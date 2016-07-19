@@ -24,6 +24,7 @@ var gulp = require('gulp'),
                 key: "certificates/server.key",
                 cert: "certificates/server.crt"
             },
+            browser: "google chrome",
             server: {
                 baseDir: './dist',
                 routes: {
