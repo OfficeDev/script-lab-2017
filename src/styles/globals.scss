@@ -1,0 +1,49 @@
+﻿@import 'theme.scss';
+@import 'mixins.scss';
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    color: $foreground-primary;
+}
+
+body {
+    position: relative;
+}
+
+main {
+    height: 100%;
+}
+
+footer {
+    width: 100%;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    padding: 0;
+}
+
+.clearfix {
+    display: block;
+    clear: both;
+    height: 0;
+}
+
+.ms-Icon-large {
+    position: relative;
+    font-size: 20px;
+    top: 4px;
+}
