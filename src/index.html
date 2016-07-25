@@ -3,7 +3,7 @@
 
 <head>
     <base href="/">
-    <title>Angular2 Template</title>
+    <title>OfficeJS API Playground</title>
 
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -11,7 +11,22 @@
 </head>
 
 <body>
-    <app>Loading... </app>
+    <app>
+        <div class="ms-progress-component">
+            <main class="ms-progress-component__main ms-fontColor-white">
+                <img class="ms-progress-component__logo" src="assets/images/logo.png" />
+                <h1 class="ms-progress-component__title ms-font-xl ms-fontColor-white ms-fontWeight-semibold">API Playground</h1>
+                <h2 class="ms-progress-component__title ms-font-l ms-fontColor-white ms-fontWeight-light">for Office.js</h2>
+            </main>
+            <footer class="ms-progress-component__footer ms-fontColor-white">
+                <div class="ms-progress">
+                    <div class="ms-Spinner large"></div>
+                    <div class="ms-ProgressIndicator-itemName">Loading</div>
+                    <div class="ms-ProgressIndicator-itemDescription">Fetching libraries</div>
+                </div>
+            </footer>
+        </div>
+    </app>
 </body>
 
 </html>
