@@ -10,7 +10,8 @@
     "start": "webpack-dev-server --https --hot --inline --progress --port 3000",
     "test": "karma start",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
-    "postinstall": "typings install"
+    "postinstall": "typings install",
+    "lint": "npm run tslint \"src/**/*.ts\""
   },
   "license": "MIT",
   "dependencies": {
@@ -55,6 +56,8 @@
     "typings": "^1.0.4",
     "webpack": "^1.13.0",
     "webpack-dev-server": "^1.14.1",
-    "webpack-merge": "^0.14.0"
+    "webpack-merge": "^0.14.0",
+    "angular2-hmr": "^0.8.1",
+    "tslint": "^3.13.0"
   }
 }

@@ -13,6 +13,8 @@ module.exports = {
         'common': './src/common.ts'
     },
 
+    devtool: 'inline-source-map',
+
     resolve: {
         extensions: ['', '.js', '.ts']
     },
@@ -68,8 +70,9 @@ module.exports = {
     },
 
     plugins: [
+
         new webpack.optimize.CommonsChunkPlugin({
-            name: ['app', 'vendor', 'common', 'polyfills']
+            name: ['polyfills', 'common', 'vendor', 'app'].reverse()
         }),
 
         new HtmlWebpackPlugin({
