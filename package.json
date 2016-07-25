@@ -1,6 +1,6 @@
 {
   "name": "officejs-api-playground",
-  "description": "",
+  "description": "Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint.",
   "repository": "https://github.com/Zlatkovsky/OfficeJsPlayground",
   "author": {
     "name": "OfficeJS Playground"

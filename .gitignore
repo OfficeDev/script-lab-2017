@@ -58,3 +58,4 @@ bin
 node_modules/**
 typings/**
 dist/**
+/packages

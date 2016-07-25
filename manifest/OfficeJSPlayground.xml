@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--Created:cb85b80c-f585-40ff-8bfc-12ff4d0e34a9-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+
+  <Id>af8fa5ba-4010-4bcc-9e03-a91ddadf6dd3</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Microsoft</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="OfficeJS Playground" />
+  <Description DefaultValue="Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint." />
+  <IconUrl DefaultValue="https://localhost:3000/assets/images/logo_32.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/logo_64.png" />
+  <AppDomains>
+    <AppDomain>https://bing.com</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Workbook" />
+    <Host Name="Presentation" />
+    <Host Name="Document" />
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://localhost:3000" />
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="OPlay.GetStarted.Title"/>
+            <Description resid="OPlay.GetStarted.Description"/>
+            <LearnMoreUrl resid="OPlay.GetStarted.LearnMoreUrl"/>
+          </GetStarted>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="OPlay.Group1">
+                <Label resid="OPlay.Group1Label" />
+                <Icon>
+                  <bt:Image size="16" resid="OPlay.tpicon_16x16" />
+                  <bt:Image size="32" resid="OPlay.tpicon_32x32" />
+                  <bt:Image size="80" resid="OPlay.tpicon_80x80" />
+                </Icon>
+                <Control xsi:type="Button" id="OPlay.TaskpaneButton">
+                  <Label resid="OPlay.TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="OPlay.TaskpaneButton.Label" />
+                    <Description resid="OPlay.TaskpaneButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="OPlay.tpicon_16x16" />
+                    <bt:Image size="32" resid="OPlay.tpicon_32x32" />
+                    <bt:Image size="80" resid="OPlay.tpicon_80x80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="OPlay.Taskpane.Url" />
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="OPlay.tpicon_16x16" DefaultValue="https://localhost:3000/assets/images/logo_16.png" />
+        <bt:Image id="OPlay.tpicon_32x32" DefaultValue="https://localhost:3000/assets/images/logo_32.png" />
+        <bt:Image id="OPlay.tpicon_80x80" DefaultValue="https://localhost:3000/assets/images/logo_80.png" />
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="OPlay.Taskpane.Url" DefaultValue="https://localhost:3000" />
+        <bt:Url id="OPlay.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="OPlay.TaskpaneButton.Label" DefaultValue="Editor" />
+        <bt:String id="OPlay.Group1Label" DefaultValue="OfficeJS Playground" />
+        <bt:String id="OPlay.GetStarted.Title" DefaultValue="OfficeJS Playground" />
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="OPlay.TaskpaneButton.Tooltip" DefaultValue="Click to launch OfficeJS Playground" />
+        <bt:String id="OPlay.GetStarted.Description" DefaultValue="Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint." />
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
