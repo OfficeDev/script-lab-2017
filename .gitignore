@@ -55,7 +55,6 @@ $RECYCLE.BIN/
 obj
 bin
 *.user
-node_modules
-typings
-npm-debug.log
-dist
+node_modules/**
+typings/**
+dist/**
