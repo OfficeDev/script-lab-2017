@@ -15,7 +15,3 @@ import 'rxjs';
 // JQuery & Underscore
 import 'jquery/dist/jquery.min.js';
 import 'underscore/underscore-min.js';
-
-// Winstrap - Boostrap Theme
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';

@@ -16,5 +16,5 @@ $foreground-lighter: #999999;
 $foreground-lightest: #BABABA;
 
 /* Accent Colors */
-$accent-background-primary: #0078d7;
-$accent-foreground-primary: #deecf9;
+$accent-background-primary: rgba(33, 115, 70, 1);
+$accent-foreground-primary: lighten($accent-background-primary, 60%);

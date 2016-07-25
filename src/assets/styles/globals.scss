@@ -47,3 +47,8 @@ ul {
     font-size: 20px;
     top: 4px;
 }
+
+editor {
+    @include flex();
+    flex: 1 1 100%;
+}

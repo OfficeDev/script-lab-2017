@@ -2,7 +2,8 @@ import {Component} from '@angular/core';
 
 @Component({
     selector: 'editor',
-    template: '<h1>Editor Component</h1>'
+    templateUrl: 'editor.component.html',
+    styleUrls: ['editor.component.scss']
 })
 export class EditorComponent {
     
