@@ -41,14 +41,25 @@ module.exports = {
                 include: helpers.root('src', 'app'),
                 loader: 'raw'
             },
-            { 
-                test: /^(?!.*component).*\.scss$/, 
+            {
+                test: /^(?!.*component).*\.scss$/,
                 loaders: ['style', 'css', 'resolve-url', 'postcss', 'sass']
             },
-            { 
-                test: /\.component\.scss$/, 
-                loaders: ['raw', 'resolve-url', 'postcss', 'sass'] 
-            }            
+            {
+                test: /\.component\.scss$/,
+                loaders: ['raw', 'resolve-url', 'postcss', 'sass']
+            }
+        ],
+        preLoaders: [
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            {
+                test: /\.js$/,
+                loader: "source-map-loader",
+                exclude: [
+                    helpers.root('node_modules/rxjs'),
+                    helpers.root('node_modules/@angular')
+                ]
+            }
         ]
     },
 
