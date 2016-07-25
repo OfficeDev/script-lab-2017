@@ -1,5 +1,3 @@
-import {Observable} from 'rxjs/Rx';
-
 export enum ContextType {
     Web,
     Word,
@@ -30,7 +28,7 @@ export class Utilities {
     }
 
     static isEmpty(obj: any): boolean {
-        return Utils.isNull(obj) || _.isEmpty(obj);
+        return this.isNull(obj) || _.isEmpty(obj);
     }
 
     static get isExcel() {
@@ -45,10 +43,10 @@ export class Utilities {
         return this._context == ContextType.Web;
     }
 
-    static error<T>(exception?: any): Observable<T> | Promise<T> | OfficeExtension.IPromise<T> {
+    static error<T>(exception?: any): any {
         console.log('Error: ' + JSON.stringify(exception));
 
-        if (Utils.isWord) {
+        if (this.isWord) {
             if (exception instanceof OfficeExtension.Error) {
                 console.log('Debug info: ' + JSON.stringify(exception.debugInfo));
             }
@@ -59,7 +57,7 @@ export class Utilities {
 
     static get context(): ContextType {
         if (this.isNull(this._context)) {
-            if (_.has(window, 'Office') {
+            if (_.has(window, 'Office')) {
                 if (_.has(window, 'Word')) {
                     this._context = ContextType.Word;
                 }

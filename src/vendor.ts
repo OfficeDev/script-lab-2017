@@ -13,11 +13,9 @@ import '@angular/router';
 import 'rxjs';
 
 // JQuery & Underscore
-import 'jquery';
-import 'underscore';
+import 'jquery/dist/jquery.min.js';
+import 'underscore/underscore-min.js';
 
 // Winstrap - Boostrap Theme
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/css/bootstrap.min.js';
-import 'winstrap/dist/css/winstrap.min.css';
-import 'winstrap/dist/css/winstrap-optional.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';

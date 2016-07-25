@@ -29,9 +29,10 @@ export class StorageHelper<T> extends Dictionary<T>{
         return value;
     }
 
-    remove(item: string) {
-        super.remove(item);
+    remove(item: string): T {
+        var deletedItem = super.remove(item);
         this._save();
+        return deletedItem;
     }
 
     clear() {
