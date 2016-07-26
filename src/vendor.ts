@@ -12,4 +12,4 @@ import 'rxjs';
 
 // JQuery & Underscore
 import * as $ from 'jquery';
-import * as _ from 'underscore';
+require('underscore/underscore-min.js');

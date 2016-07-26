@@ -71,6 +71,10 @@ module.exports = {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 
+    externals: {
+        '_': 'underscore'
+    },
+
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()

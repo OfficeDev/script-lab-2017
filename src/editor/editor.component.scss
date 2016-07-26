@@ -2,20 +2,9 @@
 @import '../assets/styles/theme.scss';
 
 .editor {
-    &__header {
-        background-color: $accent-background-primary;
-        color: $accent-foreground-primary;
-        padding: $default-spacing/2 $default-spacing;
-    }   
-
     &__main {
-        padding: $default-spacing/2 0;
         flex: 1 1 100%;
         @include flex();
-
-        .monaco-editor {
-            flex: 1 1 auto;
-        }
     }
 
     &__footer {

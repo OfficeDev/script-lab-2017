@@ -39,6 +39,8 @@
     "node-sass": "^3.8.0",
     "precss": "^1.4.0",
     "autoprefixer": "^6.3.7",
+    "exports-loader": "^0.6.3",
+    "imports-loader": "^0.6.5",
     "angular2-template-loader": "^0.4.0",
     "css-loader": "^0.23.1",
     "postcss-loader": "^0.9.1",

@@ -51,14 +51,12 @@ export class Dictionary<T> {
 
     keys(): string[] {
         if (Utilities.isNull(this.items)) throw new Error('Dictionary isn\'t initialized. Call \'new\' first.');
-        return Object.keys(this.items);
+        return _.keys(this.items);
     }
 
     values(): T[] {
         if (Utilities.isNull(this.items)) throw new Error('Dictionary isn\'t initialized. Call \'new\' first.');
-        return Array.map(this.keys(), function (key) {
-            return this.items[key];
-        });
+        return _.values(this.items);
     }
 
     lookup(): IDictionary<T> {

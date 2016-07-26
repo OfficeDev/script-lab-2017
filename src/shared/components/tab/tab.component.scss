@@ -1,0 +1,25 @@
+@import '../../../assets/styles/mixins.scss';
+@import '../../../assets/styles/theme.scss';
+
+.tabs {
+    background-color: #f4f4f4;
+
+    &__tab {
+        &--active {
+            background-color: $accent-background-primary !important;
+            color: $accent-foreground-primary !important;
+            font-style: italic;
+        }
+    }    
+}
+
+tabs {
+    @include flex();
+    flex: 1 1 100%;
+}
+
+.tab__editor {
+    flex: 1 1 100%;
+    width: 100%;
+    border: solid 1px #666;            
+}
