@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Microsoft.WindowsAzure.Storage.Table;
-using OfficeJsApiPlayground.Common;
+using OfficeJsSnippetsService.Common;
 
-namespace OfficeJsApiPlayground.DataModel
+namespace OfficeJsSnippetsService.DataModel
 {
     public class SnippetInfoEntity : TableEntity
     {

@@ -6,10 +6,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json.Linq;
-using OfficeJsApiPlayground.Common;
-using OfficeJsApiPlayground.Service;
+using OfficeJsSnippetsService.Common;
+using OfficeJsSnippetsService.Service;
 
-namespace OfficeJsApiPlayground.Controllers
+namespace OfficeJsSnippetsService.Controllers
 {
     public class HealthController : ApiController
     {

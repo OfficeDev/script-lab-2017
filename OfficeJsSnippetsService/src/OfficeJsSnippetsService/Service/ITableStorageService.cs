@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Table;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     public interface ITableStorageService
     {

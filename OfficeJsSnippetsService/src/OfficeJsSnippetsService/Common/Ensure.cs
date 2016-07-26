@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
-namespace OfficeJsApiPlayground.Common
+namespace OfficeJsSnippetsService.Common
 {
     internal static class Ensure
     {

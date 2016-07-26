@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     public class Logger
     {

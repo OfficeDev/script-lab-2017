@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace OfficeJsApiPlayground.Controllers
+namespace OfficeJsSnippetsService.Controllers
 {
     public class SnippetInfoDto
     {

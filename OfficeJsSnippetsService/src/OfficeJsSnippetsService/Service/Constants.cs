@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     internal static class Constants
     {

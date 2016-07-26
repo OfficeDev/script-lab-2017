@@ -7,11 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
-using OfficeJsApiPlayground.Common;
-using OfficeJsApiPlayground.DataModel;
-using OfficeJsApiPlayground.Service;
+using OfficeJsSnippetsService.Common;
+using OfficeJsSnippetsService.DataModel;
+using OfficeJsSnippetsService.Service;
 
-namespace OfficeJsApiPlayground.Controllers
+namespace OfficeJsSnippetsService.Controllers
 {
     public class SnippetsController : ApiController
     {

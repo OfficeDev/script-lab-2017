@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 
-namespace OfficeJsApiPlayground.Common
+namespace OfficeJsSnippetsService.Common
 {
     internal static class StringExtensions
     {

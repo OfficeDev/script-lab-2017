@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
-using OfficeJsApiPlayground.DataModel;
-using OfficeJsApiPlayground.Service;
+using OfficeJsSnippetsService.DataModel;
+using OfficeJsSnippetsService.Service;
 using Xunit;
 
-namespace OfficeJsApiPlayground.Tests
+namespace OfficeJsSnippetsService.Tests
 {
     public class SnippetInfoProviderTests
     {

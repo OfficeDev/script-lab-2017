@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     public class ServiceConfig
     {

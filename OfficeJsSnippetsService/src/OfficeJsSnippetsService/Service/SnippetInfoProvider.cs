@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using OfficeJsApiPlayground.Common;
-using OfficeJsApiPlayground.DataModel;
+using OfficeJsSnippetsService.Common;
+using OfficeJsSnippetsService.DataModel;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     public class SnippetInfoProvider
     {

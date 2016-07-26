@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
-using OfficeJsApiPlayground.Service;
+using OfficeJsSnippetsService.Service;
 using Xunit;
 
-namespace OfficeJsApiPlayground.Tests
+namespace OfficeJsSnippetsService.Tests
 {
     public class SnippetContentProviderTests
     {
@@ -27,7 +27,7 @@ namespace OfficeJsApiPlayground.Tests
 
             // Arrange
             this.blobServiceMock
-                .Setup(b => b.DownloadBlobAsync("snippetabc123", "myFile"))
+                .Setup(b => b.DownloadBlobAsync("snippet-abc123", "myFile"))
                 .ReturnsAsync(TestContent);
 
             // Act

@@ -5,10 +5,10 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using OfficeJsApiPlayground.Common;
-using OfficeJsApiPlayground.Service;
+using OfficeJsSnippetsService.Common;
+using OfficeJsSnippetsService.Service;
 
-namespace OfficeJsApiPlayground.Filters
+namespace OfficeJsSnippetsService.Filters
 {
     public class MyWebExceptionFilter : ExceptionFilterAttribute
     {

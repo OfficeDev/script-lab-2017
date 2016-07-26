@@ -4,10 +4,10 @@ using System.Linq;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
-using OfficeJsApiPlayground.Filters;
-using OfficeJsApiPlayground.Service;
+using OfficeJsSnippetsService.Filters;
+using OfficeJsSnippetsService.Service;
 
-namespace OfficeJsApiPlayground
+namespace OfficeJsSnippetsService
 {
     public static class WebApiConfig
     {

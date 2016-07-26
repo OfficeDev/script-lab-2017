@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     public interface IBlobService
     {

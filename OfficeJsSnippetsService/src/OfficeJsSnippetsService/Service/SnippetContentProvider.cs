@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using OfficeJsApiPlayground.Common;
+using OfficeJsSnippetsService.Common;
 
-namespace OfficeJsApiPlayground.Service
+namespace OfficeJsSnippetsService.Service
 {
     public class SnippetContentProvider
     {
