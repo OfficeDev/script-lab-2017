@@ -1,8 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, ExceptionHandler} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
-import {bootstrap} from '@angular/platform-browser-dynamic';
 import {ROUTER_DIRECTIVES} from '@angular/router';
-import {APP_ROUTER_PROVIDERS} from "./app.routes";
+
+
+import {MediatorService} from '../shared/services';
+import {ExceptionHelper, NotificationHelper, RequestHelper} from '../shared/helpers';
 
 @Component({
     selector: 'app',
@@ -10,17 +12,18 @@ import {APP_ROUTER_PROVIDERS} from "./app.routes";
     directives: [ROUTER_DIRECTIVES]
 })
 
-export class AppComponent { }
+export class AppComponent {
 
-declare var require: any;
+}
 
-// require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }});
-require(['vs/editor/editor.main'], function() {
-    console.log("Monaco loaded on bootstrap");
-    console.log(monaco.editor);
+export const PROVIDER_OVERRIDES = [
+    { provide: ExceptionHandler, useClass: ExceptionHelper },
+    { provide: LocationStrategy, useClass: HashLocationStrategy }    
+];
 
-    bootstrap(AppComponent, [
-        APP_ROUTER_PROVIDERS,
-        {provide: LocationStrategy, useClass: HashLocationStrategy}
-    ]);  
-});
+export const APP_PROVIDERS = [
+    ExceptionHelper,
+    NotificationHelper,
+    RequestHelper,
+    MediatorService
+];

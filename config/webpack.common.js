@@ -1,7 +1,9 @@
 var webpack = require('webpack');
+var helpers = require('./helpers');
+
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var helpers = require('./helpers');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
 
@@ -13,11 +15,9 @@ module.exports = {
         'common': './src/common.ts'
     },
 
-    devtool: 'cheap-module-source-map',
-
     resolve: {
         alias: {
-            'vs': '/node_modules/monaco-editor/min/vs'
+            'vs': helpers.node_modules('monaco-editor/min/vs')
         },
         extensions: ['', '.js', '.ts']
     },
@@ -61,8 +61,8 @@ module.exports = {
                 test: /\.js$/,
                 loader: "source-map-loader",
                 exclude: [
-                    helpers.root('node_modules/rxjs'),
-                    helpers.root('node_modules/@angular')
+                    helpers.node_modules('node_modules/rxjs'),
+                    helpers.node_modules('node_modules/@angular')
                 ]
             }
         ]
@@ -73,17 +73,19 @@ module.exports = {
     },
 
     plugins: [
-
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'common', 'vendor', 'app'].reverse()
         }),
 
         new HtmlWebpackPlugin({
             template: 'src/index.html'
-        })
-    ],
+        }),
 
-    externals: {
-        '/node_modules/monaco-editor/min/vs/*': 'monaco'
-    }
+        new CopyWebpackPlugin([
+            {
+                from: helpers.node_modules('monaco-editor/min/vs'),
+                to: 'vs',
+            }
+        ]),
+    ]
 };

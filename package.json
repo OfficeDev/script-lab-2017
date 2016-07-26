@@ -7,11 +7,11 @@
   },
   "version": "1.0.0",
   "scripts": {
-    "start": "webpack-dev-server --https --hot --inline --progress --port 3000",
+    "start": "webpack-dev-server --https --hot --inline --progress --colors --port 3000",
     "test": "karma start",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
     "postinstall": "typings install",
-    "lint": "npm run tslint \"src/**/*.ts\""
+    "lint": "tslint \"src/**/*.ts\""
   },
   "license": "MIT",
   "dependencies": {
@@ -29,9 +29,11 @@
     "zone.js": "^0.6.12",
     "jquery": "^3.0.0",
     "underscore": "^1.8.3",
-    "office-ui-fabric": "2.6.1"
+    "office-ui-fabric": "^2.6.1",
+    "monaco-editor": "^0.5.3"
   },
   "devDependencies": {
+    "codelyzer": "^0.0.26",
     "resolve-url-loader": "^1.6.0",
     "perfectionist": "^2.1.3",
     "node-sass": "^3.8.0",
@@ -57,7 +59,7 @@
     "webpack": "^1.13.0",
     "webpack-dev-server": "^1.14.1",
     "webpack-merge": "^0.14.0",
-    "angular2-hmr": "^0.8.1",
-    "tslint": "^3.13.0"
+    "tslint": "^3.13.0",
+    "copy-webpack-plugin": "^3.0.1"
   }
 }
