@@ -60,6 +60,18 @@ namespace OfficeJsSnippetsService.Service
                 });
         }
 
+        public async Task InsertAsync<T>(string tableName, T item)
+            where T : ITableEntity, new()
+        {
+            await this.RunAndCreateTableIfNotExistsAsync(
+                tableName,
+                async (CloudTable table) =>
+                {
+                    TableResult result = await table.ExecuteAsync(TableOperation.Insert(item));
+                    return result;
+                });
+        }
+
         private async Task<T> RunAndCreateTableIfNotExistsAsync<T>(string tableName, Func<CloudTable, Task<T>> lambda)
         {
             CloudTable table = this.tableClient.GetTableReference(tableName);

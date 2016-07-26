@@ -39,8 +39,10 @@ namespace OfficeJsSnippetsService
             builder.RegisterType<ServiceConfigProvider>().SingleInstance();
             builder.RegisterType<BlobService>().As<IBlobService>();
             builder.RegisterType<TableStorageService>().As<ITableStorageService>();
-            builder.RegisterType<SnippetInfoProvider>();
-            builder.RegisterType<SnippetContentProvider>();
+            builder.RegisterType<SnippetInfoService>();
+            builder.RegisterType<SnippetContentService>();
+            builder.RegisterType<IdGenerator>();
+            builder.RegisterType<PasswordHelper>();
 
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

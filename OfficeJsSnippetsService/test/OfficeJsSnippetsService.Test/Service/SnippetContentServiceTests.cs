@@ -9,15 +9,15 @@ using Xunit;
 
 namespace OfficeJsSnippetsService.Tests
 {
-    public class SnippetContentProviderTests
+    public class SnippetContentServiceTests
     {
         private readonly Mock<IBlobService> blobServiceMock;
-        private readonly SnippetContentProvider contentProvider;
+        private readonly SnippetContentService snippetContentService;
 
-        public SnippetContentProviderTests()
+        public SnippetContentServiceTests()
         {
             this.blobServiceMock = new Mock<IBlobService>(MockBehavior.Strict);
-            this.contentProvider = new SnippetContentProvider(this.blobServiceMock.Object);
+            this.snippetContentService = new SnippetContentService(this.blobServiceMock.Object);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace OfficeJsSnippetsService.Tests
                 .ReturnsAsync(TestContent);
 
             // Act
-            string actual = await this.contentProvider.GetContentAsync("abc123", "myFile");
+            string actual = await this.snippetContentService.GetContentAsync("abc123", "myFile");
 
             // Assert
             Assert.Equal(TestContent, actual);

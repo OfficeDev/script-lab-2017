@@ -10,15 +10,15 @@ using Xunit;
 
 namespace OfficeJsSnippetsService.Tests
 {
-    public class SnippetInfoProviderTests
+    public class SnippetInfoServiceTests
     {
         private readonly Mock<ITableStorageService> tableServiceMock;
-        private readonly SnippetInfoProvider infoProvider;
+        private readonly SnippetInfoService snippetInfoService;
 
-        public SnippetInfoProviderTests()
+        public SnippetInfoServiceTests()
         {
             this.tableServiceMock = new Mock<ITableStorageService>(MockBehavior.Strict);
-            this.infoProvider = new SnippetInfoProvider(this.tableServiceMock.Object);
+            this.snippetInfoService = new SnippetInfoService(this.tableServiceMock.Object);
         }
 
         [Fact]
@@ -35,10 +35,23 @@ namespace OfficeJsSnippetsService.Tests
                 .ReturnsAsync(new[] { expected });
 
             // Act
-            SnippetInfoEntity actual = await this.infoProvider.GetSnippetInfoAsync("abc123");
+            SnippetInfoEntity actual = await this.snippetInfoService.GetSnippetInfoAsync("abc123");
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async Task CreateSnippetAsync_Works()
+        {
+            // Arrange
+            SnippetInfoEntity entity = SnippetInfoEntity.Create("abc123");
+            this.tableServiceMock
+                .Setup(b => b.InsertAsync("snippets", entity))
+                .Returns(Task.FromResult(0));
+
+            // Act
+            await this.snippetInfoService.CreateSnippetAsync(entity);
         }
     }
 }

@@ -95,8 +95,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Service\SnippetInfoProviderTests.cs" />
-    <Compile Include="Service\SnippetContentProviderTests.cs" />
+    <Compile Include="Service\PasswordHelperTests.cs" />
+    <Compile Include="Service\IdGeneratorTests.cs" />
+    <Compile Include="Service\SnippetInfoServiceTests.cs" />
+    <Compile Include="Service\SnippetContentServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

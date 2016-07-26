@@ -124,7 +124,8 @@
     <Compile Include="Common\Ensure.cs" />
     <Compile Include="Common\UserValidation.cs" />
     <Compile Include="Controllers\HealthController.cs" />
-    <Compile Include="DataModel\SnippetContentDto.cs" />
+    <Compile Include="DataModel\SnippetInfoWithKeyDto.cs" />
+    <Compile Include="DataModel\SnippetInfoDto.cs" />
     <Compile Include="Controllers\SnippetsController.cs" />
     <Compile Include="DataModel\SnippetInfoEntity.cs" />
     <Compile Include="Filters\MyWebExceptionFilter.cs" />
@@ -135,13 +136,16 @@
     <Compile Include="Service\BlobService.cs" />
     <Compile Include="Service\Constants.cs" />
     <Compile Include="Service\IBlobService.cs" />
+    <Compile Include="Service\IdGenerator.cs" />
     <Compile Include="Service\ITableStorageService.cs" />
     <Compile Include="Service\Logger.cs" />
+    <Compile Include="Service\PasswordHelper.cs" />
     <Compile Include="Service\ServiceConfig.cs" />
     <Compile Include="Service\ServiceConfigProvider.cs" />
-    <Compile Include="Service\SnippetInfoProvider.cs" />
-    <Compile Include="Service\SnippetContentProvider.cs" />
+    <Compile Include="Service\SnippetInfoService.cs" />
+    <Compile Include="Service\SnippetContentService.cs" />
     <Compile Include="Service\TableStorageService.cs" />
+    <Compile Include="Utils\Fnv1a64.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

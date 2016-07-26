@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using OfficeJsSnippetsService.Common;
 using OfficeJsSnippetsService.DataModel;
@@ -24,18 +25,24 @@ namespace OfficeJsSnippetsService.Controllers
 
         private const string SnippetIdValidationPattern = "^[0-9a-z]{3,}$";
 
-        private readonly SnippetInfoProvider infoProvider;
-        private readonly SnippetContentProvider contentProvider;
-
         private static readonly Regex snippetIdValidationRegex = new Regex(SnippetIdValidationPattern);
 
-        public SnippetsController(SnippetInfoProvider infoProvider, SnippetContentProvider contentProvider)
-        {
-            Ensure.ArgumentNotNull(infoProvider, nameof(infoProvider));
-            Ensure.ArgumentNotNull(contentProvider, nameof(contentProvider));
+        private readonly SnippetInfoService snippetInfoService;
+        private readonly SnippetContentService snippetContentService;
+        private readonly IdGenerator idGenerator;
+        private readonly PasswordHelper passwordHelper;
 
-            this.infoProvider = infoProvider;
-            this.contentProvider = contentProvider;
+        public SnippetsController(SnippetInfoService snippetInfoService, SnippetContentService snippetContentService, IdGenerator idGenerator, PasswordHelper passwordHelper)
+        {
+            Ensure.ArgumentNotNull(snippetInfoService, nameof(snippetInfoService));
+            Ensure.ArgumentNotNull(snippetContentService, nameof(snippetContentService));
+            Ensure.ArgumentNotNull(idGenerator, nameof(idGenerator));
+            Ensure.ArgumentNotNull(passwordHelper, nameof(passwordHelper));
+
+            this.snippetInfoService = snippetInfoService;
+            this.snippetContentService = snippetContentService;
+            this.idGenerator = idGenerator;
+            this.passwordHelper = passwordHelper;
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}")]
@@ -43,7 +50,7 @@ namespace OfficeJsSnippetsService.Controllers
         {
             ValidateSnippetId(snippetId);
 
-            SnippetInfoEntity entity = await this.infoProvider.GetSnippetInfoAsync(snippetId);
+            SnippetInfoEntity entity = await this.snippetInfoService.GetSnippetInfoAsync(snippetId);
             if (entity == null)
             {
                 throw new MyWebException(HttpStatusCode.NotFound, "Snippet '{0}' does not exist.".FormatInvariant(snippetId));
@@ -54,10 +61,26 @@ namespace OfficeJsSnippetsService.Controllers
         }
 
         [HttpPost, Route("~/api/snippets")]
-        public async Task<SnippetInfoDto> CreateSnippet()
+        public async Task<SnippetInfoDto> CreateSnippet([FromBody] SnippetInfoWithKeyDto snippetInfo)
         {
-            await Task.FromResult(0);
-            return new SnippetInfoDto();
+            var entity = SnippetInfoEntity.Create(this.idGenerator.GenerateId());
+            entity.CreatorIP = HttpContext.Current?.Request?.UserHostAddress;
+            entity.LastAccessed = DateTimeOffset.UtcNow;
+
+            if (snippetInfo != null)
+            {
+                entity.Name = snippetInfo.Name;
+                if (!string.IsNullOrEmpty(snippetInfo.Key))
+                {
+                    string salt, hash;
+                    this.passwordHelper.CreateSaltAndHash(snippetInfo.Key, out salt, out hash);
+                    entity.Salt = salt;
+                    entity.Hash = hash;
+                };
+            };
+
+            await this.snippetInfoService.CreateSnippetAsync(entity);
+            return ToSnippetInfoDto(entity);
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}/content/{fileName}")]
@@ -74,7 +97,7 @@ namespace OfficeJsSnippetsService.Controllers
                 throw new MyWebException(HttpStatusCode.BadRequest, message);
             }
 
-            string content = await this.contentProvider.GetContentAsync(snippetId, fileName);
+            string content = await this.snippetContentService.GetContentAsync(snippetId, fileName);
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StringContent(content, Encoding.UTF8, mimeType);

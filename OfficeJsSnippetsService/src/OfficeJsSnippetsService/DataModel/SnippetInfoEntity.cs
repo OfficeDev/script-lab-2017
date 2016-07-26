@@ -16,6 +16,12 @@ namespace OfficeJsSnippetsService.DataModel
 
         public string Name { get; set; }
 
+        public string CreatorIP { get; set; }
+
+        public string Salt { get; set; }
+
+        public string Hash { get; set; }
+
         public DateTimeOffset LastAccessed { get; set; }
 
         public static string GenerateLookupFilter(string snippetId)

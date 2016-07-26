@@ -7,13 +7,13 @@ using OfficeJsSnippetsService.Common;
 
 namespace OfficeJsSnippetsService.Service
 {
-    public class SnippetContentProvider
+    public class SnippetContentService
     {
         private const string ContainerNameTemplate = "snippet-{0}";
 
         private readonly IBlobService blobProvider;
 
-        public SnippetContentProvider(IBlobService blobProvider)
+        public SnippetContentService(IBlobService blobProvider)
         {
             Ensure.ArgumentNotNull(blobProvider, nameof(blobProvider));
             this.blobProvider = blobProvider;

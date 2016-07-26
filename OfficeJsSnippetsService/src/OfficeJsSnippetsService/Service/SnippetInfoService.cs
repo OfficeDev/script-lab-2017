@@ -8,14 +8,14 @@ using OfficeJsSnippetsService.DataModel;
 
 namespace OfficeJsSnippetsService.Service
 {
-    public class SnippetInfoProvider
+    public class SnippetInfoService
     {
         private const string TableName = "snippets";
         private const string ContainerNameTemplate = "snippet{0}";
 
         private readonly ITableStorageService tableService;
 
-        public SnippetInfoProvider(ITableStorageService tableService)
+        public SnippetInfoService(ITableStorageService tableService)
         {
             Ensure.ArgumentNotNull(tableService, nameof(tableService));
             this.tableService = tableService;
@@ -29,6 +29,15 @@ namespace OfficeJsSnippetsService.Service
                 filter);
 
             return entities.FirstOrDefault();
+        }
+
+        public async Task CreateSnippetAsync(SnippetInfoEntity entity)
+        {
+            Ensure.ArgumentNotNull(entity, nameof(entity));
+            Ensure.ArgumentNotNullOrEmpty(entity.PartitionKey, "{0}.{1}".FormatInvariant(nameof(entity), nameof(entity.PartitionKey)));
+            Ensure.ArgumentNotNullOrEmpty(entity.RowKey, "{0}.{1}".FormatInvariant(nameof(entity), nameof(entity.RowKey)));
+
+            await this.tableService.InsertAsync(TableName, entity);
         }
     }
 }
