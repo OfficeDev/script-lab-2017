@@ -11,8 +11,7 @@ module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
         'vendor': './src/vendor.ts',
-        'app': './src/app/app.component.ts',
-        'common': './src/common.ts'
+        'app': './src/app/app.component.ts'
     },
 
     resolve: {
@@ -38,12 +37,12 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                exclude: helpers.root('src', 'app'),
+                exclude: helpers.root('src', 'assets'),
                 loader: ExtractTextPlugin.extract('style', 'css?sourceMap')
             },
             {
                 test: /\.css$/,
-                include: helpers.root('src', 'app'),
+                include: helpers.root('src', 'assets'),
                 loader: 'raw'
             },
             {
@@ -74,7 +73,7 @@ module.exports = {
 
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
-            name: ['polyfills', 'common', 'vendor', 'app'].reverse()
+            name: ['polyfills', 'vendor', 'app'].reverse()
         }),
 
         new HtmlWebpackPlugin({
@@ -83,7 +82,7 @@ module.exports = {
 
         new CopyWebpackPlugin([
             {
-                from: helpers.node_modules('monaco-editor/min/vs'),
+                from: 'node_modules/monaco-editor/min/vs',
                 to: 'vs',
             }
         ]),

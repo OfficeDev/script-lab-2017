@@ -7,7 +7,7 @@
   },
   "version": "1.0.0",
   "scripts": {
-    "start": "webpack-dev-server --https --hot --inline --progress --colors --port 3000",
+    "start": "webpack-dev-server --https --hot --inline --progress --compress --port 3000 --cert certificates/localhost.crt --key certificates/localhost.key --open",
     "test": "karma start",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
     "postinstall": "typings install",

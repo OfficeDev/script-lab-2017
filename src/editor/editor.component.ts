@@ -1,20 +1,14 @@
-import {Component, OnInit, ElementRef, ViewChild, ViewQuery} from '@angular/core';
-import {COMMON_DIRECTIVES} from '@angular/common';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 
 declare const require: any;
 
 @Component({
     selector: 'editor',
     templateUrl: 'editor.component.html',
-    styleUrls: ['editor.component.scss'],
-    directives: [COMMON_DIRECTIVES]
+    styleUrls: ['editor.component.scss']
 })
 export class EditorComponent implements OnInit {
-    @ViewChild('editor') editorContent: ElementRef;
-
-    constructor(
-    ) {
-    }
+    @ViewChild('editor') private _editor: ElementRef;
 
     ngOnInit() {
         var onGotAmdLoader = () => {
@@ -38,14 +32,27 @@ export class EditorComponent implements OnInit {
 
     // Will be called once monaco library is available
     initMonaco() {
-        var myDiv: HTMLDivElement = this.editorContent.nativeElement;
-        var editor = monaco.editor.create(myDiv, {
-            value: [
-                'function x() {',
-                '\tconsole.log("Hello world!");',
-                '}'
-            ].join('\n'),
-            language: 'javascript'
+        var editor = monaco.editor.create(this._editor.nativeElement, {
+            value: `// First line
+function hello() {
+    alert('Hello world!');
+}
+// Last line
+
+class MyEditor {
+    helloWorld() {
+        console.log('Hello World');
+    }
+}
+
+var editor = new MyEditor();
+editor.helloWorld();`,
+            language: "typescript",
+            lineNumbers: true,
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            theme: "vs-dark",
         });
     }
 }
