@@ -13,9 +13,12 @@ module.exports = {
         'common': './src/common.ts'
     },
 
-    devtool: 'inline-source-map',
+    devtool: 'cheap-module-source-map',
 
     resolve: {
+        alias: {
+            'vs': '/node_modules/monaco-editor/min/vs'
+        },
         extensions: ['', '.js', '.ts']
     },
 
@@ -78,5 +81,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/index.html'
         })
-    ]
+    ],
+
+    externals: {
+        '/node_modules/monaco-editor/min/vs/*': 'monaco'
+    }
 };

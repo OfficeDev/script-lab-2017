@@ -12,7 +12,15 @@ import {APP_ROUTER_PROVIDERS} from "./app.routes";
 
 export class AppComponent { }
 
-bootstrap(AppComponent, [
-    APP_ROUTER_PROVIDERS,
-    {provide: LocationStrategy, useClass: HashLocationStrategy}
-]);
+declare var require: any;
+
+// require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }});
+require(['vs/editor/editor.main'], function() {
+    console.log("Monaco loaded on bootstrap");
+    console.log(monaco.editor);
+
+    bootstrap(AppComponent, [
+        APP_ROUTER_PROVIDERS,
+        {provide: LocationStrategy, useClass: HashLocationStrategy}
+    ]);  
+});
