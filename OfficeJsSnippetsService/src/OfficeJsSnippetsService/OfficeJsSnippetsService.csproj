@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Common\HttpRequestMessageExtensions.cs" />
     <Compile Include="Common\MyWebException.cs" />
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Common\Ensure.cs" />

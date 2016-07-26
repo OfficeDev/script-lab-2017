@@ -52,10 +52,44 @@ namespace OfficeJsSnippetsService.Service
             {
                 if (ex.RequestInformation?.HttpStatusCode == (int)HttpStatusCode.NotFound)
                 {
-                    throw new MyWebException(HttpStatusCode.NotFound, "File does not exist");
+                    throw new MyWebException(HttpStatusCode.NotFound, "File does not exist", ex);
                 }
 
-                throw new MyWebException(HttpStatusCode.BadGateway, "An error occurred while processing a request from an upstream server. Please try again in a few minutes.");
+                throw new MyWebException(HttpStatusCode.BadGateway, "Upstream server responded with an error. Please try again in a few minutes.", ex);
+            }
+        }
+
+        public async Task CreateContainerIfNotExistsAsync(string containerName)
+        {
+            CloudBlobContainer container = this.blobClient.GetContainerReference(containerName);
+
+            try
+            {
+                await container.CreateIfNotExistsAsync();
+            }
+            catch (StorageException ex)
+            {
+                throw new MyWebException(HttpStatusCode.BadGateway, "Upstream server responded with an error. Please try again in a few minutes.", ex);
+            }
+        }
+
+        public async Task UploadOrReplaceBlobAsync(string containerName, string blobName, string content)
+        {
+            CloudBlobContainer container = this.blobClient.GetContainerReference(containerName);
+            CloudBlockBlob blob = container.GetBlockBlobReference(blobName);
+
+            try
+            {
+                using (var ms = new MemoryStream())
+                {
+                    byte[] bytes = this.encoding.GetBytes(content);
+                    // TODO: Deal with etags / sequence numbers and handle OC properly
+                    await blob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
+                }
+            }
+            catch (StorageException ex)
+            {
+                throw new MyWebException(HttpStatusCode.BadGateway, "Upstream server responded with an error. Please try again in a few minutes.", ex);
             }
         }
     }

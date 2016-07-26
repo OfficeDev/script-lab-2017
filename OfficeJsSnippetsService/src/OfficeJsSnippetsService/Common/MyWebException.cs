@@ -16,6 +16,12 @@ namespace OfficeJsSnippetsService.Common
             this.StatusCode = statusCode;
         }
 
+        public MyWebException(HttpStatusCode statusCode, string message, Exception innerExeption)
+            : base(message, innerExeption)
+        {
+            this.StatusCode = statusCode;
+        }
+
         public override string ToString()
         {
             return "{0}. StatusCode: {1}. Details: {2}".FormatInvariant(

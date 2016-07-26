@@ -26,6 +26,20 @@ namespace OfficeJsSnippetsService.Service
                 blobName: fileName);
         }
 
+        public async Task CreateContainerAsync(string snippetId)
+        {
+            await this.blobProvider.CreateContainerIfNotExistsAsync(
+                containerName: GetContainerName(snippetId));
+        }
+
+        public async Task SetContentAsync(string snippetId, string fileName, string content)
+        {
+            await this.blobProvider.UploadOrReplaceBlobAsync(
+                containerName: GetContainerName(snippetId),
+                blobName: fileName,
+                content: content);
+        }
+
         private static string GetContainerName(string snippetId)
         {
             return ContainerNameTemplate.FormatInvariant(snippetId);
