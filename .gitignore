@@ -55,7 +55,7 @@ $RECYCLE.BIN/
 obj
 bin
 *.user
+
 node_modules/**
-typings/**
 dist/**
-/packages
+packages/**
