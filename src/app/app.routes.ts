@@ -1,10 +1,14 @@
 import {provideRouter, RouterConfig} from '@angular/router';
-import {EditorComponent} from '../components'
+import {EditorComponent, SnippetCreateComponent} from '../components'
 
 export const AppRoutes: RouterConfig = [
     {
         path: '',
         component: EditorComponent
+    },
+    {
+        path: 'new',
+        component: SnippetCreateComponent
     }
 ];
 
