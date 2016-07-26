@@ -22,8 +22,6 @@ namespace OfficeJsSnippetsService.DataModel
 
         public string Hash { get; set; }
 
-        public DateTimeOffset LastAccessed { get; set; }
-
         public static string GenerateLookupFilter(string snippetId)
         {
             Ensure.ArgumentNotNullOrEmpty(snippetId, nameof(snippetId));

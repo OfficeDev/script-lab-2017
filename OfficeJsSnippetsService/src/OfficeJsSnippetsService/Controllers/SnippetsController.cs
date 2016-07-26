@@ -64,17 +64,16 @@ namespace OfficeJsSnippetsService.Controllers
         }
 
         [HttpPost, Route("~/api/snippets")]
-        public async Task<SnippetInfoWithKeyDto> CreateSnippet([FromBody] SnippetInfoWithKeyDto snippetInfo)
+        public async Task<SnippetInfoWithPasswordDto> CreateSnippet([FromBody] SnippetInfoWithPasswordDto snippetInfo)
         {
             var entity = SnippetInfoEntity.Create(this.idGenerator.GenerateId());
             entity.CreatorIP = HttpContext.Current?.Request?.UserHostAddress;
-            entity.LastAccessed = DateTimeOffset.UtcNow;
 
             string password = null;
             if (snippetInfo != null)
             {
                 entity.Name = snippetInfo.Name;
-                password = snippetInfo.Key;
+                password = snippetInfo.Password;
             };
 
             if (string.IsNullOrEmpty(password))
@@ -89,7 +88,7 @@ namespace OfficeJsSnippetsService.Controllers
             await this.snippetInfoService.CreateSnippetAsync(entity);
             await this.snippetContentService.CreateContainerAsync(entity.SnippetId);
 
-            return ToSnippetInfoWithKeyDto(entity, password);
+            return ToSnippetInfoWithPasswordDto(entity, password);
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}/content/{fileName}")]
@@ -172,13 +171,13 @@ namespace OfficeJsSnippetsService.Controllers
             };
         }
 
-        private static SnippetInfoWithKeyDto ToSnippetInfoWithKeyDto(SnippetInfoEntity entity, string password)
+        private static SnippetInfoWithPasswordDto ToSnippetInfoWithPasswordDto(SnippetInfoEntity entity, string password)
         {
-            return new SnippetInfoWithKeyDto
+            return new SnippetInfoWithPasswordDto
             {
                 Id = entity.SnippetId,
                 Name = entity.Name,
-                Key = password
+                Password = password
             };
         }
     }
