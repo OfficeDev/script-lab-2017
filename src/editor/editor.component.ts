@@ -51,8 +51,7 @@ editor.helloWorld();`,
             lineNumbers: true,
             roundedSelection: false,
             scrollBeyondLastLine: false,
-            readOnly: false,
-            theme: "vs-dark",
+            readOnly: false
         });
     }
 }

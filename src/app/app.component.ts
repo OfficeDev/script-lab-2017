@@ -20,7 +20,7 @@ export const APP_PROVIDERS = [
 
 @Component({
     selector: 'app',
-    templateUrl: 'app.component.html',
+    template: '<router-outlet></router-outlet>',
     directives: [ROUTER_DIRECTIVES]
 })
 export class AppComponent { }

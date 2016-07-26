@@ -52,30 +52,8 @@ ul {
     @include flex();
     height: 100vh;
 
-    &__search {
-        width: 100%;
-        margin: 0;
-    }
-
-    &__separator {
-        margin: 0 auto;
-        width: calc(100% - 30px);
-        border: none;
-        border-top: 1px solid $background-light;
-    }
-
-    &__main {
-        flex: 1 1 calc(100% - 80px);
+    editor {
+        flex: 1 1 100%;
         @include flex();
-    }
-
-    &__footer {        
-        cursor: pointer;
-        height: 80px;
-    }
-}
-
-editor {
-    @include flex();
-    flex: 1 1 100%;
+    }    
 }

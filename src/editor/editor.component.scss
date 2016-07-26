@@ -1,8 +1,26 @@
 @import '../assets/styles/mixins.scss';
 @import '../assets/styles/theme.scss';
 
-.monaco-editor {
-    width: 100%;
-    height: 100%;
-    border: 1px solid grey;
+.editor {
+    &__header {
+        background-color: $accent-background-primary;
+        color: $accent-foreground-primary;
+        padding: $default-spacing/2 $default-spacing;
+    }   
+
+    &__main {
+        padding: $default-spacing/2 0;
+        flex: 1 1 100%;
+        @include flex();
+
+        .monaco-editor {
+            flex: 1 1 auto;
+        }
+    }
+
+    &__footer {
+        background-color: $accent-background-primary;
+        color: $accent-foreground-primary;
+        padding: $default-spacing/2 $default-spacing;        
+    }
 }
