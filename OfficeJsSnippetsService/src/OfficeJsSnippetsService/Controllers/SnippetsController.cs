@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -184,6 +187,56 @@ namespace OfficeJsSnippetsService.Controllers
 
             string body = await this.Request.Content.ReadAsStringAsync();
             await this.snippetContentService.SetContentAsync(snippetId, fileName, body);
+        }
+
+        [HttpGet, Route("~/api/snippets/{snippetId}/zipped")]
+        public async Task<HttpResponseMessage> GetZippedSnippet(string snippetId)
+        {
+            ValidateSnippetId(snippetId);
+
+            string[] fileNames = knownMimeTypes.Keys.ToArray();
+            var tasks = new Task<string>[fileNames.Length];
+            for (int i = 0; i < fileNames.Length; i++)
+            {
+                tasks[i] = this.GetFileContentOrNull(snippetId, fileNames[i]);
+            }
+            string[] contents = await Task.WhenAll(tasks);
+
+            var ms = new MemoryStream();
+            using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+            {
+                for (int i = 0; i < fileNames.Length; i++)
+                {
+                    var entry = zip.CreateEntry("default.{0}".FormatInvariant(fileNames[i]));
+                    using (StreamWriter writer = new StreamWriter(entry.Open()))
+                    {
+                        writer.Write(contents[i]);
+                    }
+                }
+            }
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var response = this.Request.CreateResponse();
+            var content = new StreamContent(ms);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+            content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "officejs_snippet_{0}.zip".FormatInvariant(snippetId)
+            };
+            response.Content = content;
+            return response;
+        }
+
+        private async Task<string> GetFileContentOrNull(string snippetId, string fileName)
+        {
+            try
+            {
+                return await this.snippetContentService.GetContentAsync(snippetId, fileName);
+            }
+            catch (MyWebException)
+            {
+                return null;
+            }
         }
 
         private static void ValidateSnippetId(string snippetId)
