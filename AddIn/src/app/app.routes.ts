@@ -3,15 +3,19 @@ import {RunComponent, EditorComponent, NewComponent} from '../components'
 
 export const AppRoutes: RouterConfig = [
     {
-        path: ':id',
-        component: EditorComponent
-    },
-    {
         path: '',
         component: NewComponent
     },
     {
-        path: ':id/run',
+        path: 'edit',
+        component: EditorComponent
+    },
+    {
+        path: 'edit/:name',
+        component: EditorComponent
+    },
+    {
+        path: 'edit/:name/run',
         component: RunComponent
     }
 ];

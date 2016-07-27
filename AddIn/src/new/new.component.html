@@ -1,1 +1,29 @@
-<h1>Create</h1>
+<section class="new">
+    <section class="new__section new__gallery">
+        <h2 class="new__section-title ms-font-xl">Choose from gallery</h2>
+        <section class="new__list">
+            <section class="new-list">
+                <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
+                    <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
+                    <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items" (click)="import(snippet?.id)">{{snippet?.name}}</article>                    
+                </section>               
+            </section>
+        </section>
+    </section>
+    <section class="new__section">
+        <hr class="new__section--separator" />
+        <button class="new__action ms-Button ms-Button--compound" (click)="import()"> 
+            <span class="ms-Button-label">Create new</span> 
+            <span class="ms-Button-description">Create a new snippet from a blank template</span> 
+        </button>
+        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importFlag = !importFlag"> 
+            <span class="ms-Button-label">Create from link</span> 
+            <span class="ms-Button-description">Create a new snippet from a shared snippet link</span> 
+        </button>
+    </section>
+    <section class="new__section new__form" [hidden]="!importFlag">
+        <hr class="new__section--separator" />        
+        <input [(ngModel)]="link" class="new__input--text" type="text" name="link" placeholder="Link to snippet or snippet ID" />
+        <h2 class="new__section-title ms-font-xl" (click)="import()">Create<i class="ms-Icon ms-Icon--chevronThinRight"></i></h2>
+    </section>
+</section>

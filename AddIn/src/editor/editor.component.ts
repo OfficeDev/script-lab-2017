@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {Snippet, SnippetsService} from '../shared/services';
+import {Snippet, SnippetManager} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
@@ -16,7 +16,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     snippet: any;
 
     constructor(
-        private _snippets: SnippetsService,
+        private _snippetManager: SnippetManager,
         private _route: ActivatedRoute
     ) {
         super();
@@ -24,11 +24,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            this._snippetId = params['id'];
-            this._snippets.get(this._snippetId).then(snippet => {
-                console.log(snippet);
-                this.snippet = snippet;
-            });
+            this._snippetId = params['name'];
+            if (Utilities.isEmpty(this._snippetId)) return;
+            this.snippet = this._snippetManager.findByName(decodeURIComponent(this._snippetId));
         });
 
         this.markDispose(subscription);

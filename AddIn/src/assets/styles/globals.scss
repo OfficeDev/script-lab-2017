@@ -52,7 +52,7 @@ ul {
     @include flex();
     height: 100vh;
 
-    editor, tabs, tab {
+    editor, tabs, tab, new {
         flex: 1 1 100%;
         @include flex();
     }    

@@ -43,8 +43,9 @@ export class RequestHelper {
             .toPromise()
             .catch(error => {
                 Utilities.error(error);
-                return error.text();
+                return null;
             });
+        
     }
 
     private _json<T>(request: Observable<any>): Promise<T> {
@@ -53,7 +54,7 @@ export class RequestHelper {
             .toPromise()
             .catch(error => {
                 Utilities.error(error);
-                return error.text();
+                return null;
             });
     }
 }

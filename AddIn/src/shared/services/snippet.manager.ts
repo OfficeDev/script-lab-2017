@@ -40,7 +40,6 @@ export class SnippetManager implements OnInit, OnDestroy {
 
     findByName(name: string): Snippet {
         var result = this._snippetsContainer.get(name);
-        if (!result) throw "Snippet not found";
         return result;
     }
 

@@ -1,0 +1,110 @@
+@import '../assets/styles/mixins.scss';
+@import '../assets/styles/theme.scss';
+
+.new {
+    @include flex();
+    flex: 1 1 100%;
+
+    &__action {
+        width: 100%;
+        max-width: none;
+        display: block !important;
+        background-color: #F4F4F4;
+        color: #333;
+        margin: 0;
+        border: none;
+        margin-bottom: $default-spacing * 0.25;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        @include focus-states($accent-background-primary, $accent-foreground-primary);
+
+        &:hover,
+        &:focus {
+            border: none;
+            background-color: $accent-background-primary;
+    
+            .ms-Button-description,
+            .ms-Button-label {
+                color: $accent-foreground-primary;                
+            }
+        }
+        
+
+        .ms-Button-description,
+        .ms-Button-label {
+            color: #333;                
+        }
+    }
+
+    &__section {
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &--separator {
+            height: 0;
+            border-bottom: solid 1px #E4E4E4;
+        }
+    }
+
+    &__section-title {
+        padding: $default-spacing !important;
+        color: $accent-background-primary;
+    }
+
+    &__gallery {
+        margin-bottom: $default-spacing;        
+        flex: 1 1 100%;
+        @include flex();
+    }
+
+    &__list {
+        flex: 1 1 100%;
+        @include vScroll();    
+    }
+    
+    &__form {
+        i.ms-Icon {
+            position: absolute;
+            right: $default-spacing;
+            margin-top: $default-spacing/2;
+        }  
+        
+        .new__section-title {
+            @include focus-states($accent-background-primary, $accent-foreground-primary);
+        }      
+    }
+
+    &__input--text {
+        width: 100%;
+        height: 25px;
+        padding: $default-spacing $default-spacing;
+        font-size: 15px;
+        background-color: #F4F4F4;
+        border: none;
+        outline: none;
+
+        &:focus {
+            color: $accent-background-primary;
+            border: solid 1px $accent-background-primary;
+        }
+    }
+}
+
+.new-list {
+    &__group-header {
+        text-transform: uppercase;
+        font-weight: bold;
+        padding: $default-spacing/2 $default-spacing;
+        color: $accent-background-primary;
+    }
+
+    &__item {
+        padding: $default-spacing;
+        padding-left: $default-spacing * 1.5;        
+        @include focus-states(#F4F4F4);
+    }
+}
