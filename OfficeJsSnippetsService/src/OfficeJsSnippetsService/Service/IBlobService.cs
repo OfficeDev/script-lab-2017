@@ -7,6 +7,9 @@ namespace OfficeJsSnippetsService.Service
         Task<string> DownloadBlobAsync(string containerName, string blobName);
 
         Task UploadOrReplaceBlobAsync(string containerName, string blobName, string content);
+
         Task CreateContainerIfNotExistsAsync(string containerName);
+
+        Task DeleteBlobIfExistsAsync(string containerName, string blobName);
     }
 }

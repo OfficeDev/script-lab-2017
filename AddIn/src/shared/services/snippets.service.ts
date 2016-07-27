@@ -85,7 +85,7 @@ export class SnippetsService {
     uploadContent(snippetId: string, password: string, fileName: string, content: string) {
         var headers = RequestHelper.generateHeaders({
             "Content-Type": "application/octet-stream",
-            "x-ms-password": password
+            "x-ms-b64-password": btoa(password)
         });
         return this._request.putRaw(this._baseUrl + '/snippets/' + snippetId + '/content/' + fileName, content, headers);
     }

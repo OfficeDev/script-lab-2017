@@ -150,10 +150,12 @@
     <Compile Include="Service\IdGenerator.cs" />
     <Compile Include="Service\IIdGenerator.cs" />
     <Compile Include="Service\IPasswordHelper.cs" />
+    <Compile Include="Service\IPasswordValidator.cs" />
     <Compile Include="Service\ISnippetContentService.cs" />
     <Compile Include="Service\ISnippetInfoService.cs" />
     <Compile Include="Service\ITableStorageService.cs" />
     <Compile Include="Service\Logger.cs" />
+    <Compile Include="Service\PasswordValidator.cs" />
     <Compile Include="Service\PasswordHelper.cs" />
     <Compile Include="Service\ServiceConfig.cs" />
     <Compile Include="Service\ServiceConfigProvider.cs" />

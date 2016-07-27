@@ -40,6 +40,13 @@ namespace OfficeJsSnippetsService.Service
                 content: content);
         }
 
+        public async Task DeleteContentIfExistsAsync(string snippetId, string fileName)
+        {
+            await this.blobProvider.DeleteBlobIfExistsAsync(
+                containerName: GetContainerName(snippetId),
+                blobName: fileName);
+        }
+
         private static string GetContainerName(string snippetId)
         {
             return ContainerNameTemplate.FormatInvariant(snippetId);
