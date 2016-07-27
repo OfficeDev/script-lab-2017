@@ -1,9 +1,10 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
+import {HTTP_PROVIDERS} from '@angular/http';
 import {Component, ExceptionHandler} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
-import {MediatorService, SnippetsService} from '../shared/services';
+import {MediatorService, SnippetsService, SnippetManager} from '../shared/services';
 import {Utilities, ExceptionHelper, NotificationHelper, RequestHelper} from '../shared/helpers';
 
 export const PROVIDER_OVERRIDES = [
@@ -13,10 +14,12 @@ export const PROVIDER_OVERRIDES = [
 
 export const APP_PROVIDERS = [
     SnippetsService,
+    SnippetManager,
     ExceptionHelper,
     NotificationHelper,
     RequestHelper,
-    MediatorService
+    MediatorService,
+    HTTP_PROVIDERS
 ];
 
 @Component({

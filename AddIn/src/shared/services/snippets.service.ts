@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, RequestOptions} from '@angular/http';
-import {Observable} from 'rxjs/Rx';
+import {Http} from '@angular/http';
 import {Utilities} from '../helpers';
 
 export class Snippet {
@@ -59,18 +58,19 @@ export class Snippet {
 
 @Injectable()
 export class SnippetsService {
-    private _baseUrl = 'https://xlsnippets.azurewebsites.net';
+    private _baseUrl: string = 'https://xlsnippets.azurewebsites.net/api';
 
     constructor(private _http: Http) {
 
     }
 
     get(snippetId: string): Promise<Snippet> {
-        var meta = this._http.get(this._baseUrl + '/api/snippets/' + snippetId).toPromise();
-        var js = this._http.get(this._baseUrl + '/api/snippets/' + snippetId + '/content/js').toPromise();
-        var html = this._http.get(this._baseUrl + '/api/snippets/' + snippetId + '/content/html').toPromise();
-        var css = this._http.get(this._baseUrl + '/api/snippets/' + snippetId + '/content/css').toPromise();
-        var extras = this._http.get(this._baseUrl + '/api/snippets/' + snippetId + '/content/extras').toPromise();
+        console.log(snippetId);
+        var meta = this._http.get(this._baseUrl + '/snippets/' + snippetId).toPromise();
+        var js = this._http.get(this._baseUrl + '/snippets/' + snippetId + '/content/js').toPromise();
+        var html = this._http.get(this._baseUrl + '/snippets/' + snippetId + '/content/html').toPromise();
+        var css = this._http.get(this._baseUrl + '/snippets/' + snippetId + '/content/css').toPromise();
+        var extras = this._http.get(this._baseUrl + '/snippets/' + snippetId + '/content/extras').toPromise();
         return Snippet.create(meta, js, html, css, extras);
     }
 }

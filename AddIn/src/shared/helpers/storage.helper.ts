@@ -1,4 +1,4 @@
-import {Dictionary, IDictionary} from './';
+import {Dictionary, IDictionary, Utilities} from '../helpers';
 
 export enum StorageTypes {
     LocalStorage,
@@ -20,18 +20,18 @@ export class StorageHelper<T> extends Dictionary<T>{
             this._storage[this._container] = "";
         }
 
-        this._load();
+        this.load();
     }
 
     insert(item: string, value: T): T {
         super.add(item, value);
-        this._save();
+        this.save();
         return value;
     }
 
     remove(item: string): T {
         var deletedItem = super.remove(item);
-        this._save();
+        this.save();
         return deletedItem;
     }
 
@@ -45,12 +45,14 @@ export class StorageHelper<T> extends Dictionary<T>{
         window.sessionStorage.clear();
     }
 
-    private _save() {
+    save() {
         this._storage[this._container] = JSON.stringify(this.items);
     }
 
-    private _load() {
+    load() {
         super.clear();
-        this.items = JSON.parse(this._storage[this._container]) as IDictionary<T>;
+        var data = this._storage[this._container];
+        if (Utilities.isEmpty(data)) return;
+        this.items = JSON.parse(data) as IDictionary<T>;
     }
 }
