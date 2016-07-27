@@ -17,7 +17,7 @@ export class SnippetManager implements OnInit, OnDestroy {
     ngOnDestroy() {
     }
 
-    importFromWeb(privateLink: string): Promise<void> {
+    importFromWeb(privateLink: string): Promise<Snippet> {
         var snippetId: string = null;
 
         var regex = /^^(https?:\/\/[^/]+)\/(?:api\/)?snippets\/([0-9a-z]+)\/?$/;
@@ -38,7 +38,17 @@ export class SnippetManager implements OnInit, OnDestroy {
             .then(snippet => this._makeNameUniqueAndSave(snippet));
     }
 
-    private _makeNameUniqueAndSave(snippet: Snippet) {
+    findByName(name: string): Snippet {
+        var result = this._snippetsContainer.get(name);
+        if (!result) throw "Snippet not found";
+        return result;
+    }
+
+    duplicateSnippet(snippet: Snippet): Snippet {
+        return this._makeNameUniqueAndSave(snippet);
+    }
+
+    private _makeNameUniqueAndSave(snippet: Snippet): Snippet {
         if (Utilities.isNull(snippet.meta)) {
             snippet.meta = { name: null, id: null };
         }
@@ -64,10 +74,10 @@ export class SnippetManager implements OnInit, OnDestroy {
         snippet.meta.name = name;
 
         this._snippetsContainer.add(name, snippet);
+        return snippet;
     }
 
     private static _escapeRegex(input: string) {
         return input.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
-    // TODO: Add methods to call Snippets.Service and store in localStoraege
 }
