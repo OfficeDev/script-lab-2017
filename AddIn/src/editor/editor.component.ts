@@ -12,7 +12,6 @@ import {Utilities} from '../shared/helpers';
     directives: [Tab, Tabs]
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
-    private _snippetName;
     snippet: any;
 
     constructor(
@@ -25,9 +24,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
             console.log(params['name'], Utilities.decode(params['name']));
-            this._snippetName = Utilities.decode(params['name']);
-            if (Utilities.isEmpty(this._snippetName)) return;
-            this.snippet = this._snippetManager.findByName(this._snippetName);
+            var snippetName = Utilities.decode(params['name']);
+            if (Utilities.isEmpty(snippetName)) return;
+            this.snippet = this._snippetManager.findByName(snippetName);
         });
 
         this.markDispose(subscription);
