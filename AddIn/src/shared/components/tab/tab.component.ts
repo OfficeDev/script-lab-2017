@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, Input, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
 import {Tabs} from './tab-container.component';
 import {Utilities} from '../../helpers';
 
@@ -37,18 +37,30 @@ export class Tab {
             });
         });
 
+        $(window).resize(() => {
+            this.resize();
+        });
+
         this.tabs.add(this.name, this);
     }
 
+    ngOnDestroy() {
+        $(window).unbind('resize');
+    }
+
     activate() {
-        $(this.element.nativeElement).css('display', 'block');        
+        $(this.element.nativeElement).css('display', 'block');
         this.active = true;
         if (!Utilities.isNull(this._monacoEditor)) {
-            this._monacoEditor.layout();
-            this._monacoEditor.setScrollTop(0);
-            this._monacoEditor.setScrollLeft(0);
+            this.resize();
             this._monacoEditor.focus();
         }
+    }
+
+    resize() {
+        this._monacoEditor.layout();
+        this._monacoEditor.setScrollTop(0);
+        this._monacoEditor.setScrollLeft(0);
     }
 
     deactivate() {
