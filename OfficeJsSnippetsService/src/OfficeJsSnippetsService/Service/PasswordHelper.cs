@@ -53,5 +53,12 @@ namespace OfficeJsSnippetsService.Service
             var hashBytes = this.sha256hash.ComputeHash(bytesToHash);
             return Convert.ToBase64String(hashBytes);
         }
+
+        public string CreatePassword()
+        {
+            var bytes = new byte[32];
+            this.rng.GetBytes(bytes);
+            return Convert.ToBase64String(bytes);
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace OfficeJsSnippetsService.Test.Service
         PasswordHelper passwordHelper = new PasswordHelper();
 
         [Fact]
-        public void Basics_Works()
+        public void Hashing_Works()
         {
             const int N = 20;
 
@@ -50,6 +50,22 @@ namespace OfficeJsSnippetsService.Test.Service
                     bool expectedOutcome = i == j;
                     Assert.Equal(expectedOutcome, passwordHelper.VerifyPassword(passwords[i], salts[j], hashes[j]));
                 }
+            }
+        }
+
+        [Fact]
+        public void CreatePassword_Works()
+        {
+            // Arrange
+            var seenPasswords = new HashSet<string>();
+
+            // Act & Assert
+            for (int i = 0; i < 100; i++)
+            {
+                string password = this.passwordHelper.CreatePassword();
+                Assert.Equal(44, password.Length);
+                Assert.False(seenPasswords.Contains(password));
+                seenPasswords.Add(password);
             }
         }
     }

@@ -39,5 +39,12 @@ namespace OfficeJsSnippetsService.Service
 
             await this.tableService.InsertAsync(TableName, entity);
         }
+
+        internal async Task SetSnippetInfoAsync(SnippetInfoEntity entity)
+        {
+            Ensure.ArgumentNotNull(entity, nameof(entity));
+
+            await this.tableService.UpdateAsync(TableName, entity);
+        }
     }
 }

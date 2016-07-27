@@ -58,7 +58,39 @@ namespace OfficeJsSnippetsService.Controllers
             {
                 throw new MyWebException(HttpStatusCode.NotFound, "Snippet '{0}' does not exist.".FormatInvariant(snippetId));
             }
-            // TODO: Update last accessed date
+
+            return ToSnippetInfoDto(entity);
+        }
+
+        [HttpPut, Route("~/api/snippets/{snippetId}")]
+        public async Task<SnippetInfoDto> SetSnippetInfo(string snippetId, [FromBody] SnippetInfoDto snippetInfo)
+        {
+            ValidateSnippetId(snippetId);
+
+            if (snippetInfo == null)
+            {
+                throw new MyWebException(HttpStatusCode.BadRequest, "Body must be provided");
+            }
+
+            SnippetInfoEntity entity = await this.snippetInfoService.GetSnippetInfoAsync(snippetId);
+            if (entity == null)
+            {
+                throw new MyWebException(HttpStatusCode.NotFound, "Snippet '{0}' does not exist.".FormatInvariant(snippetId));
+            }
+
+            string password = this.Request.GetHeaderValueOrNull(PasswordHeaderName);
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new MyWebException(HttpStatusCode.BadRequest, "Header '{0}' must be specified in order to upload content.".FormatInvariant(PasswordHeaderName));
+            }
+
+            if (!this.passwordHelper.VerifyPassword(password, entity.Salt, entity.Hash))
+            {
+                throw new MyWebException(HttpStatusCode.BadRequest, "Wrong password.");
+            }
+
+            entity.Name = snippetInfo.Name;
+            await this.snippetInfoService.SetSnippetInfoAsync(entity);
 
             return ToSnippetInfoDto(entity);
         }
@@ -78,7 +110,7 @@ namespace OfficeJsSnippetsService.Controllers
 
             if (string.IsNullOrEmpty(password))
             {
-                password = Guid.NewGuid().ToString();
+                password = this.passwordHelper.CreatePassword();
             }
             string salt, hash;
             this.passwordHelper.CreateSaltAndHash(password, out salt, out hash);

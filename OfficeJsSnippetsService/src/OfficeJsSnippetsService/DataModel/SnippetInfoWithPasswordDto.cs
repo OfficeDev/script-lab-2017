@@ -4,7 +4,7 @@ namespace OfficeJsSnippetsService.Controllers
 {
     public class SnippetInfoWithPasswordDto : SnippetInfoDto
     {
-        [JsonProperty("password")]
+        [JsonProperty("password", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Password { get; set; }
     }
 }

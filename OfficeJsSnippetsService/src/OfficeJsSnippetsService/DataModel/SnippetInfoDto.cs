@@ -7,7 +7,7 @@ namespace OfficeJsSnippetsService.Controllers
         [JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Name { get; set; }
     }
 }
