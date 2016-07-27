@@ -1,2 +1,17 @@
 @import '../assets/styles/mixins.scss';
 @import '../assets/styles/theme.scss';
+
+.run {
+    &__header {
+        background-color: $accent-background-primary;
+        padding: $default-spacing/2 $default-spacing;
+        h1 {
+            color: $accent-foreground-primary;
+        }                
+    }
+
+    &__main {
+        flex: 1 1 100%;
+        @include flex();
+    }
+}
