@@ -125,6 +125,7 @@
     <Compile Include="Common\Ensure.cs" />
     <Compile Include="Common\UserValidation.cs" />
     <Compile Include="Controllers\HealthController.cs" />
+    <Compile Include="Controllers\SnippetsLandingPageController.cs" />
     <Compile Include="DataModel\SnippetInfoWithPasswordDto.cs" />
     <Compile Include="DataModel\SnippetInfoDto.cs" />
     <Compile Include="Controllers\SnippetsController.cs" />
