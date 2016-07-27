@@ -41,6 +41,10 @@ export class Utilities {
         return this.isNull(obj) || _.isEmpty(obj);
     }
 
+    static stripSpaces(text: string) {
+        return text; // FIXME mizlatko
+    }
+    
     static get isExcel() {
         return this._context == ContextType.Excel;
     }

@@ -92,5 +92,13 @@ namespace OfficeJsSnippetsService.Service
                 throw new MyWebException(HttpStatusCode.BadGateway, "Upstream server responded with an error. Please try again in a few minutes.", ex);
             }
         }
+
+        public async Task DeleteBlobIfExistsAsync(string containerName, string blobName)
+        {
+            CloudBlobContainer container = this.blobClient.GetContainerReference(containerName);
+            CloudBlockBlob blob = container.GetBlockBlobReference(blobName);
+
+            await blob.DeleteIfExistsAsync();
+        }
     }
 }
