@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
+import {Component, Input, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, SimpleChanges} from '@angular/core';
 import {Tabs} from './tab-container.component';
 import {Utilities} from '../../helpers';
 
@@ -9,12 +9,12 @@ declare const require: any;
     template: '<section #editor class="monaco-editor"></section>',
     styleUrls: ['tab.component.scss'],
 })
-export class Tab {
+export class Tab implements OnInit, OnChanges, OnDestroy {
     @Input() name: string;
     @Input() active: boolean;
     @Input() content: string;
     @Input() language: string;
-    @ViewChild('editor') private _editor: ElementRef;
+    @ViewChild('editor') private _component: ElementRef;
 
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
 
@@ -27,7 +27,7 @@ export class Tab {
     ngOnInit() {
         (<any>window).require(['vs/editor/editor.main'], () => {
             console.log(this.language, this.content);
-            this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
+            this._monacoEditor = monaco.editor.create(this._component.nativeElement, {
                 value: this.content,
                 language: this.language,
                 lineNumbers: true,
@@ -42,6 +42,14 @@ export class Tab {
         });
 
         this.tabs.add(this.name, this);
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        var data = (<any>changes).content; 
+        if (!Utilities.isNull(this._monacoEditor)) {
+            console.log(data.currentValue);
+            this._monacoEditor.setValue(changes['content'].currentValue);
+        }    
     }
 
     ngOnDestroy() {

@@ -1,9 +1,9 @@
 <section class="editor__main">
     <tabs>        
-        <tab name="HTML" language="html" [content]='html'></tab>
-        <tab name="CSS" language="css" [content]='css'></tab>
-        <tab name="JS" language="typescript" [content]='js'></tab>
-        <tab name="Extras" language="text" [content]='text'></tab>        
+        <tab name="HTML" language="html" [content]='snippet?.html'></tab>
+        <tab name="CSS" language="css" [content]='snippet?.css'></tab>
+        <tab name="JS" language="typescript" [content]='snippet?.ts'></tab>
+        <tab name="Extras" language="text" [content]='snippet?.extras'></tab>        
     </tabs>
 </section>
 <section class="editor__footer ms-font-m">Powered by Monaco Editor</section>

@@ -12,7 +12,6 @@ export class SnippetManager implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log(this._service);
         this._service.get('abc')
             .then(snippet => { console.log(snippet); });
     }

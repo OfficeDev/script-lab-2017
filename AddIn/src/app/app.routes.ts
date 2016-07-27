@@ -7,6 +7,10 @@ export const AppRoutes: RouterConfig = [
         component: EditorComponent
     },
     {
+        path: ':id',
+        component: EditorComponent
+    },
+    {
         path: 'new',
         component: SnippetCreateComponent
     }

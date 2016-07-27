@@ -16,13 +16,12 @@ export class RequestHelper {
     constructor(private _http: Http) { }
 
     get<T>(url: string, options?: RequestOptions, unformatted?: boolean) {
-        let requestOptions = options || this._generateHeaders();
-        let xhr = Utilities.isNull(requestOptions) ? this._http.get(url) : this._http.get(url, requestOptions);
-        return unformatted ? xhr : this._json<T>(xhr);
+        let xhr = this._http.get(url, options);
+        return unformatted ? this._text(xhr) : this._json<T>(xhr);
     }
 
     post<T>(url: string, body: any, options?: RequestOptions, unformatted?: boolean) {
-        let requestOptions =  options || this._generateHeaders();
+        let requestOptions = options || this._generateHeaders();
         let xhr = Utilities.isNull(requestOptions) ? this._http.post(url, JSON.stringify(body)) : this._http.post(url, JSON.stringify(body), requestOptions);
         return unformatted ? xhr : this._json<T>(xhr);
     }
@@ -60,17 +59,23 @@ export class RequestHelper {
         return new RequestOptions({ headers: headers });
     }
 
-    private _text(request: Observable<any>): Observable<string> {
+    private _text(request: Observable<any>): Promise<string> {
         return request
             .map(response => response.text() as string)
-            .catch((err: any, caught: Observable<string>) => Utilities.error<string>(err) as Observable<string>);
+            .toPromise()
+            .catch(error => {
+                Utilities.error(error);
+                return error.text();
+            });            
     }
 
-    private _json<T>(request: Observable<any>): Observable<T> {
+    private _json<T>(request: Observable<any>): Promise<T> {
         return request
-            .map(response => {
-                return response.json() as T
-            })
-            .catch((err: any, caught: Observable<T>) => Utilities.error<T>(err) as Observable<T>);
+            .map(response => response.json() as T)
+            .toPromise()
+            .catch(error => {
+                Utilities.error(error);
+                return error.text();
+            });
     }
 }
