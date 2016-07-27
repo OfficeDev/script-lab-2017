@@ -3,7 +3,7 @@ import {Component, ExceptionHandler} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
-import {MediatorService} from '../shared/services';
+import {MediatorService, SnippetsService} from '../shared/services';
 import {Utilities, ExceptionHelper, NotificationHelper, RequestHelper} from '../shared/helpers';
 
 export const PROVIDER_OVERRIDES = [
@@ -12,6 +12,7 @@ export const PROVIDER_OVERRIDES = [
 ];
 
 export const APP_PROVIDERS = [
+    SnippetsService,
     ExceptionHelper,
     NotificationHelper,
     RequestHelper,
