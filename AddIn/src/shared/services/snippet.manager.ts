@@ -45,7 +45,13 @@ export class SnippetManager implements OnInit, OnDestroy {
     }
 
     duplicateSnippet(snippet: Snippet): Snippet {
-        return this._makeNameUniqueAndSave(snippet);
+        var oldMeta = snippet.meta || { name: null, id: null };
+        var newMeta = {
+            name: oldMeta.name,
+            id: oldMeta.id
+        }
+        var newSnippet = new Snippet(newMeta, snippet.ts, snippet.html, snippet.css, snippet.extras);
+        return this._makeNameUniqueAndSave(newSnippet);
     }
 
     private _makeNameUniqueAndSave(snippet: Snippet): Snippet {
