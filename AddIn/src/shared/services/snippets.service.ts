@@ -15,7 +15,7 @@ export class Snippet {
     hash: string;
     jsHash: string;
 
-    private _js: Promise<string>;
+    private _compiledJs: string;
 
     constructor(meta, ts, html, css, extras) {
         this.meta = meta;
@@ -27,29 +27,51 @@ export class Snippet {
 
     get js(): Promise<string> {
         if (this._mustCompile) {
-            this._js = this._compile(this.ts);
+            return this._compile(this.ts).then((compiledJs) => {
+                this._compiledJs = compiledJs;
+                return compiledJs; 
+            })
         }
 
-        return this._js;
+        return Promise.resolve(this._compiledJs);
+    }
+
+    getJsLibaries(): Array<string> {
+        // FIXME
+        return [
+            "https://appsforoffice.microsoft.com/lib/1/hosted/office.js",
+            "https://npmcdn.com/jquery",
+            "https://npmcdn.com/office-ui-fabric/dist/js/jquery.fabric.min.js",
+        ];
+    }
+
+    getCssStylesheets(): Array<string> {
+        // FIXME
+        return [
+            "https://npmcdn.com/office-ui-fabric/dist/css/fabric.min.css",
+            "https://npmcdn.com/office-ui-fabric/dist/css/fabric.components.min.css",
+        ];
     }
 
     private get _mustCompile(): boolean {
+        // FIXME
         return true;
     }
 
     private _compile(ts: string): Promise<string> {
+        // FIXME
         return Promise.resolve(ts);
     }
 
     private _hash() {
-
+        // FIXME
     }
 
     static create(meta, js, html, css, extras): Promise<Snippet> {
         return Promise.all([meta, js, html, css, extras])
             .then(results => new Snippet(results[0], results[1], results[2], results[3], results[4]))
             .catch(error => Utilities.error);
-    }
+    }    
 }
 
 @Injectable()

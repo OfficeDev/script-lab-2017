@@ -44,7 +44,7 @@ export class SnippetManager implements OnInit, OnDestroy {
 
     findByName(name: string): Snippet {
         var result = this._snippetsContainer.get(name);
-        return result;
+        return new Snippet(result.meta, result.ts, result.html, result.css, result.extras);
     }
 
     duplicateSnippet(snippet: Snippet): Snippet {

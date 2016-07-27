@@ -60,11 +60,11 @@ export class Utilities {
     static error<T>(exception?: any): any {
         console.log('Error: ' + JSON.stringify(exception));
 
-        if (this.isWord) {
-            if (exception instanceof OfficeExtension.Error) {
-                console.log('Debug info: ' + JSON.stringify(exception.debugInfo));
-            }
-        }
+        // if (this.isWord) {
+        //     if (exception instanceof OfficeExtension.Error) {
+        //         console.log('Debug info: ' + JSON.stringify(exception.debugInfo));
+        //     }
+        // }
 
         return exception;
     }
