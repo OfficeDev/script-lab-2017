@@ -20,7 +20,7 @@ export class RequestHelper {
 
     putRaw<T>(url: string, body: any, options?: RequestOptions) {
         let requestOptions = options || RequestHelper.generateHeaders();
-        let xhr = this._http.put(url, JSON.stringify(body), requestOptions);
+        let xhr = this._http.put(url, body, requestOptions);
         return xhr.toPromise();
     }
 
