@@ -15,10 +15,10 @@ namespace OfficeJsSnippetsService.Controllers
 {
     public class SnippetsLandingPageController : ApiController
     {
-        private readonly SnippetInfoService snippetInfoService;
-        private readonly SnippetContentService snippetContentService;
+        private readonly ISnippetInfoService snippetInfoService;
+        private readonly ISnippetContentService snippetContentService;
 
-        public SnippetsLandingPageController(SnippetInfoService snippetInfoService, SnippetContentService snippetContentService)
+        public SnippetsLandingPageController(ISnippetInfoService snippetInfoService, ISnippetContentService snippetContentService)
         {
             Ensure.ArgumentNotNull(snippetInfoService, nameof(snippetInfoService));
             Ensure.ArgumentNotNull(snippetContentService, nameof(snippetContentService));

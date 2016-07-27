@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Autofac;
 using Autofac.Integration.WebApi;
 using OfficeJsSnippetsService.Filters;
@@ -17,6 +18,9 @@ namespace OfficeJsSnippetsService
 
             // Web API configuration and services
             config.Filters.Add(new MyWebExceptionFilter(logger));
+
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
 
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -39,10 +43,10 @@ namespace OfficeJsSnippetsService
             builder.RegisterType<ServiceConfigProvider>().SingleInstance();
             builder.RegisterType<BlobService>().As<IBlobService>();
             builder.RegisterType<TableStorageService>().As<ITableStorageService>();
-            builder.RegisterType<SnippetInfoService>();
-            builder.RegisterType<SnippetContentService>();
-            builder.RegisterType<IdGenerator>();
-            builder.RegisterType<PasswordHelper>();
+            builder.RegisterType<SnippetInfoService>().As<ISnippetInfoService>();
+            builder.RegisterType<SnippetContentService>().As<ISnippetContentService>();
+            builder.RegisterType<IdGenerator>().As<IIdGenerator>();
+            builder.RegisterType<PasswordHelper>().As<IPasswordHelper>();
 
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
