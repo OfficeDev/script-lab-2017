@@ -69,4 +69,24 @@ export class SnippetsService {
         var extras = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/extras', null, true);
         return Snippet.create(meta, js, html, css, extras);
     }
+
+    create(name: string, password?: string): Promise<{ id: string, password: string }> {
+        var body = { name: name, password: password };
+
+        return this._request.post(this._baseUrl + '/snippets', body)
+            .then((data: any) => {
+                return {
+                    id: data.id,
+                    password: data.password
+                }
+            })
+    }
+
+    uploadContent(snippetId: string, password: string, fileName: string, content: string) {
+        var headers = RequestHelper.generateHeaders({
+            "Content-Type": "application/octet-stream",
+            "x-ms-password": password
+        });
+        return this._request.putRaw(this._baseUrl + '/snippets/' + snippetId + '/content/' + fileName, content, headers);
+    }
 }

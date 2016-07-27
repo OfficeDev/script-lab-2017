@@ -54,6 +54,33 @@ export class SnippetManager implements OnInit, OnDestroy {
         return this._makeNameUniqueAndSave(newSnippet);
     }
 
+    publishSnippet(snippet: Snippet, password?: string) {
+        if (Utilities.isNull(snippet.meta) || Utilities.isEmpty(snippet.meta.name)) {
+            throw "Snippet name not specified.";
+        }
+
+        var createResult: { id: string, password: string };
+        debugger;
+        return this._service.create(snippet.meta.name, password)
+            .then(data => {
+                createResult = data;
+                if (Utilities.isEmpty(snippet.ts)) return;
+                return this._service.uploadContent(createResult.id, createResult.password, 'js', snippet.ts);
+            })
+            .then(() => {
+                if (Utilities.isEmpty(snippet.html)) return;
+                return this._service.uploadContent(createResult.id, createResult.password, 'html', snippet.html);
+            })
+            .then(() => {
+                if (Utilities.isEmpty(snippet.css)) return;
+                return this._service.uploadContent(createResult.id, createResult.password, 'css', snippet.css);
+            })
+            .then(() => {
+                if (Utilities.isEmpty(snippet.extras)) return;
+                return this._service.uploadContent(createResult.id, createResult.password, 'extras', snippet.extras);
+            });
+    }
+
     private _makeNameUniqueAndSave(snippet: Snippet): Snippet {
         if (Utilities.isNull(snippet.meta)) {
             snippet.meta = { name: null, id: null };
