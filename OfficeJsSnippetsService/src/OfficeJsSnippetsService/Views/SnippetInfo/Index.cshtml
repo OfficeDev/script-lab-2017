@@ -1,0 +1,30 @@
+﻿@model OfficeJsSnippetsService.MvcControllers.SnippetViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @if (Model.Exists)
+    {
+        <title>@Model.Name - an OfficeJS API snippet</title>
+    }
+    else
+    {
+        <title>Snippet not found - OfficeJS API Playground</title>
+    }
+</head>
+<body>
+    @if (Model.Exists)
+    {
+        <iframe src="https://localhost:3000/#/view/@Model.Id" />
+    }
+    else
+    {
+        <p>Snippet @Model.Id not found.</p>
+    }
+</body>
+</html>

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Mvc;
 using Autofac;
+using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using OfficeJsSnippetsService.Filters;
 using OfficeJsSnippetsService.Service;
@@ -38,6 +40,7 @@ namespace OfficeJsSnippetsService
         {
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(typeof(WebApiConfig).Assembly);
+            builder.RegisterControllers(typeof(WebApiConfig).Assembly);
 
             builder.RegisterInstance(logger);
             builder.RegisterType<ServiceConfigProvider>().SingleInstance();
@@ -51,6 +54,7 @@ namespace OfficeJsSnippetsService
 
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }
     }
 }
