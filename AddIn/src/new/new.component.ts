@@ -3,11 +3,11 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 
 @Component({
-    selector: 'snippet-create',
-    templateUrl: 'snippet-create.component.html',
-    styleUrls: ['snippet-create.component.html']
+    selector: 'new',
+    templateUrl: 'new.component.html',
+    styleUrls: ['new.component.html']
 })
-export class SnippetCreateComponent extends BaseComponent implements OnInit, OnDestroy {
+export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     constructor(
         private _router: Router,
         private _route: ActivatedRoute

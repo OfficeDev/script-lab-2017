@@ -1,3 +1,3 @@
 export * from './editor';
-export * from './snippet';
+export * from './new';
 export * from './run';

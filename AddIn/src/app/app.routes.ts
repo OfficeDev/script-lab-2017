@@ -1,5 +1,5 @@
 import {provideRouter, RouterConfig} from '@angular/router';
-import {RunComponent, EditorComponent, SnippetCreateComponent} from '../components'
+import {RunComponent, EditorComponent, NewComponent} from '../components'
 
 export const AppRoutes: RouterConfig = [
     {
@@ -8,7 +8,7 @@ export const AppRoutes: RouterConfig = [
     },
     {
         path: '',
-        component: SnippetCreateComponent
+        component: NewComponent
     },
     {
         path: ':id/run',
