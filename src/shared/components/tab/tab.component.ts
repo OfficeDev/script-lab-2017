@@ -13,7 +13,7 @@ export class Tab {
     @Input() name: string;
     @Input() active: boolean;
     @Input() content: string;
-    @Input() launguage: string;
+    @Input() language: string;
     @ViewChild('editor') private _editor: ElementRef;
 
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
@@ -26,9 +26,10 @@ export class Tab {
 
     ngOnInit() {
         (<any>window).require(['vs/editor/editor.main'], () => {
+            console.log(this.language, this.content);
             this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
-                value: this.content || '',
-                language: this.launguage || 'typescript',
+                value: this.content,
+                language: this.language,
                 lineNumbers: true,
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
