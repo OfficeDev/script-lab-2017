@@ -44,8 +44,9 @@ namespace OfficeJsSnippetsService.Controllers
                 @"<li><a href=""{4}"">JavaScript</a></li>" +
                 @"<li><a href=""{5}"">Extras</a></li>" +
                 @"</ul>" +
+                @"<p><a href=""{6}"">Download all as a zip file</a></p>" +
                 @"<p>Use the following link to import in the OfficeJS Playground AddIn:<br/>" +
-                @"<a href=""{6}"">{6}</a></p>" +
+                @"<a href=""{7}"">{7}</a></p>" +
                 "</body></html>";
             string html = Template.FormatInvariant(
                 string.IsNullOrEmpty(entity.Name) ? "Unnamed" : WebUtility.HtmlEncode(entity.Name),
@@ -54,6 +55,7 @@ namespace OfficeJsSnippetsService.Controllers
                 GetContentUri(snippetId, "css"),
                 GetContentUri(snippetId, "js"),
                 GetContentUri(snippetId, "extras"),
+                GetZippedUri(snippetId),
                 GetAddInUri(snippetId));
             return this.CreateHtmlResponse(html);
         }
@@ -63,6 +65,11 @@ namespace OfficeJsSnippetsService.Controllers
             string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
             var uri = new Uri(new Uri(baseUrl), "/api/snippets/{0}".FormatInvariant(snippetId));
             return uri.ToString();
+        }
+
+        private object GetZippedUri(string snippetId)
+        {
+            return "/api/snippets/{0}/zipped".FormatInvariant(snippetId);
         }
 
         private static string GetContentUri(string snippetId, string fileName)
