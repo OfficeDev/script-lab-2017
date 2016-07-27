@@ -24,6 +24,7 @@ namespace OfficeJsSnippetsService.Controllers
             { "html", "text/html" },
             { "js", "application/x-javascript" },
             { "css", "text/css" },
+            { "extras", "text/plain" }
         };
 
         private const string SnippetIdValidationPattern = "^[0-9a-z]{3,}$";
