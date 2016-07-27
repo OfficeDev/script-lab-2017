@@ -1,7 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities} from '../shared/helpers';
+import {Snippet, SnippetManager} from '../shared/services';
 
 @Component({
     selector: 'run',
@@ -9,16 +10,23 @@ import {Utilities} from '../shared/helpers';
     styleUrls: ['run.component.scss'],
 })
 export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
-     snippetId: string;
+    @ViewChild('runner') runner: ElementRef;
+    snippet: Snippet;
 
-    constructor(private _route: ActivatedRoute) {
+    constructor(
+        private _snippetManager: SnippetManager,
+        private _route: ActivatedRoute
+    ) {
         super();
     }
 
+
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            this.snippetId = Utilities.decode(params['name']);
-            console.log(this.snippetId);
+            var snippetName = Utilities.decode(params['name']);
+            if (Utilities.isEmpty(snippetName)) return;
+            this.snippet = this._snippetManager.findByName(snippetName);
+            console.log(this.runner.nativeElement);
         });
 
         this.markDispose(subscription);
