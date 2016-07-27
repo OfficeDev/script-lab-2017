@@ -39,10 +39,13 @@ namespace OfficeJsSnippetsService.MvcControllers
             {
                 model.Exists = true;
                 model.Name = entity.Name;
+
+                ViewBag.Title = "{0} - OfficeJS API Playground".FormatInvariant(entity.Name);
             }
             else
             {
                 model.Exists = false;
+                ViewBag.Title = "OfficeJS API Playground - Snippet not found";
             };
 
             return View(model);

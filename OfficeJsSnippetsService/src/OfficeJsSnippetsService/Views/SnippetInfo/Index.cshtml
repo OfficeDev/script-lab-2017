@@ -1,30 +1,43 @@
 ﻿@model OfficeJsSnippetsService.MvcControllers.SnippetViewModel
-@{
-    Layout = null;
-}
 
-<!DOCTYPE html>
+@*<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        @if (Model.Exists)
+        {
+            <title>@Model.Name - an OfficeJS API snippet</title>
+        }
+        else
+        {
+            <title>Snippet not found - OfficeJS API Playground</title>
+        }
+    </head>*@
+@*<body>
+    <div class="container">*@
+<div class="left">
+    <h1 class="ms-font-su">@Model.Name</h1>
+
+    <div class="centering-container">
+        <div class="message">
+            <p class="ms-font-l">Welcome to the OfficeJS API Playground. You are looking at a snippet that was shared with you.</p>
+            <p class="ms-font-l">To see the snippet in action, download the API Payground Add-in from the Office store.</p>
+            <p class="ms-font-l">You can also view the snippet code on the pane to the right.</p>
+        </div>
+
+        <button class="ms-Button ms-Button--compound">
+            <span class="ms-Button-label">Download this snippet</span>
+            <span class="ms-Button-description">Click here to get the adjacent snippet as a zip.</span>
+        </button>
+    </div>
+</div>
+<div class="right">
     @if (Model.Exists)
-    {
-        <title>@Model.Name - an OfficeJS API snippet</title>
-    }
-    else
-    {
-        <title>Snippet not found - OfficeJS API Playground</title>
-    }
-</head>
-<body>
-    @if (Model.Exists)
-    {
+            {
         <iframe src="https://localhost:3000/#/view/@Model.Id" />
     }
-    else
-    {
-        <p>Snippet @Model.Id not found.</p>
-    }
-</body>
-</html>
+</div>
+@*</div>
+    </body>
+    </html>*@
