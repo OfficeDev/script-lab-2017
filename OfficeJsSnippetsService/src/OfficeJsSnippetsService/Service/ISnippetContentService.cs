@@ -9,5 +9,7 @@ namespace OfficeJsSnippetsService.Service
         Task<string> GetContentAsync(string snippetId, string fileName);
 
         Task SetContentAsync(string snippetId, string fileName, string content);
+
+        Task DeleteContentIfExistsAsync(string snippetId, string fileName);
     }
 }

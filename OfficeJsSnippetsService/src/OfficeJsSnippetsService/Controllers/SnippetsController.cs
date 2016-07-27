@@ -19,7 +19,7 @@ namespace OfficeJsSnippetsService.Controllers
 {
     public class SnippetsController : ApiController
     {
-        private const string PasswordHeaderName = "x-ms-password";
+        private const string PasswordHeaderName = "x-ms-b64-password";
         private const long MaxContentLength = 10 * 1024 * 1024;
 
         private static readonly Dictionary<string, string> knownMimeTypes = new Dictionary<string, string>
@@ -38,18 +38,26 @@ namespace OfficeJsSnippetsService.Controllers
         private readonly ISnippetContentService snippetContentService;
         private readonly IIdGenerator idGenerator;
         private readonly IPasswordHelper passwordHelper;
+        private readonly IPasswordValidator passwordValidator;
 
-        public SnippetsController(ISnippetInfoService snippetInfoService, ISnippetContentService snippetContentService, IIdGenerator idGenerator, IPasswordHelper passwordHelper)
+        public SnippetsController(
+            ISnippetInfoService snippetInfoService,
+            ISnippetContentService snippetContentService,
+            IIdGenerator idGenerator,
+            IPasswordHelper passwordHelper,
+            IPasswordValidator passwordValidator)
         {
             Ensure.ArgumentNotNull(snippetInfoService, nameof(snippetInfoService));
             Ensure.ArgumentNotNull(snippetContentService, nameof(snippetContentService));
             Ensure.ArgumentNotNull(idGenerator, nameof(idGenerator));
             Ensure.ArgumentNotNull(passwordHelper, nameof(passwordHelper));
+            Ensure.ArgumentNotNull(passwordValidator, nameof(passwordValidator));
 
             this.snippetInfoService = snippetInfoService;
             this.snippetContentService = snippetContentService;
             this.idGenerator = idGenerator;
             this.passwordHelper = passwordHelper;
+            this.passwordValidator = passwordValidator;
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}")]
@@ -82,16 +90,7 @@ namespace OfficeJsSnippetsService.Controllers
                 throw new MyWebException(HttpStatusCode.NotFound, "Snippet '{0}' does not exist.".FormatInvariant(snippetId));
             }
 
-            string password = this.Request.GetHeaderValueOrNull(PasswordHeaderName);
-            if (string.IsNullOrEmpty(password))
-            {
-                throw new MyWebException(HttpStatusCode.BadRequest, "Header '{0}' must be specified in order to upload content.".FormatInvariant(PasswordHeaderName));
-            }
-
-            if (!this.passwordHelper.VerifyPassword(password, entity.Salt, entity.Hash))
-            {
-                throw new MyWebException(HttpStatusCode.BadRequest, "Wrong password.");
-            }
+            this.passwordValidator.ValidatePasswordOrThrow(this.Request, entity);
 
             entity.Name = snippetInfo.Name;
             await this.snippetInfoService.SetSnippetInfoAsync(entity);
@@ -162,31 +161,28 @@ namespace OfficeJsSnippetsService.Controllers
                 throw new MyWebException(HttpStatusCode.BadRequest, message);
             }
 
-            string password = this.Request.GetHeaderValueOrNull(PasswordHeaderName);
-            if (string.IsNullOrEmpty(password))
-            {
-                throw new MyWebException(HttpStatusCode.BadRequest, "Header '{0}' must be specified in order to upload content.".FormatInvariant(PasswordHeaderName));
-            }
-
             SnippetInfoEntity entity = await this.snippetInfoService.GetSnippetInfoAsync(snippetId);
             if (entity == null)
             {
                 throw new MyWebException(HttpStatusCode.NotFound, "Snippet '{0}' does not exist.".FormatInvariant(snippetId));
             }
 
-            if (!this.passwordHelper.VerifyPassword(password, entity.Salt, entity.Hash))
-            {
-                throw new MyWebException(HttpStatusCode.BadRequest, "Wrong password.");
-            }
+            this.passwordValidator.ValidatePasswordOrThrow(this.Request, entity);
 
             long contentLength = this.Request.Content?.Headers?.ContentLength ?? 0;
-            if (contentLength <= 0 || contentLength >= MaxContentLength)
+            if (contentLength == 0)
             {
-                throw new MyWebException(HttpStatusCode.BadRequest, "Content length must be between 1 and {0} bytes.".FormatInvariant(MaxContentLength));
+                await this.snippetContentService.DeleteContentIfExistsAsync(snippetId, fileName);
             }
-
-            string body = await this.Request.Content.ReadAsStringAsync();
-            await this.snippetContentService.SetContentAsync(snippetId, fileName, body);
+            else if (contentLength < MaxContentLength)
+            {
+                string body = await this.Request.Content.ReadAsStringAsync();
+                await this.snippetContentService.SetContentAsync(snippetId, fileName, body);
+            }
+            else
+            {
+                throw new MyWebException(HttpStatusCode.BadRequest, "Maximum allowable content length is {0} bytes.".FormatInvariant(MaxContentLength));
+            }
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}/zipped")]
