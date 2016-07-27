@@ -14,6 +14,7 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
     @Input() active: boolean;
     @Input() content: string;
     @Input() language: string;
+    @Input() readonly: boolean;    
     @ViewChild('editor') private _component: ElementRef;
 
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
@@ -32,7 +33,8 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
                 lineNumbers: true,
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
-                readOnly: false
+                wrappingColumn: 0,
+                readOnly: this.readonly
             });
         });
 

@@ -35,8 +35,8 @@
 
             span {
                 display: block;
-                padding: $default-spacing;
-                width: calc(100% - 30px);
+                padding: 12px;
+                width: calc(100% - 24px);
             }
 
             span[hidden] {
@@ -54,9 +54,9 @@
     }
 
     &__input--text {
-        width: 100%;
+        width: calc(100% - 16px);
         height: 25px;
-        padding: 10px;
+        padding: 8px;
         font-size: 14px;
         background-color: #F4F4F4;
         border: solid 1px transparent;

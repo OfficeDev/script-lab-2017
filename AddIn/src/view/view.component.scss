@@ -1,0 +1,15 @@
+@import '../assets/styles/mixins.scss';
+@import '../assets/styles/theme.scss';
+
+.view {
+    &__main {
+        flex: 1 1 100%;
+        @include flex();
+    }
+
+    &__footer {
+        background-color: $accent-background-primary;
+        color: $accent-foreground-primary;
+        padding: $default-spacing/2 $default-spacing;        
+    }
+}

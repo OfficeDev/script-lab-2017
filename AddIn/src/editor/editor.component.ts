@@ -34,7 +34,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     createDefaultNewSnippet(): Snippet {
-        var meta = null;
+        var meta = {
+            name: 'Unnamed Snippet',
+            id: 'asbsdasds'
+        };
 
         var ts = Utilities.stripSpaces(`
             $("#sample-button").click(runSample);
