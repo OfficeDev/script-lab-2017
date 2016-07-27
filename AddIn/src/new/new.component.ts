@@ -19,10 +19,12 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     link: string;
+    localGallery: any;
     gallery: any;
     importFlag = false;
 
     ngOnInit() {
+        this.localGallery = this._snippetManager.getAllSnippets();
         this.mockPlaylist()
             .then(data => {
                 return {
@@ -46,11 +48,18 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             .then(data => this.gallery = data);
     }
 
+    select(name?: string) {
+        this._router.navigate(['edit', encodeURIComponent(name)]);
+    }
+
     import(link?: string) {
-        this.link = link;
-        if (Utilities.isEmpty(this.link)) this._router.navigate(['edit']);
+        this.link = link || this.link;
+        if (Utilities.isEmpty(this.link)) {
+            this.select();
+            return;
+        }
         this._snippetManager.importFromWeb(this.link)
-            .then(snippet => this._router.navigate(['edit', encodeURIComponent(snippet.meta.name)]));
+            .then(snippet => this.select(snippet.meta.name));
     }
 
     mockPlaylist() {

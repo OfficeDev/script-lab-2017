@@ -7,10 +7,6 @@ export const AppRoutes: RouterConfig = [
         component: NewComponent
     },
     {
-        path: 'edit',
-        component: EditorComponent
-    },
-    {
         path: 'edit/:name',
         component: EditorComponent
     },

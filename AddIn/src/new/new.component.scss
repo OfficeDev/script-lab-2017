@@ -107,4 +107,8 @@
         padding-left: $default-spacing * 1.5;        
         @include focus-states(#F4F4F4);
     }
+
+    &__message {
+        padding: $default-spacing/2 $default-spacing;
+    }
 }

@@ -17,6 +17,10 @@ export class SnippetManager implements OnInit, OnDestroy {
     ngOnDestroy() {
     }
 
+    getAllSnippets() {
+        return this._snippetsContainer.values();
+    }
+
     importFromWeb(privateLink: string): Promise<Snippet> {
         var snippetId: string = null;
 

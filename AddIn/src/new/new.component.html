@@ -1,18 +1,23 @@
 <section class="new">
     <section class="new__section new__gallery">
-        <h2 class="new__section-title ms-font-xl">Choose from gallery</h2>
+        <h2 class="new__section-title ms-font-l">Howdy hacker :D</h2>
         <section class="new__list">
             <section class="new-list">
+                <section class="new-list__group">
+                    <h3 class="new-list__group-header ms-font-m">My local snippets</h3>
+                    <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery" (click)="select(snippet?.meta.name)">{{snippet?.meta.name}}</article>
+                    <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from the gallery below.</p>
+                </section>
                 <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
-                    <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items" (click)="import(snippet?.id)">{{snippet?.name}}</article>                    
+                    <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items" (click)="import(snippet?.id)">{{snippet?.name}}</article>
                 </section>               
             </section>
         </section>
     </section>
     <section class="new__section">
         <hr class="new__section--separator" />
-        <button class="new__action ms-Button ms-Button--compound" (click)="import()"> 
+        <button class="new__action ms-Button ms-Button--compound" (click)="select()"> 
             <span class="ms-Button-label">Create new</span> 
             <span class="ms-Button-description">Create a new snippet from a blank template</span> 
         </button>
@@ -23,7 +28,7 @@
     </section>
     <section class="new__section new__form" [hidden]="!importFlag">
         <hr class="new__section--separator" />        
-        <input [(ngModel)]="link" class="new__input--text" type="text" name="link" placeholder="Link to snippet or snippet ID" />
-        <h2 class="new__section-title ms-font-xl" (click)="import()">Create<i class="ms-Icon ms-Icon--chevronThinRight"></i></h2>
+        <input class="new__input--text" type="text" name="link" [(ngModel)]="link" placeholder="Link to snippet or snippet ID" />
+        <h2 class="new__section-title ms-font-l" (click)="import()">Create<i class="ms-Icon ms-Icon--chevronThinRight"></i></h2>
     </section>
 </section>
