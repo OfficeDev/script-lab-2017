@@ -23,7 +23,7 @@ export class StorageHelper<T> extends Dictionary<T>{
         this.load();
     }
 
-    insert(item: string, value: T): T {
+    add(item: string, value: T): T {
         super.add(item, value);
         this.save();
         return value;
