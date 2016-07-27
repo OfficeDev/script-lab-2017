@@ -60,24 +60,43 @@ export class SnippetManager implements OnInit, OnDestroy {
         }
 
         var createResult: { id: string, password: string };
-        debugger;
         return this._service.create(snippet.meta.name, password)
             .then(data => {
                 createResult = data;
+                return this._uploadAllContents(snippet, data.id, data.password);
+            }).then(() => {
+                snippet.meta.id = createResult.id;
+            })
+    }
+
+    publishSnippetUpdate(snippet: Snippet, password: string) {
+        if (Utilities.isNull(snippet.meta) || Utilities.isEmpty(snippet.meta.id)) {
+            throw "Snippet id not specified.";
+        }
+        if (Utilities.isEmpty(snippet.meta.name)) {
+            throw "Snippet name not specified.";
+        }
+
+        return this._uploadAllContents(snippet, snippet.meta.id, password);
+    }
+
+    private _uploadAllContents(snippet: Snippet, id: string, password: string) {
+        return Promise.resolve()
+            .then(() => {
                 if (Utilities.isEmpty(snippet.ts)) return;
-                return this._service.uploadContent(createResult.id, createResult.password, 'js', snippet.ts);
+                return this._service.uploadContent(id, password, 'js', snippet.ts);
             })
             .then(() => {
                 if (Utilities.isEmpty(snippet.html)) return;
-                return this._service.uploadContent(createResult.id, createResult.password, 'html', snippet.html);
+                return this._service.uploadContent(id, password, 'html', snippet.html);
             })
             .then(() => {
                 if (Utilities.isEmpty(snippet.css)) return;
-                return this._service.uploadContent(createResult.id, createResult.password, 'css', snippet.css);
+                return this._service.uploadContent(id, password, 'css', snippet.css);
             })
             .then(() => {
                 if (Utilities.isEmpty(snippet.extras)) return;
-                return this._service.uploadContent(createResult.id, createResult.password, 'extras', snippet.extras);
+                return this._service.uploadContent(id, password, 'extras', snippet.extras);
             });
     }
 
