@@ -17,8 +17,12 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            this.snippetId = Utilities.decode(params['name']);
+<<<<<<< HEAD
+            this.snippetId = params['name'];
             console.log(this.snippetId);
+=======
+            this.snippetId = Utilities.decode(params['name']);
+>>>>>>> 719880048ddac903e38dd8590309d19f530296eb
         });
 
         this.markDispose(subscription);

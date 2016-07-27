@@ -26,7 +26,6 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
 
     ngOnInit() {
         (<any>window).require(['vs/editor/editor.main'], () => {
-            console.log(this.language, this.content);
             this._monacoEditor = monaco.editor.create(this._component.nativeElement, {
                 value: this.content,
                 language: this.language,
@@ -47,7 +46,6 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges) {
         var data = (<any>changes).content; 
         if (!Utilities.isNull(this._monacoEditor)) {
-            console.log(data.currentValue);
             this._monacoEditor.setValue(changes['content'].currentValue);
         }    
     }

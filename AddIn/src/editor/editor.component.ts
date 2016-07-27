@@ -24,7 +24,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            this._snippetName = decodeURIComponent(params['name']);
+            console.log(params['name'], Utilities.decode(params['name']));
+            this._snippetName = Utilities.decode(params['name']);
             if (Utilities.isEmpty(this._snippetName)) return;
             this.snippet = this._snippetManager.findByName(this._snippetName);
         });

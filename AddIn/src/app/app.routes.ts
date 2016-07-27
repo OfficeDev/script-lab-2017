@@ -11,7 +11,11 @@ export const AppRoutes: RouterConfig = [
         component: EditorComponent
     },
     {
-        path: 'edit/:name/run',
+        path: 'edit/readonly/:name',
+        component: EditorComponent
+    },
+    {
+        path: 'run/:name',
         component: RunComponent
     }
 ];
