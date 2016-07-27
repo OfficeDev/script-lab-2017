@@ -8,7 +8,7 @@ using OfficeJsSnippetsService.DataModel;
 
 namespace OfficeJsSnippetsService.Service
 {
-    public class SnippetInfoService
+    public class SnippetInfoService : ISnippetInfoService
     {
         private const string TableName = "snippets";
         private const string ContainerNameTemplate = "snippet{0}";
@@ -40,7 +40,7 @@ namespace OfficeJsSnippetsService.Service
             await this.tableService.InsertAsync(TableName, entity);
         }
 
-        internal async Task SetSnippetInfoAsync(SnippetInfoEntity entity)
+        public async Task SetSnippetInfoAsync(SnippetInfoEntity entity)
         {
             Ensure.ArgumentNotNull(entity, nameof(entity));
 

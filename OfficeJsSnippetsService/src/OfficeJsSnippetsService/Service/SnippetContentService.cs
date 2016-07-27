@@ -7,7 +7,7 @@ using OfficeJsSnippetsService.Common;
 
 namespace OfficeJsSnippetsService.Service
 {
-    public class SnippetContentService
+    public class SnippetContentService : ISnippetContentService
     {
         private const string ContainerNameTemplate = "snippet-{0}";
 

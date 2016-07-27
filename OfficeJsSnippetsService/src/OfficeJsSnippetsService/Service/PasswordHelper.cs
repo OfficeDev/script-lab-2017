@@ -8,7 +8,7 @@ using OfficeJsSnippetsService.Common;
 
 namespace OfficeJsSnippetsService.Service
 {
-    public class PasswordHelper
+    public class PasswordHelper : IPasswordHelper
     {
         private readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
         private readonly SHA256 sha256hash = SHA256.Create();

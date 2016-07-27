@@ -6,7 +6,7 @@ using OfficeJsSnippetsService.Utils;
 
 namespace OfficeJsSnippetsService.Service
 {
-    public class IdGenerator
+    public class IdGenerator : IIdGenerator
     {
         private const string Alphabet = "abcdefghjkmnpqrstuvwxyz123456789";
 

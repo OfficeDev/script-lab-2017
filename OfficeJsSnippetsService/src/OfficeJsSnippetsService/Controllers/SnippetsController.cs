@@ -31,12 +31,12 @@ namespace OfficeJsSnippetsService.Controllers
 
         private static readonly Regex snippetIdValidationRegex = new Regex(SnippetIdValidationPattern);
 
-        private readonly SnippetInfoService snippetInfoService;
-        private readonly SnippetContentService snippetContentService;
-        private readonly IdGenerator idGenerator;
-        private readonly PasswordHelper passwordHelper;
+        private readonly ISnippetInfoService snippetInfoService;
+        private readonly ISnippetContentService snippetContentService;
+        private readonly IIdGenerator idGenerator;
+        private readonly IPasswordHelper passwordHelper;
 
-        public SnippetsController(SnippetInfoService snippetInfoService, SnippetContentService snippetContentService, IdGenerator idGenerator, PasswordHelper passwordHelper)
+        public SnippetsController(ISnippetInfoService snippetInfoService, ISnippetContentService snippetContentService, IIdGenerator idGenerator, IPasswordHelper passwordHelper)
         {
             Ensure.ArgumentNotNull(snippetInfoService, nameof(snippetInfoService));
             Ensure.ArgumentNotNull(snippetContentService, nameof(snippetContentService));

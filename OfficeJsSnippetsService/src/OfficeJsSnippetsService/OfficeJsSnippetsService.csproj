@@ -139,6 +139,10 @@
     <Compile Include="Service\Constants.cs" />
     <Compile Include="Service\IBlobService.cs" />
     <Compile Include="Service\IdGenerator.cs" />
+    <Compile Include="Service\IIdGenerator.cs" />
+    <Compile Include="Service\IPasswordHelper.cs" />
+    <Compile Include="Service\ISnippetContentService.cs" />
+    <Compile Include="Service\ISnippetInfoService.cs" />
     <Compile Include="Service\ITableStorageService.cs" />
     <Compile Include="Service\Logger.cs" />
     <Compile Include="Service\PasswordHelper.cs" />
