@@ -16,6 +16,8 @@ namespace OfficeJsSnippetsService.MvcControllers
         public bool Exists { get; set; }
 
         public string Name { get; set; }
+
+        public string DownloadZipUri { get; set; }
     }
 
     public class SnippetInfoController : Controller
@@ -39,6 +41,7 @@ namespace OfficeJsSnippetsService.MvcControllers
             {
                 model.Exists = true;
                 model.Name = entity.Name;
+                model.DownloadZipUri = "/api/snippets/{0}/zipped".FormatInvariant(snippetId);
 
                 ViewBag.Title = "{0} - OfficeJS API Playground".FormatInvariant(entity.Name);
             }

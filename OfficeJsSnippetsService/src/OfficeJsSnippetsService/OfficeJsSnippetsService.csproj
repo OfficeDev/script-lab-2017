@@ -197,7 +197,6 @@
     <Compile Include="Common\UserValidation.cs" />
     <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="MvcControllers\SnippetInfoController.cs" />
-    <None Include="Controllers\SnippetsLandingPageController.cs" />
     <Compile Include="DataModel\SnippetInfoWithPasswordDto.cs" />
     <Compile Include="DataModel\SnippetInfoDto.cs" />
     <Compile Include="Controllers\SnippetsController.cs" />

@@ -50,8 +50,12 @@ body {
             width: 100%;
         }
 
-        .left .centering-container .ms-Button {
+        .left .centering-container a {
             align-self: flex-start;
+            text-decoration: none;
+        }
+
+        .left .centering-container .ms-Button {
             max-width: none;
             width: auto;
             display: block;
