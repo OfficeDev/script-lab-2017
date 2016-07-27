@@ -9,7 +9,3 @@ import '@angular/router';
 
 // RxJS
 import 'rxjs';
-
-// JQuery & Underscore
-import * as $ from 'jquery';
-require('underscore/underscore-min.js');

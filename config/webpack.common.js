@@ -72,7 +72,8 @@ module.exports = {
     },
 
     externals: {
-        '_': 'underscore'
+        '_': 'underscore',
+        '$': 'jquery'
     },
 
     plugins: [

@@ -3,14 +3,20 @@
 
 .tabs {
     background-color: #f4f4f4;
+    overflow: hidden;
 
     &__tab {
         &--active {
             background-color: $accent-background-primary !important;
             color: $accent-foreground-primary !important;
             font-style: italic;
-        }
+        }        
     }    
+
+    &__container {
+        flex: 1 1 100%;
+        width: 100%;        
+    }
 }
 
 tabs {
@@ -18,8 +24,9 @@ tabs {
     flex: 1 1 100%;
 }
 
-.tab__editor {
+.monaco-editor {
     flex: 1 1 100%;
-    width: 100%;
-    border: solid 1px #666;            
+    width: 100% !important;     
+    height: 100% !important;
+    border: solid 1px #555;
 }
