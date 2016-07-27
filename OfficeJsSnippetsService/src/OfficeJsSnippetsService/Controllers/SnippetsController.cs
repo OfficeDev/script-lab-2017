@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,7 +18,6 @@ namespace OfficeJsSnippetsService.Controllers
 {
     public class SnippetsController : ApiController
     {
-        private const string PasswordHeaderName = "x-ms-b64-password";
         private const long MaxContentLength = 10 * 1024 * 1024;
 
         private static readonly Dictionary<string, string> knownMimeTypes = new Dictionary<string, string>
@@ -39,25 +37,29 @@ namespace OfficeJsSnippetsService.Controllers
         private readonly IIdGenerator idGenerator;
         private readonly IPasswordHelper passwordHelper;
         private readonly IPasswordValidator passwordValidator;
+        private readonly ISnippetZipService zipService;
 
         public SnippetsController(
             ISnippetInfoService snippetInfoService,
             ISnippetContentService snippetContentService,
             IIdGenerator idGenerator,
             IPasswordHelper passwordHelper,
-            IPasswordValidator passwordValidator)
+            IPasswordValidator passwordValidator,
+            ISnippetZipService zipService)
         {
             Ensure.ArgumentNotNull(snippetInfoService, nameof(snippetInfoService));
             Ensure.ArgumentNotNull(snippetContentService, nameof(snippetContentService));
             Ensure.ArgumentNotNull(idGenerator, nameof(idGenerator));
             Ensure.ArgumentNotNull(passwordHelper, nameof(passwordHelper));
             Ensure.ArgumentNotNull(passwordValidator, nameof(passwordValidator));
+            Ensure.ArgumentNotNull(zipService, nameof(zipService));
 
             this.snippetInfoService = snippetInfoService;
             this.snippetContentService = snippetContentService;
             this.idGenerator = idGenerator;
             this.passwordHelper = passwordHelper;
             this.passwordValidator = passwordValidator;
+            this.zipService = zipService;
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}")]
@@ -190,26 +192,8 @@ namespace OfficeJsSnippetsService.Controllers
         {
             ValidateSnippetId(snippetId);
 
-            string[] fileNames = knownMimeTypes.Keys.ToArray();
-            var tasks = new Task<string>[fileNames.Length];
-            for (int i = 0; i < fileNames.Length; i++)
-            {
-                tasks[i] = this.GetFileContentOrNull(snippetId, fileNames[i]);
-            }
-            string[] contents = await Task.WhenAll(tasks);
-
             var ms = new MemoryStream();
-            using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
-            {
-                for (int i = 0; i < fileNames.Length; i++)
-                {
-                    var entry = zip.CreateEntry("default.{0}".FormatInvariant(fileNames[i]));
-                    using (StreamWriter writer = new StreamWriter(entry.Open()))
-                    {
-                        writer.Write(contents[i]);
-                    }
-                }
-            }
+            await this.zipService.ZipToStreamAsync(snippetId, ms);
             ms.Seek(0, SeekOrigin.Begin);
 
             var response = this.Request.CreateResponse();
@@ -221,18 +205,6 @@ namespace OfficeJsSnippetsService.Controllers
             };
             response.Content = content;
             return response;
-        }
-
-        private async Task<string> GetFileContentOrNull(string snippetId, string fileName)
-        {
-            try
-            {
-                return await this.snippetContentService.GetContentAsync(snippetId, fileName);
-            }
-            catch (MyWebException)
-            {
-                return null;
-            }
         }
 
         private static void ValidateSnippetId(string snippetId)

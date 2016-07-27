@@ -22,6 +22,7 @@ namespace OfficeJsSnippetsService.Test.Controllers
         private readonly Mock<IIdGenerator> idGeneratorMock;
         private readonly Mock<IPasswordHelper> passwordHelperMock;
         private readonly Mock<IPasswordValidator> passwordValidatorMock;
+        private readonly Mock<ISnippetZipService> zipService;
 
         private readonly SnippetsController controller;
 
@@ -32,13 +33,15 @@ namespace OfficeJsSnippetsService.Test.Controllers
             this.idGeneratorMock = new Mock<IIdGenerator>(MockBehavior.Strict);
             this.passwordHelperMock = new Mock<IPasswordHelper>(MockBehavior.Strict);
             this.passwordValidatorMock = new Mock<IPasswordValidator>(MockBehavior.Strict);
+            this.zipService = new Mock<ISnippetZipService>(MockBehavior.Strict);
 
             this.controller = new SnippetsController(
                 this.snippetInfoServiceMock.Object,
                 this.snippetContentServiceMock.Object,
                 this.idGeneratorMock.Object,
                 this.passwordHelperMock.Object,
-                this.passwordValidatorMock.Object);
+                this.passwordValidatorMock.Object,
+                this.zipService.Object);
         }
 
         [Fact]

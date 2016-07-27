@@ -207,6 +207,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\ISnippetZipService.cs" />
+    <Compile Include="Service\SnippetZipService.cs" />
+    <Compile Include="Service\SnippetManifestProvider.cs" />
     <Compile Include="Service\BlobService.cs" />
     <Compile Include="Service\Constants.cs" />
     <Compile Include="Service\IBlobService.cs" />

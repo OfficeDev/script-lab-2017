@@ -51,6 +51,8 @@ namespace OfficeJsSnippetsService
             builder.RegisterType<IdGenerator>().As<IIdGenerator>();
             builder.RegisterType<PasswordHelper>().As<IPasswordHelper>();
             builder.RegisterType<PasswordValidator>().As<IPasswordValidator>();
+            builder.RegisterType<SnippetZipService>().As<ISnippetZipService>();
+            builder.RegisterType<SnippetManifestProvider>();
 
             var container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
