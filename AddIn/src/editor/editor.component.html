@@ -3,9 +3,10 @@
         <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft" (click)="back()"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet.meta.name}}</span>
-            <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
+            <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet"
+            />
         </li>
-        <li [hidden]="!editMode" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--check"></i></li>        
+        <li [hidden]="!editMode" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--check"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--save"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="duplicate()"><i class="ms-Icon ms-Icon--copy"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="delete()"><i class="ms-Icon ms-Icon--trash"></i></li>
@@ -13,20 +14,11 @@
 </header>
 <section class="editor__main">
     <tabs>
-<<<<<<< HEAD
-        <tab name="JS" language="typescript" [content]='snippet?.ts'></tab>
-        <tab name="HTML" language="html" [content]='snippet?.html'></tab>
-        <tab name="CSS" language="css" [content]='snippet?.css'></tab>
-        <tab name="Extras" language="text" [content]='snippet?.extras'></tab>
-    </tabs>
-</section>
-<section class="editor__footer ms-font-m">{{ status || 'Powered by Monaco Editor' }} <button (click)="switchToRun()">Run!</button></section>
-=======
         <tab name="HTML" language="html" [content]="snippet.html" (change)="change($event, 'html')"></tab>
         <tab name="CSS" language="css" [content]="snippet.css" (change)="change($event, 'css')"></tab>
         <tab name="JS" language="typescript" [content]="snippet.ts" (change)="change($event, 'ts')"></tab>
         <tab name="Extras" language="text" [content]="snippet.extras" (change)="change($event, 'extras')"></tab>
     </tabs>
 </section>
-<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco Editor</span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span></section>
->>>>>>> 25642e1a8c859cafc1b32d4d8362fce5039586d6
+<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco </span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span><button (click)="switchToRun()">Run!</button>
+</section>
