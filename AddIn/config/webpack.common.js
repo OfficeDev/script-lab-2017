@@ -89,6 +89,10 @@ module.exports = {
             {
                 from: 'node_modules/monaco-editor/min/vs',
                 to: 'vs',
+            },
+            {
+                from: './src/assets/images',
+                to: 'assets/images',
             }
         ]),
     ]

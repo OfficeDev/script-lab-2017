@@ -5,8 +5,7 @@ var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
 module.exports = webpackMerge(commonConfig, {
-    debug: true,
-
+    cache: true,
     devtool: 'source-map',
 
     output: {
@@ -24,8 +23,7 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        new ExtractTextPlugin('[name].css'),
-        // new webpack.optimize.UglifyJsPlugin()
+        new ExtractTextPlugin('[name].css')
     ],
 
     devServer: {

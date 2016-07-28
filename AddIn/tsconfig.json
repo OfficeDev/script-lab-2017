@@ -9,7 +9,7 @@
     "removeComments": false,
     "noImplicitAny": false,
     "noEmitOnError": true,
-    "sourceRoot": "src",
+    "rootDir": "src",
     "outDir": "dist"
   },
   "exclude": [
