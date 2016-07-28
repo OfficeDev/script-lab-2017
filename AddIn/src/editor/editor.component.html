@@ -1,6 +1,6 @@
 <header class="editor__header">
     <ul class="editor-command-bar">
-        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft"></i></li>
+        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft" (click)="back()"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet.meta.name}}</span>
             <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
@@ -19,4 +19,4 @@
         <tab name="Extras" language="text" [content]='snippet?.extras'></tab>
     </tabs>
 </section>
-<section class="editor__footer ms-font-m">{{ status || 'Powered by Monaco Editor' }}</section>
+<section class="editor__footer ms-font-m"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco Editor</span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span></section>
