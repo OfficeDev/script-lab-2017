@@ -1,0 +1,26 @@
+<header class="editor__header">
+    <ul class="editor-command-bar">
+        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft"></i></li>
+        <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
+            <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet.meta.name}}</span>
+            <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
+        </li>
+        <li [hidden]="!editMode" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--check"></i></li>        
+        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--save"></i></li>
+        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="duplicate()"><i class="ms-Icon ms-Icon--copy"></i></li>
+        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="delete()"><i class="ms-Icon ms-Icon--trash"></i></li>
+    </ul>
+</header>
+<section class="editor__main">
+    <tabs>
+        <tab name="JS" language="typescript" [content]='snippet?.ts'></tab>
+        <tab name="HTML" language="html" [content]='snippet?.html'></tab>
+        <tab name="CSS" language="css" [content]='snippet?.css'></tab>
+        <tab name="Extras" language="text" [content]='snippet?.extras'></tab>
+    </tabs>
+</section>
+<<<<<<< HEAD
+<section class="editor__footer ms-font-m"><button (click)="switchToRun()">Run!</button></section>
+=======
+<section class="editor__footer ms-font-m">{{ status || 'Powered by Monaco Editor' }}</section>
+>>>>>>> b460253bbd6318a0aec044fe682400d65018a7f5

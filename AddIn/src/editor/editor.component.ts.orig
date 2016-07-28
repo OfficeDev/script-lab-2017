@@ -1,5 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
+<<<<<<< HEAD
+=======
 import {Location} from '@angular/common';
+>>>>>>> b460253bbd6318a0aec044fe682400d65018a7f5
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
@@ -18,6 +21,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     private timeout;
 
     constructor(
+        private _router: Router,
         private _snippetManager: SnippetManager,
         private _location: Location,
         private _router: Router,
@@ -93,15 +97,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         };
 
         var ts = Utilities.stripSpaces(`
-            showNotification("Snippet loaded!", "This message comes from within the snippet!");
-
             $("#sample-button").click(runSample);
 
             function runSample() {
                 // This sample will color the selected range in yellow, and also display the selection address.
                 Excel.run(function (ctx) {
                     var range = ctx.workbook.getSelectedRange();
-                    range.format.fill.color = "yellow";
                     range.load('address');
                     return ctx.sync()
                         .then(function () {

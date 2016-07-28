@@ -30,6 +30,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             var iframe = this.runner.nativeElement;
             var iframeWindow: Window = (<any>iframe).contentWindow;
             this.createHtml().then(function(fullHtml) {
+                console.log(fullHtml);
                 iframeWindow.document.open();
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();
@@ -62,9 +63,20 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 + "\n" +
                 this.snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n")
                 + "\n" +
-                "    <script>"
-                +
+                "    <style>" +
+                this.snippet.css +
+                "    </style>" +
+                "    <script>\n"
+                + Utilities.stripSpaces(`
+                    Office.initialize = function (reason) {
+                        $(document).ready(function () {
+                    `)
+                + "\n" +
                 js
+                + Utilities.stripSpaces(`
+                        });
+                    };
+                    `)
                 +
                 "    </script>"
                 +
@@ -78,7 +90,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 Utilities.stripSpaces(
                 `            
                 </body>
-                </html>;
+                </html>
                 `
                 );
         })
