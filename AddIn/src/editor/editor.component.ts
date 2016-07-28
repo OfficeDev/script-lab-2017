@@ -1,8 +1,9 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {Snippet, SnippetManager} from '../shared/services';
+import {ISnippet, Snippet, SnippetManager} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
@@ -13,10 +14,14 @@ import {Utilities} from '../shared/helpers';
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
     snippet: Snippet;
+    status: string;
+    private timeout;
 
     constructor(
         private _router: Router,
         private _snippetManager: SnippetManager,
+        private _location: Location,
+        private _router: Router,
         private _route: ActivatedRoute
     ) {
         super();
@@ -36,12 +41,53 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this.snippet = this._snippetManager.findByName(snippetName);
         });
 
-        this.snippet = this.createDefaultNewSnippet();
+        this.snippet = this._createDefaultNewSnippet();
 
         this.markDispose(subscription);
     }
 
-    createDefaultNewSnippet(): Snippet {
+    back() {
+        this._location.back();
+    }
+
+    save() {
+        var snippet = this._snippetManager.saveSnippet(this.snippet);
+        this._showStatus('Saved ' + snippet.meta.name);
+    }
+
+    delete() {
+        this._snippetManager.deleteSnippet(this.snippet);
+        this._showStatus('Deleted ' + this.snippet.meta.name)
+            .then(() => {
+                this._location.replaceState('/new');
+            });
+    }
+
+    duplicate() {
+        var duplicateSnippet = this._snippetManager.duplicateSnippet(this.snippet);
+        this._showStatus('Created ' + duplicateSnippet.meta.name).then(() => {
+            this._location.replaceState('edit/' + Utilities.encode(duplicateSnippet.meta.name));
+        });
+    }
+
+    private _showStatus(message) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!Utilities.isNull(this.timeout)) clearTimeout(this.timeout);
+                this.status = message;
+                this.timeout = setTimeout(() => {
+                    clearTimeout(this.timeout);
+                    this.status = null;
+                    resolve();
+                }, 2000);
+            }
+            catch (exception) {
+                reject(exception);
+            }
+        });
+    }
+
+    private _createDefaultNewSnippet(): Snippet {
         var meta = {
             name: 'Unnamed Snippet',
             id: 'asbsdasds'
@@ -139,6 +185,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
         var extras = null;
 
-        return new Snippet(meta, ts, html, css, extras);
+        return new Snippet(<ISnippet>{
+            meta: meta,
+            ts: ts,
+            html: html,
+            css: css,
+            extras: extras
+        });
     }
 }

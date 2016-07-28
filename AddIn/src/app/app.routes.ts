@@ -7,11 +7,11 @@ export const AppRoutes: RouterConfig = [
         component: NewComponent
     },
     {        
-        path: 'edit/:name',
+        path: 'edit',
         component: EditorComponent
     },
-    {
-        path: 'edit/readonly/:name',
+    {        
+        path: 'edit/:name',
         component: EditorComponent
     },
     {

@@ -2,10 +2,24 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Utilities, RequestHelper} from '../helpers';
 
-export class Snippet {
+export interface ISnippet {
     meta: {
-        name: string,
-        id: string
+        name: string;
+        id: string;
+    };
+    ts: string;
+    html: string;
+    css: string;
+    extras: string;
+
+    hash: string;
+    jsHash: string;
+}
+
+export class Snippet implements ISnippet {
+    meta: {
+        name: string;
+        id: string;
     };
     ts: string;
     html: string;
@@ -17,12 +31,12 @@ export class Snippet {
 
     private _compiledJs: string;
 
-    constructor(meta, ts, html, css, extras) {
-        this.meta = meta;
-        this.ts = ts;
-        this.css = css;
-        this.extras = extras;
-        this.html = html;
+    constructor(snippet: ISnippet) {
+        this.meta = snippet.meta;
+        this.ts = snippet.ts;
+        this.css = snippet.css;
+        this.extras = snippet.extras;
+        this.html = snippet.html;
     }
 
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
@@ -85,9 +99,15 @@ export class Snippet {
 
     static create(meta, js, html, css, extras): Promise<Snippet> {
         return Promise.all([meta, js, html, css, extras])
-            .then(results => new Snippet(results[0], results[1], results[2], results[3], results[4]))
+            .then(results => new Snippet(<ISnippet>{
+                meta: results[0],
+                ts: results[1],
+                html: results[2],
+                css: results[3],
+                extras: results[4]
+            }))
             .catch(error => Utilities.error);
-    }    
+    }
 }
 
 @Injectable()

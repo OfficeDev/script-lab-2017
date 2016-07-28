@@ -15,7 +15,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy {
     snippet: Snippet;
 
     constructor(
-        private _snippetManager: SnippetsService,
+        private _snippetsService: SnippetsService,
         private _route: ActivatedRoute
     ) {
         super();
@@ -24,7 +24,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy {
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
             var id = params['id'];
-            this._snippetManager.get(id).then(snippet => this.snippet = snippet);
+            this._snippetsService.get(id).then(snippet => this.snippet = snippet);
         });
 
         this.markDispose(subscription);
