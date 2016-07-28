@@ -25,15 +25,27 @@ export class Snippet {
         this.html = html;
     }
 
-    get js(): Promise<string> {
-        if (this._mustCompile) {
-            return this._compile(this.ts).then((compiledJs) => {
-                this._compiledJs = compiledJs;
-                return compiledJs; 
-            })
-        }
+    // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
+    get runUrl(): string {
+        var url = window.location.toString() + "#/run/" + this.meta.id;
+        console.log(url);
+        return url;
+    }
 
-        return Promise.resolve(this._compiledJs);
+    get js(): Promise<string> {
+        if (Snippet._isPureValidJs(this.ts)) {
+            this._compiledJs = this.ts;
+            return Promise.resolve(this._compiledJs);        
+        }
+        else {
+            // FIXME expose to user
+            console.log(this.ts);
+            throw Utilities.error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)")
+            // return this._compile(this.ts).then((compiledJs) => {
+            //     this._compiledJs = compiledJs;
+            //     return compiledJs; 
+            // })
+        }
     }
 
     getJsLibaries(): Array<string> {
@@ -53,9 +65,13 @@ export class Snippet {
         ];
     }
 
-    private get _mustCompile(): boolean {
-        // FIXME
-        return true;
+    static _isPureValidJs(scriptText): boolean {
+        try {
+			new Function(scriptText);
+            return true;
+        } catch (syntaxError) {
+            return false;
+        }
     }
 
     private _compile(ts: string): Promise<string> {

@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetManager} from '../shared/services';
@@ -15,14 +15,22 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     snippet: Snippet;
 
     constructor(
+        private _router: Router,
         private _snippetManager: SnippetManager,
         private _route: ActivatedRoute
     ) {
         super();
     }
 
+    switchToRun() {
+        this._router.navigate(['run', this.initialParamsName]);
+    }
+
+    private initialParamsName: string;
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
+            this.initialParamsName = params['name'];
+            console.log("Initial params name " + this.initialParamsName)
             var snippetName = Utilities.decode(params['name']);
             if (Utilities.isEmpty(snippetName)) return;
             this.snippet = this._snippetManager.findByName(snippetName);
@@ -53,7 +61,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                         });
                 })
                 .catch(handleError);
-            })
+            }
             
             function handleError(error) {
                 showNotification("Error", error);
@@ -63,9 +71,26 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                 }
             }
 
-            var notificationPopup = createNotificationPopup(document.getElementById('notification-popup'));
-            function showNotification(header: string, text: string) {
-                notificationPopup.show(header, text);
+            function showNotification(header, text) {
+                var container = document.getElementById('notification-popup');
+                var headerPlaceholder = container.querySelector('.notification-popup-title');
+                var textPlaceholder = container.querySelector('.ms-MessageBanner-clipper');
+
+                headerPlaceholder.textContent = header;
+                textPlaceholder.textContent = text;
+                    
+                var closeButton = container.querySelector('.ms-MessageBanner-close');
+                closeButton.addEventListener("click", function () {
+                    if (container.className.indexOf("hide") === -1) {
+                        container.className += " hide";
+                        setTimeout(function () {
+                            container.className = "ms-MessageBanner is-hidden";
+                        }, 500);
+                    }
+                    closeButton.removeEventListener("click");
+                });
+
+                container.className = "ms-MessageBanner is-expanded";
             }
 		`);
 
