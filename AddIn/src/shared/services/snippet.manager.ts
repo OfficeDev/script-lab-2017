@@ -12,12 +12,14 @@ export class SnippetManager {
     }
 
     saveSnippet(snippet: ISnippet) {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return;        
-        return this._makeNameUniqueAndSave(snippet);
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return;
+        if (Utilities.isEmpty(snippet.meta.name)) throw 'Snippet name cannot be empty';
+        return this._snippetsContainer.insert(snippet.meta.name, snippet);
     }
 
     deleteSnippet(snippet: ISnippet) {
         if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return;
+        if (Utilities.isEmpty(snippet.meta.name)) throw 'Snippet name cannot be empty';        
         return this._snippetsContainer.remove(snippet.meta.name);
     }
 

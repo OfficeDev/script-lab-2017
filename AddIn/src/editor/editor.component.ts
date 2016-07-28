@@ -15,6 +15,7 @@ import {Utilities} from '../shared/helpers';
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
     snippet: Snippet;
     status: string;
+    error: boolean;
     private timeout;
 
     constructor(
@@ -24,6 +25,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         private _route: ActivatedRoute
     ) {
         super();
+        this.snippet = this._createDefaultNewSnippet();
     }
 
     switchToRun() {
@@ -36,47 +38,75 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this.initialParamsName = params['name'];
             console.log("Initial params name " + this.initialParamsName)
             var snippetName = Utilities.decode(params['name']);
-            if (Utilities.isEmpty(snippetName)) return;
-            this.snippet = this._snippetManager.findByName(snippetName);
+            try {
+                if (!Utilities.isEmpty(snippetName)) {
+                    this.snippet = this._snippetManager.findByName(snippetName);
+                }
+            }
+            catch (e) {
+                this._showStatus(e, true);
+            }
         });
-
-        this.snippet = this._createDefaultNewSnippet();
 
         this.markDispose(subscription);
     }
 
+    change(data: string, property: string) {
+        this.snippet[property] = data;
+    }
+
     back() {
-        this._location.back();
+        this._location.replaceState('');
+        this._router.navigate(['']);
     }
 
     save() {
-        var snippet = this._snippetManager.saveSnippet(this.snippet);
-        this._showStatus('Saved ' + snippet.meta.name);
+        try {
+            var snippet = this._snippetManager.saveSnippet(this.snippet);
+            this._showStatus('Saved ' + snippet.meta.name);
+        }
+        catch (e) {
+            this._showStatus(e, true);
+        }
     }
 
     delete() {
-        this._snippetManager.deleteSnippet(this.snippet);
-        this._showStatus('Deleted ' + this.snippet.meta.name)
-            .then(() => {
-                this._location.replaceState('/new');
-            });
+        try {
+            this._snippetManager.deleteSnippet(this.snippet);
+            this._showStatus('Deleted ' + this.snippet.meta.name)
+                .then(() => {
+                    this._location.replaceState('');
+                    this._router.navigate(['']);
+                });
+        }
+        catch (e) {
+            this._showStatus(e, true);
+        }
     }
 
     duplicate() {
-        var duplicateSnippet = this._snippetManager.duplicateSnippet(this.snippet);
-        this._showStatus('Created ' + duplicateSnippet.meta.name).then(() => {
-            this._location.replaceState('edit/' + Utilities.encode(duplicateSnippet.meta.name));
-        });
+        try {
+            var duplicateSnippet = this._snippetManager.duplicateSnippet(this.snippet);
+            this._showStatus('Created ' + duplicateSnippet.meta.name).then(() => {
+                this._router.navigate(['edit', Utilities.encode(duplicateSnippet.meta.name)]);
+            });
+        }
+        catch (e) {
+            this._showStatus(e, true);
+        }
     }
 
-    private _showStatus(message) {
+    private _showStatus(message: string, error?: boolean) {
         return new Promise((resolve, reject) => {
             try {
                 if (!Utilities.isNull(this.timeout)) clearTimeout(this.timeout);
                 this.status = message;
+                this.error = error;
+
                 this.timeout = setTimeout(() => {
                     clearTimeout(this.timeout);
                     this.status = null;
+                    this.error = false;
                     resolve();
                 }, 2000);
             }
@@ -88,13 +118,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     private _createDefaultNewSnippet(): Snippet {
         var meta = {
-            name: 'Unnamed Snippet',
-            id: 'asbsdasds'
+            name: null,
+            id: null
         };
 
         var ts = Utilities.stripSpaces(`
-            showNotification("Snippet loaded!", "This message comes from within the snippet!");
-
             $("#sample-button").click(runSample);
 
             function runSample() {

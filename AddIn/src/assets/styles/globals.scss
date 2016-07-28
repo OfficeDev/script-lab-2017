@@ -57,6 +57,10 @@ ul {
         @include flex();
     }    
 
+    tabs {
+        overflow: hidden;
+    }
+
     tab {
         display: none;
         height: 100% !important;

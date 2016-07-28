@@ -1,6 +1,6 @@
 <header class="editor__header">
     <ul class="editor-command-bar">
-        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft"></i></li>
+        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft" (click)="back()"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet.meta.name}}</span>
             <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
@@ -13,6 +13,7 @@
 </header>
 <section class="editor__main">
     <tabs>
+<<<<<<< HEAD
         <tab name="JS" language="typescript" [content]='snippet?.ts'></tab>
         <tab name="HTML" language="html" [content]='snippet?.html'></tab>
         <tab name="CSS" language="css" [content]='snippet?.css'></tab>
@@ -20,3 +21,12 @@
     </tabs>
 </section>
 <section class="editor__footer ms-font-m">{{ status || 'Powered by Monaco Editor' }} <button (click)="switchToRun()">Run!</button></section>
+=======
+        <tab name="HTML" language="html" [content]="snippet.html" (change)="change($event, 'html')"></tab>
+        <tab name="CSS" language="css" [content]="snippet.css" (change)="change($event, 'css')"></tab>
+        <tab name="JS" language="typescript" [content]="snippet.ts" (change)="change($event, 'ts')"></tab>
+        <tab name="Extras" language="text" [content]="snippet.extras" (change)="change($event, 'extras')"></tab>
+    </tabs>
+</section>
+<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco Editor</span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span></section>
+>>>>>>> 25642e1a8c859cafc1b32d4d8362fce5039586d6

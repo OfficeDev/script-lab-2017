@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, SimpleChanges} from '@angular/core';
+import {Component, Input, Output, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, SimpleChanges, EventEmitter} from '@angular/core';
 import {Tabs} from './tab-container.component';
 import {Utilities} from '../../helpers';
 
@@ -6,7 +6,7 @@ declare const require: any;
 
 @Component({
     selector: 'tab',
-    template: '<section #editor class="monaco-editor"></section>',
+    template: '<section #editor class="monaco-editor" (keyup)="syncContent()"></section>',
     styleUrls: ['tab.component.scss'],
 })
 export class Tab implements OnInit, OnChanges, OnDestroy {
@@ -14,15 +14,21 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
     @Input() active: boolean;
     @Input() content: string;
     @Input() language: string;
-    @Input() readonly: boolean;    
+    @Input() readonly: boolean;
+    @Output() change: EventEmitter<string> = new EventEmitter<string>();
     @ViewChild('editor') private _component: ElementRef;
 
+    syncContent: () => void;
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
 
     constructor(
         private element: ElementRef,
         private tabs: Tabs
     ) {
+        this.syncContent = _.debounce(() => {
+            if (Utilities.isNull(this._monacoEditor)) return;
+            this.change.next(this._monacoEditor.getValue())
+        }, 400);
     }
 
     ngOnInit() {
@@ -46,10 +52,11 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        var data = (<any>changes).content; 
+        var data = (<any>changes).content;
         if (!Utilities.isNull(this._monacoEditor)) {
-            this._monacoEditor.setValue(changes['content'].currentValue);
-        }    
+            if (changes['content'].currentValue !== this.content)
+                this._monacoEditor.setValue(changes['content'].currentValue);
+        }
     }
 
     ngOnDestroy() {
