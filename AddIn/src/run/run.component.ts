@@ -30,7 +30,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             var iframe = this.runner.nativeElement;
             var iframeWindow: Window = (<any>iframe).contentWindow;
             this.createHtml().then(function(fullHtml) {
-                console.log(fullHtml);
                 iframeWindow.document.open();
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();

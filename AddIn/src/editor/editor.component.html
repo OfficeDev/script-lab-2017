@@ -10,6 +10,7 @@
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--save"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="duplicate()"><i class="ms-Icon ms-Icon--copy"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="delete()"><i class="ms-Icon ms-Icon--trash"></i></li>
+        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="switchToRun()"><i class="ms-Icon ms-Icon--play"></i></li>        
     </ul>
 </header>
 <section class="editor__main">
@@ -20,5 +21,5 @@
         <tab name="Extras" language="text" [content]="snippet.extras" (change)="change($event, 'extras')"></tab>
     </tabs>
 </section>
-<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco </span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span><button (click)="switchToRun()">Run!</button>
+<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco </span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span>
 </section>

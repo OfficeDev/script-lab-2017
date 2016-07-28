@@ -2,21 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Chrome against localhost, with sourcemaps",
-            "type": "chrome",
-            "request": "launch",
-            "preLaunchTask": "npm start",
-            "url": "https://localhost:3000",
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
-        },
-        {
-            "name": "Attach to Chrome, with sourcemaps",
+            "name": "Attach",
             "type": "chrome",
             "request": "attach",
             "port": 9222,
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
+            "webRoot": "${workspaceRoot}/dist",
+            "url": "https://localhost:3000/#/",
+            "diagnosticLogging": true
         }
     ]
 }
