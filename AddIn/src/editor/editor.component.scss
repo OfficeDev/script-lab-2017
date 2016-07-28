@@ -10,7 +10,13 @@
     &__footer {
         background-color: $accent-background-primary;
         color: $accent-foreground-primary;
-        padding: $default-spacing/2 $default-spacing;        
+        padding: $default-spacing/2 $default-spacing;       
+        transition: background-color 0.3s ease-in-out;
+
+        &--error {
+            background-color: #FF4444;
+            color: lighten(#FF4444, 60%);
+        } 
     }
 }
 

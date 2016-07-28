@@ -36,7 +36,7 @@ export class Dictionary<T> {
         if (!this.contains(key)) throw new Error('Key not found.');
         var value = this.items[key];
         delete this.items[key];
-        return this.insert(key, value);
+        return value;
     };
 
     clear() {
