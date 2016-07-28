@@ -49,7 +49,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     select(name?: string) {
-        console.log(name, Utilities.encode(name));
+        if (Utilities.isEmpty(name)) {
+            this._router.navigate(['edit']);
+            return;
+        }
         this._router.navigate(['edit', Utilities.encode(name)]);
     }
 

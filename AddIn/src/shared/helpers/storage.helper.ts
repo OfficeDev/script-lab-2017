@@ -23,6 +23,12 @@ export class StorageHelper<T> extends Dictionary<T>{
         this.load();
     }
 
+    insert(item: string, value: T): T {
+        super.insert(item, value);
+        this.save();
+        return value;
+    }
+
     add(item: string, value: T): T {
         super.add(item, value);
         this.save();

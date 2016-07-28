@@ -1,20 +1,24 @@
-import {Injectable, OnInit, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import {Snippet, SnippetsService} from '../services';
+import {ISnippet, Snippet, SnippetsService} from '../services';
 import {StorageHelper, Utilities} from '../helpers';
 
 @Injectable()
-export class SnippetManager implements OnInit, OnDestroy {
-    private _snippetsContainer: StorageHelper<Snippet>;
+export class SnippetManager {
+    private _snippetsContainer: StorageHelper<ISnippet>;
 
     constructor(private _service: SnippetsService) {
-        this._snippetsContainer = new StorageHelper<Snippet>('snippets');
+        this._snippetsContainer = new StorageHelper<ISnippet>('snippets');
     }
 
-    ngOnInit() {
+    saveSnippet(snippet: ISnippet) {
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return;        
+        return this._makeNameUniqueAndSave(snippet);
     }
 
-    ngOnDestroy() {
+    deleteSnippet(snippet: ISnippet) {
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return;
+        return this._snippetsContainer.remove(snippet.meta.name);
     }
 
     getAllSnippets() {
@@ -44,7 +48,7 @@ export class SnippetManager implements OnInit, OnDestroy {
 
     findByName(name: string): Snippet {
         var result = this._snippetsContainer.get(name);
-        return new Snippet(result.meta, result.ts, result.html, result.css, result.extras);
+        return new Snippet(result);
     }
 
     duplicateSnippet(snippet: Snippet): Snippet {
@@ -52,12 +56,14 @@ export class SnippetManager implements OnInit, OnDestroy {
         var newMeta = {
             name: oldMeta.name,
             id: oldMeta.id
-        }
-        var newSnippet = new Snippet(newMeta, snippet.ts, snippet.html, snippet.css, snippet.extras);
+        };
+
+        var newSnippet = new Snippet(snippet);
+        newSnippet.meta = newMeta;
         return this._makeNameUniqueAndSave(newSnippet);
     }
 
-    publishSnippet(snippet: Snippet, password?: string) {
+    publishSnippet(snippet: ISnippet, password?: string) {
         if (Utilities.isNull(snippet.meta) || Utilities.isEmpty(snippet.meta.name)) {
             throw "Snippet name not specified.";
         }
@@ -72,7 +78,7 @@ export class SnippetManager implements OnInit, OnDestroy {
             })
     }
 
-    publishSnippetUpdate(snippet: Snippet, password: string) {
+    publishSnippetUpdate(snippet: ISnippet, password: string) {
         if (Utilities.isNull(snippet.meta) || Utilities.isEmpty(snippet.meta.id)) {
             throw "Snippet id not specified.";
         }
@@ -83,27 +89,31 @@ export class SnippetManager implements OnInit, OnDestroy {
         return this._uploadAllContents(snippet, snippet.meta.id, password);
     }
 
-    private _uploadAllContents(snippet: Snippet, id: string, password: string) {
-        return Promise.resolve()
-            .then(() => {
-                if (Utilities.isEmpty(snippet.ts)) return;
-                return this._service.uploadContent(id, password, 'js', snippet.ts);
-            })
-            .then(() => {
-                if (Utilities.isEmpty(snippet.html)) return;
-                return this._service.uploadContent(id, password, 'html', snippet.html);
-            })
-            .then(() => {
-                if (Utilities.isEmpty(snippet.css)) return;
-                return this._service.uploadContent(id, password, 'css', snippet.css);
-            })
-            .then(() => {
-                if (Utilities.isEmpty(snippet.extras)) return;
-                return this._service.uploadContent(id, password, 'extras', snippet.extras);
-            });
+    private _uploadAllContents(snippet: ISnippet, id: string, password: string) {
+        var uploadJs = () => {
+            if (Utilities.isEmpty(snippet.ts)) return Promise.resolve() as Promise<any>;
+            return this._service.uploadContent(id, password, 'js', snippet.ts);
+        };
+
+        var uploadHtml = () => {
+            if (Utilities.isEmpty(snippet.html)) return Promise.resolve() as Promise<any>;
+            return this._service.uploadContent(id, password, 'html', snippet.html);
+        };
+
+        var uploadCss = () => {
+            if (Utilities.isEmpty(snippet.css)) return Promise.resolve() as Promise<any>;
+            return this._service.uploadContent(id, password, 'css', snippet.css);
+        };
+
+        var uploadExtras = () => {
+            if (Utilities.isEmpty(snippet.extras)) return Promise.resolve() as Promise<any>;
+            return this._service.uploadContent(id, password, 'extras', snippet.extras);
+        };
+
+        return Promise.all([uploadJs(), uploadCss(), uploadHtml(), uploadExtras()]);
     }
 
-    private _makeNameUniqueAndSave(snippet: Snippet): Snippet {
+    private _makeNameUniqueAndSave(snippet: ISnippet): Snippet {
         if (Utilities.isNull(snippet.meta)) {
             snippet.meta = { name: null, id: null };
         }
@@ -128,8 +138,10 @@ export class SnippetManager implements OnInit, OnDestroy {
         }
         snippet.meta.name = name;
 
-        this._snippetsContainer.add(name, snippet);
-        return snippet;
+        var newSnippet = new Snippet(snippet);
+
+        this._snippetsContainer.add(name, newSnippet);
+        return newSnippet;
     }
 
     private static _escapeRegex(input: string) {

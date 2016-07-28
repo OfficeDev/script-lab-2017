@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {Snippet, SnippetManager} from '../shared/services';
+import {ISnippet, Snippet, SnippetManager} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
@@ -16,6 +16,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     constructor(
         private _snippetManager: SnippetManager,
+        private _router: Router,
         private _route: ActivatedRoute
     ) {
         super();
@@ -28,12 +29,26 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this.snippet = this._snippetManager.findByName(snippetName);
         });
 
-        this.snippet = this.createDefaultNewSnippet();
+        this.snippet = this._createDefaultNewSnippet();
 
         this.markDispose(subscription);
     }
 
-    createDefaultNewSnippet(): Snippet {
+    save() {
+        this._snippetManager.saveSnippet(this.snippet);
+    }
+
+    delete() {
+        this._snippetManager.deleteSnippet(this.snippet);
+        this._router.navigate(['edit']);        
+    }
+
+    duplicate() {
+        var duplicateSnippet = this._snippetManager.duplicateSnippet(this.snippet);
+        this._router.navigate(['edit', Utilities.encode(duplicateSnippet.meta.name)]);
+    }
+
+    private _createDefaultNewSnippet(): Snippet {
         var meta = {
             name: 'Unnamed Snippet',
             id: 'asbsdasds'
@@ -114,6 +129,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
         var extras = null;
 
-        return new Snippet(meta, ts, html, css, extras);
+        return new Snippet(<ISnippet>{
+            meta: meta,
+            ts: ts,
+            html: html,
+            css: css,
+            extras: extras
+        });
     }
 }
