@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Utilities} from '../shared/helpers';
-import {SnippetManager} from '../shared/services';
+import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
 @Component({
@@ -48,22 +48,36 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             .then(data => this.gallery = data);
     }
 
-    select(name?: string) {
-        if (Utilities.isEmpty(name)) {
+    share(snippet: ISnippet) {
+        
+    }
+
+    delete(snippet: ISnippet) {
+        try {
+            this._snippetManager.deleteSnippet(snippet);
+            this.localGallery = this._snippetManager.getAllSnippets();
+        }
+        catch (e) {
+        }
+    }
+
+    run(snippet: ISnippet) {
+        this._router.navigate(['run', Utilities.encode(snippet.meta.name)]);
+    }
+
+    select(snippet?: ISnippet) {
+        if (Utilities.isEmpty(snippet)) {
             this._router.navigate(['edit']);
             return;
         }
-        this._router.navigate(['edit', Utilities.encode(name)]);
+        this._router.navigate(['edit', Utilities.encode(snippet.meta.name)]);
     }
 
-    import(link?: string) {
-        this.link = link || this.link;
-        if (Utilities.isEmpty(this.link)) {
-            this.select();
-            return;
-        }
-        this._snippetManager.importFromWeb(this.link)
-            .then(snippet => this.select(snippet.meta.name));
+    import(snippet?: ISnippetMeta) {
+        var link = snippet.id || this.link;
+        if (Utilities.isEmpty(link)) { return; }
+        this._snippetManager.importFromWeb(link)
+            .then(snippet => this.select(snippet));
     }
 
     mockPlaylist() {

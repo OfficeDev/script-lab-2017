@@ -2,11 +2,25 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Utilities, RequestHelper} from '../helpers';
 
+export enum OfficeClient {
+    All,
+    Word,
+    Excel,
+    PowerPoint,
+    Project,
+    Outlook,
+    OneNote 
+}
+
+export interface ISnippetMeta {
+    name: string;
+    id: string;
+    group?: string;
+    client?: OfficeClient;
+}
+
 export interface ISnippet {
-    meta: {
-        name: string;
-        id: string;
-    };
+    meta: ISnippetMeta;
     ts: string;
     html: string;
     css: string;
@@ -49,7 +63,7 @@ export class Snippet implements ISnippet {
     get js(): Promise<string> {
         if (Snippet._isPureValidJs(this.ts)) {
             this._compiledJs = this.ts;
-            return Promise.resolve(this._compiledJs);        
+            return Promise.resolve(this._compiledJs);
         }
         else {
             // FIXME expose to user
@@ -81,7 +95,8 @@ export class Snippet implements ISnippet {
 
     static _isPureValidJs(scriptText): boolean {
         try {
-			new Function(scriptText);
+            console.log(scriptText);
+            new Function(scriptText);
             return true;
         } catch (syntaxError) {
             return false;

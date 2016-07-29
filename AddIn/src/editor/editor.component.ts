@@ -28,19 +28,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         this.snippet = this._createDefaultNewSnippet();
     }
 
-    switchToRun() {
-        this._router.navigate(['run', this.initialParamsName]);
-    }
-
-    private initialParamsName: string;
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            this.initialParamsName = params['name'];
-            console.log("Initial params name " + this.initialParamsName)
             var snippetName = Utilities.decode(params['name']);
             try {
+                console.log(snippetName);
                 if (!Utilities.isEmpty(snippetName)) {
                     this.snippet = this._snippetManager.findByName(snippetName);
+                    console.log(this.snippet);
                 }
             }
             catch (e) {
@@ -58,6 +53,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     back() {
         this._location.replaceState('');
         this._router.navigate(['']);
+    }
+
+    share() {
+
     }
 
     save() {
@@ -82,6 +81,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         catch (e) {
             this._showStatus(e, true);
         }
+    }
+
+    run() {
+        this._router.navigate(['run', Utilities.encode(this.snippet.meta.name)]);
     }
 
     duplicate() {

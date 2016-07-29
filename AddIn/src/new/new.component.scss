@@ -103,12 +103,26 @@
     }
 
     &__item {
-        padding: $default-spacing;
-        padding-left: $default-spacing * 1.5;        
         @include focus-states(#F4F4F4);
+        @include inline-flex();
+        width: 100%;
+
+        span {
+            padding: $default-spacing;            
+            align-self: flex-start;
+            @include ellipsis();
+            flex: 1 1 100%;
+        }
     }
 
     &__message {
         padding: $default-spacing/2 $default-spacing;
+    }
+
+    &__action {
+        padding: $default-spacing + 2px;
+        font-size: 15px;
+        @include focus-states($accent-background-primary, $accent-foreground-primary);
+        align-self: flex-end;
     }
 }

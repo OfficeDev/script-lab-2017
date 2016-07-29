@@ -27,14 +27,15 @@ export class Tab implements OnInit, OnChanges, OnDestroy {
     ) {
         this.syncContent = _.debounce(() => {
             if (Utilities.isNull(this._monacoEditor)) return;
-            this.change.next(this._monacoEditor.getValue())
+            this.change.next(this._monacoEditor.getValue());
         }, 400);
     }
 
     ngOnInit() {
+        var content = (!_.isString(this.content) || _.isEmpty(this.content)) ? '' : this.content;
         (<any>window).require(['vs/editor/editor.main'], () => {
             this._monacoEditor = monaco.editor.create(this._component.nativeElement, {
-                value: this.content,
+                value: content,
                 language: this.language,
                 lineNumbers: true,
                 roundedSelection: false,

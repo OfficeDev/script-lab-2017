@@ -1,6 +1,6 @@
 <header class="editor__header">
     <ul class="editor-command-bar">
-        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft" (click)="back()"></i></li>
+        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--home" (click)="back()"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet.meta.name}}</span>
             <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet"
@@ -10,7 +10,8 @@
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--save"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="duplicate()"><i class="ms-Icon ms-Icon--copy"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="delete()"><i class="ms-Icon ms-Icon--trash"></i></li>
-        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="switchToRun()"><i class="ms-Icon ms-Icon--play"></i></li>        
+        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="share()"><i class="ms-Icon ms-Icon--share"></i></li>                
+        <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="run()"><i class="ms-Icon ms-Icon--play"></i></li>        
     </ul>
 </header>
 <section class="editor__main">
