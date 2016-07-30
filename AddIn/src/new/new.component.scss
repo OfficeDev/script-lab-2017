@@ -13,7 +13,7 @@
         color: #333;
         margin: 0;
         border: none;
-        margin-bottom: $default-spacing * 0.25;
+        border-bottom: solid 1px #E4E4E4;
 
         &:last-child {
             margin-bottom: 0;
@@ -46,6 +46,8 @@
 
         &--separator {
             height: 0;
+            border: none;
+            outline: none;
             border-bottom: solid 1px #E4E4E4;
         }
     }
@@ -61,11 +63,6 @@
         @include flex();
     }
 
-    &__list {
-        flex: 1 1 100%;
-        @include vScroll();    
-    }
-    
     &__form {
         i.ms-Icon {
             position: absolute;
@@ -95,6 +92,13 @@
 }
 
 .new-list {
+    flex: 1 1 100%;
+    @include vScroll();   
+
+    &__group {
+        margin-bottom: $default-spacing;
+    }
+
     &__group-header {
         text-transform: uppercase;
         font-weight: bold;

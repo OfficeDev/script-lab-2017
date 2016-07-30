@@ -56,7 +56,6 @@ export class Snippet implements ISnippet {
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
     get runUrl(): string {
         var url = window.location.toString() + "#/run/" + this.meta.id;
-        console.log(url);
         return url;
     }
 
@@ -67,7 +66,6 @@ export class Snippet implements ISnippet {
         }
         else {
             // FIXME expose to user
-            console.log(this.ts);
             throw Utilities.error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)")
             // return this._compile(this.ts).then((compiledJs) => {
             //     this._compiledJs = compiledJs;
@@ -95,7 +93,6 @@ export class Snippet implements ISnippet {
 
     static _isPureValidJs(scriptText): boolean {
         try {
-            console.log(scriptText);
             new Function(scriptText);
             return true;
         } catch (syntaxError) {
@@ -134,7 +131,6 @@ export class SnippetsService {
     }
 
     get(snippetId: string): Promise<Snippet> {
-        console.log(snippetId);
         var meta = this._request.get(this._baseUrl + '/snippets/' + snippetId);
         var js = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/js', null, true);
         var html = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/html', null, true);

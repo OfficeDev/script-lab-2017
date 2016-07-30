@@ -37,7 +37,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();
             }).catch(function (e) {
-                console.log(e);
                 // eventually Util instead
             });
         });
