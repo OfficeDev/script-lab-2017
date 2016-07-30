@@ -22,5 +22,5 @@
         <tab name="Extras" language="text" [content]="snippet.extras" (change)="change($event, 'extras')"></tab>
     </tabs>
 </section>
-<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco </span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span>
+<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}"><span *ngIf="!!!status" class="ms-u-slideUpIn20">Powered by Monaco Editor</span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span>
 </section>

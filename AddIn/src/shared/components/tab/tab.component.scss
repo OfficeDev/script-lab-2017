@@ -14,6 +14,7 @@
     }    
 
     &__container {
+        @include flex();
         flex: 1 1 100%;
         width: 100%;        
     }
@@ -25,8 +26,8 @@ tabs {
 }
 
 .monaco-editor {
+    @include flex();
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    border: solid 1px #555;
 }
