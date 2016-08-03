@@ -13,7 +13,7 @@ export class Utilities {
     }
 
     static decode(encodedString: string): string {
-        if (this.isEmpty(encodedString)) return null;        
+        if (this.isEmpty(encodedString)) return null;
         return atob(decodeURIComponent(encodedString));
     }
 
@@ -44,7 +44,7 @@ export class Utilities {
     static stripSpaces(text: string) {
         return text; // FIXME mizlatko
     }
-    
+
     static get isExcel() {
         return this._context == ContextType.Excel;
     }
@@ -85,4 +85,6 @@ export class Utilities {
         }
         return this._context;
     }
+
+    static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);
 }

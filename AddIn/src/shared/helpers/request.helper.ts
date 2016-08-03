@@ -18,15 +18,10 @@ export class RequestHelper {
         return this._json<T>(xhr);
     }
 
-    putRaw<T>(url: string, body: any, options?: RequestOptions) {
+    put<T>(url: string, body: any, options?: RequestOptions) {
         let requestOptions = options || RequestHelper.generateHeaders();
         let xhr = this._http.put(url, body, requestOptions);
         return xhr.toPromise();
-    }
-
-    raw(url: string, options?: RequestOptions, unformatted?: boolean) {
-        let xhr = Utilities.isNull(options) ? this._http.get(url) : this._http.get(url, options);
-        return unformatted ? xhr : this._text(xhr);
     }
 
     static generateHeaders(additionalHeaders?: { [key: string]: any }): RequestOptions {
@@ -41,20 +36,14 @@ export class RequestHelper {
         return request
             .map(response => response.text() as string)
             .toPromise()
-            .catch(error => {
-                Utilities.error(error);
-                return null;
-            });
-        
+            .catch(error => { Utilities.error(error); });
+
     }
 
     private _json<T>(request: Observable<any>): Promise<T> {
         return request
             .map(response => response.json() as T)
             .toPromise()
-            .catch(error => {
-                Utilities.error(error);
-                return null;
-            });
+            .catch(error => { Utilities.error(error); });
     }
 }

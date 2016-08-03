@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {Snippet, SnippetsService} from '../shared/services';
+import {Snippet, SnippetService} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
@@ -15,7 +15,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy {
     snippet: Snippet;
 
     constructor(
-        private _snippetsService: SnippetsService,
+        private _snippetsService: SnippetService,
         private _route: ActivatedRoute
     ) {
         super();

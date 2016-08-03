@@ -1,6 +1,4 @@
-import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-import {Utilities, RequestHelper} from '../helpers';
+import {Utilities} from '../helpers';
 
 export enum OfficeClient {
     All,
@@ -9,12 +7,13 @@ export enum OfficeClient {
     PowerPoint,
     Project,
     Outlook,
-    OneNote 
+    OneNote
 }
 
 export interface ISnippetMeta {
     name: string;
     id: string;
+    key?: string;
     group?: string;
     client?: OfficeClient;
 }
@@ -34,6 +33,9 @@ export class Snippet implements ISnippet {
     meta: {
         name: string;
         id: string;
+        key?: string;
+        group?: string;
+        client?: OfficeClient;
     };
     ts: string;
     html: string;
@@ -45,23 +47,26 @@ export class Snippet implements ISnippet {
 
     private _compiledJs: string;
 
-    constructor(snippet: ISnippet) {
-        this.meta = snippet.meta;
-        this.ts = snippet.ts;
-        this.css = snippet.css;
-        this.extras = snippet.extras;
-        this.html = snippet.html;
+    constructor(private snippet: ISnippet) {
+        this.randomizeId();
+    }
+
+    randomizeId() {
+        if (Utilities.isNull(this.snippet.meta)) {
+            this.snippet.meta = {} as any;
+        }
+        this.snippet.meta.id = 'L' + Utilities.randomize(10000).toString();        
     }
 
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
     get runUrl(): string {
-        var url = window.location.toString() + "#/run/" + this.meta.id;
+        var url = window.location.toString() + "#/run/" + this.snippet.meta.id;
         return url;
     }
 
     get js(): Promise<string> {
-        if (Snippet._isPureValidJs(this.ts)) {
-            this._compiledJs = this.ts;
+        if (Snippet._isPureValidJs(this.snippet.ts)) {
+            this._compiledJs = this.snippet.ts;
             return Promise.resolve(this._compiledJs);
         }
         else {
@@ -119,43 +124,5 @@ export class Snippet implements ISnippet {
                 extras: results[4]
             }))
             .catch(error => Utilities.error);
-    }
-}
-
-@Injectable()
-export class SnippetsService {
-    private _baseUrl: string = 'https://xlsnippets.azurewebsites.net/api';
-
-    constructor(private _request: RequestHelper) {
-
-    }
-
-    get(snippetId: string): Promise<Snippet> {
-        var meta = this._request.get(this._baseUrl + '/snippets/' + snippetId);
-        var js = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/js', null, true);
-        var html = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/html', null, true);
-        var css = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/css', null, true);
-        var extras = this._request.get(this._baseUrl + '/snippets/' + snippetId + '/content/extras', null, true);
-        return Snippet.create(meta, js, html, css, extras);
-    }
-
-    create(name: string, password?: string): Promise<{ id: string, password: string }> {
-        var body = { name: name, password: password };
-
-        return this._request.post(this._baseUrl + '/snippets', body)
-            .then((data: any) => {
-                return {
-                    id: data.id,
-                    password: data.password
-                }
-            })
-    }
-
-    uploadContent(snippetId: string, password: string, fileName: string, content: string) {
-        var headers = RequestHelper.generateHeaders({
-            "Content-Type": "application/octet-stream",
-            "x-ms-b64-password": btoa(password)
-        });
-        return this._request.putRaw(this._baseUrl + '/snippets/' + snippetId + '/content/' + fileName, content, headers);
     }
 }

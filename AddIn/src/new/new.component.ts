@@ -24,7 +24,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     importFlag = false;
 
     ngOnInit() {
-        this.localGallery = this._snippetManager.getAllSnippets();
+        this._snippetManager.get().then(data => this.localGallery = data);
         this.mockPlaylist()
             .then(data => {
                 return {
@@ -49,16 +49,12 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     share(snippet: ISnippet) {
-        
+
     }
 
     delete(snippet: ISnippet) {
-        try {
-            this._snippetManager.deleteSnippet(snippet);
-            this.localGallery = this._snippetManager.getAllSnippets();
-        }
-        catch (e) {
-        }
+        this._snippetManager.delete(snippet);
+        this._snippetManager.get().then(data => this.localGallery = data);
     }
 
     run(snippet: ISnippet) {
@@ -74,10 +70,8 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     import(snippet?: ISnippetMeta) {
-        var link = snippet.id || this.link;
-        if (Utilities.isEmpty(link)) { return; }
-        this._snippetManager.importFromWeb(link)
-            .then(snippet => this.select(snippet));
+        var link = snippet.id || this.link;        
+        this._snippetManager.import(link).then(snippet => this.select(snippet));
     }
 
     mockPlaylist() {

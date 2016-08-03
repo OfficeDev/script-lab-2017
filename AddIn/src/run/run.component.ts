@@ -26,9 +26,8 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            var snippetName = Utilities.decode(params['name']);
-            if (Utilities.isEmpty(snippetName)) return;
-            this.snippet = this._snippetManager.findByName(snippetName);
+            var id = Utilities.decode(params['id']);
+            this._snippetManager.find(id).then(snippet => this.snippet = snippet);
 
             var iframe = this.runner.nativeElement;
             var iframeWindow: Window = (<any>iframe).contentWindow;
@@ -36,8 +35,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 iframeWindow.document.open();
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();
-            }).catch(function (e) {
-                // eventually Util instead
             });
         });
 
@@ -63,21 +60,21 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 '    <meta charset="UTF-8" />',
                 '    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />',
                 '    <title>Running snippet</title>',
-                this.snippet.getJsLibaries().map(item => '    <script src="' + item + '"></script>').join("\n"),
-                this.snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
+                    this.snippet.getJsLibaries().map(item => '    <script src="' + item + '"></script>').join("\n"),
+                    this.snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
                 "    <style>",
-                this.snippet.css,
+                        this.snippet.css,
                 "    </style>",
                 "    <script>",
                 '       Office.initialize = function (reason) {',
                 '           $(document).ready(function () {',
-                js,
+                                js,
                 '           });',
                 '       };',
                 "    </script>",
                 '</head>',
                 '<body onload="parent.iframeReadyCallback(this.window)">',
-                this.snippet.html,
+                    this.snippet.html,
                 '</body>',
                 '</html>'
             ].join('\n');
