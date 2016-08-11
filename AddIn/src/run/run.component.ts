@@ -1,14 +1,9 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities} from '../shared/helpers';
+import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 import {} from "js-beautify";
-
-interface CreateHtmlOptions {
-    inlineJsAndCssIntoIframe: boolean,
-    includeOfficeInitialize: boolean
-}
 
 @Component({
     selector: 'run',
@@ -21,7 +16,8 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     snippet: Snippet;
 
     private _originalConsole: Console;
-    private _createHtmlOptions: CreateHtmlOptions
+    private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
+    private _originalConsoleMethods: { [key: string] : () => void; } = {};
 
     constructor(
         private _snippetManager: SnippetManager,
@@ -29,16 +25,22 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         private _router: Router
     ) {
         super();
-        this._originalConsole = window.console;
-        this._monkeyPatchConsole(window);
 
-        this._createHtmlOptions = {
-            includeOfficeInitialize: false /*FIXME*/,
-            inlineJsAndCssIntoIframe: true
-        }; 
+        this._originalConsole = window.console;
+
+        this._consoleMethodsToIntercept.forEach(methodName => {
+            this._originalConsoleMethods[methodName] = window.console[methodName];
+        });
+
+        this._monkeyPatchConsole(window);
     }
 
     ngOnInit() {
+        var createHtmlOptions: ICreateHtmlOptions = {
+            includeOfficeInitialize: Utilities.context == ContextType.Web,
+            inlineJsAndCssIntoIframe: true
+        };
+
         var subscription = this._route.params.subscribe(params => {
             var snippetName = Utilities.decode(params['name']);
             if (Utilities.isEmpty(snippetName)) return;
@@ -46,7 +48,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
             var iframe = this.runner.nativeElement;
             var iframeWindow: Window = (<any>iframe).contentWindow;
-            this.createHtml(this._createHtmlOptions).then(function (fullHtml) {
+            SnippetWriter.createHtml(this.snippet, createHtmlOptions).then(function (fullHtml) {
                 iframeWindow.document.open();
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();
@@ -59,7 +61,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this.markDispose(subscription);
 
         window["iframeReadyCallback"] = (iframeWin) => {
-            if (this._createHtmlOptions.includeOfficeInitialize) {
+            if (createHtmlOptions.includeOfficeInitialize) {
                 iframeWin['Office'] = (<any>window).Office;
                 iframeWin['Excel'] = (<any>window).Excel;
             }
@@ -75,87 +77,22 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         super.ngOnDestroy();
-        console = this._originalConsole;
-    }
-
-    createHtml(options: CreateHtmlOptions): Promise<string> {
-        return this.snippet.js.then(js => {
-            var html = [
-                '<!DOCTYPE html>',
-                '<html>',
-                '<head>',
-                '    <meta charset="UTF-8" />',
-                '    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />',
-                '    <title>Running snippet</title>',
-                this.snippet.getJsLibaries().map(item => '    <script src="' + item + '"></script>').join("\n"),
-                this.snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
-            ];
-
-            if (options.inlineJsAndCssIntoIframe) {
-                html.push(
-                    "    <style>",
-                    this.snippet.css.trim(),
-                    "    </style>"
-                );
-
-                var jsStringArray = [];
-                if (options.includeOfficeInitialize) {
-                    jsStringArray.push('        Office.initialize = function (reason) {');
-                }
-
-                jsStringArray.push('            $(document).ready(function () {');
-
-                if (options.inlineJsAndCssIntoIframe) {
-                    jsStringArray.push('                parent.iframeReadyCallback(window);');
-                }
-                
-                jsStringArray.push(
-                    js.trim(),
-                    '            });'
-                );
-
-                if (options.includeOfficeInitialize) {
-                    jsStringArray.push('        };');
-                }
-
-                var beautify = require('js-beautify').js_beautify;
-                var jsString = Utilities.indentAll(
-                    Utilities.stripSpaces(beautify(jsStringArray.join("\n"))),
-                    2);
-
-                html.push(
-                    "    <script>",
-                    jsString,
-                    "    </script>"
-                );
-            } else {
-                html.push(
-                    "    <link type='text/css' rel='stylesheet' href='app.css' />",
-                    "    <script src='app.js'></script>"
-                );
-            }
-
-            html.push(
-                '</head>',
-                '<body>',
-                Utilities.indentAll(this.snippet.html, 1),
-                '</body>',
-                '</html>'
-            );
-
-            return Utilities.stripSpaces(html.join('\n'));
-        })
+        
+        this._consoleMethodsToIntercept.forEach(methodName => {
+            window.console[methodName] = this._originalConsoleMethods[methodName];
+        });
     }
 
     private _monkeyPatchConsole(windowToPatch: Window) {
+        
         // Taken from http://tobyho.com/2012/07/27/taking-over-console-log/
         var console = windowToPatch.console;
         var that = this;
         if (!console) return
-        function intercept(method){
-            var original = console[method];
-            console[method] = function() {
-                that.logToConsole(method, arguments);
+        function intercept(methodName) {
+            var original = console[methodName];
+            console[methodName] = function() {
+                that.logToConsole(methodName, arguments);
                 if (original.apply){
                     // Do this for normal browsers
                     original.apply(console, arguments);
@@ -166,10 +103,10 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        var methods = ['log', 'warn', 'error'];
-        for (var i = 0; i < methods.length; i++) {
-            intercept(methods[i]);
-        }
+
+        this._consoleMethodsToIntercept.forEach(methodName => {
+            intercept(methodName);
+        });
     }
 
     private logToConsole(consoleMethodType: string, args: IArguments) {

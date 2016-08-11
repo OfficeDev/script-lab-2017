@@ -28,6 +28,8 @@ export interface ISnippet {
 
     hash: string;
     jsHash: string;
+
+    js: Promise<string>;
 }
 
 export class Snippet implements ISnippet {
