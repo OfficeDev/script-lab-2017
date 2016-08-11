@@ -68,7 +68,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             
             var that = this;
             iframeWin.onerror = function() {
-                that.consoleCommon('error', arguments);
+                that.logToConsole('error', arguments);
             }
         }
     }
@@ -79,8 +79,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     createHtml(options: CreateHtmlOptions): Promise<string> {
-        // TODO: Tabbing of created HTML could use some love
-
         return this.snippet.js.then(js => {
             var html = [
                 '<!DOCTYPE html>',
@@ -157,7 +155,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         function intercept(method){
             var original = console[method];
             console[method] = function() {
-                that.consoleCommon(method, arguments);
+                that.logToConsole(method, arguments);
                 if (original.apply){
                     // Do this for normal browsers
                     original.apply(console, arguments);
@@ -174,11 +172,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         }
     }
 
-    private consoleCommon(consoleMethodType: string, args: IArguments) {
+    private logToConsole(consoleMethodType: string, args: IArguments) {
         var message = '';
         _.each(args, arg => {
             if (_.isString(arg)) message += arg + ' ';
-            else if (_.object(arg) || _.isArray(arg)) message += JSON.stringify(arg) + ' ';
+            else if (_.object(arg) || _.isArray(arg)) message += stringifyPlusPlus(arg) + ' ';
         });
         message += '\n';
         var span = document.createElement("span");
@@ -186,6 +184,51 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         span.classList.add(consoleMethodType);
         span.innerText = message;
         $(this.console.nativeElement).append(span);
+
+        function stringifyPlusPlus(object) {
+            // Don't JSON.stringify strings, because we don't want quotes in the output
+			if (typeof object == 'string' || object instanceof String) {
+				return object;
+			} else if (object.toString() != "[object Object]") {
+				return object.toString();
+			}
+			// Otherwise, stringify the object
+			else {
+				return JSON.stringify(object, function (key, value) {
+					if (value && typeof value === "object" && !$.isArray(value)) {
+						return getStringifiableSnapshot(value);
+					}
+					return value;
+				}, "  ");
+			}
+
+            function getStringifiableSnapshot(object: any) {
+                try {
+                    var snapshot: any = {};
+                    var current = object;
+                    var hasOwnProperty = Object.prototype.hasOwnProperty;
+                    function tryAddName(name: string) {
+                        if (name.indexOf("_") < 0 &&
+                            !hasOwnProperty.call(snapshot, name)) {
+                            Object.defineProperty(snapshot, name, {
+                                configurable: true,
+                                enumerable: true,
+                                get: function () {
+                                    return object[name];
+                                }
+                            });
+                        }
+                    }
+                    do {
+                        Object.keys(current).forEach(tryAddName);
+                        current = Object.getPrototypeOf(current);
+                    } while (current);
+                    return snapshot;
+                } catch (e) {
+                    return object;
+                }
+            }
+        }
     }
 
     back() {
