@@ -66,3 +66,15 @@ ul {
         height: 100% !important;
     }        
 }
+
+span.console.log {
+    color: seagreen;
+}
+
+span.console.warn {
+    color: orange;
+}
+
+span.console.error {
+    color: brown;
+}
