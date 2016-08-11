@@ -1,4 +1,4 @@
-<section class="run__header">
+<section class="run__header" #header id="header">
     <span id="back" (click)="back()">&#8656;</span>
     <span id="name" class="ms-font-l">Running "<b>{{snippet.meta.name}}</b>"</span>
 </section>
@@ -7,6 +7,12 @@
     <iframe #runner id="runner-frame"></iframe>
 </section>
 
-<section class="run__console">
-    <pre #console></pre>
+<section class="run__console" #console id="console">
+    <div id="console-buttons">
+        <button id="console-clear">Clear</button>
+        <button id="console-close">Close</button>
+    </div>
+    <div class="scrollable">
+        <pre id="console-text"></pre>
+    </div>
 </section>

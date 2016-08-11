@@ -11,13 +11,19 @@ import {} from "js-beautify";
     styleUrls: ['run.component.scss'],
 })
 export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
+    @ViewChild('header') header: ElementRef;
     @ViewChild('runner') runner: ElementRef;
-    @ViewChild('console') console: ElementRef;
-    snippet: Snippet;
+    @ViewChild('console') consoleView: ElementRef;
+
+    private _snippet: Snippet;
 
     private _originalConsole: Console;
     private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
     private _originalConsoleMethods: { [key: string] : () => void; } = {};
+    private _consoleLastShown = false;
+
+    private $console: JQuery;
+    private $consoleText: JQuery;
 
     constructor(
         private _snippetManager: SnippetManager,
@@ -44,11 +50,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         var subscription = this._route.params.subscribe(params => {
             var snippetName = Utilities.decode(params['name']);
             if (Utilities.isEmpty(snippetName)) return;
-            this.snippet = this._snippetManager.findByName(snippetName);
+            this._snippet = this._snippetManager.findByName(snippetName);
 
             var iframe = this.runner.nativeElement;
             var iframeWindow: Window = (<any>iframe).contentWindow;
-            SnippetWriter.createHtml(this.snippet, createHtmlOptions).then(function (fullHtml) {
+            SnippetWriter.createHtml(this._snippet, createHtmlOptions).then(function (fullHtml) {
                 iframeWindow.document.open();
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();
@@ -73,6 +79,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 that.logToConsole('error', arguments);
             }
         }
+
+        this.$console = $(this.consoleView.nativeElement);
+		this.$consoleText = $('#console-text', this.$console);
+
+        this._initializeConsole();
     }
 
     ngOnDestroy() {
@@ -83,8 +94,22 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         });
     }
 
+    private _initializeConsole() {
+        this.$console.height(window.innerHeight / 2);
+
+        $("#console-clear", this.$console).click(() => this.$consoleText.empty());
+        $("#console-close", this.$console).click(() => this._showHideConsole(false));
+    }
+
+    private _showHideConsole(showConsole: boolean) {
+        if (showConsole) {
+            this.$console.show();
+        } else {
+            this.$console.hide();
+        }
+    }
+
     private _monkeyPatchConsole(windowToPatch: Window) {
-        
         // Taken from http://tobyho.com/2012/07/27/taking-over-console-log/
         var console = windowToPatch.console;
         var that = this;
@@ -110,34 +135,47 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     private logToConsole(consoleMethodType: string, args: IArguments) {
+        if (!this.$console) {
+            // Must have been called during initial initialization, before the console is available
+            return;
+        }
+
         var message = '';
         _.each(args, arg => {
             if (_.isString(arg)) message += arg + ' ';
             else if (_.object(arg) || _.isArray(arg)) message += stringifyPlusPlus(arg) + ' ';
         });
         message += '\n';
+
         var span = document.createElement("span");
         span.classList.add("console");
         span.classList.add(consoleMethodType);
         span.innerText = message;
-        $(this.console.nativeElement).append(span);
+        this.$consoleText.append(span);
+
+        this._showHideConsole(true);
+        this.$console.children('.scrollable')[0].scrollTop = $(span)[0].offsetTop;
 
         function stringifyPlusPlus(object) {
             // Don't JSON.stringify strings, because we don't want quotes in the output
-			if (typeof object == 'string' || object instanceof String) {
+            if (object == null) {
+                return "null";
+            }
+            if (typeof object == 'string' || object instanceof String) {
 				return object;
-			} else if (object.toString() != "[object Object]") {
+			}
+            if (object.toString() != "[object Object]") {
 				return object.toString();
 			}
+
 			// Otherwise, stringify the object
-			else {
-				return JSON.stringify(object, function (key, value) {
-					if (value && typeof value === "object" && !$.isArray(value)) {
-						return getStringifiableSnapshot(value);
-					}
-					return value;
-				}, "  ");
-			}
+			
+            return JSON.stringify(object, function (key, value) {
+                if (value && typeof value === "object" && !$.isArray(value)) {
+                    return getStringifiableSnapshot(value);
+                }
+                return value;
+            }, "  ");
 
             function getStringifiableSnapshot(object: any) {
                 try {
@@ -169,6 +207,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     back() {
-        this._router.navigate(['edit', Utilities.encode(this.snippet.meta.name)]);
+        this._router.navigate(['edit', Utilities.encode(this._snippet.meta.name)]);
     }
 }
