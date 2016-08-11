@@ -3,6 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
+import {} from "js-beautify";
 
 interface CreateHtmlOptions {
     inlineJsAndCssIntoIframe: boolean,
@@ -95,31 +96,38 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             if (options.inlineJsAndCssIntoIframe) {
                 html.push(
                     "    <style>",
-                    this.snippet.css,
-                    "    </style>",
-                    "    <script>"
+                    this.snippet.css.trim(),
+                    "    </style>"
                 );
 
+                var jsStringArray = [];
                 if (options.includeOfficeInitialize) {
-                    html.push('        Office.initialize = function (reason) {');
+                    jsStringArray.push('        Office.initialize = function (reason) {');
                 }
 
-                html.push('            $(document).ready(function () {');
+                jsStringArray.push('            $(document).ready(function () {');
 
                 if (options.inlineJsAndCssIntoIframe) {
-                    html.push('                parent.iframeReadyCallback(window);');
+                    jsStringArray.push('                parent.iframeReadyCallback(window);');
                 }
                 
-                html.push(
-                    js,
+                jsStringArray.push(
+                    js.trim(),
                     '            });'
                 );
 
                 if (options.includeOfficeInitialize) {
-                    html.push('        };');
+                    jsStringArray.push('        };');
                 }
 
+                var beautify = require('js-beautify').js_beautify;
+                var jsString = Utilities.indentAll(
+                    Utilities.stripSpaces(beautify(jsStringArray.join("\n"))),
+                    2);
+
                 html.push(
+                    "    <script>",
+                    jsString,
                     "    </script>"
                 );
             } else {
@@ -132,7 +140,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             html.push(
                 '</head>',
                 '<body>',
-                this.snippet.html,
+                Utilities.indentAll(this.snippet.html, 1),
                 '</body>',
                 '</html>'
             );

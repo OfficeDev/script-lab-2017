@@ -108,6 +108,16 @@ export class Utilities {
         return finalSetOfLines;
     }
 
+    static indentAll(text: string, indentSize: number) {
+        var lines: string[] = text.split('\n');
+        var indentString = "";
+        for (var i = 0; i < indentSize; i++) {
+            indentString += "    ";
+        }
+
+        return lines.map((line) => indentString + line).join('\n');
+    }
+
     static get isExcel() {
         return this._context == ContextType.Excel;
     }
