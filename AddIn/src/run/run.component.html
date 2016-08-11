@@ -1,6 +1,6 @@
-<section class="run__header" #header id="header">
+<section class="run__header">
     <span id="back" (click)="back()">&#8656;</span>
-    <span id="name" class="ms-font-l">Running "<b>{{snippet.meta.name}}</b>"</span>
+    <span id="name" class="ms-font-l">Running "<b>{{_snippet.meta.name}}</b>"</span>
 </section>
 
 <section class="run__main">
@@ -8,11 +8,11 @@
 </section>
 
 <section class="run__console" #console id="console">
-    <div id="console-buttons">
+    <div>
         <button id="console-clear">Clear</button>
         <button id="console-close">Close</button>
     </div>
     <div class="scrollable">
-        <pre id="console-text"></pre>
+        <pre></pre>
     </div>
 </section>

@@ -11,7 +11,6 @@ import {} from "js-beautify";
     styleUrls: ['run.component.scss'],
 })
 export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
-    @ViewChild('header') header: ElementRef;
     @ViewChild('runner') runner: ElementRef;
     @ViewChild('console') consoleView: ElementRef;
 
@@ -31,7 +30,9 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         private _router: Router
     ) {
         super();
+    }
 
+    ngOnInit() {
         this._originalConsole = window.console;
 
         this._consoleMethodsToIntercept.forEach(methodName => {
@@ -39,9 +40,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         });
 
         this._monkeyPatchConsole(window);
-    }
 
-    ngOnInit() {
         var createHtmlOptions: ICreateHtmlOptions = {
             includeOfficeInitialize: Utilities.context == ContextType.Web,
             inlineJsAndCssIntoIframe: true
@@ -81,7 +80,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         }
 
         this.$console = $(this.consoleView.nativeElement);
-		this.$consoleText = $('#console-text', this.$console);
+		this.$consoleText = $('pre', this.$console);
 
         this._initializeConsole();
     }
@@ -121,7 +120,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 if (original.apply){
                     // Do this for normal browsers
                     original.apply(console, arguments);
-                }else{
+                } else{
                     // Do this for IE
                     var message = Array.prototype.slice.apply(arguments).join(' ');
                     original(message);
