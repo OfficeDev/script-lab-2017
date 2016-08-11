@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
@@ -18,7 +18,8 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     constructor(
         private _snippetManager: SnippetManager,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _router: Router
     ) {
         super();
         this._monkeyPatchConsole();
@@ -43,15 +44,20 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
         this.markDispose(subscription);
 
-        window["iframeReadyCallback"] = function (iframeWin) {
+        window["iframeReadyCallback"] = (iframeWin) => {
             iframeWin['Office'] = (<any>window).Office;
             iframeWin['Excel'] = (<any>window).Excel;
+
+            iframeWin.console.log = this.consoleCommon.bind(this);
+            iframeWin.console.error = this.consoleCommon.bind(this);
+
+            iframeWin.onerror = this.consoleCommon.bind(this);
         }
     }
 
     ngOnDestroy() {
         super.ngOnDestroy();
-        console.log = this._originalConsole;
+        console = this._originalConsole;
     }
 
     createHtml(): Promise<string> {
@@ -69,14 +75,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 this.snippet.css,
                 "    </style>",
                 "    <script>",
-                '    window.onerror = function(error, url, line) {',
-                "    controller.sendLog({acc:'error', data:'ERR:'+error+' URL:'+url+' L:'+line});",
-                '    };',
-                '       Office.initialize = function (reason) {',
-                '           $(document).ready(function () {',
+                '        Office.initialize = function (reason) {',
+                '            $(document).ready(function () {',
                 js,
-                '           });',
-                '       };',
+                '            });',
+                '        };',
                 "    </script>",
                 '</head>',
                 '<body onload="parent.iframeReadyCallback(this.window)">',
@@ -90,17 +93,48 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     private _monkeyPatchConsole() {
-        this._originalConsole = console.log;
-        console.log = (...args) => {
-            var message = '';
-            _.each(args, arg => {
-                if (_.isString(arg)) message += arg + ' ';
-                else if (_.object(arg) || _.isArray(arg)) message += JSON.stringify(arg) + ' ';
-            });
-            message += '\n';
-            var span = document.createElement("span");
-            span.innerText = message;
-            $(this.console.nativeElement).append(span);
-        }
+        this._originalConsole = console;
+        console.log = this.consoleCommon.bind(this);
+        console.error = this.consoleCommon.bind(this);
+    }
+
+    // consoleLog() {
+    //     this.consoleCommon("log", arguments);
+    // }
+
+    // consoleError(...args) {
+    //     this.consoleCommon("error", arguments);
+    // }
+
+    // private consoleCommon(spanClass: string, ...argsDifferent) {
+    //     var message = '';
+    //     var args = _.rest(arguments, 1);
+    //     _.each(args, arg => {
+    //         if (_.isString(arg)) message += arg + ' ';
+    //         else if (_.object(arg) || _.isArray(arg)) message += JSON.stringify(arg) + ' ';
+    //     });
+    //     message += '\n';
+    //     var span = document.createElement("span");
+    //     span.classList.add(spanClass);
+    //     span.innerText = message;
+    //     $(this.console.nativeElement).append(span);
+    // }
+
+    private consoleCommon() {
+        var message = _.first(arguments);
+        var args = _.rest(arguments, 1);        
+        _.each(args, arg => {
+            if (_.isString(arg)) message += arg + ' ';
+            else if (_.object(arg) || _.isArray(arg)) message += JSON.stringify(arg) + ' ';
+        });
+        message += '\n';
+        var span = document.createElement("span");
+        span.classList.add('error');
+        span.innerText = message;
+        $(this.console.nativeElement).append(span);
+    }
+
+    back() {
+        this._router.navigate(['edit', Utilities.encode(this.snippet.meta.name)]);
     }
 }

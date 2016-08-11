@@ -44,9 +44,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             ])
                 .then(responses => {
                     try {
-                        monaco.languages.typescript.javascriptDefaults.addExtraLib(responses[0].text(), 'office-js.d.ts');
-                        monaco.languages.typescript.javascriptDefaults.addExtraLib(responses[1].text(), 'jquery.d.ts');
-                        monaco.languages.typescript.javascriptDefaults.addExtraLib(responses[2].text(), 'core-js.d.ts');
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[0].text(), 'office-js.d.ts');
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[1].text(), 'jquery.d.ts');
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[2].text(), 'core-js.d.ts');                        
                     }
                     catch (e) {
                         

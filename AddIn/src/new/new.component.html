@@ -18,8 +18,6 @@
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items">
                     <span (click)="import(snippet)">{{snippet?.name}}</span>
                     <i class="new-list__action ms-Icon ms-Icon--play" (click)="run(snippet)"></i>
-                    <i class="new-list__action ms-Icon ms-Icon--share" (click)="share(snippet)"></i>
-                    <i class="new-list__action ms-Icon ms-Icon--trash" (click)="delete(snippet)"></i>
                 </article>
             </section>
         </section>
