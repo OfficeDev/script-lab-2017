@@ -1,8 +1,9 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities} from '../shared/helpers';
+import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
+import {} from "js-beautify";
 
 @Component({
     selector: 'run',
@@ -11,88 +12,201 @@ import {Snippet, SnippetManager} from '../shared/services';
 })
 export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('runner') runner: ElementRef;
-    @ViewChild('console') console: ElementRef;
-    snippet: Snippet;
+    @ViewChild('console') consoleView: ElementRef;
 
-    private _originalConsole;
+    private _snippet: Snippet;
+
+    private _originalConsole: Console;
+    private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
+    private _originalConsoleMethods: { [key: string] : () => void; } = {};
+    private _consoleLastShown = false;
+
+    private $console: JQuery;
+    private $consoleText: JQuery;
 
     constructor(
         private _snippetManager: SnippetManager,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _router: Router
     ) {
         super();
-        this._monkeyPatchConsole();
     }
 
     ngOnInit() {
+        this._originalConsole = window.console;
+
+        this._consoleMethodsToIntercept.forEach(methodName => {
+            this._originalConsoleMethods[methodName] = window.console[methodName];
+        });
+
+        this._monkeyPatchConsole(window);
+
+        var createHtmlOptions: ICreateHtmlOptions = {
+            includeOfficeInitialize: Utilities.context != ContextType.Web,
+            inlineJsAndCssIntoIframe: true
+        };
+
         var subscription = this._route.params.subscribe(params => {
             this._snippetManager.find(params['id']).then(snippet => this.snippet = snippet);
             var iframe = this.runner.nativeElement;
             var iframeWindow: Window = (<any>iframe).contentWindow;
-            this.createHtml().then(function (fullHtml) {
+            SnippetWriter.createHtml(this._snippet, createHtmlOptions).then(function (fullHtml) {
                 iframeWindow.document.open();
                 iframeWindow.document.write(fullHtml);
                 iframeWindow.document.close();
+            }).catch(function (e) {
+                console.log(e);
+                // TODO eventually Util instead
             });
         });
 
         this.markDispose(subscription);
 
-        window["iframeReadyCallback"] = function (iframeWin) {
-            iframeWin['Office'] = (<any>window).Office;
-            iframeWin['Excel'] = (<any>window).Excel;
+        window["iframeReadyCallback"] = (iframeWin) => {
+            if (createHtmlOptions.includeOfficeInitialize) {
+                iframeWin['Office'] = (<any>window).Office;
+                iframeWin['Excel'] = (<any>window).Excel;
+            }
+
+            this._monkeyPatchConsole(iframeWin);
+            
+            var that = this;
+            iframeWin.onerror = function() {
+                that.logToConsole('error', arguments);
+            }
         }
+
+        this.$console = $(this.consoleView.nativeElement);
+		this.$consoleText = $('pre', this.$console);
+
+        this._initializeConsole();
     }
 
     ngOnDestroy() {
         super.ngOnDestroy();
-        console.log = this._originalConsole;
+        
+        this._consoleMethodsToIntercept.forEach(methodName => {
+            window.console[methodName] = this._originalConsoleMethods[methodName];
+        });
     }
 
-    createHtml(): Promise<string> {
-        return this.snippet.js.then(js => {
-            var html = [
-                '<!DOCTYPE html>',
-                '<html>',
-                '<head>',
-                '    <meta charset="UTF-8" />',
-                '    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />',
-                '    <title>Running snippet</title>',
-                this.snippet.getJsLibaries().map(item => '    <script src="' + item + '"></script>').join("\n"),
-                this.snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
-                "    <style>",
-                this.snippet.css,
-                "    </style>",
-                "    <script>",
-                '       Office.initialize = function (reason) {',
-                '           $(document).ready(function () {',
-                js,
-                '           });',
-                '       };',
-                "    </script>",
-                '</head>',
-                '<body onload="parent.iframeReadyCallback(this.window)">',
-                this.snippet.html,
-                '</body>',
-                '</html>'
-            ].join('\n');
+    private _initializeConsole() {
+        this.$console.height(window.innerHeight / 2);
 
-            return Utilities.stripSpaces(html);
-        })
+        $("#console-clear", this.$console).click(() => this.$consoleText.empty());
+        $("#console-close", this.$console).click(() => this._showHideConsole(false));
     }
 
-    private _monkeyPatchConsole() {
-        this._originalConsole = console.log;
-        console.log = (...args) => {
-            var message = '';
-            _.each(args, arg => {
-                if (_.isString(arg)) message += arg + ' ';
-                else if (_.object(arg) || _.isArray(arg)) message += JSON.stringify(arg) + ' ';
-            });
-            message += '\n';
-            var span = document.createElement("span");
-            span.innerText = message;
-            $(this.console.nativeElement).append(span);
+    private _showHideConsole(showConsole: boolean) {
+        if (showConsole) {
+            this.$console.show();
+        } else {
+            this.$console.hide();
         }
+    }
+
+    private _monkeyPatchConsole(windowToPatch: Window) {
+        // Taken from http://tobyho.com/2012/07/27/taking-over-console-log/
+        var console = windowToPatch.console;
+        var that = this;
+        if (!console) return
+        function intercept(methodName) {
+            var original = console[methodName];
+            console[methodName] = function() {
+                that.logToConsole(methodName, arguments);
+                if (original.apply){
+                    // Do this for normal browsers
+                    original.apply(console, arguments);
+                } else{
+                    // Do this for IE
+                    var message = Array.prototype.slice.apply(arguments).join(' ');
+                    original(message);
+                }
+            }
+        }
+
+        this._consoleMethodsToIntercept.forEach(methodName => {
+            intercept(methodName);
+        });
+    }
+
+    private logToConsole(consoleMethodType: string, args: IArguments) {
+        if (!this.$console) {
+            // Must have been called during initial initialization, before the console is available
+            return;
+        }
+
+        var message = '';
+        _.each(args, arg => {
+            if (_.isString(arg)) message += arg + ' ';
+            else if (_.object(arg) || _.isArray(arg)) message += stringifyPlusPlus(arg) + ' ';
+        });
+        message += '\n';
+
+        var span = document.createElement("span");
+        span.classList.add("console");
+        span.classList.add(consoleMethodType);
+        span.innerText = message;
+        this.$consoleText.append(span);
+
+        this._showHideConsole(true);
+        this.$console.children('.scrollable')[0].scrollTop = $(span)[0].offsetTop;
+
+        function stringifyPlusPlus(object) {
+            // Don't JSON.stringify strings, because we don't want quotes in the output
+            if (object == null) {
+                return "null";
+            }
+            if (typeof object == 'string' || object instanceof String) {
+				return object;
+			}
+            if (object.toString() != "[object Object]") {
+				return object.toString();
+			}
+
+			// Otherwise, stringify the object
+			
+            return JSON.stringify(object, function (key, value) {
+                if (value && typeof value === "object" && !$.isArray(value)) {
+                    return getStringifiableSnapshot(value);
+                }
+                return value;
+            }, "  ");
+
+            function getStringifiableSnapshot(object: any) {
+                try {
+                    var snapshot: any = {};
+                    var current = object;
+                    var hasOwnProperty = Object.prototype.hasOwnProperty;
+                    function tryAddName(name: string) {
+                        if (name.indexOf("_") < 0 &&
+                            !hasOwnProperty.call(snapshot, name)) {
+                            Object.defineProperty(snapshot, name, {
+                                configurable: true,
+                                enumerable: true,
+                                get: function () {
+                                    return object[name];
+                                }
+                            });
+                        }
+                    }
+                    do {
+                        Object.keys(current).forEach(tryAddName);
+                        current = Object.getPrototypeOf(current);
+                    } while (current);
+                    return snapshot;
+                } catch (e) {
+                    return object;
+                }
+            }
+        }
+    }
+
+    back() {
+        this._router.navigate(['edit', Utilities.encode(this._snippet.meta.name)]);
+    }
+
+    refresh() {
+        window.location.reload();
     }
 }

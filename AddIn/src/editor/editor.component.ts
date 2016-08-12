@@ -4,7 +4,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities} from '../shared/helpers';
+import {Utilities, ContextType} from '../shared/helpers';
 
 @Component({
     selector: 'editor',
@@ -89,7 +89,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                     this.status = null;
                     this.error = false;
                     resolve();
-                }, 2000);
+                }, 5000);
             }
             catch (exception) {
                 reject(exception);
@@ -102,8 +102,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return new Snippet(<ISnippet>{
             meta: this.snippet.meta,
             css: currentEditorState['CSS'],
-            extras: currentEditorState['Extras'],
-            ts: currentEditorState['JS'],
+            extras: currentEditorState['Libraries'],
+            ts: currentEditorState['JavaScript'],
             html: currentEditorState['HTML']
         });
     }

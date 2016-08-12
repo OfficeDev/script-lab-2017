@@ -37,6 +37,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         (<any>window).require(['vs/editor/editor.main'], () => {
+            // FIXME: make dynamic
+
             Promise.all([
                 this._http.get('https://npmcdn.com/@types/office-js/index.d.ts').toPromise(),
                 this._http.get('https://npmcdn.com/@types/jquery/index.d.ts').toPromise(),
@@ -44,9 +46,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             ])
                 .then(responses => {
                     try {
-                        monaco.languages.typescript.javascriptDefaults.addExtraLib(responses[0].text(), 'office-js.d.ts');
-                        monaco.languages.typescript.javascriptDefaults.addExtraLib(responses[1].text(), 'jquery.d.ts');
-                        monaco.languages.typescript.javascriptDefaults.addExtraLib(responses[2].text(), 'core-js.d.ts');
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[0].text(), 'office-js.d.ts');
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[1].text(), 'jquery.d.ts');
+                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[2].text(), 'core-js.d.ts');                        
                     }
                     catch (e) {
                         

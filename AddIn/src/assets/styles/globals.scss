@@ -68,5 +68,22 @@ ul {
     editor-tab {
         display: none;
         height: 100% !important;
-    }
+    }        
+}
+
+span.console {
+    margin-bottom: 5px;
+    display: block;
+}
+
+span.console.log {
+    color: seagreen;
+}
+
+span.console.warn {
+    color: orange;
+}
+
+span.console.error {
+    color: brown;
 }
