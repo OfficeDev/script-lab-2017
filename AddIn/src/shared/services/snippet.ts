@@ -19,7 +19,9 @@ export class Snippet implements ISnippet {
     private _compiledJs: string;
 
     constructor(snippet: ISnippet) {
+
         this.meta = _.extend({}, snippet.meta);
+        if (Utilities.isNullOrWhitespace(this.meta.name)) this.meta.name = 'New Snippet';
         this.randomizeId();
 
         if (Utilities.isNull(this.meta)) throw 'Snippet metadata cannot be empty.';
@@ -48,23 +50,49 @@ export class Snippet implements ISnippet {
     }
 
     getJsLibaries(): Array<string> {
-        // FIXME
-        return [
-            "https://appsforoffice.microsoft.com/lib/1/hosted/office.js",
-            "https://npmcdn.com/jquery",
-            "https://npmcdn.com/office-ui-fabric/dist/js/jquery.fabric.min.js",
-        ];
+        return Utilities.stringOrEmpty(this.extras).split("\n")
+            .map((entry) => {
+                entry = entry.toLowerCase().trim();
+
+                if (entry.length === 0 || entry.startsWith("//") || entry.startsWith("@types") || entry.endsWith(".css")) {
+                    return null;
+                }
+
+                if (Snippet._entryIsUrl(entry) && entry.endsWith(".js")) {
+                    return Snippet._normalizeUrl(entry);
+                }
+
+                // otherwise assume it's an NPM package name
+                return "//npmcdn.com/" + entry;
+            })
+            .filter((entry) => entry != null);
     }
 
     getCssStylesheets(): Array<string> {
-        // FIXME
-        return [
-            "https://npmcdn.com/office-ui-fabric/dist/css/fabric.min.css",
-            "https://npmcdn.com/office-ui-fabric/dist/css/fabric.components.min.css",
-        ];
+        return Utilities.stringOrEmpty(this.extras).split("\n")
+            .map((entry) => entry.trim().toLowerCase())
+            .filter((entry) => entry.endsWith(".css"))
+            .map((entry) => {
+                if (Snippet._entryIsUrl(entry)) {
+                    return Snippet._normalizeUrl(entry);
+                }
+
+                // otherwise assume it's an NPM package name
+                return "//npmcdn.com/" + entry;
+            })
     }
 
-    randomizeId(force?: boolean) {
+    static _entryIsUrl(entry: string): boolean {
+        entry = entry.trim().toLowerCase();
+        return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
+    }
+
+    static _normalizeUrl(url: string): string {
+        // strip out https: or http:
+        return url.substr(url.indexOf("//"));
+    }
+
+    randomizeId(force?: boolean) {        
         if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1)
             this.meta.id = '~!L' + Utilities.randomize(10000).toString();
     }
@@ -94,7 +122,7 @@ export class Snippet implements ISnippet {
         this.css = snippet.css || "";
         this.html = snippet.html || "";
         this.extras = snippet.extras || "";
-    }
+    }    
 }
 
 export enum OfficeClient {
@@ -124,4 +152,3 @@ export interface ISnippet {
     hash?: string;
     jsHash?: string;
 }
-

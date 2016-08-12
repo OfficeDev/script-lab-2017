@@ -40,7 +40,7 @@ export class Utilities {
     }
 
     static isNullOrWhitespace(text: string) {
-        return (text === null || text === undefined || text.trim().length === 0);
+        return Utilities.isNull(text) || Utilities.isEmpty(text.trim());
     }
 
     static stripSpaces(text: string) {

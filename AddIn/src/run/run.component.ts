@@ -14,7 +14,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('runner') runner: ElementRef;
     @ViewChild('console') consoleView: ElementRef;
 
-    private _snippet = new Snippet({ meta: { name: 'New Snippet', id: null } });
+    private _snippet = new Snippet({ meta: { name: null, id: null } });
 
     private _originalConsole: Console;
     private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
@@ -149,6 +149,13 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             else if (_.object(arg) || _.isArray(arg)) message += stringifyPlusPlus(arg) + ' ';
         });
         message += '\n';
+
+        var trimmedMessage = message.trim();
+        if (trimmedMessage === "Agave.HostCall.IssueCall" ||
+            trimmedMessage === "Agave.HostCall.ReceiveResponse"
+        ) {
+            return;
+        }
 
         var span = document.createElement("span");
         span.classList.add("console");

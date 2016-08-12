@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {ISnippet, Snippet, SnippetService} from '../services';
-import {StorageHelper, Utilities} from '../helpers';
+import {StorageHelper, Utilities, ContextType} from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -13,7 +13,12 @@ export class SnippetManager {
 
     new(): Promise<Snippet> {
         return new Promise(resolve => {
-            var snippet = new Snippet({ meta: { name: "New Snippet", id: null } });
+            var snippet;
+            if (Utilities.context == ContextType.Web) {
+                snippet = this._createBlankWebSnippet();
+            } else {
+                snippet = this._createBlankOfficeJsSnippet();
+            }
             resolve(this._makeNameUniqueAndSave(snippet));
         });
     }
@@ -184,4 +189,72 @@ export class SnippetManager {
         ]
     };
 
+    private _createBlankOfficeJsSnippet(): Snippet {
+        return new Snippet({
+            meta: {
+                name: null,
+                id: null
+            },
+            ts: Utilities.stripSpaces(`
+                ${getNamespace()}.run(function(context) {
+                    // ...
+                    return context.sync();
+                }).catch(function(error) {
+                    console.log(error);
+                    if (error instanceof OfficeExtension.Error) {
+                        console.log("Debug info: " + JSON.stringify(error.debugInfo));
+                    }
+                });
+            `),
+            html: null,
+            css: null,
+            extras: Utilities.stripSpaces(`
+                // Office.js CDN reference
+                https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
+
+                // NPM CDN references
+                jquery
+                office-ui-fabric/dist/js/jquery.fabric.min.js
+                office-ui-fabric/dist/css/fabric.min.css
+                office-ui-fabric/dist/css/fabric.components.min.css
+
+                // IntelliSense definitions
+                @types/jquery
+                @types/office-js
+                @types/office-ui-fabric
+            `)
+        });
+
+        function getNamespace() {
+            switch (Utilities.context) {
+                case ContextType.Excel:
+                    return 'Excel';
+                case ContextType.Word:
+                    return 'Word';
+                default:
+                    throw new Error("Invalid context type for Office namespace");
+            }
+        }
+    }
+
+    private _createBlankWebSnippet(): Snippet {
+        return new Snippet({
+            meta: {
+                name: null,
+                id: null
+            },
+            ts: Utilities.stripSpaces(`
+                console.log("Hello world");
+            `),
+            html: null,
+            css: null,
+            extras: Utilities.stripSpaces(`
+                // NPM CDN references
+                jquery
+
+                // IntelliSense definitions
+                @types/jquery
+            `)
+        });
+    }
 }

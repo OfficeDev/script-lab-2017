@@ -13,7 +13,7 @@ import {Utilities, ContextType} from '../shared/helpers';
     directives: [Tab, Tabs]
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
-    snippet = new Snippet({ meta: { name: 'New Snippet', id: null } });
+    snippet = new Snippet({ meta: { name: null, id: null } });
     status: string;
     error: boolean;
     editMode: boolean = false;
@@ -49,33 +49,34 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     save() {
-        try {
-            this.snippet = this._composeSnippetFromEditor();
-            this._snippetManager.save(this.snippet).then(snippet => {
-                this._showStatus('Saved ' + snippet.meta.name);
-            });
-        }
-        catch (e) {
-            this._showStatus(e, true);
-        }
+        this.snippet = this._composeSnippetFromEditor();
+        return this._snippetManager.save(this.snippet)
+            .then(snippet => {
+                this._showStatus('Saved ' + snippet.meta.name);                
+            }).
+            catch(e => {
+                this._showStatus(e, true);
+                throw 'cannot run';
+            })
     }
 
     delete() {
-        try {
-            this._snippetManager.delete(this.snippet).then(snippet => {
-                this._showStatus('Deleted ' + this.snippet.meta.name)
+        return this._snippetManager.delete(this.snippet)
+            .then(snippet => {
+                return this._showStatus('Deleted ' + this.snippet.meta.name)
                     .then(() => {
                         this._router.navigate(['new']);
                     });
+            }).
+            catch(e => {
+                return this._showStatus(e, true);
             });
-        }
-        catch (e) {
-            this._showStatus(e, true);
-        }
     }
 
     run() {
-        this._router.navigate(['run', this.snippet.meta.id]);
+        this.save().then(() => { 
+            this._router.navigate(['run', this.snippet.meta.id]);
+        });
     }
 
     private _showStatus(message: string, error?: boolean) {
