@@ -14,10 +14,10 @@
 </header>
 <section class="editor__main">
     <tabs readonly="false">
-        <tab name="HTML" language="html" [content]="snippet.html" (change)="change($event, 'html')"></tab>
-        <tab name="CSS" language="css" [content]="snippet.css" (change)="change($event, 'css')"></tab>
-        <tab name="JS" language="javascript" [content]="snippet.ts" (change)="change($event, 'ts')"></tab>
-        <tab name="Extras" language="text" [content]="snippet.extras" (change)="change($event, 'extras')"></tab>
+        <tab name="HTML" language="html" [content]="snippet.html"></tab>
+        <tab name="CSS" language="css" [content]="snippet.css"></tab>
+        <tab name="JS" language="javascript" [content]="snippet.ts"></tab>
+        <tab name="Extras" language="text" [content]="snippet.extras"></tab>
     </tabs>
 </section>
 <section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}">

@@ -6,6 +6,10 @@
     padding: 0;
 }
 
+*[hidden] {
+    display: none !important;
+}
+
 html, body {
     width: 100%;
     height: 100%;
@@ -52,17 +56,17 @@ ul {
     @include flex();
     height: 100vh;
 
-    editor, tabs, tab, new, run, view {
+    editor, tabs, editor-tab, new, run, view {
         flex: 1 1 100%;
         @include flex();
-    }    
+    }
 
     tabs {
         overflow: hidden;
     }
 
-    tab {
+    editor-tab {
         display: none;
         height: 100% !important;
-    }        
+    }
 }
