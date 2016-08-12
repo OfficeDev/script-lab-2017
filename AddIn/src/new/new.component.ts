@@ -29,8 +29,9 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     delete(snippet: ISnippet) {
-        this._snippetManager.delete(snippet);
-        this._snippetManager.getLocal().then(data => this.localGallery = data);
+        this._snippetManager.delete(snippet).then(
+            result => this._snippetManager.getLocal().then(data => this.localGallery = data)
+        );
     }
 
     run(snippet: ISnippet) {
@@ -47,8 +48,9 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     duplicate(snippet: ISnippet) {
-        this._snippetManager.duplicate(snippet)
-            .then(snippet => this.select(snippet));
+        this._snippetManager.duplicate(snippet).then(
+            result => this._snippetManager.getLocal().then(data => this.localGallery = data)
+        );
     }
 
     import(snippet?: ISnippetMeta) {

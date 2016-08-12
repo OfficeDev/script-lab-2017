@@ -84,7 +84,7 @@ export class SnippetManager {
             if (Utilities.isNull(snippet)) throw "Snippet cannot be null."
             var newSnippet = new Snippet(snippet);
             newSnippet.randomizeId(true);
-            return this._makeNameUniqueAndSave(newSnippet);
+            resolve(this._makeNameUniqueAndSave(newSnippet));
         });
     }
 
@@ -117,8 +117,8 @@ export class SnippetManager {
         let escapedName = this._escapeRegex(snippet.meta.name);
         let regex = new RegExp('^' + escapedName + ' \\(([0-9]+)\\)$');
         var maxSeen = 0;
-        this._snippetsContainer.keys().forEach(key => {
-            var matches = regex.exec(key);
+        this._snippetsContainer.values().forEach(value => {
+            var matches = regex.exec(value.meta.name);
             if (matches) {
                 var num = +matches[1];
                 if (num > maxSeen) maxSeen = num;

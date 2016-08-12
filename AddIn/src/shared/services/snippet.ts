@@ -19,7 +19,7 @@ export class Snippet implements ISnippet {
     private _compiledJs: string;
 
     constructor(snippet: ISnippet) {
-        this.meta = snippet.meta || {} as any;
+        this.meta = _.extend({}, snippet.meta);
         this.randomizeId();
 
         if (Utilities.isNull(this.meta)) throw 'Snippet metadata cannot be empty.';

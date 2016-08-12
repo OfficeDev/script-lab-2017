@@ -64,8 +64,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this._snippetManager.delete(this.snippet).then(snippet => {
                 this._showStatus('Deleted ' + this.snippet.meta.name)
                     .then(() => {
-                        this._location.replaceState('');
-                        this._router.navigate(['']);
+                        this._router.navigate(['new']);
                     });
             });
         }
