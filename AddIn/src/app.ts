@@ -33,7 +33,7 @@ export const APP_PROVIDERS = [
 
 export class AppComponent { }
 
-export function launch(initialHmrState?: any) {
+export function launch() {
     bootstrap(AppComponent, [
         ...APP_ROUTER_PROVIDERS,
         ...PROVIDER_OVERRIDES,

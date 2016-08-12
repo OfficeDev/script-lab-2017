@@ -3,10 +3,10 @@
   "dependencies": {},
   "globalDependencies": {
     "bootstrap": "registry:dt/bootstrap#3.3.5+20160619023404",
-    "core-js": "registry:dt/core-js#0.0.0+20160602141332",
+    "core-js": "registry:dt/core-js#0.0.0+20160725163759",
     "jquery": "registry:dt/jquery#1.10.0+20160704162008",
-    "node": "registry:dt/node#6.0.0+20160720070758",
+    "node": "registry:dt/node#6.0.0+20160807145350",
     "office-js": "registry:dt/office-js#0.0.0+20160627000258",
-    "underscore": "registry:dt/underscore#1.7.0+20160720002543"
+    "underscore": "registry:dt/underscore#1.7.0+20160805164035"
   }
 }
