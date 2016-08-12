@@ -27,35 +27,19 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         private _route: ActivatedRoute
     ) {
         super();
-        this.snippet = new Snippet(<ISnippet>{
-            meta: {
-                name: null,
-                id: null
-            },
-            css: null,
-            html: null,
-            ts: null
-        })
     }
 
     ngOnInit() {
-        var subscription = this._route.params.subscribe(params => {
-            var snippetName = Utilities.decode(params['id']);
-            try {
-                if (!Utilities.isEmpty(snippetName)) {
-                    this.snippet = this._snippetManager.find(id);
-                }
-            }
-            catch (e) {
-                this._showStatus(e, true);
-            }
-        });
+        var subscription = this._route.params.subscribe(params =>
+            this._snippetManager.find(params['id'])
+                .then(snippet => this.snippet = snippet)
+                .catch(e => this._showStatus(e, true))
+        );
 
         this.markDispose(subscription);
     }
 
     back() {
-        this._location.replaceState('');
         this._router.navigate(['']);
     }
 
@@ -66,8 +50,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     save() {
         try {
             this.snippet = this._composeSnippetFromEditor();
-            var snippet = this._snippetManager.saveSnippet(this.snippet);
-            this._showStatus('Saved ' + snippet.meta.name);
+            this._snippetManager.save(this.snippet).then(snippet => {
+                this._showStatus('Saved ' + snippet.meta.name);
+            });
         }
         catch (e) {
             this._showStatus(e, true);
@@ -76,12 +61,13 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     delete() {
         try {
-            this._snippetManager.deleteSnippet(this.snippet);
-            this._showStatus('Deleted ' + this.snippet.meta.name)
-                .then(() => {
-                    this._location.replaceState('');
-                    this._router.navigate(['']);
-                });
+            this._snippetManager.delete(this.snippet).then(snippet => {
+                this._showStatus('Deleted ' + this.snippet.meta.name)
+                    .then(() => {
+                        this._location.replaceState('');
+                        this._router.navigate(['']);
+                    });
+            });
         }
         catch (e) {
             this._showStatus(e, true);
@@ -89,19 +75,17 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     run() {
-        this._router.navigate(['run', Utilities.encode(this.snippet.meta.name)]);
+        this._router.navigate(['run', this.snippet.meta.name]);
     }
 
     duplicate() {
-        try {
-            var duplicateSnippet = this._snippetManager.duplicateSnippet(this.snippet);
-            this._showStatus('Created ' + duplicateSnippet.meta.name).then(() => {
-                this._router.navigate(['edit', Utilities.encode(duplicateSnippet.meta.name)]);
-            });
-        }
-        catch (e) {
-            this._showStatus(e, true);
-        }
+        this._snippetManager.duplicate(this.snippet)
+            .then(newSnippet => {
+                this._showStatus('Created ' + newSnippet.meta.name).then(() => {
+                    this._router.navigate(['edit', newSnippet.meta.name]);
+                });
+            })
+            .catch(e => this._showStatus(e, true));
     }
 
     private _showStatus(message: string, error?: boolean) {

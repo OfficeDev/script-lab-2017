@@ -11,7 +11,7 @@ module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
         'vendor': './src/vendor.ts',
-        'app': './src/app/app.component.ts'
+        'app': './src/app.ts'
     },
 
     resolve: {
@@ -24,56 +24,30 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.ts$/,
-                loaders: ['ts', 'angular2-template-loader']
-            },
-            {
                 test: /\.html$/,
                 loader: 'html'
             },
             {
-                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-                loader: 'file?name=assets/[name].[hash].[ext]'
-            },
-            {
-                test: /\.css$/,
-                exclude: helpers.root('src', 'assets'),
-                loader: ExtractTextPlugin.extract('style', 'css?sourceMap')
-            },
-            {
-                test: /\.css$/,
-                include: helpers.root('src', 'assets'),
-                loader: 'raw'
+                test: /\.ts$/,
+                loaders: ['ts', 'angular2-template-loader']
             },
             {
                 test: /^(?!.*component).*\.scss$/,
-                loaders: ['style', 'css', 'resolve-url', 'postcss', 'sass']
+                loader: ExtractTextPlugin.extract('css!postcss!sass')
             },
             {
                 test: /\.component\.scss$/,
                 loaders: ['raw', 'resolve-url', 'postcss', 'sass']
-            }
-        ],
-        preLoaders: [
-            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            },
             {
-                test: /\.js$/,
-                loader: "source-map-loader",
-                exclude: [
-                    helpers.node_modules('node_modules/rxjs'),
-                    helpers.node_modules('node_modules/@angular')
-                ]
+                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+                loader: 'file?name=assets/[name].[ext]'
             }
-        ]
+        ]        
     },
 
     postcss: function () {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
-    },
-
-    externals: {
-        '_': 'underscore',
-        '$': 'jquery'
     },
 
     plugins: [
@@ -91,9 +65,14 @@ module.exports = {
                 to: 'vs',
             },
             {
-                from: './src/assets/images',
-                to: 'assets/images',
+                from: './src/assets',
+                to: 'assets',
             }
         ]),
+
+        new webpack.ProvidePlugin({
+            _: 'underscore',
+            $: 'jquery'
+        })
     ]
 };

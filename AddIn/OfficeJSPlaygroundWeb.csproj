@@ -105,8 +105,6 @@
     <Content Include="typings.json" />
     <Content Include="certificates\localhost.crt" />
     <Content Include="certificates\localhost.key" />
-    <Content Include="src\editor\editor.component.html.orig" />
-    <Content Include="src\editor\editor.component.ts.orig" />
     <Content Include="src\new\new.component.scss" />
     <Content Include="src\run\run.component.scss" />
     <Content Include="src\shared\components\tab\tab.component.scss" />
@@ -139,9 +137,8 @@
     <Folder Include="src\assets\scripts\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\app\app.component.ts" />
-    <TypeScriptCompile Include="src\app\app.routes.ts" />
-    <TypeScriptCompile Include="src\app\index.ts" />
+    <TypeScriptCompile Include="src\app.ts" />
+    <TypeScriptCompile Include="src\app.routes.ts" />
     <TypeScriptCompile Include="src\components.ts" />
     <TypeScriptCompile Include="src\editor\editor.component.ts" />
     <TypeScriptCompile Include="src\editor\index.ts" />
@@ -165,7 +162,8 @@
     <TypeScriptCompile Include="src\shared\services\index.ts" />
     <TypeScriptCompile Include="src\shared\services\mediator.service.ts" />
     <TypeScriptCompile Include="src\shared\services\snippet.manager.ts" />
-    <TypeScriptCompile Include="src\shared\services\snippets.service.ts" />
+    <TypeScriptCompile Include="src\shared\services\snippet.service.ts" />
+    <TypeScriptCompile Include="src\shared\services\snippet.ts" />
     <TypeScriptCompile Include="src\vendor.ts" />
     <TypeScriptCompile Include="src\view\index.ts" />
     <TypeScriptCompile Include="src\view\view.component.ts" />

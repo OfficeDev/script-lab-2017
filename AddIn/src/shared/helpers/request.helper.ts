@@ -7,8 +7,8 @@ import {Utilities, StorageHelper} from '../helpers';
 export class RequestHelper {
     constructor(private _http: Http) { }
 
-    get<T>(url: string, options?: RequestOptions, unformatted?: boolean) {
-        let xhr = this._http.get(url, options);
+    get<T>(url: string, unformatted?: boolean) {
+        let xhr = this._http.get(url);
         return unformatted ? this._text(xhr) : this._json<T>(xhr);
     }
 
@@ -35,7 +35,8 @@ export class RequestHelper {
     private _text(request: Observable<any>): Promise<string> {
         return request
             .map(response => response.text() as string)
-            .toPromise()
+            .retry(3)           
+            .toPromise()            
             .catch(error => { Utilities.error(error); });
 
     }
@@ -43,6 +44,7 @@ export class RequestHelper {
     private _json<T>(request: Observable<any>): Promise<T> {
         return request
             .map(response => response.json() as T)
+            .retry(3)
             .toPromise()
             .catch(error => { Utilities.error(error); });
     }

@@ -11,105 +11,109 @@ export class SnippetManager {
         this._snippetsContainer = new StorageHelper<ISnippet>('snippets');
     }
 
-    save(snippet: ISnippet): Promise<any> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty');
-        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject('Snippet name cannot be empty');
+    new(): Promise<Snippet> {
+        return new Promise(resolve => {
+            var snippet = new Snippet({ meta: { name: "New Snippet", id: null } });
+            resolve(this._makeNameUniqueAndSave(snippet));
+        });
+    }
+
+    save(snippet: ISnippet): Promise<Snippet> {
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty') as any;
+        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject('Snippet name cannot be empty') as any;
         return Promise.resolve(this._snippetsContainer.insert(snippet.meta.id, snippet));
     }
 
-    delete(snippet: ISnippet): Promise<any> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty');
-        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject('Snippet name cannot be empty');
+    delete(snippet: ISnippet): Promise<Snippet> {
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty') as any;
         return Promise.resolve(this._snippetsContainer.remove(snippet.meta.id));
     }
 
-    get() {
+    getLocal(): Promise<ISnippet[]> {
         return Promise.resolve(this._snippetsContainer.values());
     }
 
-    import(privateLink: string): Promise<any> {
-        var snippetId: string = null;
+    getPlaylist(): Promise<any> {
+        return Promise.resolve(this._playlist)
+            .then(data => {
+                return {
+                    name: data.name,
+                    items: _.groupBy(data.snippets, item => item.group)
+                };
+            })
+            .then(data => {
+                var remappedArray = _.map(data.items, (value, index) => {
+                    return {
+                        name: index,
+                        items: value
+                    }
+                });
+
+                return {
+                    name: data.name,
+                    items: remappedArray
+                }
+            })
+    }
+
+    import(privateLink: string): Promise<Snippet> {
+        var id: string = null;
 
         var regex = /^^(https?:\/\/[^/]+)\/(?:api\/)?snippets\/([0-9a-z]+)\/?$/;
         var matches = regex.exec(privateLink);
-        if (matches) {
-            snippetId = matches[2];
-        }
+
+        if (!Utilities.isEmpty(matches)) id = matches[2];
         else {
             var altRegex = /^[0-9a-z]+$/;
-            if (altRegex.exec(privateLink)) {
-                snippetId = privateLink;
-            }
-            else {
-                return Promise.reject('Please provide either the snippet ID or snippet URL');
-            }
+            if (!altRegex.test(privateLink)) return Promise.reject<any>('Please provide either the snippet ID or snippet URL');
+            id = privateLink;
         }
 
-        return this._service.get(snippetId)
-            .then(snippet => this._makeNameUniqueAndSave(snippet));
+        return this._service.get(id).then(snippet => this._makeNameUniqueAndSave(snippet));
     }
 
-    find(id: string) {
-        var result = this._snippetsContainer.get(id);
-        return Promise.resolve(new Snippet(result));
+    find(id: string): Promise<Snippet> {
+        return new Promise(resolve => {
+            var result = this._snippetsContainer.get(id);
+            resolve(new Snippet(result));
+        });
     }
 
-    duplicate(snippet: ISnippet): Snippet {
-        var newSnippet = new Snippet(snippet);
-        newSnippet.randomizeId();
-        return this._makeNameUniqueAndSave(newSnippet);
+    duplicate(snippet: ISnippet): Promise<Snippet> {
+        return new Promise(resolve => {
+            var newSnippet = new Snippet(snippet);
+            newSnippet.randomizeId(true);
+            return this._makeNameUniqueAndSave(newSnippet);
+        });
     }
 
-    publish(snippet: ISnippet, password?: string): Promise<any> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty');
+    publish(snippet: ISnippet, password?: string): Promise<Snippet> {
         return this._service.create(snippet.meta.name, password)
             .then(data => {
                 snippet.meta.id = data.id;
                 snippet.meta.key = data.password;
             })
-            .then(data => this._uploadAllContents(snippet))
+            .then(data => this._uploadAllContents(snippet));
     }
 
     update(snippet: ISnippet, password: string): Promise<any> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty');
         if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject('Snippet name cannot be empty');
         if (Utilities.isEmpty(snippet.meta.id)) return Promise.reject('Snippet id cannot be empty');
         return this._uploadAllContents(snippet);
     }
 
-    private _uploadAllContents(snippet: ISnippet) {
-        var uploadJs = () => {
-            if (Utilities.isEmpty(snippet.ts)) return Promise.resolve() as Promise<any>;
-            return this._service.uploadContent(snippet, 'js');
-        };
-
-        var uploadHtml = () => {
-            if (Utilities.isEmpty(snippet.html)) return Promise.resolve() as Promise<any>;
-            return this._service.uploadContent(snippet, 'html');
-        };
-
-        var uploadCss = () => {
-            if (Utilities.isEmpty(snippet.css)) return Promise.resolve() as Promise<any>;
-            return this._service.uploadContent(snippet, 'css');
-        };
-
-        var uploadExtras = () => {
-            if (Utilities.isEmpty(snippet.extras)) return Promise.resolve() as Promise<any>;
-            return this._service.uploadContent(snippet, 'extras');
-        };
-
-        return Promise.all([uploadJs(), uploadCss(), uploadHtml(), uploadExtras()]);
+    private _uploadAllContents(snippet: ISnippet): Promise<Snippet> {
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty') as any;
+        return Promise.all([
+            this._service.upload(snippet.meta, snippet.ts, 'js'),
+            this._service.upload(snippet.meta, snippet.html, 'html'),
+            this._service.upload(snippet.meta, snippet.css, 'css'),
+            this._service.upload(snippet.meta, snippet.extras, 'extras')
+        ]).then(() => snippet);
     }
 
     private _makeNameUniqueAndSave(snippet: ISnippet): Snippet {
-        var newSnippet = new Snippet(snippet);
-        newSnippet.meta.name = "New Snippet";
-
-        while (this._snippetsContainer.contains(newSnippet.meta.id)) {
-            newSnippet.randomizeId();
-        }
-
-        let escapedName = this._escapeRegex(newSnippet.meta.name);
+        let escapedName = this._escapeRegex(snippet.meta.name);
         let regex = new RegExp('^' + escapedName + ' \\(([0-9]+)\\)$');
         var maxSeen = 0;
         this._snippetsContainer.keys().forEach(key => {
@@ -119,12 +123,64 @@ export class SnippetManager {
                 if (num > maxSeen) maxSeen = num;
             }
         });
-        newSnippet.meta.name = newSnippet.meta.name + ' (' + (maxSeen + 1) + ')';
-        this._snippetsContainer.add(newSnippet.meta.id, newSnippet);
-        return newSnippet;
+
+        snippet.meta.name = escapedName + ' (' + (maxSeen + 1) + ')';
+        return this._snippetsContainer.add(snippet.meta.id, snippet) as Snippet;
     }
 
     private _escapeRegex(input: string) {
         return input.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
+
+    private _playlist = {
+        name: 'Microsoft',
+        snippets: [
+            {
+                id: 'abc',
+                name: 'Set range values',
+                group: 'Range Manipulation'
+            },
+            {
+                id: 'abc',
+                name: 'Set cell ranges',
+                group: 'Range Manipulation'
+            },
+            {
+                id: 'abc',
+                name: 'Set formulas',
+                group: 'Range Manipulation'
+            },
+            {
+                id: 'abc',
+                name: 'Set background',
+                group: 'Range Manipulation'
+            },
+            {
+                id: 'abc',
+                name: 'Set range values',
+                group: 'Tables'
+            },
+            {
+                id: 'abc',
+                name: 'Set range values',
+                group: 'Tables'
+            },
+            {
+                id: 'abc',
+                name: 'Set cell ranges',
+                group: 'Tables'
+            },
+            {
+                id: 'abc',
+                name: 'Set formulas',
+                group: 'Tables'
+            },
+            {
+                id: 'abc',
+                name: 'Set background',
+                group: 'Tables'
+            }
+        ]
+    };
+
 }

@@ -4,8 +4,11 @@ import {Component, ExceptionHandler} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
-import {MediatorService, SnippetsService, SnippetManager} from '../shared/services';
-import {Utilities, ExceptionHelper, NotificationHelper, RequestHelper} from '../shared/helpers';
+import {MediatorService, SnippetService, SnippetManager} from './shared/services';
+import {Utilities, ExceptionHelper, NotificationHelper, RequestHelper} from './shared/helpers';
+
+require('./assets/styles/spinner.scss');
+require('./assets/styles/globals.scss');
 
 export const PROVIDER_OVERRIDES = [
     { provide: ExceptionHandler, useClass: ExceptionHelper },
@@ -13,7 +16,7 @@ export const PROVIDER_OVERRIDES = [
 ];
 
 export const APP_PROVIDERS = [
-    SnippetsService,
+    SnippetService,
     SnippetManager,
     ExceptionHelper,
     NotificationHelper,
@@ -27,6 +30,7 @@ export const APP_PROVIDERS = [
     template: '<router-outlet></router-outlet>',
     directives: [ROUTER_DIRECTIVES]
 })
+
 export class AppComponent { }
 
 export function launch(initialHmrState?: any) {

@@ -1,34 +1,5 @@
 import {Utilities} from '../helpers';
 
-export enum OfficeClient {
-    All,
-    Word,
-    Excel,
-    PowerPoint,
-    Project,
-    Outlook,
-    OneNote
-}
-
-export interface ISnippetMeta {
-    name: string;
-    id: string;
-    key?: string;
-    group?: string;
-    client?: OfficeClient;
-}
-
-export interface ISnippet {
-    meta: ISnippetMeta;
-    ts: string;
-    html: string;
-    css: string;
-    extras: string;
-
-    hash: string;
-    jsHash: string;
-}
-
 export class Snippet implements ISnippet {
     meta: {
         name: string;
@@ -47,31 +18,28 @@ export class Snippet implements ISnippet {
 
     private _compiledJs: string;
 
-    constructor(private snippet: ISnippet) {
+    constructor(snippet: ISnippet) {
+        this.meta = snippet.meta || {} as any;
         this.randomizeId();
-    }
 
-    randomizeId() {
-        if (Utilities.isNull(this.snippet.meta)) {
-            this.snippet.meta = {} as any;
-        }
-        this.snippet.meta.id = 'L' + Utilities.randomize(10000).toString();        
+        if (Utilities.isNull(this.meta)) throw 'Snippet metadata cannot be empty.';
+        this._default(snippet);
     }
 
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
     get runUrl(): string {
-        var url = window.location.toString() + "#/run/" + this.snippet.meta.id;
+        var url = window.location.toString() + "#/run/" + this.meta.id;
         return url;
     }
 
     get js(): Promise<string> {
-        if (Snippet._isPureValidJs(this.snippet.ts)) {
-            this._compiledJs = this.snippet.ts;
+        if (Snippet._isValid(this.ts)) {
+            this._compiledJs = this.ts;
             return Promise.resolve(this._compiledJs);
         }
         else {
             // FIXME expose to user
-            throw Utilities.error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)")
+            return Promise.reject<string>("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)");
             // return this._compile(this.ts).then((compiledJs) => {
             //     this._compiledJs = compiledJs;
             //     return compiledJs; 
@@ -96,11 +64,17 @@ export class Snippet implements ISnippet {
         ];
     }
 
-    static _isPureValidJs(scriptText): boolean {
+    randomizeId(force?: boolean) {
+        if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1)
+            this.meta.id = '~!L' + Utilities.randomize(10000).toString();
+    }
+
+    static _isValid(scriptText): boolean {
         try {
             new Function(scriptText);
             return true;
         } catch (syntaxError) {
+            Utilities.error(syntaxError);
             return false;
         }
     }
@@ -114,15 +88,40 @@ export class Snippet implements ISnippet {
         // FIXME
     }
 
-    static create(meta, js, html, css, extras): Promise<Snippet> {
-        return Promise.all([meta, js, html, css, extras])
-            .then(results => new Snippet(<ISnippet>{
-                meta: results[0],
-                ts: results[1],
-                html: results[2],
-                css: results[3],
-                extras: results[4]
-            }))
-            .catch(error => Utilities.error);
+    // TODO: this is where we'll have our default code for each format.
+    private _default(snippet: ISnippet) {
+        this.ts = snippet.ts || "";
+        this.css = snippet.css || "";
+        this.html = snippet.html || "";
+        this.extras = snippet.extras || "";
     }
 }
+
+export enum OfficeClient {
+    All,
+    Word,
+    Excel,
+    PowerPoint,
+    Project,
+    Outlook,
+    OneNote
+}
+
+export interface ISnippetMeta {
+    name: string;
+    id: string;
+    key?: string;
+    group?: string;
+    client?: OfficeClient;
+}
+
+export interface ISnippet {
+    meta: ISnippetMeta;
+    ts?: string;
+    html?: string;
+    css?: string;
+    extras?: string;
+    hash?: string;
+    jsHash?: string;
+}
+

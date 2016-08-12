@@ -24,108 +24,30 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     importFlag = false;
 
     ngOnInit() {
-        this._snippetManager.get().then(data => this.localGallery = data);
-        this.mockPlaylist()
-            .then(data => {
-                return {
-                    name: data.name,
-                    items: _.groupBy(data.snippets, item => item.group)
-                };
-            })
-            .then(data => {
-                var remappedArray = _.map(data.items, (value, index) => {
-                    return {
-                        name: index,
-                        items: value
-                    }
-                });
-
-                return {
-                    name: data.name,
-                    items: remappedArray
-                };
-            })
-            .then(data => this.gallery = data);
-    }
-
-    share(snippet: ISnippet) {
-
+        this._snippetManager.getLocal().then(data => this.localGallery = data);
+        this._snippetManager.getPlaylist().then(data => this.gallery = data);
     }
 
     delete(snippet: ISnippet) {
         this._snippetManager.delete(snippet);
-        this._snippetManager.get().then(data => this.localGallery = data);
+        this._snippetManager.getLocal().then(data => this.localGallery = data);
     }
 
     run(snippet: ISnippet) {
-        this._router.navigate(['run', Utilities.encode(snippet.meta.name)]);
+        this._router.navigate(['run', snippet.meta.id]);
     }
 
     select(snippet?: ISnippet) {
         if (Utilities.isEmpty(snippet)) {
-            this._router.navigate(['edit']);
-            return;
+            return this._snippetManager.new().then(newSnippet => {
+                this._router.navigate(['edit', newSnippet.meta.id]);
+            });
         }
-        this._router.navigate(['edit', Utilities.encode(snippet.meta.name)]);
+        this._router.navigate(['edit', snippet.meta.id]);
     }
 
     import(snippet?: ISnippetMeta) {
-        var link = snippet.id || this.link;        
+        var link = snippet.id || this.link;
         this._snippetManager.import(link).then(snippet => this.select(snippet));
-    }
-
-    mockPlaylist() {
-        var playlist = {
-            name: 'Microsoft',
-            snippets: [
-                {
-                    id: 'abc',
-                    name: 'Set range values',
-                    group: 'Range Manipulation'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set cell ranges',
-                    group: 'Range Manipulation'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set formulas',
-                    group: 'Range Manipulation'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set background',
-                    group: 'Range Manipulation'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set range values',
-                    group: 'Tables'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set range values',
-                    group: 'Tables'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set cell ranges',
-                    group: 'Tables'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set formulas',
-                    group: 'Tables'
-                },
-                {
-                    id: 'abc',
-                    name: 'Set background',
-                    group: 'Tables'
-                }
-            ]
-        };
-
-        return Promise.resolve(playlist);
     }
 }
