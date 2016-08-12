@@ -49,6 +49,10 @@ export class Utilities {
         return text;
     }
 
+    static isNullOrWhitespace(text: string) {
+        return (text === null || text === undefined || text.trim().length === 0);
+    }
+
     static stripSpaces(text: string) {
         let lines: string[] = text.split('\n');
 

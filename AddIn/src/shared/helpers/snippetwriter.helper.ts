@@ -16,6 +16,7 @@ export class SnippetWriter {
                 '    <meta charset="UTF-8" />',
                 '    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />',
                 '    <title>Running snippet</title>',
+                '	 <script src="https://npmcdn.com/jquery"></script>',
                 snippet.getJsLibaries().map(item => '    <script src="' + item + '"></script>').join("\n"),
                 snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
             ];
@@ -23,7 +24,7 @@ export class SnippetWriter {
             if (options.inlineJsAndCssIntoIframe) {
                 html.push(
                     "    <style>",
-                    snippet.css.trim(),
+                    Utilities.stringOrEmpty(snippet.css).trim(),
                     "    </style>"
                 );
 
@@ -39,13 +40,24 @@ export class SnippetWriter {
 
                 jsStringArray.push('$(document).ready(function () {');
                 
-                jsStringArray.push(
-                    js.trim(),
-                    '});'
-                );
+                if (Utilities.isNullOrWhitespace(snippet.html)) {
+                    jsStringArray.push('$("#invoke-action").click(invokeAction);');
+                } else {
+                    jsStringArray.push(js.trim());
+                }
+
+                jsStringArray.push('});');
 
                 if (options.includeOfficeInitialize) {
                     jsStringArray.push('};');
+                }
+
+                if (Utilities.isNullOrWhitespace(snippet.html)) {
+                    jsStringArray.push(
+                        'function invokeAction() {',
+                        js.trim(),
+                        '}'
+                    );
                 }
 
                 var beautify = require('js-beautify').js_beautify;
@@ -65,10 +77,13 @@ export class SnippetWriter {
                 );
             }
 
+            var htmlBody = Utilities.isNullOrWhitespace(snippet.html) ? 
+                '<button id="invoke-action">Invoke action</button>' : snippet.html;
+
             html.push(
                 '</head>',
                 '<body>',
-                Utilities.indentAll(snippet.html, 1),
+                Utilities.indentAll(htmlBody, 1),
                 '</body>',
                 '</html>'
             );

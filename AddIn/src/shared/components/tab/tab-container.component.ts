@@ -37,6 +37,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         (<any>window).require(['vs/editor/editor.main'], () => {
+            // FIXME: make dynamic
+
             Promise.all([
                 this._http.get('https://npmcdn.com/@types/office-js/index.d.ts').toPromise(),
                 this._http.get('https://npmcdn.com/@types/jquery/index.d.ts').toPromise(),
