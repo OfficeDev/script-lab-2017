@@ -40,7 +40,13 @@ export class SnippetService {
     }
 
     _createSnippet(meta: Promise<ISnippetMeta>, ts: Promise<string>, html: Promise<string>, css: Promise<string>, extras: Promise<string>): Promise<Snippet> {
-        return Promise.all([meta, ts, html, css, extras])
+        return Promise.all([
+            meta,
+            ts.catch(e => ""),
+            html.catch(e => ""),
+            css.catch(e => ""),
+            extras.catch(e => "")
+        ])
             .then(results => new Snippet(<ISnippet>{
                 meta: results[0],
                 ts: results[1],

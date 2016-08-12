@@ -13,7 +13,7 @@ import {Utilities} from '../shared/helpers';
     directives: [Tab, Tabs]
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
-    snippet: Snippet;
+    snippet = new Snippet({ meta: { name: 'New Snippet', id: null } });
     status: string;
     error: boolean;
     private timeout;

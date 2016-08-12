@@ -4,9 +4,14 @@ import {RunComponent, EditorComponent, NewComponent, ViewComponent} from './comp
 export const AppRoutes: RouterConfig = [
     {
         path: '',
-        component: NewComponent
+        redirectTo: 'new',
+        pathMatch: 'full'
     },
-    {        
+    {
+        path: 'new',
+        component: NewComponent,
+    },
+    {
         path: 'edit/:id',
         component: EditorComponent
     },
