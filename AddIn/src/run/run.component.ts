@@ -14,11 +14,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('runner') runner: ElementRef;
     @ViewChild('console') consoleView: ElementRef;
 
-    private _snippet: Snippet;
+    private _snippet = new Snippet({ meta: { name: 'New Snippet', id: null } });
 
     private _originalConsole: Console;
     private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
-    private _originalConsoleMethods: { [key: string] : () => void; } = {};
+    private _originalConsoleMethods: { [key: string]: () => void; } = {};
     private _consoleLastShown = false;
 
     private $console: JQuery;
@@ -47,18 +47,24 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         };
 
         var subscription = this._route.params.subscribe(params => {
-            this._snippetManager.find(params['id']).then(snippet => this.snippet = snippet);
-            var iframe = this.runner.nativeElement;
-            var iframeWindow: Window = (<any>iframe).contentWindow;
-            SnippetWriter.createHtml(this._snippet, createHtmlOptions).then(function (fullHtml) {
-                iframeWindow.document.open();
-                iframeWindow.document.write(fullHtml);
-                iframeWindow.document.close();
-            }).catch(function (e) {
-                console.log(e);
-                // TODO eventually Util instead
-            });
+            this._snippetManager.find(params['id'])
+                .then(snippet => {
+                    this._snippet = snippet;
+                    return SnippetWriter.createHtml(this._snippet, createHtmlOptions);
+                })
+                .then(fullHtml => {
+                    var iframe = this.runner.nativeElement;
+                    var iframeWindow: Window = (<any>iframe).contentWindow;
+                    iframeWindow.document.open();
+                    iframeWindow.document.write(fullHtml);
+                    iframeWindow.document.close();
+                })
+                .catch(e => {
+                    console.log(e);
+                    // TODO eventually Util instead
+                });
         });
+
 
         this.markDispose(subscription);
 
@@ -69,22 +75,22 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             }
 
             this._monkeyPatchConsole(iframeWin);
-            
+
             var that = this;
-            iframeWin.onerror = function() {
+            iframeWin.onerror = function () {
                 that.logToConsole('error', arguments);
             }
         }
 
         this.$console = $(this.consoleView.nativeElement);
-		this.$consoleText = $('pre', this.$console);
+        this.$consoleText = $('pre', this.$console);
 
         this._initializeConsole();
     }
 
     ngOnDestroy() {
         super.ngOnDestroy();
-        
+
         this._consoleMethodsToIntercept.forEach(methodName => {
             window.console[methodName] = this._originalConsoleMethods[methodName];
         });
@@ -110,14 +116,15 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         var console = windowToPatch.console;
         var that = this;
         if (!console) return
-        function intercept(methodName) {
+
+        var intercept = (methodName) => {
             var original = console[methodName];
-            console[methodName] = function() {
+            console[methodName] = function () {
                 that.logToConsole(methodName, arguments);
-                if (original.apply){
+                if (original.apply) {
                     // Do this for normal browsers
                     original.apply(console, arguments);
-                } else{
+                } else {
                     // Do this for IE
                     var message = Array.prototype.slice.apply(arguments).join(' ');
                     original(message);
@@ -158,15 +165,15 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 return "null";
             }
             if (typeof object == 'string' || object instanceof String) {
-				return object;
-			}
+                return object;
+            }
             if (object.toString() != "[object Object]") {
-				return object.toString();
-			}
+                return object.toString();
+            }
 
-			// Otherwise, stringify the object
-			
-            return JSON.stringify(object, function (key, value) {
+            // Otherwise, stringify the object
+
+            return JSON.stringify(object, (key, value) => {
                 if (value && typeof value === "object" && !$.isArray(value)) {
                     return getStringifiableSnapshot(value);
                 }
@@ -203,7 +210,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     back() {
-        this._router.navigate(['edit', Utilities.encode(this._snippet.meta.name)]);
+        this._router.navigate(['edit', this._snippet.meta.id]);
     }
 
     refresh() {

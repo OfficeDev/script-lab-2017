@@ -58,9 +58,13 @@
 #console {
 	font-family: Consolas;
 	padding: 5px;
-	box-sizing: border-box;
-	background: #DDD;
 	display: none;
+    font-size: 11pt;
+
+    .ms-Button {
+        border: solid 1px #666;
+        cursor: pointer;
+    }
 }
 
 	#console .scrollable {

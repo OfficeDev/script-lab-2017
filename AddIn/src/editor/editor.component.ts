@@ -16,6 +16,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     snippet = new Snippet({ meta: { name: 'New Snippet', id: null } });
     status: string;
     error: boolean;
+    editMode: boolean = false;
     private timeout;
 
     @ViewChild(Tabs) tabs: Tabs;
@@ -40,7 +41,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     back() {
-        this._router.navigate(['']);
+        this._router.navigate(['new']);
     }
 
     share() {
@@ -74,7 +75,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     run() {
-        this._router.navigate(['run', this.snippet.meta.name]);
+        this._router.navigate(['run', this.snippet.meta.id]);
     }
 
     private _showStatus(message: string, error?: boolean) {

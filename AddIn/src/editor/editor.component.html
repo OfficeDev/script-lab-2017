@@ -1,6 +1,6 @@
 <header class="editor__header">
     <ul class="editor-command-bar">
-        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--home" (click)="back()"></i></li>
+        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft" (click)="back()"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet?.meta?.name}}</span>
             <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />

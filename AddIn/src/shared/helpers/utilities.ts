@@ -151,4 +151,6 @@ export class Utilities {
         }
         return this._context;
     }
+
+    static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);
 }
