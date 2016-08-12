@@ -7,16 +7,6 @@ export enum ContextType {
 export class Utilities {
     private static _context: ContextType = null;
 
-    static encode(name: string) {
-        if (this.isEmpty(name)) return null;
-        return encodeURIComponent(btoa(name));
-    }
-
-    static decode(encodedString: string): string {
-        if (this.isEmpty(encodedString)) return null;
-        return atob(decodeURIComponent(encodedString));
-    }
-
     static replace(source: string): (key: string, value: string) => any {
         return function self(key: string, value: string): any {
             if (!key) return source;
@@ -144,7 +134,6 @@ export class Utilities {
 
     static error<T>(exception?: any): any {
         console.log('Error: ' + JSON.stringify(exception));
-
         return exception;
     }
 
