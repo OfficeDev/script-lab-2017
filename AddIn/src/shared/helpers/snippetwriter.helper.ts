@@ -28,23 +28,24 @@ export class SnippetWriter {
                 );
 
                 var jsStringArray = [];
-                if (options.includeOfficeInitialize) {
-                    jsStringArray.push('        Office.initialize = function (reason) {');
-                }
-
-                jsStringArray.push('            $(document).ready(function () {');
-
+                
                 if (options.inlineJsAndCssIntoIframe) {
-                    jsStringArray.push('                parent.iframeReadyCallback(window);');
+                    jsStringArray.push('parent.iframeReadyCallback(window);');
                 }
+
+                if (options.includeOfficeInitialize) {
+                    jsStringArray.push('Office.initialize = function (reason) {');
+                }
+
+                jsStringArray.push('$(document).ready(function () {');
                 
                 jsStringArray.push(
                     js.trim(),
-                    '            });'
+                    '});'
                 );
 
                 if (options.includeOfficeInitialize) {
-                    jsStringArray.push('        };');
+                    jsStringArray.push('};');
                 }
 
                 var beautify = require('js-beautify').js_beautify;

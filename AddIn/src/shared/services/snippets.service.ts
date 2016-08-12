@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import {Utilities, RequestHelper} from '../helpers';
+import {Utilities, ContextType, RequestHelper} from '../helpers';
 
 export enum OfficeClient {
     All,
@@ -21,15 +21,21 @@ export interface ISnippetMeta {
 
 export interface ISnippet {
     meta: ISnippetMeta;
-    ts: string;
+    ts: string; // FIXME, after merge with other branch, rename to "scriptSource"
     html: string;
     css: string;
+
+    /**
+     * Extras can be of the following form:
+     * 
+     * // A comment     	                            ==> Ignore
+     * https://appsomething.cdn.blah/something.js       ==> Take as is
+     * jquery                                           ==> NPM JS
+     * office-ui-fabric/dist/js/jquery.fabric.min.js    ==> NPM JS
+     * office-ui-fabric/dist/css/fabric.min.css         ==> NPM CSS
+     * @types/jquery                                    ==> @types from CDN
+     */
     extras: string;
-
-    hash: string;
-    jsHash: string;
-
-    js: Promise<string>;
 }
 
 export class Snippet implements ISnippet {
@@ -55,6 +61,75 @@ export class Snippet implements ISnippet {
         this.html = snippet.html;
     }
 
+    static createBlankOfficeJsSnippet(): Snippet {
+        return new Snippet({
+            meta: {
+                name: null,
+                id: null
+            },
+            ts: Utilities.stripSpaces(`
+                ${getNamespace()}.run(function(context) {
+                    // ...
+                    return context.sync();
+                }).catch(function(error) {
+                    console.log(error);
+                    if (error instanceof OfficeExtension.Error) {
+                        console.log("Debug info: " + JSON.stringify(error.debugInfo));
+                    }
+                });
+            `),
+            html: null,
+            css: null,
+            extras: Utilities.stripSpaces(`
+                // Office.js CDN reference
+                https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
+
+                // NPM CDN references
+                jquery
+                office-ui-fabric/dist/js/jquery.fabric.min.js
+                office-ui-fabric/dist/css/fabric.min.css
+                office-ui-fabric/dist/css/fabric.components.min.css
+
+                // IntelliSense definitions
+                @types/jquery
+                @types/office-js
+                @types/office-ui-fabric
+            `)
+        });
+
+        function getNamespace() {
+            switch (Utilities.context) {
+                case ContextType.Excel:
+                    return 'Excel';
+                case ContextType.Word:
+                    return 'Word';
+                default:
+                    throw new Error("Invalid context type for Office namespace");
+            }
+        }
+    }
+
+    static createBlankWebSnippet(): Snippet {
+        return new Snippet({
+            meta: {
+                name: null,
+                id: null
+            },
+            ts: Utilities.stripSpaces(`
+                console.log("Hello world");
+            `),
+            html: null,
+            css: null,
+            extras: Utilities.stripSpaces(`
+                // NPM CDN references
+                jquery
+
+                // IntelliSense definitions
+                @types/jquery
+            `)
+        });
+    }
+
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
     get runUrl(): string {
         var url = window.location.toString() + "#/run/" + this.meta.id;
@@ -62,8 +137,8 @@ export class Snippet implements ISnippet {
     }
 
     get js(): Promise<string> {
-        if (Snippet._isPureValidJs(this.ts)) {
-            this._compiledJs = this.ts;
+        if (Snippet._isPureValidJs(Utilities.stringOrEmpty(this.ts))) {
+            this._compiledJs = Utilities.stringOrEmpty(this.ts);
             return Promise.resolve(this._compiledJs);
         }
         else {
@@ -77,20 +152,36 @@ export class Snippet implements ISnippet {
     }
 
     getJsLibaries(): Array<string> {
-        // FIXME
-        return [
-            "https://appsforoffice.microsoft.com/lib/1/hosted/office.js",
-            "https://npmcdn.com/jquery",
-            "https://npmcdn.com/office-ui-fabric/dist/js/jquery.fabric.min.js",
-        ];
+        return Utilities.stringOrEmpty(this.extras).split("\n")
+            .map((entry) => {
+                entry = entry.toLowerCase().trim();
+                
+                if (entry.length === 0 || entry.startsWith("//") || entry.startsWith("@types") || entry.endsWith(".css")) {
+                    return null;
+                }
+
+                if (entry.startsWith("https://") && entry.endsWith(".js")) {
+                    return entry;
+                }
+
+                // otherwise assume it's an NPM package name
+                return "https://npmcdn.com/" + entry;
+            })
+            .filter((entry) => entry != null);
     }
 
     getCssStylesheets(): Array<string> {
-        // FIXME
-        return [
-            "https://npmcdn.com/office-ui-fabric/dist/css/fabric.min.css",
-            "https://npmcdn.com/office-ui-fabric/dist/css/fabric.components.min.css",
-        ];
+        return Utilities.stringOrEmpty(this.extras).split("\n")
+            .map((entry) => entry.trim().toLowerCase())
+            .filter((entry) => entry.endsWith(".css"))
+            .map((entry) => {
+                if (entry.startsWith("https://")) {
+                    return entry;
+                }
+
+                // otherwise assume it's an NPM package name
+                return "https://npmcdn.com/" + entry;
+            })
     }
 
     static _isPureValidJs(scriptText): boolean {

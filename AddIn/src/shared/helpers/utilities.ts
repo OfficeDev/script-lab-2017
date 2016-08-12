@@ -41,6 +41,14 @@ export class Utilities {
         return this.isNull(obj) || _.isEmpty(obj);
     }
 
+    static stringOrEmpty(text: string): string {
+        if (text === null || text === undefined) {
+            return "";
+        }
+        
+        return text;
+    }
+
     static stripSpaces(text: string) {
         let lines: string[] = text.split('\n');
 
@@ -133,24 +141,16 @@ export class Utilities {
     static error<T>(exception?: any): any {
         console.log('Error: ' + JSON.stringify(exception));
 
-        // if (this.isWord) {
-        //     if (exception instanceof OfficeExtension.Error) {
-        //         console.log('Debug info: ' + JSON.stringify(exception.debugInfo));
-        //     }
-        // }
-
         return exception;
     }
 
     static get context(): ContextType {
         if (this.isNull(this._context)) {
-            if (_.has(window, 'Office')) {
-                if (_.has(window, 'Word')) {
-                    this._context = ContextType.Word;
-                }
-                else if (_.has(window, 'Excel')) {
-                    this._context = ContextType.Excel;
-                }
+            if (_.has(window, 'Word')) {
+                this._context = ContextType.Word;
+            }
+            else if (_.has(window, 'Excel')) {
+                this._context = ContextType.Excel;
             }
             else {
                 this._context = ContextType.Web;

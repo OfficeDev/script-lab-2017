@@ -4,7 +4,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities} from '../shared/helpers';
+import {Utilities, ContextType} from '../shared/helpers';
 
 @Component({
     selector: 'editor',
@@ -17,6 +17,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     status: string;
     error: boolean;
     private timeout;
+    public editMode: boolean;
 
     @ViewChild(Tabs) tabs: Tabs;
 
@@ -27,6 +28,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         private _route: ActivatedRoute
     ) {
         super();
+
         this.snippet = new Snippet(<ISnippet>{
             meta: {
                 name: null,
@@ -42,7 +44,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         var subscription = this._route.params.subscribe(params => {
             var snippetName = Utilities.decode(params['name']);
             try {
-                if (!Utilities.isEmpty(snippetName)) {
+                if (Utilities.isEmpty(snippetName)) {
+                    this.snippet = EditorComponent._createBlankSnippet();
+                    this.editMode = true;
+                } else {
                     this.snippet = this._snippetManager.findByName(snippetName);
                 }
             }
@@ -54,6 +59,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         this.markDispose(subscription);
     }
 
+    private static _createBlankSnippet(): Snippet {
+        if (Utilities.context == ContextType.Web) {
+            return Snippet.createBlankWebSnippet();
+        } else {
+    	    return Snippet.createBlankOfficeJsSnippet();
+        }
+    }
+
     back() {
         this._location.replaceState('');
         this._router.navigate(['']);
@@ -63,7 +76,21 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     }
 
-    save() {
+    private _forceNameOrStop(): boolean {
+        if (Utilities.isEmpty(this.snippet.meta.name)) {
+            this._showStatus("Please provide a name for the snippet.", true);
+            this.editMode = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    save(): void {
+        if (this._forceNameOrStop()) {
+            return;
+        }
+
         try {
             this.snippet = this._composeSnippetFromEditor();
             var snippet = this._snippetManager.saveSnippet(this.snippet);
@@ -74,27 +101,37 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    delete() {
+    delete(): void {
+        if (Utilities.isEmpty(this.snippet.meta.name)) {
+            this.back();
+        }
+
         try {
             this._snippetManager.deleteSnippet(this.snippet);
-            this._showStatus('Deleted ' + this.snippet.meta.name)
-                .then(() => {
-                    this._location.replaceState('');
-                    this._router.navigate(['']);
-                });
+            this.back();
         }
         catch (e) {
             this._showStatus(e, true);
         }
     }
 
-    run() {
+    run(): void {
+        if (this._forceNameOrStop()) {
+            return;
+        }
+
+        this.save();
+
         this._router.navigate(['run', Utilities.encode(this.snippet.meta.name)]);
     }
 
     duplicate() {
+        if (this._forceNameOrStop()) {
+            return false;
+        }
+
         try {
-            var duplicateSnippet = this._snippetManager.duplicateSnippet(this.snippet);
+            var duplicateSnippet = this._snippetManager.duplicateSnippet(this._composeSnippetFromEditor());
             this._showStatus('Created ' + duplicateSnippet.meta.name).then(() => {
                 this._router.navigate(['edit', Utilities.encode(duplicateSnippet.meta.name)]);
             });
@@ -116,7 +153,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                     this.status = null;
                     this.error = false;
                     resolve();
-                }, 2000);
+                }, 5000);
             }
             catch (exception) {
                 reject(exception);
@@ -129,8 +166,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return new Snippet(<ISnippet>{
             meta: this.snippet.meta,
             css: currentEditorState['CSS'],
-            extras: currentEditorState['Extras'],
-            ts: currentEditorState['JS'],
+            extras: currentEditorState['Libraries'],
+            ts: currentEditorState['JavaScript'],
             html: currentEditorState['HTML']
         });
     }

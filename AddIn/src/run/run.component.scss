@@ -34,10 +34,19 @@
     height: 100%;
 }
 
-#back {
+#back, #refresh {
     font-size: 1.5em;
     font-weight: bold;
     color: white;
+
+    /* different browsers use different terms for pointer vs. hand, so include both*/
+    cursor: pointer;
+    cursor: hand;
+}
+
+#refresh {
+    position: absolute;
+    right: 20px;
 }
 
 #name {

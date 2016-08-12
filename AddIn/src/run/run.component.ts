@@ -42,7 +42,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this._monkeyPatchConsole(window);
 
         var createHtmlOptions: ICreateHtmlOptions = {
-            includeOfficeInitialize: Utilities.context == ContextType.Web,
+            includeOfficeInitialize: Utilities.context != ContextType.Web,
             inlineJsAndCssIntoIframe: true
         };
 
@@ -207,5 +207,9 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     back() {
         this._router.navigate(['edit', Utilities.encode(this._snippet.meta.name)]);
+    }
+
+    refresh() {
+        window.location.reload();
     }
 }
