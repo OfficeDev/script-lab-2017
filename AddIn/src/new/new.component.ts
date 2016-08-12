@@ -46,6 +46,11 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._router.navigate(['edit', snippet.meta.id]);
     }
 
+    duplicate(snippet: ISnippet) {
+        this._snippetManager.duplicate(snippet)
+            .then(snippet => this.select(snippet));
+    }
+
     import(snippet?: ISnippetMeta) {
         var link = snippet.id || this.link;
         this._snippetManager.import(link).then(snippet => this.select(snippet));

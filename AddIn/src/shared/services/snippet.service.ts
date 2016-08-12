@@ -17,7 +17,7 @@ export class SnippetService {
     }
 
     get(id: string): Promise<Snippet> {
-        var meta = this._request.get<ISnippetMeta>(`${this._baseUrl}'/snippets/${id}`) as Promise<ISnippetMeta>;
+        var meta = this._request.get<ISnippetMeta>(`${this._baseUrl}/snippets/${id}`) as Promise<ISnippetMeta>;
         var js = this._request.get(`${this._baseUrl}/snippets/${id}/content/js`, true);
         var html = this._request.get(`${this._baseUrl}/snippets/${id}/content/html`, true);
         var css = this._request.get(`${this._baseUrl}/snippets/${id}/content/css`, true);

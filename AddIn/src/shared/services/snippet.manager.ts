@@ -81,6 +81,7 @@ export class SnippetManager {
 
     duplicate(snippet: ISnippet): Promise<Snippet> {
         return new Promise(resolve => {
+            if (Utilities.isNull(snippet)) throw "Snippet cannot be null."
             var newSnippet = new Snippet(snippet);
             newSnippet.randomizeId(true);
             return this._makeNameUniqueAndSave(newSnippet);

@@ -78,16 +78,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         this._router.navigate(['run', this.snippet.meta.name]);
     }
 
-    duplicate() {
-        this._snippetManager.duplicate(this.snippet)
-            .then(newSnippet => {
-                this._showStatus('Created ' + newSnippet.meta.name).then(() => {
-                    this._router.navigate(['edit', newSnippet.meta.name]);
-                });
-            })
-            .catch(e => this._showStatus(e, true));
-    }
-
     private _showStatus(message: string, error?: boolean) {
         return new Promise((resolve, reject) => {
             try {

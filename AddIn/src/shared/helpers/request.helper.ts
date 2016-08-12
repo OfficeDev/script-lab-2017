@@ -35,7 +35,6 @@ export class RequestHelper {
     private _text(request: Observable<any>): Promise<string> {
         return request
             .map(response => response.text() as string)
-            .retry(3)           
             .toPromise()            
             .catch(error => { Utilities.error(error); });
 
@@ -44,7 +43,6 @@ export class RequestHelper {
     private _json<T>(request: Observable<any>): Promise<T> {
         return request
             .map(response => response.json() as T)
-            .retry(3)
             .toPromise()
             .catch(error => { Utilities.error(error); });
     }

@@ -7,10 +7,13 @@
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
                     <i class="new-list__action ms-Icon ms-Icon--play" (click)="run(snippet)"></i>
+                    <i class="new-list__action ms-Icon ms-Icon--copy" (click)="duplicate(snippet)"></i>
                     <i class="new-list__action ms-Icon ms-Icon--trash" (click)="delete(snippet)"></i>
                 </article>
-                <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">You have no local snippets. To get started, import one from a shared link or create a new snippet. You can
-                    also choose from the gallery below.</p>
+                <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">
+                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can
+                    also choose from the gallery below.
+                </p>
             </section>
             <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
                 <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
@@ -23,13 +26,13 @@
     </section>
     <section class="new__section">
         <hr class="new__section--separator" />
-        <button class="new__action ms-Button ms-Button--compound" (click)="select()"> 
-            <span class="ms-Button-label">Create new</span> 
-            <span class="ms-Button-description">Create a new snippet from a blank template</span> 
+        <button class="new__action ms-Button ms-Button--compound" (click)="select()">
+            <span class="ms-Button-label">Create new</span>
+            <span class="ms-Button-description">Create a new snippet from a blank template</span>
         </button>
-        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importFlag = !importFlag"> 
-            <span class="ms-Button-label">Create from link</span> 
-            <span class="ms-Button-description">Create a new snippet from a shared snippet link</span> 
+        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importFlag = !importFlag">
+            <span class="ms-Button-label">Create from link</span>
+            <span class="ms-Button-description">Create a new snippet from a shared snippet link</span>
         </button>
     </section>
     <section class="new__section new__form" [hidden]="!importFlag">
