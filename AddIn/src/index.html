@@ -16,15 +16,7 @@
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/underscore/underscore.js"></script>
-    <script src="vs/loader.js"></script>   
-
-    <script>
-        Office.initialize = function (reason) {
-            delete window.alert;       // assures alert works
-            delete window.confirm;     // assures confirm works
-            delete window.prompt;      // assures prompt works
-        };
-    </script>
+    <script src="vs/loader.js"></script>
 </head>
 <body>
     <app class="app">

@@ -79,18 +79,15 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 // });
 
                 $(this._component.nativeElement).keydown((event) => {
-                        // If Control or Command key is pressed and the S key is pressed
-                        // run save function. 83 is the key code for S.
-                        if((event.ctrlKey || event.metaKey) && event.which == 83) {
-                            event.preventDefault();
-                            if (this._saveAction) {
-                                this._saveAction();
-                            }
-                            return false;
+                    // Control (or Command) + S (83 = code for S)
+                    if((event.ctrlKey || event.metaKey) && event.which == 83) {
+                        event.preventDefault();
+                        if (this._saveAction) {
+                            this._saveAction();
                         }
+                        return false;
                     }
-                );
-
+                });
 
                 this._updateEditor(this.selectedTab);
             });

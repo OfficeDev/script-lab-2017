@@ -17,7 +17,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     status: string;
     error: boolean;
     editMode: boolean = false;
-    editorLoaded: boolean = false;
     private timeout;
 
     @ViewChild(Tabs) tabs: Tabs;
