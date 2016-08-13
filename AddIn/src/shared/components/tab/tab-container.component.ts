@@ -19,6 +19,11 @@ export interface IContentUpdated {
         </li>
     </ul>
     <div class="tabs__container">
+        <div #loader class="ms-progress">
+            <div class="ms-Spinner large"></div>
+            <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Initializing the code editor</div>
+            <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">Just one moment...</div>
+        </div>
         <section #editor class="monaco-editor"></section>
     </div>`,
     styleUrls: ['tab.component.scss']
@@ -29,7 +34,10 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     selectedTab: Tab;
     @Input() readonly: boolean;
-    @ViewChild('editor') private _component: ElementRef;
+    @ViewChild('editor') private _editor: ElementRef;
+    @ViewChild('loader') private _loader: ElementRef;
+
+    editorLoaded: boolean;
 
     private _saveAction: () => void;
 
@@ -56,7 +64,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                     console.log() // FIXME
                 }
 
-                this._monacoEditor = monaco.editor.create(this._component.nativeElement, {
+                this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
                     value: '',
                     language: 'text',
                     lineNumbers: true,
@@ -67,18 +75,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                     theme: "vs-dark"
                 });
 
-                // this._monacoEditor.onKeyDown((e) => {
-                //     // Ctrl + 'S' or 's' {
-                //     if (e.ctrlKey && (e.keyCode === 4 || e.keyCode == 49 )) {
-                //         e.stopPropagation();
-                //         if (this._saveAction) {
-                //             this._saveAction();
-                //         }
-                //         alert("Snippet saved!");
-                //     }
-                // });
-
-                $(this._component.nativeElement).keydown((event) => {
+                $(this._editor.nativeElement).keydown((event) => {
                     // Control (or Command) + S (83 = code for S)
                     if((event.ctrlKey || event.metaKey) && event.which == 83) {
                         event.preventDefault();
@@ -90,6 +87,10 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 });
 
                 this._updateEditor(this.selectedTab);
+
+                $(this._loader.nativeElement).hide();
+                $(this._editor.nativeElement).show();
+                this._monacoEditor.layout();
             });
         });
     }

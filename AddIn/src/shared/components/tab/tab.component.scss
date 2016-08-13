@@ -30,4 +30,13 @@ tabs {
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
+    display: none;
+}
+
+.ms-progress {
+    @include flex();
+    flex: 1 1 100%;
+    width: 100% !important;     
+    height: 100% !important;
+    background: #217346;
 }
