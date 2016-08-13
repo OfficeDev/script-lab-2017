@@ -161,7 +161,7 @@
         <bt:Url id="OPlay.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="O_T_Title" DefaultValue="OfficeJS API Playground" />
+        <bt:String id="O_T_Title" DefaultValue="Office.js API Playground" />
         <bt:String id="O_T_G_GroupTitle" DefaultValue="Edit and run scripts" />
         <bt:String id="O_T_G_GroupTitle2" DefaultValue="Manage scripts" />
         <bt:String id="O_E_T_B_Label" DefaultValue="Edit" />
@@ -175,7 +175,7 @@
         <bt:String id="O_EBR_T_B_Label" DefaultValue="Export, backup, restore" />
         <bt:String id="O_EBR_T_B_Label.Supertip" DefaultValue="Export, backup, restore" />
         <bt:String id="OPlay.TaskpaneButton.Label" DefaultValue="Editor" />
-        <bt:String id="OPlay.Group1Label" DefaultValue="OfficeJS API Playground" />
+        <bt:String id="OPlay.Group1Label" DefaultValue="Office.js API Playground" />
         <bt:String id="OPlay.GetStarted.Title" DefaultValue="OfficeJS Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>

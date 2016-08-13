@@ -31,6 +31,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     @Input() readonly: boolean;
     @ViewChild('editor') private _component: ElementRef;
 
+    private _saveAction: () => void;
+
     constructor(private _http: Http) {
         super();
     }
@@ -44,29 +46,54 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 this._http.get('https://npmcdn.com/@types/jquery/index.d.ts').toPromise(),
                 this._http.get('https://npmcdn.com/@types/core-js/index.d.ts').toPromise(),
             ])
-                .then(responses => {
-                    try {
-                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[0].text(), 'office-js.d.ts');
-                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[1].text(), 'jquery.d.ts');
-                        monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[2].text(), 'core-js.d.ts');                        
-                    }
-                    catch (e) {
-                        
-                    }
+            .then(responses => {
+                try {
+                    monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[0].text(), 'office-js.d.ts');
+                    monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[1].text(), 'jquery.d.ts');
+                    monaco.languages.typescript.typescriptDefaults.addExtraLib(responses[2].text(), 'core-js.d.ts');                        
+                }
+                catch (e) {
+                    console.log() // FIXME
+                }
 
-                    this._monacoEditor = monaco.editor.create(this._component.nativeElement, {
-                        value: '',
-                        language: 'text',
-                        lineNumbers: true,
-                        roundedSelection: false,
-                        scrollBeyondLastLine: false,
-                        wrappingColumn: 0,
-                        readOnly: this.readonly,
-                        theme: "vs-dark"
-                    });
-
-                    this._updateEditor(this.selectedTab);
+                this._monacoEditor = monaco.editor.create(this._component.nativeElement, {
+                    value: '',
+                    language: 'text',
+                    lineNumbers: true,
+                    roundedSelection: false,
+                    scrollBeyondLastLine: false,
+                    wrappingColumn: 0,
+                    readOnly: this.readonly,
+                    theme: "vs-dark"
                 });
+
+                // this._monacoEditor.onKeyDown((e) => {
+                //     // Ctrl + 'S' or 's' {
+                //     if (e.ctrlKey && (e.keyCode === 4 || e.keyCode == 49 )) {
+                //         e.stopPropagation();
+                //         if (this._saveAction) {
+                //             this._saveAction();
+                //         }
+                //         alert("Snippet saved!");
+                //     }
+                // });
+
+                $(this._component.nativeElement).keydown((event) => {
+                        // If Control or Command key is pressed and the S key is pressed
+                        // run save function. 83 is the key code for S.
+                        if((event.ctrlKey || event.metaKey) && event.which == 83) {
+                            event.preventDefault();
+                            if (this._saveAction) {
+                                this._saveAction();
+                            }
+                            return false;
+                        }
+                    }
+                );
+
+
+                this._updateEditor(this.selectedTab);
+            });
         });
     }
 
@@ -78,6 +105,10 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         });
 
         this._monacoEditor.dispose();
+    }
+
+    setSaveAction(action: () => void): void {
+        this._saveAction = action;
     }
 
     get currentState(): IDictionary<string> {

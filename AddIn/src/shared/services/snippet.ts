@@ -6,7 +6,7 @@ export class Snippet implements ISnippet {
         id: string;
         key?: string;
         group?: string;
-        client?: OfficeClient;
+        client?: OfficeClient[];
     };
     ts: string;
     html: string;
@@ -126,12 +126,10 @@ export class Snippet implements ISnippet {
 }
 
 export enum OfficeClient {
-    All,
     Word,
     Excel,
     PowerPoint,
     Project,
-    Outlook,
     OneNote
 }
 
@@ -140,7 +138,7 @@ export interface ISnippetMeta {
     id: string;
     key?: string;
     group?: string;
-    client?: OfficeClient;
+    client?: OfficeClient[];
 }
 
 export interface ISnippet {

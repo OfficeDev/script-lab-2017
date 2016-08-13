@@ -27,7 +27,6 @@ export class Dictionary<T> {
 
     insert(key: string, value: T): T {
         if (Utilities.isNull(this.items)) throw new Error('Dictionary isn\'t initialized. Call \'new\' first.');
-        if (Utilities.isNull(value)) throw new Error('Value expected. Got ' + value);
         this.items[key] = value;
         return value;
     }

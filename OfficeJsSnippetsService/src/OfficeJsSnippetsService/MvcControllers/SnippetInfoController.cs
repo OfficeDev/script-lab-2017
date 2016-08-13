@@ -43,12 +43,12 @@ namespace OfficeJsSnippetsService.MvcControllers
                 model.Name = entity.Name;
                 model.DownloadZipUri = "/api/snippets/{0}/zipped".FormatInvariant(snippetId);
 
-                ViewBag.Title = "{0} - OfficeJS API Playground".FormatInvariant(entity.Name);
+                ViewBag.Title = "{0} - Office.js API Playground".FormatInvariant(entity.Name);
             }
             else
             {
                 model.Exists = false;
-                ViewBag.Title = "OfficeJS API Playground - Snippet not found";
+                ViewBag.Title = "Office.js API Playground - Snippet not found";
             };
 
             return View(model);

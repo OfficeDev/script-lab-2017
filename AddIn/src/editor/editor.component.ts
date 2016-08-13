@@ -17,6 +17,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     status: string;
     error: boolean;
     editMode: boolean = false;
+    editorLoaded: boolean = false;
     private timeout;
 
     @ViewChild(Tabs) tabs: Tabs;
@@ -38,6 +39,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         );
 
         this.markDispose(subscription);
+
+        this.tabs.setSaveAction(() => {
+             this.save();
+        })
     }
 
     back() {
@@ -48,35 +53,69 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     }
 
-    save() {
+    private _forceNameOrStop(): boolean {
+        if (Utilities.isEmpty(this.snippet.meta.name)) {
+            this._showStatus("Please provide a name for the snippet.", true);
+            this.editMode = true;
+            return true;
+	    }
+        return false;
+    }
+
+	save(): Promise<void> {
+        if (this._forceNameOrStop()) {
+            return Promise.resolve();
+        }
+
         this.snippet = this._composeSnippetFromEditor();
-        return this._snippetManager.save(this.snippet)
+	    return this._snippetManager.save(this.snippet)
             .then(snippet => {
-                this._showStatus('Saved ' + snippet.meta.name);                
-            }).
-            catch(e => {
+               this._showStatus('Saved ' + snippet.meta.name);
+            })
+            .catch(e => {
                 this._showStatus(e, true);
-                throw 'cannot run';
             })
     }
 
-    delete() {
+	delete(): Promise<void> {
         return this._snippetManager.delete(this.snippet)
             .then(snippet => {
                 return this._showStatus('Deleted ' + this.snippet.meta.name)
                     .then(() => {
                         this._router.navigate(['new']);
                     });
-            }).
-            catch(e => {
+            })
+            .catch(e => {
                 return this._showStatus(e, true);
             });
     }
 
-    run() {
+    run(): Promise<void> {
+        if (this._forceNameOrStop()) {
+            return Promise.resolve();
+        }
+
         this.save().then(() => { 
             this._router.navigate(['run', this.snippet.meta.id]);
         });
+    }
+
+    duplicate(): Promise<void> {
+        if (this._forceNameOrStop()) {
+            return Promise.resolve();
+        }
+
+        this._snippetManager.duplicate(this._composeSnippetFromEditor())
+            .then(duplicateSnippet => {
+                this._router.navigate(['edit', duplicateSnippet.meta.id]);
+                return duplicateSnippet
+            })
+            .then((duplicateSnippet) => {
+                this._showStatus('Created duplicate snippet ' + duplicateSnippet.meta.name)
+            })
+            .catch(e => {
+                return this._showStatus(e, true);
+            });
     }
 
     private _showStatus(message: string, error?: boolean) {
