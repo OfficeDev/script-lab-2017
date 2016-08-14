@@ -5,3 +5,5 @@ export * from './utilities';
 export * from './exception.helper';
 export * from './request.helper';
 export * from './snippetwriter.helper';
+export * from './message-strings';
+export * from './expected-error';

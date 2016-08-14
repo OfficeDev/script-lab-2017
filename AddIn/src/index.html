@@ -9,11 +9,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
     <link rel="stylesheet" href="node_modules/office-ui-fabric/dist/css/fabric.components.min.css" />
     <link rel="stylesheet" href="node_modules/office-ui-fabric/dist/css/fabric.min.css" />
 
+    <script>
+        window.originalFunctions = {};
+        window.originalFunctions.alert = window.alert;
+        window.originalFunctions.confirm = window.confirm;
+        window.originalFunctions.prompt = window.prompt;
+    </script>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script>
+        window.alert = window.originalFunctions.alert;
+        window.confirm = window.originalFunctions.confirm;
+        window.prompt = window.originalFunctions.prompt;
+        delete window.originalFunctions;
+    </script>
+    
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/underscore/underscore.js"></script>
     <script src="vs/loader.js"></script>

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {ISnippet, Snippet, SnippetService} from '../services';
-import {StorageHelper, Utilities, ContextType} from '../helpers';
+import {StorageHelper, Utilities, ContextType, MessageStrings, ExpectedError} from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -13,29 +13,41 @@ export class SnippetManager {
 
     new(): Promise<Snippet> {
         return new Promise(resolve => {
-            var snippet;
+            var snippet: Snippet;
             if (Utilities.context == ContextType.Web) {
                 snippet = this._createBlankWebSnippet();
             } else {
                 snippet = this._createBlankOfficeJsSnippet();
             }
-            resolve(this._makeNameUniqueAndSave(snippet));
+
+            snippet.makeNameUnique(false /*isDuplicate*/);
+            resolve(this._addSnippetToLocalStorage(snippet));
         });
     }
 
     save(snippet: ISnippet): Promise<Snippet> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty') as any;
-        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject('Snippet name cannot be empty') as any;
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
+        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty')) as any;
         return Promise.resolve(this._snippetsContainer.insert(snippet.meta.id, snippet));
     }
 
-    delete(snippet: ISnippet): Promise<Snippet> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty') as any;
-        return Promise.resolve(this._snippetsContainer.remove(snippet.meta.id));
+    delete(snippet: ISnippet, askForConfirmation: boolean): Promise<any> {
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) {
+            return Promise.reject(new Error('Snippet metadata cannot be empty'));
+        }
+
+        if (askForConfirmation) {
+            if (!window.confirm(`Are you sure you want to delete the snippet "${snippet.meta.name}"?`)) {
+                return Promise.reject(new ExpectedError(MessageStrings.DeletionCancelledByUser));
+            }
+        }
+
+        this._snippetsContainer.remove(snippet.meta.id)
+        return Promise.resolve();
     }
 
-    getLocal(): Promise<ISnippet[]> {
-        return Promise.resolve(this._snippetsContainer.values());
+    getLocal(): ISnippet[] {
+        return this._snippetsContainer.values();
     }
 
     getPlaylist(): Promise<any> {
@@ -70,11 +82,14 @@ export class SnippetManager {
         if (!Utilities.isEmpty(matches)) id = matches[2];
         else {
             var altRegex = /^[0-9a-z]+$/;
-            if (!altRegex.test(privateLink)) return Promise.reject<any>('Please provide either the snippet ID or snippet URL');
+            if (!altRegex.test(privateLink)) return Promise.reject<any>(new Error(MessageStrings.InvalidSnippetIdOrUrl));
             id = privateLink;
         }
 
-        return this._service.get(id).then(snippet => this._makeNameUniqueAndSave(snippet));
+        return this._service.get(id).then(snippet => {
+            snippet.makeNameUnique(false /*isDuplicate*/);
+            return this._addSnippetToLocalStorage(snippet);
+        }).catch((e) => alert(e));
     }
 
     find(id: string): Promise<Snippet> {
@@ -89,7 +104,8 @@ export class SnippetManager {
             if (Utilities.isNull(snippet)) throw "Snippet cannot be null."
             var newSnippet = new Snippet(snippet);
             newSnippet.randomizeId(true);
-            resolve(this._makeNameUniqueAndSave(newSnippet));
+            newSnippet.makeNameUnique(true /*isDuplicate*/);
+            resolve(this._addSnippetToLocalStorage(newSnippet));
         });
     }
 
@@ -103,13 +119,15 @@ export class SnippetManager {
     }
 
     update(snippet: ISnippet, password: string): Promise<any> {
-        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject('Snippet name cannot be empty');
-        if (Utilities.isEmpty(snippet.meta.id)) return Promise.reject('Snippet id cannot be empty');
+        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty'));
+        if (Utilities.isEmpty(snippet.meta.id)) return Promise.reject(new Error('Snippet id cannot be empty'));
         return this._uploadAllContents(snippet);
     }
 
     private _uploadAllContents(snippet: ISnippet): Promise<Snippet> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject('Snippet metadata cannot be empty') as any;
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) {
+            return Promise.reject<any>(new Error('Snippet metadata cannot be empty'));
+        }
         return Promise.all([
             this._service.upload(snippet.meta, snippet.ts, 'js'),
             this._service.upload(snippet.meta, snippet.html, 'html'),
@@ -118,24 +136,9 @@ export class SnippetManager {
         ]).then(() => snippet);
     }
 
-    private _makeNameUniqueAndSave(snippet: ISnippet): Snippet {
-        let escapedName = this._escapeRegex(snippet.meta.name);
-        let regex = new RegExp('^' + escapedName + ' \\(([0-9]+)\\)$');
-        var maxSeen = 0;
-        this._snippetsContainer.values().forEach(value => {
-            var matches = regex.exec(value.meta.name);
-            if (matches) {
-                var num = +matches[1];
-                if (num > maxSeen) maxSeen = num;
-            }
-        });
-
-        snippet.meta.name = escapedName + ' (' + (maxSeen + 1) + ')';
-        return this._snippetsContainer.add(snippet.meta.id, snippet) as Snippet;
-    }
-
-    private _escapeRegex(input: string) {
-        return input.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    private _addSnippetToLocalStorage(snippet: Snippet) {
+        this._snippetsContainer.add(snippet.meta.id, snippet);
+        return snippet;
     }
 
     private _playlist = {
@@ -191,10 +194,6 @@ export class SnippetManager {
 
     private _createBlankOfficeJsSnippet(): Snippet {
         return new Snippet({
-            meta: {
-                name: null,
-                id: null
-            },
             ts: Utilities.stripSpaces(`
                 ${getNamespace()}.run(function(context) {
                     // ...
@@ -206,8 +205,6 @@ export class SnippetManager {
                     }
                 });
             `),
-            html: null,
-            css: null,
             extras: Utilities.stripSpaces(`
                 // Office.js CDN reference
                 https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
@@ -239,15 +236,9 @@ export class SnippetManager {
 
     private _createBlankWebSnippet(): Snippet {
         return new Snippet({
-            meta: {
-                name: null,
-                id: null
-            },
             ts: Utilities.stripSpaces(`
                 console.log("Hello world");
             `),
-            html: null,
-            css: null,
             extras: Utilities.stripSpaces(`
                 // NPM CDN references
                 jquery

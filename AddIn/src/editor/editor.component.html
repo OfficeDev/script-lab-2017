@@ -1,9 +1,9 @@
 <header class="editor__header">
     <ul class="editor-command-bar">
-        <li class="editor-command-bar__command"><i class="ms-Icon ms-Icon--chevronThinLeft" (click)="back()"></i></li>
+        <li class="editor-command-bar__command" (click)="back()"><i class="ms-Icon ms-Icon--chevronThinLeft"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet?.meta?.name}}</span>
-            <input [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
+            <input #name [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
         </li>
         <li [hidden]="!editMode" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--check"></i></li>
         <li [hidden]="editMode" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--save"></i></li>

@@ -3,7 +3,6 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
-import {} from "js-beautify";
 
 @Component({
     selector: 'run',

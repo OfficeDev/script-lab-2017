@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Utilities} from '../shared/helpers';
+import {Utilities, MessageStrings} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
@@ -24,14 +24,22 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     importFlag = false;
 
     ngOnInit() {
-        this._snippetManager.getLocal().then(data => this.localGallery = data);
+        this.localGallery = this._snippetManager.getLocal();
         this._snippetManager.getPlaylist().then(data => this.gallery = data);
     }
 
-    delete(snippet: ISnippet) {
-        this._snippetManager.delete(snippet).then(
-            result => this._snippetManager.getLocal().then(data => this.localGallery = data)
-        );
+    delete(snippet: ISnippet): void {
+        this._snippetManager.delete(snippet, true /*askForConfirmation*/)
+            .then(() => {
+                this.localGallery = this._snippetManager.getLocal();
+            }).catch((e) => {
+                if (e.Message = MessageStrings.DeletionCancelledByUser) {
+                    // do nothing
+                } else {
+                    throw e;
+                    // TODO something should catch this!
+                }
+            });
     }
 
     run(snippet: ISnippet) {
@@ -45,12 +53,6 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             });
         }
         this._router.navigate(['edit', snippet.meta.id]);
-    }
-
-    duplicate(snippet: ISnippet) {
-        this._snippetManager.duplicate(snippet).then(
-            result => this._snippetManager.getLocal().then(data => this.localGallery = data)
-        );
     }
 
     import(snippet?: ISnippetMeta) {

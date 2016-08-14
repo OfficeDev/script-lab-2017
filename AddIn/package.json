@@ -31,7 +31,8 @@
     "underscore": "^1.8.3",
     "office-ui-fabric": "^2.6.1",
     "monaco-editor": "^0.5.3",
-    "js-beautify": "1.6.3"
+    "js-beautify": "1.6.3",
+    "js-md5": "0.4.1"
   },
   "devDependencies": {
     "codelyzer": "^0.0.28",

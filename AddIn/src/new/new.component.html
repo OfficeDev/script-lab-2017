@@ -6,8 +6,8 @@
                 <h3 class="new-list__group-header ms-font-m">My local snippets</h3>
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
+                    <i class="new-list__action ms-Icon ms-Icon--pencil" (click)="select(snippet)"></i>
                     <i class="new-list__action ms-Icon ms-Icon--play" (click)="run(snippet)"></i>
-                    <i class="new-list__action ms-Icon ms-Icon--copy" (click)="duplicate(snippet)"></i>
                     <i class="new-list__action ms-Icon ms-Icon--trash" (click)="delete(snippet)"></i>
                 </article>
                 <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">

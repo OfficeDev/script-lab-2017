@@ -1,4 +1,5 @@
-import {Utilities} from '../helpers';
+import {Utilities, MessageStrings} from '../helpers';
+import {SnippetManager} from './snippet.manager';
 
 export class Snippet implements ISnippet {
     meta: {
@@ -13,19 +14,20 @@ export class Snippet implements ISnippet {
     css: string;
     extras: string;
 
-    hash: string;
     jsHash: string;
 
     private _compiledJs: string;
 
     constructor(snippet: ISnippet) {
+        this.meta = _.extend({}, snippet.meta || {name: undefined, id: undefined});
+        this.ts = snippet.ts || "";
+        this.css = snippet.css || "";
+        this.html = snippet.html || "";
+        this.extras = snippet.extras || "";
 
-        this.meta = _.extend({}, snippet.meta);
-        if (Utilities.isNullOrWhitespace(this.meta.name)) this.meta.name = 'New Snippet';
-        this.randomizeId();
-
-        if (Utilities.isNull(this.meta)) throw 'Snippet metadata cannot be empty.';
-        this._default(snippet);
+        if (Utilities.isNullOrWhitespace(this.meta.id)) {
+            this.randomizeId();
+        }
     }
 
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
@@ -92,9 +94,16 @@ export class Snippet implements ISnippet {
         return url.substr(url.indexOf("//"));
     }
 
-    randomizeId(force?: boolean) {        
-        if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1)
-            this.meta.id = '~!L' + Utilities.randomize(10000).toString();
+    randomizeId(force?: boolean) {
+        var localSnippets = new SnippetManager(null).getLocal(); 
+        if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1) {
+            this.meta.id = '~!L' + Utilities.randomize(Math.max(10000, localSnippets.length * 10)).toString();
+        }
+
+        // Ensure it is, in fact, unique
+        if (localSnippets.find(item => (item.meta.id === this.meta.id))) {
+            this.randomizeId(true /*force*/);
+        }
     }
 
     static _isValid(scriptText): boolean {
@@ -112,17 +121,62 @@ export class Snippet implements ISnippet {
         return Promise.resolve(ts);
     }
 
-    private _hash() {
-        // FIXME
+    public computeHash(): string {
+        var md5: (input: string) => string = require('js-md5');
+        return md5([this.ts, this.html, this.css, this.extras].map(item => md5(item)).join(":"));
     }
 
-    // TODO: this is where we'll have our default code for each format.
-    private _default(snippet: ISnippet) {
-        this.ts = snippet.ts || "";
-        this.css = snippet.css || "";
-        this.html = snippet.html || "";
-        this.extras = snippet.extras || "";
-    }    
+    public makeNameUnique(isDuplicate: boolean): void {
+        var localSnippets = new SnippetManager(null).getLocal(); 
+
+        if (Utilities.isNullOrWhitespace(name)) {
+            this.meta.name = MessageStrings.NewSnippetName;
+        }
+
+        if (isNameUnique(this)) {
+            return;
+        }
+
+        // If name doesn't have "copy" in it, try to use "<name> - copy".
+        // Otherwise (or if the copy one is already taken), find the first available "<name> - copy <number>".
+        var regex = /(.*) - copy( \d+)?$/i;
+        /*  Will match these:
+                test - copy
+                test - copy 1
+                test - copy 2
+                test - copy 222
+            But not these:
+                test
+                test - copy 222 gaga
+        */
+        var regexMatches = regex.exec(name);
+        var prefix = this.meta.name;
+
+        if (regexMatches === null) {
+            if (isDuplicate) {
+                this.meta.name = prefix + " - copy";
+                if (isNameUnique(this)) {
+                    return;
+                }
+            }
+        } else {
+            prefix = regexMatches[0];
+        }
+        
+        var i = 1;
+        while (true) {
+            this.meta.name = `${prefix}${isDuplicate ? " - copy " : " "}${i}`;
+            if (isNameUnique(this)) {
+                return;               
+            }
+            i++;
+        }
+
+        function isNameUnique(snippet: Snippet) {
+            return Utilities.isNull(localSnippets.find((item) => 
+                (item.meta.id != snippet.meta.id && item.meta.name == snippet.meta.name)));
+        }
+    }
 }
 
 export enum OfficeClient {
@@ -142,11 +196,9 @@ export interface ISnippetMeta {
 }
 
 export interface ISnippet {
-    meta: ISnippetMeta;
+    meta?: ISnippetMeta;
     ts?: string;
     html?: string;
     css?: string;
     extras?: string;
-    hash?: string;
-    jsHash?: string;
 }
