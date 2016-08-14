@@ -42,13 +42,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this.snippet = snippet;
-                    if (Utilities.isNullOrWhitespace(this.snippet.meta.name)) {
-                        this.snippet.makeNameUnique(false /*isCopy*/);
+                    if (params['new']) {
                         this._isBrandNewUnsavedSnippet = true;
                     }
                     this._lastSaveHash = this.snippet.computeHash();
                 })
-                .catch(e => this._showStatus(e, true))
+                .catch(this._errorHandler)
         );
 
         this.markDispose(subscription);
@@ -75,6 +74,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     back(): void {
+        if (this.editMode) {
+            this.editMode = false;
+            return;
+        }
+        
         const navigateHomeAction = () => this._router.navigate(['new']);
 
         var promptToSave = 
@@ -99,7 +103,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     }
 
-    private _forceNameOrStop(): Promise<void> {
+    private _validateNameBeforeProceeding(): Promise<void> {
         if (Utilities.isEmpty(this.snippet.meta.name)) {
             this._showNameFieldAndSetFocus();
             return Promise.reject(new Error(MessageStrings.PleaseProvideNameForSnippet));
@@ -128,7 +132,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     private _saveHelper(): Promise<Snippet> {
-        return this._forceNameOrStop().then(() => {
+        return this._validateNameBeforeProceeding().then(() => {
             this.snippet = this._composeSnippetFromEditor();
 	        return this._snippetManager.save(this.snippet);
         });
@@ -139,38 +143,28 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             .then(() => {
                 this._router.navigate(['new']);
             })
-            .catch(e => {
-                return this._showStatus(e, true);
-            });
+            .catch(this._errorHandler);
     }
 
-    run(): Promise<void> {
-        if (this._forceNameOrStop()) {
-            return Promise.resolve();
-        }
-
-        this.save().then(() => { 
-            this._router.navigate(['run', this.snippet.meta.id]);
-        });
+    run(): Promise<any> {
+        return this._validateNameBeforeProceeding()
+            .then(() => this.save())
+            .then(() => this._router.navigate(['run', this.snippet.meta.id, true /*returnToEdit*/]))
+            .catch(this._errorHandler);
     }
 
     duplicate(): Promise<void> {
-        if (this._forceNameOrStop()) {
-            return Promise.resolve();
-        }
-
-        this._snippetManager.duplicate(this._composeSnippetFromEditor())
+        return this._validateNameBeforeProceeding()
+            .then(() => this._snippetManager.duplicate(this._composeSnippetFromEditor()))
             .then(duplicateSnippet => {
-                this._router.navigate(['edit', duplicateSnippet.meta.id]);
+                this._router.navigate(['edit', duplicateSnippet.meta.id, true /*new*/]);
                 return duplicateSnippet
             })
             .then((duplicateSnippet) => {
                 this._showStatus('Created duplicate snippet');
                 this._showNameFieldAndSetFocus();
             })
-            .catch(e => {
-                return this._showStatus(e, true);
-            });
+            .catch(this._errorHandler);
     }
 
     private _showStatus(message: string, error?: boolean): void {

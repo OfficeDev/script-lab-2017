@@ -43,16 +43,16 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     run(snippet: ISnippet) {
-        this._router.navigate(['run', snippet.meta.id]);
+        this._router.navigate(['run', snippet.meta.id, false /*returnToEdit*/]);
     }
 
     select(snippet?: ISnippet) {
         if (Utilities.isEmpty(snippet)) {
             return this._snippetManager.new().then(newSnippet => {
-                this._router.navigate(['edit', newSnippet.meta.id]);
+                this._router.navigate(['edit', newSnippet.meta.id, true /*new*/]);
             });
         }
-        this._router.navigate(['edit', snippet.meta.id]);
+        this._router.navigate(['edit', snippet.meta.id, false /*new*/]);
     }
 
     import(snippet?: ISnippetMeta) {

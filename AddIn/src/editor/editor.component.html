@@ -2,7 +2,11 @@
     <ul class="editor-command-bar">
         <li class="editor-command-bar__command" (click)="back()"><i class="ms-Icon ms-Icon--chevronThinLeft"></i></li>
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
-            <span [hidden]="editMode" (click)="editMode = !editMode">{{snippet?.meta?.name}}</span>
+            <span [hidden]="editMode" (click)="editMode = !editMode;">{{snippet?.meta?.name}}</span>
+            <!--<span [hidden]="editMode" (click)="editMode = !editMode; $event.stopPropagation();">
+                <span (click)="editMode = !editMode; $event.stopPropagation();">{{snippet?.meta?.name}}</span>
+                <i (click)="editMode = !editMode; $event.stopPropagation();" class="edit-name-icon ms-Icon ms-Icon--styleRemove"></i>
+            </span>-->
             <input #name [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
         </li>
         <li [hidden]="!editMode" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--check"></i></li>

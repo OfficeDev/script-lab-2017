@@ -43,7 +43,7 @@
             padding: 0;
             @include ellipsis();
 
-            span {
+            > span {
                 display: block;
                 padding: 12px;
                 width: calc(100% - 24px);
@@ -77,4 +77,16 @@
             border: solid 1px $accent-background-primary;
         }
     }
+}
+
+.edit-name-icon {
+    color: #217346 !important;
+    font-size: 1.5em;
+    margin-left: 15px;
+    position: relative;
+    top: 4px;
+}
+
+.editor-command-bar__command:hover i {
+    color: white !important;
 }

@@ -22,6 +22,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     private $console: JQuery;
     private $consoleText: JQuery;
+    private _returnToEdit: boolean;
 
     constructor(
         private _snippetManager: SnippetManager,
@@ -46,6 +47,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         };
 
         var subscription = this._route.params.subscribe(params => {
+            this._returnToEdit = params['returnToEdit'] === 'true';
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this._snippet = snippet;
@@ -216,7 +218,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     back() {
-        this._router.navigate(['edit', this._snippet.meta.id]);
+        if (this._returnToEdit) {
+            this._router.navigate(['edit', this._snippet.meta.id, false /*new*/]);
+        } else {
+            this._router.navigate(['new']);            
+        }
     }
 
     refresh() {
