@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Utilities, MessageStrings} from '../shared/helpers';
+import {Utilities, ExpectedError} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
@@ -33,7 +33,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
             }).catch((e) => {
-                if (e.Message = MessageStrings.DeletionCancelledByUser) {
+                if (e instanceof ExpectedError) {
                     // do nothing
                 } else {
                     throw e;

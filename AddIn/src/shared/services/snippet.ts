@@ -25,6 +25,8 @@ export class Snippet implements ISnippet {
         this.html = snippet.html || "";
         this.extras = snippet.extras || "";
 
+        this._hash = snippet._hash;
+
         if (Utilities.isNullOrWhitespace(this.meta.id)) {
             this.randomizeId();
         }
@@ -121,9 +123,16 @@ export class Snippet implements ISnippet {
         return Promise.resolve(ts);
     }
 
-    public computeHash(): string {
+    _hash: string;
+    get hash(): string {
+        if (Utilities.isEmpty(this._hash)) {
+            this.updateHash();
+        }
+        return this._hash;
+    }
+    public updateHash(): void {
         var md5: (input: string) => string = require('js-md5');
-        return md5([this.ts, this.html, this.css, this.extras].map(item => md5(item)).join(":"));
+        this._hash = md5([this.ts, this.html, this.css, this.extras].map(item => md5(item)).join(":"));
     }
 
     public makeNameUnique(isDuplicate: boolean): void {
@@ -201,4 +210,6 @@ export interface ISnippet {
     html?: string;
     css?: string;
     extras?: string;
+
+    _hash?: string;
 }

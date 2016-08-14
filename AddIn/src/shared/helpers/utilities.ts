@@ -4,6 +4,10 @@ export enum ContextType {
     Excel
 }
 
+export class ExpectedError {
+    // Placeholder class just to indicate that the error was in fact an expected rejection.
+}
+
 export class Utilities {
     private static _context: ContextType = null;
 

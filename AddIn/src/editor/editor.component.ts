@@ -20,7 +20,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     editMode = false;
 
     private _isBrandNewUnsavedSnippet = false;
-    private _lastSaveHash: string;
     private _timeout;
 
     @ViewChild(Tabs) tabs: Tabs;
@@ -42,10 +41,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this.snippet = snippet;
-                    if (params['new']) {
+                    if (params['new'] === 'true') {
                         this._isBrandNewUnsavedSnippet = true;
                     }
-                    this._lastSaveHash = this.snippet.computeHash();
                 })
                 .catch(this._errorHandler)
         );
@@ -82,7 +80,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         const navigateHomeAction = () => this._router.navigate(['new']);
 
         var promptToSave = 
-            (this._lastSaveHash != this._composeSnippetFromEditor().computeHash()) ||
+            (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
             this._isBrandNewUnsavedSnippet;
 
         if (promptToSave && window.confirm(`Save the snippet "${this.snippet.meta.name}" before going back?`)) {
@@ -125,7 +123,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return this._saveHelper()
             .then((snippet) => {
                 this._isBrandNewUnsavedSnippet = false;
-                this._lastSaveHash = snippet.computeHash();
 	            this._showStatus(`Saved "${snippet.meta.name}"`);
             })
             .catch(this._errorHandler);
@@ -148,7 +145,15 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     run(): Promise<any> {
         return this._validateNameBeforeProceeding()
-            .then(() => this.save())
+            .then(() => {
+                if (this.snippet.hash != this._composeSnippetFromEditor().hash) {
+                    if (window.confirm("You need to save the snippet before running it. Would you like to save now?")) {
+                        return this._saveHelper();
+                    } else {
+                        throw new ExpectedError();
+                    }
+                }
+            })
             .then(() => this._router.navigate(['run', this.snippet.meta.id, true /*returnToEdit*/]))
             .catch(this._errorHandler);
     }
@@ -177,16 +182,20 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
         this._timeout = setTimeout(() => {
             clearTimeout(this._timeout);
-            this.status = null;
-            this.error = false;
+            this._clearStatus();
         }, 5000);
+    }
+
+    private _clearStatus() {
+        this.status = null;
+        this.error = false;
     }
 
     private _errorHandler(e: any): void {
         if (_.isString(e)) {
             this._showStatus(e, true /*error*/);
         } else if (e instanceof ExpectedError) {
-            this._showStatus(e.message, false /*error*/);
+            this._clearStatus();
         } else if (e instanceof Error) {
             this._showStatus(e.message, true /*error*/);
         } else {

@@ -25,9 +25,10 @@ export class SnippetManager {
         });
     }
 
-    save(snippet: ISnippet): Promise<Snippet> {
+    save(snippet: Snippet): Promise<ISnippet> {
         if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
         if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty')) as any;
+        snippet.updateHash();
         return Promise.resolve(this._snippetsContainer.insert(snippet.meta.id, snippet));
     }
 
@@ -38,7 +39,7 @@ export class SnippetManager {
 
         if (askForConfirmation) {
             if (!window.confirm(`Are you sure you want to delete the snippet "${snippet.meta.name}"?`)) {
-                return Promise.reject(new ExpectedError(MessageStrings.DeletionCancelledByUser));
+                return Promise.reject(new ExpectedError());
             }
         }
 
