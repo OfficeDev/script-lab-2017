@@ -75,7 +75,7 @@ export class Snippet implements ISnippet {
     getCssStylesheets(): Array<string> {
         return Utilities.stringOrEmpty(this.extras).split("\n")
             .map((entry) => entry.trim().toLowerCase())
-            .filter((entry) => entry.endsWith(".css"))
+            .filter((entry) => !entry.startsWith("//") && entry.endsWith(".css"))
             .map((entry) => {
                 if (Snippet._entryIsUrl(entry)) {
                     return Snippet._normalizeUrl(entry);
@@ -84,6 +84,23 @@ export class Snippet implements ISnippet {
                 // otherwise assume it's an NPM package name
                 return "//npmcdn.com/" + entry;
             })
+    }
+
+    /**
+     * Returns TypeScript definitions in sorted order
+     */
+    getTypeScriptDefinitions(): Array<string> {
+        return Utilities.stringOrEmpty(this.extras).split("\n")
+            .map((entry) => entry.trim().toLowerCase())
+            .filter((entry) => !entry.startsWith("//") && (entry.startsWith("@types") || entry.endsWith(".ts")))
+            .map((entry) => {
+                if (entry.startsWith("@types")) {
+                    return "//npmcdn.com/" + entry + "/index.d.ts";
+                }
+
+                return Snippet._normalizeUrl(entry);
+            })
+            .sort();
     }
 
     static _entryIsUrl(entry: string): boolean {

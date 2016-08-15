@@ -4,7 +4,13 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError} from '../shared/helpers';
+import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, ErrorUtil} from '../shared/helpers';
+
+enum StatusType {
+    info,
+    warning,
+    error
+}
 
 @Component({
     selector: 'editor',
@@ -16,8 +22,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     snippet = new Snippet({ meta: { name: null, id: null } });
     
     status: string;
-    error = false;
+    statusType: StatusType;
     editMode = false;
+    currentIntelliSense: string[];
 
     private _isBrandNewUnsavedSnippet = false;
     private _timeout;
@@ -37,15 +44,18 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnInit() {
-        var subscription = this._route.params.subscribe(params =>
+        var subscription = this._route.params.subscribe(params => {
+            if (params['new'] === 'true') {
+                this._isBrandNewUnsavedSnippet = true;
+            }
+            
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this.snippet = snippet;
-                    if (params['new'] === 'true') {
-                        this._isBrandNewUnsavedSnippet = true;
-                    }
+                    this.currentIntelliSense = snippet.getTypeScriptDefinitions();
                 })
-                .catch(this._errorHandler)
+                .catch(this._errorHandler);
+            }
         );
 
         this.markDispose(subscription);
@@ -53,6 +63,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         this.tabs.setSaveAction(() => {
              this.save();
         })
+
+        this.tabs.parentEditor = this;
     }
 
     // TODO (ask Bhargav): how to validate name?
@@ -69,6 +81,16 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         setTimeout(() => {
             $(this.nameInputField.nativeElement).focus(); // TODO: doesn't seem to do anything
         }, 100);
+    }
+
+    onSwitchFocusToJavaScript(): void {
+        var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
+        if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
+            this._showStatus(StatusType.warning,
+                "It looks like your IntelliSense references have changed. " + 
+                "To see those changes live, go back to the home page and re-select this snippet.");
+        }
+
     }
 
     back(): void {
@@ -123,7 +145,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return this._saveHelper()
             .then((snippet) => {
                 this._isBrandNewUnsavedSnippet = false;
-	            this._showStatus(`Saved "${snippet.meta.name}"`);
+	            this._showStatus(StatusType.info, `Saved "${snippet.meta.name}"`);
             })
             .catch(this._errorHandler);
     }
@@ -147,7 +169,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return this._validateNameBeforeProceeding()
             .then(() => {
                 if (this.snippet.hash != this._composeSnippetFromEditor().hash) {
-                    if (window.confirm("You need to save the snippet before running it. Would you like to save now?")) {
+                    if (window.confirm("You need to save the snippet before running it. " + 
+                        "Would you like to save now? Alternatively, if you're in the middle of a risky change, " + 
+                        "you can cancel out of this dialog and click \"duplicate\" instead before running.")
+                    ){
                         return this._saveHelper();
                     } else {
                         throw new ExpectedError();
@@ -166,19 +191,19 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                 return duplicateSnippet
             })
             .then((duplicateSnippet) => {
-                this._showStatus('Created duplicate snippet');
+                this._showStatus(StatusType.info, 'Created duplicate snippet');
                 this._showNameFieldAndSetFocus();
             })
             .catch(this._errorHandler);
     }
 
-    private _showStatus(message: string, error?: boolean): void {
+    private _showStatus(statusType: StatusType, message: string): void {
         if (!Utilities.isNull(this._timeout)) {
             clearTimeout(this._timeout);
         }
 
         this.status = message;
-        this.error = error;
+        this.statusType = statusType;
 
         this._timeout = setTimeout(() => {
             clearTimeout(this._timeout);
@@ -188,19 +213,20 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     private _clearStatus() {
         this.status = null;
-        this.error = false;
+        this.statusType = StatusType.info;
     }
 
+    get isStatusWarning() { return this.statusType === StatusType.warning; }
+    get isStatusError() { return this.statusType === StatusType.error; }
+
     private _errorHandler(e: any): void {
-        if (_.isString(e)) {
-            this._showStatus(e, true /*error*/);
-        } else if (e instanceof ExpectedError) {
+        if (e instanceof ExpectedError) {
             this._clearStatus();
-        } else if (e instanceof Error) {
-            this._showStatus(e.message, true /*error*/);
-        } else {
-            this._showStatus(e, true /*error*/);
+            return;
         }
+        
+        var message = ErrorUtil.extractMessage(e);
+        this._showStatus(StatusType.error, message);
     }
 
     private _composeSnippetFromEditor() {

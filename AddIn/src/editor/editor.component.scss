@@ -20,6 +20,11 @@
         &--error {
             background-color: #FF4444;
             color: lighten(#FF4444, 60%);
+        }
+
+        &--warning {
+            background-color: orange;
+            color: black;
         } 
     }
 }

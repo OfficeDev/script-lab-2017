@@ -4,10 +4,6 @@ export enum ContextType {
     Excel
 }
 
-export class ExpectedError {
-    // Placeholder class just to indicate that the error was in fact an expected rejection.
-}
-
 export class Utilities {
     private static _context: ContextType = null;
 
@@ -48,12 +44,9 @@ export class Utilities {
     }
 
     static stripSpaces(text: string) {
-        let lines: string[] = text.split('\n');
-
-        // Replace each tab with 4 spaces.
-        for (let i: number = 0; i < lines.length; i++) {
-            lines[i].replace('\t', '    ');
-        }
+        let lines: string[] = text.split('\n').map(function(item) {
+			return item.replace(new RegExp("\t", 'g'), "    ");
+		});
 
         let isZeroLengthLine: boolean = true;
         let arrayPosition: number = 0;
@@ -111,8 +104,10 @@ export class Utilities {
                 finalSetOfLines += lines[i];
             }
         }
+        
         return finalSetOfLines;
     }
+
 
     static indentAll(text: string, indentSize: number) {
         var lines: string[] = text.split('\n');

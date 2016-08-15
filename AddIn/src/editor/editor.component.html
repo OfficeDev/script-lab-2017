@@ -24,6 +24,9 @@
         <tab name="Libraries" language="text" [content]="snippet.extras"></tab>
     </tabs>
 </section>
-<section class="editor__footer ms-font-m" [ngClass]="{'editor__footer--error':error}">
+<section class="editor__footer ms-font-m" [ngClass]="{
+    'editor__footer--warning': isStatusWarning, 
+    'editor__footer--error': isStatusError
+}">
     <span *ngIf="!!!status" class="ms-u-slideUpIn20">Office.js API Playground</span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span>
 </section>

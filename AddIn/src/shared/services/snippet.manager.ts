@@ -217,8 +217,8 @@ export class SnippetManager {
                 office-ui-fabric/dist/css/fabric.components.min.css
 
                 // IntelliSense definitions
-                @types/jquery
-                @types/office-js
+                https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
+                https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
                 @types/office-ui-fabric
             `)
         });
@@ -245,7 +245,7 @@ export class SnippetManager {
                 jquery
 
                 // IntelliSense definitions
-                @types/jquery
+                https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
             `)
         });
     }
