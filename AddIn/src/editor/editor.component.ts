@@ -86,9 +86,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     onSwitchFocusToJavaScript(): void {
         var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
-            this._showStatus(StatusType.warning,
+            this._showStatus(StatusType.warning, 10 /*seconds*/,
                 "It looks like your IntelliSense references have changed. " + 
-                "To see those changes live, go back to the home page and re-select this snippet.");
+                'To see those changes live, please re-load this page (see the "refresh" icon at thee bottom right corner.');
         }
     }
 
@@ -125,6 +125,27 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         }
     }
 
+    refresh(): void {
+        var promptToSave = 
+            (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
+            this._isBrandNewUnsavedSnippet;
+
+        if (promptToSave) {
+            UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before re-loading the page?`, ['Save', 'Discard Changes'])
+                .then((choice) => {
+                    if (choice == "Save") {
+                        this._saveHelper()
+                        .then(Utilities.reloadPage)
+                        .catch(this._errorHandler);
+                    } else {
+                        Utilities.reloadPage();
+                    }
+                });
+        } else {
+            Utilities.reloadPage();
+        }
+    }
+
     share() {
 
     }
@@ -151,7 +172,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return this._saveHelper()
             .then((snippet) => {
                 this._isBrandNewUnsavedSnippet = false;
-	            this._showStatus(StatusType.info, `Saved "${snippet.meta.name}"`);
+	            this._showStatus(StatusType.info, 3 /*seconds*/,`Saved "${snippet.meta.name}"`);
             })
             .catch(this._errorHandler);
     }
@@ -201,13 +222,13 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                 return duplicateSnippet
             })
             .then((duplicateSnippet) => {
-                this._showStatus(StatusType.info, 'Created duplicate snippet');
+                this._showStatus(StatusType.info, 3 /*seconds*/, 'Created duplicate snippet');
                 this._showNameFieldAndSetFocus();
             })
             .catch(this._errorHandler);
     }
 
-    private _showStatus(statusType: StatusType, message: string): void {
+    private _showStatus(statusType: StatusType, seconds: number, message: string): void {
         if (!Utilities.isNull(this._timeout)) {
             clearTimeout(this._timeout);
         }
@@ -217,11 +238,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
         this._timeout = setTimeout(() => {
             clearTimeout(this._timeout);
-            this._clearStatus();
-        }, 5000);
+            this.clearStatus();
+        }, seconds * 1000);
     }
 
-    private _clearStatus() {
+    clearStatus() {
         this.status = null;
         this.statusType = StatusType.info;
     }
@@ -231,12 +252,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     private _errorHandler(e: any): void {
         if (e instanceof ExpectedError) {
-            this._clearStatus();
+            this.clearStatus();
             return;
         }
         
         var message = UxUtil.extractErrorMessage(e);
-        this._showStatus(StatusType.error, message);
+        this._showStatus(StatusType.error, 5 /*seconds*/, message);
     }
 
     private _composeSnippetFromEditor() {

@@ -35,6 +35,7 @@ export class UxUtil {
                 }
                 
                 var $buttonPane = $('.ui-dialog-buttonpane', $dialogRoot);
+                $buttonPane.empty();
                 buttons.forEach(function(buttonLabel) {
                     var $button = $('<button type="button" class="ui-button ui-corner-all ui-widget"></button>');
                     

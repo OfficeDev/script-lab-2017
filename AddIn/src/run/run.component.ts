@@ -165,8 +165,4 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             this._router.navigate(['new']);            
         }
     }
-
-    refresh() {
-        window.location.reload();
-    }
 }

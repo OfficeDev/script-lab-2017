@@ -167,6 +167,10 @@ export class Utilities {
         }
     }
 
+    static reloadPage() {
+        window.location.reload();
+    }
+
     static get isExcel() {
         return this._context == ContextType.Excel;
     }

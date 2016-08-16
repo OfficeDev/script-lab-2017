@@ -28,5 +28,9 @@
     'editor__footer--warning': isStatusWarning, 
     'editor__footer--error': isStatusError
 }">
-    <span *ngIf="!!!status" class="ms-u-slideUpIn20">Office.js API Playground</span><span *ngIf="!!status" class="ms-u-slideUpIn20">{{status}}</span>
+    <div id="editor-status-text">
+        <div *ngIf="!!!status" class="ms-u-slideUpIn20">Office.js API Playground</div>
+        <div *ngIf="!!status" class="ms-u-slideUpIn20" (click)="clearStatus">{{status}}</div>
+    </div>
+    <span id="refresh" (click)="refresh()">&#8635;</span>
 </section>

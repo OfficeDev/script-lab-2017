@@ -44,7 +44,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     @ViewChild('editor') private _editor: ElementRef;
     @ViewChild('loader') private _loader: ElementRef;
 
-    progressMessage = "Initializing IntelliSense";
+    progressMessage = "Loading the snippet";
     editorLoaded: boolean;
 
     private _saveAction: () => void;
@@ -59,8 +59,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         var that = this;
 
         waitForIntelliSenseListToBeReady()
-            .then(() =>{ 
-                console.log("IntelliSense has been loaded");
+            .then(() => {
+                // FXIME: realistically some of this time is loading editor as well, for fairness may want to refactor.
+                this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
                     this._initiateLoadIntelliSense(this.parentEditor.currentIntelliSense)
                         .catch(UxUtil.showErrorNotification)
@@ -77,7 +78,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
                 function wait() {
                     if (that.parentEditor == null || that.parentEditor.currentIntelliSense == null) {
-                        setTimeout(wait, 100);
+                        setTimeout(wait, 20);
                     } else {
                         resolve();
                     }
@@ -184,6 +185,10 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     get currentState(): IDictionary<string> {
+        if (!this._monacoEditor) {
+            return null;
+        }
+        
         this.selectedTab.state = this._monacoEditor.saveViewState();
         this.selectedTab.model = this._monacoEditor.getModel();
         this.selectedTab.content = this._monacoEditor.getValue();

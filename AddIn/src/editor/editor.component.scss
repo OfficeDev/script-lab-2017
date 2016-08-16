@@ -95,3 +95,25 @@
 .editor-command-bar__command:hover i {
     color: white !important;
 }
+
+.editor__footer {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+}
+
+#editor-status-text {
+    flex-grow: 1;
+}
+
+#refresh {
+    margin-right: 15px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    right: 10px;
+
+    /* different browsers use different terms for pointer vs. hand, so include both*/
+    cursor: pointer;
+    cursor: hand;
+}
