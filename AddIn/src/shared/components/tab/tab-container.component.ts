@@ -1,7 +1,7 @@
 import {Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter} from '@angular/core';
 import {Http} from '@angular/http';
 import {Subscription} from 'rxjs/Subscription';
-import {Dictionary, IDictionary, Utilities, ErrorUtil} from '../../helpers';
+import {Dictionary, IDictionary, Utilities, UxUtil} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
 
@@ -63,7 +63,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 console.log("IntelliSense has been loaded");
                 (<any>window).require(['vs/editor/editor.main'], () => {
                     this._initiateLoadIntelliSense(this.parentEditor.currentIntelliSense)
-                        .catch(ErrorUtil.notifyUserOfError)
+                        .catch(UxUtil.showErrorNotification)
                         .then(() => {
                             this.progressMessage = "Loading the Monaco editor";
                             this._initializeMonacoEditor();

@@ -11,24 +11,11 @@
 
     <link rel="stylesheet" href="node_modules/office-ui-fabric/dist/css/fabric.components.min.css" />
     <link rel="stylesheet" href="node_modules/office-ui-fabric/dist/css/fabric.min.css" />
-
-    <script>
-        window.originalFunctions = {};
-        window.originalFunctions.alert = window.alert;
-        window.originalFunctions.confirm = window.confirm;
-        window.originalFunctions.prompt = window.prompt;
-    </script>
-    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    <script>
-        window.alert = window.originalFunctions.alert;
-        window.confirm = window.originalFunctions.confirm;
-        window.prompt = window.originalFunctions.prompt;
-        delete window.originalFunctions;
-    </script>
-    
+    <script src="//appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>    
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/underscore/underscore.js"></script>
     <script src="vs/loader.js"></script>
+    <link rel="stylesheet" href="jquery-ui.min.css">
 </head>
 <body>
     <app class="app">
@@ -47,6 +34,18 @@
             </footer>
         </div>
     </app>
+    <div tabindex="-1" class="appwide-overlay-dialog ui-dialog ui-corner-all ui-widget ui-widget-content ui-front ui-dialog-buttons">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span class="ui-dialog-title"></span>
+        </div>
+        <div class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 19px; max-height: none; height: auto;">
+            <p></p>
+        </div>
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+            <div class="ui-dialog-buttonset"></div>
+        </div>
+    </div>
+    <div class="appwide-overlay-dialog ui-widget-overlay ui-front" style="z-index: 100;"></div>
 </body>
 
 </html>

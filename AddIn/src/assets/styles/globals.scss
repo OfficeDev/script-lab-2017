@@ -1,5 +1,6 @@
 ﻿@import 'theme.scss';
 @import 'mixins.scss';
+@import 'jquery-ui-dialog-minimal.scss';
 
 * {
     margin: 0;
@@ -86,4 +87,25 @@ span.console.warn {
 
 span.console.error {
     color: brown;
+}
+
+.appwide-overlay-dialog {
+    display: none;
+}
+
+.appwide-overlay-dialog.ui-dialog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -55%);
+    width: 70%;
+    z-index: 101;
+}
+
+    .appwide-overlay-dialog.ui-dialog .ui-dialog-buttonpane {
+        text-align: right;
+    }
+
+.appwide-overlay-dialog.ui-widget-overlay {
+    z-index: 100;
 }

@@ -4,7 +4,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, ErrorUtil} from '../shared/helpers';
+import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, UxUtil} from '../shared/helpers';
 
 enum StatusType {
     info,
@@ -90,7 +90,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                 "It looks like your IntelliSense references have changed. " + 
                 "To see those changes live, go back to the home page and re-select this snippet.");
         }
-
     }
 
     back(): void {
@@ -105,15 +104,22 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
             this._isBrandNewUnsavedSnippet;
 
-        if (promptToSave && window.confirm(`Save the snippet "${this.snippet.meta.name}" before going back?`)) {
-            this._saveHelper()
-                .then(navigateHomeAction)
-                .catch(this._errorHandler);
-        } else if (this._isBrandNewUnsavedSnippet) {
-            // If user is going back, having never explicitly saved, just delete the snippet.
-            this._snippetManager.delete(this.snippet, false /*askForConfirmation*/)
-                .then(navigateHomeAction)
-                .catch(this._errorHandler);
+        if (promptToSave) {
+            UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before going back?`, ['Yes', 'No'])
+                .then((choice) => {
+                    if (choice == "Yes") {
+                        this._saveHelper()
+                        .then(navigateHomeAction)
+                        .catch(this._errorHandler);
+                    } else if (this._isBrandNewUnsavedSnippet) {
+                        // If user is going back, having never explicitly saved, just delete the snippet.
+                        this._snippetManager.delete(this.snippet, false /*askForConfirmation*/)
+                            .then(navigateHomeAction)
+                            .catch(this._errorHandler);
+                    } else {
+                        navigateHomeAction();
+                    }
+                });
         } else {
             navigateHomeAction();
         }
@@ -169,14 +175,18 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         return this._validateNameBeforeProceeding()
             .then(() => {
                 if (this.snippet.hash != this._composeSnippetFromEditor().hash) {
-                    if (window.confirm("You need to save the snippet before running it. " + 
+                    const message = "You need to save the snippet before running it. " + 
                         "Would you like to save now? Alternatively, if you're in the middle of a risky change, " + 
-                        "you can cancel out of this dialog and click \"duplicate\" instead before running.")
-                    ){
-                        return this._saveHelper();
-                    } else {
-                        throw new ExpectedError();
-                    }
+                        "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet."; 
+                    
+                    return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel out'])
+                        .then((choice) => {
+                            if (choice == 'Save') {
+                                return this._saveHelper();
+                            } else {
+                                throw new ExpectedError();
+                            }
+                        });
                 }
             })
             .then(() => this._router.navigate(['run', this.snippet.meta.id, true /*returnToEdit*/]))
@@ -225,7 +235,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             return;
         }
         
-        var message = ErrorUtil.extractMessage(e);
+        var message = UxUtil.extractErrorMessage(e);
         this._showStatus(StatusType.error, message);
     }
 

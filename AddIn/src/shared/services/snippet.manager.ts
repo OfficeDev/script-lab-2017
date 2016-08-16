@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {ISnippet, Snippet, SnippetService} from '../services';
-import {StorageHelper, Utilities, ContextType, MessageStrings, ExpectedError} from '../helpers';
+import {StorageHelper, Utilities, ContextType, MessageStrings, ExpectedError, UxUtil} from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -37,14 +37,24 @@ export class SnippetManager {
             return Promise.reject(new Error('Snippet metadata cannot be empty'));
         }
 
+        var that = this;
+
         if (askForConfirmation) {
-            if (!window.confirm(`Are you sure you want to delete the snippet "${snippet.meta.name}"?`)) {
-                return Promise.reject(new ExpectedError());
-            }
+            return UxUtil.showDialog("Delete confirmation",
+                    `Are you sure you want to delete the snippet "${snippet.meta.name}"?`, ['Yes', 'No'])
+                .then((choice) => {
+                    if (choice = 'Yes') {
+                        return deleteAndResolvePromise();
+                    } else {
+                        return Promise.reject(new ExpectedError());
+                    }
+                })
         }
 
-        this._snippetsContainer.remove(snippet.meta.id)
-        return Promise.resolve();
+        function deleteAndResolvePromise(): Promise<any> {
+            that._snippetsContainer.remove(snippet.meta.id)
+            return Promise.resolve();
+        }
     }
 
     getLocal(): ISnippet[] {
@@ -90,7 +100,7 @@ export class SnippetManager {
         return this._service.get(id).then(snippet => {
             snippet.makeNameUnique(false /*isDuplicate*/);
             return this._addSnippetToLocalStorage(snippet);
-        }).catch((e) => alert(e));
+        }).catch(UxUtil.showErrorNotification);
     }
 
     find(id: string): Promise<Snippet> {

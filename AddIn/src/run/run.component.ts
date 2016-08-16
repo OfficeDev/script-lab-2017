@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions, ErrorUtil} from '../shared/helpers';
+import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 
 interface IConsoleMessage {
@@ -67,7 +67,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     iframeWindow.document.close();
                 })
                 .catch(e => {
-                    ErrorUtil.notifyUserOfError(e);
+                    UxUtil.showErrorNotification(e);
                 });
         });
 

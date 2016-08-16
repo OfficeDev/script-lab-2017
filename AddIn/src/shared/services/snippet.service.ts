@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import {Utilities, ErrorUtil, RequestHelper} from '../helpers';
+import {Utilities, UxUtil, RequestHelper} from '../helpers';
 import {ISnippet, ISnippetMeta, Snippet} from '../services';
 
 export interface IToken {
@@ -54,6 +54,6 @@ export class SnippetService {
                 css: results[3],
                 extras: results[4]
             }))
-            .catch(ErrorUtil.notifyUserOfError);
+            .catch(UxUtil.showErrorNotification);
     }
 }

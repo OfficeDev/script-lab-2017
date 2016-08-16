@@ -1,4 +1,4 @@
-import {Utilities, MessageStrings, ErrorUtil} from '../helpers';
+import {Utilities, MessageStrings, UxUtil} from '../helpers';
 import {SnippetManager} from './snippet.manager';
 
 export class Snippet implements ISnippet {
@@ -130,7 +130,7 @@ export class Snippet implements ISnippet {
             new Function(scriptText);
             return true;
         } catch (syntaxError) {
-            ErrorUtil.notifyUserOfError(syntaxError);
+            UxUtil.showErrorNotification(syntaxError);
             return false;
         }
     }
