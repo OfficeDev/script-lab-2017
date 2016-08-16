@@ -1,8 +1,13 @@
-import {Component, OnInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions} from '../shared/helpers';
+import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions, ErrorUtil} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
+
+interface IConsoleMessage {
+    type: string,
+    message: string
+}
 
 @Component({
     selector: 'run',
@@ -11,26 +16,27 @@ import {Snippet, SnippetManager} from '../shared/services';
 })
 export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('runner') runner: ElementRef;
-    @ViewChild('console') consoleView: ElementRef;
+    @ViewChild('console') consoleFrame: ElementRef;
 
     private _snippet = new Snippet({ meta: { name: null, id: null } });
 
     private _originalConsole: Console;
     private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
     private _originalConsoleMethods: { [key: string]: () => void; } = {};
-    private _consoleLastShown = false;
-
-    private $console: JQuery;
-    private $consoleText: JQuery;
+    
     private _returnToEdit: boolean;
 
     constructor(
         private _snippetManager: SnippetManager,
         private _route: ActivatedRoute,
-        private _router: Router
+        private _router: Router,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {
         super();
     }
+
+    showConsole = false;
+    consoleMessages: IConsoleMessage[] = [];
 
     ngOnInit() {
         this._originalConsole = window.console;
@@ -61,8 +67,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     iframeWindow.document.close();
                 })
                 .catch(e => {
-                    console.log(e);
-                    // TODO eventually Util instead
+                    ErrorUtil.notifyUserOfError(e);
                 });
         });
 
@@ -82,11 +87,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                 that.logToConsole('error', arguments);
             }
         }
-
-        this.$console = $(this.consoleView.nativeElement);
-        this.$consoleText = $('pre', this.$console);
-
-        this._initializeConsole();
     }
 
     ngOnDestroy() {
@@ -95,21 +95,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this._consoleMethodsToIntercept.forEach(methodName => {
             window.console[methodName] = this._originalConsoleMethods[methodName];
         });
-    }
-
-    private _initializeConsole() {
-        this.$console.height(window.innerHeight / 2);
-
-        $("#console-clear", this.$console).click(() => this.$consoleText.empty());
-        $("#console-close", this.$console).click(() => this._showHideConsole(false));
-    }
-
-    private _showHideConsole(showConsole: boolean) {
-        if (showConsole) {
-            this.$console.show();
-        } else {
-            this.$console.hide();
-        }
     }
 
     private _monkeyPatchConsole(windowToPatch: Window) {
@@ -138,16 +123,19 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         });
     }
 
-    private logToConsole(consoleMethodType: string, args: IArguments) {
-        if (!this.$console) {
-            // Must have been called during initial initialization, before the console is available
-            return;
-        }
+    clearConsole() {
+        this.consoleMessages = [];
+    }
 
+    hideConsole() {
+        this.showConsole = false;
+    }
+
+    private logToConsole(consoleMethodType: string, args: IArguments) {
         var message = '';
         _.each(args, arg => {
             if (_.isString(arg)) message += arg + ' ';
-            else if (_.object(arg) || _.isArray(arg)) message += stringifyPlusPlus(arg) + ' ';
+            else if (_.object(arg) || _.isArray(arg)) message += Utilities.stringifyPlusPlus(arg) + ' ';
         });
         message += '\n';
 
@@ -158,63 +146,16 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             return;
         }
 
-        var span = document.createElement("span");
-        span.classList.add("console");
-        span.classList.add(consoleMethodType);
-        span.innerText = message;
-        this.$consoleText.append(span);
+        this.consoleMessages.push({
+            type: consoleMethodType,
+            message: message
+        })
+        this.showConsole = true;
 
-        this._showHideConsole(true);
-        this.$console.children('.scrollable')[0].scrollTop = $(span)[0].offsetTop;
+        this._changeDetectorRef.detectChanges();
 
-        function stringifyPlusPlus(object) {
-            // Don't JSON.stringify strings, because we don't want quotes in the output
-            if (object == null) {
-                return "null";
-            }
-            if (typeof object == 'string' || object instanceof String) {
-                return object;
-            }
-            if (object.toString() != "[object Object]") {
-                return object.toString();
-            }
-
-            // Otherwise, stringify the object
-
-            return JSON.stringify(object, (key, value) => {
-                if (value && typeof value === "object" && !$.isArray(value)) {
-                    return getStringifiableSnapshot(value);
-                }
-                return value;
-            }, "  ");
-
-            function getStringifiableSnapshot(object: any) {
-                try {
-                    var snapshot: any = {};
-                    var current = object;
-                    var hasOwnProperty = Object.prototype.hasOwnProperty;
-                    function tryAddName(name: string) {
-                        if (name.indexOf("_") < 0 &&
-                            !hasOwnProperty.call(snapshot, name)) {
-                            Object.defineProperty(snapshot, name, {
-                                configurable: true,
-                                enumerable: true,
-                                get: function () {
-                                    return object[name];
-                                }
-                            });
-                        }
-                    }
-                    do {
-                        Object.keys(current).forEach(tryAddName);
-                        current = Object.getPrototypeOf(current);
-                    } while (current);
-                    return snapshot;
-                } catch (e) {
-                    return object;
-                }
-            }
-        }
+        var $consoleScrollable = $(this.consoleFrame.nativeElement).children('.scrollable')[0];
+        $consoleScrollable.scrollTop = $consoleScrollable.scrollHeight;
     }
 
     back() {

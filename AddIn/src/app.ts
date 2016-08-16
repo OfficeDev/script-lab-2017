@@ -5,7 +5,7 @@ import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
 import {MediatorService, SnippetService, SnippetManager} from './shared/services';
-import {Utilities, ExceptionHelper, NotificationHelper, RequestHelper} from './shared/helpers';
+import {Utilities, ErrorUtil, ExceptionHelper, NotificationHelper, RequestHelper} from './shared/helpers';
 
 require('./assets/styles/spinner.scss');
 require('./assets/styles/globals.scss');
@@ -39,7 +39,7 @@ export function launch() {
         ...PROVIDER_OVERRIDES,
         ...APP_PROVIDERS
     ])
-        .catch(err => Utilities.error);
+    .catch(ErrorUtil.notifyUserOfError);
 }
 
 launch();

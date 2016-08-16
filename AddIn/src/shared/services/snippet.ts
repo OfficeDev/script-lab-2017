@@ -1,4 +1,4 @@
-import {Utilities, MessageStrings} from '../helpers';
+import {Utilities, MessageStrings, ErrorUtil} from '../helpers';
 import {SnippetManager} from './snippet.manager';
 
 export class Snippet implements ISnippet {
@@ -45,7 +45,7 @@ export class Snippet implements ISnippet {
         }
         else {
             // FIXME expose to user
-            return Promise.reject<string>("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)");
+            return Promise.reject<string>(new Error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)"));
             // return this._compile(this.ts).then((compiledJs) => {
             //     this._compiledJs = compiledJs;
             //     return compiledJs; 
@@ -130,7 +130,7 @@ export class Snippet implements ISnippet {
             new Function(scriptText);
             return true;
         } catch (syntaxError) {
-            Utilities.error(syntaxError);
+            ErrorUtil.notifyUserOfError(syntaxError);
             return false;
         }
     }

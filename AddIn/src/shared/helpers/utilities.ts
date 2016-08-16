@@ -108,7 +108,6 @@ export class Utilities {
         return finalSetOfLines;
     }
 
-
     static indentAll(text: string, indentSize: number) {
         var lines: string[] = text.split('\n');
         var indentString = "";
@@ -117,6 +116,55 @@ export class Utilities {
         }
 
         return lines.map((line) => indentString + line).join('\n');
+    }
+
+    static stringifyPlusPlus(object) {
+        // Don't JSON.stringify strings, because we don't want quotes in the output
+        if (object == null) {
+            return "null";
+        }
+        if (typeof object == 'string' || object instanceof String) {
+            return object;
+        }
+        if (object.toString() != "[object Object]") {
+            return object.toString();
+        }
+
+        // Otherwise, stringify the object
+
+        return JSON.stringify(object, (key, value) => {
+            if (value && typeof value === "object" && !$.isArray(value)) {
+                return getStringifiableSnapshot(value);
+            }
+            return value;
+        }, "  ");
+
+        function getStringifiableSnapshot(object: any) {
+            try {
+                var snapshot: any = {};
+                var current = object;
+                var hasOwnProperty = Object.prototype.hasOwnProperty;
+                function tryAddName(name: string) {
+                    if (name.indexOf("_") < 0 &&
+                        !hasOwnProperty.call(snapshot, name)) {
+                        Object.defineProperty(snapshot, name, {
+                            configurable: true,
+                            enumerable: true,
+                            get: function () {
+                                return object[name];
+                            }
+                        });
+                    }
+                }
+                do {
+                    Object.keys(current).forEach(tryAddName);
+                    current = Object.getPrototypeOf(current);
+                } while (current);
+                return snapshot;
+            } catch (e) {
+                return object;
+            }
+        }
     }
 
     static get isExcel() {
@@ -129,11 +177,6 @@ export class Utilities {
 
     static get isWeb() {
         return this._context == ContextType.Web;
-    }
-
-    static error<T>(exception?: any): any {
-        console.log('Error: ' + JSON.stringify(exception));
-        return exception;
     }
 
     static get context(): ContextType {

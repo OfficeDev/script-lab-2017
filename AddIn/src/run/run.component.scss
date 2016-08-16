@@ -16,8 +16,9 @@
     }
 
     &__console {
+        flex: 1 1 50%;
+        @include flex();
         background-color: #F4F4F4;
-        height: 300px;
         padding: 15px;
         overflow: auto;
 
@@ -58,7 +59,6 @@
 #console {
 	font-family: Consolas;
 	padding: 5px;
-	display: none;
     font-size: 11pt;
 
     .ms-Button {

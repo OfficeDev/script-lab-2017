@@ -8,12 +8,12 @@
     <iframe #runner id="runner-frame"></iframe>
 </section>
 
-<section class="run__console" #console id="console">
+<section #console class="run__console animate-show" id="console" [hidden]="!showConsole">
     <div>
-        <button class="ms-Button" id="console-clear">Clear</button>
-        <button class="ms-Button" id="console-close">Close</button>
+        <button class="ms-Button" id="console-clear" (click)="clearConsole()">Clear</button>
+        <button class="ms-Button" id="console-close" (click)="hideConsole()">Close</button>
     </div>
     <div class="scrollable">
-        <pre></pre>
+        <pre><span *ngFor="let item of consoleMessages" class="console {{item.type}}">{{item.message}}</span></pre>
     </div>
 </section>

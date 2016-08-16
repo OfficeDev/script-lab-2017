@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, RequestOptions} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
-import {Utilities, StorageHelper} from '../helpers';
+import {Utilities, StorageHelper, ErrorUtil} from '../helpers';
 
 @Injectable()
 export class RequestHelper {
@@ -36,7 +36,7 @@ export class RequestHelper {
         return request
             .map(response => response.text() as string)
             .toPromise()            
-            .catch(error => { Utilities.error(error); });
+            .catch(ErrorUtil.notifyUserOfError);
 
     }
 
@@ -44,6 +44,6 @@ export class RequestHelper {
         return request
             .map(response => response.json() as T)
             .toPromise()
-            .catch(error => { Utilities.error(error); });
+            .catch(ErrorUtil.notifyUserOfError);
     }
 }
