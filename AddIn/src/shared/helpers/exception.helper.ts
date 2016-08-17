@@ -1,4 +1,5 @@
 import {ExceptionHandler} from '@angular/core';
+import {UxUtil} from "./error.helper";
 
 export class ExceptionHelper extends ExceptionHandler {
     call(exception: any, stackTrace?: any, reason?: string) {
@@ -8,5 +9,7 @@ export class ExceptionHelper extends ExceptionHandler {
         console.error(stackTrace);
         console.groupEnd();
         console.groupEnd();
+
+        UxUtil.showErrorNotification(exception);
     }
 }
