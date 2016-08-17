@@ -7,6 +7,10 @@ export class ExpectedError {
 // TODO rename file to UxUtil
 export class UxUtil {
     static showErrorNotification(e: any) {
+        if (e instanceof ExpectedError) {
+            return;
+        }
+        
         var message = Utilities.stringifyPlusPlus(e);
         console.log(message);
 

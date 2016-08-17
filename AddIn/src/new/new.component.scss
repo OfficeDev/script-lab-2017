@@ -130,3 +130,20 @@
         align-self: flex-end;
     }
 }
+
+#local-snippets {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+}
+
+    #local-snippets h3 {
+        flex-grow: 1;
+    }
+
+    #local-snippets i {
+        padding: 17px;
+        /* different browsers use different terms for pointer vs. hand, so include both*/
+        cursor: pointer;
+        cursor: hand;        
+    }

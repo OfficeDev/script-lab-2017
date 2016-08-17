@@ -59,6 +59,29 @@ export class SnippetManager {
         }
     }
 
+    deleteAll(askForConfirmation: boolean): Promise<any> {
+        var that = this;
+
+        if (askForConfirmation) {
+            return UxUtil.showDialog("Delete confirmation",
+                    "Are you sure you want to delete *ALL* of your local snippets?", ['Yes', 'No'])
+                .then((choice) => {
+                    if (choice = 'Yes') {
+                        return deleteAndResolvePromise();
+                    } else {
+                        return Promise.reject(new ExpectedError());
+                    }
+                })
+        } else {
+            return deleteAndResolvePromise();
+        }
+        
+        function deleteAndResolvePromise(): Promise<any> {
+            that._snippetsContainer.clear();
+            return Promise.resolve();
+        }
+    }
+
     getLocal(): ISnippet[] {
         return this._snippetsContainer.values();
     }

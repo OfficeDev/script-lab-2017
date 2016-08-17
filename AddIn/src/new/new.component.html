@@ -3,7 +3,10 @@
         <h2 class="new__section-title ms-font-l">Office.js API Playground</h2>
         <section class="new-list">
             <section class="new-list__group">
-                <h3 class="new-list__group-header ms-font-m">My local snippets</h3>
+                <div id="local-snippets">
+                    <h3 class="new-list__group-header ms-font-m">My local snippets</h3>
+                    <i *ngIf="localGallery.length > 0" class="ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
+                </div>
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
                     <i class="new-list__action ms-Icon ms-Icon--pencil" (click)="select(snippet)"></i>

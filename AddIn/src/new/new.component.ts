@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Utilities, ExpectedError} from '../shared/helpers';
+import {Utilities, ExpectedError, UxUtil} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
@@ -32,14 +32,14 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._snippetManager.delete(snippet, true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
-            }).catch((e) => {
-                if (e instanceof ExpectedError) {
-                    // do nothing
-                } else {
-                    throw e;
-                    // TODO something should catch this!
-                }
-            });
+            }).catch(UxUtil.showErrorNotification);
+    }
+
+    deleteAll(): void {
+        this._snippetManager.deleteAll(true /*askForConfirmation*/)
+            .then(() => {
+                this.localGallery = this._snippetManager.getLocal();
+            }).catch(UxUtil.showErrorNotification);
     }
 
     run(snippet: ISnippet) {
