@@ -48,7 +48,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this._monkeyPatchConsole(window);
 
         var createHtmlOptions: ICreateHtmlOptions = {
-            includeOfficeInitialize: Utilities.context != ContextType.Web,
             inlineJsAndCssIntoIframe: true
         };
 
@@ -75,7 +74,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this.markDispose(subscription);
 
         window["iframeReadyCallback"] = (iframeWin) => {
-            if (createHtmlOptions.includeOfficeInitialize) {
+            if (Utilities.context != ContextType.Web) {
                 iframeWin['Office'] = (<any>window).Office;
                 iframeWin['Excel'] = (<any>window).Excel;
             }

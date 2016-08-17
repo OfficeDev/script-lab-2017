@@ -1,13 +1,17 @@
 import {Snippet} from '../services';
-import {Utilities} from './utilities';
+import {Utilities, ContextType} from './utilities';
 
 export interface ICreateHtmlOptions {
-    inlineJsAndCssIntoIframe: boolean,
-    includeOfficeInitialize: boolean
+    inlineJsAndCssIntoIframe: boolean
 }
 
 export class SnippetWriter {
     static createHtml(snippet: Snippet, options: ICreateHtmlOptions): Promise<string> {
+        var isOfficeSnippet = Utilities.context != ContextType.Web;
+
+        var injectOfficeInitialize = isOfficeSnippet && 
+            !options.inlineJsAndCssIntoIframe /* don't need it when doing a run inside an iFrame */;
+
         return snippet.js.then(js => {
             var html = [
                 '<!DOCTYPE html>',
@@ -34,7 +38,7 @@ export class SnippetWriter {
                     jsStringArray.push('parent.iframeReadyCallback(window);');
                 }
 
-                if (options.includeOfficeInitialize) {
+                if (injectOfficeInitialize) {
                     jsStringArray.push('Office.initialize = function (reason) {');
                 }
 
@@ -48,7 +52,7 @@ export class SnippetWriter {
 
                 jsStringArray.push('});');
 
-                if (options.includeOfficeInitialize) {
+                if (injectOfficeInitialize) {
                     jsStringArray.push('};');
                 }
 

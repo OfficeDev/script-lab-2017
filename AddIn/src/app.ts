@@ -5,7 +5,7 @@ import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
 import {MediatorService, SnippetService, SnippetManager} from './shared/services';
-import {Utilities, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper} from './shared/helpers';
+import {Utilities, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
 
 require('./assets/styles/spinner.scss');
 require('./assets/styles/globals.scss');
@@ -42,4 +42,8 @@ export function launch() {
     .catch(UxUtil.showErrorNotification);
 }
 
-launch();
+if (Utilities.context == ContextType.Web) {
+    launch();
+} else {
+    Office.initialize = () => launch();
+}

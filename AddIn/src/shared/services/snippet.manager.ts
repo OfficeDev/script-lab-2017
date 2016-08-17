@@ -49,8 +49,10 @@ export class SnippetManager {
                         return Promise.reject(new ExpectedError());
                     }
                 })
+        } else {
+            return deleteAndResolvePromise();
         }
-
+        
         function deleteAndResolvePromise(): Promise<any> {
             that._snippetsContainer.remove(snippet.meta.id)
             return Promise.resolve();
@@ -229,7 +231,6 @@ export class SnippetManager {
                 // IntelliSense definitions
                 https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
                 https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
-                @types/office-ui-fabric
             `)
         });
 
