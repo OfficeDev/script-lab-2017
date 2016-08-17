@@ -58,7 +58,7 @@ export class Snippet implements ISnippet {
             .map((entry) => {
                 entry = entry.toLowerCase().trim();
 
-                if (entry.length === 0 || entry.startsWith("//") || entry.startsWith("@types") || entry.endsWith(".css")) {
+                if (entry.length === 0 || entry.startsWith("//") || entry.startsWith("@types") || entry.endsWith(".css") || entry.endsWith(".ts")) {
                     return null;
                 }
 

@@ -12,6 +12,9 @@ export class SnippetWriter {
         var injectOfficeInitialize = isOfficeSnippet && 
             !options.inlineJsAndCssIntoIframe /* don't need it when doing a run inside an iFrame */;
 
+        var jsLibsToInclude = snippet.getJsLibaries()
+            .filter(item => !item.endsWith("/office.js") && !item.endsWith("/office.debug.js"));
+
         return snippet.js.then(js => {
             var html = [
                 '<!DOCTYPE html>',
@@ -20,8 +23,7 @@ export class SnippetWriter {
                 '    <meta charset="UTF-8" />',
                 '    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />',
                 '    <title>Running snippet</title>',
-                '	 <script src="https://npmcdn.com/jquery"></script>',
-                snippet.getJsLibaries().map(item => '    <script src="' + item + '"></script>').join("\n"),
+                jsLibsToInclude.map(item => '    <script src="' + item + '"></script>').join("\n"),
                 snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
             ];
 

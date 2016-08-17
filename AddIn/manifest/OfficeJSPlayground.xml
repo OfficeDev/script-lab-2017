@@ -4,18 +4,16 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
-  <Id>af8fa5ba-4010-4bcc-9e03-a91ddadf6dd3</Id>
+  <Id>af8fa5ba-4010-4bcc-9e03-a91ddadf3333</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="OfficeJS Playground" />
-  <Description DefaultValue="Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint." />
-  <IconUrl DefaultValue="https://localhost:3000/assets/images/edit16x16.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/edit80x80.png" />
+  <Description DefaultValue="Create, test and share your Office.js snippets directly from Excel or Word." />
+  <IconUrl DefaultValue="https://localhost:3000/assets/images/notepad-icon-16.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/notepad-icon-80.png" />
   <Hosts>
     <Host Name="Workbook" />
-    <Host Name="Presentation" />
-    <Host Name="Document" />
   </Hosts>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://localhost:3000" />
@@ -23,169 +21,68 @@
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
-    <Description resid="OPlay.GetStarted.Description" />
+    <Description resid="OfficeJsPlayground.Description" />
     <Hosts>
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
           <GetStarted>
-            <Title resid="OPlay.GetStarted.Title"/>
-            <Description resid="OPlay.GetStarted.Description"/>
-            <LearnMoreUrl resid="OPlay.GetStarted.LearnMoreUrl"/>
+            <Title resid="OfficeJsPlayground.GetStarted.Title"/>
+            <Description resid="OfficeJsPlayground.Description"/>
+            <LearnMoreUrl resid="OfficeJsPlayground.GetStarted.LearnMoreUrl"/>
           </GetStarted>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <CustomTab id="OPlay.Tab">
-              <Group id="OPlay.Tab.Group1">
-                <Label resid="O_T_G_GroupTitle" />
+            <OfficeTab id="TabHome">
+              <Group id="OfficeJsPlayground.Group">
+                <Label resid="OfficeJsPlayground.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="OPlay_edit_icon_16x16" />
-                  <bt:Image size="32" resid="OPlay_edit_icon_32x32" />
-                  <bt:Image size="80" resid="OPlay_edit_icon_80x80" />
+                    <bt:Image size="16" resid="OfficeJsPlayground_icon_16" />
+                    <bt:Image size="32" resid="OfficeJsPlayground_icon_32" />
+                    <bt:Image size="80" resid="OfficeJsPlayground_icon_80" />
                 </Icon>
-                <Control xsi:type="Button" id="OPlay.Edit.Taskpane.Button">
-                  <Label resid="O_E_T_B_Label" />
+
+                <Control xsi:type="Button" id="OfficeJsPlayground.TaskpaneButton">
+                  <Label resid="OfficeJsPlayground.TaskpaneButton.Label" />
                   <Supertip>
-                    <Title resid="O_E_T_B_Label.Supertip" />
-                    <Description resid="O_E_T_B_Label.Supertip.Desc" />
+                    <Title resid="OfficeJsPlayground.TaskpaneButton.TipTitle" />
+                    <Description resid="OfficeJsPlayground.TaskpaneButton.TipDescription" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="OPlay_edit_icon_16x16" />
-                    <bt:Image size="32" resid="OPlay_edit_icon_32x32" />
-                    <bt:Image size="80" resid="OPlay_edit_icon_80x80" />
+                    <bt:Image size="16" resid="OfficeJsPlayground_icon_16" />
+                    <bt:Image size="32" resid="OfficeJsPlayground_icon_32" />
+                    <bt:Image size="80" resid="OfficeJsPlayground_icon_80" />
                   </Icon>
+
                   <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="OPlay_Taskpane_Url" />
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="OPlay.Run.Taskpane.Button">
-                  <Label resid="O_R_T_B_Label" />
-                  <Supertip>
-                    <Title resid="O_R_T_B_Label.Supertip" />
-                    <Description resid="O_R_T_B_Label.Supertip.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="OPlay_run_icon_16x16" />
-                    <bt:Image size="32" resid="OPlay_run_icon_32x32" />
-                    <bt:Image size="80" resid="OPlay_run_icon_80x80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="OPlay_Taskpane_Url_Run" />
+                    <TaskpaneId>OfficeJsPlayground</TaskpaneId>
+                    <SourceLocation resid="OfficeJsPlayground_Taskpane_Url" />
                   </Action>
                 </Control>
               </Group>
-              <Group id="OPlay.Tab.Group2">
-                <Label resid="O_T_G_GroupTitle2" />
-                <Icon>
-                  <bt:Image size="16" resid="OPlay_edit_icon_16x16" />
-                  <bt:Image size="32" resid="OPlay_edit_icon_32x32" />
-                  <bt:Image size="80" resid="OPlay_edit_icon_80x80" />
-                </Icon>
-                <Control xsi:type="Button" id="OPlay.Import.Taskpane.Button">
-                  <Label resid="O_I_T_B_Label" />
-                  <Supertip>
-                    <Title resid="O_I_T_B_Label.Supertip" />
-                    <Description resid="O_I_T_B_Label.Supertip.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="OPlay_import_icon_16x16" />
-                    <bt:Image size="32" resid="OPlay_import_icon_32x32" />
-                    <bt:Image size="80" resid="OPlay_import_icon_80x80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="OPlay_Taskpane_Url_Import" />
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="OPlay.Share.Taskpane.Button">
-                  <Label resid="O_S_T_B_Label" />
-                  <Supertip>
-                    <Title resid="O_S_T_B_Label.Supertip" />
-                    <Description resid="O_S_T_B_Label.Supertip.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="OPlay_share_icon_16x16" />
-                    <bt:Image size="32" resid="OPlay_share_icon_32x32" />
-                    <bt:Image size="80" resid="OPlay_share_icon_80x80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="OPlay_Taskpane_Url_Share" />
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="OPlay.Export.Taskpane.Button">
-                  <Label resid="O_EBR_T_B_Label" />
-                  <Supertip>
-                    <Title resid="O_EBR_T_B_Label.Supertip" />
-                    <Description resid="O_EBR_T_B_Label.Supertip.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="OPlay_export_icon_16x16" />
-                    <bt:Image size="32" resid="OPlay_export_icon_32x32" />
-                    <bt:Image size="80" resid="OPlay_export_icon_80x80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="OPlay_Taskpane_Url_Export" />
-                  </Action>
-                </Control>
-              </Group>
-              <Label resid="O_T_Title" />
-            </CustomTab>
+            </OfficeTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="OPlay_edit_icon_16x16" DefaultValue="https://localhost:3000/assets/images/edit16x16.png" />
-        <bt:Image id="OPlay_edit_icon_32x32" DefaultValue="https://localhost:3000/assets/images/edit32x32.png" />
-        <bt:Image id="OPlay_edit_icon_80x80" DefaultValue="https://localhost:3000/assets/images/edit80x80.png" />
-        <bt:Image id="OPlay_run_icon_16x16" DefaultValue="https://localhost:3000/assets/images/run16x16.png" />
-        <bt:Image id="OPlay_run_icon_32x32" DefaultValue="https://localhost:3000/assets/images/run32x32.png" />
-        <bt:Image id="OPlay_run_icon_80x80" DefaultValue="https://localhost:3000/assets/images/run80x80.png" />
-        <bt:Image id="OPlay_import_icon_16x16" DefaultValue="https://localhost:3000/assets/images/import16x16.png" />
-        <bt:Image id="OPlay_import_icon_32x32" DefaultValue="https://localhost:3000/assets/images/import32x32.png" />
-        <bt:Image id="OPlay_import_icon_80x80" DefaultValue="https://localhost:3000/assets/images/import80x80.png" />
-        <bt:Image id="OPlay_share_icon_16x16" DefaultValue="https://localhost:3000/assets/images/share16x16.png" />
-        <bt:Image id="OPlay_share_icon_32x32" DefaultValue="https://localhost:3000/assets/images/share32x32.png" />
-        <bt:Image id="OPlay_share_icon_80x80" DefaultValue="https://localhost:3000/assets/images/share80x80.png" />
-        <bt:Image id="OPlay_export_icon_16x16" DefaultValue="https://localhost:3000/assets/images/export_backup_restore16x16.png" />
-        <bt:Image id="OPlay_export_icon_32x32" DefaultValue="https://localhost:3000/assets/images/export_backup_restore32x32.png" />
-        <bt:Image id="OPlay_export_icon_80x80" DefaultValue="https://localhost:3000/assets/images/export_backup_restore80x80.png" />
-        <bt:Image id="OPlay.tpicon_16x16" DefaultValue="https://localhost:3000/assets/images/logo_16.png" />
-        <bt:Image id="OPlay.tpicon_32x32" DefaultValue="https://localhost:3000/assets/images/logo_32.png" />
-        <bt:Image id="OPlay.tpicon_80x80" DefaultValue="https://localhost:3000/assets/images/logo_80.png" />
+        <bt:Image id="OfficeJsPlayground_icon_16" DefaultValue="https://localhost:3000/assets/images/notepad-icon-16.png" />
+        <bt:Image id="OfficeJsPlayground_icon_32" DefaultValue="https://localhost:3000/assets/images/notepad-icon-32.png" />
+        <bt:Image id="OfficeJsPlayground_icon_80" DefaultValue="https://localhost:3000/assets/images/notepad-icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="OPlay_Taskpane_Url" DefaultValue="https://localhost:3000" />
-        <bt:Url id="OPlay_Taskpane_Url_Run" DefaultValue="https://localhost:3000" />
-        <bt:Url id="OPlay_Taskpane_Url_Import" DefaultValue="https://localhost:3000" />
-        <bt:Url id="OPlay_Taskpane_Url_Share" DefaultValue="https://localhost:3000" />
-        <bt:Url id="OPlay_Taskpane_Url_Export" DefaultValue="https://localhost:3000" />
-        <bt:Url id="OPlay.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
+        <bt:Url id="OfficeJsPlayground_Taskpane_Url" DefaultValue="https://localhost:3000" />
+        <bt:Url id="OfficeJsPlayground.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="O_T_Title" DefaultValue="Office.js API Playground" />
-        <bt:String id="O_T_G_GroupTitle" DefaultValue="Edit and run scripts" />
-        <bt:String id="O_T_G_GroupTitle2" DefaultValue="Manage scripts" />
-        <bt:String id="O_E_T_B_Label" DefaultValue="Edit" />
-        <bt:String id="O_E_T_B_Label.Supertip" DefaultValue="Edit" />
-        <bt:String id="O_R_T_B_Label" DefaultValue="Run" />
-        <bt:String id="O_R_T_B_Label.Supertip" DefaultValue="Run" />
-        <bt:String id="O_I_T_B_Label" DefaultValue="Import" />
-        <bt:String id="O_I_T_B_Label.Supertip" DefaultValue="Import" />
-        <bt:String id="O_S_T_B_Label" DefaultValue="Share" />
-        <bt:String id="O_S_T_B_Label.Supertip" DefaultValue="Share" />
-        <bt:String id="O_EBR_T_B_Label" DefaultValue="Export, backup, restore" />
-        <bt:String id="O_EBR_T_B_Label.Supertip" DefaultValue="Export, backup, restore" />
-        <bt:String id="OPlay.TaskpaneButton.Label" DefaultValue="Editor" />
-        <bt:String id="OPlay.Group1Label" DefaultValue="Office.js API Playground" />
-        <bt:String id="OPlay.GetStarted.Title" DefaultValue="OfficeJS Playground" />
+        <bt:String id="OfficeJsPlayground.GroupLabel" DefaultValue="Office.js" />
+        <bt:String id="OfficeJsPlayground.TaskpaneButton.Label" DefaultValue="API Playground" />
+        <bt:String id="OfficeJsPlayground.TaskpaneButton.TipTitle" DefaultValue="Office.js API Playground" />
+        <bt:String id="OfficeJsPlayground.GetStarted.Title" DefaultValue="Office.js API Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="O_E_T_B_Label.Supertip.Desc" DefaultValue="Launch a task pane and edit scripts." />
-        <bt:String id="O_R_T_B_Label.Supertip.Desc" DefaultValue="Run the last script." />
-        <bt:String id="O_I_T_B_Label.Supertip.Desc" DefaultValue="Import a script." />
-        <bt:String id="O_S_T_B_Label.Supertip.Desc" DefaultValue="Share a script." />
-        <bt:String id="O_EBR_T_B_Label.Supertip.Desc" DefaultValue="Export, backup, or restore a script." />
-        <bt:String id="OPlay.TaskpaneButton.Tooltip" DefaultValue="Click to launch OfficeJS Playground" />
-        <bt:String id="OPlay.GetStarted.Description" DefaultValue="Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint." />
+        <bt:String id="OfficeJsPlayground.TaskpaneButton.TipDescription" DefaultValue="Office.js API Playground" />
+        <bt:String id="OfficeJsPlayground.Supertip.Desc" DefaultValue="Launch the Office.js script editor." />
+        <bt:String id="OfficeJsPlayground.Description" DefaultValue="Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
