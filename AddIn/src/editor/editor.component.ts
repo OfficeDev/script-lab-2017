@@ -105,9 +105,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             this._isBrandNewUnsavedSnippet;
 
         if (promptToSave) {
-            UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before going back?`, ['Yes', 'No'])
+            UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before going back?`, ['Yes', 'No', 'Cancel'])
                 .then((choice) => {
-                    if (choice == "Yes") {
+                    if (choice == "Cancel") {
+                        return;
+                    }
+                    else if (choice == "Yes") {
                         this._saveHelper()
                         .then(navigateHomeAction)
                         .catch(this._errorHandler);

@@ -171,6 +171,17 @@ export class Utilities {
         window.location.reload();
     }
 
+    static getContextNamespace() {
+        switch (Utilities.context) {
+            case ContextType.Excel:
+                return 'Excel';
+            case ContextType.Word:
+                return 'Word';
+            default:
+                throw new Error("Invalid context type for Office namespace");
+        }
+    }
+
     static get isExcel() {
         return this._context == ContextType.Excel;
     }

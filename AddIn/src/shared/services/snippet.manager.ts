@@ -231,7 +231,7 @@ export class SnippetManager {
     private _createBlankOfficeJsSnippet(): Snippet {
         return new Snippet({
             ts: Utilities.stripSpaces(`
-                ${getNamespace()}.run(function(context) {
+                ${Utilities.getContextNamespace()}.run(function(context) {
                     // ...
                     return context.sync();
                 }).catch(function(error) {
@@ -242,31 +242,20 @@ export class SnippetManager {
                 });
             `),
             extras: Utilities.stripSpaces(`
-                // Office.js CDN reference
-                https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
+                # Office.js CDN reference
+                //appsforoffice.microsoft.com/lib/1/hosted/Office.js
 
-                // NPM CDN references
+                # NPM CDN references
                 jquery
                 office-ui-fabric/dist/js/jquery.fabric.min.js
                 office-ui-fabric/dist/css/fabric.min.css
                 office-ui-fabric/dist/css/fabric.components.min.css
 
-                // IntelliSense definitions
-                https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
-                https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+                # IntelliSense definitions
+                //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
+                //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
             `)
         });
-
-        function getNamespace() {
-            switch (Utilities.context) {
-                case ContextType.Excel:
-                    return 'Excel';
-                case ContextType.Word:
-                    return 'Word';
-                default:
-                    throw new Error("Invalid context type for Office namespace");
-            }
-        }
     }
 
     private _createBlankWebSnippet(): Snippet {

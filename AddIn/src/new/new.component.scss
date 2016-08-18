@@ -55,6 +55,8 @@
     &__section-title {
         padding: $default-spacing !important;
         color: $accent-background-primary;
+        display: table-cell;
+        box-sizing: border-box;
     }
 
     &__gallery {
@@ -80,9 +82,11 @@
         height: 25px;
         padding: $default-spacing $default-spacing;
         font-size: 15px;
-        background-color: #F4F4F4;
-        border: none;
+        border: 1px solid lightgray;
         outline: none;
+        display: table-cell;
+        box-sizing: border-box;
+        background: aliceblue;
 
         &:focus {
             color: $accent-background-primary;
@@ -100,7 +104,6 @@
     }
 
     &__group-header {
-        text-transform: uppercase;
         font-weight: bold;
         padding: $default-spacing/2 $default-spacing;
         color: $accent-background-primary;
@@ -147,3 +150,49 @@
         cursor: pointer;
         cursor: hand;        
     }
+
+h1.main-heading {
+    background-color: #F4F4F4;
+    color: #217346;
+    margin-top: 15px;
+    border: none;
+    border-bottom: solid 1px #E4E4E4;
+    padding: 10px;
+    border-top: solid 1px #E4E4E4;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 15px;
+}
+
+h1.ms-Button-label {
+    background: inherit;
+    text-transform: uppercase;
+}
+
+.new__action h1.ms-Button-label {
+    color: #217346;
+}
+
+.new-list__from-template > section, .new-list__from-template > section > section {
+    margin-left: 1.5em;
+}
+
+.new__section.new__form {
+    padding: 0 10px;
+}
+
+    .new__section.new__form > div {
+        margin-left: 1.15em;
+        display: table;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+.new__section.new__form > div {
+    display: table-row;
+}
+
+.new__section.new__form > div > .separator {
+    display: table-cell;
+    width: 15px;
+}

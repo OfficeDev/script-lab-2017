@@ -1,10 +1,11 @@
 <section class="new">
     <section class="new__section new__gallery">
-        <h2 class="new__section-title ms-font-l">Office.js API Playground</h2>
         <section class="new-list">
+            <h1 style="margin-top: 0;" class="ms-font-m main-heading ">
+                My local snippets
+            </h1>
             <section class="new-list__group">
                 <div id="local-snippets">
-                    <h3 class="new-list__group-header ms-font-m">My local snippets</h3>
                     <i *ngIf="localGallery.length > 0" class="ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
                 </div>
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
@@ -18,28 +19,39 @@
                     also choose from the gallery below.
                 </p>
             </section>
-            <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
-                <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
-                <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items">
-                    <span (click)="import(snippet)">{{snippet?.name}}</span>
-                </article>
+            <section class="new-list__from-template">
+                <h1 class="ms-font-m main-heading">
+                    From template
+                </h1>
+                <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
+                    <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
+                    <section class="new-list__group">
+                        <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items">
+                            <span (click)="import(snippet)">{{snippet?.name}}</span>
+                        </article>
+                    </section>
+                </section>
             </section>
         </section>
     </section>
     <section class="new__section">
         <hr class="new__section--separator" />
         <button class="new__action ms-Button ms-Button--compound" (click)="select()">
-            <span class="ms-Button-label">Create new</span>
+            <h1 class="ms-Button-label">Create new</h1>
             <span class="ms-Button-description">Create a new snippet from a blank template</span>
         </button>
-        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importFlag = !importFlag">
-            <span class="ms-Button-label">Create from link</span>
+        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importButtonClick()">
+            <h1 class="ms-Button-label">Create from link</h1>
             <span class="ms-Button-description">Create a new snippet from a shared snippet link</span>
         </button>
     </section>
     <section class="new__section new__form" [hidden]="!importFlag">
-        <hr class="new__section--separator" />
-        <input class="new__input--text" type="text" name="link" [(ngModel)]="link" placeholder="Link to snippet or snippet ID" />
-        <h2 class="new__section-title ms-font-l" (click)="import()">Create<i class="ms-Icon ms-Icon--chevronThinRight"></i></h2>
+        <table>
+            <tr>
+                <td><input class="new__input--text" type="text" name="link" [(ngModel)]="link" placeholder="Link to snippet or snippet ID" /></td>
+                <td><div class="separator"></div></td>
+                <td><h2 class="new__section-title ms-font-l" (click)="import()">Create&nbsp;&nbsp;&#x27A4;</h2></td>
+            </tr>
+        </table>
     </section>
 </section>

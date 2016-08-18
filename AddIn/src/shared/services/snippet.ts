@@ -58,7 +58,7 @@ export class Snippet implements ISnippet {
             .map((entry) => {
                 entry = entry.toLowerCase().trim();
 
-                if (entry.length === 0 || entry.startsWith("//") || entry.startsWith("@types") || entry.endsWith(".css") || entry.endsWith(".ts")) {
+                if (entry.length === 0 || entry.startsWith("#") || entry.startsWith("@types") || entry.endsWith(".css") || entry.endsWith(".ts")) {
                     return null;
                 }
 
@@ -75,7 +75,7 @@ export class Snippet implements ISnippet {
     getCssStylesheets(): Array<string> {
         return Utilities.stringOrEmpty(this.extras).split("\n")
             .map((entry) => entry.trim().toLowerCase())
-            .filter((entry) => !entry.startsWith("//") && entry.endsWith(".css"))
+            .filter((entry) => !entry.startsWith("#") && entry.endsWith(".css"))
             .map((entry) => {
                 if (Snippet._entryIsUrl(entry)) {
                     return Snippet._normalizeUrl(entry);
@@ -92,7 +92,7 @@ export class Snippet implements ISnippet {
     getTypeScriptDefinitions(): Array<string> {
         return Utilities.stringOrEmpty(this.extras).split("\n")
             .map((entry) => entry.trim().toLowerCase())
-            .filter((entry) => !entry.startsWith("//") && (entry.startsWith("@types") || entry.endsWith(".ts")))
+            .filter((entry) => !entry.startsWith("#") && (entry.startsWith("@types") || entry.endsWith(".ts")))
             .map((entry) => {
                 if (entry.startsWith("@types")) {
                     return "//npmcdn.com/" + entry + "/index.d.ts";
