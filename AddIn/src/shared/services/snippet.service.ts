@@ -10,24 +10,26 @@ export interface IToken {
 
 @Injectable()
 export class SnippetService {
-    private _baseUrl: string = 'https://api-playground-web.azurewebsites.net/api';
+    static baseWebUrl: string = 'https://api-playground-web.azurewebsites.net/';
+    static baseWebUrlSnippets: string = SnippetService.baseWebUrl + 'snippets/';
+    private _baseApiUrlNoSlash: string = SnippetService.baseWebUrl + 'api';
 
     constructor(private _request: RequestHelper) {
 
     }
 
     get(id: string): Promise<Snippet> {
-        var meta = this._request.get<ISnippetMeta>(`${this._baseUrl}/snippets/${id}`) as Promise<ISnippetMeta>;
+        var meta = this._request.get<ISnippetMeta>(`${this._baseApiUrlNoSlash}/snippets/${id}`) as Promise<ISnippetMeta>;
 
         return meta.then((metadata) => {
             if (Utilities.isEmpty(metadata)) {
                 throw new Error(); // will be picked up below.
             }
             
-            var script = this._request.get(`${this._baseUrl}/snippets/${id}/content/script`, true);
-            var html = this._request.get(`${this._baseUrl}/snippets/${id}/content/html`, true);
-            var css = this._request.get(`${this._baseUrl}/snippets/${id}/content/css`, true);
-            var extras = this._request.get(`${this._baseUrl}/snippets/${id}/content/extras`, true);
+            var script = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/script`, true);
+            var html = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/html`, true);
+            var css = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/css`, true);
+            var extras = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/extras`, true);
 
             var allPromises = Promise.all([
                 script.catch(e => ""),
@@ -53,7 +55,7 @@ export class SnippetService {
 
     create(name: string, password?: string): Promise<IToken> {
         var body = { name: name, password: password };
-        return this._request.post(this._baseUrl + '/snippets', body);
+        return this._request.post(this._baseApiUrlNoSlash + '/snippets', body);
     }
 
     upload(meta: ISnippetMeta, content: string, segment: string) {
@@ -62,7 +64,7 @@ export class SnippetService {
             "Content-Type": "application/octet-stream",
             "x-ms-b64-password": btoa(meta.key)
         });
-        return this._request.put(this._baseUrl + '/snippets/' + meta.id + '/content/' + segment, content, headers);
+        return this._request.put(this._baseApiUrlNoSlash + '/snippets/' + meta.id + '/content/' + segment, content, headers);
     }
 
 }

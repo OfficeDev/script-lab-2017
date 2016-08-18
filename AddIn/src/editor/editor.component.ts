@@ -3,7 +3,7 @@ import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {ISnippet, Snippet, SnippetManager} from '../shared/services';
+import {ISnippet, Snippet, SnippetManager, SnippetService} from '../shared/services';
 import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, UxUtil} from '../shared/helpers';
 
 enum StatusType {
@@ -145,7 +145,13 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     share() {
-
+        this._snippetManager.publish(this._composeSnippetFromEditor())
+            .then(function(e) {
+                UxUtil.showDialog("Sharing succeeded!",
+                    "Snippet shared with private URL: " + 
+                    SnippetService.baseWebUrlSnippets + e.meta.id,
+                    "OK");
+            })
     }
 
     private _validateNameBeforeProceeding(): Promise<void> {

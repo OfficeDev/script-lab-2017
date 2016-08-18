@@ -167,7 +167,7 @@ export class SnippetManager {
             return Promise.reject<any>(new Error('Snippet metadata cannot be empty'));
         }
         return Promise.all([
-            this._service.upload(snippet.meta, snippet.ts, 'js'),
+            this._service.upload(snippet.meta, snippet.ts, 'script'),
             this._service.upload(snippet.meta, snippet.html, 'html'),
             this._service.upload(snippet.meta, snippet.css, 'css'),
             this._service.upload(snippet.meta, snippet.extras, 'extras')
