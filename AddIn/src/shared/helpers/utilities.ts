@@ -5,8 +5,6 @@ export enum ContextType {
 }
 
 export class Utilities {
-    private static _context: ContextType = null;
-
     static replace(source: string): (key: string, value: string) => any {
         return function self(key: string, value: string): any {
             if (!key) return source;
@@ -182,31 +180,23 @@ export class Utilities {
         }
     }
 
-    static get isExcel() {
-        return this._context == ContextType.Excel;
-    }
-
-    static get isWord() {
-        return this._context == ContextType.Word;
-    }
-
-    static get isWeb() {
-        return this._context == ContextType.Web;
-    }
-
     static get context(): ContextType {
-        if (this.isNull(this._context)) {
-            if (_.has(window, 'Word')) {
-                this._context = ContextType.Word;
-            }
-            else if (_.has(window, 'Excel')) {
-                this._context = ContextType.Excel;
-            }
-            else {
-                this._context = ContextType.Web;
-            };
+        switch (window.sessionStorage.getItem('context')) {
+            case 'excel':
+                return ContextType.Excel;
+            case 'word':
+                return ContextType.Word;
+            default:
+                return ContextType.Web;
         }
-        return this._context;
+    }
+
+    static get isRunnableMode(): boolean {
+        return window.sessionStorage.getItem('context') === 'true';
+    }
+
+    static get officeNamespacesLoaded(): boolean {
+        return window['Excel'] || Window['Word'];
     }
 
     static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);

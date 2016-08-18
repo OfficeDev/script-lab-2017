@@ -114,11 +114,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                         this._saveHelper()
                         .then(navigateHomeAction)
                         .catch(this._errorHandler);
-                    } else if (this._isBrandNewUnsavedSnippet) {
-                        // If user is going back, having never explicitly saved, just delete the snippet.
-                        this._snippetManager.delete(this.snippet, false /*askForConfirmation*/)
-                            .then(navigateHomeAction)
-                            .catch(this._errorHandler);
                     } else {
                         navigateHomeAction();
                     }

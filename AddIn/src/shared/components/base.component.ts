@@ -1,8 +1,12 @@
 import {Subscription} from 'rxjs/Rx';
-import {Utilities} from '../helpers';
+import {Utilities, ContextType} from '../helpers';
 
 export class BaseComponent {
     private _subscriptions: Subscription[] = [];
+
+    contextTagline: string =
+        (Utilities.context === ContextType.Web) ?
+            'TypeScript Playground' : 'Office.js API Playground';
 
     protected markDispose(subscription: Subscription[])
     protected markDispose(subscription: Subscription)

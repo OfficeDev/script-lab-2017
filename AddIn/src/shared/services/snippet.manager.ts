@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
 import {ISnippet, Snippet, SnippetService} from '../services';
-import {StorageHelper, Utilities, ContextType, MessageStrings, ExpectedError, UxUtil} from '../helpers';
+import {StorageHelper, Utilities, ContextType, ExpectedError, UxUtil} from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -27,7 +26,9 @@ export class SnippetManager {
     }
 
     save(snippet: Snippet): Promise<ISnippet> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
+        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) {
+            return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
+        }
         if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty')) as any;
         snippet.updateHash();
         return Promise.resolve(this._snippetsContainer.insert(snippet.meta.id, snippet));
@@ -41,7 +42,7 @@ export class SnippetManager {
         var that = this;
 
         if (askForConfirmation) {
-            return UxUtil.showDialog("Delete confirmation",
+            return UxUtil.showDialog('Delete confirmation',
                     `Are you sure you want to delete the snippet "${snippet.meta.name}"?`, ['Yes', 'No'])
                 .then((choice) => {
                     if (choice = 'Yes') {
@@ -49,13 +50,13 @@ export class SnippetManager {
                     } else {
                         return Promise.reject(new ExpectedError());
                     }
-                })
+                });
         } else {
             return deleteAndResolvePromise();
         }
-        
+
         function deleteAndResolvePromise(): Promise<any> {
-            that._snippetsContainer.remove(snippet.meta.id)
+            that._snippetsContainer.remove(snippet.meta.id);
             return Promise.resolve();
         }
     }
@@ -64,19 +65,19 @@ export class SnippetManager {
         var that = this;
 
         if (askForConfirmation) {
-            return UxUtil.showDialog("Delete confirmation",
-                    "Are you sure you want to delete *ALL* of your local snippets?", ['Yes', 'No'])
+            return UxUtil.showDialog('Delete confirmation',
+                    'Are you sure you want to delete *ALL* of your local snippets?', ['Yes', 'No'])
                 .then((choice) => {
                     if (choice = 'Yes') {
                         return deleteAndResolvePromise();
                     } else {
                         return Promise.reject(new ExpectedError());
                     }
-                })
+                });
         } else {
             return deleteAndResolvePromise();
         }
-        
+
         function deleteAndResolvePromise(): Promise<any> {
             that._snippetsContainer.clear();
             return Promise.resolve();
@@ -100,28 +101,28 @@ export class SnippetManager {
                     return {
                         name: index,
                         items: value
-                    }
+                    };
                 });
 
                 return {
                     name: data.name,
                     items: remappedArray
-                }
-            })
+                };
+            });
     }
 
     import(id: string): Promise<Snippet> {
         id = id.trim();
 
         if (Utilities.isEmpty(id)) {
-            UxUtil.showDialog("Missing snippet ID", "Please enter the snippet share ID before proceeding", "OK");
+            UxUtil.showDialog('Missing snippet ID', 'Please enter the snippet share ID before proceeding', 'OK');
             throw new ExpectedError();
         }
 
-        if (id.startsWith("http://") || id.startsWith("https://") || id.startsWith("//")) {
-            id = id.substr(id.lastIndexOf("/") + 1);
+        if (id.startsWith('http://') || id.startsWith('https://') || id.startsWith('//')) {
+            id = id.substr(id.lastIndexOf('/') + 1);
         }
-        
+
         return this._service.get(id).then(snippet => {
             snippet.randomizeId(true);
             snippet.makeNameUnique(false /*isDuplicate*/);
@@ -138,7 +139,7 @@ export class SnippetManager {
 
     duplicate(snippet: ISnippet): Promise<Snippet> {
         return new Promise(resolve => {
-            if (Utilities.isNull(snippet)) throw "Snippet cannot be null."
+            if (Utilities.isNull(snippet)) throw 'Snippet cannot be null.';
             var newSnippet = new Snippet(snippet);
             newSnippet.randomizeId(true);
             newSnippet.makeNameUnique(true /*isDuplicate*/);

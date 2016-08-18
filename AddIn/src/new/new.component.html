@@ -3,7 +3,7 @@
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
                 <span>My local snippets</span>
-                <i *ngIf="localGallery.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
+                <i *ngIf="localGallery.length > 0" class="new-list__action ms-Icon ms-Icon--trash" style="color: black" (click)="deleteAll()"></i>
             </h1>
             <section class="new-list__group local-snippets">
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">

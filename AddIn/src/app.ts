@@ -34,6 +34,7 @@ export const APP_PROVIDERS = [
 export class AppComponent { }
 
 export function launch() {
+    $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime');
     bootstrap(AppComponent, [
         ...APP_ROUTER_PROVIDERS,
         ...PROVIDER_OVERRIDES,
@@ -42,8 +43,12 @@ export function launch() {
     .catch(UxUtil.showErrorNotification);
 }
 
-if (Utilities.context == ContextType.Web) {
-    launch();
-} else {
+if (Utilities.officeNamespacesLoaded) {
+    console.log('Waiting for Office.initialize to be called.');
+    $('.app .ms-ProgressIndicator-itemDescription').text('Loading Office.js');
     Office.initialize = () => launch();
+} else {
+    // Otherwise must be opening on the web browser.
+    // Launch regardless, to avoid being stuck on the loading screen.
+    launch();
 }

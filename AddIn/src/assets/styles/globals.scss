@@ -120,6 +120,7 @@ span.console.error {
     .appwide-overlay-dialog .ui-dialog-content {
 		word-wrap: break-word;
 		flex-basis: 100%;
+        min-height: 150px;
 	}
 
 .appwide-overlay-dialog.ui-widget-overlay {

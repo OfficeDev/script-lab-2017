@@ -45,8 +45,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             this._originalConsoleMethods[methodName] = window.console[methodName];
         });
 
-        this._monkeyPatchConsole(window);
-
         var createHtmlOptions: ICreateHtmlOptions = {
             inlineJsAndCssIntoIframe: true
         };
