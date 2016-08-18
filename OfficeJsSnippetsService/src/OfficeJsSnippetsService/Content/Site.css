@@ -18,7 +18,7 @@ body {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    background-color: #217346;
+    background-color: #fbf7f7;
 }
 
 .left,
@@ -59,6 +59,12 @@ body {
             max-width: none;
             width: auto;
             display: block;
+            color: white !important;
+            background: #217346 !important;
+        }
+
+        .left .centering-container .ms-Button span {
+            color: white !important;
         }
 
 .right {
@@ -71,11 +77,6 @@ body {
         border: none;
     }
 
-h1 {
-    color: #d3f3e1 !important;
-}
-
 p {
     margin-bottom: 20px;
-    color: #d3f3e1 !important;
 }

@@ -15,7 +15,12 @@ interface IIntelliSenseResponse {
     success: boolean,
     data?: string,
     error?: string
-} 
+}
+
+export class IEditorParent {
+    currentIntelliSense: string[];
+    onSwitchFocusToJavaScript: () => void;
+}
 
 @Component({
     selector: 'tabs',
@@ -49,7 +54,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     private _saveAction: () => void;
 
-    parentEditor: EditorComponent;
+    editorParent: IEditorParent;
 
     constructor(private _http: Http) {
         super();
@@ -63,7 +68,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 // FXIME: realistically some of this time is loading editor as well, for fairness may want to refactor.
                 this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
-                    this._initiateLoadIntelliSense(this.parentEditor.currentIntelliSense)
+                    this._initiateLoadIntelliSense(this.editorParent.currentIntelliSense)
                         .catch(UxUtil.showErrorNotification)
                         .then(() => {
                             this.progressMessage = "Loading the Monaco editor";
@@ -77,7 +82,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 wait();
 
                 function wait() {
-                    if (that.parentEditor == null || that.parentEditor.currentIntelliSense == null) {
+                    if (that.editorParent == null || that.editorParent.currentIntelliSense == null) {
                         setTimeout(wait, 20);
                     } else {
                         resolve();
@@ -254,8 +259,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             this._monacoEditor.restoreViewState(nextTab.state);
             this._monacoEditor.focus();
 
-            if (nextTab.name === "JavaScript" && this.parentEditor != null) {
-                this.parentEditor.onSwitchFocusToJavaScript();
+            if (nextTab.name === "JavaScript" && this.editorParent != null) {
+                this.editorParent.onSwitchFocusToJavaScript();
             }
         }
     }

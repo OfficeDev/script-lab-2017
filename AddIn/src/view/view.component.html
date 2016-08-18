@@ -1,9 +1,8 @@
 <section class="view__main">
-    <tabs readonly="true">
-        <tab name="HTML" language="html" [content]='snippet?.html'></tab>
-        <tab name="CSS" language="css" [content]='snippet?.css'></tab>
-        <tab name="JS" language="typescript" [content]='snippet?.ts'></tab>
-        <tab name="Extras" language="text" [content]='snippet?.extras'></tab>
+    <tabs readonly="false">
+        <tab name="JavaScript" language="typescript" [content]="snippet?.ts"></tab>
+        <tab name="HTML" language="html" [content]="snippet?.html"></tab>
+        <tab name="CSS" language="css" [content]="snippet?.css"></tab>
+        <tab name="Libraries" language="text" [content]="snippet?.extras"></tab>
     </tabs>
 </section>
-<section class="view__footer ms-font-m">{{contextTagline}}</section>

@@ -1,6 +1,6 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Tab, Tabs} from '../shared/components';
+import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetService} from '../shared/services';
 import {Utilities} from '../shared/helpers';
@@ -11,8 +11,11 @@ import {Utilities} from '../shared/helpers';
     styleUrls: ['view.component.scss'],
     directives: [Tab, Tabs]
 })
-export class ViewComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
     snippet: Snippet;
+    currentIntelliSense: string[];
+
+    @ViewChild(Tabs) tabs: Tabs;
 
     constructor(
         private _snippetsService: SnippetService,
@@ -23,9 +26,18 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         var subscription = this._route.params.subscribe(params => {
-            this._snippetsService.get(params['id']).then(snippet => this.snippet = snippet);
+            this._snippetsService.get(params['id']).then(snippet => {
+                this.snippet = snippet;
+                this.currentIntelliSense = snippet.getTypeScriptDefinitions();
+            }); 
         });
 
         this.markDispose(subscription);
+
+        this.tabs.editorParent = this;
+    }
+
+    onSwitchFocusToJavaScript(): void {
+        return;
     }
 }

@@ -1,7 +1,7 @@
 import {Component, ViewChild, OnInit, OnDestroy, ElementRef} from '@angular/core';
 import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Tab, Tabs} from '../shared/components';
+import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager, SnippetService} from '../shared/services';
 import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, UxUtil} from '../shared/helpers';
@@ -18,7 +18,7 @@ enum StatusType {
     styleUrls: ['editor.component.scss'],
     directives: [Tab, Tabs]
 })
-export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
+export class EditorComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
     snippet = new Snippet({ meta: { name: null, id: null } });
     
     status: string;
@@ -64,7 +64,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
              this.save();
         })
 
-        this.tabs.parentEditor = this;
+        this.tabs.editorParent = this;
     }
 
     // TODO (ask Bhargav): how to validate name?
