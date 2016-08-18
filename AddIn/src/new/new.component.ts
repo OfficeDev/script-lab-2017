@@ -62,8 +62,14 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         }
     }
 
-    import(snippet?: ISnippetMeta) {
-        var link = snippet.id || this.link;
-        this._snippetManager.import(link).then(snippet => this.select(snippet));
+    import(): void {
+        this._snippetManager.import(this.link)
+            .then((snippet) => {
+                if (Utilities.isEmpty(snippet)) {
+                    throw new Error("Could not read snippet data");
+                }
+                this._router.navigate(['edit', snippet.meta.id, true /*new*/])
+            })
+            .catch(UxUtil.showErrorNotification);
     }
 }

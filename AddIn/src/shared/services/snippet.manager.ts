@@ -20,6 +20,7 @@ export class SnippetManager {
                 snippet = this._createBlankOfficeJsSnippet();
             }
 
+            snippet.randomizeId(true);
             snippet.makeNameUnique(false /*isDuplicate*/);
             resolve(this._addSnippetToLocalStorage(snippet));
         });
@@ -109,23 +110,23 @@ export class SnippetManager {
             })
     }
 
-    import(privateLink: string): Promise<Snippet> {
-        var id: string = null;
+    import(id: string): Promise<Snippet> {
+        id = id.trim();
 
-        var regex = /^^(https?:\/\/[^/]+)\/(?:api\/)?snippets\/([0-9a-z]+)\/?$/;
-        var matches = regex.exec(privateLink);
-
-        if (!Utilities.isEmpty(matches)) id = matches[2];
-        else {
-            var altRegex = /^[0-9a-z]+$/;
-            if (!altRegex.test(privateLink)) return Promise.reject<any>(new Error(MessageStrings.InvalidSnippetIdOrUrl));
-            id = privateLink;
+        if (Utilities.isEmpty(id)) {
+            UxUtil.showDialog("Missing snippet ID", "Please enter the snippet share ID before proceeding", "OK");
+            throw new ExpectedError();
         }
 
+        if (id.startsWith("http://") || id.startsWith("https://") || id.startsWith("//")) {
+            id = id.substr(id.lastIndexOf("/") + 1);
+        }
+        
         return this._service.get(id).then(snippet => {
+            snippet.randomizeId(true);
             snippet.makeNameUnique(false /*isDuplicate*/);
             return this._addSnippetToLocalStorage(snippet);
-        }).catch(UxUtil.showErrorNotification);
+        });
     }
 
     find(id: string): Promise<Snippet> {

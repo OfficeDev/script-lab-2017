@@ -35,15 +35,12 @@ export class RequestHelper {
     private _text(request: Observable<any>): Promise<string> {
         return request
             .map(response => response.text() as string)
-            .toPromise()            
-            .catch(UxUtil.showErrorNotification);
-
+            .toPromise();
     }
 
     private _json<T>(request: Observable<any>): Promise<T> {
         return request
             .map(response => response.json() as T)
-            .toPromise()
-            .catch(UxUtil.showErrorNotification);
+            .toPromise();
     }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import {Utilities, UxUtil, RequestHelper} from '../helpers';
+import {Utilities, UxUtil, RequestHelper, MessageStrings} from '../helpers';
 import {ISnippet, ISnippetMeta, Snippet} from '../services';
 
 export interface IToken {
@@ -18,11 +18,37 @@ export class SnippetService {
 
     get(id: string): Promise<Snippet> {
         var meta = this._request.get<ISnippetMeta>(`${this._baseUrl}/snippets/${id}`) as Promise<ISnippetMeta>;
-        var js = this._request.get(`${this._baseUrl}/snippets/${id}/content/js`, true);
-        var html = this._request.get(`${this._baseUrl}/snippets/${id}/content/html`, true);
-        var css = this._request.get(`${this._baseUrl}/snippets/${id}/content/css`, true);
-        var extras = this._request.get(`${this._baseUrl}/snippets/${id}/content/extras`, true);
-        return this._createSnippet(meta, js, html, css, extras);
+
+        return meta.then((metadata) => {
+            if (Utilities.isEmpty(metadata)) {
+                throw new Error(); // will be picked up below.
+            }
+            
+            var script = this._request.get(`${this._baseUrl}/snippets/${id}/content/script`, true);
+            var html = this._request.get(`${this._baseUrl}/snippets/${id}/content/html`, true);
+            var css = this._request.get(`${this._baseUrl}/snippets/${id}/content/css`, true);
+            var extras = this._request.get(`${this._baseUrl}/snippets/${id}/content/extras`, true);
+
+            var allPromises = Promise.all([
+                script.catch(e => ""),
+                html.catch(e => ""),
+                css.catch(e => ""),
+                extras.catch(e => "")
+            ]);
+
+            return allPromises.then(results => 
+                new Snippet(<ISnippet>{
+                    meta: metadata,
+                    ts: results[0],
+                    html: results[1],
+                    css: results[2],
+                    extras: results[3]
+                })
+            ).catch(UxUtil.showErrorNotification);
+        }).catch((e) => {
+            console.log(e);
+            throw new Error(MessageStrings.InvalidSnippetIdOrUrl)
+        });
     }
 
     create(name: string, password?: string): Promise<IToken> {
@@ -39,21 +65,4 @@ export class SnippetService {
         return this._request.put(this._baseUrl + '/snippets/' + meta.id + '/content/' + segment, content, headers);
     }
 
-    _createSnippet(meta: Promise<ISnippetMeta>, ts: Promise<string>, html: Promise<string>, css: Promise<string>, extras: Promise<string>): Promise<Snippet> {
-        return Promise.all([
-            meta,
-            ts.catch(e => ""),
-            html.catch(e => ""),
-            css.catch(e => ""),
-            extras.catch(e => "")
-        ])
-            .then(results => new Snippet(<ISnippet>{
-                meta: results[0],
-                ts: results[1],
-                html: results[2],
-                css: results[3],
-                extras: results[4]
-            }))
-            .catch(UxUtil.showErrorNotification);
-    }
 }

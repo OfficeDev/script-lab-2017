@@ -23,7 +23,7 @@ namespace OfficeJsSnippetsService.Controllers
         private static readonly Dictionary<string, string> knownMimeTypes = new Dictionary<string, string>
         {
             { "html", "text/html" },
-            { "js", "application/x-javascript" },
+            { "script", "application/x-javascript" },
             { "css", "text/css" },
             { "extras", "text/plain" }
         };

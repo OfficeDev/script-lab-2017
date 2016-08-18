@@ -95,6 +95,7 @@ span.console.error {
 }
 
 .appwide-overlay-dialog.ui-dialog {
+    overflow-y: auto;
     position: absolute;
     left: 50%;
     top: 50%;
