@@ -91,20 +91,35 @@ span.console.error {
 
 .appwide-overlay-dialog {
     display: none;
+	overflow: hidden;
 }
 
 .appwide-overlay-dialog.ui-dialog {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -55%);
+    transform: translate(-50%, -52%);
     width: 70%;
+    max-height: 80%;
     z-index: 101;
 }
 
+    .appwide-overlay-dialog.ui-dialog > div {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
     .appwide-overlay-dialog.ui-dialog .ui-dialog-buttonpane {
         text-align: right;
+        margin-top: initial;
+		padding: initial;
     }
+
+    .appwide-overlay-dialog .ui-dialog-content {
+		word-wrap: break-word;
+		flex-basis: 100%;
+	}
 
 .appwide-overlay-dialog.ui-widget-overlay {
     z-index: 100;

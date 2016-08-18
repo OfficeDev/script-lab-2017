@@ -29,15 +29,15 @@
         <a href="@Model.DownloadZipUri">
             <button class="ms-Button ms-Button--compound">
                 <span class="ms-Button-label">Download this snippet</span>
-                <span class="ms-Button-description">Click here to get the adjacent snippet as a zip.</span>
+                <span class="ms-Button-description">Click here to get the snippet as a zip file containing full-runnable html/js/css.</span>
             </button>
         </a>
     </div>
 </div>
 <div class="right">
     @if (Model.Exists)
-            {
-        <iframe src="https://api-playground.azurewebsites.net/#/view/@Model.Id" />
+    {
+        <iframe src="@System.Configuration.ConfigurationManager.AppSettings["PlaygroundBaseUrl"]#/view/@Model.Id" />
     }
 </div>
 @*</div>

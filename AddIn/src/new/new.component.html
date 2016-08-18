@@ -1,13 +1,11 @@
 <section class="new">
     <section class="new__section new__gallery">
         <section class="new-list">
-            <h1 style="margin-top: 0;" class="ms-font-m main-heading ">
-                My local snippets
+            <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
+                <span>My local snippets</span>
+                <i *ngIf="localGallery.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
-            <section class="new-list__group">
-                <div id="local-snippets">
-                    <i *ngIf="localGallery.length > 0" class="ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
-                </div>
+            <section class="new-list__group local-snippets">
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
                     <i class="new-list__action ms-Icon ms-Icon--pencil" (click)="select(snippet)"></i>
@@ -49,8 +47,7 @@
         <table>
             <tr>
                 <td><input class="new__input--text" type="text" name="link" [(ngModel)]="link" placeholder="Link to snippet or snippet ID" /></td>
-                <td><div class="separator"></div></td>
-                <td><h2 class="new__section-title ms-font-l" (click)="import()">Create&nbsp;&nbsp;&#x27A4;</h2></td>
+                <td style="width: 1%;"><h2 class="new__section-title ms-font-l" (click)="import()">Create&nbsp;&nbsp;&#x27A4;</h2></td>
             </tr>
         </table>
     </section>

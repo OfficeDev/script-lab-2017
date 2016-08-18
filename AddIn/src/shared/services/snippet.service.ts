@@ -10,7 +10,7 @@ export interface IToken {
 
 @Injectable()
 export class SnippetService {
-    private _baseUrl: string = 'https://xlsnippets.azurewebsites.net/api';
+    private _baseUrl: string = 'https://api-playground-web.azurewebsites.net/api';
 
     constructor(private _request: RequestHelper) {
 

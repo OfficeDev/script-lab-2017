@@ -15,7 +15,6 @@
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/underscore/underscore.js"></script>
     <script src="vs/loader.js"></script>
-    <link rel="stylesheet" href="jquery-ui.min.css">
 </head>
 <body>
     <app class="app">
@@ -35,14 +34,16 @@
         </div>
     </app>
     <div tabindex="-1" class="appwide-overlay-dialog ui-dialog ui-corner-all ui-widget ui-widget-content ui-front ui-dialog-buttons">
-        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
-            <span class="ui-dialog-title"></span>
-        </div>
-        <div class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 19px; max-height: none; height: auto;">
-            <p></p>
-        </div>
-        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-            <div class="ui-dialog-buttonset"></div>
+        <div>
+            <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+                <span class="ui-dialog-title"></span>
+            </div>
+            <div class="ui-dialog-content ui-widget-content">
+                <p></p>
+            </div>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+                <div class="ui-dialog-buttonset"></div>
+            </div>
         </div>
     </div>
     <div class="appwide-overlay-dialog ui-widget-overlay ui-front" style="z-index: 100;"></div>

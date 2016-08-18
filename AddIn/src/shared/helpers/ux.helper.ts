@@ -14,7 +14,7 @@ export class UxUtil {
         var message = Utilities.stringifyPlusPlus(e);
         console.log(message);
 
-        UxUtil.showDialog("Error", message);
+        UxUtil.showDialog("Error", message, "OK");
     }
 
     static extractErrorMessage(e: any): string {
@@ -25,7 +25,7 @@ export class UxUtil {
         }
     }       
 
-    static showDialog(title: string, message: string, buttons?: string[]): Promise<string> {
+    static showDialog(title: string, message: string, buttons: string[]|string): Promise<string> {
         return new Promise(function(resolve) {
             $(document).ready(function() {
                 var $app = $('body app.app');
@@ -34,13 +34,16 @@ export class UxUtil {
                 $('.ui-dialog-title', $dialogRoot).text(title);
                 $('.ui-dialog-content p', $dialogRoot).text(message);
                 
-                if (buttons == null || buttons.length == 0) {
-                    buttons = ["OK"];
+                var buttonsArray: string[];
+                if (_.isString(buttons)) {
+                    buttonsArray = [buttons];
+                } else if (_.isArray(buttons)) {
+                    buttonsArray = buttons;
                 }
                 
                 var $buttonPane = $('.ui-dialog-buttonpane', $dialogRoot);
                 $buttonPane.empty();
-                buttons.forEach(function(buttonLabel) {
+                buttonsArray.forEach(function(buttonLabel) {
                     var $button = $('<button type="button" class="ui-button ui-corner-all ui-widget"></button>');
                     
                     $button.text(buttonLabel);

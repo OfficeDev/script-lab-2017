@@ -78,14 +78,14 @@
     }
 
     &__input--text {
-        width: 100%;
-        height: 25px;
-        padding: $default-spacing $default-spacing;
+        width: calc(100% - 10px);
+        padding: 0 10px;
+        box-sizing: border-box;
+        height: 30px;
         font-size: 15px;
         border: 1px solid lightgray;
         outline: none;
         display: table-cell;
-        box-sizing: border-box;
         background: aliceblue;
 
         &:focus {
@@ -110,7 +110,6 @@
     }
 
     &__item {
-        @include focus-states(#F4F4F4);
         @include inline-flex();
         width: 100%;
 
@@ -134,18 +133,20 @@
     }
 }
 
-#local-snippets {
+.main-heading.local-snippets {
     display: flex;
     overflow: hidden;
     align-items: center;
 }
 
-    #local-snippets h3 {
+    .main-heading.local-snippets > span {
         flex-grow: 1;
     }
 
-    #local-snippets i {
-        padding: 17px;
+    .main-heading.local-snippets > i {
+        position: absolute;
+        top: 0;
+        right: 17px;
         /* different browsers use different terms for pointer vs. hand, so include both*/
         cursor: pointer;
         cursor: hand;        
@@ -169,6 +170,10 @@ h1.ms-Button-label {
     text-transform: uppercase;
 }
 
+.new-list__group.local-snippets {
+    margin-left: 1.5em;
+}
+
 .new__action h1.ms-Button-label {
     color: #217346;
 }
@@ -181,18 +186,10 @@ h1.ms-Button-label {
     padding: 0 10px;
 }
 
-    .new__section.new__form > div {
-        margin-left: 1.15em;
-        display: table;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-.new__section.new__form > div {
-    display: table-row;
-}
-
-.new__section.new__form > div > .separator {
-    display: table-cell;
-    width: 15px;
+.new-list__item:active, .new-list__item:hover {
+    background: #217346;
+    color: white;
+    /* different browsers use different terms for pointer vs. hand, so include both*/
+    cursor: pointer;
+    cursor: hand; 
 }
