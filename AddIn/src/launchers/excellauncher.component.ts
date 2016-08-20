@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 
@@ -6,7 +6,7 @@ import {BaseComponent} from '../shared/components/base.component';
   selector: 'excel-launcher',
   template: '<h3>Redirecting...</h3>',
 })
-export class ExcelLauncherComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ExcelLauncherComponent extends BaseComponent {
     constructor(
         private _router: Router,
         private _route: ActivatedRoute
@@ -14,15 +14,6 @@ export class ExcelLauncherComponent extends BaseComponent implements OnInit, OnD
         super();
 
         window.sessionStorage.setItem('context', 'excel');
-    }
-
-    ngOnInit() {
-        this._route.params.subscribe(params => {
-            if (params['runnable'] === 'true') {
-                window.sessionStorage.setItem('runnable', 'true');
-            }
-
-            this._router.navigate(['new']);
-        });
+        this._router.navigate(['new']);
     }
 }

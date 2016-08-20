@@ -28,13 +28,29 @@ export class SnippetWriter {
             ];
 
             if (options.inlineJsAndCssIntoIframe) {
-                html.push(
-                    "    <style>",
-                    Utilities.stringOrEmpty(snippet.css).trim(),
-                    "    </style>"
-                );
+                html.push("    <style>");
+                
+                if (Utilities.isNullOrWhitespace(snippet.html) && Utilities.isNullOrWhitespace(snippet.css)) {
+                    html.push(Utilities.indentAll(Utilities.stripSpaces(`
+                        body {
+                            padding: 5px 10px;
+                        }
 
-                var jsStringArray = [];
+                        body, #invoke-action {
+                            font-family: Segoe UI Semilight, Segoe UI, Tahoma;
+                        }
+
+                        #invoke-action {
+                            font-weight: bold;
+                        }
+                    `), 2));
+                } else {
+                    html.push(Utilities.indentAll(Utilities.stringOrEmpty(snippet.css).trim(), 2));
+                }
+                
+                html.push(    "</style>");
+
+                var jsStringArray = ['"use strict"', ''];
                 
                 if (options.inlineJsAndCssIntoIframe) {
                     jsStringArray.push('parent.iframeReadyCallback(window);');
@@ -84,7 +100,10 @@ export class SnippetWriter {
             }
 
             var htmlBody = Utilities.isNullOrWhitespace(snippet.html) ? 
-                '<button id="invoke-action">Invoke action</button>' : snippet.html;
+                Utilities.stripSpaces(`
+                    <p>Your snippet contained only script code, with no user interface. We created a simple button to let you execute your code.</p>
+                    <button id="invoke-action">Invoke action</button>
+                `) : snippet.html;
 
             html.push(
                 '</head>',

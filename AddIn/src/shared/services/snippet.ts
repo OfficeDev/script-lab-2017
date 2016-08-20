@@ -38,12 +38,7 @@ export class Snippet implements ISnippet {
             return Promise.resolve(this._compiledJs);
         }
         else {
-            // FIXME expose to user
             return Promise.reject<string>(new Error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)"));
-            // return this._compile(this.script).then((compiledJs) => {
-            //     this._compiledJs = compiledJs;
-            //     return compiledJs; 
-            // })
         }
     }
 
@@ -108,7 +103,7 @@ export class Snippet implements ISnippet {
     }
 
     randomizeId(force?: boolean) {
-        var localSnippets = new SnippetManager(null).getLocal(); 
+        var localSnippets = new SnippetManager().getLocal(); 
         if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1) {
             this.meta.id = '~!L' + Utilities.randomize(Math.max(10000, localSnippets.length * 10)).toString();
         }
@@ -138,12 +133,12 @@ export class Snippet implements ISnippet {
     }
     public updateHash(): void {
         var md5: (input: string) => string = require('js-md5');
-        this._hash = md5([this.script, this.html, this.css, this.libraries]
+        this._hash = md5([this.meta.name, this.script, this.html, this.css, this.libraries]
             .map(item => md5(item)).join(":"));
     }
 
     public makeNameUnique(isDuplicate: boolean): void {
-        var localSnippets = new SnippetManager(null).getLocal(); 
+        var localSnippets = new SnippetManager().getLocal(); 
 
         if (Utilities.isNullOrWhitespace(name)) {
             this.meta.name = MessageStrings.NewSnippetName;
@@ -206,11 +201,7 @@ export enum OfficeClient {
 export interface ISnippetMeta {
     name: string;
     id: string;
-    contains?: string;
     hosts?: string;
-
-    // for upload only:
-    key?: string;
 }
 
 export interface ISnippet {
@@ -219,9 +210,6 @@ export interface ISnippet {
     html?: string;
     css?: string;
     libraries?: string;
-
-    downloadableHtml?: string;
-    downloadableJs?: string;
 
     _hash?: string;
 }

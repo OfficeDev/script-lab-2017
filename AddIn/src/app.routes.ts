@@ -8,7 +8,7 @@ export const AppRoutes: RouterConfig = [
         pathMatch: 'full'
     },
     {
-        path: 'excel/:runnable',
+        path: 'excel',
         component: ExcelLauncherComponent,
     },
     {

@@ -196,7 +196,15 @@ export class Utilities {
     }
 
     static get isRunnableMode(): boolean {
-        return window.sessionStorage.getItem('runnable') === 'true';
+        switch (Utilities.context) {
+            case ContextType.Excel:
+            case ContextType.Word:
+                return Utilities.officeNamespacesLoaded;
+            case ContextType.Web:
+                return true;
+            default:
+                throw "Invalid context " + Utilities.context;
+        }
     }
 
     static get officeNamespacesLoaded(): boolean {

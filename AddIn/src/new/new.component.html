@@ -3,7 +3,7 @@
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
                 <span>My local snippets</span>
-                <i *ngIf="localGallery.length > 0" class="new-list__action ms-Icon ms-Icon--trash" style="color: black" (click)="deleteAll()"></i>
+                <i *ngIf="localGallery.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
             <section class="new-list__group local-snippets">
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
@@ -39,8 +39,8 @@
             <span class="ms-Button-description">Create a new snippet from a blank template</span>
         </button>
         <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importButtonClick()">
-            <h1 class="ms-Button-label">Create from link</h1>
-            <span class="ms-Button-description">Create a new snippet from a shared snippet link</span>
+            <h1 class="ms-Button-label">Create from link / JSON</h1>
+            <span class="ms-Button-description">Create a new snippet from a shared link or from a JSON object</span>
         </button>
     </section>
     <section class="new__section new__form" [hidden]="!importFlag">

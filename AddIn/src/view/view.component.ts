@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {Snippet, SnippetService} from '../shared/services';
+import {Snippet} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
@@ -18,21 +18,22 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     @ViewChild(Tabs) tabs: Tabs;
 
     constructor(
-        private _snippetsService: SnippetService,
         private _route: ActivatedRoute
     ) {
         super();
     }
 
     ngOnInit() {
-        var subscription = this._route.params.subscribe(params => {
-            this._snippetsService.get(params['id']).then(snippet => {
-                this.snippet = snippet;
-                this.currentIntelliSense = snippet.getTypeScriptDefinitions();
-            }); 
-        });
+        this.snippet = new Snippet({});
+        this.currentIntelliSense = [];
+        // var subscription = this._route.params.subscribe(params => {
+        //     this._snippetsService.get(params['id']).then(snippet => {
+        //         this.snippet = snippet;
+        //         this.currentIntelliSense = snippet.getTypeScriptDefinitions();
+        //     }); 
+        // });
 
-        this.markDispose(subscription);
+        // this.markDispose(subscription);
 
         this.tabs.editorParent = this;
     }

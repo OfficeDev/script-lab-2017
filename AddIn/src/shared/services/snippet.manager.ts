@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
-import {ISnippet, Snippet, SnippetService} from '../services';
+import {ISnippet, Snippet} from '../services';
 import {StorageHelper, Utilities, ContextType, ExpectedError, UxUtil} from '../helpers';
 
 @Injectable()
 export class SnippetManager {
     private _snippetsContainer: StorageHelper<ISnippet>;
 
-    constructor(private _service: SnippetService) {
+    constructor() {
         this._snippetsContainer = new StorageHelper<ISnippet>('snippets');
     }
 
@@ -115,19 +115,21 @@ export class SnippetManager {
         id = id.trim();
 
         if (Utilities.isEmpty(id)) {
-            UxUtil.showDialog('Missing snippet ID', 'Please enter the snippet share ID before proceeding', 'OK');
+            UxUtil.showDialog('Missing snippet JSON or URL', 'Please paste in the snippet data or URL before proceeding', 'OK');
             throw new ExpectedError();
         }
 
-        if (id.startsWith('http://') || id.startsWith('https://') || id.startsWith('//')) {
+        if (id.startsWith('http://') || id.startsWith('https://')) {
             id = id.substr(id.lastIndexOf('/') + 1);
         }
 
-        return this._service.get(id).then(snippet => {
-            snippet.randomizeId(true);
-            snippet.makeNameUnique(false /*isDuplicate*/);
-            return this._addSnippetToLocalStorage(snippet);
-        });
+        throw new Error("Not implemented!");
+
+        // return this._service.get(id).then(snippet => {
+        //     snippet.randomizeId(true);
+        //     snippet.makeNameUnique(false /*isDuplicate*/);
+        //     return this._addSnippetToLocalStorage(snippet);
+        // });
     }
 
     find(id: string): Promise<Snippet> {
@@ -145,37 +147,6 @@ export class SnippetManager {
             newSnippet.makeNameUnique(true /*isDuplicate*/);
             resolve(this._addSnippetToLocalStorage(newSnippet));
         });
-    }
-
-    publish(snippet: ISnippet, password?: string): Promise<Snippet> {
-        var nonEmptyContentTypes: string[] = [];
-        var availableTypes = ["html", "script", "css", "libraries"]
-        FIXME
-        if (!Utilities.isNullOrWhitespace(snippet.css)) { nonEmptyContentTypes.push("css")}
-
-        return this._service.create(snippet.meta.name, nonEmptyContentTypes, password)
-            .then(data => {
-                snippet.meta.id = data.id;
-            })
-            .then(data => this._uploadAllContents(snippet));
-    }
-
-    update(snippet: ISnippet, password: string): Promise<any> {
-        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty'));
-        if (Utilities.isEmpty(snippet.meta.id)) return Promise.reject(new Error('Snippet id cannot be empty'));
-        return this._uploadAllContents(snippet);
-    }
-
-    private _uploadAllContents(snippet: ISnippet): Promise<Snippet> {
-        if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) {
-            return Promise.reject<any>(new Error('Snippet metadata cannot be empty'));
-        }
-        return Promise.all([
-            this._service.upload(snippet.meta, snippet.script, 'script'),
-            this._service.upload(snippet.meta, snippet.html, 'html'),
-            this._service.upload(snippet.meta, snippet.css, 'css'),
-            this._service.upload(snippet.meta, snippet.libraries, 'libraries')
-        ]).then(() => snippet);
     }
 
     private _addSnippetToLocalStorage(snippet: Snippet) {

@@ -14,7 +14,6 @@ export class WebLauncherComponent extends BaseComponent implements OnInit, OnDes
         super();
 
         window.sessionStorage.setItem('context', 'web');
-        window.sessionStorage.setItem('runnable', 'true');
     }
 
     ngOnInit() {

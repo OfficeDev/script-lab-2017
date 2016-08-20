@@ -4,7 +4,7 @@ import {Component, ExceptionHandler} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
-import {MediatorService, SnippetService, SnippetManager} from './shared/services';
+import {MediatorService, SnippetManager} from './shared/services';
 import {Utilities, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
 
 require('./assets/styles/spinner.scss');
@@ -16,7 +16,6 @@ export const PROVIDER_OVERRIDES = [
 ];
 
 export const APP_PROVIDERS = [
-    SnippetService,
     SnippetManager,
     ExceptionHelper,
     NotificationHelper,

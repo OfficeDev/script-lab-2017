@@ -28,14 +28,14 @@
     
             .ms-Button-description,
             .ms-Button-label {
-                color: $accent-foreground-primary;                
+                color: $accent-foreground-primary;
             }
         }
         
 
         .ms-Button-description,
         .ms-Button-label {
-            color: #333;                
+            color: #333;
         }
     }
 
@@ -60,7 +60,6 @@
     }
 
     &__gallery {
-        margin-bottom: $default-spacing;        
         flex: 1 1 100%;
         @include flex();
     }
@@ -144,12 +143,18 @@
     }
 
     .main-heading.local-snippets > i {
-        position: absolute;
+        position: relative;
         top: 0;
-        right: 17px;
+        right: 2px;
+        padding: 5px;
+        color: black;
         /* different browsers use different terms for pointer vs. hand, so include both*/
         cursor: pointer;
         cursor: hand;        
+    }
+
+    .main-heading.local-snippets > i:hover {
+        color: white;        
     }
 
 h1.main-heading {
@@ -162,7 +167,6 @@ h1.main-heading {
     border-top: solid 1px #E4E4E4;
     text-transform: uppercase;
     font-weight: bold;
-    padding: 15px;
 }
 
 h1.ms-Button-label {
@@ -192,4 +196,8 @@ h1.ms-Button-label {
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand; 
+}
+
+.new-list__action:active, .new-list__action:hover {
+    color: orange;
 }

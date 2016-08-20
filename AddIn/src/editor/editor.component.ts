@@ -3,7 +3,7 @@ import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {ISnippet, Snippet, SnippetManager, SnippetService} from '../shared/services';
+import {ISnippet, Snippet, SnippetManager} from '../shared/services';
 import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, UxUtil} from '../shared/helpers';
 
 enum StatusType {
@@ -145,13 +145,26 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     share() {
-        this._snippetManager.publish(this._composeSnippetFromEditor())
-            .then(function(e) {
-                UxUtil.showDialog("Sharing succeeded!",
-                    "Snippet shared with private URL: " + 
-                    SnippetService.baseWebUrlSnippets + e.meta.id,
-                    "OK");
-            })
+        var promptToSave = 
+            (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
+            this._isBrandNewUnsavedSnippet;
+        
+        const navigateToShareAction = () => this._router.navigate(['share', this.snippet.meta.id]);
+
+        if (promptToSave) {
+            UxUtil.showDialog('Save the snippet?', `You must save the snippet before sharing it. Save it now?`, ['Save and proceed', 'Cancel'])
+                .then((choice) => {
+                    if (choice === "Save and proceed") {
+                        this._saveHelper()
+                        .then(navigateToShareAction)
+                        .catch(this._errorHandler);
+                    } else {
+                        Utilities.reloadPage();
+                    }
+                });
+        } else {
+            navigateToShareAction();
+        }
     }
 
     private _validateNameBeforeProceeding(): Promise<void> {
