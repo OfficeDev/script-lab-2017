@@ -14,7 +14,6 @@ share {
     -webkit-flex: 1 1 100%;
     -ms-flex: 1 1 100%;
     flex: 1 1 100%;
-    padding: 10px;
     overflow: auto;
 }
     .share__main a {
@@ -61,3 +60,14 @@ share {
     height: 300px;
 }
 
+.ms-progress {
+    @include flex();
+    flex: 1 1 100%;
+    width: 100% !important;     
+    height: 100% !important;
+    background: #217346;
+}
+
+.pre-share, .post-share {
+    padding: 10px;
+}

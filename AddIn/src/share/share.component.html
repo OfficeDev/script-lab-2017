@@ -4,18 +4,24 @@
 </section>
 
 <section class="share__main ms-font-m">
-    <div class="pre-share">
+    <div class="ms-progress" [hidden]="loaded">
+        <div class="ms-Spinner large"></div>
+        <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
+        <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">Preparing the snippet for sharing...</div>
+    </div>
+
+    <div class="pre-share" [hidden]="!loaded || shareLink">
         <div>
             Below is a sharable copy of your snippet. You can now:
         </div>
         <ol>
             <li>Manually <b>copy the JSON</b> to share with another user. You can also put it on your own 
-                <a href="https://gist.github.com/">GitHub&nbsp;Gist</a>
-                for sharing or version-control.'
+                <a href="https://gist.github.com/" >GitHub&nbsp;Gist</a>
+                for sharing or version-control.
             </li>
             <li>Alternatively, <b>have <em>us</em> create an 
-                anonymous secret <a href="https://gist.github.com/">GitHub&nbsp;Gist</a></b>
-                (<a href="https://help.github.com/articles/about-gists/#anonymous-gists">"anonymous" info here</a>),
+                anonymous secret <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a></b>
+                (<a href="https://help.github.com/articles/about-gists/#anonymous-gists" target="_blank">"anonymous" info here</a>),
                 and give you a link that you can share with other users of the Playground.
             </li>
         </ol>
@@ -28,6 +34,7 @@
 
         <div #editor id="monaco"></div>
     </div>
+    
     <div class="post-share" [hidden]="!shareLink">
         Shared successfully!
     </div>

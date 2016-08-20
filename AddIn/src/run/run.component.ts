@@ -35,6 +35,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         super();
     }
 
+    loaded = false;
     showConsole = false;
     consoleMessages: IConsoleMessage[] = [];
 
@@ -72,6 +73,9 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this.markDispose(subscription);
 
         window["iframeReadyCallback"] = (iframeWin) => {
+            this.loaded = true;
+            this._changeDetectorRef.detectChanges();
+
             if (Utilities.context != ContextType.Web) {
                 iframeWin['Office'] = (<any>window).Office;
                 iframeWin['Excel'] = (<any>window).Excel;
@@ -161,5 +165,9 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         } else {
             this._router.navigate(['new']);            
         }
+    }
+
+    reloadPage() {
+        Utilities.reloadPage();
     }
 }

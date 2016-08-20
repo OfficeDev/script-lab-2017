@@ -1,10 +1,16 @@
 <section class="run__header">
     <span id="back" (click)="back()">&#8656;</span>
     <span id="name" class="ms-font-l">Running "<b>{{_snippet.meta.name}}</b>"</span>
-    <span id="refresh" (click)="Utilities.reloadPage()">&#8635;</span>
+    <span id="refresh" (click)="reloadPage()">&#8635;</span>
 </section>
 
-<section class="run__main">
+<div class="ms-progress" [hidden]="loaded">
+    <div class="ms-Spinner large"></div>
+    <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
+    <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">Preparing the snippet to run...</div>
+</div>
+
+<section class="run__main" [hidden]="!loaded">
     <iframe #runner id="runner-frame"></iframe>
 </section>
 
