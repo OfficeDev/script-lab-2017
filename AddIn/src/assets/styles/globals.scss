@@ -57,9 +57,13 @@ ul {
     @include flex();
     height: 100vh;
 
-    editor, tabs, editor-tab, new, run, view {
+    editor, tabs, editor-tab, new, run, view, share {
         flex: 1 1 100%;
         @include flex();
+    }
+
+    share {
+        overflow: hidden;
     }
 
     tabs {

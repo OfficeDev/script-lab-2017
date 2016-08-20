@@ -1,5 +1,5 @@
 import {provideRouter, RouterConfig} from '@angular/router';
-import {RunComponent, EditorComponent, NewComponent, ViewComponent, ExcelLauncherComponent, WebLauncherComponent} from './components';
+import {RunComponent, EditorComponent, NewComponent, ShareComponent, ViewComponent, ExcelLauncherComponent, WebLauncherComponent} from './components';
 
 export const AppRoutes: RouterConfig = [
     {
@@ -26,6 +26,10 @@ export const AppRoutes: RouterConfig = [
     {
         path: 'run/:id/:returnToEdit',
         component: RunComponent
+    },
+    {
+        path: 'share/:id',
+        component: ShareComponent
     },
     {
         path: 'view/:id',

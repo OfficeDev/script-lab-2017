@@ -1,0 +1,34 @@
+<section class="share__header">
+    <span id="back" (click)="back()">&#8656;</span>
+    <span id="name" class="ms-font-l">Share "<b>{{_snippet.meta.name}}</b>"</span>
+</section>
+
+<section class="share__main ms-font-m">
+    <div class="pre-share">
+        <div>
+            Below is a sharable copy of your snippet. You can now:
+        </div>
+        <ol>
+            <li>Manually <b>copy the JSON</b> to share with another user. You can also put it on your own 
+                <a href="https://gist.github.com/">GitHub&nbsp;Gist</a>
+                for sharing or version-control.'
+            </li>
+            <li>Alternatively, <b>have <em>us</em> create an 
+                anonymous secret <a href="https://gist.github.com/">GitHub&nbsp;Gist</a></b>
+                (<a href="https://help.github.com/articles/about-gists/#anonymous-gists">"anonymous" info here</a>),
+                and give you a link that you can share with other users of the Playground.
+            </li>
+        </ol>
+
+        <button class="ms-Button" (click)="postToGist()">
+            <h1 class="ms-Button-label">Share as a secret anonymous GitHub Gits</h1>
+        </button>
+
+        <hr />
+
+        <div #editor id="monaco"></div>
+    </div>
+    <div class="post-share" [hidden]="!shareLink">
+        Shared successfully!
+    </div>
+</section>

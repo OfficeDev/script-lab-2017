@@ -26,6 +26,25 @@ export class Snippet implements ISnippet {
         }
     }
 
+    get jsonExportedString() : string {
+        var data = {
+            meta: {
+                playgroundVersion: 1.0,
+                name: this.meta.name,
+                hosts: this.meta.hosts
+            }
+        };
+
+        var contentTypes = ["script", "css", "html", "libraries"];
+        contentTypes.forEach((type) => {
+            if (!Utilities.isNullOrWhitespace(this[type])) {
+                data[type] = this[type].split("\n");
+            }
+        });
+
+        return JSON.stringify(data, null, 4);
+    }
+
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
     get runUrl(): string {
         var url = window.location.toString() + "#/run/" + this.meta.id;

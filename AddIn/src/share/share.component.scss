@@ -1,0 +1,63 @@
+@import '../assets/styles/mixins.scss';
+@import '../assets/styles/theme.scss';
+
+share {
+    overflow: hidden;
+}
+
+.share__header {
+    background-color: #217346;
+    padding: 7.5px 15px;
+}
+
+.share__main {
+    -webkit-flex: 1 1 100%;
+    -ms-flex: 1 1 100%;
+    flex: 1 1 100%;
+    padding: 10px;
+    overflow: auto;
+}
+    .share__main a {
+        color: #217346
+    }
+
+    .share__main ol {
+        margin-left: 30px;
+        margin-top: 10px;
+    }
+
+        .share__main ol li {
+            margin: 10px 0;
+        }
+
+    .share__main .pre-share .ms-Button {
+        background: #217346;
+        margin: 10px 10px 20px 50px;
+    }
+
+        .share__main .pre-share .ms-Button .ms-Button-label {
+            color: white;
+            font-weight: normal;
+        }
+
+#back {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+
+    /* different browsers use different terms for pointer vs. hand, so include both*/
+    cursor: pointer;
+    cursor: hand;
+}
+
+#name {
+    color: white;
+    margin-left: 15px;
+}
+
+#monaco {
+    margin-top: 10px;
+    width: 100%;
+    height: 300px;
+}
+

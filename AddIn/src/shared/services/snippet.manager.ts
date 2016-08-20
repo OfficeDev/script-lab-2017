@@ -68,7 +68,7 @@ export class SnippetManager {
             return UxUtil.showDialog('Delete confirmation',
                     'Are you sure you want to delete *ALL* of your local snippets?', ['Yes', 'No'])
                 .then((choice) => {
-                    if (choice = 'Yes') {
+                    if (choice === 'Yes') {
                         return deleteAndResolvePromise();
                     } else {
                         return Promise.reject(new ExpectedError());
