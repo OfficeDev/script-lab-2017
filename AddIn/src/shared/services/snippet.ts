@@ -2,17 +2,11 @@ import {Utilities, MessageStrings, UxUtil} from '../helpers';
 import {SnippetManager} from './snippet.manager';
 
 export class Snippet implements ISnippet {
-    meta: {
-        name: string;
-        id: string;
-        key?: string;
-        group?: string;
-        client?: OfficeClient[];
-    };
-    ts: string;
+    meta: ISnippetMeta;
+    script: string;
     html: string;
     css: string;
-    extras: string;
+    libraries: string;
 
     jsHash: string;
 
@@ -20,10 +14,10 @@ export class Snippet implements ISnippet {
 
     constructor(snippet: ISnippet) {
         this.meta = _.extend({}, snippet.meta || {name: undefined, id: undefined});
-        this.ts = snippet.ts || "";
+        this.script = snippet.script || "";
         this.css = snippet.css || "";
         this.html = snippet.html || "";
-        this.extras = snippet.extras || "";
+        this.libraries = snippet.libraries || "";
 
         this._hash = snippet._hash;
 
@@ -39,14 +33,14 @@ export class Snippet implements ISnippet {
     }
 
     get js(): Promise<string> {
-        if (Snippet._isValid(this.ts)) {
-            this._compiledJs = this.ts;
+        if (Snippet._isValid(this.script)) {
+            this._compiledJs = this.script;
             return Promise.resolve(this._compiledJs);
         }
         else {
             // FIXME expose to user
             return Promise.reject<string>(new Error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)"));
-            // return this._compile(this.ts).then((compiledJs) => {
+            // return this._compile(this.script).then((compiledJs) => {
             //     this._compiledJs = compiledJs;
             //     return compiledJs; 
             // })
@@ -54,7 +48,7 @@ export class Snippet implements ISnippet {
     }
 
     getJsLibaries(): Array<string> {
-        return Utilities.stringOrEmpty(this.extras).split("\n")
+        return Utilities.stringOrEmpty(this.libraries).split("\n")
             .map((entry) => {
                 entry = entry.toLowerCase().trim();
 
@@ -73,7 +67,7 @@ export class Snippet implements ISnippet {
     }
 
     getCssStylesheets(): Array<string> {
-        return Utilities.stringOrEmpty(this.extras).split("\n")
+        return Utilities.stringOrEmpty(this.libraries).split("\n")
             .map((entry) => entry.trim().toLowerCase())
             .filter((entry) => !entry.startsWith("#") && entry.endsWith(".css"))
             .map((entry) => {
@@ -90,7 +84,7 @@ export class Snippet implements ISnippet {
      * Returns TypeScript definitions in sorted order
      */
     getTypeScriptDefinitions(): Array<string> {
-        return Utilities.stringOrEmpty(this.extras).split("\n")
+        return Utilities.stringOrEmpty(this.libraries).split("\n")
             .map((entry) => entry.trim().toLowerCase())
             .filter((entry) => !entry.startsWith("#") && (entry.startsWith("@types") || entry.endsWith(".ts")))
             .map((entry) => {
@@ -135,11 +129,6 @@ export class Snippet implements ISnippet {
         }
     }
 
-    private _compile(ts: string): Promise<string> {
-        // FIXME
-        return Promise.resolve(ts);
-    }
-
     _hash: string;
     get hash(): string {
         if (Utilities.isEmpty(this._hash)) {
@@ -149,7 +138,8 @@ export class Snippet implements ISnippet {
     }
     public updateHash(): void {
         var md5: (input: string) => string = require('js-md5');
-        this._hash = md5([this.ts, this.html, this.css, this.extras].map(item => md5(item)).join(":"));
+        this._hash = md5([this.script, this.html, this.css, this.libraries]
+            .map(item => md5(item)).join(":"));
     }
 
     public makeNameUnique(isDuplicate: boolean): void {
@@ -216,17 +206,22 @@ export enum OfficeClient {
 export interface ISnippetMeta {
     name: string;
     id: string;
+    contains?: string;
+    hosts?: string;
+
+    // for upload only:
     key?: string;
-    group?: string;
-    client?: OfficeClient[];
 }
 
 export interface ISnippet {
     meta?: ISnippetMeta;
-    ts?: string;
+    script?: string;
     html?: string;
     css?: string;
-    extras?: string;
+    libraries?: string;
+
+    downloadableHtml?: string;
+    downloadableJs?: string;
 
     _hash?: string;
 }

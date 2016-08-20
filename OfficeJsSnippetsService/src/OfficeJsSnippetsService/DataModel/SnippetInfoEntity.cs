@@ -16,11 +16,26 @@ namespace OfficeJsSnippetsService.DataModel
 
         public string Name { get; set; }
 
-        public string CreatorIP { get; set; }
+		public string Hosts { get; set; }
+
+		public string[] HostsArray
+		{
+			get
+			{
+				return this.Hosts.Split(',');
+			}
+		}
+
+		public double MetadataVersion { get; set; }
+
+		public string Contains { get; set; }
+
+		public DateTime DateCreated { get; set; }
 
         public string Salt { get; set; }
 
         public string Hash { get; set; }
+
 
         public static string GenerateLookupFilter(string snippetId)
         {

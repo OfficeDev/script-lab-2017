@@ -180,8 +180,12 @@ export class Utilities {
         }
     }
 
+    static get contextString(): string {
+        return window.sessionStorage.getItem('context');
+    }
+
     static get context(): ContextType {
-        switch (window.sessionStorage.getItem('context')) {
+        switch (Utilities.contextString) {
             case 'excel':
                 return ContextType.Excel;
             case 'word':
@@ -192,7 +196,7 @@ export class Utilities {
     }
 
     static get isRunnableMode(): boolean {
-        return window.sessionStorage.getItem('context') === 'true';
+        return window.sessionStorage.getItem('runnable') === 'true';
     }
 
     static get officeNamespacesLoaded(): boolean {

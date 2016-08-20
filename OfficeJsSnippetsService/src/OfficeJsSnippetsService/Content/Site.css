@@ -34,9 +34,10 @@ body {
     flex-wrap: nowrap;
     flex-direction: column;
     justify-content: center;
+	flex: 1 1 20%;
 }
 
-    .left .centering-container {
+    .left .body {
         flex: 1 1 100%;
         align-self: center;
         display: flex;
@@ -46,16 +47,16 @@ body {
         justify-content: center;
     }
 
-        .left .centering-container .message {
+        .left .body .message {
             width: 100%;
         }
 
-        .left .centering-container a {
+        .left .body a {
             align-self: flex-start;
             text-decoration: none;
         }
 
-        .left .centering-container .ms-Button {
+        .left .body .ms-Button {
             max-width: none;
             width: auto;
             display: block;
@@ -63,7 +64,7 @@ body {
             background: #217346 !important;
         }
 
-        .left .centering-container .ms-Button span {
+        .left .body .ms-Button span {
             color: white !important;
         }
 

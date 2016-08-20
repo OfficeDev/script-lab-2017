@@ -172,6 +172,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="index.html" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Properties\PublishProfiles\api-playground-web.pubxml" />
@@ -196,6 +197,7 @@
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Common\Ensure.cs" />
     <Compile Include="Common\UserValidation.cs" />
+    <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="MvcControllers\SnippetInfoController.cs" />
     <Compile Include="DataModel\SnippetInfoWithPasswordDto.cs" />
@@ -241,6 +243,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\SnippetInfo\Index.cshtml" />
+    <Content Include="Views\Default\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

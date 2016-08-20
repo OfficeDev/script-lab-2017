@@ -25,26 +25,30 @@ export class SnippetService {
             if (Utilities.isEmpty(metadata)) {
                 throw new Error(); // will be picked up below.
             }
+
+            // if it's being imported, don't worry about what hosts can in, and just use the current one.
+            metadata.hosts = Utilities.contextString;
             
             var script = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/script`, true);
             var html = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/html`, true);
             var css = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/css`, true);
-            var extras = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/extras`, true);
+            var libraries = this._request.get(`${this._baseApiUrlNoSlash}/snippets/${id}/content/libraries`, true);
 
+            // FIXME
             var allPromises = Promise.all([
                 script.catch(e => ""),
                 html.catch(e => ""),
                 css.catch(e => ""),
-                extras.catch(e => "")
+                libraries.catch(e => "")
             ]);
 
             return allPromises.then(results => 
-                new Snippet(<ISnippet>{
+                new Snippet({
                     meta: metadata,
-                    ts: results[0],
+                    script: results[0],
                     html: results[1],
                     css: results[2],
-                    extras: results[3]
+                    libraries: results[3]
                 })
             ).catch(UxUtil.showErrorNotification);
         }).catch((e) => {
@@ -53,8 +57,14 @@ export class SnippetService {
         });
     }
 
-    create(name: string, password?: string): Promise<IToken> {
-        var body = { name: name, password: password };
+    create(name: string, nonEmptyContentTypes: string[], password?: string): Promise<IToken> {
+        var body = {
+            name: name,
+            password: password,
+            hosts: Utilities.context,
+            metadataVersion: 1.0,
+            contains: nonEmptyContentTypes.join(',')
+        };
         return this._request.post(this._baseApiUrlNoSlash + '/snippets', body);
     }
 

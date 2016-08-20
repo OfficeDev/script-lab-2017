@@ -148,10 +148,14 @@ export class SnippetManager {
     }
 
     publish(snippet: ISnippet, password?: string): Promise<Snippet> {
-        return this._service.create(snippet.meta.name, password)
+        var nonEmptyContentTypes: string[] = [];
+        var availableTypes = ["html", "script", "css", "libraries"]
+        FIXME
+        if (!Utilities.isNullOrWhitespace(snippet.css)) { nonEmptyContentTypes.push("css")}
+
+        return this._service.create(snippet.meta.name, nonEmptyContentTypes, password)
             .then(data => {
                 snippet.meta.id = data.id;
-                snippet.meta.key = data.password;
             })
             .then(data => this._uploadAllContents(snippet));
     }
@@ -167,10 +171,10 @@ export class SnippetManager {
             return Promise.reject<any>(new Error('Snippet metadata cannot be empty'));
         }
         return Promise.all([
-            this._service.upload(snippet.meta, snippet.ts, 'script'),
+            this._service.upload(snippet.meta, snippet.script, 'script'),
             this._service.upload(snippet.meta, snippet.html, 'html'),
             this._service.upload(snippet.meta, snippet.css, 'css'),
-            this._service.upload(snippet.meta, snippet.extras, 'extras')
+            this._service.upload(snippet.meta, snippet.libraries, 'libraries')
         ]).then(() => snippet);
     }
 
@@ -232,7 +236,7 @@ export class SnippetManager {
 
     private _createBlankOfficeJsSnippet(): Snippet {
         return new Snippet({
-            ts: Utilities.stripSpaces(`
+            script: Utilities.stripSpaces(`
                 ${Utilities.getContextNamespace()}.run(function(context) {
                     // ...
                     return context.sync();
@@ -243,7 +247,7 @@ export class SnippetManager {
                     }
                 });
             `),
-            extras: Utilities.stripSpaces(`
+            libraries: Utilities.stripSpaces(`
                 # Office.js CDN reference
                 //appsforoffice.microsoft.com/lib/1/hosted/Office.js
 
@@ -262,10 +266,10 @@ export class SnippetManager {
 
     private _createBlankWebSnippet(): Snippet {
         return new Snippet({
-            ts: Utilities.stripSpaces(`
+            script: Utilities.stripSpaces(`
                 console.log("Hello world");
             `),
-            extras: Utilities.stripSpaces(`
+            libraries: Utilities.stripSpaces(`
                 // NPM CDN references
                 jquery
 

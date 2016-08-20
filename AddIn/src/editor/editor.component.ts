@@ -266,11 +266,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     private _composeSnippetFromEditor() {
         var currentEditorState = this.tabs.currentState;
-        return new Snippet(<ISnippet>{
+        return new Snippet({
             meta: this.snippet.meta,
             css: currentEditorState['CSS'],
-            extras: currentEditorState['Libraries'],
-            ts: currentEditorState['JavaScript'],
+            libraries: currentEditorState['Libraries'],
+            script: currentEditorState['Script'],
             html: currentEditorState['HTML']
         });
     }

@@ -101,11 +101,14 @@ namespace OfficeJsSnippetsService.Controllers
         }
 
         [HttpPost, Route("~/api/snippets")]
-        public async Task<SnippetInfoWithPasswordDto> CreateSnippet([FromBody] SnippetInfoWithPasswordDto snippetInfo)
+        public async Task<SnippetInfoDto> CreateSnippet([FromBody] SnippetInfoWithPasswordDto snippetInfo)
         {
             var entity = SnippetInfoEntity.Create(this.idGenerator.GenerateId());
-            entity.CreatorIP = HttpContext.Current?.Request?.UserHostAddress;
-
+            entity.Hosts = snippetInfo.Hosts;
+            entity.MetadataVersion = snippetInfo.MetadataVersion;
+            entity.DateCreated = DateTime.UtcNow;
+            entity.Contains = snippetInfo.Contains;
+            
             string password = null;
             if (snippetInfo != null)
             {
@@ -117,6 +120,7 @@ namespace OfficeJsSnippetsService.Controllers
             {
                 password = this.passwordHelper.CreatePassword();
             }
+
             string salt, hash;
             this.passwordHelper.CreateSaltAndHash(password, out salt, out hash);
             entity.Salt = salt;
@@ -125,7 +129,7 @@ namespace OfficeJsSnippetsService.Controllers
             await this.snippetInfoService.CreateSnippetAsync(entity);
             await this.snippetContentService.CreateContainerAsync(entity.SnippetId);
 
-            return ToSnippetInfoWithPasswordDto(entity, password);
+            return ToSnippetInfoDto(entity);
         }
 
         [HttpGet, Route("~/api/snippets/{snippetId}/content/{fileName}")]
@@ -201,7 +205,7 @@ namespace OfficeJsSnippetsService.Controllers
             content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
             content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
-                FileName = "officejs_snippet_{0}.zip".FormatInvariant(snippetId)
+                FileName = "snippet_{0}.zip".FormatInvariant(snippetId)
             };
             response.Content = content;
             return response;
@@ -222,16 +226,6 @@ namespace OfficeJsSnippetsService.Controllers
             {
                 Id = entity.SnippetId,
                 Name = entity.Name
-            };
-        }
-
-        private static SnippetInfoWithPasswordDto ToSnippetInfoWithPasswordDto(SnippetInfoEntity entity, string password)
-        {
-            return new SnippetInfoWithPasswordDto
-            {
-                Id = entity.SnippetId,
-                Name = entity.Name,
-                Password = password
             };
         }
     }

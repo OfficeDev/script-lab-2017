@@ -5,39 +5,33 @@
     <html>
     <head>
         <meta name="viewport" content="width=device-width" />
-        @if (Model.Exists)
-        {
-            <title>@Model.Name - an OfficeJS API snippet</title>
-        }
-        else
-        {
-            <title>Snippet not found - Office.js API Playground</title>
-        }
+        <title>@ViewBag.Title</title>
     </head>*@
 @*<body>
     <div class="container">*@
 <div class="left">
-    <h1 class="ms-font-su">@Model.Name</h1>
+    <h1 class="ms-font-su">@ViewBag.SnippetTitle</h1>
 
-    <div class="centering-container">
+    <div class="body">
         <div class="message">
-            <p class="ms-font-l">Welcome to the Office.js API Playground. You are looking at a snippet that was shared with you.</p>
-            <p class="ms-font-l">To see the snippet in action, download the API Payground Add-in from the Office store.</p>
-            <p class="ms-font-l">You can also view the snippet code on the pane to the right.</p>
+            @foreach (var paragraph in Model.Message)
+            {
+                <p class="ms-font-l">@paragraph</p>
+            }
         </div>
 
         <a href="@Model.DownloadZipUri">
-            <button class="ms-Button ms-Button--compound">
+            <class class="ms-Button ms-Button--compound">
                 <span class="ms-Button-label">Download this snippet</span>
                 <span class="ms-Button-description">Click here to get the snippet as a zip file containing full-runnable html/js/css.</span>
-            </button>
+            </class>
         </a>
     </div>
 </div>
 <div class="right">
     @if (Model.Exists)
     {
-        <iframe src="@System.Configuration.ConfigurationManager.AppSettings["PlaygroundBaseUrl"]#/view/@Model.Id" />
+        <iframe src="@Model.IFrameUrl" />
     }
 </div>
 @*</div>
