@@ -1,8 +1,10 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {UxUtil} from '../shared/helpers';
+import {Utilities, UxUtil} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
+
+declare var GitHub;
 
 @Component({
     selector: 'share',
@@ -14,7 +16,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('editor') private _editor: ElementRef;
 
     loaded: boolean;
-    shareLink: string;
+    gistId: string;
+    embedUrl: string;
 
     _snippet: Snippet = new Snippet({});
 
@@ -26,16 +29,14 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         super();
     }
 
-    ngOnInit() {
+    ngOnInit() {                    
         var subscription = this._route.params.subscribe(params => {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this._snippet = snippet;
                     return this._initializeMonacoEditor()
                 })
-                .catch(e => {
-                    UxUtil.showErrorNotification(e);
-                });
+                .catch(UxUtil.catchError("An error occurred while fetching the snippet."));
         });
 
         this.markDispose(subscription);
@@ -48,7 +49,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             (<any>window).require(['vs/editor/editor.main'], () => {
                 this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
                     value: this._snippet.jsonExportedString,
-                    language: 'javascript',
+                    language: 'text',
                     lineNumbers: true,
                     roundedSelection: false,
                     scrollBeyondLastLine: false,
@@ -58,6 +59,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                     theme: "vs-dark",
                     scrollbar: {
                         vertical: 'visible',
+                        verticalHasArrows: true,
+                        arrowSize: 15
                     }
                 });
 
@@ -65,6 +68,41 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                 setTimeout(() => this._monacoEditor.layout(), 20);                
             });
         });
+    }
+
+    postToGist() {
+        var errorMessage
+        const gh = new GitHub(); // Note: unauthenticated client, i.e., for creating anonymous gist
+        let gist = gh.getGist();
+        gist
+            .create({
+                public: true,
+                description: '"' + this._snippet.meta.name + '" snippet - ' + Utilities.playgroundDescription,
+                files: {
+                    "playground-metadata.json": {
+                        "content": this._snippet.jsonExportedString
+                    }
+                }
+            })
+            .then(({data}) => {
+                let gistJson = data;
+                gist.read((err, gist, xhr) => {
+                    if (err) {
+                        UxUtil.showErrorNotification(
+                            "Sorry, something went wrong when creating the GitHub Gist.", err);
+                        return;
+                    }
+
+                    this.gistId = gist.id;
+
+                    var playgroundBasePath = window.location.protocol + "//" + window.location.hostname + 
+                        (window.location.port ? (":" + window.location.port) : "") + window.location.pathname;
+                    this.embedUrl = playgroundBasePath + '#/embed/' + this.gistId;
+
+                    $(window).scrollTop(0); 
+                })
+            })
+            .catch(UxUtil.catchError("Sorry, something went wrong when creating the GitHub Gist."));
     }
 
     back() {

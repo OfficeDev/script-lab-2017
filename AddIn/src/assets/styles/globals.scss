@@ -127,6 +127,10 @@ span.console.error {
         min-height: 150px;
 	}
 
+        .appwide-overlay-dialog .ui-dialog-content p {
+            margin-bottom: .5em;
+        }
+
 .appwide-overlay-dialog.ui-widget-overlay {
     z-index: 100;
 }

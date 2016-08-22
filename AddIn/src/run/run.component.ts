@@ -64,9 +64,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     iframeWindow.document.write(fullHtml);
                     iframeWindow.document.close();
                 })
-                .catch(e => {
-                    UxUtil.showErrorNotification(e);
-                });
+                .catch(UxUtil.catchError("An error occurred while loading the snippet."));
         });
 
 

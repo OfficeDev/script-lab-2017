@@ -32,14 +32,14 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._snippetManager.delete(snippet, true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
-            }).catch(UxUtil.showErrorNotification);
+            }).catch(UxUtil.catchError("Error deleting the snippet."));
     }
 
     deleteAll(): void {
         this._snippetManager.deleteAll(true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
-            }).catch(UxUtil.showErrorNotification);
+            }).catch(UxUtil.catchError("Error deleting snippets."));
     }
 
     run(snippet: ISnippet) {
@@ -70,6 +70,6 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
                 }
                 this._router.navigate(['edit', snippet.meta.id, true /*new*/])
             })
-            .catch(UxUtil.showErrorNotification);
+            .catch(UxUtil.catchError("Error importing the snippet."));
     }
 }

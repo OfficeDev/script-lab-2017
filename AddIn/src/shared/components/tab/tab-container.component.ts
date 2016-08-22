@@ -69,7 +69,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
                     this._initiateLoadIntelliSense(this.editorParent.currentIntelliSense)
-                        .catch(UxUtil.showErrorNotification)
+                        .catch(UxUtil.catchError("An error occurred while loading the IntelliSense."))
                         .then(() => {
                             this.progressMessage = "Loading the Monaco editor";
                             this._initializeMonacoEditor();
@@ -133,7 +133,6 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 responses.forEach((responseIn) => {
                     var response: IIntelliSenseResponse = <any>responseIn;
                     if (response.success) {
-                        const npmPrefixLength = "https://npmcdn.com/@types/".length;
                         try {
                             monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url);
                             console.log("Added " + response.url);

@@ -195,6 +195,18 @@ export class Utilities {
         }
     }
 
+    static get playgroundDescription(): string {
+        switch (Utilities.context) {
+            case ContextType.Excel:
+            case ContextType.Word:
+                return "Office.js API Playground"
+            case ContextType.Web:
+                return "API Playground";
+            default:
+                throw "Invalid context " + Utilities.context;
+        }
+    }
+
     static get isRunnableMode(): boolean {
         switch (Utilities.context) {
             case ContextType.Excel:

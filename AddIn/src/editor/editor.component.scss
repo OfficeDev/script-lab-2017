@@ -84,6 +84,28 @@
     }
 }
 
+@media (max-width: 400px) {
+    .editor-command-bar__command {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+}
+
+@media (max-width: 330px) {
+    .editor-command-bar__command {
+        padding-right: 7px;
+        padding-left: 7px;
+    }
+}
+
+@media (max-width: 300px) {
+    .editor-command-bar__command {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+}
+
+
 .edit-name-icon {
     color: #217346 !important;
     font-size: 1.5em;

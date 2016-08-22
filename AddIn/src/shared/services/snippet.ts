@@ -138,7 +138,7 @@ export class Snippet implements ISnippet {
             new Function(scriptText);
             return true;
         } catch (syntaxError) {
-            UxUtil.showErrorNotification(syntaxError);
+            UxUtil.showErrorNotification("Invalid snippet code.", syntaxError);
             return false;
         }
     }

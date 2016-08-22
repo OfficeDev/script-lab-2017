@@ -10,6 +10,6 @@ export class ExceptionHelper extends ExceptionHandler {
         console.groupEnd();
         console.groupEnd();
 
-        UxUtil.showErrorNotification(exception);
+        UxUtil.showErrorNotification("An unexpected error occurred.", exception);
     }
 }

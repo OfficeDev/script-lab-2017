@@ -4,18 +4,24 @@ export class ExpectedError {
     // Placeholder class just to indicate that the error was in fact an expected rejection.
 }
 
-// TODO rename file to UxUtil
 export class UxUtil {
-    static showErrorNotification(e: any) {
+    static showErrorNotification(messageOrMessageArray: string | string[], e: any) : Promise<string> {
         if (e instanceof ExpectedError) {
             return;
         }
-        
-        var message = Utilities.stringifyPlusPlus(e);
-        console.log(message);
 
-        UxUtil.showDialog("Error", message, "OK");
+        console.log(Utilities.stringifyPlusPlus(messageOrMessageArray));
+        console.log(Utilities.stringifyPlusPlus(e));
+
+        var messages: string[] = UxUtil.getArrayOfMessages(messageOrMessageArray);
+        messages.push(UxUtil.extractErrorMessage(e));
+
+        return UxUtil.showDialog("Error", messages, "OK");
     }
+
+    static catchError(messageOrMessageArray: string | string[]): (e: Error) => Promise<string> {
+        return (e: Error) => UxUtil.showErrorNotification(messageOrMessageArray, e);
+    } 
 
     static extractErrorMessage(e: any): string {
         if (e instanceof Error) {
@@ -25,20 +31,28 @@ export class UxUtil {
         }
     }       
 
-    static showDialog(title: string, message: string, buttons: string[]|string): Promise<string> {
+    static showDialog(title: string,
+        messageOrMessageArray: string | string[],
+        buttons: string[]|string
+    ): Promise<string> {
         return new Promise(function(resolve) {
             $(document).ready(function() {
                 var $app = $('body app.app');
                 var $dialogAndOverlay = $('.appwide-overlay-dialog');
                 var $dialogRoot = $('.appwide-overlay-dialog.ui-dialog');
                 $('.ui-dialog-title', $dialogRoot).text(title);
-                $('.ui-dialog-content p', $dialogRoot).text(message);
+
+                var $dialogContent = $('.ui-dialog-content', $dialogRoot).empty();
+
+                UxUtil.getArrayOfMessages(messageOrMessageArray).forEach((message) => {
+                    $dialogContent.append($(document.createElement('p')).text(message));
+                })
                 
                 var buttonsArray: string[];
-                if (_.isString(buttons)) {
-                    buttonsArray = [buttons];
-                } else if (_.isArray(buttons)) {
+                if (_.isArray(buttons)) {
                     buttonsArray = buttons;
+                } else {
+                    buttonsArray = [buttons];
                 }
                 
                 var $buttonPane = $('.ui-dialog-buttonpane', $dialogRoot);
@@ -57,5 +71,23 @@ export class UxUtil {
                 $dialogAndOverlay.show();
             })
         });
+    }
+
+    static getArrayOfMessages(messageOrMessageArray: string | string[]) {
+        var messages: string[];
+        if (_.isArray(messageOrMessageArray)) {
+            messages = messageOrMessageArray;
+        } else {
+            messages = [messageOrMessageArray];
+        }
+
+        var result = [];
+        messages.map((message) => message.split('\n')).forEach((messageArray) => {
+            messageArray.forEach((message) => {
+                result.push(message);
+            })
+        })
+
+        return result;
     }
 }

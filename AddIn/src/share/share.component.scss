@@ -54,9 +54,13 @@ share {
     margin-left: 15px;
 }
 
-#monaco {
+#monaco-wrapper {
     margin-top: 10px;
-    width: 100%;
+    background: #217346;
+    padding: 5px;
+}
+
+#monaco {
     height: 300px;
 }
 
@@ -68,6 +72,37 @@ share {
     background: #217346;
 }
 
-.pre-share, .post-share {
+.pre-share {
     padding: 10px;
 }
+
+    .pre-share button {
+        height: auto;
+    }
+
+.post-share h1 {
+    padding: 10px;
+}
+
+.post-share h2 {
+    margin-top: 20px;
+    padding: 10px;
+    background: #eee;
+}
+
+.post-share .info-panel {
+    padding: 0 10px 10px 10px;
+}
+
+    .post-share .info-panel p {
+        margin-top: 10px;
+    }
+
+    .post-share .info-panel .link-or-id {
+        word-wrap: break-word;
+        font-weight: bold;
+        margin-left: 20px;
+        margin-bottom: 10px;
+        margin-top: 5px;
+        color: #217346;
+    }

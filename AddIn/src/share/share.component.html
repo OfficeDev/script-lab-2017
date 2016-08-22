@@ -10,32 +10,74 @@
         <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">Preparing the snippet for sharing...</div>
     </div>
 
-    <div class="pre-share" [hidden]="!loaded || shareLink">
+    <div class="pre-share" [hidden]="!loaded || gistId">
         <div>
             Below is a sharable copy of your snippet. You can now:
         </div>
         <ol>
             <li>Manually <b>copy the JSON</b> to share with another user. You can also put it on your own 
-                <a href="https://gist.github.com/" >GitHub&nbsp;Gist</a>
+                <a href="https://gist.github.com/" traget="_blank">GitHub&nbsp;Gist</a>
                 for sharing or version-control.
             </li>
-            <li>Alternatively, <b>have <em>us</em> create an 
+            <li>Alternatively, <b>have us create an 
                 anonymous secret <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a></b>
                 (<a href="https://help.github.com/articles/about-gists/#anonymous-gists" target="_blank">"anonymous" info here</a>),
-                and give you a link that you can share with other users of the Playground.
+                and give you a shareable link.
             </li>
         </ol>
 
         <button class="ms-Button" (click)="postToGist()">
-            <h1 class="ms-Button-label">Share as a secret anonymous GitHub Gits</h1>
+            <h1 class="ms-Button-label">Share as an anonymous GitHub Gist</h1>
         </button>
 
         <hr />
 
-        <div #editor id="monaco"></div>
+        <div id="monaco-wrapper">
+            <div #editor id="monaco"></div>
+        </div>
     </div>
     
-    <div class="post-share" [hidden]="!shareLink">
-        Shared successfully!
+    <div class="post-share" [hidden]="!gistId">
+        <h1 class="ms-font-xl">Your snippet has been shared successfully!</h1>
+
+        <h2 class="ms-font-l">Shareable link</h2>
+        <div class="info-panel">
+            <p>
+                The URL of the GitHub Gist is
+            </p>
+            <div class="link-or-id">
+                <a href="https://gist.github.com/{{gistId}}" target="_blank">
+                    https://gist.github.com/{{gistId}}
+                </a>.
+            </div>
+            <p>
+                <span style="font-weight: bold;">
+                    Copy-paste this URL for safekeeping
+                </span>,
+                as it will be gone as soon as you navigate away from this page.
+            </p>
+
+            <p>
+                Your colleagues will be able to import your snippet by
+                choosing the <b>"Import from link or JSON"</b> button 
+                in the API Playground, and providing either the URL above
+                or a simplified ID:
+            </p>
+            <div class="link-or-id">
+                gist_{{gistId}}
+            </div>
+        </div>
+
+        <h2 class="ms-font-l">Embeddable view</h2>
+        <div class="info-panel">
+            <p>
+                To <b>embed a view-only</b> version of the snippet
+                in an article, blog post, etc., use the embed link:
+            </p>
+
+            <div class="link-or-id">
+                <a href="{{embedUrl}}" target="_blank">{{embedUrl}}</a>.
+            </div>
+        </div>
     </div>
 </section>

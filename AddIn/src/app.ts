@@ -39,7 +39,7 @@ export function launch() {
         ...PROVIDER_OVERRIDES,
         ...APP_PROVIDERS
     ])
-    .catch(UxUtil.showErrorNotification);
+    .catch(UxUtil.catchError("An error occurred while loading the API Playground"));
 }
 
 if (Utilities.officeNamespacesLoaded) {
