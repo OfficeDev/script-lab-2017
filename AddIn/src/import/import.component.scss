@@ -1,0 +1,103 @@
+@import '../assets/styles/mixins.scss';
+@import '../assets/styles/theme.scss';
+
+import {
+    overflow: hidden;
+}
+
+.import__header {
+    background-color: #217346;
+    padding: 7.5px 15px;
+}
+
+.import__main {
+    -webkit-flex: 1 1 100%;
+    -ms-flex: 1 1 100%;
+    flex: 1 1 100%;
+    overflow: auto;
+}
+    .import__main a {
+        color: #217346
+    }
+
+    .import__main ol {
+        margin-left: 30px;
+        margin-top: 10px;
+    }
+
+        .import__main ol li {
+            margin: 10px 0;
+        }
+
+    .import__main .pre-import .ms-Button {
+        background: #217346;
+        margin: 10px 10px 20px 50px;
+    }
+
+        .import__main .pre-import .ms-Button .ms-Button-label {
+            color: white;
+            font-weight: normal;
+        }
+
+#back {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+
+    /* different browsers use different terms for pointer vs. hand, so include both*/
+    cursor: pointer;
+    cursor: hand;
+}
+
+#name {
+    color: white;
+    margin-left: 15px;
+}
+
+#monaco-wrapper {
+    margin-top: 10px;
+}
+
+#monaco {
+    border: 5px solid green;
+    box-sizing: border-box;
+    height: 300px;
+}
+
+.ms-progress {
+    @include flex();
+    flex: 1 1 100%;
+    width: 100% !important;     
+    height: 100% !important;
+    background: #217346;
+}
+
+.pre-import > h1 {
+    margin-top:  20px;
+}
+
+.pre-import > .gray-background {
+    background: #eee;
+    padding: 10px;
+}
+
+.pre-import .info-panel {
+    padding: 10px;
+}
+
+.pre-import .right-aligned-button-container {
+    text-align: right;
+}
+
+    .pre-import .right-aligned-button-container button {
+        height: auto;
+    }
+
+.pre-import .link-or-id {
+    word-wrap: break-word;
+    font-weight: bold;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    color: #217346;
+}

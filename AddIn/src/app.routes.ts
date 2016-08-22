@@ -1,5 +1,7 @@
 import {provideRouter, RouterConfig} from '@angular/router';
-import {RunComponent, EditorComponent, NewComponent, ShareComponent, ViewComponent, ExcelLauncherComponent, WebLauncherComponent} from './components';
+import {RunComponent, EditorComponent, NewComponent,
+    ShareComponent, ImportComponent, ViewComponent,
+    ExcelLauncherComponent, WebLauncherComponent} from './components';
 
 export const AppRoutes: RouterConfig = [
     {
@@ -30,6 +32,10 @@ export const AppRoutes: RouterConfig = [
     {
         path: 'share/:id',
         component: ShareComponent
+    },
+    {
+        path: 'import',
+        component: ImportComponent
     },
     {
         path: 'view/:id',

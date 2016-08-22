@@ -38,17 +38,9 @@
             <h1 class="ms-Button-label">Create new</h1>
             <span class="ms-Button-description">Create a new snippet from a blank template</span>
         </button>
-        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="importButtonClick()">
+        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="import()">
             <h1 class="ms-Button-label">Create from link / JSON</h1>
             <span class="ms-Button-description">Create a new snippet from a shared link or from a JSON object</span>
         </button>
-    </section>
-    <section class="new__section new__form" [hidden]="!importFlag">
-        <table>
-            <tr>
-                <td><input class="new__input--text" type="text" name="link" [(ngModel)]="link" placeholder="Link to snippet or snippet ID" /></td>
-                <td style="width: 1%;"><h2 class="new__section-title ms-font-l" (click)="import()">Create&nbsp;&nbsp;&#x27A4;</h2></td>
-            </tr>
-        </table>
     </section>
 </section>

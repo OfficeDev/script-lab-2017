@@ -64,18 +64,6 @@
         @include flex();
     }
 
-    &__form {
-        i.ms-Icon {
-            position: absolute;
-            right: $default-spacing;
-            margin-top: $default-spacing/2;
-        }  
-        
-        .new__section-title {
-            @include focus-states($accent-background-primary, $accent-foreground-primary);
-        }      
-    }
-
     &__input--text {
         width: calc(100% - 10px);
         padding: 0 10px;
@@ -191,10 +179,6 @@ h1.ms-Button-label {
     .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
         margin-left: 0.75em;
     }
-}
-
-.new__section.new__form {
-    padding: 0 10px;
 }
 
 .new-list__item:active, .new-list__item:hover {

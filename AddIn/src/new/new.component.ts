@@ -55,21 +55,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._router.navigate(['edit', snippet.meta.id, false /*new*/]);
     }
 
-    importButtonClick() {
-        this.importFlag = !this.importFlag;
-        if (this.importFlag) {
-            setTimeout(() => $('.new__input--text').focus(), 50);
-        }
-    }
-
-    import(): void {
-        this._snippetManager.import(this.link)
-            .then((snippet) => {
-                if (Utilities.isEmpty(snippet)) {
-                    throw new Error("Could not read snippet data");
-                }
-                this._router.navigate(['edit', snippet.meta.id, true /*new*/])
-            })
-            .catch(UxUtil.catchError("Error importing the snippet."));
+    import() {
+        this._router.navigate(['import']);
     }
 }
