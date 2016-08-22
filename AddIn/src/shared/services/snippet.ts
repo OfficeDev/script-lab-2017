@@ -64,13 +64,17 @@ export class Snippet implements ISnippet {
     getJsLibaries(): Array<string> {
         return Utilities.stringOrEmpty(this.libraries).split("\n")
             .map((entry) => {
-                entry = entry.toLowerCase().trim();
+                entry = entry.trim();
 
-                if (entry.length === 0 || entry.startsWith("#") || entry.startsWith("@types") || entry.endsWith(".css") || entry.endsWith(".ts")) {
+                var lowercaseEntry = entry.toLowerCase();
+
+                if (lowercaseEntry.length === 0 || lowercaseEntry.startsWith("#") || lowercaseEntry.startsWith("@types") ||
+                    lowercaseEntry.endsWith(".css") || lowercaseEntry.endsWith(".ts")
+                ) {
                     return null;
                 }
 
-                if (Snippet._entryIsUrl(entry) && entry.endsWith(".js")) {
+                if (Snippet._entryIsUrl(entry) && lowercaseEntry.endsWith(".js")) {
                     return Snippet._normalizeUrl(entry);
                 }
 

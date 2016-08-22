@@ -13,7 +13,10 @@ export class SnippetWriter {
             !options.inlineJsAndCssIntoIframe /* don't need it when doing a run inside an iFrame */;
 
         var jsLibsToInclude = snippet.getJsLibaries()
-            .filter(item => !item.endsWith("/office.js") && !item.endsWith("/office.debug.js"));
+            .filter(item => {
+                var lowercase = item.toLowerCase();
+                return !lowercase.endsWith("/office.js") && !lowercase.endsWith("/office.debug.js");
+            });
 
         return snippet.js.then(js => {
             var html = [

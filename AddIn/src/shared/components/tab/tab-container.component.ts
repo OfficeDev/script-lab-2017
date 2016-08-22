@@ -164,7 +164,12 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             wrappingColumn: 0,
             readOnly: this.readonly,
             theme: "vs-dark",
-            wrappingIndent: "indent"
+            wrappingIndent: "indent",
+            scrollbar: {
+                vertical: 'visible',
+                verticalHasArrows: true,
+                arrowSize: 15
+            }
         });
 
         $(this._editor.nativeElement).keydown((event) => {
