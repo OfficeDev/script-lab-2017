@@ -7,7 +7,7 @@
     <div class="ms-progress" [hidden]="loaded">
         <div class="ms-Spinner large"></div>
         <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
-        <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">Preparing the snippet for sharing...</div>
+        <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">{{statusDescription}}</div>
     </div>
 
     <div class="pre-share" [hidden]="!loaded || gistId">
@@ -21,7 +21,7 @@
             </li>
             <li>Alternatively, <b>have us create an 
                 anonymous secret <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a></b>
-                (<a href="https://help.github.com/articles/about-gists/#anonymous-gists" target="_blank">"anonymous" info here</a>),
+                (see more about "anonymous" snippets <a href="https://help.github.com/articles/about-gists/#anonymous-gists" target="_blank">here</a>),
                 and give you a shareable link.
             </li>
         </ol>
@@ -48,12 +48,11 @@
             <div class="link-or-id">
                 <a href="https://gist.github.com/{{gistId}}" target="_blank">
                     https://gist.github.com/{{gistId}}
-                </a>.
+                </a>
             </div>
             <p>
                 <span style="font-weight: bold;">
-                    Copy-paste this URL for safekeeping
-                </span>,
+                    Copy-paste this URL for safekeeping</span>,
                 as it will be gone as soon as you navigate away from this page.
             </p>
 
@@ -76,7 +75,7 @@
             </p>
 
             <div class="link-or-id">
-                <a href="{{embedUrl}}" target="_blank">{{embedUrl}}</a>.
+                <a href="{{embedUrl}}" target="_blank">{{embedUrl}}</a>
             </div>
         </div>
     </div>

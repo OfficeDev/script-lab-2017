@@ -145,7 +145,6 @@
     .main-heading.local-snippets > i {
         position: relative;
         top: 0;
-        right: 2px;
         padding: 5px;
         color: black;
         /* different browsers use different terms for pointer vs. hand, so include both*/
@@ -174,16 +173,24 @@ h1.ms-Button-label {
     text-transform: uppercase;
 }
 
-.new-list__group.local-snippets {
-    margin-left: 1.5em;
-}
-
 .new__action h1.ms-Button-label {
     color: #217346;
 }
 
-.new-list__from-template > section, .new-list__from-template > section > section {
+.new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
     margin-left: 1.5em;
+}
+
+@media (max-width: 400px) {
+    .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
+        margin-left: 1em;
+    }
+}
+
+@media (max-width: 300px) {
+    .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
+        margin-left: 0.75em;
+    }
 }
 
 .new__section.new__form {
@@ -200,4 +207,59 @@ h1.ms-Button-label {
 
 .new-list__action:active, .new-list__action:hover {
     color: orange;
+}
+
+@media (max-width: 600px) {
+    .new-list__action {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    h1.main-heading {
+        padding-right: 10px; /* padding above minus 5 */
+    }
+}
+
+@media (max-width: 500px) {
+    .new-list__action {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    h1.main-heading {
+        padding-right: 7px; /* padding above minus 5 */
+    }
+}
+
+@media (max-width: 400px) {
+    .new-list__action {
+        padding-right: 9px;
+        padding-left: 9px;
+    }
+
+    h1.main-heading {
+        padding-right: 4px; /* padding above minus 5 */
+    }
+}
+
+@media (max-width: 300px) {
+    .new-list__action {
+        padding-right: 7px;
+        padding-left: 7px;
+    }
+
+    h1.main-heading {
+        padding-right: 2px; /* padding above minus 5 */
+    }
+}
+
+@media (max-width: 250px) {
+    .new-list__action {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+
+    h1.main-heading {
+        padding-right: 0; /* padding above minus 5 */
+    }
 }

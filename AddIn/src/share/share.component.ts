@@ -18,6 +18,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     loaded: boolean;
     gistId: string;
     embedUrl: string;
+    statusDescription = "Preparing the snippet for sharing...";
 
     _snippet: Snippet = new Snippet({});
 
@@ -71,7 +72,9 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     postToGist() {
-        var errorMessage
+        this.statusDescription = "Posting the snippet to a new GitHub Gist...";
+        this.loaded = false;
+
         const gh = new GitHub(); // Note: unauthenticated client, i.e., for creating anonymous gist
         let gist = gh.getGist();
         gist
@@ -87,7 +90,9 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             .then(({data}) => {
                 let gistJson = data;
                 gist.read((err, gist, xhr) => {
-                    if (err) {
+                    this.loaded = true;
+
+                    if (err) {                        
                         UxUtil.showErrorNotification(
                             "Sorry, something went wrong when creating the GitHub Gist.", err);
                         return;
@@ -97,12 +102,15 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
                     var playgroundBasePath = window.location.protocol + "//" + window.location.hostname + 
                         (window.location.port ? (":" + window.location.port) : "") + window.location.pathname;
-                    this.embedUrl = playgroundBasePath + '#/embed/' + this.gistId;
+                    this.embedUrl = playgroundBasePath + '#/embed/gist_' + this.gistId;
 
                     $(window).scrollTop(0); 
                 })
             })
-            .catch(UxUtil.catchError("Sorry, something went wrong when creating the GitHub Gist."));
+            .catch((e) => {
+                this.loaded = true;
+                UxUtil.catchError("Sorry, something went wrong when creating the GitHub Gist.")(e);
+            });
     }
 
     back() {

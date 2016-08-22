@@ -56,11 +56,11 @@ share {
 
 #monaco-wrapper {
     margin-top: 10px;
-    background: #217346;
-    padding: 5px;
 }
 
 #monaco {
+    border: 5px solid green;
+    box-sizing: border-box;
     height: 300px;
 }
 

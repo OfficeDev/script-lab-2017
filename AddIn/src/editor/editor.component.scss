@@ -84,27 +84,40 @@
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
     .editor-command-bar__command {
         padding-right: 10px;
         padding-left: 10px;
     }
 }
 
-@media (max-width: 330px) {
+@media (max-width: 500px) {
     .editor-command-bar__command {
         padding-right: 7px;
-        padding-left: 7px;
+        padding-left: 7x;
     }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 400px) {
     .editor-command-bar__command {
         padding-right: 5px;
         padding-left: 5px;
     }
 }
 
+@media (max-width: 300px) {
+    .editor-command-bar__command {
+        padding-right: 3px;
+        padding-left: 3px;
+    }
+}
+
+@media (max-width: 250px) {
+    .editor-command-bar__command {
+        padding-right: 2px;
+        padding-left: 2px;
+    }
+}
 
 .edit-name-icon {
     color: #217346 !important;
