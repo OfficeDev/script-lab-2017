@@ -10,8 +10,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Office Add-in Playground" />
   <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
-  <IconUrl DefaultValue="https://api-playground.azurewebsites.net/assets/images/notepad-icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://api-playground.azurewebsites.net/assets/images/notepad-icon-64.png" />
+  <IconUrl DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-64.png" />
   <Hosts>
     <Host Name="Workbook" />
     <Host Name="Document" />
@@ -95,9 +95,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Play_icon_16" DefaultValue="https://api-playground.azurewebsites.net/assets/images/notepad-icon-16.png" />
-        <bt:Image id="Play_icon_32" DefaultValue="https://api-playground.azurewebsites.net/assets/images/notepad-icon-32.png" />
-        <bt:Image id="Play_icon_80" DefaultValue="https://api-playground.azurewebsites.net/assets/images/notepad-icon-80.png" />
+        <bt:Image id="Play_icon_16" DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-16.png" />
+        <bt:Image id="Play_icon_32" DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-32.png" />
+        <bt:Image id="Play_icon_80" DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://api-playground.azurewebsites.net/#/excel" />
@@ -110,8 +110,8 @@
         <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Office Add-in Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Office Add-in Playground to create, test, and share your Office.js snippets." />
-        <bt:String id="Play.Description" DefaultValue="Create, test and share your Office.js snippets directly from Excel or Word." />
+        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Office Add-in Playground to create, test, and share your Office Add-in snippets." />
+        <bt:String id="Play.Description" DefaultValue="Create, test and share your Office Add-in snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

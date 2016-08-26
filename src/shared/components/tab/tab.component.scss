@@ -19,7 +19,9 @@
     &__container {
         @include flex();
         flex: 1 1 100%;
-        width: 100%;        
+        width: 100%;
+        padding-top: 10px;
+        background: #1e1e1e;  
     }
 }
 
