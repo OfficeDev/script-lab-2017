@@ -18,7 +18,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('runner') runner: ElementRef;
     @ViewChild('console') consoleFrame: ElementRef;
 
-    private _snippet = new Snippet({ meta: { name: null, id: null } });
+    private _snippet: Snippet;
 
     private _originalConsole: Console;
     private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
@@ -33,6 +33,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
+        this._snippet = new Snippet({ meta: { name: null, id: null } }, this._snippetManager);
     }
 
     loaded = false;
@@ -181,7 +182,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     back() {
         if (this._returnToEdit) {
-            this._router.navigate(['edit', this._snippet.meta.id, false /*new*/]);
+            this._router.navigate(['edit', this._snippet.meta.id]);
         } else {
             this._router.navigate(['new']);            
         }

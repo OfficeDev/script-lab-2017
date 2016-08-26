@@ -4,5 +4,5 @@ export class MessageStrings {
     static PleaseProvideNameForSnippet = "Please provide a name for the snippet.";
     static SnippetNameAlreadyTaken = "A snippet with this same name already exists, please provide a different name.";
 
-    static NewSnippetName = "New Snippet";
+    static NewSnippetName = "New Snippet 1";
 }

@@ -1,4 +1,4 @@
-import {Utilities} from '../helpers';
+import {Utilities, PlaygroundError} from '../helpers';
 
 export interface IDictionary<T> {
     [index: string]: T
@@ -10,12 +10,14 @@ export class Dictionary<T> {
     }
 
     get(key: string): T {
-        if (!this.contains(key)) return null;
+        if (!this.contains(key)) {
+            throw new PlaygroundError('Key not found.');
+        }
         return this.items[key];
     }
 
     add(key: string, value: T): T {
-        if (this.contains(key)) throw new Error('Key already exists.');
+        if (this.contains(key)) throw new PlaygroundError('Key already exists.');
         return this.insert(key, value);
     };
 
@@ -32,7 +34,7 @@ export class Dictionary<T> {
     }
 
     remove(key: string): T {
-        if (!this.contains(key)) throw new Error('Key not found.');
+        if (!this.contains(key)) throw new PlaygroundError('Key not found.');
         var value = this.items[key];
         delete this.items[key];
         return value;
@@ -43,7 +45,7 @@ export class Dictionary<T> {
     }
 
     contains(key: string): boolean {
-        if (key == null) throw new Error('Key cannot be null or undefined');
+        if (key == null) throw new PlaygroundError('Key cannot be null or undefined');
         if (Utilities.isNull(this.items)) throw new Error('Dictionary isn\'t initialized. Call \'new\' first.');
         return this.items.hasOwnProperty(key);
     }

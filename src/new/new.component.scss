@@ -7,7 +7,7 @@
 
     &__header {
         padding: 7.5px 15px;
-        background-color: #1D7044;
+        background-color: #0d321e;
         color: white;
     }
 
@@ -198,6 +198,10 @@ h1.ms-Button-label {
 .new-list__action:active, .new-list__action:hover {
     background: #13472b;
     color: #cdf2de;
+}
+
+h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {
+    padding-right: 7px;
 }
 
 @media (max-width: 600px) {

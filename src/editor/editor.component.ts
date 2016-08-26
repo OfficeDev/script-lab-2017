@@ -3,7 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, UxUtil} from '../shared/helpers';
+import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, PlaygroundError, UxUtil} from '../shared/helpers';
 
 enum StatusType {
     info,
@@ -18,14 +18,13 @@ enum StatusType {
     directives: [Tab, Tabs]
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
-    snippet = new Snippet({ meta: { name: null, id: null } });
+    snippet: Snippet;
     
     status: string;
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
 
-    private _isBrandNewUnsavedSnippet = false;
     private _timeout;
 
     @ViewChild(Tabs) tabs: Tabs;
@@ -37,6 +36,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         private _route: ActivatedRoute
     ) {
         super(_router, _snippetManager);
+        this.snippet = new Snippet({ meta: { name: null, id: null } }, this._snippetManager);
 
         this._errorHandler = this._errorHandler.bind(this);
     }
@@ -47,10 +47,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         }
 
         var subscription = this._route.params.subscribe(params => {
-            if (params['new'] === 'true') {
-                this._isBrandNewUnsavedSnippet = true;
-            }
-            
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this.snippet = snippet;
@@ -68,15 +64,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
         this.tabs.editorParent = this;
     }
-
-    // TODO (ask Bhargav): how to validate name?
-    // onNameChange() {
-    //     var snippetsContainer = SnippetManager.getLocalSnippetsContainer();
-    //     if (snippetsContainer.contains(this.snippet.meta.name)) {
-    //         this._rejectName(MessageStrings.NameAlreadyExists);
-    //     }
-    //     this.snippet.meta.name = $(this.nameInputField.nativeElement).val();
-    // }
 
     private _showNameFieldAndSetFocus(): void {
         this.editMode = true;
@@ -102,11 +89,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         
         const navigateHomeAction = () => this._router.navigate(['new']);
 
-        var promptToSave = 
-            (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
-            this._isBrandNewUnsavedSnippet;
-
-        if (promptToSave) {
+        if (this._promptToSave) {
             UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before going back?`, ['Yes', 'No', 'Cancel'])
                 .then((choice) => {
                     if (choice == "Cancel") {
@@ -126,11 +109,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     refresh(): void {
-        var promptToSave = 
-            (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
-            this._isBrandNewUnsavedSnippet;
-
-        if (promptToSave) {
+        if (this._promptToSave) {
             UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before re-loading the page?`, ['Save', 'Discard Changes'])
                 .then((choice) => {
                     if (choice == "Save") {
@@ -147,13 +126,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     share() {
-        var promptToSave = 
-            (this.snippet.hash != this._composeSnippetFromEditor().hash) ||
-            this._isBrandNewUnsavedSnippet;
-        
         const navigateToShareAction = () => this._router.navigate(['share', this.snippet.meta.id]);
 
-        if (promptToSave) {
+        if (this._promptToSave) {
             UxUtil.showDialog('Save the snippet?', `You must save the snippet before sharing it. Save it now?`, ['Save and proceed', 'Cancel'])
                 .then((choice) => {
                     if (choice === "Save and proceed") {
@@ -175,22 +150,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             return Promise.reject(new Error(MessageStrings.PleaseProvideNameForSnippet));
 	    }
 
-        var containsAnotherSnippetWithSameName =
-            this._snippetManager.getLocal().find((item) => 
-                (item.meta.id != this.snippet.meta.id && item.meta.name == this.snippet.meta.name));
-        
-        if (containsAnotherSnippetWithSameName) {
-            this._showNameFieldAndSetFocus();
-            return Promise.reject(new Error(MessageStrings.SnippetNameAlreadyTaken));
-        }
-
         return Promise.resolve();
     }
 
 	save(): Promise<void> {
         return this._saveHelper()
             .then((snippet) => {
-                this._isBrandNewUnsavedSnippet = false;
 	            this._showStatus(StatusType.info, 3 /*seconds*/,`Saved "${snippet.meta.name}"`);
             })
             .catch(this._errorHandler);
@@ -214,7 +179,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     run(): Promise<any> {
         return this._validateNameBeforeProceeding()
             .then(() => {
-                if (this.snippet.hash != this._composeSnippetFromEditor().hash) {
+                if (this._promptToSave) {
                     const message = "You need to save the snippet before running it. " + 
                         "Would you like to save now? Alternatively, if you're in the middle of a risky change, " + 
                         "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet."; 
@@ -237,7 +202,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         return this._validateNameBeforeProceeding()
             .then(() => this._snippetManager.duplicate(this._composeSnippetFromEditor()))
             .then(duplicateSnippet => {
-                this._router.navigate(['edit', duplicateSnippet.meta.id, true /*new*/]);
+                this._router.navigate(['edit', duplicateSnippet.meta.id]);
                 return duplicateSnippet
             })
             .then((duplicateSnippet) => {
@@ -273,20 +238,29 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         if (e instanceof ExpectedError) {
             this.clearStatus();
             return;
-        }
-        
-        var message = UxUtil.extractErrorMessage(e);
-        this._showStatus(StatusType.error, 5 /*seconds*/, message);
+        } else if (e instanceof PlaygroundError) {
+            this._showStatus(StatusType.error, 5 /*seconds*/, e.message);    
+        } else {
+            UxUtil.showErrorNotification([], e);
+        }        
     }
 
     private _composeSnippetFromEditor() {
         var currentEditorState = this.tabs.currentState;
+        if (currentEditorState === null) {
+            return new Snippet({}, this._snippetManager);
+        }
+
         return new Snippet({
             meta: this.snippet.meta,
             css: currentEditorState['CSS'],
             libraries: currentEditorState['Libraries'],
             script: currentEditorState['Script'],
             html: currentEditorState['HTML']
-        });
+        }, this._snippetManager);
+    }
+
+    private get _promptToSave() {
+        return this.snippet.lastSavedHash != this._composeSnippetFromEditor().getHash();
     }
 }

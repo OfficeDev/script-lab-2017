@@ -32,7 +32,7 @@ export const AppRoutes: RouterConfig = [
         component: NewComponent
     },
     {
-        path: 'edit/:id/:new',
+        path: 'edit/:id',
         component: EditorComponent
     },
     {

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter} from '@angular/core';
 import {Http} from '@angular/http';
 import {Subscription} from 'rxjs/Subscription';
-import {Dictionary, IDictionary, Utilities, UxUtil} from '../../helpers';
+import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
 
@@ -99,7 +99,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             }
         });
 
-        this._monacoEditor.dispose();
+        if (this._monacoEditor) {
+            this._monacoEditor.dispose();
+        }
     }
 
     private _initiateLoadIntelliSense(urls: string[]): Promise<void> {
@@ -146,7 +148,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 })
 
                 if (errorUrls.length > 0) {
-                    throw new Error("Error fetching IntelliSense for: \n" +
+                    throw new PlaygroundError("Error fetching IntelliSense for: \n" +
                         errorUrls.map((url) => "* " + url).join("\n"));
                 }
             });

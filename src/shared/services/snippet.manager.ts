@@ -19,7 +19,7 @@ export class SnippetManager {
         return new Promise(resolve => {
             var snippet: Snippet;
             if (Utilities.context == ContextType.TypeScript) {
-                snippet = this._createBlankWebSnippet();
+                snippet = this._createBlankTypeScriptSnippet();
             } else {
                 snippet = this._createBlankOfficeJsSnippet();
             }
@@ -35,7 +35,7 @@ export class SnippetManager {
             return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
         }
         if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty')) as any;
-        snippet.updateHash();
+        snippet.lastSavedHash = snippet.getHash();
         return Promise.resolve(this._snippetsContainer.insert(snippet.meta.id, snippet));
     }
 
@@ -50,7 +50,7 @@ export class SnippetManager {
             return UxUtil.showDialog('Delete confirmation',
                     `Are you sure you want to delete the snippet "${snippet.meta.name}"?`, ['Yes', 'No'])
                 .then((choice) => {
-                    if (choice = 'Yes') {
+                    if (choice === 'Yes') {
                         return deleteAndResolvePromise();
                     } else {
                         return Promise.reject(new ExpectedError());
@@ -89,6 +89,10 @@ export class SnippetManager {
         }
     }
 
+    /**
+     * Returns a list of local snippets.  Note that the initialize function of SnippetManager
+     * MUST be called before issuing this call, or else you'll always get an empty list.
+     */
     getLocal(): ISnippet[] {
         if (this._snippetsContainer) {
             return this._snippetsContainer.values();
@@ -144,14 +148,14 @@ export class SnippetManager {
     find(id: string): Promise<Snippet> {
         return new Promise(resolve => {
             var result = this._snippetsContainer.get(id);
-            resolve(new Snippet(result));
+            resolve(new Snippet(result, this));
         });
     }
 
     duplicate(snippet: ISnippet): Promise<Snippet> {
         return new Promise(resolve => {
             if (Utilities.isNull(snippet)) throw 'Snippet cannot be null.';
-            var newSnippet = new Snippet(snippet);
+            var newSnippet = new Snippet(snippet, this);
             newSnippet.randomizeId(true);
             newSnippet.makeNameUnique(true /*isDuplicate*/);
             resolve(this._addSnippetToLocalStorage(newSnippet));
@@ -241,10 +245,10 @@ export class SnippetManager {
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
             `)
-        });
+        }, this);
     }
 
-    private _createBlankWebSnippet(): Snippet {
+    private _createBlankTypeScriptSnippet(): Snippet {
         return new Snippet({
             script: Utilities.stripSpaces(`
                 console.log("Hello world");
@@ -256,6 +260,6 @@ export class SnippetManager {
                 // IntelliSense definitions
                 https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
             `)
-        });
+        }, this);
     }
 }

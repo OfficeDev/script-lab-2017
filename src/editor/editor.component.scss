@@ -71,12 +71,13 @@
         height: 25px;
         padding: 8px;
         font-size: 14px;
-        background-color: #F4F4F4;
+        background-color: #1a1a1a;
         border: solid 1px transparent;
         outline: none;
+        color: white;
 
         &:focus {
-            color: $accent-background-primary;
+            color: #cdf2de; 
             border: solid 1px $accent-background-primary;
         }
     }

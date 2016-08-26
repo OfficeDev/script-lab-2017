@@ -34,7 +34,7 @@ export class Utilities {
 
     static stringOrEmpty(text: string): string {
         if (text === null || text === undefined) {
-            return "";
+            return '';
         }
         
         return text;

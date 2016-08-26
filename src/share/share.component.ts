@@ -20,7 +20,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     embedUrl: string;
     statusDescription = "Preparing the snippet for sharing...";
 
-    _snippet: Snippet = new Snippet({});
+    _snippet: Snippet;
+    _snippetExportString: string;
 
     constructor(
         _snippetManager: SnippetManager,
@@ -29,6 +30,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     ) {
         super(_router, _snippetManager);
+        this._snippet = new Snippet({}, this._snippetManager);
     }
 
     ngOnInit() {
@@ -40,6 +42,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this._snippet = snippet;
+                    this._snippetExportString = JSON.stringify(snippet.exportToJson(true /*forPlayground*/));
                     return this._initializeMonacoEditor()
                 })
                 .catch(UxUtil.catchError("An error occurred while fetching the snippet."));
@@ -54,7 +57,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
             (<any>window).require(['vs/editor/editor.main'], () => {
                 this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
-                    value: this._snippet.jsonExportedString,
+                    value: this._snippetExportString,
                     language: 'text',
                     lineNumbers: true,
                     roundedSelection: false,
@@ -90,7 +93,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                 description: '"' + this._snippet.meta.name + '" snippet - ' + Utilities.playgroundDescription,
                 files: {
                     "playground-metadata.json": {
-                        "content": this._snippet.jsonExportedString
+                        "content": this._snippetExportString
                     }
                 }
             })
@@ -116,12 +119,13 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             })
             .catch((e) => {
                 this.loaded = true;
-                UxUtil.catchError("Sorry, something went wrong when creating the GitHub Gist.")(e);
+                UxUtil.showErrorNotification(
+                    "Sorry, something went wrong when creating the GitHub Gist.", e);
             });
     }
 
     back() {
-        this._router.navigate(['edit', this._snippet.meta.id, false /*new*/]);
+        this._router.navigate(['edit', this._snippet.meta.id]);
     }
 
     @HostListener('window:resize', ['$event'])

@@ -10,38 +10,54 @@ export class Snippet implements ISnippet {
 
     jsHash: string;
 
+    lastSavedHash: string;
     private _compiledJs: string;
 
-    constructor(snippet: ISnippet) {
+    constructor(snippet: ISnippet, private _snippetManager: SnippetManager) {
         this.meta = _.extend({}, snippet.meta || {name: undefined, id: undefined});
         this.script = snippet.script || "";
         this.css = snippet.css || "";
         this.html = snippet.html || "";
         this.libraries = snippet.libraries || "";
 
-        this._hash = snippet._hash;
-
         if (Utilities.isNullOrWhitespace(this.meta.id)) {
             this.randomizeId();
         }
+
+        this.lastSavedHash = this.getHash();
     }
 
-    get jsonExportedString() : string {
+    toJSON(): any {
+       return this.exportToJson(false /*forPlayground*/);
+    }
+
+
+    exportToJson(forPlayground: boolean) : any {
         var data = {
             meta: {
-                playgroundVersion: 1.0,
                 name: this.meta.name
             }
         };
 
+        if (forPlayground) {
+            data.meta['playgroundVersion'] = 1.0;
+        } else {
+            data.meta['id'] = this.meta.id;
+        }
+
         var contentTypes = ["script", "css", "html", "libraries"];
         contentTypes.forEach((type) => {
             if (!Utilities.isNullOrWhitespace(this[type])) {
-                data[type] = this[type].split("\n");
+                data[type] = (<string>this[type]).replace(/\r?\n|\r/g, '\n');
+
+                // for playground, break into array for ease of readability:
+                if (forPlayground) {
+                    data[type] = data[type].split("\n");
+                }
             }
         });
 
-        return JSON.stringify(data, null, 4);
+        return data;
     }
 
     // A bit of a hack (probably doesn't belong here, but want to get an easy "run" link)
@@ -133,7 +149,7 @@ export class Snippet implements ISnippet {
     }
 
     randomizeId(force?: boolean) {
-        var localSnippets = new SnippetManager().getLocal(); 
+        var localSnippets = this._snippetManager.getLocal(); 
         if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1) {
             this.meta.id = '~!L' + Utilities.randomize(Math.max(10000, localSnippets.length * 10)).toString();
         }
@@ -154,23 +170,15 @@ export class Snippet implements ISnippet {
         }
     }
 
-    _hash: string;
-    get hash(): string {
-        if (Utilities.isEmpty(this._hash)) {
-            this.updateHash();
-        }
-        return this._hash;
-    }
-    public updateHash(): void {
+    public getHash(): string {
         var md5: (input: string) => string = require('js-md5');
-        this._hash = md5([this.meta.name, this.script, this.html, this.css, this.libraries]
-            .map(item => md5(item)).join(":"));
+        return md5(JSON.stringify(this));
     }
 
     public makeNameUnique(isDuplicate: boolean): void {
-        var localSnippets = new SnippetManager().getLocal(); 
+        var localSnippets = this._snippetManager.getLocal(); 
 
-        if (Utilities.isNullOrWhitespace(name)) {
+        if (Utilities.isNullOrWhitespace(this.meta.name)) {
             this.meta.name = MessageStrings.NewSnippetName;
         }
 
@@ -178,35 +186,50 @@ export class Snippet implements ISnippet {
             return;
         }
 
-        // If name doesn't have "copy" in it, try to use "<name> - copy".
-        // Otherwise (or if the copy one is already taken), find the first available "<name> - copy <number>".
-        var regex = /(.*) - copy( \d+)?$/i;
-        /*  Will match these:
-                test - copy
-                test - copy 1
-                test - copy 2
-                test - copy 222
-            But not these:
-                test
-                test - copy 222 gaga
-        */
-        var regexMatches = regex.exec(name);
-        var prefix = this.meta.name;
-
-        if (regexMatches === null) {
-            if (isDuplicate) {
-                this.meta.name = prefix + " - copy";
-                if (isNameUnique(this)) {
-                    return;
-                }
+        var prefix = Utilities.stringOrEmpty(this.meta.name);
+        if (isDuplicate) {
+            // If name doesn't have "copy" in it, try to use "<name> - copy".
+            // Otherwise (or if the copy one is already taken), find the first available "<name> - copy <number>".
+            var regex = /(.*) - copy( \d+)?$/i;
+            /*  Will match these:
+                    test - copy
+                    test - copy 1
+                    test - copy 2
+                    test - copy 222
+                But not these:
+                    test
+                    test - copy 222 gaga
+            */
+            var regexMatches = regex.exec(this.meta.name);
+            
+            if (regexMatches) {
+                prefix = regexMatches[1];
             }
+
+            prefix = prefix + ' - copy';
+
         } else {
-            prefix = regexMatches[0];
+            // Does it end with just a number on the end?  If so, grab that?
+            var regex = /(.*) \d+$/;
+            /* Will match these:
+                    test 1
+                    test 122
+                But not these:
+                    test
+                    test - copy
+                    test - copy 222 gaga
+            */
+
+            var regexMatches = regex.exec(this.meta.name);
+            
+            if (regexMatches) {
+                prefix = regexMatches[1];
+            }
         }
         
         var i = 1;
         while (true) {
-            this.meta.name = `${prefix}${isDuplicate ? " - copy " : " "}${i}`;
+            this.meta.name = prefix + ' ' + i;
             if (isNameUnique(this)) {
                 return;               
             }
@@ -239,6 +262,4 @@ export interface ISnippet {
     html?: string;
     css?: string;
     libraries?: string;
-
-    _hash?: string;
 }

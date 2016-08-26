@@ -4,6 +4,14 @@ export class ExpectedError {
     // Placeholder class just to indicate that the error was in fact an expected rejection.
 }
 
+/**
+ * A class for signifying that an error is a "handleable" error that comes from the playground,
+ * as opposed to an error that comes from some internal operation or runtime error.
+ */
+export class PlaygroundError {
+    constructor(public message) { }
+}
+
 export class UxUtil {
     static showErrorNotification(messageOrMessageArray: string | string[], e: any) : Promise<string> {
         if (e instanceof ExpectedError) {
