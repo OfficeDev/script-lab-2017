@@ -61,6 +61,10 @@ module.exports = {
 
         new CopyWebpackPlugin([
             {
+                from: 'src/addin.html',
+                to: 'addin.html'
+            },
+            {
                 from: 'node_modules/monaco-editor/min/vs',
                 to: 'vs',
             },

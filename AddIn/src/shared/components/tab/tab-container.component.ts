@@ -188,6 +188,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         $(this._loader.nativeElement).hide();
         $(this._editor.nativeElement).show();
         this._monacoEditor.layout();
+
+        console.log("Monaco editor initialized.");
     }
 
     setSaveAction(action: () => void): void {

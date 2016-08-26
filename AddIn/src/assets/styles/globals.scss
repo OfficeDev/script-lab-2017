@@ -57,7 +57,7 @@ ul {
     @include flex();
     height: 100vh;
 
-    editor, tabs, editor-tab, new, run, view, share, import {
+    home, excel-launcher, word-launcher, typescript-launcher, new, editor, tabs, editor-tab, run, view, share, import {
         flex: 1 1 100%;
         @include flex();
     }
@@ -91,6 +91,22 @@ span.console.warn {
 
 span.console.error {
     color: brown;
+}
+
+.excel-background {
+    background: #217346;
+}
+
+.word-background {
+    background: #2A4497;
+}
+
+.onenote-background {
+    background: #7D3777;
+}
+
+.typescript-background {
+    background: #007ACC;
 }
 
 .appwide-overlay-dialog {

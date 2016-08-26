@@ -1,5 +1,4 @@
 import {Component, ViewChild, OnInit, OnDestroy, ElementRef} from '@angular/core';
-import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
@@ -33,17 +32,20 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     @ViewChild('name') nameInputField: ElementRef;
 
     constructor(
-        private _snippetManager: SnippetManager,
-        private _location: Location,
-        private _router: Router,
+        _router: Router,
+        _snippetManager: SnippetManager,
         private _route: ActivatedRoute
     ) {
-        super();
+        super(_router, _snippetManager);
 
         this._errorHandler = this._errorHandler.bind(this);
     }
 
     ngOnInit() {
+        if (!this._ensureContext()) {
+            return;
+        }
+
         var subscription = this._route.params.subscribe(params => {
             if (params['new'] === 'true') {
                 this._isBrandNewUnsavedSnippet = true;

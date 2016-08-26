@@ -27,19 +27,24 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     private _returnToEdit: boolean;
 
     constructor(
-        private _snippetManager: SnippetManager,
+        _router: Router,
+        _snippetManager: SnippetManager,
         private _route: ActivatedRoute,
-        private _router: Router,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
-        super();
+        super(_router, _snippetManager);
     }
 
     loaded = false;
+    loadingMessage = 'Preparing the snippet to run...';
     showConsole = false;
     consoleMessages: IConsoleMessage[] = [];
 
     ngOnInit() {
+        if (!this._ensureContext()) {
+            return;
+        }
+        
         this._originalConsole = window.console;
 
         this._consoleMethodsToIntercept.forEach(methodName => {
@@ -55,37 +60,55 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this._snippet = snippet;
-                    return SnippetWriter.createHtml(this._snippet, createHtmlOptions);
                 })
+                .then(() => {
+                    if (this._snippet.containsOfficeJsReference && !Utilities.officeInitialized) {
+                        this.loadingMessage = 'Waiting for Office.js to initialize. ' + 
+                            'Note than a snippet that references Office.js can only run ' + 
+                            'inside of an Office Add-in, not a regular webpage.';
+                        
+                        return new Promise((resolve) => {
+                            setTimeout(() => {
+                                if (Utilities.officeInitialized) {
+                                    resolve();
+                                }
+                            }, 50)
+                        });
+                    }
+                })
+                .then(() => SnippetWriter.createHtml(this._snippet, createHtmlOptions))
                 .then(fullHtml => {
                     var iframe = this.runner.nativeElement;
                     var iframeWindow: Window = (<any>iframe).contentWindow;
+
                     iframeWindow.document.open();
                     iframeWindow.document.write(fullHtml);
+
+                    this._monkeyPatchConsole(iframeWindow);
+
+                    var that = this;
+                    iframeWindow.onerror = function () {
+                        that.logToConsole('error', arguments);
+                    };
+
+                    iframeWindow.onload = () => {
+                        console.log("Frame loaded");
+                        
+                        this.loaded = true;
+                        this._changeDetectorRef.detectChanges();
+
+                        if (Utilities.context != ContextType.TypeScript) {
+                            iframeWindow['Office'] = (<any>window).Office;
+                            iframeWindow['Excel'] = (<any>window).Excel;
+                        }
+                    };
+
                     iframeWindow.document.close();
                 })
                 .catch(UxUtil.catchError("An error occurred while loading the snippet."));
         });
 
-
         this.markDispose(subscription);
-
-        window["iframeReadyCallback"] = (iframeWin) => {
-            this.loaded = true;
-            this._changeDetectorRef.detectChanges();
-
-            if (Utilities.context != ContextType.Web) {
-                iframeWin['Office'] = (<any>window).Office;
-                iframeWin['Excel'] = (<any>window).Excel;
-            }
-
-            this._monkeyPatchConsole(iframeWin);
-
-            var that = this;
-            iframeWin.onerror = function () {
-                that.logToConsole('error', arguments);
-            }
-        }
     }
 
     ngOnDestroy() {
@@ -107,10 +130,9 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
             console[methodName] = function () {
                 that.logToConsole(methodName, arguments);
                 if (original.apply) {
-                    // Do this for normal browsers
                     original.apply(console, arguments);
                 } else {
-                    // Do this for IE
+                    // If no "apply" method (Internet Explorer), use a different approach
                     var message = Array.prototype.slice.apply(arguments).join(' ');
                     original(message);
                 }

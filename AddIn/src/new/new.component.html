@@ -1,4 +1,7 @@
 <section class="new">
+    <section class="new__header ms-font-l">
+        {{title}}
+    </section>
     <section class="new__section new__gallery">
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
@@ -19,7 +22,7 @@
             </section>
             <section class="new-list__from-template">
                 <h1 class="ms-font-m main-heading">
-                    From template
+                    From a template
                 </h1>
                 <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>

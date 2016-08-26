@@ -30,8 +30,7 @@ export class Snippet implements ISnippet {
         var data = {
             meta: {
                 playgroundVersion: 1.0,
-                name: this.meta.name,
-                hosts: this.meta.hosts
+                name: this.meta.name
             }
         };
 
@@ -82,6 +81,14 @@ export class Snippet implements ISnippet {
                 return "//npmcdn.com/" + entry;
             })
             .filter((entry) => entry != null);
+    }
+
+    get containsOfficeJsReference(): boolean {
+        return this.getJsLibaries()
+            .filter(item => {
+                var lowercase = item.toLowerCase();
+                return !lowercase.endsWith("/office.js") && !lowercase.endsWith("/office.debug.js");
+            }).length > 0;
     }
 
     getCssStylesheets(): Array<string> {
@@ -224,7 +231,6 @@ export enum OfficeClient {
 export interface ISnippetMeta {
     name: string;
     id: string;
-    hosts?: string;
 }
 
 export interface ISnippet {

@@ -1,25 +1,35 @@
 import {provideRouter, RouterConfig} from '@angular/router';
-import {RunComponent, EditorComponent, NewComponent,
+import {
+    ExcelLauncherComponent, WordLauncherComponent, TypeScriptLauncherComponent,
+    HomeComponent, NewComponent, EditorComponent, RunComponent, 
     ShareComponent, ImportComponent, ViewComponent,
-    ExcelLauncherComponent, WebLauncherComponent} from './components';
+    } from './components';
 
 export const AppRoutes: RouterConfig = [
     {
         path: '',
-        redirectTo: 'new',
+        redirectTo: 'home',
         pathMatch: 'full'
     },
     {
-        path: 'excel',
-        component: ExcelLauncherComponent,
+        path: 'home',
+        component: HomeComponent
     },
     {
-        path: 'web',
-        component: WebLauncherComponent,
+        path: 'excel',
+        component: ExcelLauncherComponent
+    },
+    {
+        path: 'word',
+        component: WordLauncherComponent
+    },
+    {
+        path: 'typescript',
+        component: TypeScriptLauncherComponent
     },
     {
         path: 'new',
-        component: NewComponent,
+        component: NewComponent
     },
     {
         path: 'edit/:id/:new',

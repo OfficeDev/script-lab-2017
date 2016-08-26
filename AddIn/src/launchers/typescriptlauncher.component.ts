@@ -5,18 +5,18 @@ import {SnippetManager} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
-    selector: 'excel-launcher',
+    selector: 'typescript-launcher',
     templateUrl: 'launchercommon.html',
     styleUrls: ['launchercommon.component.scss']
 })
-export class ExcelLauncherComponent extends BaseComponent implements OnInit {
+export class TypeScriptLauncherComponent extends BaseComponent implements OnInit {
     constructor(
         _snippetManager: SnippetManager,
         _router: Router
     ) {
         super(_router, _snippetManager);
 
-        window.sessionStorage.setItem('context', 'excel');
+        window.sessionStorage.setItem('context', 'typescript');
     }
 
     ngOnInit() {

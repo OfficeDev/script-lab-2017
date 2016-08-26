@@ -5,15 +5,20 @@ import {StorageHelper, Utilities, ContextType, ExpectedError, UxUtil} from '../h
 @Injectable()
 export class SnippetManager {
     private _snippetsContainer: StorageHelper<ISnippet>;
+    private currentContext: string;
 
-    constructor() {
-        this._snippetsContainer = new StorageHelper<ISnippet>('snippets');
+    /**
+     * Must be called from every controller to ensure that the snippet manager uses
+     * a correct snippet context (Excel vs. Word vs. Web).
+     */
+    initialize() {
+        this._snippetsContainer = new StorageHelper<ISnippet>(Utilities.contextString + '_snippets');
     }
 
     new(): Promise<Snippet> {
         return new Promise(resolve => {
             var snippet: Snippet;
-            if (Utilities.context == ContextType.Web) {
+            if (Utilities.context == ContextType.TypeScript) {
                 snippet = this._createBlankWebSnippet();
             } else {
                 snippet = this._createBlankOfficeJsSnippet();
@@ -85,7 +90,11 @@ export class SnippetManager {
     }
 
     getLocal(): ISnippet[] {
-        return this._snippetsContainer.values();
+        if (this._snippetsContainer) {
+            return this._snippetsContainer.values();
+        }
+
+        return [];
     }
 
     getPlaylist(): Promise<any> {

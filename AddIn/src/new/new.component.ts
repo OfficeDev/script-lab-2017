@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Utilities, ExpectedError, UxUtil} from '../shared/helpers';
+import {Utilities, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
@@ -11,11 +11,11 @@ import {BaseComponent} from '../shared/components/base.component';
 })
 export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     constructor(
-        private _router: Router,
-        private _route: ActivatedRoute,
-        private _snippetManager: SnippetManager
+        _router: Router,
+        _snippetManager: SnippetManager,
+        private _route: ActivatedRoute
     ) {
-        super();
+        super(_router, _snippetManager);        
     }
 
     link: string;
@@ -24,6 +24,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     importFlag = false;
 
     ngOnInit() {
+        if (!this._ensureContext()) {
+            return;
+        }
+        
         this.localGallery = this._snippetManager.getLocal();
         this._snippetManager.getPlaylist().then(data => this.gallery = data);
     }
@@ -57,5 +61,14 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
 
     import() {
         this._router.navigate(['import']);
+    }
+
+    get title(): string {
+        if (Utilities.context === ContextType.Unknown) {
+            return '';
+        }
+
+        return Utilities.playgroundDescription + ' - '+  
+            Utilities.captializeFirstLetter(Utilities.contextString);
     }
 }

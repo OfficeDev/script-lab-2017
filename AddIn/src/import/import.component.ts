@@ -18,13 +18,6 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     loaded: boolean;
     statusDescription = "Initializing editor for importing...";
 
-    constructor(
-        private _snippetManager: SnippetManager,
-        private _router: Router
-    ) {
-        super();
-    }
-
     ngOnInit() {                    
         return this._initializeMonacoEditor();
     }
@@ -66,6 +59,8 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                         this._monacoEditor.getModel().setValue(defaultText);
                     }
                 });
+
+                console.log("Monaco editor initialized.");
             });
         });
     }

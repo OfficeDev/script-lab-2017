@@ -5,6 +5,12 @@
     @include flex();
     flex: 1 1 100%;
 
+    &__header {
+        padding: 7.5px 15px;
+        background-color: #1D7044;
+        color: white;
+    }
+
     &__action {
         width: 100%;
         max-width: none;
@@ -146,7 +152,7 @@
 
 h1.main-heading {
     background-color: #F4F4F4;
-    color: #217346;
+    color: #1D7044;
     margin-top: 15px;
     border: none;
     border-bottom: solid 1px #E4E4E4;
@@ -162,7 +168,7 @@ h1.ms-Button-label {
 }
 
 .new__action h1.ms-Button-label {
-    color: #217346;
+    color: #1D7044;
 }
 
 .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
@@ -182,7 +188,7 @@ h1.ms-Button-label {
 }
 
 .new-list__item:active, .new-list__item:hover {
-    background: #217346;
+    background: #1D7044;
     color: white;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
@@ -190,7 +196,8 @@ h1.ms-Button-label {
 }
 
 .new-list__action:active, .new-list__action:hover {
-    color: orange;
+    background: #13472b;
+    color: #cdf2de;
 }
 
 @media (max-width: 600px) {

@@ -1,8 +1,8 @@
 import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
-import {Snippet} from '../shared/services';
+import {Snippet, SnippetManager} from '../shared/services';
 import {Utilities} from '../shared/helpers';
 
 @Component({
@@ -18,9 +18,11 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     @ViewChild(Tabs) tabs: Tabs;
 
     constructor(
+        _router: Router,
+        _snippetManager: SnippetManager,
         private _route: ActivatedRoute
     ) {
-        super();
+        super(_router, _snippetManager);
     }
 
     ngOnInit() {

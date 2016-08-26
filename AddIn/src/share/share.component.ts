@@ -23,14 +23,19 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     _snippet: Snippet = new Snippet({});
 
     constructor(
-        private _snippetManager: SnippetManager,
-        private _route: ActivatedRoute,
-        private _router: Router
+        _snippetManager: SnippetManager,
+        _router: Router,
+        private _route: ActivatedRoute
+
     ) {
-        super();
+        super(_router, _snippetManager);
     }
 
-    ngOnInit() {                    
+    ngOnInit() {
+        if (!this._ensureContext()) {
+            return;
+        }
+                            
         var subscription = this._route.params.subscribe(params => {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
@@ -66,7 +71,9 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                 });
 
                 this.loaded = true;
-                setTimeout(() => this._monacoEditor.layout(), 20);                
+                setTimeout(() => this._monacoEditor.layout(), 20);
+
+                console.log("Monaco editor initialized.");               
             });
         });
     }

@@ -1,10 +1,13 @@
 export enum ContextType {
-    Web,
+    Unknown,
+    TypeScript,
     Word,
     Excel
 }
 
 export class Utilities {
+    static officeInitialized: boolean;
+    
     static replace(source: string): (key: string, value: string) => any {
         return function self(key: string, value: string): any {
             if (!key) return source;
@@ -190,8 +193,10 @@ export class Utilities {
                 return ContextType.Excel;
             case 'word':
                 return ContextType.Word;
+            case 'typescript':
+                return ContextType.TypeScript;
             default:
-                return ContextType.Web;
+                return ContextType.Unknown;
         }
     }
 
@@ -200,27 +205,15 @@ export class Utilities {
             case ContextType.Excel:
             case ContextType.Word:
                 return "Office.js API Playground"
-            case ContextType.Web:
+            case ContextType.TypeScript:
                 return "API Playground";
             default:
                 throw "Invalid context " + Utilities.context;
         }
     }
 
-    static get isRunnableMode(): boolean {
-        switch (Utilities.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return Utilities.officeNamespacesLoaded;
-            case ContextType.Web:
-                return true;
-            default:
-                throw "Invalid context " + Utilities.context;
-        }
-    }
-
-    static get officeNamespacesLoaded(): boolean {
-        return window['Excel'] || Window['Word'];
+    static captializeFirstLetter(input: string): string {
+        return input.substr(0, 1).toUpperCase() + input.substr(1);
     }
 
     static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);

@@ -3,7 +3,9 @@
 
 .editor {
     &__header {
-        padding-right: 30px; 
+        padding-right: 30px;
+        background: #1D7044;
+        color: white;
     }
     
     &__main {
@@ -33,17 +35,13 @@
     @include inline-flex();
     list-style-type: none;
     width: 100%;
-    border-bottom: 1px solid $background-light;
 
     &__command {
         padding: (40px - $default-spacing)/2 $default-spacing;
         @include focus-states($accent-background-primary, $accent-foreground-primary);
 
-        &:hover i {
-            color: $accent-foreground-primary;
-        }
-
         &--text {
+            color: white;
             flex: 1 1 0px;
             padding: 0;
             @include ellipsis();
@@ -84,6 +82,17 @@
     }
 }
 
+.editor-command-bar__command:active,
+.editor-command-bar__command:hover,
+.editor-command-bar__command i:active,
+.editor-command-bar__command i:hover {
+    background: #13472b !important;
+    color: #cdf2de !important;
+    /* different browsers use different terms for pointer vs. hand, so include both*/
+    cursor: pointer;
+    cursor: hand;
+}
+
 @media (max-width: 600px) {
     .editor-command-bar__command {
         padding-right: 10px;
@@ -120,15 +129,11 @@
 }
 
 .edit-name-icon {
-    color: #217346 !important;
+    color: #1D7044 !important;
     font-size: 1.5em;
     margin-left: 15px;
     position: relative;
     top: 4px;
-}
-
-.editor-command-bar__command:hover i {
-    color: white !important;
 }
 
 .editor__footer {

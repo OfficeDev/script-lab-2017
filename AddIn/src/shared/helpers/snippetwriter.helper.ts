@@ -7,7 +7,7 @@ export interface ICreateHtmlOptions {
 
 export class SnippetWriter {
     static createHtml(snippet: Snippet, options: ICreateHtmlOptions): Promise<string> {
-        var isOfficeSnippet = Utilities.context != ContextType.Web;
+        var isOfficeSnippet = Utilities.context != ContextType.TypeScript;
 
         var injectOfficeInitialize = isOfficeSnippet && 
             !options.inlineJsAndCssIntoIframe /* don't need it when doing a run inside an iFrame */;
@@ -54,10 +54,6 @@ export class SnippetWriter {
                 html.push(    "</style>");
 
                 var jsStringArray = ['"use strict"', ''];
-                
-                if (options.inlineJsAndCssIntoIframe) {
-                    jsStringArray.push('parent.iframeReadyCallback(window);');
-                }
 
                 if (injectOfficeInitialize) {
                     jsStringArray.push('Office.initialize = function (reason) {');

@@ -7,7 +7,7 @@
 <div class="ms-progress" [hidden]="loaded">
     <div class="ms-Spinner large"></div>
     <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
-    <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">Preparing the snippet to run...</div>
+    <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">{{loadingMessage}}</div>
 </div>
 
 <section class="run__main" [hidden]="!loaded">

@@ -42,12 +42,14 @@ export function launch() {
     .catch(UxUtil.catchError("An error occurred while loading the API Playground"));
 }
 
-if (Utilities.officeNamespacesLoaded) {
-    console.log('Waiting for Office.initialize to be called.');
-    $('.app .ms-ProgressIndicator-itemDescription').text('Loading Office.js');
-    Office.initialize = () => launch();
-} else {
-    // Otherwise must be opening on the web browser.
-    // Launch regardless, to avoid being stuck on the loading screen.
-    launch();
+if (!window['Office']) {
+    window['Office'] = {};
 }
+Office.initialize = function() {
+    console.log('Office.initialize completed.');
+    Utilities.officeInitialized = true;
+};
+
+// Otherwise must be opening on the web browser.
+// Launch regardless, to avoid being stuck on the loading screen.
+launch();
