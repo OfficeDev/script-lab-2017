@@ -76,8 +76,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
             this._showStatus(StatusType.warning, 10 /*seconds*/,
-                "It looks like your IntelliSense references have changed. " + 
-                'To see those changes live, please re-load this page (see the "refresh" icon at thee bottom right corner.');
+                'It looks like your IntelliSense references have changed. ' + 
+                'To see those changes live, please re-load this page ' + 
+                '(see the "refresh" icon at thee bottom right corner).');
         }
     }
 

@@ -65,7 +65,6 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         waitForIntelliSenseListToBeReady()
             .then(() => {
-                // FXIME: realistically some of this time is loading editor as well, for fairness may want to refactor.
                 this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
                     this._initiateLoadIntelliSense(this.editorParent.currentIntelliSense)
@@ -101,6 +100,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         if (this._monacoEditor) {
             this._monacoEditor.dispose();
+            console.log("Monaco editor disposed");
         }
     }
 
@@ -268,7 +268,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             this._monacoEditor.restoreViewState(nextTab.state);
             this._monacoEditor.focus();
 
-            if (nextTab.name === "JavaScript" && this.editorParent != null) {
+            if (nextTab.name === "Script" && this.editorParent != null) {
                 this.editorParent.onSwitchFocusToJavaScript();
             }
         }
