@@ -33,13 +33,13 @@ export const APP_PROVIDERS = [
 export class AppComponent { }
 
 export function launch() {
-    $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime');
+    $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
     bootstrap(AppComponent, [
         ...APP_ROUTER_PROVIDERS,
         ...PROVIDER_OVERRIDES,
         ...APP_PROVIDERS
     ])
-    .catch(UxUtil.catchError("An error occurred while loading the API Playground"));
+    .catch(UxUtil.catchError("An error occurred while loading the playground"));
 }
 
 if (!window['Office']) {

@@ -69,7 +69,6 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             return '';
         }
 
-        return Utilities.playgroundDescription + ' - '+  
-            Utilities.captializeFirstLetter(Utilities.contextString);
+        return Utilities.fullPlaygroundDescription;
     }
 }

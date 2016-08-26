@@ -90,7 +90,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         gist
             .create({
                 public: true,
-                description: '"' + this._snippet.meta.name + '" snippet - ' + Utilities.playgroundDescription,
+                description: '"' + this._snippet.meta.name + '" snippet - ' + Utilities.fullPlaygroundDescription,
                 files: {
                     "playground-metadata.json": {
                         "content": this._snippetExportString

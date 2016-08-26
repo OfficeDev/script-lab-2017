@@ -24,6 +24,6 @@ export class WordLauncherComponent extends BaseComponent implements OnInit {
     }
 
     get playgroundDescription() {
-        return Utilities.playgroundDescription + ' for ' + Utilities.captializeFirstLetter(Utilities.contextString);
+        return Utilities.fullPlaygroundDescription;
     }
 }

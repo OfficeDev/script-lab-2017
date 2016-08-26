@@ -32,7 +32,7 @@ export class BaseComponent {
 
     contextTagline: string =
         (Utilities.context === ContextType.TypeScript) ?
-            'TypeScript Playground' : 'Office.js API Playground';
+            'TypeScript Playground' : 'Office Add-in Playground';
 
     protected markDispose(subscription: Subscription[])
     protected markDispose(subscription: Subscription)

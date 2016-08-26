@@ -200,13 +200,13 @@ export class Utilities {
         }
     }
 
-    static get playgroundDescription(): string {
+    static get fullPlaygroundDescription(): string {
         switch (Utilities.context) {
             case ContextType.Excel:
             case ContextType.Word:
-                return "Office.js API Playground"
+                return "Office Add-in Playground - " + Utilities.captializeFirstLetter(Utilities.contextString);
             case ContextType.TypeScript:
-                return "API Playground";
+                return "TypeScript Playground";
             default:
                 throw "Invalid context " + Utilities.context;
         }

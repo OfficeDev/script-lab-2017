@@ -8,16 +8,16 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="API Playground" />
-  <Description DefaultValue="Create, test and share your Office.js snippets directly from." />
+  <DisplayName DefaultValue="Office Add-in Playground" />
+  <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://localhost:3000/assets/images/notepad-icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/notepad-icon-64.png" />
   <Hosts>
     <Host Name="Workbook" />
-	<Host Name="Document" />
+    <Host Name="Document" />
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://localhost:3000/#/excel" />
+    <SourceLocation DefaultValue="https://localhost:3000/" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides
@@ -50,7 +50,7 @@
 
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_Url" />
+                    <SourceLocation resid="Play_Taskpane_ExcelUrl" />
                   </Action>
                 </Control>
               </Group>
@@ -84,7 +84,7 @@
 
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_Url" />
+                    <SourceLocation resid="Play_Taskpane_WordUrl" />
                   </Action>
                 </Control>
               </Group>
@@ -100,16 +100,17 @@
         <bt:Image id="Play_icon_80" DefaultValue="https://localhost:3000/assets/images/notepad-icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://localhost:3000/#/excel" />
+        <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://localhost:3000/#/excel" />
+        <bt:Url id="Play_Taskpane_WordUrl" DefaultValue="https://localhost:3000/#/word" />
         <bt:Url id="Play.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Play.GroupLabel" DefaultValue="Office.js" />
-        <bt:String id="Play.TaskpaneButton.Label" DefaultValue="API Playground" />
-        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Office.js API Playground" />
+        <bt:String id="Play.GroupLabel" DefaultValue="Playground" />
+        <bt:String id="Play.TaskpaneButton.Label" DefaultValue="Office Add-in" />
+        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Office Add-in Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the API Playground to create, test, and share your Office.js snippets." />
+        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Office Add-in Playground to create, test, and share your Office.js snippets." />
         <bt:String id="Play.Description" DefaultValue="Create, test and share your Office.js snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>
