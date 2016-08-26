@@ -103,7 +103,7 @@ export class Snippet implements ISnippet {
         return this.getJsLibaries()
             .filter(item => {
                 var lowercase = item.toLowerCase();
-                return !lowercase.endsWith("/office.js") && !lowercase.endsWith("/office.debug.js");
+                return lowercase.endsWith("/office.js") || lowercase.endsWith("/office.debug.js");
             }).length > 0;
     }
 

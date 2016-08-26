@@ -7,9 +7,7 @@ export interface ICreateHtmlOptions {
 
 export class SnippetWriter {
     static createHtml(snippet: Snippet, options: ICreateHtmlOptions): Promise<string> {
-        var isOfficeSnippet = Utilities.context != ContextType.TypeScript;
-
-        var injectOfficeInitialize = isOfficeSnippet && 
+        var injectOfficeInitialize = snippet.containsOfficeJsReference && 
             !options.inlineJsAndCssIntoIframe /* don't need it when doing a run inside an iFrame */;
 
         var jsLibsToInclude = snippet.getJsLibaries()
@@ -25,10 +23,23 @@ export class SnippetWriter {
                 '<head>',
                 '    <meta charset="UTF-8" />',
                 '    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />',
-                '    <title>Running snippet</title>',
-                jsLibsToInclude.map(item => '    <script src="' + item + '"></script>').join("\n"),
-                snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n"),
+                '    <title>Running snippet</title>'
             ];
+
+            if (snippet.containsOfficeJsReference) {
+                html.push(
+                    '',
+                    '    <!- Outside of the Office Add-in Playground (which references office.js differently) -->',
+                    '    <!- you would need to include the following script reference:                        -->',
+                    '    <!--<script src="//appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>     -->',
+                    ''
+                );
+            }
+
+            html.push(
+                jsLibsToInclude.map(item => '    <script src="' + item + '"></script>').join("\n"),
+                snippet.getCssStylesheets().map((item) => '    <link rel="stylesheet" href="' + item + '" />').join("\n")
+            );
 
             if (options.inlineJsAndCssIntoIframe) {
                 html.push("    <style>");
@@ -51,9 +62,9 @@ export class SnippetWriter {
                     html.push(Utilities.indentAll(Utilities.stringOrEmpty(snippet.css).trim(), 2));
                 }
                 
-                html.push(    "</style>");
+                html.push("    </style>");
 
-                var jsStringArray = ['"use strict"', ''];
+                var jsStringArray = ["'use strict';", ''];
 
                 if (injectOfficeInitialize) {
                     jsStringArray.push('Office.initialize = function (reason) {');
