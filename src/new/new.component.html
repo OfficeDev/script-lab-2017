@@ -24,14 +24,19 @@
                 <h1 class="ms-font-m main-heading">
                     From a template
                 </h1>
-                <section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
+                <div class="ms-font-m" style="
+                    padding: 15px;
+                    color: #999;
+                    margin-left: 1.5em;
+                ">... Coming soon ...</div>
+                <!--<section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
                     <section class="new-list__group">
                         <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items">
                             <span (click)="import(snippet)">{{snippet?.name}}</span>
                         </article>
                     </section>
-                </section>
+                </section>-->
             </section>
         </section>
     </section>
