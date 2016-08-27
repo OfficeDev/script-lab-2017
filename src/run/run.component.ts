@@ -106,7 +106,12 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
                     iframeWindow.document.close();
                 })
-                .catch(UxUtil.catchError("Error while loading the snippet", []));
+                .catch((e) => {
+                    UxUtil.showErrorNotification("Error while loading the snippet", [], e)
+                        .then(() => {
+                            this._navigateToEdit();
+                        });
+                });
         });
 
         this.markDispose(subscription);
@@ -182,10 +187,14 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     back() {
         if (this._returnToEdit) {
-            this._router.navigate(['edit', this._snippet.meta.id]);
+            this._navigateToEdit();
         } else {
             this._router.navigate(['new']);            
         }
+    }
+
+    _navigateToEdit() {
+        this._router.navigate(['edit', this._snippet.meta.id]);
     }
 
     reloadPage() {

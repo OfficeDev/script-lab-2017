@@ -74,13 +74,15 @@ export class Snippet implements ISnippet {
         if (result.diagnostics.length === 0) {
             return Promise.resolve(result.outputText);
         } else {
+            var errorWordSingularOrPlural = result.diagnostics.length > 1 ? "errors" : "error";
             var errors: string[] = [
-                'Invalid JavaScript or TypeScript. Please return to the editor and fix the following syntax errors:'
+                'Invalid JavaScript or TypeScript. ' + 
+                `Please return to the editor and fix the following syntax ${errorWordSingularOrPlural}:`
             ];
             result.diagnostics.map((diag) => {
                 var position = diag.file.getLineAndCharacterOfPosition(diag.start);
                 var sourceText = diag.file.text.substr(diag.start, diag.length);
-                errors.push(`* Line ${position.line}, char ${position.character}: ${diag.messageText}.` + 
+                errors.push(`* Line ${position.line + 1 /*0-indexed*/}, char ${position.character}: ${diag.messageText}` + 
                     '\n-->    Source code: ' + sourceText);
             });
 
