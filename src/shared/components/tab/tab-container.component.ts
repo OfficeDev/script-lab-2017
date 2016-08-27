@@ -68,7 +68,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
                     this._initiateLoadIntelliSense(this.editorParent.currentIntelliSense)
-                        .catch(UxUtil.catchError("An error occurred while loading the IntelliSense."))
+                        .catch(UxUtil.catchError("An error occurred while loading IntelliSense.", []))
                         .then(() => {
                             this.progressMessage = "Loading the Monaco editor";
                             this._initializeMonacoEditor();

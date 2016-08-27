@@ -45,7 +45,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                     this._snippetExportString = JSON.stringify(snippet.exportToJson(true /*forPlayground*/));
                     return this._initializeMonacoEditor()
                 })
-                .catch(UxUtil.catchError("An error occurred while fetching the snippet."));
+                .catch(UxUtil.catchError("Could not load snippet", "An error occurred while fetching the snippet."));
         });
 
         this.markDispose(subscription);
@@ -103,7 +103,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                     this.loaded = true;
 
                     if (err) {                        
-                        UxUtil.showErrorNotification(
+                        UxUtil.showErrorNotification("Gist-creation error",
                             "Sorry, something went wrong when creating the GitHub Gist.", err);
                         return;
                     }
@@ -119,7 +119,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             })
             .catch((e) => {
                 this.loaded = true;
-                UxUtil.showErrorNotification(
+                UxUtil.showErrorNotification("Gist-creation error",
                     "Sorry, something went wrong when creating the GitHub Gist.", e);
             });
     }

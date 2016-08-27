@@ -1,5 +1,6 @@
-import {Utilities, MessageStrings, UxUtil} from '../helpers';
+import {Utilities, MessageStrings, UxUtil, PlaygroundError} from '../helpers';
 import {SnippetManager} from './snippet.manager';
+import * as ts from '../../../node_modules/typescript';
 
 export class Snippet implements ISnippet {
     meta: ISnippetMeta;
@@ -7,8 +8,6 @@ export class Snippet implements ISnippet {
     html: string;
     css: string;
     libraries: string;
-
-    jsHash: string;
 
     lastSavedHash: string;
     private _compiledJs: string;
@@ -67,12 +66,26 @@ export class Snippet implements ISnippet {
     }
 
     get js(): Promise<string> {
-        if (Snippet._isValid(this.script)) {
-            this._compiledJs = this.script;
-            return Promise.resolve(this._compiledJs);
-        }
-        else {
-            return Promise.reject<string>(new Error("Invalid JavaScript (or is TypeScript, which we don't have a compiler for yet)"));
+        let result = ts.transpileModule(this.script, {            
+            compilerOptions: { module: ts.ModuleKind.CommonJS },
+            reportDiagnostics: true,
+        });
+
+        if (result.diagnostics.length === 0) {
+            return Promise.resolve(result.outputText);
+        } else {
+            var errors: string[] = [
+                'Invalid JavaScript or TypeScript. Please return to the editor and fix the following syntax errors:'
+            ];
+            result.diagnostics.map((diag) => {
+                var position = diag.file.getLineAndCharacterOfPosition(diag.start);
+                var sourceText = diag.file.text.substr(diag.start, diag.length);
+                errors.push(`* Line ${position.line}, char ${position.character}: ${diag.messageText}.` + 
+                    '\n-->    Source code: ' + sourceText);
+            });
+
+            console.log(Utilities.stringifyPlusPlus(errors));
+            return Promise.reject<string>(new PlaygroundError(errors));
         }
     }
 
@@ -157,16 +170,6 @@ export class Snippet implements ISnippet {
         // Ensure it is, in fact, unique
         if (localSnippets.find(item => (item.meta.id === this.meta.id))) {
             this.randomizeId(true /*force*/);
-        }
-    }
-
-    static _isValid(scriptText): boolean {
-        try {
-            new Function(scriptText);
-            return true;
-        } catch (syntaxError) {
-            UxUtil.showErrorNotification("Invalid snippet code.", syntaxError);
-            return false;
         }
     }
 

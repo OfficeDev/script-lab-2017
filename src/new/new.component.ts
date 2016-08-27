@@ -36,7 +36,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._snippetManager.delete(snippet, true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
-            }).catch(UxUtil.catchError("Error deleting the snippet."));
+            }).catch(UxUtil.catchError("Error deleting the snippet.", []));
     }
 
     deleteAll(): void {
@@ -44,7 +44,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
             })
-            .catch(UxUtil.catchError("Error deleting snippets."));
+            .catch(UxUtil.catchError("Error deleting snippets.", []));
     }
 
     run(snippet: ISnippet) {

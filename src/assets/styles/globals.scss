@@ -130,6 +130,10 @@ span.console.error {
         flex-direction: column;
         height: 100%;
     }
+    
+    .appwide-overlay-dialog.ui-dialog .ui-dialog-title {
+        white-space: initial;
+    }
 
     .appwide-overlay-dialog.ui-dialog .ui-dialog-buttonpane {
         text-align: right;

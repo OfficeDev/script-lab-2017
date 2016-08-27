@@ -242,7 +242,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         } else if (e instanceof PlaygroundError) {
             this._showStatus(StatusType.error, 5 /*seconds*/, e.message);    
         } else {
-            UxUtil.showErrorNotification([], e);
+            UxUtil.showErrorNotification('Error', [], e);
         }        
     }
 

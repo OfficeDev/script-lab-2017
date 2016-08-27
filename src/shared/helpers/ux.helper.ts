@@ -9,30 +9,41 @@ export class ExpectedError {
  * as opposed to an error that comes from some internal operation or runtime error.
  */
 export class PlaygroundError {
-    constructor(public message) { }
+    constructor(public message: string | string[]) { }
 }
 
 export class UxUtil {
-    static showErrorNotification(messageOrMessageArray: string | string[], e: any) : Promise<string> {
+    static showErrorNotification(title, messageOrMessageArray: string | string[], e: any) : Promise<string> {
         if (e instanceof ExpectedError) {
             return;
         }
 
-        console.log(Utilities.stringifyPlusPlus(messageOrMessageArray));
-        console.log(Utilities.stringifyPlusPlus(e));
+        if (!messageOrMessageArray) {
+            messageOrMessageArray = [];
+        }
 
         var messages: string[] = UxUtil.getArrayOfMessages(messageOrMessageArray);
-        messages.push(UxUtil.extractErrorMessage(e));
+        var errorDataExtracted = UxUtil.extractErrorMessage(e);
+        if (_.isArray(errorDataExtracted)) {
+            errorDataExtracted.forEach((msg) => {
+                messages.push(msg);
+            })
+        } else {
+            messages.push(errorDataExtracted);
+        }
 
-        return UxUtil.showDialog("Error", messages, "OK");
+        console.log(Utilities.stringifyPlusPlus(messages));
+        console.log(Utilities.stringifyPlusPlus(e));
+
+        return UxUtil.showDialog(title, messages, "OK");
     }
 
-    static catchError(messageOrMessageArray: string | string[]): (e: Error) => Promise<string> {
-        return (e: Error) => UxUtil.showErrorNotification(messageOrMessageArray, e);
+    static catchError(title, messageOrMessageArray: string | string[]): (e: Error) => Promise<string> {
+        return (e: Error) => UxUtil.showErrorNotification(title, messageOrMessageArray, e);
     } 
 
-    static extractErrorMessage(e: any): string {
-        if (e instanceof Error) {
+    static extractErrorMessage(e: any): string | string[] {
+        if (e instanceof Error || e instanceof PlaygroundError) {
             return e.message;
         } else {
             return e;

@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil} from '../shared/helpers';
+import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil, PlaygroundError} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 
 interface IConsoleMessage {
@@ -106,7 +106,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
                     iframeWindow.document.close();
                 })
-                .catch(UxUtil.catchError("An error occurred while loading the snippet."));
+                .catch(UxUtil.catchError("Error while loading the snippet", []));
         });
 
         this.markDispose(subscription);

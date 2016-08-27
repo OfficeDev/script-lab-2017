@@ -121,13 +121,19 @@ export class Utilities {
 
     static stringifyPlusPlus(object) {
         // Don't JSON.stringify strings, because we don't want quotes in the output
-        if (object == null) {
+        if (object === null) {
             return "null";
         }
-        if (typeof object == 'string' || object instanceof String) {
+        if (_.isUndefined(object)) {
+            return 'undefined';
+        }
+        if (_.isString(object)) {
             return object;
         }
-        if (object.toString() != "[object Object]") {
+        if (_.isArray(object)) {
+            return '[' + (<any[]>object).map((item) => Utilities.stringifyPlusPlus(item)).join(', ') + ']';
+        }
+        if (object.toString() !== "[object Object]") {
             return object.toString();
         }
 
