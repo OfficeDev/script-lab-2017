@@ -64,7 +64,7 @@ export class SnippetWriter {
                 
                 html.push("    </style>");
 
-                var jsStringArray = ["'use strict';", ''];
+                var jsStringArray = ['"use strict";', ''];
 
                 if (injectOfficeInitialize) {
                     jsStringArray.push('Office.initialize = function (reason) {');
