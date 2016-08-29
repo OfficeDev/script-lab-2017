@@ -93,6 +93,10 @@ span.console.error {
     color: brown;
 }
 
+.consolas {
+    font-family: Consolas, monaco, monospace;
+}
+
 .excel-background {
     background: #217346;
 }
@@ -129,6 +133,10 @@ span.console.error {
         display: flex;
         flex-direction: column;
         height: 100%;
+    }
+    
+    .appwide-overlay-dialog.ui-dialog .ui-dialog-title {
+        white-space: initial;
     }
 
     .appwide-overlay-dialog.ui-dialog .ui-dialog-buttonpane {
