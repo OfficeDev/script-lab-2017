@@ -29,14 +29,62 @@ share {
             margin: 10px 0;
         }
 
-    .share__main .pre-share .ms-Button {
-        background: #1D7044;
-        margin: 10px 10px 20px 50px;
+    .share__main .pre-share {
+        padding: 10px;
     }
 
-        .share__main .pre-share .ms-Button .ms-Button-label {
-            color: white;
-            font-weight: normal;
+        .share__main .pre-share > .description {
+            margin-bottom: 2em;
+        }
+
+        .share__main .pre-share > .header {
+            margin-bottom: .5em;
+        }
+
+        .share__main .pre-share > .header.space-above {
+            margin-top: 3em;
+        }
+
+        .share__main .pre-share > .option {
+            margin-left: 2em;
+        }
+
+        .share__main .pre-share .ms-Button {
+            height: auto;
+            background: #1D7044;
+            margin-top: .5em;
+        }
+
+            .share__main .pre-share .ms-Button .ms-Button-label {
+                color: white;
+                font-weight: normal;
+            }
+
+    .share__main .post-share h1 {
+        padding: 10px;
+    }
+
+    .share__main .post-share h2 {
+        margin-top: 20px;
+        padding: 10px;
+        background: #eee;
+    }
+
+    .share__main .post-share .info-panel {
+        padding: 0 10px 10px 10px;
+    }
+
+        .share__main .post-share .info-panel p {
+            margin-top: 10px;
+        }
+
+        .share__main .post-share .info-panel .link-or-id {
+            word-wrap: break-word;
+            font-weight: bold;
+            margin-left: 20px;
+            margin-bottom: 10px;
+            margin-top: 5px;
+            color: #1D7044;
         }
 
 #back {
@@ -59,9 +107,9 @@ share {
 }
 
 #monaco {
-    border: 5px solid green;
+    border: 5px solid gray;
     box-sizing: border-box;
-    height: 300px;
+    height: 250px;
 }
 
 .ms-progress {
@@ -71,38 +119,3 @@ share {
     height: 100% !important;
     background: #1D7044;
 }
-
-.pre-share {
-    padding: 10px;
-}
-
-    .pre-share button {
-        height: auto;
-    }
-
-.post-share h1 {
-    padding: 10px;
-}
-
-.post-share h2 {
-    margin-top: 20px;
-    padding: 10px;
-    background: #eee;
-}
-
-.post-share .info-panel {
-    padding: 0 10px 10px 10px;
-}
-
-    .post-share .info-panel p {
-        margin-top: 10px;
-    }
-
-    .post-share .info-panel .link-or-id {
-        word-wrap: break-word;
-        font-weight: bold;
-        margin-left: 20px;
-        margin-bottom: 10px;
-        margin-top: 5px;
-        color: #1D7044;
-    }

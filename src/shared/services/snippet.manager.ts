@@ -222,7 +222,7 @@ export class SnippetManager {
         return new Snippet({
             script: Utilities.stripSpaces(`
                 ${Utilities.getContextNamespace()}.run(function(context) {
-                    // ...
+                    // insert your code here...
                     return context.sync();
                 }).catch(function(error) {
                     console.log(error);
@@ -244,6 +244,8 @@ export class SnippetManager {
                 # IntelliSense definitions
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+
+                # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
             `)
         }, this);
     }
@@ -254,11 +256,13 @@ export class SnippetManager {
                 console.log("Hello world");
             `),
             libraries: Utilities.stripSpaces(`
-                // NPM CDN references
+                # NPM CDN references
                 jquery
 
-                // IntelliSense definitions
-                https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+                # IntelliSense definitions
+                //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+
+                # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
             `)
         }, this);
     }
