@@ -10,7 +10,6 @@
     "start": "webpack-dev-server --https --inline --progress --compress --port 3000 --cert certificates/localhost.crt --key certificates/localhost.key --open",
     "test": "karma start",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
-    // "postinstall": "typings install",
     "lint": "tslint \"src/**/*.ts\""
   },
   "license": "MIT",
