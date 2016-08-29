@@ -29,6 +29,10 @@ export class HomeComponent extends BaseComponent {
         UxUtil.showDialog("Coming soon...", "The OneNote flavor of the Playground will be available soon. Thanks for your patience!", "OK");
     }
 
+    navigateToFabric() {
+        this._navigateCommon("fabric");
+    }
+
     navigateToTypeScript() {
         this._navigateCommon("typescript");
     }

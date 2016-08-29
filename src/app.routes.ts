@@ -1,6 +1,6 @@
 import {provideRouter, RouterConfig} from '@angular/router';
 import {
-    ExcelLauncherComponent, WordLauncherComponent, TypeScriptLauncherComponent,
+    ExcelLauncherComponent, WordLauncherComponent,
     HomeComponent, NewComponent, EditorComponent, RunComponent, 
     ShareComponent, ImportComponent, ViewComponent,
     } from './components';
@@ -22,10 +22,6 @@ export const AppRoutes: RouterConfig = [
     {
         path: 'word',
         component: WordLauncherComponent
-    },
-    {
-        path: 'typescript',
-        component: TypeScriptLauncherComponent
     },
     {
         path: 'new',

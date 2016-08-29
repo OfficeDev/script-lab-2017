@@ -17,17 +17,95 @@ export class SnippetManager {
 
     new(): Promise<Snippet> {
         return new Promise(resolve => {
-            var snippet: Snippet;
-            if (Utilities.context == ContextType.TypeScript) {
-                snippet = this._createBlankTypeScriptSnippet();
-            } else {
-                snippet = this._createBlankOfficeJsSnippet();
-            }
+            var snippet = createBlankSnippet(this);
 
             snippet.randomizeId(true);
             snippet.makeNameUnique(false /*isDuplicate*/);
             resolve(this._addSnippetToLocalStorage(snippet));
         });
+
+        function createBlankSnippet(snippetManager: SnippetManager) {
+            switch (Utilities.context) {
+                case ContextType.Excel:
+                case ContextType.Word:
+                    return createBlankOfficeJsSnippet();
+
+                case ContextType.Fabric:
+                    return createBlankFabricSnippet();
+
+                case ContextType.TypeScript:
+                    return createBlankTypeScriptSnippet();
+
+                default: 
+                    throw new Error("Cannot create blank snippet -- invalid context");
+            }
+
+            function createBlankOfficeJsSnippet(): Snippet {
+                return new Snippet({
+                    script: Utilities.stripSpaces(`
+                        ${Utilities.getContextNamespace()}.run(function(context) {
+                            // insert your code here...
+                            return context.sync();
+                        }).catch(function(error) {
+                            console.log(error);
+                            if (error instanceof OfficeExtension.Error) {
+                                console.log("Debug info: " + JSON.stringify(error.debugInfo));
+                            }
+                        });
+                    `),
+                    libraries: Utilities.stripSpaces(`
+                        # Office.js CDN reference
+                        //appsforoffice.microsoft.com/lib/1/hosted/Office.js
+
+                        # NPM CDN references
+                        jquery
+                        office-ui-fabric/dist/js/jquery.fabric.min.js
+                        office-ui-fabric/dist/css/fabric.min.css
+                        office-ui-fabric/dist/css/fabric.components.min.css
+
+                        # IntelliSense definitions
+                        //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
+                        //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+
+                        # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
+                    `)
+                }, snippetManager);
+            }
+
+            function createBlankFabricSnippet(): Snippet {
+                return new Snippet({
+                    libraries: Utilities.stripSpaces(`
+                        # NPM CDN references
+                        jquery
+                        office-ui-fabric/dist/js/jquery.fabric.min.js
+                        office-ui-fabric/dist/css/fabric.min.css
+                        office-ui-fabric/dist/css/fabric.components.min.css
+
+                        # IntelliSense definitions
+                        //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+
+                        # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
+                    `)
+                }, snippetManager);
+            }
+    
+            function createBlankTypeScriptSnippet(): Snippet {
+                return new Snippet({
+                    script: Utilities.stripSpaces(`
+                        console.log("Hello world");
+                    `),
+                    libraries: Utilities.stripSpaces(`
+                        # NPM CDN references
+                        jquery
+
+                        # IntelliSense definitions
+                        //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+
+                        # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
+                    `)
+                }, snippetManager);
+            }
+        }
     }
 
     save(snippet: Snippet): Promise<ISnippet> {
@@ -217,53 +295,4 @@ export class SnippetManager {
             }
         ]
     };
-
-    private _createBlankOfficeJsSnippet(): Snippet {
-        return new Snippet({
-            script: Utilities.stripSpaces(`
-                ${Utilities.getContextNamespace()}.run(function(context) {
-                    // insert your code here...
-                    return context.sync();
-                }).catch(function(error) {
-                    console.log(error);
-                    if (error instanceof OfficeExtension.Error) {
-                        console.log("Debug info: " + JSON.stringify(error.debugInfo));
-                    }
-                });
-            `),
-            libraries: Utilities.stripSpaces(`
-                # Office.js CDN reference
-                //appsforoffice.microsoft.com/lib/1/hosted/Office.js
-
-                # NPM CDN references
-                jquery
-                office-ui-fabric/dist/js/jquery.fabric.min.js
-                office-ui-fabric/dist/css/fabric.min.css
-                office-ui-fabric/dist/css/fabric.components.min.css
-
-                # IntelliSense definitions
-                //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
-                //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
-
-                # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
-            `)
-        }, this);
-    }
-
-    private _createBlankTypeScriptSnippet(): Snippet {
-        return new Snippet({
-            script: Utilities.stripSpaces(`
-                console.log("Hello world");
-            `),
-            libraries: Utilities.stripSpaces(`
-                # NPM CDN references
-                jquery
-
-                # IntelliSense definitions
-                //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
-
-                # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
-            `)
-        }, this);
-    }
 }

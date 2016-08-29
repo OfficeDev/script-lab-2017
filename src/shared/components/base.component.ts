@@ -30,9 +30,9 @@ export class BaseComponent {
         return true;
     }
 
-    contextTagline: string =
-        (Utilities.context === ContextType.TypeScript) ?
-            'TypeScript Playground' : 'Office Add-in Playground';
+    get contextTagline() {
+        return Utilities.contextTagline;
+    }
 
     protected markDispose(subscription: Subscription[])
     protected markDispose(subscription: Subscription)

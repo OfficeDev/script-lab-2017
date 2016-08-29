@@ -1,8 +1,9 @@
 export enum ContextType {
     Unknown,
-    TypeScript,
+    Excel,
     Word,
-    Excel
+    Fabric,
+    TypeScript,
 }
 
 export class Utilities {
@@ -199,10 +200,29 @@ export class Utilities {
                 return ContextType.Excel;
             case 'word':
                 return ContextType.Word;
+            case 'fabric':
+                return ContextType.Fabric;
             case 'typescript':
                 return ContextType.TypeScript;
             default:
-                return ContextType.Unknown;
+                throw new Error("Unknown context");
+        }
+    }
+
+    static get contextTagline(): string {
+        switch (Utilities.context) {
+            case ContextType.Excel:
+            case ContextType.Word:
+                return 'Office Add-in Playground';
+
+            case ContextType.Fabric:
+                return 'Fabric Playground';
+
+            case ContextType.TypeScript:
+                return 'TypeScript Playground';
+
+            default: 
+                throw new Error("Cannot determine playground context");
         }
     }
 
@@ -211,8 +231,13 @@ export class Utilities {
             case ContextType.Excel:
             case ContextType.Word:
                 return "Office Add-in Playground - " + Utilities.captializeFirstLetter(Utilities.contextString);
+
+            case ContextType.Fabric:
+                return "Fabric Playground";
+
             case ContextType.TypeScript:
                 return "TypeScript Playground";
+
             default:
                 throw "Invalid context " + Utilities.context;
         }
