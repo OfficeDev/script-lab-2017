@@ -245,7 +245,7 @@ export class SnippetManager {
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
 
-                # Note: for any "loose" typescript definitions, you can paste them into the bottom of your Script code.
+                # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
             `)
         }, this);
     }
@@ -262,7 +262,7 @@ export class SnippetManager {
                 # IntelliSense definitions
                 //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
 
-                # Note: for any "loose" typescript definitions, you can paste them into the bottom of your Script code.
+                # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
             `)
         }, this);
     }

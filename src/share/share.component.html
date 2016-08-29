@@ -11,29 +11,47 @@
     </div>
 
     <div class="pre-share" [hidden]="!loaded || gistId">
-        <div>
-            Below is a sharable copy of your snippet. You can now:
+        <div class="description ms-font-m ms-fontWeight-semibold">
+            There are two ways to share your snippet:
         </div>
-        <ol>
-            <li>Manually <b>copy the JSON</b> to share with another user. You can also put it on your own 
-                <a href="https://gist.github.com/" traget="_blank">GitHub&nbsp;Gist</a>
-                for sharing or version-control.
-            </li>
-            <li>Alternatively, <b>have us create an 
-                anonymous secret <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a></b>
-                (see more about "anonymous" snippets <a href="https://help.github.com/articles/about-gists/#anonymous-gists" target="_blank">here</a>),
-                and give you a shareable link.
-            </li>
-        </ol>
 
-        <button class="ms-Button" (click)="postToGist()">
-            <h1 class="ms-Button-label">Share as an anonymous GitHub Gist</h1>
-        </button>
+        <div class="header ms-font-l ms-fontWeight-semibold">
+            <b>Option 1 (Recommended)</b>: Upload to a <b>
+                <a href="https://gist.github.com/" traget="_blank">GitHub&nbsp;Gist</a> </b>
+            (<a href="https://help.github.com/articles/about-gists/#anonymous-gists" traget="_blank">anonymous</a>)
+        </div>
+        <div class="option option-gist">
+            <!--Radio buttons, hooked up-->
+            <div class="ms-ChoiceFieldGroup">
+                <div class="ms-ChoiceFieldGroup-title">
+                    <label class="ms-font-m ms-Label is-required">Share as:</label>
+                </div>
+                <div class="ms-ChoiceField">
+                    <input id="radio-public" class="ms-ChoiceField-input" type="radio" name="radio-share" checked="" (change)="gistSharePublic = true">
+                    <label for="radio-public" class="ms-ChoiceField-field">
+                        <span class="ms-Label">Public (searchable) GitHub Gist</span>
+                    </label>
+                </div>
+                <div class="ms-ChoiceField">
+                    <input id="radio-secret" class="ms-ChoiceField-input" type="radio" name="radio-share" (change)="gistSharePublic = false">
+                    <label for="radio-secret" class="ms-ChoiceField-field">
+                        <span class="ms-Label">Secret (link-only) GitHub Gist</span>
+                    </label>
+                </div>
+            </div>
 
-        <hr />
+            <button class="ms-Button" (click)="postToGist()">
+                <h1 class="ms-Button-label">Post to an anonymous GitHub Gist</h1>
+            </button>
+        </div>
 
-        <div id="monaco-wrapper">
-            <div #editor id="monaco"></div>
+        <div class="header space-above ms-font-l ms-fontWeight-semibold">
+            Option 2: Manually <b>copy the JSON</b> to share with another user
+        </div>
+        <div class="option">
+            <div id="monaco-wrapper">
+                <div #editor id="monaco"></div>
+            </div>
         </div>
     </div>
     
@@ -51,32 +69,31 @@
                 </a>
             </div>
             <p>
-                <span style="font-weight: bold;">
-                    Copy-paste this URL for safekeeping</span>,
-                as it will be gone as soon as you navigate away from this page.
+                For a shareable link, where folks can view your snippet online, use
             </p>
-
+            <div class="link-or-id">
+                <a href="{{viewUrl}}" target="_blank">{{viewUrl}}</a>
+            </div>
             <p>
                 Your colleagues will be able to import your snippet by
                 choosing the <b>"Import from link or JSON"</b> button 
-                in the Playground, and providing either the URL above
-                or a simplified ID:
+                in the Playground, and providing either of the above URLs
             </p>
-            <div class="link-or-id">
-                gist_{{gistId}}
-            </div>
+
+            <p>
+                <span style="font-weight: bold;">
+                    Note: please copy and make note of the above URLs</span>,
+                as they will be gone as soon as you navigate away from this page.
+            </p>
         </div>
 
         <h2 class="ms-font-l">Embeddable view</h2>
         <div class="info-panel">
             <p>
-                To <b>embed a view-only</b> version of the snippet
-                in an article, blog post, etc., use the embed link:
+                To <b>embed the snippet in an article, blog post, etc.,</b>
+                simply add the following iframe tag to your site:
             </p>
-
-            <div class="link-or-id">
-                <a href="{{embedUrl}}" target="_blank">{{embedUrl}}</a>
-            </div>
+            <div class="link-or-id consolas">{{embedScriptTag}}</div>
         </div>
     </div>
 </section>

@@ -65,7 +65,7 @@ export class Snippet implements ISnippet {
         return url;
     }
 
-    get js(): Promise<string> {
+    getCompiledJs(): string {
         let result = ts.transpileModule(this.script, {            
             compilerOptions: { module: ts.ModuleKind.CommonJS },
             reportDiagnostics: true,
@@ -80,7 +80,7 @@ export class Snippet implements ISnippet {
             if (firstLine === '"use strict";' || firstLine === "'use strict';") {
                 outputArray.splice(0, 1);
             } 
-            return Promise.resolve(outputArray.join('\n'));
+            return outputArray.join('\n');
         } else {
             var errorWordSingularOrPlural = result.diagnostics.length > 1 ? "errors" : "error";
             var errors: string[] = [
@@ -95,7 +95,7 @@ export class Snippet implements ISnippet {
             });
 
             console.log(Utilities.stringifyPlusPlus(errors));
-            return Promise.reject<string>(new PlaygroundError(errors));
+            throw new PlaygroundError(errors);
         }
     }
 

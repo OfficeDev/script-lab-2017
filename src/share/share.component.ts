@@ -16,8 +16,10 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     @ViewChild('editor') private _editor: ElementRef;
 
     loaded: boolean;
+    gistSharePublic: boolean = true;
     gistId: string;
-    embedUrl: string;
+    viewUrl: string;
+    embedScriptTag: string;
     statusDescription = "Preparing the snippet for sharing...";
 
     _snippet: Snippet;
@@ -42,13 +44,21 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this._snippet = snippet;
-                    this._snippetExportString = JSON.stringify(snippet.exportToJson(true /*forPlayground*/));
+                    this._snippetExportString = JSON.stringify(snippet.exportToJson(true /*forPlayground*/), null, 4);
                     return this._initializeMonacoEditor()
                 })
                 .catch(UxUtil.catchError("Could not load snippet", "An error occurred while fetching the snippet."));
         });
 
         this.markDispose(subscription);
+    }
+
+    ngOnDestroy() {
+        super.ngOnDestroy();
+
+        if (this._monacoEditor) {
+            this._monacoEditor.dispose();
+        }
     }
 
     private _initializeMonacoEditor(): Promise<any> {
@@ -82,6 +92,62 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     postToGist() {
+        var compiledJs: string;
+        try {
+            compiledJs = 
+                '// This is a compiled version of the TypeScript/JavaScript code ("app.ts").\n' + 
+                '// In case the original code was already JavaScript, this is likely identical to "app.js".\n\n' +
+                this._snippet.getCompiledJs();
+        } catch (e) {
+            this.loaded = true;
+            UxUtil.showErrorNotification("Please fix syntax errors before sharing", [], e);
+            return;
+        }
+
+        var startsWithComment = this._snippet.script.trim().startsWith('//') ||
+            this._snippet.script.trim().startsWith('/*');
+
+        if (startsWithComment) {
+            this._proceedWithPostToGist(compiledJs);
+        } else {
+            var title = 'Do you want to add a description?';
+            var description = "If you're posting the snippet for the world to see, it may be helpful " +
+                "to add a description of what the code does.\n\n" + 
+                "One simple way to do it is by adding a comment at the top of your script file, explaining " +
+                "the snippet's purpose. Would you like to return to the editor and add a comment now?"; 
+            
+            UxUtil.showDialog(title, description, ['Return to editor', 'Proceed as is'])
+                .then((choice) => {
+                    if (choice === 'Return to editor') {
+                        this.back();
+                    } else {
+                        this._proceedWithPostToGist(compiledJs);
+                    }
+                });
+        }
+    }
+
+    private _proceedWithPostToGist(compiledJs: string) {
+        var meta = JSON.stringify(this._snippet.exportToJson(true /*forPlayground*/)['meta'], null, 4);
+
+        // Note: Gist (at least for now?) orders files in alphabetical order.
+        // The filenames were [somewhat] chosen accordingly.
+        // Putting them in that same order below, for realism's sake
+        var fileData = {
+            "app.js": { 'content': compiledJs },
+            "app.ts": { 'content': this._snippet.script },
+            "app.css": { 'content': this._snippet.css },
+            "index.html": { 'content': this._snippet.html },
+            "libraries.txt": { 'content': this._snippet.libraries },            
+            "metadata.json": { 'content': meta },            
+        };
+
+        for (var key in fileData) {
+            if (_.isEmpty(fileData[key]['content'])) {
+                delete fileData[key];
+            }
+        }
+
         this.statusDescription = "Posting the snippet to a new GitHub Gist...";
         this.loaded = false;
 
@@ -89,13 +155,9 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         let gist = gh.getGist();
         gist
             .create({
-                public: true,
+                public: this.gistSharePublic,
                 description: '"' + this._snippet.meta.name + '" snippet - ' + Utilities.fullPlaygroundDescription,
-                files: {
-                    "playground-metadata.json": {
-                        "content": this._snippetExportString
-                    }
-                }
+                files: fileData
             })
             .then(({data}) => {
                 let gistJson = data;
@@ -112,14 +174,15 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
                     var playgroundBasePath = window.location.protocol + "//" + window.location.hostname + 
                         (window.location.port ? (":" + window.location.port) : "") + window.location.pathname;
-                    this.embedUrl = playgroundBasePath + '#/embed/gist_' + this.gistId;
+                    this.viewUrl = playgroundBasePath + '#/view/gist_' + this.gistId;
+                    this.embedScriptTag = `<iframe src="${this.viewUrl}" style="width: 100%; height: 450px"></iframe>`;
 
                     $(window).scrollTop(0); 
                 })
             })
             .catch((e) => {
                 this.loaded = true;
-                UxUtil.showErrorNotification("Gist-creation error",
+                UxUtil.showErrorNotification("Gist-creation failed",
                     "Sorry, something went wrong when creating the GitHub Gist.", e);
             });
     }
