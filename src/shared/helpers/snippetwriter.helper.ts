@@ -1,5 +1,6 @@
 import {Snippet} from '../services';
-import {Utilities, ContextType} from './utilities';
+import {Utilities} from './utilities';
+import {ContextUtil, ContextType} from './contextutil';
 
 export interface ICreateHtmlOptions {
     inlineJsAndCssIntoIframe: boolean

@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil, PlaygroundError} from '../shared/helpers';
+import {Utilities, ContextUtil, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil, PlaygroundError} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 
 interface IConsoleMessage {
@@ -63,14 +63,14 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     this._snippet = snippet;
                 })
                 .then(() => {
-                    if (this._snippet.containsOfficeJsReference && !Utilities.officeInitialized) {
+                    if (this._snippet.containsOfficeJsReference && !ContextUtil.officeInitialized) {
                         this.loadingMessage = 'Waiting for Office.js to initialize. ' + 
                             'Note than a snippet that references Office.js can only run ' + 
                             'inside of an Office Add-in, not a regular webpage.';
                         
                         return new Promise((resolve) => {
                             setTimeout(() => {
-                                if (Utilities.officeInitialized) {
+                                if (ContextUtil.officeInitialized) {
                                     resolve();
                                 }
                             }, 50)
@@ -98,7 +98,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                         this.loaded = true;
                         this._changeDetectorRef.detectChanges();
 
-                        if (Utilities.context != ContextType.TypeScript) {
+                        if (ContextUtil.context != ContextType.TypeScript) {
                             iframeWindow['Office'] = (<any>window).Office;
                             iframeWindow['Excel'] = (<any>window).Excel;
                         }

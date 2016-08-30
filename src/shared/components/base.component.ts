@@ -1,6 +1,6 @@
 import {Router} from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
-import {Utilities, ContextType} from '../helpers';
+import {UxUtil, Utilities, ContextUtil, ContextType} from '../helpers';
 import {SnippetManager} from '../../shared/services';
 
 export class BaseComponent {
@@ -10,19 +10,32 @@ export class BaseComponent {
         protected _router: Router,
         protected _snippetManager: SnippetManager
     ) {
-        if (Utilities.context !== ContextType.Unknown) {
+        if (ContextUtil.context !== ContextType.Unknown) {
             _snippetManager.initialize();
+
+            // Eventually, once can do dynamic Office.js loading, do this:
+            // if (ContextUtil.isAddin && !ContextUtil.initiatedOfficeLoading) {
+            //     // Dynamically load Office.js
+            //     ContextUtil.initiatedOfficeLoading = true;
+
+            //     var script = document.createElement('script');
+            //     script.setAttribute('src', '//appsforoffice.microsoft.com/lib/1/hosted/office.js');
+            //     script.onload = function() {
+            //         console.log("Office.js dynamically loaded.");
+            //     };
+            //     document.head.appendChild(script);
+            // }
         }
     }
 
     /**
      * Ensures that a context is specified (i.e., will navigate to "home" route if
-     * Utilities.context === ContextType.Unknown).
+     * ContextUtil.context === ContextType.Unknown).
      * 
      * Returns true if context is already set, false if will need to redirect.
      */
     _ensureContext(): boolean {
-        if (Utilities.context === ContextType.Unknown) {
+        if (ContextUtil.context === ContextType.Unknown) {
             this._router.navigate(['home']);
             return false;
         }
@@ -31,7 +44,7 @@ export class BaseComponent {
     }
 
     get contextTagline() {
-        return Utilities.contextTagline;
+        return ContextUtil.contextTagline;
     }
 
     protected markDispose(subscription: Subscription[])

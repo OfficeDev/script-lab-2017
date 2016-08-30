@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Utilities, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
+import {Utilities, ContextUtil, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
@@ -72,10 +72,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     get title(): string {
-        if (Utilities.context === ContextType.Unknown) {
+        if (ContextUtil.context === ContextType.Unknown) {
             return '';
         }
 
-        return Utilities.fullPlaygroundDescription;
+        return ContextUtil.fullPlaygroundDescription;
     }
 }

@@ -66,6 +66,7 @@ export class Snippet implements ISnippet {
     }
 
     getCompiledJs(): string {
+        // https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
         let result = ts.transpileModule(this.script, {            
             compilerOptions: { module: ts.ModuleKind.CommonJS },
             reportDiagnostics: true,
@@ -75,7 +76,7 @@ export class Snippet implements ISnippet {
             // It looks like TypeScript puts a "use strict" at the top.
             // However, we put out own in the runner, in a different location,
             // so strip it out of this output.
-            var outputArray = result.outputText.split('\n');
+            var outputArray = Utilities.stringOrEmpty(result.outputText).split('\n');
             var firstLine = outputArray[0].trim();
             if (firstLine === '"use strict";' || firstLine === "'use strict';") {
                 outputArray.splice(0, 1);

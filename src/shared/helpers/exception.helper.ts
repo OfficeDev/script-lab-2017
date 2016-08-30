@@ -1,5 +1,5 @@
 import {ExceptionHandler} from '@angular/core';
-import {UxUtil} from "./ux.helper";
+import {UxUtil} from "./uxutil";
 
 export class ExceptionHelper extends ExceptionHandler {
     call(exception: any, stackTrace?: any, reason?: string) {

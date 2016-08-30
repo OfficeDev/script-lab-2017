@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ISnippet, Snippet} from '../services';
-import {StorageHelper, Utilities, ContextType, ExpectedError, UxUtil} from '../helpers';
+import {StorageHelper, Utilities, ContextUtil, ContextType, ExpectedError, UxUtil} from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -12,7 +12,7 @@ export class SnippetManager {
      * a correct snippet context (Excel vs. Word vs. Web).
      */
     initialize() {
-        this._snippetsContainer = new StorageHelper<ISnippet>(Utilities.contextString + '_snippets');
+        this._snippetsContainer = new StorageHelper<ISnippet>(ContextUtil.contextString + '_snippets');
     }
 
     new(): Promise<Snippet> {
@@ -25,7 +25,7 @@ export class SnippetManager {
         });
 
         function createBlankSnippet(snippetManager: SnippetManager) {
-            switch (Utilities.context) {
+            switch (ContextUtil.context) {
                 case ContextType.Excel:
                 case ContextType.Word:
                     return createBlankOfficeJsSnippet();
@@ -43,7 +43,7 @@ export class SnippetManager {
             function createBlankOfficeJsSnippet(): Snippet {
                 return new Snippet({
                     script: Utilities.stripSpaces(`
-                        ${Utilities.getContextNamespace()}.run(function(context) {
+                        ${ContextUtil.getContextNamespace()}.run(function(context) {
                             // insert your code here...
                             return context.sync();
                         }).catch(function(error) {

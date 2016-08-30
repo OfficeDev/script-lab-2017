@@ -23,13 +23,16 @@ export class UxUtil {
         }
 
         var messages: string[] = UxUtil.getArrayOfMessages(messageOrMessageArray);
-        var errorDataExtracted = UxUtil.extractErrorMessage(e);
-        if (_.isArray(errorDataExtracted)) {
-            errorDataExtracted.forEach((msg) => {
-                messages.push(msg);
-            })
-        } else {
-            messages.push(errorDataExtracted);
+
+        if (e) {
+            var errorDataExtracted = UxUtil.extractErrorMessage(e);
+            if (_.isArray(errorDataExtracted)) {
+                errorDataExtracted.forEach((msg) => {
+                    messages.push(msg);
+                })
+            } else {
+                messages.push(errorDataExtracted);
+            }
         }
 
         console.log(Utilities.stringifyPlusPlus(messages));
@@ -101,7 +104,7 @@ export class UxUtil {
         }
 
         var result = [];
-        messages.map((message) => message.split('\n')).forEach((messageArray) => {
+        messages.map((message) => Utilities.stringOrEmpty(message).split('\n')).forEach((messageArray) => {
             messageArray.forEach((message) => {
                 result.push(message);
             })

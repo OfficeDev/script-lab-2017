@@ -100,8 +100,8 @@
         <bt:Image id="Play_icon_80" DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://api-playground.azurewebsites.net/#/excel" />
-        <bt:Url id="Play_Taskpane_WordUrl" DefaultValue="https://api-playground.azurewebsites.net/#/word" />
+        <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://api-playground.azurewebsites.net/#/addin/excel" />
+        <bt:Url id="Play_Taskpane_WordUrl" DefaultValue="https://api-playground.azurewebsites.net/#/addin/word" />
         <bt:Url id="Play.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
       </bt:Urls>
       <bt:ShortStrings>

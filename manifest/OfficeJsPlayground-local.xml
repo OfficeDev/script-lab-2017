@@ -100,8 +100,8 @@
         <bt:Image id="Play_icon_80" DefaultValue="https://localhost:3000/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://localhost:3000/#/excel" />
-        <bt:Url id="Play_Taskpane_WordUrl" DefaultValue="https://localhost:3000/#/word" />
+        <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://localhost:3000/#/addin/excel" />
+        <bt:Url id="Play_Taskpane_WordUrl" DefaultValue="https://localhost:3000/#/addin/word" />
         <bt:Url id="Play.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
       </bt:Urls>
       <bt:ShortStrings>

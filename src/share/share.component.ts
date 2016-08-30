@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, UxUtil} from '../shared/helpers';
+import {Utilities, UxUtil, ContextUtil} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 
 declare var GitHub;
@@ -156,7 +156,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         gist
             .create({
                 public: this.gistSharePublic,
-                description: '"' + this._snippet.meta.name + '" snippet - ' + Utilities.fullPlaygroundDescription,
+                description: '"' + this._snippet.meta.name + '" snippet - ' + ContextUtil.fullPlaygroundDescription,
                 files: fileData
             })
             .then(({data}) => {

@@ -1,14 +1,4 @@
-export enum ContextType {
-    Unknown,
-    Excel,
-    Word,
-    Fabric,
-    TypeScript,
-}
-
-export class Utilities {
-    static officeInitialized: boolean;
-    
+export class Utilities {   
     static replace(source: string): (key: string, value: string) => any {
         return function self(key: string, value: string): any {
             if (!key) return source;
@@ -37,8 +27,12 @@ export class Utilities {
         if (text === null || text === undefined) {
             return '';
         }
+
+        if (_.isString(text)) {
+            return text;
+        }
         
-        return text;
+        return text.toString();
     }
 
     static isNullOrWhitespace(text: string) {
@@ -46,7 +40,7 @@ export class Utilities {
     }
 
     static stripSpaces(text: string) {
-        let lines: string[] = text.split('\n').map(function(item) {
+        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map(function(item) {
 			return item.replace(new RegExp("\t", 'g'), "    ");
 		});
 
@@ -111,7 +105,7 @@ export class Utilities {
     }
 
     static indentAll(text: string, indentSize: number) {
-        var lines: string[] = text.split('\n');
+        var lines: string[] = Utilities.stringOrEmpty(text).split('\n');
         var indentString = "";
         for (var i = 0; i < indentSize; i++) {
             indentString += "    ";
@@ -179,73 +173,10 @@ export class Utilities {
         window.location.reload();
     }
 
-    static getContextNamespace() {
-        switch (Utilities.context) {
-            case ContextType.Excel:
-                return 'Excel';
-            case ContextType.Word:
-                return 'Word';
-            default:
-                throw new Error("Invalid context type for Office namespace");
-        }
-    }
-
-    static get contextString(): string {
-        return window.sessionStorage.getItem('context');
-    }
-
-    static get context(): ContextType {
-        switch (Utilities.contextString) {
-            case 'excel':
-                return ContextType.Excel;
-            case 'word':
-                return ContextType.Word;
-            case 'fabric':
-                return ContextType.Fabric;
-            case 'typescript':
-                return ContextType.TypeScript;
-            default:
-                throw new Error("Unknown context");
-        }
-    }
-
-    static get contextTagline(): string {
-        switch (Utilities.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return 'Office Add-in Playground';
-
-            case ContextType.Fabric:
-                return 'Fabric Playground';
-
-            case ContextType.TypeScript:
-                return 'TypeScript Playground';
-
-            default: 
-                throw new Error("Cannot determine playground context");
-        }
-    }
-
-    static get fullPlaygroundDescription(): string {
-        switch (Utilities.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return "Office Add-in Playground - " + Utilities.captializeFirstLetter(Utilities.contextString);
-
-            case ContextType.Fabric:
-                return "Fabric Playground";
-
-            case ContextType.TypeScript:
-                return "TypeScript Playground";
-
-            default:
-                throw "Invalid context " + Utilities.context;
-        }
-    }
-
     static captializeFirstLetter(input: string): string {
         return input.substr(0, 1).toUpperCase() + input.substr(1);
     }
 
     static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);
+
 }

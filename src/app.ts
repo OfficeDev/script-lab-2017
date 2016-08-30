@@ -5,7 +5,7 @@ import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
 import {MediatorService, SnippetManager} from './shared/services';
-import {Utilities, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
+import {Utilities, ContextUtil, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
 
 require('./assets/styles/spinner.scss');
 require('./assets/styles/globals.scss');
@@ -47,9 +47,7 @@ if (!window['Office']) {
 }
 Office.initialize = function() {
     console.log('Office.initialize completed.');
-    Utilities.officeInitialized = true;
+    ContextUtil.officeInitialized = true;
 };
 
-// Otherwise must be opening on the web browser.
-// Launch regardless, to avoid being stuck on the loading screen.
 launch();
