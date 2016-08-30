@@ -118,6 +118,11 @@
         padding: $default-spacing/2 $default-spacing;
     }
 
+    &__localstorage-notice {
+        padding: 10px;
+        background: lightgoldenrodyellow;
+    }
+
     &__action {
         padding: $default-spacing + 2px;
         font-size: 15px;
