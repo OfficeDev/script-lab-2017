@@ -93,6 +93,13 @@ span.console.error {
     color: brown;
 }
 
+.show-hide-link {
+    cursor: pointer;
+    cursor: hand;
+    color: blue;
+    text-decoration: underline;
+}
+
 .consolas {
     font-family: Consolas, monaco, monospace;
 }
