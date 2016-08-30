@@ -9,6 +9,8 @@ export enum ContextType {
 }
 
 export class ContextUtil {
+    static officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
+    
     /** Indicates whether the getScript for Office.js has been initiated already */
     static initiatedOfficeLoading = false;
 

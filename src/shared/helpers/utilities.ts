@@ -169,8 +169,19 @@ export class Utilities {
         }
     }
 
-    static reloadPage() {
-        window.location.reload();
+    static isUrl(entry: string): boolean {
+        entry = entry.trim().toLowerCase();
+        return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
+    }
+    
+    static normalizeUrl(url: string): string {
+        url = url.trim();
+        if (Utilities.isUrl(url)) {
+            // strip out https: or http:
+            return url.substr(url.indexOf("//"));
+        } else {
+            throw new Error("Could not normalize URL " + url);
+        }
     }
 
     static captializeFirstLetter(input: string): string {
@@ -179,4 +190,7 @@ export class Utilities {
 
     static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);
 
+    static reloadPage() {
+        window.location.reload();
+    }
 }

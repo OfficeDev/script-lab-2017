@@ -77,6 +77,21 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                         });
                     }
                 })
+                .then(() => {
+                    if (this._snippet.containsOfficeJsReference) {
+                        var requestedOfficeJs = this._snippet.getOfficeJsReference();
+                        var normalizeReference = Utilities.normalizeUrl(requestedOfficeJs).toLowerCase(); 
+                        if (normalizeReference !== ContextUtil.officeJsUrl) {
+                            return UxUtil.showDialog('Unsupported Office.js reference', [
+                                "It looks like the snippet references a non-standard version of Office.js.",
+                                'Right now the playground can only can reference the "Prod" version: ' + ContextUtil.officeJsUrl,
+                                'We will look into supporting other Office.js references ' + 
+                                '(i.e., Beta endpoint, debug flavor, etc.) in the near future, ' +
+                                'but will use the standard "Prod" Office.js reference for now.'],
+                            "OK");
+                        }
+                    }
+                })
                 .then(() => SnippetWriter.createHtml(this._snippet, createHtmlOptions))
                 .then(fullHtml => {
                     var iframe = this.runner.nativeElement;

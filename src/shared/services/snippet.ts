@@ -113,8 +113,8 @@ export class Snippet implements ISnippet {
                     return null;
                 }
 
-                if (Snippet._entryIsUrl(entry) && lowercaseEntry.endsWith(".js")) {
-                    return Snippet._normalizeUrl(entry);
+                if (Utilities.isUrl(entry) && lowercaseEntry.endsWith(".js")) {
+                    return Utilities.normalizeUrl(entry);
                 }
 
                 // otherwise assume it's an NPM package name
@@ -131,13 +131,29 @@ export class Snippet implements ISnippet {
             }).length > 0;
     }
 
+    getOfficeJsReference(): string {
+        var matchedValues = this.getJsLibaries()
+            .filter(item => {
+                var lowercase = item.toLowerCase();
+                return lowercase.endsWith("/office.js") || lowercase.endsWith("/office.debug.js");
+            });
+        switch (matchedValues.length) {
+            case 0:
+                throw new PlaygroundError('Script contains no Office.js references');
+            case 1:
+                return matchedValues[0];
+            default:
+                throw new PlaygroundError('Script contains more than one Office.js reference, but there should only be one such reference.');
+        }
+    }
+
     getCssStylesheets(): Array<string> {
         return Utilities.stringOrEmpty(this.libraries).split("\n")
             .map((entry) => entry.trim().toLowerCase())
             .filter((entry) => !entry.startsWith("#") && entry.endsWith(".css"))
             .map((entry) => {
-                if (Snippet._entryIsUrl(entry)) {
-                    return Snippet._normalizeUrl(entry);
+                if (Utilities.isUrl(entry)) {
+                    return Utilities.normalizeUrl(entry);
                 }
 
                 // otherwise assume it's an NPM package name
@@ -157,19 +173,9 @@ export class Snippet implements ISnippet {
                     return "//npmcdn.com/" + entry + "/index.d.ts";
                 }
 
-                return Snippet._normalizeUrl(entry);
+                return Utilities.normalizeUrl(entry);
             })
             .sort();
-    }
-
-    static _entryIsUrl(entry: string): boolean {
-        entry = entry.trim().toLowerCase();
-        return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
-    }
-
-    static _normalizeUrl(url: string): string {
-        // strip out https: or http:
-        return url.substr(url.indexOf("//"));
     }
 
     randomizeId(force?: boolean) {
