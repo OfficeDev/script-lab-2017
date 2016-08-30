@@ -193,4 +193,9 @@ export class Utilities {
     static reloadPage() {
         window.location.reload();
     }
+
+    static get playgroundBasePath(): string {
+        return window.location.protocol + "//" + window.location.hostname + 
+            (window.location.port ? (":" + window.location.port) : "") + window.location.pathname;
+    }
 }

@@ -12,14 +12,22 @@ export class ContextUtil {
     static officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
     
     /** Indicates whether the getScript for Office.js has been initiated already */
-    static initiatedOfficeLoading = false;
+    static windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
 
     /** Returns true after Office.initialized has been called */
-    static officeInitialized = false;
+    static windowkey_officeInitialized = 'officeInitialized';
 
     static sessionStorageKey_context = 'context'
     static sessionStorageKey_wasLaunchedFromAddin = 'wasLaunchedFromAddin';
 
+
+    static getGlobalState(sessionStorageKey: string) {
+        return window[sessionStorageKey];
+    }
+
+    static setGlobalState(sessionStorageKey: string, value: any) {
+        return window[sessionStorageKey] = value;
+    }
 
     static get contextString(): string {
         return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_context);
@@ -27,7 +35,7 @@ export class ContextUtil {
 
     static get isAddin(): boolean {
         // Note: it's an intentional string comparison.
-        return (window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true');
+        return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
     }
 
     /** 

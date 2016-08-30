@@ -63,14 +63,16 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     this._snippet = snippet;
                 })
                 .then(() => {
-                    if (this._snippet.containsOfficeJsReference && !ContextUtil.officeInitialized) {
+                    if (this._snippet.containsOfficeJsReference && 
+                        !ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized))
+                    {
                         this.loadingMessage = 'Waiting for Office.js to initialize. ' + 
                             'Note than a snippet that references Office.js can only run ' + 
                             'inside of an Office Add-in, not a regular webpage.';
                         
                         return new Promise((resolve) => {
                             setTimeout(() => {
-                                if (ContextUtil.officeInitialized) {
+                                if (ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized)) {
                                     resolve();
                                 }
                             }, 50)
@@ -83,11 +85,14 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                         var normalizeReference = Utilities.normalizeUrl(requestedOfficeJs).toLowerCase(); 
                         if (normalizeReference !== ContextUtil.officeJsUrl) {
                             return UxUtil.showDialog('Unsupported Office.js reference', [
-                                "It looks like the snippet references a non-standard version of Office.js.",
-                                'Right now the playground can only can reference the "Prod" version: ' + ContextUtil.officeJsUrl,
+                                "It looks like the snippet references a non-standard version of Office.js: " + requestedOfficeJs,
+                                '',
+                                'Right now the playground can only can reference the standard production version ' +
+                                'of Office.js: https:' + ContextUtil.officeJsUrl,
+                                '',
                                 'We will look into supporting other Office.js references ' + 
                                 '(i.e., Beta endpoint, debug flavor, etc.) in the near future, ' +
-                                'but will use the standard "Prod" Office.js reference for now.'],
+                                'but for now, the snippet will be run using the standard Office.js CDN reference.'],
                             "OK");
                         }
                     }

@@ -112,4 +112,8 @@ export class UxUtil {
 
         return result;
     }
+
+    static debugAlert(msg) {
+        return UxUtil.showDialog("Alert!", msg, "OK");
+    }
 }

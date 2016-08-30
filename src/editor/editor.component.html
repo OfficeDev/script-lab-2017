@@ -30,7 +30,12 @@
 }">
     <div id="editor-status-text">
         <div *ngIf="!!!status" class="ms-u-slideUpIn20">{{contextTagline}}</div>
-        <div *ngIf="!!status" class="ms-u-slideUpIn20" (click)="clearStatus">{{status}}</div>
+        <div *ngIf="!!status" class="ms-u-slideUpIn20" (click)="clearStatus">{{status}}
+            <span *ngIf="showRefreshIcon" id="refresh" (click)="refresh()">&#8635;</span>
+        </div>
     </div>
-    <span id="refresh" (click)="refresh()">&#8635;</span>
+
+    <div class="editor-command-bar__command display-if-office-js-dialog-enabled" (click)="launchPopOutAddinEditor()">
+        <i class="ms-Icon ms-Icon--popout "></i>
+    </div>    
 </section>

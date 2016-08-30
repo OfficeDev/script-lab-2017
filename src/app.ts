@@ -47,7 +47,12 @@ if (!window['Office']) {
 }
 Office.initialize = function() {
     console.log('Office.initialize completed.');
-    ContextUtil.officeInitialized = true;
+
+    if (Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
+        $('.display-if-office-js-dialog-enabled').show();
+    }
+    
+    ContextUtil.setGlobalState(ContextUtil.windowkey_officeInitialized, true);
 };
 
 launch();

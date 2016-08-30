@@ -3,7 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextType, StorageHelper, MessageStrings, ExpectedError, PlaygroundError, UxUtil} from '../shared/helpers';
+import {Utilities, ContextUtil, ContextType, StorageHelper, MessageStrings, ExpectedError, PlaygroundError, UxUtil} from '../shared/helpers';
 
 enum StatusType {
     info,
@@ -22,6 +22,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     
     status: string;
     statusType: StatusType;
+    showRefreshIcon = false;
     editMode = false;
     currentIntelliSense: string[];
 
@@ -75,10 +76,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     onSwitchFocusToJavaScript(): void {
         var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
+            this.showRefreshIcon = true;
             this._showStatus(StatusType.warning, 10 /*seconds*/,
                 'It looks like your IntelliSense references have changed. ' + 
-                'To see those changes live, please re-load this page ' + 
-                '(see the "refresh" icon at thee bottom right corner).');
+                'To see those changes live, please re-load this page.');
         }
     }
 
@@ -230,10 +231,30 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     clearStatus() {
         this.status = null;
         this.statusType = StatusType.info;
+        this.showRefreshIcon = false;
     }
 
     get isStatusWarning() { return this.statusType === StatusType.warning; }
     get isStatusError() { return this.statusType === StatusType.error; }
+
+    launchPopOutAddinEditor() {
+        var dialogOptions = {displayInIFrame: true, width: 85, height: 85};
+        var url = Utilities.playgroundBasePath + "#/addin/" + ContextUtil.contextString;
+        
+        Office.context.ui.displayDialogAsync(url, dialogOptions, function(result) {
+            if (result.status !== Office.AsyncResultStatus.Succeeded) {
+                UxUtil.showDialog("Error launching dialog", [
+                    "Could not crate a standalone-editor dialog window.",
+                    "Error details: " + result.error.message
+                ], "OK");
+            }
+
+            var dialog = result.value;
+            dialog.addEventHandler("DialogMessageReceived", function(e) {
+                UxUtil.showDialog("Event received", Utilities.stringifyPlusPlus(e), "OK");
+            });
+        });
+    }
 
     private _errorHandler(e: any): void {
         if (e instanceof ExpectedError) {
