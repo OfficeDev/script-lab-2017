@@ -241,10 +241,16 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         var dialogOptions = {displayInIFrame: true, width: 85, height: 85};
         var url = Utilities.playgroundBasePath + "#/addin/" + ContextUtil.contextString;
         
+        if (!Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
+            UxUtil.showDialog("Dialog not supported",
+                "Launching a standalone-editor dialog window is not supported on this platform yet.", "OK")
+            return;
+        }
+
         Office.context.ui.displayDialogAsync(url, dialogOptions, function(result) {
             if (result.status !== Office.AsyncResultStatus.Succeeded) {
                 UxUtil.showDialog("Error launching dialog", [
-                    "Could not crate a standalone-editor dialog window.",
+                    "Could not create a standalone-editor dialog window.",
                     "Error details: " + result.error.message
                 ], "OK");
             }

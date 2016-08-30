@@ -23,9 +23,7 @@ export class AddinLauncherComponent extends BaseComponent implements OnInit {
             window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, params['host'].toLowerCase());
             window.sessionStorage.setItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin, 'true');
 
-            UxUtil.debugAlert("launcher done").then(() => {
-                this._router.navigate(['new']); 
-            });
+            this._router.navigate(['new']);
         });
 
         this.markDispose(subscription);
