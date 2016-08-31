@@ -8,3 +8,4 @@ export * from './snippetwriter.helper';
 export * from './message-strings';
 export * from './uxutil';
 export * from './contextutil';
+export * from './gistutilities';

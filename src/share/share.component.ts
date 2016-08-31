@@ -32,7 +32,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     ) {
         super(_router, _snippetManager);
-        this._snippet = new Snippet({}, this._snippetManager);
+        this._snippet = new Snippet({});
     }
 
     ngOnInit() {
@@ -146,9 +146,9 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             topmostFilename: { 'content': meta },
             "app.js": { 'content': compiledJs },
             "app.ts": { 'content': this._snippet.script },
-            "app.css": { 'content': this._snippet.css },
             "index.html": { 'content': this._snippet.html },
-            "libraries.txt": { 'content': this._snippet.libraries },            
+            "libraries.txt": { 'content': this._snippet.libraries },
+            "style.css": { 'content': this._snippet.css }            
         };
 
         for (var key in fileData) {

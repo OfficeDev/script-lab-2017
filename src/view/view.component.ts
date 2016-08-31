@@ -26,7 +26,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     }
 
     ngOnInit() {
-        this.snippet = new Snippet({}, this._snippetManager);
+        this.snippet = new Snippet({});
         this.currentIntelliSense = [];
         // var subscription = this._route.params.subscribe(params => {
         //     this._snippetsService.get(params['id']).then(snippet => {

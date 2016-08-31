@@ -37,7 +37,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
-        this.snippet = new Snippet({ meta: { name: null, id: null } }, this._snippetManager);
+        this.snippet = new Snippet({});
 
         this._errorHandler = this._errorHandler.bind(this);
     }
@@ -282,7 +282,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     private _composeSnippetFromEditor() {
         var currentEditorState = this.tabs.currentState;
         if (currentEditorState === null) {
-            return new Snippet({}, this._snippetManager);
+            return new Snippet({});
         }
 
         return new Snippet({
@@ -291,7 +291,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             libraries: currentEditorState['Libraries'],
             script: currentEditorState['Script'],
             html: currentEditorState['HTML']
-        }, this._snippetManager);
+        });
     }
 
     private get _promptToSave() {

@@ -18,6 +18,8 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     loaded: boolean;
     statusDescription = "Initializing editor for importing...";
 
+    sampleGistId = '8a58218a48d39d40431cf934e62a71a2';
+
     constructor(
         _snippetManager: SnippetManager,
         _router: Router
@@ -94,7 +96,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     import() {
-        this.statusDescription = '// Processing the snippet import request, please wait...';
+        this.statusDescription = 'Processing the snippet import request, please wait...';
         this.loaded = false;
 
         var inputValue = this._monacoEditor.getValue().trim();
@@ -110,10 +112,10 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 this.playgroundBasePath + "#/view/gist_");
             if (normalized.startsWith(normalizedGithubPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedGithubPrefix.length), snippetManager));
+                    normalized.substr(normalizedGithubPrefix.length)));
             } else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedPlaygroundViewPrefix.length), snippetManager));
+                    normalized.substr(normalizedPlaygroundViewPrefix.length)));
             } else {
                 this.loaded = true;
                 UxUtil.showDialog("Invalid URL for import", [
@@ -125,7 +127,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 return;
             }            
         } else if (Utilities.isJson(inputValue)) {
-            addHelper(() => Snippet.createFromJson(inputValue, snippetManager));
+            addHelper(() => Snippet.createFromJson(inputValue));
         } else {
             this.loaded = true;
             UxUtil.showDialog("Invalid Snippet URL or JSON", [
@@ -135,12 +137,13 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        function addHelper(createAction: () => Snippet) {
+        function addHelper(createAction: () => Snippet | Promise<Snippet>) {
             var snippet: Snippet;
             Promise.resolve()
-                .then(() => {
-                    snippet = createAction();
-                    snippetManager.add(snippet);
+                .then(createAction)
+                .then((passedInSnippet: Snippet) => {
+                    snippet = passedInSnippet;
+                    return snippetManager.add(snippet, false /*isDuplicate*/);
                 })
                 .then(() => that._router.navigate(['edit', snippet.meta.id]))
                 .catch((e) => {

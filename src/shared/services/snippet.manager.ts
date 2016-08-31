@@ -17,15 +17,19 @@ export class SnippetManager {
     }
 
     new(): Promise<Snippet> {
-        return this.add(SnippetManager.createBlankSnippet(this));
+        return this.add(SnippetManager.createBlankSnippet(this), false /*isDuplicate*/);
     }
 
-    add(snippet: Snippet): Promise<Snippet> {
+    add(snippet: Snippet, isDuplicate: boolean): Promise<Snippet> {
         return new Promise(resolve => {
-            snippet.randomizeId(true);
-            snippet.makeNameUnique(false /*isDuplicate*/);
+            snippet.randomizeId(true /*force*/, this);
+            snippet.makeNameUnique(isDuplicate, this);
             resolve(this._addSnippetToLocalStorage(snippet));
         });
+    }
+
+    duplicate(snippet: ISnippet): Promise<Snippet> {
+        return this.add(new Snippet(snippet), true /*isDuplicate*/);
     }
 
     save(snippet: Snippet): Promise<ISnippet> {
@@ -122,41 +126,10 @@ export class SnippetManager {
             });
     }
 
-    import(id: string): Promise<Snippet> {
-        id = id.trim();
-
-        if (Utilities.isEmpty(id)) {
-            UxUtil.showDialog('Missing snippet JSON or URL', 'Please paste in the snippet data or URL before proceeding', 'OK');
-            throw new ExpectedError();
-        }
-
-        if (id.startsWith('http://') || id.startsWith('https://')) {
-            id = id.substr(id.lastIndexOf('/') + 1);
-        }
-
-        throw new Error("Not implemented!");
-
-        // return this._service.get(id).then(snippet => {
-        //     snippet.randomizeId(true);
-        //     snippet.makeNameUnique(false /*isDuplicate*/);
-        //     return this._addSnippetToLocalStorage(snippet);
-        // });
-    }
-
     find(id: string): Promise<Snippet> {
         return new Promise(resolve => {
             var result = this._snippetsContainer.get(id);
-            resolve(new Snippet(result, this));
-        });
-    }
-
-    duplicate(snippet: ISnippet): Promise<Snippet> {
-        return new Promise(resolve => {
-            if (Utilities.isNull(snippet)) throw 'Snippet cannot be null.';
-            var newSnippet = new Snippet(snippet, this);
-            newSnippet.randomizeId(true);
-            newSnippet.makeNameUnique(true /*isDuplicate*/);
-            resolve(this._addSnippetToLocalStorage(newSnippet));
+            resolve(new Snippet(result));
         });
     }
 
@@ -210,7 +183,7 @@ export class SnippetManager {
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)
-            }, snippetManager);
+            });
         }
 
         function createBlankFabricSnippet(): Snippet {
@@ -227,7 +200,7 @@ export class SnippetManager {
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)
-            }, snippetManager);
+            });
         }
 
         function createBlankTypeScriptSnippet(): Snippet {
@@ -244,7 +217,7 @@ export class SnippetManager {
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)
-            }, snippetManager);
+            });
         }
     }
 

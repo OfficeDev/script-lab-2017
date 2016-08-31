@@ -33,7 +33,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
-        this._snippet = new Snippet({ meta: { name: null, id: null } }, this._snippetManager);
+        this._snippet = new Snippet({});
     }
 
     loaded = false;

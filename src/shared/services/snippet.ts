@@ -1,4 +1,4 @@
-import {Utilities, MessageStrings, UxUtil, PlaygroundError} from '../helpers';
+import {Utilities, GistUtilities, IGistResponse, MessageStrings, UxUtil, PlaygroundError} from '../helpers';
 import {SnippetManager} from './snippet.manager';
 import * as ts from '../../../node_modules/typescript';
 
@@ -12,16 +12,12 @@ export class Snippet implements ISnippet {
     lastSavedHash: string;
     private _compiledJs: string;
 
-    constructor(snippet: ISnippet, private _snippetManager: SnippetManager) {
+    constructor(snippet: ISnippet) {
         this.meta = _.extend({}, snippet.meta || {name: undefined, id: undefined});
         this.script = snippet.script || "";
         this.css = snippet.css || "";
         this.html = snippet.html || "";
         this.libraries = snippet.libraries || "";
-
-        if (Utilities.isNullOrWhitespace(this.meta.id)) {
-            this.randomizeId();
-        }
 
         this.lastSavedHash = this.getHash();
     }
@@ -29,7 +25,6 @@ export class Snippet implements ISnippet {
     toJSON(): any {
        return this.exportToJson(false /*forPlayground*/);
     }
-
 
     exportToJson(forPlayground: boolean) : any {
         var data = {
@@ -178,15 +173,15 @@ export class Snippet implements ISnippet {
             .sort();
     }
 
-    randomizeId(force?: boolean) {
-        var localSnippets = this._snippetManager.getLocal(); 
+    randomizeId(force: boolean, snippetManager: SnippetManager) {
+        var localSnippets = snippetManager.getLocal(); 
         if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1) {
             this.meta.id = '~!L' + Utilities.randomize(Math.max(10000, localSnippets.length * 10)).toString();
         }
 
         // Ensure it is, in fact, unique
         if (localSnippets.find(item => (item.meta.id === this.meta.id))) {
-            this.randomizeId(true /*force*/);
+            this.randomizeId(true /*force*/, snippetManager);
         }
     }
 
@@ -195,8 +190,8 @@ export class Snippet implements ISnippet {
         return md5(JSON.stringify(this));
     }
 
-    public makeNameUnique(isDuplicate: boolean): void {
-        var localSnippets = this._snippetManager.getLocal(); 
+    public makeNameUnique(isDuplicate: boolean, snippetManager: SnippetManager): void {
+        var localSnippets = snippetManager.getLocal(); 
 
         if (Utilities.isNullOrWhitespace(this.meta.name)) {
             this.meta.name = MessageStrings.NewSnippetName;
@@ -262,7 +257,7 @@ export class Snippet implements ISnippet {
         }
     }
 
-    static createFromJson(inputValue: string, snippetManager: SnippetManager): Snippet {
+    static createFromJson(inputValue: string): Snippet {
         var json: ISnippet = JSON.parse(inputValue);
         
         if (Utilities.isEmpty(json.meta)) {
@@ -289,7 +284,7 @@ export class Snippet implements ISnippet {
                 html: fromJsonInput("html", json),
                 css: fromJsonInput("css", json),
                 libraries: fromJsonInput("libraries", json)
-            }, snippetManager);
+            });
         }
 
         function fromJsonInput(fieldName: string, json: Object) {
@@ -307,9 +302,24 @@ export class Snippet implements ISnippet {
         }
     }
 
-    static createFromGist(url: string, snippetManager: SnippetManager): Snippet {
-        throw new PlaygroundError("This is not yet supported... but coming very soon");
-        // GistUtilities.
+    /** snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API */
+    static createFromGist(snippetId: string): Promise<Snippet> {
+        var apiUrl = 'https://api.github.com/gists/' + snippetId;
+        return new Promise((resolve, reject) => {
+            $.getJSON(apiUrl)
+                .then(
+                    (gist: IGistResponse) => {
+                        return GistUtilities.getMetadata(gist)
+                            .then((metaJson) => 
+                                resolve(GistUtilities.processPlaygroundSnippet(metaJson, gist)))
+                            .catch(UxUtil.catchError("Import error",
+                                'An unexpected error occurred while importing the snippet.'));
+                    },
+                    (e) => {
+                        reject("Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?\n" + 
+                            "Also, please ensure that the URL does *not* include the username, only the Gist ID.");
+                    });
+        });
     }
 }
 
