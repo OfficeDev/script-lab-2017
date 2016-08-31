@@ -118,9 +118,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                         this.loaded = true;
                         this._changeDetectorRef.detectChanges();
 
-                        if (ContextUtil.context != ContextType.TypeScript) {
+                        if (ContextUtil.isOfficeContext) {
                             iframeWindow['Office'] = (<any>window).Office;
                             iframeWindow['Excel'] = (<any>window).Excel;
+                            iframeWindow['Word'] = (<any>window).Word;
+                            iframeWindow['OneNote'] = (<any>window).OneNote;
                         }
                     };
 
