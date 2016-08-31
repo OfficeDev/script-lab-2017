@@ -18,6 +18,13 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     loaded: boolean;
     statusDescription = "Initializing editor for importing...";
 
+    constructor(
+        _snippetManager: SnippetManager,
+        _router: Router
+    ) {
+        super(_router, _snippetManager);        
+    }
+
     ngOnInit() {                    
         return this._initializeMonacoEditor();
     }
@@ -65,6 +72,14 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
         });
     }
 
+    ngOnDestroy() {
+        if (this._monacoEditor) {
+            this._monacoEditor.dispose();
+            console.log("Monaco editor disposed");
+        }
+    }
+
+
     back() {
         this._router.navigate(['new']);
     }
@@ -79,6 +94,66 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     import() {
-        UxUtil.showDialog("Coming soon!", "Not yet implemented", "OK");
+        this.statusDescription = '// Processing the snippet import request, please wait...';
+        this.loaded = false;
+
+        var inputValue = this._monacoEditor.getValue().trim();
+        var lowercase = inputValue.toLowerCase();
+
+        var that = this;
+        var snippetManager = this._snippetManager;
+
+        if (Utilities.isUrl(inputValue)) {
+            var normalized = Utilities.normalizeUrl(inputValue)
+            var normalizedGithubPrefix = "//gist.github.com/";
+            var normalizedPlaygroundViewPrefix = Utilities.normalizeUrl(
+                this.playgroundBasePath + "#/view/gist_");
+            if (normalized.startsWith(normalizedGithubPrefix)) {
+                addHelper(() => Snippet.createFromGist(
+                    normalized.substr(normalizedGithubPrefix.length), snippetManager));
+            } else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
+                addHelper(() => Snippet.createFromGist(
+                    normalized.substr(normalizedPlaygroundViewPrefix.length), snippetManager));
+            } else {
+                this.loaded = true;
+                UxUtil.showDialog("Invalid URL for import", [
+                    "The supplied URL did not match the expected pattern of",
+                    `https://gist.github.com/<gist-id>`,
+                    'or',
+                    `https:${normalizedPlaygroundViewPrefix}<gist-id>`
+                ], 'OK');
+                return;
+            }            
+        } else if (Utilities.isJson(inputValue)) {
+            addHelper(() => Snippet.createFromJson(inputValue, snippetManager));
+        } else {
+            this.loaded = true;
+            UxUtil.showDialog("Invalid Snippet URL or JSON", [
+                "The input was not recognized as either a URL or as a valid JSON string.",
+                "Please double-check the input and try again."
+            ], 'OK');
+            return;
+        }
+
+        function addHelper(createAction: () => Snippet) {
+            var snippet: Snippet;
+            Promise.resolve()
+                .then(() => {
+                    snippet = createAction();
+                    snippetManager.add(snippet);
+                })
+                .then(() => that._router.navigate(['edit', snippet.meta.id]))
+                .catch((e) => {
+                    that.loaded = true;
+                    UxUtil.showErrorNotification(
+                        "Could not import snippet",
+                        "An error occurred while importing the snippet.",
+                        e);
+                });
+        }
+    }
+
+    get playgroundBasePath() {
+        return Utilities.playgroundBasePath;
     }
 }

@@ -31,8 +31,12 @@ import {
 
     .import__main .pre-import .ms-Button {
         background: #1D7044;
-        margin: 10px 10px 20px 50px;
+        margin-top: 12px;
     }
+
+        .import__main .pre-import .ms-Button:hover {
+            background: #13472b;
+        }
 
         .import__main .pre-import .ms-Button .ms-Button-label {
             color: white;
@@ -59,7 +63,7 @@ import {
 }
 
 #monaco {
-    border: 5px solid green;
+    border: 5px solid #1D7044;
     box-sizing: border-box;
     height: 300px;
 }
@@ -99,5 +103,8 @@ import {
     margin-left: 20px;
     margin-bottom: 10px;
     margin-top: 5px;
-    color: #1D7044;
+}
+
+.theme-color {
+    color: #1D7044
 }

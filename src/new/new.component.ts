@@ -61,14 +61,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     import() {
-        UxUtil.showDialog('Import from link or JSON',
-            [
-                'Coming very soon!', 
-                'In the meantime, please create a snippet using the "Create New" option.'
-            ],
-            'OK');
-
-        // this._router.navigate(['import']);
+        this._router.navigate(['import']);
     }
 
     get title(): string {

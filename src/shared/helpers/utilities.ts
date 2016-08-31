@@ -198,4 +198,14 @@ export class Utilities {
         return window.location.protocol + "//" + window.location.hostname + 
             (window.location.port ? (":" + window.location.port) : "") + window.location.pathname;
     }
+
+    static isJson(input: string) {
+        try {
+            JSON.parse(input);
+        } catch (e) {
+            return false;
+        }
+        
+        return true;
+    }
 }

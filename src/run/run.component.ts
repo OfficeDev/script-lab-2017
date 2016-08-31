@@ -87,12 +87,12 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                             return UxUtil.showDialog('Unsupported Office.js reference', [
                                 "It looks like the snippet references a non-standard version of Office.js: " + requestedOfficeJs,
                                 '',
-                                'Right now the playground can only can reference the standard production version ' +
-                                'of Office.js: https:' + ContextUtil.officeJsUrl,
+                                'Right now the playground is set to reference the Beta CDN location for ' +
+                                'of Office.js: https://' + ContextUtil.officeJsUrl.replace('/', '/beta/'),
                                 '',
                                 'We will look into supporting other Office.js references ' + 
-                                '(i.e., Beta endpoint, debug flavor, etc.) in the near future, ' +
-                                'but for now, the snippet will be run using the standard Office.js CDN reference.'],
+                                '(i.e., Prod vs. Beta endpoint, Ship vs. Debug flavors, etc.) in the near future, ' +
+                                'but for now, the snippet will run using the Beta CDN endpoint.'],
                             "OK");
                         }
                     }

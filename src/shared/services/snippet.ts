@@ -261,6 +261,56 @@ export class Snippet implements ISnippet {
                 (item.meta.id != snippet.meta.id && item.meta.name == snippet.meta.name)));
         }
     }
+
+    static createFromJson(inputValue: string, snippetManager: SnippetManager): Snippet {
+        var json: ISnippet = JSON.parse(inputValue);
+        
+        if (Utilities.isEmpty(json.meta)) {
+            throw new PlaygroundError('Missing "meta" field in snippet JSON.');
+        }
+        if (_.isUndefined(json.meta.playgroundVersion)) {
+            throw new PlaygroundError('Missing "meta.playgroundVersion" field in the snippet JSON.');
+        }
+
+        switch (json.meta.playgroundVersion) {
+            case 1:
+                return createSnippetFromPlaygroundVersion1_0();
+            default:
+                throw new PlaygroundError('Invalid playgroundVersion version "' + 
+                    json.meta.playgroundVersion + '" specified in the JSON metadata.');
+        }
+
+        function createSnippetFromPlaygroundVersion1_0() {
+            return new Snippet({
+                meta: {
+                    name: json.meta.name
+                },
+                script: fromJsonInput("script", json),
+                html: fromJsonInput("html", json),
+                css: fromJsonInput("css", json),
+                libraries: fromJsonInput("libraries", json)
+            }, snippetManager);
+        }
+
+        function fromJsonInput(fieldName: string, json: Object) {
+            var input: string | string[] = json[fieldName];
+
+            if (_.isString(input)) {
+                return input;
+            } else if (_.isArray(input)) {
+                return input.join('\n');
+            } else if (Utilities.isNullOrWhitespace(<any>input)) {
+                return undefined;
+            } else {
+                throw new PlaygroundError(`Could not parse the ${fieldName} field of the JSON body of the snippet.`);
+            }
+        }
+    }
+
+    static createFromGist(url: string, snippetManager: SnippetManager): Snippet {
+        throw new PlaygroundError("This is not yet supported... but coming very soon");
+        // GistUtilities.
+    }
 }
 
 export enum OfficeClient {
@@ -273,7 +323,12 @@ export enum OfficeClient {
 
 export interface ISnippetMeta {
     name: string;
-    id: string;
+
+    /** ID: present on local snippets but not on exported JSON */
+    id?: string;
+
+    /** playgroundVersion: present on exported JSON but not on local snippet */
+    playgroundVersion?: number;
 }
 
 export interface ISnippet {

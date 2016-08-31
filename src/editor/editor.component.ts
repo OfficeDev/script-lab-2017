@@ -1,4 +1,4 @@
-import {Component, ViewChild, OnInit, OnDestroy, ElementRef} from '@angular/core';
+import {Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
@@ -22,7 +22,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     
     status: string;
     statusType: StatusType;
-    showRefreshIcon = false;
     editMode = false;
     currentIntelliSense: string[];
 
@@ -34,7 +33,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     constructor(
         _router: Router,
         _snippetManager: SnippetManager,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
         this.snippet = new Snippet({ meta: { name: null, id: null } }, this._snippetManager);
@@ -76,7 +76,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     onSwitchFocusToJavaScript(): void {
         var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
-            this.showRefreshIcon = true;
             this._showStatus(StatusType.warning, 10 /*seconds*/,
                 'It looks like your IntelliSense references have changed. ' + 
                 'To see those changes live, please re-load this page.');
@@ -222,6 +221,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         this.status = message;
         this.statusType = statusType;
 
+        setTimeout(() => {
+            this.tabs.resize();
+            this._changeDetectorRef.detectChanges();
+        }, 100);    
+
         this._timeout = setTimeout(() => {
             clearTimeout(this._timeout);
             this.clearStatus();
@@ -231,7 +235,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     clearStatus() {
         this.status = null;
         this.statusType = StatusType.info;
-        this.showRefreshIcon = false;
+
+        this._changeDetectorRef.detectChanges();
+        this.tabs.resize();
     }
 
     get isStatusWarning() { return this.statusType === StatusType.warning; }
@@ -270,7 +276,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             this._showStatus(StatusType.error, 5 /*seconds*/, e.message);    
         } else {
             UxUtil.showErrorNotification('Error', [], e);
-        }        
+        }
     }
 
     private _composeSnippetFromEditor() {

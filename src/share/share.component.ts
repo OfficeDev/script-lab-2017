@@ -133,13 +133,22 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         // Note: Gist (at least for now?) orders files in alphabetical order.
         // The filenames were [somewhat] chosen accordingly.
         // Putting them in that same order below, for realism's sake
+
+        // Note: name of snippet (as it appears in user's Gist list)
+        // is based on topmost filename. So create a .json file with
+        // filename as "<space><safe-filename>.json"
+        var topmostFilename = 
+            (' ' + ContextUtil.contextTagline + ' - ' + this._snippet.meta.name)
+                .replace(/[^a-z0-9\-\s]/gi, '_').toLowerCase()
+                .replace(/_{2,}/g, '_');
+
         var fileData = {
+            topmostFilename: { 'content': meta },
             "app.js": { 'content': compiledJs },
             "app.ts": { 'content': this._snippet.script },
             "app.css": { 'content': this._snippet.css },
             "index.html": { 'content': this._snippet.html },
             "libraries.txt": { 'content': this._snippet.libraries },            
-            "metadata.json": { 'content': meta },            
         };
 
         for (var key in fileData) {

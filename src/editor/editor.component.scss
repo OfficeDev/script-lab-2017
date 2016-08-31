@@ -15,8 +15,11 @@
 
     &__footer {
         background-color: $accent-background-primary;
+        display: flex;
+        overflow: hidden;
+        align-items: center;
+
         color: $accent-foreground-primary;
-        padding: $default-spacing/2 $default-spacing;       
         transition: background-color 0.3s ease-in-out;
 
         &--error {
@@ -137,21 +140,17 @@
     top: 4px;
 }
 
-.editor__footer {
-    display: flex;
-    overflow: hidden;
-    align-items: center;
+.editor__footer .editor-command-bar__command {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 #editor-status-text {
     flex-grow: 1;
+    padding: 10px;
 }
 
 #refresh {
-    position: relative;
-    top: 2px;
-    left: 15px;
-    margin-right: 15px;
     font-size: 1.5em;
     font-weight: bold;
 
