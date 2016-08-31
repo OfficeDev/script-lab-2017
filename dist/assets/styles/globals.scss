@@ -57,7 +57,7 @@ ul {
     @include flex();
     height: 100vh;
 
-    home, excel-launcher, word-launcher, typescript-launcher, new, editor, tabs, editor-tab, run, view, share, import {
+    home, addin-launcher, new, editor, tabs, editor-tab, run, view, share, import {
         flex: 1 1 100%;
         @include flex();
     }
@@ -98,6 +98,10 @@ span.console.error {
     cursor: hand;
     color: blue;
     text-decoration: underline;
+}
+
+.display-if-office-js-dialog-enabled {
+    display: none;
 }
 
 .consolas {
