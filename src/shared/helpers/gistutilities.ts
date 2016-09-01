@@ -16,6 +16,12 @@ export interface IGistFileJson {
     truncated: boolean    
 }
 
+export interface IGistPostData {
+    public: boolean
+    description: string,
+    files: { [name: string]: any }
+}
+
 export class GistUtilities {   
     static getMetadata(gist: IGistResponse): Promise<ISnippetMeta> {
         return Promise.resolve().then(() => {
@@ -116,5 +122,22 @@ export class GistUtilities {
                 });
             });
         }
+    }
+
+    static postGist(token: string, createData: IGistPostData): Promise<string> {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'https://api.github.com/gists',
+                type: 'POST',
+                headers: {
+                    'Authorization': 'token ' + token,
+                },
+                data: JSON.stringify(createData)
+            })
+            .then((response) => resolve(response.id))
+            .fail(function(e) {
+                reject(e.responseText);
+            });
+        });
     }
 }

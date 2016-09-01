@@ -1,10 +1,9 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, UxUtil, ContextUtil} from '../shared/helpers';
+import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
-
-declare var GitHub;
+import {Authenticator, TokenManager, EndpointManager, IToken} from '../shared/services/oauth'; 
 
 @Component({
     selector: 'share',
@@ -24,6 +23,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     _snippet: Snippet;
     _snippetExportString: string;
+    token: IToken;
 
     constructor(
         _snippetManager: SnippetManager,
@@ -91,7 +91,52 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         });
     }
 
-    postToGist() {
+    signInToGithub(): void {
+        var endpointManager = new EndpointManager();
+        endpointManager.add('GitHub', {
+            clientId: '6b2823cf0379dd5fc050',
+            scope: 'gist',
+            baseUrl: 'https://github.com/login',
+            authorizeUrl: '/oauth/authorize',
+            responseType: '',
+            state: true
+        });
+        var tokenManager = new TokenManager();
+        var authenticator = new Authenticator(endpointManager, tokenManager);
+
+        authenticator.authenticate('GitHub', true /*force*/)
+            .then((authResponse: any) => {
+                return this._exchangeGithubCodeForToken(authResponse.code);
+            })
+            .then((tokenString) => {
+                tokenManager.insert('GitHub', JSON.parse(tokenString) as IToken)
+                this.token = tokenManager.get('GitHub');
+            })
+            .catch(UxUtil.catchError("Could not sign in to Github", null));
+    }
+
+    private _exchangeGithubCodeForToken(code): Promise<string> {
+        return new Promise((resolve, reject) => {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    resolve(xhr.responseText);
+                }
+                else if (xhr.status !== 200) {
+                    reject('Request failed.  Returned status of ' + xhr.response);
+                }
+            };
+
+            xhr.send(JSON.stringify({
+                code: code
+            }));
+        });
+    }
+
+    postToGist(): void {
         var compiledJs: string;
         try {
             compiledJs = 
@@ -162,32 +207,20 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         this.statusDescription = "Posting the snippet to a new GitHub Gist...";
         this.loaded = false;
 
-        const gh = new GitHub(); // Note: unauthenticated client, i.e., for creating anonymous gist
-        let gist = gh.getGist();
-        gist
-            .create({
+        GistUtilities.postGist(this.token.access_token,
+            {
                 public: this.gistSharePublic,
                 description: gistDescription,
                 files: fileData
             })
-            .then(({data}) => {
-                let gistJson = data;
-                gist.read((err, gist, xhr) => {
-                    this.loaded = true;
+            .then((gistId) => {
+                this.loaded = true;
 
-                    if (err) {                        
-                        UxUtil.showErrorNotification("Gist-creation error",
-                            "Sorry, something went wrong when creating the GitHub Gist.", err);
-                        return;
-                    }
+                this.gistId = gistId;
+                this.viewUrl = Utilities.playgroundBasePath + '#/view/gist_' + this.gistId;
+                this.embedScriptTag = `<iframe src="${this.viewUrl}" style="width: 100%; height: 450px"></iframe>`;
 
-                    this.gistId = gist.id;
- 
-                    this.viewUrl = Utilities.playgroundBasePath + '#/view/gist_' + this.gistId;
-                    this.embedScriptTag = `<iframe src="${this.viewUrl}" style="width: 100%; height: 450px"></iframe>`;
-
-                    $(window).scrollTop(0); 
-                })
+                $(window).scrollTop(0);
             })
             .catch((e) => {
                 this.loaded = true;

@@ -6,6 +6,7 @@ import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
 import {MediatorService, SnippetManager} from './shared/services';
 import {Utilities, ContextUtil, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
+import {Authenticator, TokenManager} from './shared/services/oauth'; 
 
 require('./assets/styles/spinner.scss');
 require('./assets/styles/globals.scss');
@@ -59,4 +60,14 @@ Office.initialize = function() {
     ContextUtil.setGlobalState(ContextUtil.windowkey_officeInitialized, true);
 };
 
-launch();
+if (Authenticator.isTokenUrl(location.href)) {
+    // use the authenticator to determine if our url contains either a code, access_token or errror
+    // if so then this code should be running in Dialog API    
+    var token = TokenManager.getToken(location.href, location.origin);
+    Authenticator.isAddin = ContextUtil.isAddin;
+    if (Authenticator.isAddin) {
+        Office.context.ui.messageParent(JSON.stringify(token));
+    }
+} else {
+    launch();
+}
