@@ -190,7 +190,7 @@ export class Snippet implements ISnippet {
         return md5(JSON.stringify(this));
     }
 
-    public makeNameUnique(isDuplicate: boolean, snippetManager: SnippetManager): void {
+    public makeNameUnique(suffixOption: SnippetNamingSuffixOption, snippetManager: SnippetManager): void {
         var localSnippets = snippetManager.getLocal(); 
 
         if (Utilities.isNullOrWhitespace(this.meta.name)) {
@@ -201,47 +201,8 @@ export class Snippet implements ISnippet {
             return;
         }
 
-        var prefix = Utilities.stringOrEmpty(this.meta.name);
-        if (isDuplicate) {
-            // If name doesn't have "copy" in it, try to use "<name> - copy".
-            // Otherwise (or if the copy one is already taken), find the first available "<name> - copy <number>".
-            var regex = /(.*) - copy( \d+)?$/i;
-            /*  Will match these:
-                    test - copy
-                    test - copy 1
-                    test - copy 2
-                    test - copy 222
-                But not these:
-                    test
-                    test - copy 222 gaga
-            */
-            var regexMatches = regex.exec(this.meta.name);
+        var prefix = generatePrefix(this.meta.name);
             
-            if (regexMatches) {
-                prefix = regexMatches[1];
-            }
-
-            prefix = prefix + ' - copy';
-
-        } else {
-            // Does it end with just a number on the end?  If so, grab that?
-            var regex = /(.*) \d+$/;
-            /* Will match these:
-                    test 1
-                    test 122
-                But not these:
-                    test
-                    test - copy
-                    test - copy 222 gaga
-            */
-
-            var regexMatches = regex.exec(this.meta.name);
-            
-            if (regexMatches) {
-                prefix = regexMatches[1];
-            }
-        }
-        
         var i = 1;
         while (true) {
             this.meta.name = prefix + ' ' + i;
@@ -249,6 +210,59 @@ export class Snippet implements ISnippet {
                 return;               
             }
             i++;
+        }
+        
+
+        // Helper functions 
+
+        function generatePrefix(name): string {
+            var prefix = Utilities.stringOrEmpty(name);
+            
+            switch (suffixOption) {
+                case SnippetNamingSuffixOption.UseAsIs: 
+                    return prefix + ' - ';
+
+                case SnippetNamingSuffixOption.AddCopySuffix:
+                    // If name doesn't have "copy" in it, try to use "<name> - copy".
+                    // Otherwise (or if the copy one is already taken), find the first available "<name> - copy <number>".
+                    var regex = /(.*) - copy( \d+)?$/i;
+                    /*  Will match these:
+                            test - copy
+                            test - copy 1
+                            test - copy 2
+                            test - copy 222
+                        But not these:
+                            test
+                            test - copy 222 gaga
+                    */
+                    var regexMatches = regex.exec(name);
+                    
+                    if (regexMatches) {
+                        prefix = regexMatches[1];
+                    }
+
+                    return prefix + ' - copy';
+                
+                case SnippetNamingSuffixOption.StripNumericSuffixAndIncrement:                
+                    // Does it end with just a number on the end?  If so, grab just the text
+                    var regex = /(.*) \d+$/;
+                    /* Will match these:
+                            test 1
+                            test 122
+                        But not these:
+                            test
+                            test - copy
+                            test - copy 222 gaga
+                    */
+
+                    var regexMatches = regex.exec(name);
+                    
+                    if (regexMatches) {
+                        prefix = regexMatches[1];
+                    }
+
+                    return prefix;
+            }
         }
 
         function isNameUnique(snippet: Snippet) {
@@ -351,4 +365,10 @@ export interface ISnippet {
     html?: string;
     css?: string;
     libraries?: string;
+}
+
+export enum SnippetNamingSuffixOption {
+    StripNumericSuffixAndIncrement, /* for new snippets */
+    UseAsIs, /* i.e., for import */
+    AddCopySuffix /* for duplicate */
 }

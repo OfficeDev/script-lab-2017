@@ -1,5 +1,15 @@
+<section class="view__header" [hidden]="!headerName">
+    <ul class="view-bar">
+        <li class="view-bar--text ms-font-m">
+            {{headerName}}
+        </li>
+        <li class="view-bar__command view-bar__command--right" (click)="openPlayground()">
+            <i class="ms-Icon ms-Icon--sites"></i><span class="ms-font-m">Playground</span>
+        </li>
+    </ul>
+</section>
 <section class="view__main">
-    <tabs readonly="false">
+    <tabs readonly="true">
         <tab name="Script" language="typescript" [content]="snippet?.script"></tab>
         <tab name="HTML" language="html" [content]="snippet?.html"></tab>
         <tab name="CSS" language="css" [content]="snippet?.css"></tab>
