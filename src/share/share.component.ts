@@ -23,7 +23,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     _snippet: Snippet;
     _snippetExportString: string;
-    token: IToken;
+    token: IToken = { access_token: null, provider: '' };
 
     constructor(
         _snippetManager: SnippetManager,

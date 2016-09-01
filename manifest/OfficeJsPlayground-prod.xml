@@ -17,6 +17,9 @@
     <Host Name="Document" />
     <Host Name="Notebook"/>
   </Hosts>
+  <AppDomains>
+    <AppDomain>https://github.com</AppDomain>
+  </AppDomains>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://api-playground.azurewebsites.net/" />
   </DefaultSettings>

@@ -112,14 +112,15 @@ export class Authenticator {
     private _openInDialog(endpoint: IEndpoint) {
         let url = EndpointManager.getLoginUrl(endpoint);
 
-        var options: Office.DialogOptions = {
-            height: 35,
-            width: 35,
-            requireHTTPS: true
-        };
+        var options: any = { displayInIFrame: true, width: 85, height: 85 };
 
         return new Promise<IToken>((resolve, reject) => {
             Office.context.ui.displayDialogAsync(url, options, result => {
+                if (result.status === Office.AsyncResultStatus.Failed) {
+                    reject(result.error.message);
+                    return;
+                }
+                
                 var dialog = result.value;
                 dialog.addEventHandler(Microsoft.Office.WebExtension.EventType.DialogMessageReceived, args => {
                     dialog.close();

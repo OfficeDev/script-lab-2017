@@ -125,13 +125,16 @@ export class GistUtilities {
     }
 
     static postGist(token: string, createData: IGistPostData): Promise<string> {
+        var headers = {};
+        if (!Utilities.isNullOrWhitespace(token)) {
+            headers['Authorization'] = 'token ' + token;
+        }
+
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: 'https://api.github.com/gists',
                 type: 'POST',
-                headers: {
-                    'Authorization': 'token ' + token,
-                },
+                headers: headers,
                 data: JSON.stringify(createData)
             })
             .then((response) => resolve(response.id))
