@@ -18,40 +18,42 @@ export interface IGistFileJson {
 
 export class GistUtilities {   
     static getMetadata(gist: IGistResponse): Promise<ISnippetMeta> {
-        var metadataCandidates = [];
-        for (let filename in gist.files) {
-            if (filename.toLowerCase().endsWith(".json")) {
-                metadataCandidates.push(filename);
+        return Promise.resolve().then(() => {
+            var metadataCandidates = [];
+            for (let filename in gist.files) {
+                if (filename.toLowerCase().endsWith(".json")) {
+                    metadataCandidates.push(filename);
+                }
             }
-        }
 
-        switch (metadataCandidates.length) {
-            case 0:
-                throw new PlaygroundError(
-                    'Could not find a metadata JSON file within the Gist snippet.\n' + 
-                    'Expecting a Gist that was exported by the Playground and that has ' +
-                    'a single file named <filename>.json within it.');
+            switch (metadataCandidates.length) {
+                case 0:
+                    throw new PlaygroundError(
+                        'Could not find a metadata JSON file within the Gist snippet.\n' + 
+                        'Expecting a Gist that was exported by the Playground and that has ' +
+                        'a single file named <filename>.json within it.');
 
-            case 1:
-                var filename = metadataCandidates[0];
-                var metaJson: ISnippetMeta;
+                case 1:
+                    var filename = metadataCandidates[0];
+                    var metaJson: ISnippetMeta;
 
-                return GistUtilities.getFileContent(gist.files[filename])
-                    .then((metaFileContents) => {
-                        if (!Utilities.isJson(metaFileContents)) {
-                            throw new PlaygroundError('Contents of the file "' + filename + 
-                                '" was not a valid JSON object.');
-                        }
+                    return GistUtilities.getFileContent(gist.files[filename])
+                        .then((metaFileContents) => {
+                            if (!Utilities.isJson(metaFileContents)) {
+                                throw new PlaygroundError('Contents of the file "' + filename + 
+                                    '" was not a valid JSON object.');
+                            }
 
-                        return JSON.parse(metaFileContents);
-                    });
-            
-            default:
-                throw new PlaygroundError(
-                    'The Gist contains more that one .json file.\n' + 
-                    'Expecting a Gist that was exported by the Playground and that has ' +
-                    'a single file named <filename>.json within it.');
-        }
+                            return JSON.parse(metaFileContents);
+                        });
+                
+                default:
+                    throw new PlaygroundError(
+                        'The Gist contains more that one .json file.\n' + 
+                        'Expecting a Gist that was exported by the Playground and that has ' +
+                        'a single file named <filename>.json within it.');
+            }
+        });
     }
 
     static getFileContent(fileJson: IGistFileJson): Promise<string> {

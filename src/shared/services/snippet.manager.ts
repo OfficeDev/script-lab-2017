@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ISnippet, Snippet} from '../services';
+import {ISnippet, Snippet, SnippetNamingSuffixOption} from '../services';
 import {StorageHelper, Utilities, ContextUtil, ContextType,
     ExpectedError, PlaygroundError, UxUtil} from '../helpers';
 
@@ -17,19 +17,20 @@ export class SnippetManager {
     }
 
     new(): Promise<Snippet> {
-        return this.add(SnippetManager.createBlankSnippet(this), false /*isDuplicate*/);
+        return this.add(SnippetManager.createBlankSnippet(this),
+            SnippetNamingSuffixOption.StripNumericSuffixAndIncrement);
     }
 
-    add(snippet: Snippet, isDuplicate: boolean): Promise<Snippet> {
+    add(snippet: Snippet, suffixOption: SnippetNamingSuffixOption): Promise<Snippet> {
         return new Promise(resolve => {
             snippet.randomizeId(true /*force*/, this);
-            snippet.makeNameUnique(isDuplicate, this);
+            snippet.makeNameUnique(suffixOption, this);
             resolve(this._addSnippetToLocalStorage(snippet));
         });
     }
 
     duplicate(snippet: ISnippet): Promise<Snippet> {
-        return this.add(new Snippet(snippet), true /*isDuplicate*/);
+        return this.add(new Snippet(snippet), SnippetNamingSuffixOption.AddCopySuffix);
     }
 
     save(snippet: Snippet): Promise<ISnippet> {

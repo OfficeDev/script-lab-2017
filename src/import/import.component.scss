@@ -29,20 +29,6 @@ import {
             margin: 10px 0;
         }
 
-    .import__main .pre-import .ms-Button {
-        background: #1D7044;
-        margin-top: 12px;
-    }
-
-        .import__main .pre-import .ms-Button:hover {
-            background: #13472b;
-        }
-
-        .import__main .pre-import .ms-Button .ms-Button-label {
-            color: white;
-            font-weight: normal;
-        }
-
 #back {
     font-size: 1.5em;
     font-weight: bold;
@@ -80,21 +66,13 @@ import {
     margin-top:  20px;
 }
 
-.pre-import > .gray-background {
-    background: #eee;
-    padding: 10px;
-}
-
 .pre-import .info-panel {
     padding: 10px;
+    word-break: break-word;
 }
 
-.pre-import .right-aligned-button-container {
-    text-align: right;
-}
-
-    .pre-import .right-aligned-button-container button {
-        height: auto;
+    .pre-import .info-panel pre {
+        white-space: pre-wrap;
     }
 
 .pre-import .link-or-id {
@@ -108,3 +86,33 @@ import {
 .theme-color {
     color: #1D7044
 }
+
+.gray-background {
+    background: #eee;
+    padding: 10px;
+}
+
+.import__footer {
+    padding: 10px;
+}
+
+    .import__footer .right-aligned-button-container {
+        text-align: right;
+    }
+
+        .import__footer .right-aligned-button-container button {
+            height: auto;
+        }
+
+    .import__footer  .ms-Button {
+        background: #1D7044;
+    }
+
+        .import__footer .ms-Button:hover {
+            background: #13472b;
+        }
+
+        .import__footer .ms-Button .ms-Button-label {
+            color: white;
+            font-weight: normal;
+        }
