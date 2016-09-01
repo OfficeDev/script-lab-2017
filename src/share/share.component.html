@@ -18,31 +18,36 @@
         <div class="header ms-font-l ms-fontWeight-semibold">
             <b>Option 1 (Recommended)</b>: Upload to a <b>
                 <a href="https://gist.github.com/" traget="_blank">GitHub&nbsp;Gist</a> </b>
-            (<a href="https://help.github.com/articles/about-gists/#anonymous-gists" traget="_blank">anonymous</a>)
         </div>
-        <div class="option option-gist">
-            <!--Radio buttons, hooked up-->
-            <div class="ms-ChoiceFieldGroup">
-                <div class="ms-ChoiceFieldGroup-title">
-                    <label class="ms-font-m ms-Label is-required">Share as:</label>
+        <div class="option">
+            <button class="ms-Button" [hidden]="token" (click)="signInToGithub()">
+                <h1 class="ms-Button-label">Sign in to GitHub</h1>
+            </button>
+            <div [hidden]="!token">
+                <div class="ms-ChoiceFieldGroup">
+                    <div class="ms-ChoiceFieldGroup-title">
+                        <label class="ms-font-m ms-Label is-required">Share as:</label>
+                    </div>
+                    <div class="ms-ChoiceField">
+                        <input id="radio-public" class="ms-ChoiceField-input" type="radio" name="radio-share" checked="" (change)="gistSharePublic = true">
+                        <label for="radio-public" class="ms-ChoiceField-field">
+                            <span class="ms-Label">Public (searchable) GitHub Gist</span>
+                        </label>
+                    </div>
+                    <div class="ms-ChoiceField">
+                        <input id="radio-secret" class="ms-ChoiceField-input" type="radio" name="radio-share" (change)="gistSharePublic = false">
+                        <label for="radio-secret" class="ms-ChoiceField-field">
+                            <span class="ms-Label">Secret (link-only) GitHub Gist</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="ms-ChoiceField">
-                    <input id="radio-public" class="ms-ChoiceField-input" type="radio" name="radio-share" checked="" (change)="gistSharePublic = true">
-                    <label for="radio-public" class="ms-ChoiceField-field">
-                        <span class="ms-Label">Public (searchable) GitHub Gist</span>
-                    </label>
-                </div>
-                <div class="ms-ChoiceField">
-                    <input id="radio-secret" class="ms-ChoiceField-input" type="radio" name="radio-share" (change)="gistSharePublic = false">
-                    <label for="radio-secret" class="ms-ChoiceField-field">
-                        <span class="ms-Label">Secret (link-only) GitHub Gist</span>
-                    </label>
+                <div>
+                    <!--BHARGAV TODO:  Add sign out and name, and profile picture if you feel like it. -->
+                    <button class="ms-Button" (click)="postToGist()">
+                        <h1 class="ms-Button-label">Post to GitHub Gist</h1>
+                    </button>
                 </div>
             </div>
-
-            <button class="ms-Button" (click)="postToGist()">
-                <h1 class="ms-Button-label">Post to an anonymous GitHub Gist</h1>
-            </button>
         </div>
 
         <div class="header space-above ms-font-l ms-fontWeight-semibold">

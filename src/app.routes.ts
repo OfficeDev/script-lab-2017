@@ -1,6 +1,5 @@
 import {provideRouter, RouterConfig} from '@angular/router';
 import {
-    AddinLauncherComponent,
     HomeComponent, NewComponent, EditorComponent, RunComponent, 
     ShareComponent, ImportComponent, ViewComponent,
     } from './components';
@@ -14,10 +13,6 @@ export const AppRoutes: RouterConfig = [
     {
         path: 'home',
         component: HomeComponent
-    },
-    {
-        path: 'addin/:host',
-        component: AddinLauncherComponent
     },
     {
         path: 'new',

@@ -14,13 +14,6 @@ export class ExceptionHelper extends ExceptionHandler {
         console.log("Exception = " + Utilities.stringifyPlusPlus(exception));
         console.log(exception);
 
-        // On Office Online, the "//.../#/excel/addin" URL gets morphed and does not match any routes.
-        // So instead, need to catch the exception and redirect to the general page.  
-        if (exception.message === "Uncaught (in promise): Error: Cannot match any routes: ''") {
-            window.location.replace(Utilities.playgroundBasePath);
-            return;
-        }
-
         UxUtil.showErrorNotification("An unexpected error occurred.", [], exception);
     }
 }

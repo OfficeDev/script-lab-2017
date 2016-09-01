@@ -1,5 +1,4 @@
 export * from './home';
-export * from './launchers';
 export * from './new';
 export * from './editor';
 export * from './run';

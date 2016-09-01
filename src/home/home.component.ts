@@ -26,7 +26,7 @@ export class HomeComponent extends BaseComponent {
     }
 
     navigateToOneNote() {
-        UxUtil.showDialog("Coming soon...", "The OneNote flavor of the Playground will be available soon. Thanks for your patience!", "OK");
+        this._navigateCommon("onenote");
     }
 
     navigateToFabric() {
