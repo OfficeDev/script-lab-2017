@@ -43,14 +43,14 @@
                     A manually-pasted JSON that has been exported from an Playground snippet. Something like:
                     <pre class="link-or-id theme-color">
 {
-    "meta": {
-        "playgroundVersion": 1,
-        "name": "Basic snippet"
-    },
-    "script": [
-        "console.log(\"Hello world\");"
-    ],
-    ...
+  "meta": {
+    "playgroundVersion": 1,
+    "name": "Basic snippet"
+  },
+  "script": [
+    "console.log(\"Hello world\");"
+  ],
+  ...
 }
                     </pre>
                 </li>
@@ -67,12 +67,14 @@
             <div id="monaco-wrapper">
                 <div #editor id="monaco"></div>
             </div>
-
-            <div class="right-aligned-button-container">
-                <button class="ms-Button" (click)="import()">
-                    <h1 class="ms-Button-label ms-font-l">Import</h1>
-                </button>
-            </div>
         </div>
+    </div>
+</section>
+
+<section class="import__footer gray-background" [hidden]="!loaded">
+    <div class="right-aligned-button-container">
+        <button class="ms-Button" (click)="import()">
+            <h1 class="ms-Button-label ms-font-l">Import</h1>
+        </button>
     </div>
 </section>

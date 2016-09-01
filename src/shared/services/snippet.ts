@@ -309,15 +309,19 @@ export class Snippet implements ISnippet {
             $.getJSON(apiUrl)
                 .then(
                     (gist: IGistResponse) => {
-                        return GistUtilities.getMetadata(gist)
-                            .then((metaJson) => 
-                                resolve(GistUtilities.processPlaygroundSnippet(metaJson, gist)))
-                            .catch(UxUtil.catchError("Import error",
-                                'An unexpected error occurred while importing the snippet.'));
+                        GistUtilities.getMetadata(gist)
+                            .then((metaJson) => GistUtilities.processPlaygroundSnippet(metaJson, gist))
+                            .then((snippet) => resolve(snippet))
+                            .catch((e) => {
+                                console.log(e);
+                                reject (new PlaygroundError(
+                                    'An error occurred while importing the snippet. ' + UxUtil.extractErrorMessage(e)));
+                            });
                     },
                     (e) => {
-                        reject("Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?\n" + 
-                            "Also, please ensure that the URL does *not* include the username, only the Gist ID.");
+                        reject(new PlaygroundError(
+                            "Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?\n" + 
+                            "Also, please ensure that the URL does *not* include the username, only the Gist ID."));
                     });
         });
     }

@@ -128,22 +128,11 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     private _proceedWithPostToGist(compiledJs: string) {
-        var meta = JSON.stringify(this._snippet.exportToJson(true /*forPlayground*/)['meta'], null, 4);
-
-        // Note: Gist (at least for now?) orders files in alphabetical order.
+        // Note: Gists have their content ordered by alphabetical order.
         // The filenames were [somewhat] chosen accordingly.
         // Putting them in that same order below, for realism's sake
 
-        // Note: name of snippet (as it appears in user's Gist list)
-        // is based on topmost filename. So create a .json file with
-        // filename as "<space><safe-filename>.json"
-        var topmostFilename = 
-            (' ' + ContextUtil.contextTagline + ' - ' + this._snippet.meta.name)
-                .replace(/[^a-z0-9\-\s]/gi, '_').toLowerCase()
-                .replace(/_{2,}/g, '_');
-
         var fileData = {
-            topmostFilename: { 'content': meta },
             "app.js": { 'content': compiledJs },
             "app.ts": { 'content': this._snippet.script },
             "index.html": { 'content': this._snippet.html },
@@ -151,11 +140,24 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             "style.css": { 'content': this._snippet.css }            
         };
 
+        // Note: name of snippet (as it appears in user's Gist list)
+        // is based on topmost filename. So create a .json file with
+        // filename as "<space><safe-filename>.json"
+        var topmostFilename = ' ' + 
+            (`${this._snippet.meta.name} (${ContextUtil.contextTagline})`)
+                .replace(/[^a-z0-9\-\s\(\)]/gi, '_')
+                .replace(/_{2,}/g, '_') +
+            '.json';
+        fileData[topmostFilename] = { 'content': 
+            JSON.stringify(this._snippet.exportToJson(true /*forPlayground*/)['meta'], null, 4) };
+
         for (var key in fileData) {
             if (_.isEmpty(fileData[key]['content'])) {
                 delete fileData[key];
             }
         }
+
+        var gistDescription = this._snippet.meta.name + ' - Shared with ' + ContextUtil.contextTagline;
 
         this.statusDescription = "Posting the snippet to a new GitHub Gist...";
         this.loaded = false;
@@ -165,7 +167,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         gist
             .create({
                 public: this.gistSharePublic,
-                description: '"' + this._snippet.meta.name + '" snippet - ' + ContextUtil.fullPlaygroundDescription,
+                description: gistDescription,
                 files: fileData
             })
             .then(({data}) => {
