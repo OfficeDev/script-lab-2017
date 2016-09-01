@@ -71,11 +71,17 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                             'inside of an Office Add-in, not a regular webpage.';
                         
                         return new Promise((resolve) => {
-                            setTimeout(() => {
-                                if (ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized)) {
-                                    resolve();
-                                }
-                            }, 50)
+                            wait();
+
+                            function wait() {
+                                setTimeout(() => {
+                                    if (ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized)) {
+                                        resolve();
+                                    } else {
+                                        wait();
+                                    }
+                                }, 50);
+                            }
                         });
                     }
                 })
