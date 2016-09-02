@@ -30,7 +30,7 @@ share {
         }
 
     .share__main .pre-share {
-        padding: 10px;
+        padding: $default-spacing;
     }
 
         .share__main .pre-share > .description {
@@ -46,7 +46,7 @@ share {
         }
 
         .share__main .pre-share > .option {
-            margin-left: 2em;
+            // margin-left: 2em;
         }
 
         .share__main .pre-share .ms-Button {
@@ -61,27 +61,27 @@ share {
             }
 
     .share__main .post-share h1 {
-        padding: 10px;
+        padding: $default-spacing;
     }
 
     .share__main .post-share h2 {
         margin-top: 20px;
-        padding: 10px;
+        padding: $default-spacing;
         background: #eee;
     }
 
     .share__main .post-share .info-panel {
-        padding: 0 10px 10px 10px;
+        padding: $default-spacing;
     }
 
         .share__main .post-share .info-panel p {
             margin-top: 10px;
+
         }
 
         .share__main .post-share .info-panel .link-or-id {
             word-wrap: break-word;
             font-weight: bold;
-            margin-left: 20px;
             margin-bottom: 10px;
             margin-top: 5px;
             color: #1D7044;
