@@ -8,11 +8,22 @@
         </li>
     </ul>
 </section>
+
 <section class="view__main">
-    <tabs readonly="true">
+    <tabs readonly="false">
         <tab name="Script" language="typescript" [content]="snippet?.script"></tab>
         <tab name="HTML" language="html" [content]="snippet?.html"></tab>
         <tab name="CSS" language="css" [content]="snippet?.css"></tab>
         <tab name="Libraries" language="text" [content]="snippet?.libraries"></tab>
     </tabs>
+</section>
+
+<div class="view__edit-warning ms-font-m" [hidden]="!showEditWarning" (click)="clearEditWarning()">
+    Note: Editing is enabled for exploring the API IntelliSense,
+    but changes made here will not be saved. To make changes and run the script,
+    <a href="#" (click)="openPlayground()">open the Playground</a> and import
+    the snippet, specifying the URL below.
+</div>
+<section class="view__footer ms-font-m">
+    Snippet URL: {{thisUrl}}
 </section>

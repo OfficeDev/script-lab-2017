@@ -14,7 +14,7 @@ export class Tab implements OnChanges {
     @Output() update = new EventEmitter();
 
     state: monaco.editor.IEditorViewState;
-    model: monaco.editor.IEditorModel;
+    model: monaco.editor.IModel;
 
     constructor(private tabs: Tabs) { }
 

@@ -3,11 +3,9 @@
 
 .run {
     &__header {
-        background-color: $accent-background-primary;
+        background-color: #1e1e1e;
         padding: $default-spacing/2 $default-spacing;
-        h1 {
-            color: $accent-foreground-primary;
-        }                
+        color: #bbb;                
     }
 
     &__main {

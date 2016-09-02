@@ -12,6 +12,31 @@
         flex: 1 1 100%;
         @include flex();
     }
+
+    &__footer {
+        background-color: $accent-background-primary;
+        display: flex;
+        overflow: hidden;
+        align-items: center;
+        padding: 5px 10px;
+        word-wrap: break-word;
+        word-break: break-all;
+
+        color: $accent-foreground-primary;
+        transition: background-color 0.3s ease-in-out; 
+    }
+
+    &__edit-warning {
+        padding: 5px 10px;
+        background-color: #0d321e;
+        color: white;
+
+        a {
+            color: #cdf2de;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    }
 }
 
 .view-bar {

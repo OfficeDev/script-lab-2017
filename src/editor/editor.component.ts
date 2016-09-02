@@ -297,4 +297,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     private get _promptToSave() {
         return this.snippet.lastSavedHash != this._composeSnippetFromEditor().getHash();
     }
+
+    onChangeContent() {
+        // Do nothing. Needed in order to fulfill the IEditorParent interface
+    }
 }

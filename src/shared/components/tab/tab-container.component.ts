@@ -20,6 +20,7 @@ interface IIntelliSenseResponse {
 export class IEditorParent {
     currentIntelliSense: string[];
     onSwitchFocusToJavaScript: () => void;
+    onChangeContent: () => void;
 }
 
 @Component({
@@ -262,6 +263,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
             if (Utilities.isNull(nextTab.model)) {
                 nextTab.model = monaco.editor.createModel(nextTab.content, nextTab.language);
+                nextTab.model.onDidChangeContent(() => this.editorParent.onChangeContent());
+
             }
 
             this._monacoEditor.setModel(nextTab.model);
