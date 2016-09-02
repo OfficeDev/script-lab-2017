@@ -4,7 +4,6 @@
 .editor {
     &__header {
         padding-right: 30px;
-        background: $accent-background-primary;
         color: white;
     }
     
@@ -14,12 +13,10 @@
     }
 
     &__footer {
-        background-color: $accent-background-primary;
         display: flex;
         overflow: hidden;
         align-items: center;
 
-        color: $accent-foreground-primary;
         transition: background-color 0.3s ease-in-out;
 
         &--error {
@@ -41,7 +38,6 @@
 
     &__command {
         padding: (40px - $default-spacing)/2 $default-spacing;
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
 
         &--text {
             color: white;
@@ -78,12 +74,6 @@
         border: solid 1px transparent;
         outline: none;
         color: white;
-
-        &:focus {
-            background-color: darken($accent-background-primary, 10%);
-            color: lighten($accent-background-primary, 50%); 
-            border: solid 1px $accent-background-primary;
-        }
     }
 }
 
@@ -91,8 +81,6 @@
 .editor-command-bar__command:hover,
 .editor-command-bar__command i:active,
 .editor-command-bar__command i:hover {
-    background: darken($accent-background-primary, 10%) !important;
-    color: lighten($accent-background-primary, 50%) !important;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand;
@@ -134,7 +122,6 @@
 }
 
 .edit-name-icon {
-    color: $accent-background-primary !important;
     font-size: 1.5em;
     margin-left: 15px;
     position: relative;

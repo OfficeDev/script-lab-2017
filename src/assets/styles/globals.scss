@@ -108,7 +108,7 @@ span.console.error {
 }
 
 .excel-background {
-    background: $accent-background-primary;
+    background: $excel;
 }
 
 .word-background {
@@ -179,16 +179,8 @@ span.console.error {
 
 .ms-Dialog-main {
     .ms-Dialog-header {
-        background-color: $accent-background-primary !important;
-        
         .ms-Dialog-title {
             font-size: 18px;
-            color: lighten($accent-background-primary, 50%) !important;
         }
-    }
-
-    .ms-Button--primary {
-        background-color: $accent-background-primary !important;
-        color: lighten($accent-background-primary, 50%) !important;        
     }
 }

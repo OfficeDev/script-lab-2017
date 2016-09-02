@@ -3,11 +3,7 @@
 
 .run {
     &__header {
-        background-color: $accent-background-primary;
-        padding: $default-spacing/2 $default-spacing;
-        h1 {
-            color: $accent-foreground-primary;
-        }                
+        padding: $default-spacing/2 $default-spacing;                        
     }
 
     &__main {
@@ -35,7 +31,6 @@
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    background: $accent-background-primary;
 }
 
 #runner-frame {

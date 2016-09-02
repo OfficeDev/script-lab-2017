@@ -6,7 +6,6 @@ share {
 }
 
 .share__header {
-    background-color: $accent-background-primary;
     padding: 7.5px 15px;
 }
 
@@ -16,9 +15,7 @@ share {
     flex: 1 1 100%;
     overflow: auto;
 }
-    .share__main a {
-        color: $accent-background-primary
-    }
+    
 
     .share__main ol {
         margin-left: 30px;
@@ -51,7 +48,6 @@ share {
 
         .share__main .pre-share .ms-Button {
             height: auto;
-            background: $accent-background-primary;
             margin-top: .5em;
         }
 
@@ -84,7 +80,6 @@ share {
             font-weight: bold;
             margin-bottom: 10px;
             margin-top: 5px;
-            color: $accent-background-primary;
         }
 
 #back {
@@ -117,5 +112,4 @@ share {
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    background: $accent-background-primary;
 }

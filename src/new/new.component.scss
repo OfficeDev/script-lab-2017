@@ -7,7 +7,6 @@
 
     &__header {
         padding: 7.5px 15px;
-        background-color: $accent-background-primary;
         color: white;
     }
 
@@ -26,17 +25,10 @@
             margin-bottom: 0;
         }
 
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
 
         &:hover,
         &:focus {
             border: none;
-            background-color: $accent-background-primary;
-    
-            .ms-Button-description,
-            .ms-Button-label {
-                color: $accent-foreground-primary;
-            }
         }
         
 
@@ -61,7 +53,6 @@
 
     &__section-title {
         padding: $default-spacing !important;
-        color: $accent-background-primary;
         display: table-cell;
         box-sizing: border-box;
     }
@@ -82,10 +73,6 @@
         display: table-cell;
         background: aliceblue;
 
-        &:focus {
-            color: $accent-background-primary;
-            border: solid 1px $accent-background-primary;
-        }
     }
 }
 
@@ -100,7 +87,6 @@
     &__group-header {
         font-weight: bold;
         padding: $default-spacing/2 $default-spacing;
-        color: $accent-background-primary;
     }
 
     &__item {
@@ -127,7 +113,6 @@
     &__action {
         padding: $default-spacing + 2px;
         font-size: 15px;
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
         align-self: flex-end;
     }
 }
@@ -158,7 +143,6 @@
 
 h1.main-heading {
     background-color: #F4F4F4;
-    color: $accent-background-primary;
     padding-left: $default-spacing !important;
     border: none;
     border-bottom: solid 1px #E4E4E4;
@@ -174,7 +158,6 @@ h1.ms-Button-label {
 }
 
 .new__action h1.ms-Button-label {
-    color: $accent-background-primary;
 }
 
 // .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
@@ -194,16 +177,10 @@ h1.ms-Button-label {
 // }
 
 .new-list__item:active, .new-list__item:hover {
-    background: $accent-background-primary;
     color: white;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand; 
-}
-
-.new-list__action:active, .new-list__action:hover {
-    background: darken($accent-background-primary, 15%);
-    color: lighten($accent-background-primary, 50%);
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {

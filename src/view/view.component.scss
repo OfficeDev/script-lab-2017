@@ -4,7 +4,6 @@
 .view {
     &__header {
         @include inline-flex();
-        background-color: $accent-background-primary;
         width: 100%;
     }
 
@@ -29,7 +28,6 @@
     &__command {
         color: white;
         padding: (40px - $default-spacing)/2 $default-spacing;
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
 
         &--right {
             align-self: flex-end;
@@ -46,8 +44,6 @@
 .view-bar__command:hover,
 .view-bar__command i:active,
 .view-bar__command i:hover {
-    background: darken($accent-background-primary, 15%) !important;
-    color: lighten($accent-background-primary, 50%) !important;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand;

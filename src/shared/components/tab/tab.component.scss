@@ -2,17 +2,14 @@
 @import '../../../assets/styles/theme.scss';
 
 .tabs {
-    background-color: darken($accent-background-primary, 15%); ;
     overflow: hidden;
     flex: 0 0 40px;
 
     &__tab.ms-Pivot-link {
-        background: darken($accent-background-primary, 15%); ;
         color: white !important;
     }
 
     &__tab.ms-Pivot-link:hover {
-        background: darken($accent-background-primary, 15%); 
         color: white !important;
     }    
 
@@ -23,11 +20,6 @@
         padding-top: 10px;
         background: #1e1e1e;  
     }
-}
-
-li.tabs__tab.ms-Pivot-link.is-selected.tabs__tab--active {
-    background-color: darken($accent-background-primary, 15%) !important;
-    color: $accent-foreground-primary !important;
 }
 
 tabs {
@@ -48,5 +40,4 @@ tabs {
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    background: $accent-background-primary;
 }

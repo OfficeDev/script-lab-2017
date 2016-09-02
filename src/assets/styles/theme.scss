@@ -1,8 +1,8 @@
-﻿$excel: #1D7044;
-$word: #2A4497;
-$onenote:  #7D3777;
-$fabric: #0078FA;
-$typescript: #007ACC;
+﻿$excel: rgba(33, 115, 70, 1);
+$word: rgba(43, 87, 154, 1);
+$onenote:  rgba(128, 57, 123, 1);
+$fabric: rgba(0, 120, 215, 1);
+$typescript: rgba(41, 78, 128, 1);
 
 /* Default Variables */
 $default-spacing: 15px;
@@ -22,6 +22,4 @@ $foreground-lighter: #999999;
 $foreground-lightest: #BABABA;
 
 /* Accent Colors */
-$accent-background-primary: $excel;
-$accent-foreground-primary: lighten($accent-background-primary, 60%);
 
