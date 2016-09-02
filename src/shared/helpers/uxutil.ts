@@ -13,7 +13,7 @@ export class PlaygroundError {
 }
 
 export class UxUtil {
-    static showErrorNotification(title, messageOrMessageArray: string | string[], e: any) : Promise<string> {
+    static showErrorNotification(title, messageOrMessageArray: string | string[], e: any): Promise<string> {
         if (e instanceof ExpectedError) {
             return;
         }
@@ -43,7 +43,7 @@ export class UxUtil {
 
     static catchError(title, messageOrMessageArray: string | string[]): (e: Error) => Promise<string> {
         return (e: Error) => UxUtil.showErrorNotification(title, messageOrMessageArray, e);
-    } 
+    }
 
     static extractErrorMessage(e: any): string | string[] {
         if (e instanceof Error || e instanceof PlaygroundError) {
@@ -51,46 +51,48 @@ export class UxUtil {
         } else {
             return e;
         }
-    }       
+    }
 
     static showDialog(title: string,
         messageOrMessageArray: string | string[],
-        buttons: string[]|string
+        buttons: string[] | string
     ): Promise<string> {
-        return new Promise(function(resolve) {
-            $(document).ready(function() {
-                var $app = $('body app.app');
-                var $dialogAndOverlay = $('.appwide-overlay-dialog');
-                var $dialogRoot = $('.appwide-overlay-dialog.ui-dialog');
-                $('.ui-dialog-title', $dialogRoot).text(title);
+        return new Promise(function (resolve) {
+            $(document).ready(function () {
+                var $dialogRoot = $('.ms-Dialog--lgHeader');
+                $dialogRoot.find('.ms-Dialog-title').text(title);
 
-                var $dialogContent = $('.ui-dialog-content', $dialogRoot).empty();
+                var $dialogContent = $dialogRoot.find('.ms-Dialog-content').empty();
 
                 UxUtil.getArrayOfMessages(messageOrMessageArray).forEach((message) => {
-                    $dialogContent.append($(document.createElement('p')).text(message));
+                    var p = $(document.createElement('p')).text(message).addClass('ms-Dialog-subText');
+                    $dialogContent.append(p);
                 })
-                
+
                 var buttonsArray: string[];
                 if (_.isArray(buttons)) {
                     buttonsArray = buttons;
                 } else {
                     buttonsArray = [buttons];
                 }
-                
-                var $buttonPane = $('.ui-dialog-buttonpane', $dialogRoot);
+
+                var $buttonPane = $('.ms-Dialog-actionsRight', $dialogRoot);
                 $buttonPane.empty();
-                buttonsArray.forEach(function(buttonLabel) {
-                    var $button = $('<button type="button" class="ui-button ui-corner-all ui-widget"></button>');
-                    
-                    $button.text(buttonLabel);
-                    $button.click(function() {
-                        $dialogAndOverlay.hide();
+                buttonsArray.forEach(function (buttonLabel, i) {
+                    var $button = $('<button class="ms-Dialog-action ms-Button"><span class="ms-Button-label">' + buttonLabel + '</span></button>');
+
+                    if (i == 0) {
+                        $button.addClass('ms-Button--primary');
+                    }
+
+                    $button.click(function () {
+                        $dialogRoot.hide();
                         resolve(buttonLabel);
                     });
                     $buttonPane.append($button);
                 });
 
-                $dialogAndOverlay.show();
+                $dialogRoot.show();
             })
         });
     }

@@ -6,7 +6,7 @@
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
                 <span>My local snippets</span>
-                <i *ngIf="localGallery.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
+                <i [hidden]="!localGallery?.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
             <section class="new-list__group local-snippets">
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
@@ -16,16 +16,14 @@
                     <i class="new-list__action ms-Icon ms-Icon--trash" (click)="delete(snippet)"></i>
                 </article>
                 <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">
-                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can
-                    also choose from the gallery below.
+                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from
+                    the gallery below.
                 </p>
             </section>
 
             <p class="new-list__localstorage-notice ms-font-m">
-                Note: These snippets are stored in your browser's "window.localStorage",
-                and will disappear if you clear your browser cache.
-                <span class="show-hide-link"
-                    [hidden]=localStorageNoticeExpanded (click)="localStorageNoticeExpanded = true;">(&#8230;)
+                Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
+                <span class="show-hide-link" [hidden]=localStorageNoticeExpanded (click)="localStorageNoticeExpanded = true;">(&#8230;)
                 </span>
                 <span style="display: block; margin-top: 10px;" [hidden]="!localStorageNoticeExpanded">
                     Please do <em>not</em> use the Playground for mission-critical snippets that you
@@ -40,7 +38,6 @@
                 <div class="ms-font-m" style="
                     padding: 15px;
                     color: #999;
-                    margin-left: 1.5em;
                 ">... Coming soon ...</div>
                 <!--<section class="new-list__group" *ngFor="let group of gallery?.items; let i = index">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>

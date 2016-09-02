@@ -3,9 +3,13 @@
 
 .run {
     &__header {
+<<<<<<< HEAD
         background-color: #1e1e1e;
         padding: $default-spacing/2 $default-spacing;
         color: #bbb;                
+=======
+        padding: $default-spacing/2 $default-spacing;                        
+>>>>>>> dev-ui-updates
     }
 
     &__main {
@@ -31,9 +35,8 @@
 .ms-progress {
     @include flex();
     flex: 1 1 100%;
-    width: 100% !important;
+    width: 100% !important;     
     height: 100% !important;
-    background: #1D7044;
 }
 
 #runner-frame {

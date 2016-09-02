@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {SnippetManager} from '../shared/services';
-import {UxUtil, ContextUtil} from '../shared/helpers';
+import {UxUtil, ContextUtil, ContextType} from '../shared/helpers';
 import {BaseComponent} from '../shared/components/base.component';
 
 @Component({
@@ -39,6 +39,9 @@ export class HomeComponent extends BaseComponent {
 
     private _navigateCommon(context) {
         window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
+        
+        ContextUtil.applyTheme();
+
         this._router.navigate(["new"]);
     }
 }

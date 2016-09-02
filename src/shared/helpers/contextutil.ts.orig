@@ -39,23 +39,6 @@ export class ContextUtil {
         return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
     }
 
-    static applyTheme() {        
-        $('body').removeClass('excel');
-        $('body').removeClass('word');
-        $('body').removeClass('powerpoint');
-        $('body').removeClass('onenote');
-        $('body').removeClass('fabric');
-
-        switch (ContextUtil.context) {
-            case ContextType.Excel: $('body').addClass('excel'); break;
-            case ContextType.Word: $('body').addClass('word'); break;
-            case ContextType.PowerPoint: $('body').addClass('powerpoint'); break;
-            case ContextType.OneNote: $('body').addClass('onenote'); break;
-
-            default: $('body').addClass('fabric'); break;
-        }
-    }
-
     /** 
      * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
      * though many of the derived ones (getContextNamespace, contextTagline, etc.) do.
@@ -118,7 +101,14 @@ export class ContextUtil {
             case ContextType.Fabric:
                 return 'Fabric Playground';
 
+<<<<<<< HEAD
+            default: 
+=======
+            case ContextType.TypeScript:
+                return 'TypeScript Playground';
+
             default:
+>>>>>>> dev-ui-updates
                 throw new Error("Cannot determine playground context");
         }
     }
@@ -127,9 +117,13 @@ export class ContextUtil {
         switch (ContextUtil.context) {
             case ContextType.Excel:
             case ContextType.Word:
+<<<<<<< HEAD
             case ContextType.PowerPoint:
             case ContextType.OneNote:
                 return "Office Add-in Playground - " + ContextUtil.hostName;
+=======
+                return Utilities.captializeFirstLetter(ContextUtil.contextString) + " Add-in Playground";
+>>>>>>> dev-ui-updates
 
             case ContextType.Fabric:
                 return "Fabric Playground";

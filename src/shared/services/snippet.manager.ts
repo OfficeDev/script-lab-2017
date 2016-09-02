@@ -155,8 +155,15 @@ export class SnippetManager {
         function createBlankOfficeJsSnippet(): Snippet {
             var script: string;
 
-            // For new host-specific APIs, use the new syntax 
-            if (ContextUtil.contextNamespace && Office.context.requirements.isSetSupported(ContextUtil.contextNamespace + 'Api')) {
+            // For new host-specific APIs, use the new syntax
+            // However, if detect that this is running inside an add-in and on an old client,
+            // Revert back to the Office 2013 code.
+            var useHostSpecificApiSample = (ContextUtil.contextNamespace != null);
+            if (ContextUtil.isAddin && !Office.context.requirements.isSetSupported(ContextUtil.contextNamespace + 'Api')) {
+                useHostSpecificApiSample = false;
+            }
+
+            if (useHostSpecificApiSample) {
                 script = Utilities.stripSpaces(`
                     ${ContextUtil.contextNamespace}.run(function(context) {
                         // insert your code here...

@@ -24,6 +24,19 @@
                 <h1 class="ms-Button-label">Sign in to GitHub</h1>
             </button>
             <div [hidden]="!token">
+                <div class="ms-Persona">
+                    <div class="ms-Persona-imageArea">
+                        <img class="ms-Persona-image" [src]="profile?.avatar_url">
+                    </div>
+                    <div class="ms-Persona-details">
+                        <div class="ms-Persona-primaryText">{{profile?.name}}</div>
+                        <div class="ms-Persona-secondaryText">{{profile?.login}}</div>
+                    </div>
+                </div>
+
+                <a (click)="logout()" style="cursor: pointer; display:block; margin: 15px 0 30px;">Sign Out</a>
+
+
                 <div class="ms-ChoiceFieldGroup">
                     <div class="ms-ChoiceFieldGroup-title">
                         <label class="ms-font-m ms-Label is-required">Share as:</label>
@@ -59,7 +72,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="post-share" [hidden]="!gistId">
         <h1 class="ms-font-xl">Your snippet has been shared successfully!</h1>
 
@@ -80,23 +93,21 @@
                 <a href="{{viewUrl}}" target="_blank">{{viewUrl}}</a>
             </div>
             <p>
-                Your colleagues will be able to import your snippet by
-                choosing the <b>"Import from link or JSON"</b> button 
+                Your colleagues will be able to import your snippet by choosing the <b>"Import from link or JSON"</b> button
                 in the Playground, and providing either of the above URLs.
             </p>
 
             <p>
                 <span style="font-weight: bold;">
-                    Note: please copy and make note of the above URLs</span>,
-                as they will be gone as soon as you navigate away from this page.
+                    Note: please copy and make note of the above URLs</span>, as they will be gone as soon
+                as you navigate away from this page.
             </p>
         </div>
 
         <h2 class="ms-font-l">Embeddable view</h2>
         <div class="info-panel">
             <p>
-                To <b>embed the snippet in an article, blog post, etc.,</b>
-                simply add the following iframe tag to your site:
+                To <b>embed the snippet in an article, blog post, etc.,</b> simply add the following iframe tag to your site:
             </p>
             <div class="link-or-id consolas">{{embedScriptTag}}</div>
         </div>
