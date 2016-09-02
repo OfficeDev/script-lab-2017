@@ -68,14 +68,4 @@ Office.initialize = function () {
     ContextUtil.setGlobalState(ContextUtil.windowkey_officeInitialized, true);
 };
 
-if (Authenticator.isTokenUrl(location.href)) {
-    // use the authenticator to determine if our url contains either a code, access_token or errror
-    // if so then this code should be running in Dialog API    
-    var token = TokenManager.getToken(location.href, location.origin);
-    Authenticator.isAddin = ContextUtil.isAddin;
-    if (Authenticator.isAddin) {
-        Office.context.ui.messageParent(JSON.stringify(token));
-    }
-} else {
-    launch();
-}
+if (!Authenticator.isDialog) launch();
