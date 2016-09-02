@@ -11,8 +11,12 @@ export class ExceptionHelper extends ExceptionHandler {
         console.groupEnd();
         console.groupEnd();
 
-        console.log("Exception = " + Utilities.stringifyPlusPlus(exception));
-        console.log(exception);
+        console.error("Exception = " + Utilities.stringifyPlusPlus(exception));
+        console.error(exception);
+
+        if (Utilities.stringifyPlusPlus(exception).indexOf('Attempt to use a destroyed view') >= 0) {
+            return; // skip showing error notification to user.  silently swallow.
+        }
 
         UxUtil.showErrorNotification("An unexpected error occurred.", [], exception);
     }

@@ -14,7 +14,10 @@ export class HomeComponent extends BaseComponent {
         _router: Router,
         _snippetManager: SnippetManager
     ) {
-        super(_router, _snippetManager);        
+        super(_router, _snippetManager);
+        
+        ContextUtil.setContext('');
+        ContextUtil.applyTheme();
     }
 
     navigateToExcel() {
@@ -31,10 +34,6 @@ export class HomeComponent extends BaseComponent {
     
     navigateToOneNote() {
         this._navigateCommon("onenote");
-    }
-
-    navigateToFabric() {
-        this._navigateCommon("fabric");
     }
 
     private _navigateCommon(context: string) {

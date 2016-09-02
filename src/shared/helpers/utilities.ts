@@ -114,7 +114,7 @@ export class Utilities {
         return lines.map((line) => indentString + line).join('\n');
     }
 
-    static stringifyPlusPlus(object) {
+    static stringifyPlusPlus(object): string {
         // Don't JSON.stringify strings, because we don't want quotes in the output
         if (object === null) {
             return "null";

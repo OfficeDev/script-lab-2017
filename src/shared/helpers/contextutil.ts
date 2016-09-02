@@ -51,7 +51,7 @@ export class ContextUtil {
             case 'powerpoint':
                 return ContextType.PowerPoint;
             case 'onenote':
-                return ContextType.Word;
+                return ContextType.OneNote;
             default:
                 return ContextType.Unknown;
         }
