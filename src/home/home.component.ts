@@ -25,6 +25,10 @@ export class HomeComponent extends BaseComponent {
         this._navigateCommon("word");
     }
 
+    navigateToPowerPoint() {
+        this._navigateCommon("powerpoint");
+    }
+    
     navigateToOneNote() {
         this._navigateCommon("onenote");
     }

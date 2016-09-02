@@ -4,6 +4,8 @@ export enum ContextType {
     Unknown,
     Excel,
     Word,
+    PowerPoint,
+    OneNote,
     Fabric
 }
 
@@ -47,6 +49,10 @@ export class ContextUtil {
                 return ContextType.Excel;
             case 'word':
                 return ContextType.Word;
+            case 'powerpoint':
+                return ContextType.PowerPoint;
+            case 'onenote':
+                return ContextType.Word;
             case 'fabric':
                 return ContextType.Fabric;
             default:
@@ -54,12 +60,31 @@ export class ContextUtil {
         }
     }
 
-    static getContextNamespace() {
+    static get hostName() {
         switch (ContextUtil.context) {
             case ContextType.Excel:
                 return 'Excel';
             case ContextType.Word:
                 return 'Word';
+            case ContextType.PowerPoint:
+                return 'PowerPoint'
+            case ContextType.OneNote:
+                return 'OneNote';
+            default:
+                throw new Error("Invalid context type for Office namespace");
+        }
+    }
+
+    static get contextNamespace() {
+        switch (ContextUtil.context) {
+            case ContextType.Excel:
+                return 'Excel';
+            case ContextType.Word:
+                return 'Word';
+            case ContextType.PowerPoint:
+                return null; // Intentionally missing until PowerPoint has the new host-specific API model
+            case ContextType.OneNote:
+                return 'OneNote';
             default:
                 throw new Error("Invalid context type for Office namespace");
         }
@@ -69,6 +94,8 @@ export class ContextUtil {
         switch (ContextUtil.context) {
             case ContextType.Excel:
             case ContextType.Word:
+            case ContextType.PowerPoint:
+            case ContextType.OneNote:
                 return 'Office Add-in Playground';
 
             case ContextType.Fabric:
@@ -83,7 +110,9 @@ export class ContextUtil {
         switch (ContextUtil.context) {
             case ContextType.Excel:
             case ContextType.Word:
-                return "Office Add-in Playground - " + Utilities.captializeFirstLetter(ContextUtil.contextString);
+            case ContextType.PowerPoint:
+            case ContextType.OneNote:
+                return "Office Add-in Playground - " + ContextUtil.hostName;
 
             case ContextType.Fabric:
                 return "Fabric Playground";
@@ -97,6 +126,8 @@ export class ContextUtil {
         switch (ContextUtil.context) {
             case ContextType.Excel:
             case ContextType.Word:
+            case ContextType.PowerPoint:
+            case ContextType.OneNote:
                 return true;
 
             default:

@@ -184,10 +184,6 @@ export class Utilities {
         }
     }
 
-    static captializeFirstLetter(input: string): string {
-        return input.substr(0, 1).toUpperCase() + input.substr(1);
-    }
-
     static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);
 
     static reloadPage() {

@@ -65,16 +65,8 @@ module.exports = {
                 to: 'acquire.html'
             },
             {
-                from: 'src/excel.html',
-                to: 'excel.html'
-            },
-            {
-                from: 'src/word.html',
-                to: 'word.html'
-            },
-            {
-                from: 'src/onenote.html',
-                to: 'onenote.html'
+                from: 'src/addin.html',
+                to: 'addin.html'
             },
             {
                 from: 'node_modules/monaco-editor/min/vs',

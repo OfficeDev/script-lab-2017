@@ -153,9 +153,12 @@ export class SnippetManager {
         }
 
         function createBlankOfficeJsSnippet(): Snippet {
-            return new Snippet({
-                script: Utilities.stripSpaces(`
-                    ${ContextUtil.getContextNamespace()}.run(function(context) {
+            var script: string;
+
+            // For new host-specific APIs, use the new syntax 
+            if (ContextUtil.contextNamespace && Office.context.requirements.isSetSupported(ContextUtil.contextNamespace + 'Api')) {
+                script = Utilities.stripSpaces(`
+                    ${ContextUtil.contextNamespace}.run(function(context) {
                         // insert your code here...
                         return context.sync();
                     }).catch(function(error) {
@@ -164,7 +167,23 @@ export class SnippetManager {
                             console.log("Debug info: " + JSON.stringify(error.debugInfo));
                         }
                     });
-                `),
+                `)
+            } else {
+                script = Utilities.stripSpaces(`
+                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                        function (asyncResult) {
+                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                console.log(error.message);
+                            } else {
+                                console.log('Selected data is ' + asyncResult.value);
+                            }            
+                        }
+                    );
+                `);
+            }
+
+            return new Snippet({
+                script: script,
                 libraries: Utilities.stripSpaces(`
                     # Office.js CDN reference
                     //appsforoffice.microsoft.com/lib/1/hosted/Office.js
