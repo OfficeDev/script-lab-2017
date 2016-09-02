@@ -10,7 +10,7 @@ export enum ContextType {
 
 export class ContextUtil {
     static officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
-    
+
     /** Indicates whether the getScript for Office.js has been initiated already */
     static windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
 
@@ -80,7 +80,7 @@ export class ContextUtil {
             case ContextType.TypeScript:
                 return 'TypeScript Playground';
 
-            default: 
+            default:
                 throw new Error("Cannot determine playground context");
         }
     }

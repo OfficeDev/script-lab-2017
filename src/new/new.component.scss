@@ -18,6 +18,7 @@
         background-color: #F4F4F4;
         color: #333;
         margin: 0;
+        padding: $default-spacing;
         border: none;
         border-bottom: solid 1px #E4E4E4;
 
@@ -119,7 +120,7 @@
     }
 
     &__localstorage-notice {
-        padding: 10px;
+        padding: $default-spacing;
         background: lightgoldenrodyellow;
     }
 
@@ -158,7 +159,7 @@
 h1.main-heading {
     background-color: #F4F4F4;
     color: #1D7044;
-    margin-top: 15px;
+    padding-left: $default-spacing !important;
     border: none;
     border-bottom: solid 1px #E4E4E4;
     padding: 10px;
@@ -176,21 +177,21 @@ h1.ms-Button-label {
     color: #1D7044;
 }
 
-.new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-    margin-left: 1.5em;
-}
+// .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
+//     margin-left: 1.5em;
+// }
 
-@media (max-width: 400px) {
-    .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-        margin-left: 1em;
-    }
-}
+// @media (max-width: 400px) {
+//     .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
+//         margin-left: 1em;
+//     }
+// }
 
-@media (max-width: 300px) {
-    .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-        margin-left: 0.75em;
-    }
-}
+// @media (max-width: 300px) {
+//     .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
+//         margin-left: 0.75em;
+//     }
+// }
 
 .new-list__item:active, .new-list__item:hover {
     background: #1D7044;

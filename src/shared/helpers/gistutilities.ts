@@ -13,7 +13,7 @@ export interface IGistFileJson {
     filename: string;
     language: string;
     raw_url: string;
-    truncated: boolean    
+    truncated: boolean
 }
 
 export interface IGistPostData {
@@ -22,7 +22,7 @@ export interface IGistPostData {
     files: { [name: string]: any }
 }
 
-export class GistUtilities {   
+export class GistUtilities {
     static getMetadata(gist: IGistResponse): Promise<ISnippetMeta> {
         return Promise.resolve().then(() => {
             var metadataCandidates = [];
@@ -35,7 +35,7 @@ export class GistUtilities {
             switch (metadataCandidates.length) {
                 case 0:
                     throw new PlaygroundError(
-                        'Could not find a metadata JSON file within the Gist snippet.\n' + 
+                        'Could not find a metadata JSON file within the Gist snippet.\n' +
                         'Expecting a Gist that was exported by the Playground and that has ' +
                         'a single file named <filename>.json within it.');
 
@@ -46,16 +46,16 @@ export class GistUtilities {
                     return GistUtilities.getFileContent(gist.files[filename])
                         .then((metaFileContents) => {
                             if (!Utilities.isJson(metaFileContents)) {
-                                throw new PlaygroundError('Contents of the file "' + filename + 
+                                throw new PlaygroundError('Contents of the file "' + filename +
                                     '" was not a valid JSON object.');
                             }
 
                             return JSON.parse(metaFileContents);
                         });
-                
+
                 default:
                     throw new PlaygroundError(
-                        'The Gist contains more that one .json file.\n' + 
+                        'The Gist contains more that one .json file.\n' +
                         'Expecting a Gist that was exported by the Playground and that has ' +
                         'a single file named <filename>.json within it.');
             }
@@ -75,7 +75,7 @@ export class GistUtilities {
                     });
             });
         } else {
-            console.log('File is small enough that it was already fully-loaded during the initial request. ' + 
+            console.log('File is small enough that it was already fully-loaded during the initial request. ' +
                 'Resolving with content as is.');
             return Promise.resolve(fileJson.content);
         }
@@ -97,7 +97,7 @@ export class GistUtilities {
             case 1:
                 return createSnippetFromPlaygroundVersion1_0();
             default:
-                throw new PlaygroundError('Invalid playgroundVersion version "' + 
+                throw new PlaygroundError('Invalid playgroundVersion version "' +
                     metaJson.playgroundVersion + '" specified in the JSON metadata.');
         }
 
@@ -105,12 +105,12 @@ export class GistUtilities {
             return Promise.all(allNonMetaFiles.map((filename) => {
                 return GistUtilities.getFileContent(gist.files[filename])
                     .then((content) => {
-                        return {filename: filename, content: content}
+                        return { filename: filename, content: content }
                     });
             })).then((items) => {
                 var contentObject = {};
                 items.forEach((item: any) => contentObject[item.filename] = item.content);
-                
+
                 return new Snippet({
                     meta: {
                         name: metaJson.name
@@ -137,10 +137,10 @@ export class GistUtilities {
                 headers: headers,
                 data: JSON.stringify(createData)
             })
-            .then((response) => resolve(response.id))
-            .fail(function(e) {
-                reject(e.responseText);
-            });
+                .then((response) => resolve(response.id))
+                .fail(function (e) {
+                    reject(e.responseText);
+                });
         });
     }
 }
