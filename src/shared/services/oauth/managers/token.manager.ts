@@ -12,6 +12,18 @@ export interface IToken {
     expires_at?: Date;
 }
 
+export interface ICode {
+    provider: string;
+    code: string;
+    scope?: string;
+    state?: string;
+}
+
+export interface IError {
+    error: string;
+    state?: string;
+}
+
 /**
  * Helper for caching and managing OAuth Tokens.
  */
@@ -26,7 +38,7 @@ export class TokenManager extends Storage<IToken> {
     /**
      * Compute the expiration date based on the expires_in field in a OAuth token.          
      */
-    setExpired(token: IToken) {
+    setExpiry(token: IToken) {
         var expire = (seconds: any = 3600) => new Date(new Date().getTime() + ~~seconds * 1000);
         if (token == null) return null;
         if (token.expires_at == null) {
@@ -45,8 +57,8 @@ export class TokenManager extends Storage<IToken> {
      */
     add(provider: string, value: IToken) {
         value.provider = provider;
-        this.setExpired(value);                        
-        return super.add(provider, value);        
+        this.setExpiry(value);
+        return super.add(provider, value);
     }
 
     /**
@@ -57,8 +69,8 @@ export class TokenManager extends Storage<IToken> {
      * @param {string} delimiter[optional] Delimiter used by OAuth provider to mark the beginning of token response. Defaults to #.
      * @return {object} Returns the extracted token.
      */
-    static getToken(url: string, exclude?: string, delimiter: string = '#'): IToken {        
-        if(exclude) url = url.replace(exclude, '');
+    static getToken(url: string, exclude?: string, delimiter: string = '#'): ICode | IToken | IError {
+        if (exclude) url = url.replace(exclude, '');
 
         let parts = url.split(delimiter);
         if (parts.length <= 0) return;
@@ -72,10 +84,18 @@ export class TokenManager extends Storage<IToken> {
             rightPart = queryPart[1];
         }
 
-        return this._extractParams(rightPart);        
+        return this._extractParams(rightPart);
     }
 
-    private static _extractParams(segment: string) {
+    /**
+     * Check if the supplied url has either access_token or code or error 
+     */
+    static isTokenUrl(url: string) {
+        var regex = /(access_token|code|error)/gi;
+        return regex.test(url);
+    }
+
+    private static _extractParams(segment: string): ICode | IToken | IError {
         let params: any = {},
             regex = /([^&=]+)=([^&]*)/g,
             matches;

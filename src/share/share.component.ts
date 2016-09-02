@@ -3,7 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
-import {Authenticator, TokenManager, EndpointManager, IToken} from '../shared/services/oauth';
+import {Authenticator, TokenManager, EndpointManager, IToken, ICode} from '../shared/services/oauth';
 
 @Component({
     selector: 'share',
@@ -99,6 +99,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     signInToGithub(): void {
         var endpointManager = new EndpointManager();
+        var authenticator = new Authenticator(endpointManager, this.tokenManager);
+
         endpointManager.add('GitHub', {
             clientId: '6b2823cf0379dd5fc050',
             scope: 'gist',
@@ -107,17 +109,20 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             responseType: '',
             state: true
         });
-        var authenticator = new Authenticator(endpointManager, this.tokenManager);
 
-        authenticator.authenticate('GitHub')
-            .then((authResponse: any) => {
-                if ('code' in authResponse)
-                    return this._exchangeGithubCodeForToken(authResponse.code);
-                else if ('access_token' in authResponse)
-                    return authResponse;
+        authenticator.authenticate('GitHub', true /* force */)
+            .then(result => {
+                if ('code' in result) {
+                    return this._exchangeGithubCodeForToken((<ICode>result).code).then(token => {
+                        if (token == null) throw 'Invalid Token received';
+                        this.tokenManager.add('GitHub', token);
+                        return token;
+                    });
+                }
+                else if ('access_token' in result)
+                    return result as IToken;
             })
-            .then((tokenString) => {
-                this.tokenManager.add('GitHub', JSON.parse(tokenString) as IToken)
+            .then(token => {
                 this.token = this.tokenManager.get('GitHub');
                 this._getGithubProfile(this.token).then(profile => this.profile = profile);
             })
@@ -147,7 +152,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         });
     }
 
-    private _exchangeGithubCodeForToken(code): Promise<string> {
+    private _exchangeGithubCodeForToken(code: string): Promise<IToken> {
         return new Promise((resolve, reject) => {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr');
@@ -155,7 +160,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    resolve(xhr.responseText);
+                    resolve(JSON.parse(xhr.responseText));
                 }
                 else if (xhr.status !== 200) {
                     reject('Request failed.  Returned status of ' + xhr.response);
