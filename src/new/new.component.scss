@@ -7,7 +7,7 @@
 
     &__header {
         padding: 7.5px 15px;
-        background-color: #0d321e;
+        background-color: $accent-background-primary;
         color: white;
     }
 
@@ -158,7 +158,7 @@
 
 h1.main-heading {
     background-color: #F4F4F4;
-    color: #1D7044;
+    color: $accent-background-primary;
     padding-left: $default-spacing !important;
     border: none;
     border-bottom: solid 1px #E4E4E4;
@@ -174,7 +174,7 @@ h1.ms-Button-label {
 }
 
 .new__action h1.ms-Button-label {
-    color: #1D7044;
+    color: $accent-background-primary;
 }
 
 // .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
@@ -194,7 +194,7 @@ h1.ms-Button-label {
 // }
 
 .new-list__item:active, .new-list__item:hover {
-    background: #1D7044;
+    background: $accent-background-primary;
     color: white;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
@@ -202,8 +202,8 @@ h1.ms-Button-label {
 }
 
 .new-list__action:active, .new-list__action:hover {
-    background: #13472b;
-    color: #cdf2de;
+    background: darken($accent-background-primary, 15%);
+    color: lighten($accent-background-primary, 50%);
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {

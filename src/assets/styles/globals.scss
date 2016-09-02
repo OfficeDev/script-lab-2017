@@ -108,23 +108,23 @@ span.console.error {
 }
 
 .excel-background {
-    background: #217346;
+    background: $accent-background-primary;
 }
 
 .word-background {
-    background: #2A4497;
+    background: $word;
 }
 
 .onenote-background {
-    background: #7D3777;
+    background: $onenote;
 }
 
 .fabric-background {
-    background: #0078FA;
+    background: $fabric;
 }
 
 .typescript-background {
-    background: #007ACC;
+    background: $typescript;
 }
 
 .appwide-overlay-dialog {
@@ -175,4 +175,20 @@ span.console.error {
 
 .ms-Dialog-subText {
     margin: 0 !important;
+}
+
+.ms-Dialog-main {
+    .ms-Dialog-header {
+        background-color: $accent-background-primary !important;
+        
+        .ms-Dialog-title {
+            font-size: 18px;
+            color: lighten($accent-background-primary, 50%) !important;
+        }
+    }
+
+    .ms-Button--primary {
+        background-color: $accent-background-primary !important;
+        color: lighten($accent-background-primary, 50%) !important;        
+    }
 }

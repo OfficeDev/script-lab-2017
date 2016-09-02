@@ -4,7 +4,7 @@
 .editor {
     &__header {
         padding-right: 30px;
-        background: #1D7044;
+        background: $accent-background-primary;
         color: white;
     }
     
@@ -80,7 +80,8 @@
         color: white;
 
         &:focus {
-            color: #cdf2de; 
+            background-color: darken($accent-background-primary, 10%);
+            color: lighten($accent-background-primary, 50%); 
             border: solid 1px $accent-background-primary;
         }
     }
@@ -90,8 +91,8 @@
 .editor-command-bar__command:hover,
 .editor-command-bar__command i:active,
 .editor-command-bar__command i:hover {
-    background: #13472b !important;
-    color: #cdf2de !important;
+    background: darken($accent-background-primary, 10%) !important;
+    color: lighten($accent-background-primary, 50%) !important;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand;
@@ -133,7 +134,7 @@
 }
 
 .edit-name-icon {
-    color: #1D7044 !important;
+    color: $accent-background-primary !important;
     font-size: 1.5em;
     margin-left: 15px;
     position: relative;

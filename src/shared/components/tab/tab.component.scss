@@ -2,17 +2,17 @@
 @import '../../../assets/styles/theme.scss';
 
 .tabs {
-    background-color: #0d321e;
+    background-color: darken($accent-background-primary, 15%); ;
     overflow: hidden;
     flex: 0 0 40px;
 
     &__tab.ms-Pivot-link {
-        background: #0d321e !important;
+        background: darken($accent-background-primary, 15%); ;
         color: white !important;
     }
 
     &__tab.ms-Pivot-link:hover {
-        background: #13472b !important;
+        background: darken($accent-background-primary, 15%); 
         color: white !important;
     }    
 
@@ -26,7 +26,7 @@
 }
 
 li.tabs__tab.ms-Pivot-link.is-selected.tabs__tab--active {
-    background-color: #13472b !important;
+    background-color: darken($accent-background-primary, 15%) !important;
     color: $accent-foreground-primary !important;
 }
 
@@ -48,5 +48,5 @@ tabs {
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    background: #1D7044;
+    background: $accent-background-primary;
 }

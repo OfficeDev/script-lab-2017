@@ -6,7 +6,7 @@ import {
 }
 
 .import__header {
-    background-color: #1D7044;
+    background-color: $accent-background-primary;
     padding: 7.5px 15px;
 }
 
@@ -17,7 +17,7 @@ import {
     overflow: auto;
 }
     .import__main a {
-        color: #1D7044
+        color: $accent-background-primary
     }
 
     .import__main ol {
@@ -49,7 +49,7 @@ import {
 }
 
 #monaco {
-    border: 5px solid #1D7044;
+    border: 5px solid $accent-background-primary;
     box-sizing: border-box;
     height: 300px;
 }
@@ -59,7 +59,7 @@ import {
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    background: #1D7044;
+    background: $accent-background-primary;
 }
 
 .pre-import > h1 {
@@ -84,7 +84,7 @@ import {
 }
 
 .theme-color {
-    color: #1D7044
+    color: $accent-background-primary
 }
 
 .gray-background {
@@ -105,11 +105,11 @@ import {
         }
 
     .import__footer  .ms-Button {
-        background: #1D7044;
+        background: $accent-background-primary;
     }
 
         .import__footer .ms-Button:hover {
-            background: #13472b;
+            background: darken($accent-background-primary, 15%); ;
         }
 
         .import__footer .ms-Button .ms-Button-label {
