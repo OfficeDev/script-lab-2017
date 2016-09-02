@@ -221,7 +221,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         // is based on topmost filename. So create a .json file with
         // filename as "<space><safe-filename>.json"
         var topmostFilename = ' ' +
-            (`${this._snippet.meta.name} (${ContextUtil.contextTagline})`)
+            (`${this._snippet.meta.name} (Office Add-in Playground)`)
                 .replace(/[^a-z0-9\-\s\(\)]/gi, '_')
                 .replace(/_{2,}/g, '_') +
             '.json';
@@ -236,7 +236,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             }
         }
 
-        var gistDescription = this._snippet.meta.name + ' - Shared with ' + ContextUtil.contextTagline;
+        var gistDescription = this._snippet.meta.name + ' - Shared with Office Add-in Playground';
 
         this.statusDescription = "Posting the snippet to a new GitHub Gist...";
         this.loaded = false;

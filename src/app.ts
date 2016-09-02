@@ -15,7 +15,7 @@ require('./assets/styles/excel.scss');
 require('./assets/styles/word.scss');
 require('./assets/styles/powerpoint.scss');
 require('./assets/styles/onenote.scss');
-require('./assets/styles/fabric.scss');
+require('./assets/styles/generic.scss');
 
 ContextUtil.applyTheme();
 

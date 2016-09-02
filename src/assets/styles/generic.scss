@@ -1,10 +1,10 @@
 @import 'theme.scss';
 @import 'mixins.scss';
 
-$accent-background-primary: $fabric;
+$accent-background-primary: $generic;
 $accent-foreground-primary: lighten($accent-background-primary, 60%);
 
-body.fabric {
+body.generic {
     .ms-progress-component {
         &__title {
             color: $accent-foreground-primary !important;

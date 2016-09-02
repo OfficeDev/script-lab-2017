@@ -43,10 +43,6 @@ export class BaseComponent {
         return true;
     }
 
-    get contextTagline() {
-        return ContextUtil.contextTagline;
-    }
-
     protected markDispose(subscription: Subscription[])
     protected markDispose(subscription: Subscription)
     protected markDispose(subscription: any) {

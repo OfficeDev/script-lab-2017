@@ -140,16 +140,11 @@ export class SnippetManager {
     }
 
     static createBlankSnippet(snippetManager: SnippetManager) {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return createBlankOfficeJsSnippet();
-
-            case ContextType.Fabric:
-                return createBlankFabricSnippet();
-
-            default: 
-                throw new Error("Cannot create blank snippet -- invalid context");
+        if (ContextUtil.isOfficeContext) {
+            return createBlankOfficeJsSnippet();
+        } else {
+            // Theoretically shouldn't happen, but leaving it in just in case:
+            createBlankGenericSnippet();
         }
 
         function createBlankOfficeJsSnippet(): Snippet {
@@ -210,8 +205,9 @@ export class SnippetManager {
             });
         }
 
-        function createBlankFabricSnippet(): Snippet {
+        function createBlankGenericSnippet(): Snippet {
             return new Snippet({
+                script: 'console.log("Hello world");',
                 libraries: Utilities.stripSpaces(`
                     # NPM CDN references
                     jquery

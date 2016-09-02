@@ -5,8 +5,7 @@ export enum ContextType {
     Excel,
     Word,
     PowerPoint,
-    OneNote,
-    Fabric
+    OneNote
 }
 
 export class ContextUtil {
@@ -39,26 +38,9 @@ export class ContextUtil {
         return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
     }
 
-    static applyTheme() {        
-        $('body').removeClass('excel');
-        $('body').removeClass('word');
-        $('body').removeClass('powerpoint');
-        $('body').removeClass('onenote');
-        $('body').removeClass('fabric');
-
-        switch (ContextUtil.context) {
-            case ContextType.Excel: $('body').addClass('excel'); break;
-            case ContextType.Word: $('body').addClass('word'); break;
-            case ContextType.PowerPoint: $('body').addClass('powerpoint'); break;
-            case ContextType.OneNote: $('body').addClass('onenote'); break;
-
-            default: $('body').addClass('fabric'); break;
-        }
-    }
-
     /** 
      * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
-     * though many of the derived ones (getContextNamespace, contextTagline, etc.) do.
+     * though many of the derived ones (hostName, contextNamespace, etc.) do.
      */
     static get context(): ContextType {
         switch (ContextUtil.contextString) {
@@ -70,10 +52,21 @@ export class ContextUtil {
                 return ContextType.PowerPoint;
             case 'onenote':
                 return ContextType.Word;
-            case 'fabric':
-                return ContextType.Fabric;
             default:
                 return ContextType.Unknown;
+        }
+    }
+
+    static get isOfficeContext(): boolean {
+        switch (ContextUtil.context) {
+            case ContextType.Excel:
+            case ContextType.Word:
+            case ContextType.PowerPoint:
+            case ContextType.OneNote:
+                return true;
+
+            default:
+                return false;
         }
     }
 
@@ -107,48 +100,28 @@ export class ContextUtil {
         }
     }
 
-    static get contextTagline(): string {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-            case ContextType.PowerPoint:
-            case ContextType.OneNote:
-                return 'Office Add-in Playground';
-
-            case ContextType.Fabric:
-                return 'Fabric Playground';
-
-            default:
-                throw new Error("Cannot determine playground context");
-        }
-    }
-
     static get fullPlaygroundDescription(): string {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-            case ContextType.PowerPoint:
-            case ContextType.OneNote:
-                return "Office Add-in Playground - " + ContextUtil.hostName;
-
-            case ContextType.Fabric:
-                return "Fabric Playground";
-
-            default:
-                throw "Invalid context " + ContextUtil.context;
+        if (ContextUtil.isOfficeContext) {
+            return "Office Add-in Playground - " + ContextUtil.hostName;
         }
+
+        throw "Invalid context " + ContextUtil.context;
     }
 
-    static get isOfficeContext(): boolean {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-            case ContextType.PowerPoint:
-            case ContextType.OneNote:
-                return true;
+    static applyTheme() {        
+        $('body').removeClass('excel');
+        $('body').removeClass('word');
+        $('body').removeClass('powerpoint');
+        $('body').removeClass('onenote');
+        $('body').removeClass('generic');
 
-            default:
-                return false;
+        switch (ContextUtil.context) {
+            case ContextType.Excel: $('body').addClass('excel'); break;
+            case ContextType.Word: $('body').addClass('word'); break;
+            case ContextType.PowerPoint: $('body').addClass('powerpoint'); break;
+            case ContextType.OneNote: $('body').addClass('onenote'); break;
+
+            default: $('body').addClass('generic'); break;
         }
     }
 }
