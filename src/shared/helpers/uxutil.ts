@@ -59,14 +59,13 @@ export class UxUtil {
     ): Promise<string> {
         return new Promise(function (resolve) {
             $(document).ready(function () {
-                console.log(title, messageOrMessageArray, buttons);
                 var $dialogRoot = $('.ms-Dialog--lgHeader');
                 $dialogRoot.find('.ms-Dialog-title').text(title);
 
-                var $dialogContent = $dialogRoot.find('.ms-DialogContent').empty();
+                var $dialogContent = $dialogRoot.find('.ms-Dialog-content').empty();
 
                 UxUtil.getArrayOfMessages(messageOrMessageArray).forEach((message) => {
-                    var p = $('p').text(message).addClass('ms-Dialog-subText');
+                    var p = $(document.createElement('p')).text(message).addClass('ms-Dialog-subText');
                     $dialogContent.append(p);
                 })
 

@@ -89,7 +89,7 @@ export class ContextUtil {
         switch (ContextUtil.context) {
             case ContextType.Excel:
             case ContextType.Word:
-                return "Office Add-in Playground - " + Utilities.captializeFirstLetter(ContextUtil.contextString);
+                return Utilities.captializeFirstLetter(ContextUtil.contextString) + " Add-in Playground";
 
             case ContextType.Fabric:
                 return "Fabric Playground";
