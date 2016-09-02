@@ -33,10 +33,6 @@ export class HomeComponent extends BaseComponent {
         this._navigateCommon("fabric");
     }
 
-    navigateToTypeScript() {
-        this._navigateCommon("typescript");
-    }
-
     private _navigateCommon(context) {
         window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
         this._router.navigate(["new"]);

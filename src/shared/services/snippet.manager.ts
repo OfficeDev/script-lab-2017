@@ -148,9 +148,6 @@ export class SnippetManager {
             case ContextType.Fabric:
                 return createBlankFabricSnippet();
 
-            case ContextType.TypeScript:
-                return createBlankTypeScriptSnippet();
-
             default: 
                 throw new Error("Cannot create blank snippet -- invalid context");
         }
@@ -195,23 +192,6 @@ export class SnippetManager {
                     office-ui-fabric/dist/js/jquery.fabric.min.js
                     office-ui-fabric/dist/css/fabric.min.css
                     office-ui-fabric/dist/css/fabric.components.min.css
-
-                    # IntelliSense definitions
-                    //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
-
-                    # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
-                `)
-            });
-        }
-
-        function createBlankTypeScriptSnippet(): Snippet {
-            return new Snippet({
-                script: Utilities.stripSpaces(`
-                    console.log("Hello world");
-                `),
-                libraries: Utilities.stripSpaces(`
-                    # NPM CDN references
-                    jquery
 
                     # IntelliSense definitions
                     //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts

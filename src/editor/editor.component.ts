@@ -245,7 +245,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     launchPopOutAddinEditor() {
         var dialogOptions = {displayInIFrame: true, width: 85, height: 85};
-        var url = Utilities.playgroundBasePath + "#/addin/" + ContextUtil.contextString;
+        var url = Utilities.playgroundBasePath + 'addin/';
         
         if (!Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
             UxUtil.showDialog("Dialog not supported",

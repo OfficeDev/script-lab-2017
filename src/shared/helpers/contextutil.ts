@@ -4,8 +4,7 @@ export enum ContextType {
     Unknown,
     Excel,
     Word,
-    Fabric,
-    TypeScript,
+    Fabric
 }
 
 export class ContextUtil {
@@ -50,8 +49,6 @@ export class ContextUtil {
                 return ContextType.Word;
             case 'fabric':
                 return ContextType.Fabric;
-            case 'typescript':
-                return ContextType.TypeScript;
             default:
                 return ContextType.Unknown;
         }
@@ -77,9 +74,6 @@ export class ContextUtil {
             case ContextType.Fabric:
                 return 'Fabric Playground';
 
-            case ContextType.TypeScript:
-                return 'TypeScript Playground';
-
             default: 
                 throw new Error("Cannot determine playground context");
         }
@@ -93,9 +87,6 @@ export class ContextUtil {
 
             case ContextType.Fabric:
                 return "Fabric Playground";
-
-            case ContextType.TypeScript:
-                return "TypeScript Playground";
 
             default:
                 throw "Invalid context " + ContextUtil.context;

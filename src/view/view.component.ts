@@ -95,7 +95,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     }
 
     openPlayground() {
-        // FIXME
-        window.open(Utilities.playgroundBasePath);
+        window.open(Utilities.playgroundBasePath + 
+            (this.snippet.containsOfficeJsReference ? 'acquire.html' : ''));
     }
 }

@@ -61,8 +61,8 @@ module.exports = {
 
         new CopyWebpackPlugin([
             {
-                from: 'src/addin.html',
-                to: 'addin.html'
+                from: 'src/acquire.html',
+                to: 'acquire.html'
             },
             {
                 from: 'src/excel.html',
