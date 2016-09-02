@@ -51,7 +51,10 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
                     .then((snippet) => {
                         this.snippet = snippet;
                         this.currentIntelliSense = this.snippet.getTypeScriptDefinitions();
-                        this.headerName = `"${snippet.meta.name}" snippet`;              
+                        this.headerName = `"${snippet.meta.name}" snippet`;
+
+                        ContextUtil.setContext(snippet.attemptToGuessContext());
+                        ContextUtil.applyTheme();              
                     })
                     .catch(UxUtil.catchError("Could not display snippet", null));
             }

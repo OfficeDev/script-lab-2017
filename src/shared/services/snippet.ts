@@ -271,6 +271,18 @@ export class Snippet implements ISnippet {
         }
     }
 
+    public attemptToGuessContext(): string {
+        if (this.script.indexOf('Excel.run(') > 0) {
+            return 'excel';
+        } else if (this.script.indexOf('Word.run(') > 0) {
+            return 'word';
+        } else if (this.script.indexOf('OneNote.run(') > 0) {
+            return 'onenote';
+        }
+
+        return '';
+    }
+
     static createFromJson(inputValue: string): Snippet {
         var json: ISnippet = JSON.parse(inputValue);
         

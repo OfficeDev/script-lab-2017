@@ -37,9 +37,9 @@ export class HomeComponent extends BaseComponent {
         this._navigateCommon("fabric");
     }
 
-    private _navigateCommon(context) {
-        window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
-        
+    private _navigateCommon(context: string) {
+        ContextUtil.setContext(context);
+
         ContextUtil.applyTheme();
 
         this._router.navigate(["new"]);

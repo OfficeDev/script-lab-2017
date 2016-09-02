@@ -57,6 +57,10 @@ export class ContextUtil {
         }
     }
 
+    static setContext(context: string): void {
+        window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
+    }
+
     static get isOfficeContext(): boolean {
         switch (ContextUtil.context) {
             case ContextType.Excel:
