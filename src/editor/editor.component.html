@@ -17,7 +17,7 @@
     </ul>
 </header>
 <section class="editor__main">
-    <tabs readonly="false">
+    <tabs>
         <tab name="Script" language="typescript" [content]="snippet.script"></tab>
         <tab name="HTML" language="html" [content]="snippet.html"></tab>
         <tab name="CSS" language="css" [content]="snippet.css"></tab>
@@ -29,7 +29,7 @@
     'editor__footer--error': isStatusError
 }">
     <div id="editor-status-text">
-        <div *ngIf="!!!status" class="ms-u-slideUpIn20">{{contextTagline}}</div>
+        <div *ngIf="!!!status" class="ms-u-slideUpIn20">Office Add-in Playground</div>
         <div *ngIf="!!status" class="ms-u-slideUpIn20" (click)="clearStatus">{{status}}</div>
     </div>
 

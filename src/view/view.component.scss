@@ -4,13 +4,36 @@
 .view {
     &__header {
         @include inline-flex();
-        background-color: #1D7044;
         width: 100%;
     }
 
     &__main {
         flex: 1 1 100%;
         @include flex();
+    }
+
+    &__footer {
+        display: flex;
+        overflow: hidden;
+        align-items: center;
+
+        transition: background-color 0.3s ease-in-out;
+
+        padding: 5px 10px;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
+    &__edit-warning {
+        padding: 5px 10px;
+        background-color: #0d321e;
+        color: white;
+
+        a {
+            color: #cdf2de;
+            font-weight: bold;
+            text-decoration: underline;
+        }
     }
 }
 
@@ -29,7 +52,6 @@
     &__command {
         color: white;
         padding: (40px - $default-spacing)/2 $default-spacing;
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
 
         &--right {
             align-self: flex-end;
@@ -46,8 +68,6 @@
 .view-bar__command:hover,
 .view-bar__command i:active,
 .view-bar__command i:hover {
-    background: #13472b !important;
-    color: #cdf2de !important;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand;

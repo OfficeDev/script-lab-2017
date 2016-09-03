@@ -3,7 +3,7 @@
   "description": "Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint.",
   "repository": "https://github.com/Zlatkovsky/OfficeJsPlayground",
   "author": {
-    "name": "OfficeJS Playground"
+    "name": "Office Add-in Playground"
   },
   "version": "1.0.0",
   "scripts": {

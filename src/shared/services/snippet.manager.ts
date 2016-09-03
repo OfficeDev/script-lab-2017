@@ -2,12 +2,14 @@ import {Injectable} from '@angular/core';
 import {ISnippet, Snippet, SnippetNamingSuffixOption} from '../services';
 import {StorageHelper, Utilities, ContextUtil, ContextType,
     ExpectedError, PlaygroundError, UxUtil} from '../helpers';
+import {Http} from '@angular/http';
 
 @Injectable()
 export class SnippetManager {
     private _snippetsContainer: StorageHelper<ISnippet>;
     private currentContext: string;
 
+    constructor (private _http: Http) { }
     /**
      * Must be called from every controller to ensure that the snippet manager uses
      * a correct snippet context (Excel vs. Word vs. Web).
@@ -105,6 +107,13 @@ export class SnippetManager {
     }
 
     getPlaylist(): Promise<any> {
+        // FIXME playlist
+        // this._http.get(location.origin + '/assets/snippets/' + ContextUtil.contextString + '.json')
+        //     .toPromise()
+        //     .then(response => {
+        //         response.json()
+        //     });
+
         return Promise.resolve(this._playlist)
             .then(data => {
                 return {
@@ -140,25 +149,27 @@ export class SnippetManager {
     }
 
     static createBlankSnippet(snippetManager: SnippetManager) {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return createBlankOfficeJsSnippet();
-
-            case ContextType.Fabric:
-                return createBlankFabricSnippet();
-
-            case ContextType.TypeScript:
-                return createBlankTypeScriptSnippet();
-
-            default: 
-                throw new Error("Cannot create blank snippet -- invalid context");
+        if (ContextUtil.isOfficeContext) {
+            return createBlankOfficeJsSnippet();
+        } else {
+            // Theoretically shouldn't happen, but leaving it in just in case:
+            createBlankGenericSnippet();
         }
 
         function createBlankOfficeJsSnippet(): Snippet {
-            return new Snippet({
-                script: Utilities.stripSpaces(`
-                    ${ContextUtil.getContextNamespace()}.run(function(context) {
+            var script: string;
+
+            // For new host-specific APIs, use the new syntax
+            // However, if detect that this is running inside an add-in and on an old client,
+            // Revert back to the Office 2013 code.
+            var useHostSpecificApiSample = (ContextUtil.contextNamespace != null);
+            if (ContextUtil.isAddin && !Office.context.requirements.isSetSupported(ContextUtil.contextNamespace + 'Api')) {
+                useHostSpecificApiSample = false;
+            }
+
+            if (useHostSpecificApiSample) {
+                script = Utilities.stripSpaces(`
+                    ${ContextUtil.contextNamespace}.run(function(context) {
                         // insert your code here...
                         return context.sync();
                     }).catch(function(error) {
@@ -167,7 +178,23 @@ export class SnippetManager {
                             console.log("Debug info: " + JSON.stringify(error.debugInfo));
                         }
                     });
-                `),
+                `)
+            } else {
+                script = Utilities.stripSpaces(`
+                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                        function (asyncResult) {
+                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                console.log(error.message);
+                            } else {
+                                console.log('Selected data is ' + asyncResult.value);
+                            }            
+                        }
+                    );
+                `);
+            }
+
+            return new Snippet({
+                script: script,
                 libraries: Utilities.stripSpaces(`
                     # Office.js CDN reference
                     //appsforoffice.microsoft.com/lib/1/hosted/Office.js
@@ -187,31 +214,15 @@ export class SnippetManager {
             });
         }
 
-        function createBlankFabricSnippet(): Snippet {
+        function createBlankGenericSnippet(): Snippet {
             return new Snippet({
+                script: 'console.log("Hello world");',
                 libraries: Utilities.stripSpaces(`
                     # NPM CDN references
                     jquery
                     office-ui-fabric/dist/js/jquery.fabric.min.js
                     office-ui-fabric/dist/css/fabric.min.css
                     office-ui-fabric/dist/css/fabric.components.min.css
-
-                    # IntelliSense definitions
-                    //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
-
-                    # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
-                `)
-            });
-        }
-
-        function createBlankTypeScriptSnippet(): Snippet {
-            return new Snippet({
-                script: Utilities.stripSpaces(`
-                    console.log("Hello world");
-                `),
-                libraries: Utilities.stripSpaces(`
-                    # NPM CDN references
-                    jquery
 
                     # IntelliSense definitions
                     //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts

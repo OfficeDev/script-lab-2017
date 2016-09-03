@@ -2,6 +2,10 @@
 @import '../assets/styles/mixins.scss';
 @import '../assets/styles/theme.scss';
 
+#title {
+    margin-top: 40px;
+}
+
 .home {
     background: #232323;
     height: 100%;
@@ -50,6 +54,4 @@
         text-align: center;
     }
 
-        .home .add-in-note a {
-            color: #8ba9c3;
-        }
+        

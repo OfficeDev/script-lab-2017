@@ -7,7 +7,6 @@
 
     &__header {
         padding: 7.5px 15px;
-        background-color: #0d321e;
         color: white;
     }
 
@@ -15,9 +14,10 @@
         width: 100%;
         max-width: none;
         display: block !important;
-        background-color: #F4F4F4;
+        background-color: $background-lightest;
         color: #333;
         margin: 0;
+        padding: $default-spacing;
         border: none;
         border-bottom: solid 1px #E4E4E4;
 
@@ -25,17 +25,10 @@
             margin-bottom: 0;
         }
 
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
 
         &:hover,
         &:focus {
             border: none;
-            background-color: $accent-background-primary;
-    
-            .ms-Button-description,
-            .ms-Button-label {
-                color: $accent-foreground-primary;
-            }
         }
         
 
@@ -60,7 +53,6 @@
 
     &__section-title {
         padding: $default-spacing !important;
-        color: $accent-background-primary;
         display: table-cell;
         box-sizing: border-box;
     }
@@ -81,10 +73,6 @@
         display: table-cell;
         background: aliceblue;
 
-        &:focus {
-            color: $accent-background-primary;
-            border: solid 1px $accent-background-primary;
-        }
     }
 }
 
@@ -99,7 +87,6 @@
     &__group-header {
         font-weight: bold;
         padding: $default-spacing/2 $default-spacing;
-        color: $accent-background-primary;
     }
 
     &__item {
@@ -119,14 +106,13 @@
     }
 
     &__localstorage-notice {
-        padding: 10px;
-        background: lightgoldenrodyellow;
+        background: $background-lightest;
+        padding: $default-spacing;
     }
 
     &__action {
         padding: $default-spacing + 2px;
         font-size: 15px;
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
         align-self: flex-end;
     }
 }
@@ -141,7 +127,7 @@
         flex-grow: 1;
     }
 
-    .main-heading.local-snippets > i {
+    .main-heading.local-snippets i {
         position: relative;
         top: 0;
         padding: 5px;
@@ -156,9 +142,8 @@
     }
 
 h1.main-heading {
-    background-color: #F4F4F4;
-    color: #1D7044;
-    margin-top: 15px;
+    background-color: $background-lightest;
+    padding-left: $default-spacing !important;
     border: none;
     border-bottom: solid 1px #E4E4E4;
     padding: 10px;
@@ -172,37 +157,11 @@ h1.ms-Button-label {
     text-transform: uppercase;
 }
 
-.new__action h1.ms-Button-label {
-    color: #1D7044;
-}
-
-.new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-    margin-left: 1.5em;
-}
-
-@media (max-width: 400px) {
-    .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-        margin-left: 1em;
-    }
-}
-
-@media (max-width: 300px) {
-    .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-        margin-left: 0.75em;
-    }
-}
-
 .new-list__item:active, .new-list__item:hover {
-    background: #1D7044;
     color: white;
     /* different browsers use different terms for pointer vs. hand, so include both*/
     cursor: pointer;
     cursor: hand; 
-}
-
-.new-list__action:active, .new-list__action:hover {
-    background: #13472b;
-    color: #cdf2de;
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {

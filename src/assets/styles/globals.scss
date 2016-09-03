@@ -1,6 +1,5 @@
 ﻿@import 'theme.scss';
 @import 'mixins.scss';
-@import 'jquery-ui-dialog-minimal.scss';
 
 * {
     margin: 0;
@@ -109,23 +108,23 @@ span.console.error {
 }
 
 .excel-background {
-    background: #217346;
+    background: $excel;
 }
 
 .word-background {
-    background: #2A4497;
+    background: $word;
+}
+
+.powerpoint-background {
+    background: #d04526;
 }
 
 .onenote-background {
-    background: #7D3777;
+    background: $onenote;
 }
 
 .fabric-background {
-    background: #0078FA;
-}
-
-.typescript-background {
-    background: #007ACC;
+    background: $generic;
 }
 
 .appwide-overlay-dialog {
@@ -172,4 +171,16 @@ span.console.error {
 
 .appwide-overlay-dialog.ui-widget-overlay {
     z-index: 100;
+}
+
+.ms-Dialog-subText {
+    margin: 0 !important;
+}
+
+.ms-Dialog-main {
+    .ms-Dialog-header {
+        .ms-Dialog-title {
+            font-size: 18px;
+        }
+    }
 }

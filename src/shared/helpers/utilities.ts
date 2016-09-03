@@ -114,7 +114,7 @@ export class Utilities {
         return lines.map((line) => indentString + line).join('\n');
     }
 
-    static stringifyPlusPlus(object) {
+    static stringifyPlusPlus(object): string {
         // Don't JSON.stringify strings, because we don't want quotes in the output
         if (object === null) {
             return "null";
@@ -182,10 +182,6 @@ export class Utilities {
         } else {
             throw new Error("Could not normalize URL " + url);
         }
-    }
-
-    static captializeFirstLetter(input: string): string {
-        return input.substr(0, 1).toUpperCase() + input.substr(1);
     }
 
     static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);

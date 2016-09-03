@@ -6,7 +6,6 @@ import {
 }
 
 .import__header {
-    background-color: #1D7044;
     padding: 7.5px 15px;
 }
 
@@ -16,9 +15,6 @@ import {
     flex: 1 1 100%;
     overflow: auto;
 }
-    .import__main a {
-        color: #1D7044
-    }
 
     .import__main ol {
         margin-left: 30px;
@@ -49,7 +45,6 @@ import {
 }
 
 #monaco {
-    border: 5px solid #1D7044;
     box-sizing: border-box;
     height: 300px;
 }
@@ -59,7 +54,6 @@ import {
     flex: 1 1 100%;
     width: 100% !important;     
     height: 100% !important;
-    background: #1D7044;
 }
 
 .pre-import > h1 {
@@ -83,10 +77,6 @@ import {
     margin-top: 5px;
 }
 
-.theme-color {
-    color: #1D7044
-}
-
 .gray-background {
     background: #eee;
     padding: 10px;
@@ -102,14 +92,6 @@ import {
 
         .import__footer .right-aligned-button-container button {
             height: auto;
-        }
-
-    .import__footer  .ms-Button {
-        background: #1D7044;
-    }
-
-        .import__footer .ms-Button:hover {
-            background: #13472b;
         }
 
         .import__footer .ms-Button .ms-Button-label {

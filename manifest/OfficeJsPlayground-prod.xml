@@ -5,7 +5,7 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>af8fa5ba-4010-4bcc-9e03-a91ddadf3333</Id>
-  <Version>1.0.0.1</Version>
+  <Version>1.0.0.2</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Office Add-in Playground" />
@@ -15,13 +15,14 @@
   <Hosts>
     <Host Name="Workbook" />
     <Host Name="Document" />
+    <Host Name="Presentation"/>
     <Host Name="Notebook"/>
   </Hosts>
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
   </AppDomains>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://api-playground.azurewebsites.net/" />
+    <SourceLocation DefaultValue="https://api-playground.azurewebsites.net/addin.html" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides
@@ -54,7 +55,7 @@
 
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_ExcelUrl" />
+                    <SourceLocation resid="Play_Taskpane_Url" />
                   </Action>
                 </Control>
               </Group>
@@ -88,7 +89,41 @@
 
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_WordUrl" />
+                    <SourceLocation resid="Play_Taskpane_Url" />
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="Play.Group">
+                <Label resid="Play.GroupLabel" />
+                <Icon>
+                    <bt:Image size="16" resid="Play_icon_16" />
+                    <bt:Image size="32" resid="Play_icon_32" />
+                    <bt:Image size="80" resid="Play_icon_80" />
+                </Icon>
+
+                <Control xsi:type="Button" id="Play.TaskpaneButton">
+                  <Label resid="Play.TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="Play.TaskpaneButton.TipTitle" />
+                    <Description resid="Play.Supertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Play_icon_16" />
+                    <bt:Image size="32" resid="Play_icon_32" />
+                    <bt:Image size="80" resid="Play_icon_80" />
+                  </Icon>
+
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Play</TaskpaneId>
+                    <SourceLocation resid="Play_Taskpane_Url" />
                   </Action>
                 </Control>
               </Group>
@@ -104,8 +139,7 @@
         <bt:Image id="Play_icon_80" DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_ExcelUrl" DefaultValue="https://api-playground.azurewebsites.net/excel.html" />
-        <bt:Url id="Play_Taskpane_WordUrl" DefaultValue="https://api-playground.azurewebsites.net/word.html" />
+        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://api-playground.azurewebsites.net/addin.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Play.GroupLabel" DefaultValue="Add-ins" />

@@ -1,4 +1,11 @@
-﻿/* Default Variables */
+﻿$excel: rgba(33, 115, 70, 1);
+$word: rgba(43, 87, 154, 1);
+$powerpoint: rgba(208, 69, 38, 1);
+$onenote:  rgba(128, 57, 123, 1);
+$generic: rgba(0, 120, 215, 1);
+
+
+/* Default Variables */
 $default-spacing: 15px;
 
 /* Background Colors */
@@ -16,5 +23,4 @@ $foreground-lighter: #999999;
 $foreground-lightest: #BABABA;
 
 /* Accent Colors */
-$accent-background-primary: #1D7044;
-$accent-foreground-primary: lighten($accent-background-primary, 60%);
+

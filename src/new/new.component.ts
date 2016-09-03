@@ -69,6 +69,6 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             return '';
         }
 
-        return ContextUtil.fullPlaygroundDescription;
+        return ContextUtil.hostName + ' Snippets';
     }
 }

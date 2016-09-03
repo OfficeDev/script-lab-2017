@@ -3,7 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
-import {Authenticator, TokenManager, EndpointManager, IToken} from '../shared/services/oauth'; 
+import {Authenticator, TokenManager, EndpointManager, IToken, ICode} from '../shared/services/oauth';
 
 @Component({
     selector: 'share',
@@ -19,11 +19,13 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     gistId: string;
     viewUrl: string;
     embedScriptTag: string;
+    profile: any;
+    tokenManager = new TokenManager();
     statusDescription = "Preparing the snippet for sharing...";
 
     _snippet: Snippet;
     _snippetExportString: string;
-    token: IToken = { access_token: null, provider: '' };
+    token: IToken = this.tokenManager.get('GitHub');
 
     constructor(
         _snippetManager: SnippetManager,
@@ -39,7 +41,11 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         if (!this._ensureContext()) {
             return;
         }
-                            
+
+        if (this.token) {
+            this._getGithubProfile(this.token).then(profile => this.profile = profile);
+        }
+
         var subscription = this._route.params.subscribe(params => {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
@@ -86,13 +92,15 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                 this.loaded = true;
                 setTimeout(() => this._monacoEditor.layout(), 20);
 
-                console.log("Monaco editor initialized.");               
+                console.log("Monaco editor initialized.");
             });
         });
     }
 
     signInToGithub(): void {
         var endpointManager = new EndpointManager();
+        var authenticator = new Authenticator(endpointManager, this.tokenManager);
+
         endpointManager.add('GitHub', {
             clientId: '6b2823cf0379dd5fc050',
             scope: 'gist',
@@ -101,21 +109,50 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             responseType: '',
             state: true
         });
-        var tokenManager = new TokenManager();
-        var authenticator = new Authenticator(endpointManager, tokenManager);
 
-        authenticator.authenticate('GitHub', true /*force*/)
-            .then((authResponse: any) => {
-                return this._exchangeGithubCodeForToken(authResponse.code);
+        authenticator.authenticate('GitHub', true /* force */)
+            .then(result => {
+                if ('code' in result) {
+                    return this._exchangeGithubCodeForToken((<ICode>result).code).then(token => {
+                        if (token == null) throw 'Invalid Token received';
+                        this.tokenManager.add('GitHub', token);
+                        return token;
+                    });
+                }
+                else if ('access_token' in result)
+                    return result as IToken;
             })
-            .then((tokenString) => {
-                tokenManager.insert('GitHub', JSON.parse(tokenString) as IToken)
-                this.token = tokenManager.get('GitHub');
+            .then(token => {
+                this.token = this.tokenManager.get('GitHub');
+                this._getGithubProfile(this.token).then(profile => this.profile = profile);
             })
             .catch(UxUtil.catchError("Could not sign in to Github", null));
     }
 
-    private _exchangeGithubCodeForToken(code): Promise<string> {
+    logout() {
+        this.tokenManager.clear();
+        this.token = null;
+    }
+
+    private _getGithubProfile(token: IToken): Promise<string> {
+        return new Promise((resolve, reject) => {
+            try {
+                $.ajax({
+                    url: 'https://api.github.com/user',
+                    dataType: 'json',
+                    headers: {
+                        'Authorization': 'Bearer ' + token.access_token
+                    }
+                }).then(response => resolve(response))
+                    .fail(e => reject(e));
+            }
+            catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    private _exchangeGithubCodeForToken(code: string): Promise<IToken> {
         return new Promise((resolve, reject) => {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr');
@@ -123,7 +160,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    resolve(xhr.responseText);
+                    resolve(JSON.parse(xhr.responseText));
                 }
                 else if (xhr.status !== 200) {
                     reject('Request failed.  Returned status of ' + xhr.response);
@@ -139,8 +176,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     postToGist(): void {
         var compiledJs: string;
         try {
-            compiledJs = 
-                '// This is a compiled version of the TypeScript/JavaScript code ("app.ts").\n' + 
+            compiledJs =
+                '// This is a compiled version of the TypeScript/JavaScript code ("app.ts").\n' +
                 '// In case the original code was already JavaScript, this is likely identical to "app.js".\n\n' +
                 this._snippet.getCompiledJs();
         } catch (e) {
@@ -157,10 +194,10 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         } else {
             var title = 'Do you want to add a description?';
             var description = "If you're posting the snippet for the world to see, it may be helpful " +
-                "to add a description of what the code does.\n\n" + 
+                "to add a description of what the code does.\n\n" +
                 "One simple way to do it is by adding a comment at the top of your script file, explaining " +
-                "the snippet's purpose. Would you like to return to the editor and add a comment now?"; 
-            
+                "the snippet's purpose. Would you like to return to the editor and add a comment now?";
+
             UxUtil.showDialog(title, description, ['Return to editor', 'Proceed as is'])
                 .then((choice) => {
                     if (choice === 'Return to editor') {
@@ -182,19 +219,21 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             "app.ts": { 'content': this._snippet.script },
             "index.html": { 'content': this._snippet.html },
             "libraries.txt": { 'content': this._snippet.libraries },
-            "style.css": { 'content': this._snippet.css }            
+            "style.css": { 'content': this._snippet.css }
         };
 
         // Note: name of snippet (as it appears in user's Gist list)
         // is based on topmost filename. So create a .json file with
         // filename as "<space><safe-filename>.json"
-        var topmostFilename = ' ' + 
-            (`${this._snippet.meta.name} (${ContextUtil.contextTagline})`)
+        var topmostFilename = ' ' +
+            (`${this._snippet.meta.name} (Office Add-in Playground)`)
                 .replace(/[^a-z0-9\-\s\(\)]/gi, '_')
                 .replace(/_{2,}/g, '_') +
             '.json';
-        fileData[topmostFilename] = { 'content': 
-            JSON.stringify(this._snippet.exportToJson(true /*forPlayground*/)['meta'], null, 4) };
+        fileData[topmostFilename] = {
+            'content':
+            JSON.stringify(this._snippet.exportToJson(true /*forPlayground*/)['meta'], null, 4)
+        };
 
         for (var key in fileData) {
             if (_.isEmpty(fileData[key]['content'])) {
@@ -202,7 +241,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             }
         }
 
-        var gistDescription = this._snippet.meta.name + ' - Shared with ' + ContextUtil.contextTagline;
+        var gistDescription = this._snippet.meta.name + ' - Shared with Office Add-in Playground';
 
         this.statusDescription = "Posting the snippet to a new GitHub Gist...";
         this.loaded = false;

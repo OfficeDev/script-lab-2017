@@ -4,13 +4,13 @@ export enum ContextType {
     Unknown,
     Excel,
     Word,
-    Fabric,
-    TypeScript,
+    PowerPoint,
+    OneNote
 }
 
 export class ContextUtil {
     static officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
-    
+
     /** Indicates whether the getScript for Office.js has been initiated already */
     static windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
 
@@ -40,7 +40,7 @@ export class ContextUtil {
 
     /** 
      * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
-     * though many of the derived ones (getContextNamespace, contextTagline, etc.) do.
+     * though many of the derived ones (hostName, contextNamespace, etc.) do.
      */
     static get context(): ContextType {
         switch (ContextUtil.contextString) {
@@ -48,68 +48,76 @@ export class ContextUtil {
                 return ContextType.Excel;
             case 'word':
                 return ContextType.Word;
-            case 'fabric':
-                return ContextType.Fabric;
-            case 'typescript':
-                return ContextType.TypeScript;
+            case 'powerpoint':
+                return ContextType.PowerPoint;
+            case 'onenote':
+                return ContextType.OneNote;
             default:
                 return ContextType.Unknown;
         }
     }
 
-    static getContextNamespace() {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-                return 'Excel';
-            case ContextType.Word:
-                return 'Word';
-            default:
-                throw new Error("Invalid context type for Office namespace");
-        }
-    }
-
-    static get contextTagline(): string {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return 'Office Add-in Playground';
-
-            case ContextType.Fabric:
-                return 'Fabric Playground';
-
-            case ContextType.TypeScript:
-                return 'TypeScript Playground';
-
-            default: 
-                throw new Error("Cannot determine playground context");
-        }
-    }
-
-    static get fullPlaygroundDescription(): string {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-                return "Office Add-in Playground - " + Utilities.captializeFirstLetter(ContextUtil.contextString);
-
-            case ContextType.Fabric:
-                return "Fabric Playground";
-
-            case ContextType.TypeScript:
-                return "TypeScript Playground";
-
-            default:
-                throw "Invalid context " + ContextUtil.context;
-        }
+    static setContext(context: string): void {
+        window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
     }
 
     static get isOfficeContext(): boolean {
         switch (ContextUtil.context) {
             case ContextType.Excel:
             case ContextType.Word:
+            case ContextType.PowerPoint:
+            case ContextType.OneNote:
                 return true;
 
             default:
                 return false;
+        }
+    }
+
+    static get hostName() {
+        switch (ContextUtil.context) {
+            case ContextType.Excel:
+                return 'Excel';
+            case ContextType.Word:
+                return 'Word';
+            case ContextType.PowerPoint:
+                return 'PowerPoint'
+            case ContextType.OneNote:
+                return 'OneNote';
+            default:
+                throw new Error("Invalid context type for Office namespace");
+        }
+    }
+
+    static get contextNamespace() {
+        switch (ContextUtil.context) {
+            case ContextType.Excel:
+                return 'Excel';
+            case ContextType.Word:
+                return 'Word';
+            case ContextType.PowerPoint:
+                return null; // Intentionally missing until PowerPoint has the new host-specific API model
+            case ContextType.OneNote:
+                return 'OneNote';
+            default:
+                throw new Error("Invalid context type for Office namespace");
+        }
+    }
+
+    static applyTheme() {        
+        $('body').removeClass('excel');
+        $('body').removeClass('word');
+        $('body').removeClass('powerpoint');
+        $('body').removeClass('onenote');
+        $('body').removeClass('generic');
+
+        switch (ContextUtil.context) {
+            case ContextType.Excel: $('body').addClass('excel'); break;
+            case ContextType.Word: $('body').addClass('word'); break;
+            case ContextType.PowerPoint: $('body').addClass('powerpoint'); break;
+            case ContextType.OneNote: $('body').addClass('onenote'); break;
+
+            default: $('body').addClass('generic'); break;
         }
     }
 }

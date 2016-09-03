@@ -1,9 +1,15 @@
-import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetManager} from '../shared/services';
 import {Utilities, ContextUtil, UxUtil} from '../shared/helpers';
+
+enum EditWarning {
+    NeverShown,
+    Showing,
+    Dismissed
+}
 
 @Component({
     selector: 'view',
@@ -18,13 +24,21 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     @ViewChild(Tabs) tabs: Tabs;
 
     headerName: string;
+    thisUrl: string;
+
+    editWarning = EditWarning.NeverShown;
+
+    private _timeout;
 
     constructor(
         _router: Router,
         _snippetManager: SnippetManager,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
+
+        this.thisUrl = window.location.href;
     }
 
     ngOnInit() {
@@ -37,7 +51,10 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
                     .then((snippet) => {
                         this.snippet = snippet;
                         this.currentIntelliSense = this.snippet.getTypeScriptDefinitions();
-                        this.headerName = `"${snippet.meta.name}" snippet`;              
+                        this.headerName = `"${snippet.meta.name}" snippet`;
+
+                        ContextUtil.setContext(snippet.attemptToGuessContext());
+                        ContextUtil.applyTheme();              
                     })
                     .catch(UxUtil.catchError("Could not display snippet", null));
             }
@@ -52,7 +69,36 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
         /* nothing to do, need to implement this function only for fulfilling the IEditorParent contract */
     }
 
+    onChangeContent() {
+        if (this.editWarning === EditWarning.NeverShown) {
+            this.editWarning = EditWarning.Showing;
+            
+            setTimeout(() => {
+                this.tabs.resize();
+                this._changeDetectorRef.detectChanges();
+            }, 100);    
+
+            this._timeout = setTimeout(() => {
+                clearTimeout(this._timeout);
+                this.clearEditWarning();
+            }, 10000);
+
+        }
+    }
+
+    clearEditWarning() {
+        this.editWarning = EditWarning.Dismissed;
+        
+        this._changeDetectorRef.detectChanges();
+        this.tabs.resize();
+    }
+
+    get showEditWarning() {
+        return this.editWarning === EditWarning.Showing;
+    }
+
     openPlayground() {
-        window.open(Utilities.playgroundBasePath);
+        window.open(Utilities.playgroundBasePath + 
+            (this.snippet.containsOfficeJsReference ? 'acquire.html' : ''));
     }
 }

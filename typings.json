@@ -1,5 +1,5 @@
 {
-  "name": "officejs-api-playground",
+  "name": "office-api-playground",
   "dependencies": {},
   "globalDependencies": {
     "bootstrap": "registry:dt/bootstrap#3.3.5+20160619023404",

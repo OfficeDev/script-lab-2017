@@ -185,7 +185,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                         "Would you like to save now? Alternatively, if you're in the middle of a risky change, " + 
                         "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet."; 
                     
-                    return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel out'])
+                    return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel'])
                         .then((choice) => {
                             if (choice == 'Save') {
                                 return this._saveHelper();
@@ -245,7 +245,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     launchPopOutAddinEditor() {
         var dialogOptions = {displayInIFrame: true, width: 85, height: 85};
-        var url = Utilities.playgroundBasePath + "#/addin/" + ContextUtil.contextString;
+        var url = Utilities.playgroundBasePath + 'addin/';
         
         if (!Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
             UxUtil.showDialog("Dialog not supported",
@@ -296,5 +296,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     private get _promptToSave() {
         return this.snippet.lastSavedHash != this._composeSnippetFromEditor().getHash();
+    }
+
+    onChangeContent() {
+        // Do nothing. Needed in order to fulfill the IEditorParent interface
     }
 }

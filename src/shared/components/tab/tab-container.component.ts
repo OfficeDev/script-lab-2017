@@ -20,6 +20,7 @@ interface IIntelliSenseResponse {
 export class IEditorParent {
     currentIntelliSense: string[];
     onSwitchFocusToJavaScript: () => void;
+    onChangeContent: () => void;
 }
 
 @Component({
@@ -45,7 +46,6 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     private _subscriptions: Subscription[] = [];
 
     selectedTab: Tab;
-    @Input() readonly: boolean;
     @ViewChild('editor') private _editor: ElementRef;
     @ViewChild('loader') private _loader: ElementRef;
 
@@ -164,7 +164,6 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             roundedSelection: false,
             scrollBeyondLastLine: false,
             wrappingColumn: 0,
-            readOnly: this.readonly,
             theme: "vs-dark",
             wrappingIndent: "indent",
             scrollbar: {
@@ -262,8 +261,13 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
             if (Utilities.isNull(nextTab.model)) {
                 nextTab.model = monaco.editor.createModel(nextTab.content, nextTab.language);
+                nextTab.model.onDidChangeContent(() => this.editorParent.onChangeContent());
+
             }
 
+            this._monacoEditor.updateOptions({
+                readOnly: nextTab.readonly
+            })
             this._monacoEditor.setModel(nextTab.model);
             this._monacoEditor.restoreViewState(nextTab.state);
             this._monacoEditor.focus();
