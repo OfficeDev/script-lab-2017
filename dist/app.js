@@ -16849,7 +16849,9 @@ webpackJsonp([0],{
 	                url: 'https://api.github.com/gists',
 	                type: 'POST',
 	                beforeSend: function (xhr) {
-	                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+	                    if (token) {
+	                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+	                    }
 	                },
 	                data: JSON.stringify(createData)
 	            })
@@ -76883,7 +76885,7 @@ webpackJsonp([0],{
 	                script = helpers_1.Utilities.stripSpaces("\n                    " + helpers_1.ContextUtil.contextNamespace + ".run(function(context) {\n                        // insert your code here...\n                        return context.sync();\n                    }).catch(function(error) {\n                        console.log(error);\n                        if (error instanceof OfficeExtension.Error) {\n                            console.log(\"Debug info: \" + JSON.stringify(error.debugInfo));\n                        }\n                    });\n                ");
 	            }
 	            else {
-	                script = helpers_1.Utilities.stripSpaces("\n                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,\n                        function (asyncResult) {\n                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {\n                                console.log(error.message);\n                            } else {\n                                console.log('Selected data is ' + asyncResult.value);\n                            }            \n                        }\n                    );\n                ");
+	                script = helpers_1.Utilities.stripSpaces("\n                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,\n                        function (asyncResult) {\n                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {\n                                console.log(asyncResult.error.message);\n                            } else {\n                                console.log('Selected data is ' + asyncResult.value);\n                            }            \n                        }\n                    );\n                ");
 	            }
 	            return new services_1.Snippet({
 	                script: script,
@@ -78847,7 +78849,9 @@ webpackJsonp([0],{
 	        this.gistSharePublic = true;
 	        this.tokenManager = new oauth_1.TokenManager();
 	        this.statusDescription = "Preparing the snippet for sharing...";
-	        this.token = this.tokenManager.get('GitHub');
+	        // NOTE: setting token temporarily to an empty-but-non-null token
+	        // to allow anonymous sharing while we figure out the GitHub login issues
+	        this.token = { access_token: null, provider: null }; // this.tokenManager.get('GitHub');
 	        this._snippet = new services_1.Snippet({});
 	    }
 	    ShareComponent.prototype.ngOnInit = function () {
@@ -78855,7 +78859,7 @@ webpackJsonp([0],{
 	        if (!this._ensureContext()) {
 	            return;
 	        }
-	        if (this.token) {
+	        if (this.token && this.token.access_token) {
 	            this._getGithubProfile(this.token).then(function (profile) { return _this.profile = profile; });
 	        }
 	        var subscription = this._route.params.subscribe(function (params) {
@@ -78974,7 +78978,6 @@ webpackJsonp([0],{
 	        });
 	    };
 	    ShareComponent.prototype.postToGist = function () {
-	        var _this = this;
 	        var compiledJs;
 	        try {
 	            compiledJs =
@@ -78987,27 +78990,7 @@ webpackJsonp([0],{
 	            helpers_1.UxUtil.showErrorNotification("Please fix syntax errors before sharing", [], e);
 	            return;
 	        }
-	        var startsWithComment = this._snippet.script.trim().startsWith('//') ||
-	            this._snippet.script.trim().startsWith('/*');
-	        if (startsWithComment) {
-	            this._proceedWithPostToGist(compiledJs);
-	        }
-	        else {
-	            var title = 'Do you want to add a description?';
-	            var description = "If you're posting the snippet for the world to see, it may be helpful " +
-	                "to add a description of what the code does.\n\n" +
-	                "One simple way to do it is by adding a comment at the top of your script file, explaining " +
-	                "the snippet's purpose. Would you like to return to the editor and add a comment now?";
-	            helpers_1.UxUtil.showDialog(title, description, ['Return to editor', 'Proceed as is'])
-	                .then(function (choice) {
-	                if (choice === 'Return to editor') {
-	                    _this.back();
-	                }
-	                else {
-	                    _this._proceedWithPostToGist(compiledJs);
-	                }
-	            });
-	        }
+	        this._proceedWithPostToGist(compiledJs);
 	    };
 	    ShareComponent.prototype._proceedWithPostToGist = function (compiledJs) {
 	        // Note: Gists have their content ordered by alphabetical order.
@@ -79057,6 +79040,22 @@ webpackJsonp([0],{
 	            helpers_1.UxUtil.showErrorNotification("Gist-creation failed", "Sorry, something went wrong when creating the GitHub Gist.", e);
 	        });
 	    };
+	    Object.defineProperty(ShareComponent.prototype, "showGithubPersona", {
+	        get: function () {
+	            return this.token && this.token.access_token;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ShareComponent.prototype, "githubViewableGistUrl", {
+	        get: function () {
+	            return 'https://gist.github.com/' +
+	                (this.profile ? (this.profile.login + '/') : '') +
+	                helpers_1.Utilities.stringOrEmpty(this.gistId);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    ShareComponent.prototype.back = function () {
 	        this._router.navigate(['edit', this._snippet.meta.id]);
 	    };
@@ -79096,7 +79095,7 @@ webpackJsonp([0],{
 /***/ 708:
 /***/ function(module, exports) {
 
-	module.exports = "<section class=\"share__header\">\r\n    <span id=\"back\" (click)=\"back()\">&#8656;</span>\r\n    <span id=\"name\" class=\"ms-font-l\">Share \"<b>{{_snippet.meta.name}}</b>\"</span>\r\n</section>\r\n\r\n<section class=\"share__main ms-font-m\">\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n        <div class=\"ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white\">{{statusDescription}}</div>\r\n    </div>\r\n\r\n    <div class=\"pre-share\" [hidden]=\"!loaded || gistId\">\r\n        <div class=\"description ms-font-m ms-fontWeight-semibold\">\r\n            There are two ways to share your snippet:\r\n        </div>\r\n\r\n        <div class=\"header ms-font-l ms-fontWeight-semibold\">\r\n            <b>Option 1 (Recommended)</b>: Upload to a <b>\r\n                <a href=\"https://gist.github.com/\" traget=\"_blank\">GitHub&nbsp;Gist</a> </b>\r\n        </div>\r\n        <div class=\"option\">\r\n            <button class=\"ms-Button\" [hidden]=\"token\" (click)=\"signInToGithub()\">\r\n                <h1 class=\"ms-Button-label\">Sign in to GitHub</h1>\r\n            </button>\r\n            <div [hidden]=\"!token\">\r\n                <div class=\"ms-Persona\">\r\n                    <div class=\"ms-Persona-imageArea\">\r\n                        <img class=\"ms-Persona-image\" [src]=\"profile?.avatar_url\">\r\n                    </div>\r\n                    <div class=\"ms-Persona-details\">\r\n                        <div class=\"ms-Persona-primaryText\">{{profile?.name}}</div>\r\n                        <div class=\"ms-Persona-secondaryText\">{{profile?.login}}</div>\r\n                    </div>\r\n                </div>\r\n\r\n                <a (click)=\"logout()\" style=\"cursor: pointer; display:block; margin: 15px 0 30px;\">Sign Out</a>\r\n\r\n\r\n                <div class=\"ms-ChoiceFieldGroup\">\r\n                    <div class=\"ms-ChoiceFieldGroup-title\">\r\n                        <label class=\"ms-font-m ms-Label is-required\">Share as:</label>\r\n                    </div>\r\n                    <div class=\"ms-ChoiceField\">\r\n                        <input id=\"radio-public\" class=\"ms-ChoiceField-input\" type=\"radio\" name=\"radio-share\" checked=\"\" (change)=\"gistSharePublic = true\">\r\n                        <label for=\"radio-public\" class=\"ms-ChoiceField-field\">\r\n                            <span class=\"ms-Label\">Public (searchable) GitHub Gist</span>\r\n                        </label>\r\n                    </div>\r\n                    <div class=\"ms-ChoiceField\">\r\n                        <input id=\"radio-secret\" class=\"ms-ChoiceField-input\" type=\"radio\" name=\"radio-share\" (change)=\"gistSharePublic = false\">\r\n                        <label for=\"radio-secret\" class=\"ms-ChoiceField-field\">\r\n                            <span class=\"ms-Label\">Secret (link-only) GitHub Gist</span>\r\n                        </label>\r\n                    </div>\r\n                </div>\r\n                <div>\r\n                    <!--BHARGAV TODO:  Add sign out and name, and profile picture if you feel like it. -->\r\n                    <button class=\"ms-Button\" (click)=\"postToGist()\">\r\n                        <h1 class=\"ms-Button-label\">Post to GitHub Gist</h1>\r\n                    </button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"header space-above ms-font-l ms-fontWeight-semibold\">\r\n            Option 2: Manually <b>copy the JSON</b> to share with another user\r\n        </div>\r\n        <div class=\"option\">\r\n            <div id=\"monaco-wrapper\">\r\n                <div #editor id=\"monaco\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <div class=\"post-share\" [hidden]=\"!gistId\">\r\n        <h1 class=\"ms-font-xl\">Your snippet has been shared successfully!</h1>\r\n\r\n        <h2 class=\"ms-font-l\">Shareable link</h2>\r\n        <div class=\"info-panel\">\r\n            <p>\r\n                The URL of the GitHub Gist is\r\n            </p>\r\n            <div class=\"link-or-id\">\r\n                <a href=\"https://gist.github.com/{{profile?.login}}/{{gistId}}\" target=\"_blank\">\r\n                    https://gist.github.com/{{profile?.login}}/{{gistId}}\r\n                </a>\r\n            </div>\r\n            <p>\r\n                For a shareable link, where folks can view your snippet online, use\r\n            </p>\r\n            <div class=\"link-or-id\">\r\n                <a href=\"{{viewUrl}}\" target=\"_blank\">{{viewUrl}}</a>\r\n            </div>\r\n            <p>\r\n                Your colleagues will be able to import your snippet by choosing the <b>\"Import from link or JSON\"</b> button\r\n                in the Playground, and providing either of the above URLs.\r\n            </p>\r\n\r\n            <p>\r\n                <span style=\"font-weight: bold;\">\r\n                    Note: please copy and make note of the above URLs</span>, as they will be gone as soon\r\n                as you navigate away from this page.\r\n            </p>\r\n        </div>\r\n\r\n        <h2 class=\"ms-font-l\">Embeddable view</h2>\r\n        <div class=\"info-panel\">\r\n            <p>\r\n                To <b>embed the snippet in an article, blog post, etc.,</b> simply add the following iframe tag to your site:\r\n            </p>\r\n            <div class=\"link-or-id consolas\">{{embedScriptTag}}</div>\r\n        </div>\r\n    </div>\r\n</section>";
+	module.exports = "<section class=\"share__header\">\r\n    <span id=\"back\" (click)=\"back()\">&#8656;</span>\r\n    <span id=\"name\" class=\"ms-font-l\">Share \"<b>{{_snippet.meta.name}}</b>\"</span>\r\n</section>\r\n\r\n<section class=\"share__main ms-font-m\">\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n        <div class=\"ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white\">{{statusDescription}}</div>\r\n    </div>\r\n\r\n    <div class=\"pre-share\" [hidden]=\"!loaded || gistId\">\r\n        <div class=\"description ms-font-m ms-fontWeight-semibold\">\r\n            There are two ways to share your snippet:\r\n        </div>\r\n\r\n        <div class=\"header ms-font-l ms-fontWeight-semibold\">\r\n            <b>Option 1 (Recommended)</b>: Upload to a <b>\r\n                <a href=\"https://gist.github.com/\" traget=\"_blank\">GitHub&nbsp;Gist</a> </b>\r\n        </div>\r\n        <div class=\"option\">\r\n            <button class=\"ms-Button\" [hidden]=\"token\" (click)=\"signInToGithub()\">\r\n                <h1 class=\"ms-Button-label\">Sign in to GitHub</h1>\r\n            </button>\r\n            <div [hidden]=\"!token\">\r\n                <div [hidden]=\"!showGithubPersona\" class=\"ms-Persona\">\r\n                    <div class=\"ms-Persona-imageArea\">\r\n                        <img class=\"ms-Persona-image\" [src]=\"profile?.avatar_url\">\r\n                    </div>\r\n                    <div class=\"ms-Persona-details\">\r\n                        <div class=\"ms-Persona-primaryText\">{{profile?.name}}</div>\r\n                        <div class=\"ms-Persona-secondaryText\">{{profile?.login}}</div>\r\n                    </div>\r\n                </div>\r\n\r\n                <a [hidden]=\"!showGithubPersona\" (click)=\"logout()\"\r\n                    style=\"cursor: pointer; display:block; margin: 15px 0 30px;\">Sign Out</a>\r\n\r\n                <div class=\"ms-ChoiceFieldGroup\">\r\n                    <div class=\"ms-ChoiceFieldGroup-title\">\r\n                        <label class=\"ms-font-m ms-Label is-required\">Share as:</label>\r\n                    </div>\r\n                    <div class=\"ms-ChoiceField\">\r\n                        <input id=\"radio-public\" class=\"ms-ChoiceField-input\" type=\"radio\" name=\"radio-share\" checked=\"\" (change)=\"gistSharePublic = true\">\r\n                        <label for=\"radio-public\" class=\"ms-ChoiceField-field\">\r\n                            <span class=\"ms-Label\">Public (searchable) GitHub Gist</span>\r\n                        </label>\r\n                    </div>\r\n                    <div class=\"ms-ChoiceField\">\r\n                        <input id=\"radio-secret\" class=\"ms-ChoiceField-input\" type=\"radio\" name=\"radio-share\" (change)=\"gistSharePublic = false\">\r\n                        <label for=\"radio-secret\" class=\"ms-ChoiceField-field\">\r\n                            <span class=\"ms-Label\">Secret (link-only) GitHub Gist</span>\r\n                        </label>\r\n                    </div>\r\n                </div>\r\n                <div>\r\n                    <!--BHARGAV TODO:  Add sign out and name, and profile picture if you feel like it. -->\r\n                    <button class=\"ms-Button\" (click)=\"postToGist()\">\r\n                        <h1 class=\"ms-Button-label\">Post to GitHub Gist</h1>\r\n                    </button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"header space-above ms-font-l ms-fontWeight-semibold\">\r\n            Option 2: Manually <b>copy the JSON</b> to share with another user\r\n        </div>\r\n        <div class=\"option\">\r\n            <div id=\"monaco-wrapper\">\r\n                <div #editor id=\"monaco\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <div class=\"post-share\" [hidden]=\"!gistId\">\r\n        <h1 class=\"ms-font-xl\">Your snippet has been shared successfully!</h1>\r\n\r\n        <h2 class=\"ms-font-l\">Shareable link</h2>\r\n        <div class=\"info-panel\">\r\n            <p>\r\n                The URL of the GitHub Gist is\r\n            </p>\r\n            <div class=\"link-or-id\">\r\n                <a href=\"{{githubViewableGistUrl}}https://gist.github.com/{{profile?.login}}/{{gistId}}\" target=\"_blank\">\r\n                    https://gist.github.com/{{profile?.login}}/{{gistId}}\r\n                </a>\r\n            </div>\r\n            <p>\r\n                For a shareable link, where folks can view your snippet online, use\r\n            </p>\r\n            <div class=\"link-or-id\">\r\n                <a href=\"{{viewUrl}}\" target=\"_blank\">{{viewUrl}}</a>\r\n            </div>\r\n            <p>\r\n                Your colleagues will be able to import your snippet by choosing the <b>\"Import from link or JSON\"</b> button\r\n                in the Playground, and providing either of the above URLs.\r\n            </p>\r\n\r\n            <p>\r\n                <span style=\"font-weight: bold;\">\r\n                    Note: please copy and make note of the above URLs</span>, as they will be gone as soon\r\n                as you navigate away from this page.\r\n            </p>\r\n        </div>\r\n\r\n        <h2 class=\"ms-font-l\">Embeddable view</h2>\r\n        <div class=\"info-panel\">\r\n            <p>\r\n                To <b>embed the snippet in an article, blog post, etc.,</b> simply add the following iframe tag to your site:\r\n            </p>\r\n            <div class=\"link-or-id consolas\">{{embedScriptTag}}</div>\r\n        </div>\r\n    </div>\r\n</section>";
 
 /***/ },
 
