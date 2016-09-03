@@ -51,14 +51,6 @@ export class SnippetWriter {
                     body {
                         padding: 5px 10px;
                     }
-
-                    body, #invoke-action {
-                        font-family: Segoe UI Semilight, Segoe UI, Tahoma;
-                    }
-
-                    #invoke-action {
-                        font-weight: bold;
-                    }
                 `), 2));
             } else {
                 html.push(Utilities.indentAll(Utilities.stringOrEmpty(snippet.css).trim(), 2));
@@ -75,7 +67,7 @@ export class SnippetWriter {
             jsStringArray.push('$(document).ready(function () {');
             
             if (Utilities.isNullOrWhitespace(snippet.html)) {
-                jsStringArray.push('$("#invoke-action").click(invokeAction);');
+                jsStringArray.push('$("#run-code").click(runCode);');
             } else {
                 jsStringArray.push(js.trim());
             }
@@ -88,7 +80,7 @@ export class SnippetWriter {
 
             if (Utilities.isNullOrWhitespace(snippet.html)) {
                 jsStringArray.push(
-                    'function invokeAction() {',
+                    'function runCode() {',
                     js.trim(),
                     '}'
                 );
@@ -114,12 +106,12 @@ export class SnippetWriter {
         var htmlBody = Utilities.isNullOrWhitespace(snippet.html) ? 
             Utilities.stripSpaces(`
                 <p>Your snippet contained only script code, with no user interface. We created a simple button to let you execute your code.</p>
-                <button id="invoke-action">Invoke action</button>
+                <button id="run-code" class="ms-font-mPlus ms-fontWeight-semibold">Run code</button>
             `) : snippet.html;
 
         html.push(
             '</head>',
-            '<body>',
+            '<body class="ms-font-mPlus ms-fontWeight-semilight">',
             Utilities.indentAll(htmlBody, 1),
             '</body>',
             '</html>'
