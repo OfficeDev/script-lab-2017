@@ -26,9 +26,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     _snippet: Snippet;
     _snippetExportString: string;
 
-    // NOTE: setting token temporarily to an empty-but-non-null token
-    // to allow anonymous sharing while we figure out the GitHub login issues
-    token: IToken = {access_token: null, provider: null}; // this.tokenManager.get('GitHub');
+    token: IToken = this.tokenManager.get('GitHub');
 
     constructor(
         _snippetManager: SnippetManager,
