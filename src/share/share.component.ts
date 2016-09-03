@@ -238,7 +238,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
                 this.gistId = gistId;
                 this.viewUrl = Utilities.playgroundBasePath + '#/view/gist_' + this.gistId;
-                this.embedScriptTag = `<iframe src="${this.viewUrl}" style="width: 100%; height: 450px"></iframe>`;
+                this.embedScriptTag = `<iframe src="${this.viewUrl}" style="display: block; width: 800px; height: 600px;"></iframe>`;
 
                 $(window).scrollTop(0);
             })
