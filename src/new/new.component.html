@@ -5,9 +5,17 @@
     <section class="new__section new__gallery">
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
-                <span>My local snippets</span>
+                <span>My local snippets&nbsp;&nbsp;
+                    <i class='new-list__action ms-Icon ms-Icon--infoCircle' (click)="showInfo = !showInfo"></i>
+                </span>
                 <i [hidden]="!localGallery?.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
+            <p [hidden]="!showInfo" class="new-list__localstorage-notice ms-font-m">
+                Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
+                Please do <em>not</em> use the Playground for mission-critical snippets that you
+                haven't backed up via some other means (i.e., manual copying or the Sharing feature).
+            </p>
+            
             <section class="new-list__group local-snippets">
                 <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
@@ -21,16 +29,6 @@
                 </p>
             </section>
 
-            <p class="new-list__localstorage-notice ms-font-m">
-                Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
-                <span class="show-hide-link" [hidden]=localStorageNoticeExpanded (click)="localStorageNoticeExpanded = true;">(&#8230;)
-                </span>
-                <span style="display: block; margin-top: 10px;" [hidden]="!localStorageNoticeExpanded">
-                    Please do <em>not</em> use the Playground for mission-critical snippets that you
-                    haven't backed up via some other means (i.e., manual copying or the Sharing feature).
-                    <span class="show-hide-link" (click)="localStorageNoticeExpanded = false;">(-)</span>
-                </span>
-            </p>
             <section class="new-list__from-template">
                 <h1 class="ms-font-m main-heading">
                     From a template

@@ -104,14 +104,6 @@ export class ContextUtil {
         }
     }
 
-    static get fullPlaygroundDescription(): string {
-        if (ContextUtil.isOfficeContext) {
-            return "Office Add-in Playground - " + ContextUtil.hostName;
-        }
-
-        throw "Invalid context " + ContextUtil.context;
-    }
-
     static applyTheme() {        
         $('body').removeClass('excel');
         $('body').removeClass('word');

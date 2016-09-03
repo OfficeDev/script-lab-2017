@@ -78,19 +78,11 @@ export class Snippet implements ISnippet {
             } 
             return outputArray.join('\n');
         } else {
-            var errorWordSingularOrPlural = result.diagnostics.length > 1 ? "errors" : "error";
             var errors: string[] = [
                 'Invalid JavaScript or TypeScript. ' + 
-                `Please return to the editor and fix the following syntax ${errorWordSingularOrPlural}:`
+                `Please return to the editor and fix the syntax errors.`
             ];
-            result.diagnostics.map((diag) => {
-                var position = diag.file.getLineAndCharacterOfPosition(diag.start);
-                var sourceText = diag.file.text.substr(diag.start, diag.length);
-                errors.push(`* Line ${position.line + 1 /*0-indexed*/}, char ${position.character}: ${diag.messageText}` + 
-                    '\n-->    Source code: ' + sourceText);
-            });
-
-            console.log(Utilities.stringifyPlusPlus(errors));
+            
             throw new PlaygroundError(errors);
         }
     }
@@ -330,6 +322,7 @@ export class Snippet implements ISnippet {
 
     /** snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API */
     static createFromGist(snippetId: string): Promise<Snippet> {
+        // FIXME automatically strip out username, remove comments about it.
         var apiUrl = 'https://api.github.com/gists/' + snippetId;
         return new Promise((resolve, reject) => {
             $.getJSON(apiUrl)

@@ -16,7 +16,7 @@
     &__console {
         flex: 1 1 50%;
         @include flex();
-        background-color: #F4F4F4;
+        background-color: $background-lightest;
         padding: 15px;
         overflow: auto;
 

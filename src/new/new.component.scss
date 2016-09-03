@@ -14,7 +14,7 @@
         width: 100%;
         max-width: none;
         display: block !important;
-        background-color: #F4F4F4;
+        background-color: $background-lightest;
         color: #333;
         margin: 0;
         padding: $default-spacing;
@@ -106,8 +106,8 @@
     }
 
     &__localstorage-notice {
+        background: $background-lightest;
         padding: $default-spacing;
-        background: lightgoldenrodyellow;
     }
 
     &__action {
@@ -127,7 +127,7 @@
         flex-grow: 1;
     }
 
-    .main-heading.local-snippets > i {
+    .main-heading.local-snippets i {
         position: relative;
         top: 0;
         padding: 5px;
@@ -142,7 +142,7 @@
     }
 
 h1.main-heading {
-    background-color: #F4F4F4;
+    background-color: $background-lightest;
     padding-left: $default-spacing !important;
     border: none;
     border-bottom: solid 1px #E4E4E4;
@@ -156,25 +156,6 @@ h1.ms-Button-label {
     background: inherit;
     text-transform: uppercase;
 }
-
-.new__action h1.ms-Button-label {
-}
-
-// .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-//     margin-left: 1.5em;
-// }
-
-// @media (max-width: 400px) {
-//     .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-//         margin-left: 1em;
-//     }
-// }
-
-// @media (max-width: 300px) {
-//     .new-list__group.local-snippets, .new-list__from-template > section, .new-list__from-template > section > section {
-//         margin-left: 0.75em;
-//     }
-// }
 
 .new-list__item:active, .new-list__item:hover {
     color: white;

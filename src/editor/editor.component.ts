@@ -185,7 +185,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                         "Would you like to save now? Alternatively, if you're in the middle of a risky change, " + 
                         "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet."; 
                     
-                    return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel out'])
+                    return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel'])
                         .then((choice) => {
                             if (choice == 'Save') {
                                 return this._saveHelper();

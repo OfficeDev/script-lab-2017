@@ -2,12 +2,14 @@ import {Injectable} from '@angular/core';
 import {ISnippet, Snippet, SnippetNamingSuffixOption} from '../services';
 import {StorageHelper, Utilities, ContextUtil, ContextType,
     ExpectedError, PlaygroundError, UxUtil} from '../helpers';
+import {Http} from '@angular/http';
 
 @Injectable()
 export class SnippetManager {
     private _snippetsContainer: StorageHelper<ISnippet>;
     private currentContext: string;
 
+    constructor (private _http: Http) { }
     /**
      * Must be called from every controller to ensure that the snippet manager uses
      * a correct snippet context (Excel vs. Word vs. Web).
@@ -105,6 +107,13 @@ export class SnippetManager {
     }
 
     getPlaylist(): Promise<any> {
+        // FIXME playlist
+        // this._http.get(location.origin + '/assets/snippets/' + ContextUtil.contextString + '.json')
+        //     .toPromise()
+        //     .then(response => {
+        //         response.json()
+        //     });
+
         return Promise.resolve(this._playlist)
             .then(data => {
                 return {
