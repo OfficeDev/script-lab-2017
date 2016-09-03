@@ -115,7 +115,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                     normalized.substr(normalizedGithubPrefix.length)));
             } else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedPlaygroundViewPrefix.length)));
+                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')));
             } else {
                 this.loaded = true;
                 UxUtil.showDialog("Invalid URL for import", [

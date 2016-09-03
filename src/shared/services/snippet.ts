@@ -320,38 +320,50 @@ export class Snippet implements ISnippet {
         }
     }
 
-    /** snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API */
+    /**
+     * snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API.
+     * If the snippet contains a username, will do a best-effort to strip it out.
+    */
     static createFromGist(snippetId: string): Promise<Snippet> {
-        // FIXME automatically strip out username, remove comments about it.
-        var apiUrl = 'https://api.github.com/gists/' + snippetId;
+        const gistApiPrefix = 'https://api.github.com/gists/';
+        snippetId = snippetId.trim();
+        if (snippetId.endsWith('/')) {
+            snippetId = snippetId.substr(0, snippetId.length - 1);
+        }
+
+        var apiUrl = gistApiPrefix + snippetId;
         return new Promise((resolve, reject) => {
             $.getJSON(apiUrl)
-                .then(
-                    (gist: IGistResponse) => {
-                        GistUtilities.getMetadata(gist)
-                            .then((metaJson) => GistUtilities.processPlaygroundSnippet(metaJson, gist))
-                            .then((snippet) => resolve(snippet))
-                            .catch((e) => {
-                                console.log(e);
-                                reject (new PlaygroundError(
-                                    'An error occurred while importing the snippet. ' + UxUtil.extractErrorMessage(e)));
-                            });
-                    },
+                .then(processGistResponse,
                     (e) => {
-                        reject(new PlaygroundError(
-                            "Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?\n" + 
-                            "Also, please ensure that the URL does *not* include the username, only the Gist ID."));
+                        // Just in case there was a usernmae there, try stripping out
+                        // everything to the first slash, and see if that's any better:
+                        if (snippetId.indexOf('/') > 0) {
+                            apiUrl = gistApiPrefix + snippetId.substr(snippetId.indexOf('/') + 1);
+                            $.getJSON(apiUrl)
+                                .then(processGistResponse, fail);
+                        } else {
+                            fail(e);
+                        }
                     });
+
+            function processGistResponse(gist: IGistResponse): Promise<any> {
+                return GistUtilities.getMetadata(gist)
+                    .then((metaJson) => GistUtilities.processPlaygroundSnippet(metaJson, gist))
+                    .then((snippet) => resolve(snippet))
+                    .catch((e) => {
+                        console.log(e);
+                        reject (new PlaygroundError(
+                            'An error occurred while importing the snippet. ' + UxUtil.extractErrorMessage(e)));
+                    });
+            }
+
+            function fail(e: any): void {
+                reject(new PlaygroundError(
+                    "Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?"));
+            }
         });
     }
-}
-
-export enum OfficeClient {
-    Word,
-    Excel,
-    PowerPoint,
-    Project,
-    OneNote
 }
 
 export interface ISnippetMeta {
