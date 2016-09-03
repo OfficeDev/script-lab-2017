@@ -1,0 +1,186 @@
+﻿@import 'theme.scss';
+@import 'mixins.scss';
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+*[hidden] {
+    display: none !important;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    color: $foreground-primary;
+}
+
+body {
+    position: relative;
+}
+
+main {
+    height: 100%;
+}
+
+footer {
+    width: 100%;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    padding: 0;
+}
+
+.clearfix {
+    display: block;
+    clear: both;
+    height: 0;
+}
+
+.ms-Icon-large {
+    position: relative;
+    font-size: 20px;
+    top: 4px;
+}
+
+.app {
+    @include flex();
+    height: 100vh;
+
+    home, addin-launcher, new, editor, tabs, editor-tab, run, view, share, import {
+        flex: 1 1 100%;
+        @include flex();
+    }
+
+    share {
+        overflow: hidden;
+    }
+
+    tabs {
+        overflow: hidden;
+    }
+
+    editor-tab {
+        display: none;
+        height: 100% !important;
+    }        
+}
+
+span.console {
+    margin-bottom: 5px;
+    display: block;
+}
+
+span.console.log {
+    color: seagreen;
+}
+
+span.console.warn {
+    color: orange;
+}
+
+span.console.error {
+    color: brown;
+}
+
+.show-hide-link {
+    cursor: pointer;
+    cursor: hand;
+    color: blue;
+    text-decoration: underline;
+}
+
+.display-if-office-js-dialog-enabled {
+    display: none;
+}
+
+.consolas {
+    font-family: Consolas, monaco, monospace;
+}
+
+.excel-background {
+    background: $excel;
+}
+
+.word-background {
+    background: $word;
+}
+
+.powerpoint-background {
+    background: #d04526;
+}
+
+.onenote-background {
+    background: $onenote;
+}
+
+.fabric-background {
+    background: $generic;
+}
+
+.appwide-overlay-dialog {
+    display: none;
+	overflow: hidden;
+}
+
+.appwide-overlay-dialog.ui-dialog {
+    overflow-y: auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -52%);
+    width: 70%;
+    max-height: 80%;
+    z-index: 101;
+}
+
+    .appwide-overlay-dialog.ui-dialog > div {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .appwide-overlay-dialog.ui-dialog .ui-dialog-title {
+        white-space: initial;
+    }
+
+    .appwide-overlay-dialog.ui-dialog .ui-dialog-buttonpane {
+        text-align: right;
+        margin-top: initial;
+		padding: initial;
+    }
+
+    .appwide-overlay-dialog .ui-dialog-content {
+		word-wrap: break-word;
+		flex-basis: 100%;
+        min-height: 150px;
+	}
+
+        .appwide-overlay-dialog .ui-dialog-content p {
+            margin-bottom: .5em;
+        }
+
+.appwide-overlay-dialog.ui-widget-overlay {
+    z-index: 100;
+}
+
+.ms-Dialog-subText {
+    margin: 0 !important;
+}
+
+.ms-Dialog-main {
+    .ms-Dialog-header {
+        .ms-Dialog-title {
+            font-size: 18px;
+        }
+    }
+}

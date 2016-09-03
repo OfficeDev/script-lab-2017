@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <base href="/">
+    <title>Office Add-in Playground</title>
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//appsforoffice.microsoft.com/lib/beta/hosted/office.js"></script>
+
+    <script>
+        // Keep those in-sync with shared\helpers\contextutil.ts
+        var sessionStorageKey_context = 'context';
+        var sessionStorageKey_wasLaunchedFromAddin = 'wasLaunchedFromAddin';
+
+        window.sessionStorage.setItem(sessionStorageKey_wasLaunchedFromAddin, 'true');
+        
+        Office.initialize = function() {
+            var context = tryToDetermineContext();
+            if (context) {
+                window.sessionStorage.setItem(sessionStorageKey_context, context);
+                window.location.href = '../#/new';
+            } else {
+                window.location.href = '../#/home';
+            }
+
+            function tryToDetermineContext() {
+                if (Office.context.requirements.isSetSupported('ExcelApi')) {
+                    return 'excel';
+                } else if (Office.context.requirements.isSetSupported('WordApi')) {
+                    return 'word';
+                } else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
+                    return 'onenote';
+                } else if (Office.context.requirements.isSetSupported('ActiveView')) {
+                    return 'powerpoint';
+                } else if (Office.context.requirements.isSetSupported('OoxmlCoercion')) {
+                    return 'word'; // for older versions of Word
+                }
+                 
+                return null;
+            }
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>
