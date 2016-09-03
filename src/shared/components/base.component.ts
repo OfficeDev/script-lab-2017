@@ -10,6 +10,9 @@ export class BaseComponent {
         protected _router: Router,
         protected _snippetManager: SnippetManager
     ) {
+        // Clear out any dialog that may have been left there from a previous page.
+        UxUtil.hideDialog();
+
         if (ContextUtil.context !== ContextType.Unknown) {
             _snippetManager.initialize();
 

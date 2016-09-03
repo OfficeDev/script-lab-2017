@@ -13,9 +13,13 @@ export class PlaygroundError {
 }
 
 export class UxUtil {
-    static showErrorNotification(title, messageOrMessageArray: string | string[], e: any): Promise<string> {
+    static showErrorNotification(title, messageOrMessageArray: string | string[], e: any, buttons?: string[]): Promise<string> {
         if (e instanceof ExpectedError) {
             return;
+        }
+
+        if (Utilities.isNull(buttons)) {
+            buttons = ['OK'];
         }
 
         if (!messageOrMessageArray) {
@@ -38,7 +42,7 @@ export class UxUtil {
         console.log(Utilities.stringifyPlusPlus(messages));
         console.log(Utilities.stringifyPlusPlus(e));
 
-        return UxUtil.showDialog(title, messages, "OK");
+        return UxUtil.showDialog(title, messages, buttons);
     }
 
     static catchError(title, messageOrMessageArray: string | string[]): (e: Error) => Promise<string> {
@@ -94,6 +98,13 @@ export class UxUtil {
 
                 $dialogRoot.show();
             })
+        });
+    }
+
+    static hideDialog() {
+        $(document).ready(function () {
+            var $dialogRoot = $('.ms-Dialog--lgHeader');
+            $dialogRoot.hide();
         });
     }
 

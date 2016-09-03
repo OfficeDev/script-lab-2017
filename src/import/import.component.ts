@@ -109,7 +109,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
             var normalized = Utilities.normalizeUrl(inputValue)
             var normalizedGithubPrefix = "//gist.github.com/";
             var normalizedPlaygroundViewPrefix = Utilities.normalizeUrl(
-                this.playgroundBasePath + "#/view/gist_");
+                this.playgroundBasePath + "#/view/");
             if (normalized.startsWith(normalizedGithubPrefix)) {
                 addHelper(() => Snippet.createFromGist(
                     normalized.substr(normalizedGithubPrefix.length)));

@@ -47,17 +47,23 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
         var subscription = this._route.params.subscribe(params => {
             var id: string = params['id'];
             if (id.startsWith('gist_')) {
-                return Snippet.createFromGist(id.substr('gist_'.length))
-                    .then((snippet) => {
-                        this.snippet = snippet;
-                        this.currentIntelliSense = this.snippet.getTypeScriptDefinitions();
-                        this.headerName = `"${snippet.meta.name}" snippet`;
-
-                        ContextUtil.setContext(snippet.attemptToGuessContext());
-                        ContextUtil.applyTheme();              
-                    })
-                    .catch(UxUtil.catchError("Could not display snippet", null));
+                id = id.substr('gist_'.length);
             }
+            id = id.replace('_', '/');
+            
+            return Snippet.createFromGist(id)
+                .then((snippet) => {
+                    this.snippet = snippet;
+                    this.currentIntelliSense = this.snippet.getTypeScriptDefinitions();
+                    this.headerName = `"${snippet.meta.name}" snippet`;
+
+                    ContextUtil.setContext(snippet.attemptToGuessContext());
+                    ContextUtil.applyTheme();              
+                })
+                .catch((e) => {
+                    UxUtil.showErrorNotification("Could not display the snippet", null, e,
+                        [] /* no buttons, so no way to cancel out the dialog */);
+                });
         });
 
         this.markDispose(subscription);
