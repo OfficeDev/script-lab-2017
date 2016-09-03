@@ -25,7 +25,10 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     _snippet: Snippet;
     _snippetExportString: string;
-    token: IToken = this.tokenManager.get('GitHub');
+
+    // NOTE: setting token temporarily to an empty-but-non-null token
+    // to allow anonymous sharing while we figure out the GitHub login issues
+    token: IToken = {access_token: null, provider: null}; // this.tokenManager.get('GitHub');
 
     constructor(
         _snippetManager: SnippetManager,
@@ -42,7 +45,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.token) {
+        if (this.token && this.token.access_token) {
             this._getGithubProfile(this.token).then(profile => this.profile = profile);
         }
 
@@ -186,27 +189,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             return;
         }
 
-        var startsWithComment = this._snippet.script.trim().startsWith('//') ||
-            this._snippet.script.trim().startsWith('/*');
-
-        if (startsWithComment) {
-            this._proceedWithPostToGist(compiledJs);
-        } else {
-            var title = 'Do you want to add a description?';
-            var description = "If you're posting the snippet for the world to see, it may be helpful " +
-                "to add a description of what the code does.\n\n" +
-                "One simple way to do it is by adding a comment at the top of your script file, explaining " +
-                "the snippet's purpose. Would you like to return to the editor and add a comment now?";
-
-            UxUtil.showDialog(title, description, ['Return to editor', 'Proceed as is'])
-                .then((choice) => {
-                    if (choice === 'Return to editor') {
-                        this.back();
-                    } else {
-                        this._proceedWithPostToGist(compiledJs);
-                    }
-                });
-        }
+        this._proceedWithPostToGist(compiledJs);
     }
 
     private _proceedWithPostToGist(compiledJs: string) {
@@ -266,6 +249,16 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                 UxUtil.showErrorNotification("Gist-creation failed",
                     "Sorry, something went wrong when creating the GitHub Gist.", e);
             });
+    }
+
+    get showGithubPersona() {
+        return this.token && this.token.access_token;
+    }
+
+    get githubViewableGistUrl() {
+        return 'https://gist.github.com/' + 
+            (this.profile ? (this.profile.login + '/') : '') + 
+            Utilities.stringOrEmpty(this.gistId);
     }
 
     back() {

@@ -130,14 +130,16 @@ export class GistUtilities {
                 url: 'https://api.github.com/gists',
                 type: 'POST',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    if (token) {
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    }
                 },
                 data: JSON.stringify(createData)
             })
-                .then((response) => resolve(response.id))
-                .fail(function (e) {
-                    reject(e.responseText);
-                });
+            .then((response) => resolve(response.id))
+            .fail(function (e) {
+                reject(e.responseText);
+            });
         });
     }
 }

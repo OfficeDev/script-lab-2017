@@ -184,7 +184,7 @@ export class SnippetManager {
                     Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
                         function (asyncResult) {
                             if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                                console.log(error.message);
+                                console.log(asyncResult.error.message);
                             } else {
                                 console.log('Selected data is ' + asyncResult.value);
                             }            

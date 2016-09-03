@@ -24,7 +24,7 @@
                 <h1 class="ms-Button-label">Sign in to GitHub</h1>
             </button>
             <div [hidden]="!token">
-                <div class="ms-Persona">
+                <div [hidden]="!showGithubPersona" class="ms-Persona">
                     <div class="ms-Persona-imageArea">
                         <img class="ms-Persona-image" [src]="profile?.avatar_url">
                     </div>
@@ -34,8 +34,8 @@
                     </div>
                 </div>
 
-                <a (click)="logout()" style="cursor: pointer; display:block; margin: 15px 0 30px;">Sign Out</a>
-
+                <a [hidden]="!showGithubPersona" (click)="logout()"
+                    style="cursor: pointer; display:block; margin: 15px 0 30px;">Sign Out</a>
 
                 <div class="ms-ChoiceFieldGroup">
                     <div class="ms-ChoiceFieldGroup-title">
@@ -82,7 +82,7 @@
                 The URL of the GitHub Gist is
             </p>
             <div class="link-or-id">
-                <a href="https://gist.github.com/{{profile?.login}}/{{gistId}}" target="_blank">
+                <a href="{{githubViewableGistUrl}}https://gist.github.com/{{profile?.login}}/{{gistId}}" target="_blank">
                     https://gist.github.com/{{profile?.login}}/{{gistId}}
                 </a>
             </div>
