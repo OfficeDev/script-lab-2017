@@ -103,7 +103,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         var authenticator = new Authenticator(endpointManager, this.tokenManager);
 
         endpointManager.add('GitHub', {
-            clientId: '6b2823cf0379dd5fc050',
+            clientId: '7cc4f025e87f951919e4',
             scope: 'gist',
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
@@ -156,7 +156,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     private _exchangeGithubCodeForToken(code: string): Promise<IToken> {
         return new Promise((resolve, reject) => {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr');
+            
+            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuthProd?code=jaFz4zawTO7BQyYwPBmYlOHck4dKaEIXN9GNtyx92LRhgiA1t3fOYw==');
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
