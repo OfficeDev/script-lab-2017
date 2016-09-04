@@ -76,6 +76,10 @@ module.exports = {
                 from: './src/assets',
                 to: 'assets',
             },
+            {
+                from: './web.config',
+                to: 'web.config',
+            },
         ]),
 
         new webpack.ProvidePlugin({

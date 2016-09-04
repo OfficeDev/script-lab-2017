@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
@@ -28,6 +29,12 @@ module.exports = webpackMerge(commonConfig, {
             'process.env': {
                 'ENV': JSON.stringify(ENV)
             }
-        })
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: './config/env.prod.json',
+                to: 'env.json',
+            }
+        ])
     ]
 });

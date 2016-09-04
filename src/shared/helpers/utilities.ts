@@ -1,3 +1,5 @@
+import {Http} from '@angular/http';
+
 export class Utilities {   
     static replace(source: string): (key: string, value: string) => any {
         return function self(key: string, value: string): any {
@@ -215,5 +217,16 @@ export class Utilities {
         }
         
         return true;
+    }
+
+    static fetchEnvironmentConfig(http: Http) {
+         var envConfigJsonUrl = Utilities.playgroundBasePath + 'env.json';
+        
+        return http.get(envConfigJsonUrl)
+            .toPromise()
+            .then(response => response.json())
+            .catch((e) => {
+                throw new Error('Could not retrieve the environment configuration');
+            });
     }
 }
