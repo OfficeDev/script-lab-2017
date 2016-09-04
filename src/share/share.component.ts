@@ -1,5 +1,6 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
+import {Http} from '@angular/http';
 import {BaseComponent} from '../shared/components/base.component';
 import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
@@ -28,10 +29,16 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     token: IToken = this.tokenManager.get('GitHub');
 
+    _environment: {
+        GITHUB_TOKEN_SERVICE_URL: string,
+        GITHUB_AUTH_CLIENT_ID: string
+    }
+
     constructor(
         _snippetManager: SnippetManager,
         _router: Router,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _http: Http
 
     ) {
         super(_router, _snippetManager);
@@ -52,8 +59,13 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                 .then(snippet => {
                     this._snippet = snippet;
                     this._snippetExportString = JSON.stringify(snippet.exportToJson(true /*forPlayground*/), null, 4);
-                    return this._initializeMonacoEditor()
                 })
+                .then(() => this._initializeMonacoEditor())
+                .then(() => {
+                    return Utilities.fetchEnvironmentConfig(this._http)
+                        .then((env) => this._environment = env);
+                })
+                .then(() => this.loaded = true)
                 .catch(UxUtil.catchError("Could not load snippet", "An error occurred while fetching the snippet."));
         });
 
@@ -90,7 +102,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                     }
                 });
 
-                this.loaded = true;
+                resolve();
+
                 setTimeout(() => this._monacoEditor.layout(), 20);
 
                 console.log("Monaco editor initialized.");
@@ -100,16 +113,17 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     signInToGithub(): void {
         var endpointManager = new EndpointManager();
-        var authenticator = new Authenticator(endpointManager, this.tokenManager);
-
+        
         endpointManager.add('GitHub', {
-            clientId: '6b2823cf0379dd5fc050',
+            clientId: this._environment.GITHUB_AUTH_CLIENT_ID,
             scope: 'gist',
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
             responseType: '',
             state: true
         });
+
+        var authenticator = new Authenticator(endpointManager, this.tokenManager);
 
         authenticator.authenticate('GitHub', true /* force */)
             .then(result => {
@@ -156,7 +170,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     private _exchangeGithubCodeForToken(code: string): Promise<IToken> {
         return new Promise((resolve, reject) => {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr');
+            xhr.open('POST', this._environment.GITHUB_TOKEN_SERVICE_URL);
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function () {
