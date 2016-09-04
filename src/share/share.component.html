@@ -55,7 +55,6 @@
                     </div>
                 </div>
                 <div>
-                    <!--BHARGAV TODO:  Add sign out and name, and profile picture if you feel like it. -->
                     <button class="ms-Button" (click)="postToGist()">
                         <h1 class="ms-Button-label">Post to GitHub Gist</h1>
                     </button>
@@ -82,8 +81,8 @@
                 The URL of the GitHub Gist is
             </p>
             <div class="link-or-id">
-                <a href="{{githubViewableGistUrl}}https://gist.github.com/{{profile?.login}}/{{gistId}}" target="_blank">
-                    https://gist.github.com/{{profile?.login}}/{{gistId}}
+                <a href="{{githubViewableGistUrl}}" target="_blank">
+                    {{githubViewableGistUrl}}
                 </a>
             </div>
             <p>
@@ -95,12 +94,6 @@
             <p>
                 Your colleagues will be able to import your snippet by choosing the <b>"Import from link or JSON"</b> button
                 in the Playground, and providing either of the above URLs.
-            </p>
-
-            <p>
-                <span style="font-weight: bold;">
-                    Note: please copy and make note of the above URLs</span>, as they will be gone as soon
-                as you navigate away from this page.
             </p>
         </div>
 

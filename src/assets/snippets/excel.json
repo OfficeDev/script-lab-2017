@@ -6,17 +6,17 @@
                 {
                     "name": "Add-in with notification toast",
                     "description": "Highlights the currently-selected range, and reports its address via a Fabric-based notification toast.",
-                    "gistId":  "d1cb7df01dabb66b046cd2c7881248e4"
+                    "gistId": "d1cb7df01dabb66b046cd2c7881248e4"
                 },
                 {
                     "name": "Document-object to DOM interaction",
                     "description": "Lists all of the tables in the workbook, and creates clickable hyperlinks to activate the tables even after the initial \"Excel.run\" has finished.",
-                    "gistId":  "0e5cceda6aa6f7eea63074cb7d19b1e5"
+                    "gistId": "0e5cceda6aa6f7eea63074cb7d19b1e5"
                 },
                 {
                     "name": "Report-generation",
                     "description": "Writes data to the workbook, applies basic formatting, and adds a chart bound to the data.",
-                    "gistId":  "0e5cceda6aa6f7eea63074cb7d19b1e5"
+                    "gistId": "0e5cceda6aa6f7eea63074cb7d19b1e5"
                 }
             ]
         },
@@ -27,10 +27,16 @@
                     "name": "Perform action on selection",
                     "description": "Highlights the currently-selected range",
                     "gistId": "8a58218a48d39d40431cf934e62a71a2"
-                },
+                }
+            ]
+        },
+        {
+            "name": "Common APIs (host-agnostic)",
+            "items": [
                 {
-                    "name": "",
-                    "gistId": ""
+                    "name": "Get selected data",
+                    "description": "Gets the text of the current selection",
+                    "gistId": "a48e903258c0e4cf74615e4c8aafaada"
                 }
             ]
         }
