@@ -45,7 +45,7 @@
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
                     <section class="new-list__group">
                         <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items">
-                            <span (click)="importSnippet(snippet?.gistId)">{{snippet?.name}}</span>
+                            <span (click)="importSnippet(snippet?.gistId, snippet?.name)">{{snippet?.name}}</span>
                         </article>
                     </section>
                 </section>
