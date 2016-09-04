@@ -22,7 +22,8 @@ body.word {
 
         .ms-Button--primary {
             background-color: $accent-background-primary  !important;
-            color: $accent-foreground-primary  !important;     
+            border: $accent-background-primary  !important;
+            color: $accent-foreground-primary  !important;  
         }
     }
 
@@ -85,13 +86,19 @@ body.word {
         color: $accent-background-primary
     }
 
-        .import__footer  .ms-Button {
+        .theme-color.ms-Button {
             background: $accent-background-primary !important;
+            border-color: $accent-background-primary !important;
         }
 
-            .import__footer .ms-Button:hover {
-                background: darken($accent-background-primary, 15%) !important;
+            .theme-color.ms-Button .ms-Button-label {
+                color: white;
             }
+
+        .theme-color.ms-Button:hover, .theme-color.ms-Button:active {
+            background: darken($accent-background-primary, 15%) !important;
+            border-color: darken($accent-background-primary, 15%) !important;
+        }
 
     .new {
         &__header {

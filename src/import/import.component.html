@@ -9,8 +9,24 @@
         <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
         <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">{{statusDescription}}</div>
     </div>
-
+        
     <div class="pre-import" [hidden]="!loaded">
+        <h1 class="ms-font-l gray-background">Import a snippet</h1>
+        <p class="ms-font-m gray-background">Please paste the Snippet URL or JSON into the text area below, 
+            and then choose the "Import" button.
+        </p>
+        <div class="info-panel">
+            <div id="monaco-wrapper">
+                <div #editor id="monaco"></div>
+            </div>
+
+            <div class="right-aligned-button-container">
+                <button class="import-button theme-color ms-Button" (click)="import()">
+                    <h1 class="ms-Button-label ms-font-l">Import</h1>
+                </button>
+            </div>
+        </div>
+
         <h1 class="ms-font-l gray-background">
             To import a snippet, you will need to have 
             <b class="theme-color">one</b> of the following:
@@ -51,25 +67,5 @@
                 </li>
             </ol>
         </div>
-
-
-        <h1 class="ms-font-l gray-background">Ready?</h1>
-        <p class="ms-font-m gray-background">Please paste the Snippet URL or JSON into the text area below, 
-            and then choose the "Import" button at the bottom of the screen.
-        </p>
-
-        <div class="info-panel">
-            <div id="monaco-wrapper">
-                <div #editor id="monaco"></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="import__footer gray-background" [hidden]="!loaded">
-    <div class="right-aligned-button-container">
-        <button class="ms-Button" (click)="import()">
-            <h1 class="ms-Button-label ms-font-l">Import</h1>
-        </button>
     </div>
 </section>

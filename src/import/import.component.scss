@@ -82,19 +82,12 @@ import {
     padding: 10px;
 }
 
-.import__footer {
-    padding: 10px;
+.right-aligned-button-container {
+    text-align: right;
 }
 
-    .import__footer .right-aligned-button-container {
-        text-align: right;
-    }
-
-        .import__footer .right-aligned-button-container button {
-            height: auto;
-        }
-
-        .import__footer .ms-Button .ms-Button-label {
-            color: white;
-            font-weight: normal;
-        }
+.import-button {
+    margin-top: 10px;
+    height: 40px;
+    width: 120px;
+}
