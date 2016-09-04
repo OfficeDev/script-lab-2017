@@ -12340,6 +12340,15 @@ webpackJsonp([0],{
 	        }
 	        return true;
 	    };
+	    Utilities.fetchEnvironmentConfig = function (http) {
+	        var envConfigJsonUrl = Utilities.playgroundBasePath + 'env.json';
+	        return http.get(envConfigJsonUrl)
+	            .toPromise()
+	            .then(function (response) { return response.json(); })
+	            .catch(function (e) {
+	            throw new Error('Could not retrieve the environment configuration');
+	        });
+	    };
 	    Utilities.randomize = function (limit, start) {
 	        if (limit === void 0) { limit = 100000; }
 	        if (start === void 0) { start = 0; }
@@ -78826,15 +78835,17 @@ webpackJsonp([0],{
 	};
 	var core_1 = __webpack_require__(6);
 	var router_1 = __webpack_require__(350);
+	var http_1 = __webpack_require__(329);
 	var base_component_1 = __webpack_require__(685);
 	var helpers_1 = __webpack_require__(632);
 	var services_1 = __webpack_require__(406);
 	var oauth_1 = __webpack_require__(679);
 	var ShareComponent = (function (_super) {
 	    __extends(ShareComponent, _super);
-	    function ShareComponent(_snippetManager, _router, _route) {
+	    function ShareComponent(_snippetManager, _router, _route, _http) {
 	        _super.call(this, _router, _snippetManager);
 	        this._route = _route;
+	        this._http = _http;
 	        this.gistSharePublic = true;
 	        this.tokenManager = new oauth_1.TokenManager();
 	        this.statusDescription = "Preparing the snippet for sharing...";
@@ -78854,8 +78865,13 @@ webpackJsonp([0],{
 	                .then(function (snippet) {
 	                _this._snippet = snippet;
 	                _this._snippetExportString = JSON.stringify(snippet.exportToJson(true /*forPlayground*/), null, 4);
-	                return _this._initializeMonacoEditor();
 	            })
+	                .then(function () { return _this._initializeMonacoEditor(); })
+	                .then(function () {
+	                return helpers_1.Utilities.fetchEnvironmentConfig(_this._http)
+	                    .then(function (env) { return _this._environment = env; });
+	            })
+	                .then(function () { return _this.loaded = true; })
 	                .catch(helpers_1.UxUtil.catchError("Could not load snippet", "An error occurred while fetching the snippet."));
 	        });
 	        this.markDispose(subscription);
@@ -78887,7 +78903,7 @@ webpackJsonp([0],{
 	                        arrowSize: 15
 	                    }
 	                });
-	                _this.loaded = true;
+	                resolve();
 	                setTimeout(function () { return _this._monacoEditor.layout(); }, 20);
 	                console.log("Monaco editor initialized.");
 	            });
@@ -78896,15 +78912,15 @@ webpackJsonp([0],{
 	    ShareComponent.prototype.signInToGithub = function () {
 	        var _this = this;
 	        var endpointManager = new oauth_1.EndpointManager();
-	        var authenticator = new oauth_1.Authenticator(endpointManager, this.tokenManager);
 	        endpointManager.add('GitHub', {
-	            clientId: '7cc4f025e87f951919e4',
+	            clientId: this._environment.GITHUB_AUTH_CLIENT_ID,
 	            scope: 'gist',
 	            baseUrl: 'https://github.com/login',
 	            authorizeUrl: '/oauth/authorize',
 	            responseType: '',
 	            state: true
 	        });
+	        var authenticator = new oauth_1.Authenticator(endpointManager, this.tokenManager);
 	        authenticator.authenticate('GitHub', true /* force */)
 	            .then(function (result) {
 	            if ('code' in result) {
@@ -78946,9 +78962,10 @@ webpackJsonp([0],{
 	        });
 	    };
 	    ShareComponent.prototype._exchangeGithubCodeForToken = function (code) {
+	        var _this = this;
 	        return new Promise(function (resolve, reject) {
 	            var xhr = new XMLHttpRequest();
-	            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuthProd?code=jaFz4zawTO7BQyYwPBmYlOHck4dKaEIXN9GNtyx92LRhgiA1t3fOYw==');
+	            xhr.open('POST', _this._environment.GITHUB_TOKEN_SERVICE_URL);
 	            xhr.setRequestHeader('Accept', 'application/json');
 	            xhr.setRequestHeader('Content-Type', 'application/json');
 	            xhr.onload = function () {
@@ -79069,7 +79086,7 @@ webpackJsonp([0],{
 	            template: __webpack_require__(708),
 	            styles: [__webpack_require__(709)],
 	        }), 
-	        __metadata('design:paramtypes', [services_1.SnippetManager, router_1.Router, router_1.ActivatedRoute])
+	        __metadata('design:paramtypes', [services_1.SnippetManager, router_1.Router, router_1.ActivatedRoute, http_1.Http])
 	    ], ShareComponent);
 	    return ShareComponent;
 	}(base_component_1.BaseComponent));
