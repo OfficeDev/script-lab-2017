@@ -1,6 +1,6 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HTTP_PROVIDERS} from '@angular/http';
-import {Component, ExceptionHandler} from '@angular/core';
+import {Component, ExceptionHandler, enableProdMode} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
@@ -18,6 +18,9 @@ require('./assets/styles/onenote.scss');
 require('./assets/styles/generic.scss');
 
 ContextUtil.applyTheme();
+if (!window.location.href.indexOf('localhost')) {
+    enableProdMode();
+}
 
 export const PROVIDER_OVERRIDES = [
     { provide: ExceptionHandler, useClass: ExceptionHelper },
