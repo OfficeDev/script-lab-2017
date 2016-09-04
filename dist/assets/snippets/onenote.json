@@ -1,0 +1,24 @@
+{
+    "groups": [
+        {
+            "name": "General Starter Templates",
+            "items": [
+                {
+                    "name": "Add-in with notification toast",
+                    "description": "Reads the first sentance in the selection, and displays it in a Fabric-based notification toast.",
+                    "gistId":  "6aa8a74b7d783d3f38062ac27fac061d"
+                }
+            ]
+        },
+        {
+            "name": "Common APIs (host-agnostic)",
+            "items": [
+                {
+                    "name": "Get selected data",
+                    "description": "Gets the text of the current selection",
+                    "gistId": "a48e903258c0e4cf74615e4c8aafaada"
+                }
+            ]
+        }
+    ]
+}
