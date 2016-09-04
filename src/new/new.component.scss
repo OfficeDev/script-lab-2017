@@ -108,16 +108,15 @@
 
         &__template {
             > div {
-                padding: $default-spacing;            
+                padding: $default-spacing 0;            
                 align-self: flex-start;
                 @include ellipsis();
                 flex: 1 1 100%;
 
                 > .description {
-                    display: none;
-                    color: #ddd;
                     padding-right: 20px;
                     white-space: normal;
+                    opacity: 0.6;
                 }
             }
         }
@@ -198,10 +197,6 @@ h1.ms-Button-label {
 
 .from-template .new-list__group article {
     padding-left: 20px;
-}
-
-.new-list__item__template:active > div > .description, .new-list__item__template:hover > div > .description {
-    display: block;
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {
