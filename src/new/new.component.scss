@@ -108,7 +108,7 @@
 
         &__template {
             > div {
-                padding: $default-spacing 0;            
+                padding: $default-spacing*2/3 $default-spacing;            
                 align-self: flex-start;
                 @include ellipsis();
                 flex: 1 1 100%;
@@ -190,13 +190,13 @@ h1.main-heading {
     font-weight: bold;
 }
 
+h1.from-template {
+    margin-bottom: 10px;
+}
+
 h1.ms-Button-label {
     background: inherit;
     text-transform: uppercase;
-}
-
-.from-template .new-list__group article {
-    padding-left: 20px;
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {
