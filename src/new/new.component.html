@@ -6,7 +6,7 @@
         <div class="ms-Spinner large"></div>
         <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
     </div>
-    <section class="new__section new__gallery" hidden="!loaded">
+    <section class="new__section new__gallery" [hidden]="!loaded">
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
                 <span>My local snippets&nbsp;&nbsp;
@@ -52,7 +52,7 @@
             </section>
         </section>
     </section>
-    <section class="new__section" hidden="!loaded">
+    <section class="new__section" [hidden]="!loaded">
         <hr class="new__section--separator" />
         <button class="new__action ms-Button ms-Button--compound" (click)="select()">
             <h1 class="ms-Button-label">Create new</h1>
