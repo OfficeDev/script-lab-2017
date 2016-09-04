@@ -23,6 +23,8 @@ export interface IGistPostData {
 }
 
 export class GistUtilities {
+    static sampleGistId = '8a58218a48d39d40431cf934e62a71a2';
+
     static getMetadata(gist: IGistResponse): Promise<ISnippetMeta> {
         return Promise.resolve().then(() => {
             var metadataCandidates = [];

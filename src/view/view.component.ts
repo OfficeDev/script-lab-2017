@@ -3,7 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextUtil, UxUtil} from '../shared/helpers';
+import {Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError} from '../shared/helpers';
 
 enum EditWarning {
     NeverShown,
@@ -45,13 +45,11 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
         this.snippet = new Snippet({});
 
         var subscription = this._route.params.subscribe(params => {
-            var id: string = params['id'];
-            if (id.startsWith('gist_')) {
-                id = id.substr('gist_'.length);
-            }
+            var provider: string = (params['provider'] as string).trim().toLowerCase();
+            var id: string = (params['id'] as string).trim().toLowerCase();
             id = id.replace('_', '/');
             
-            return Snippet.createFromGist(id)
+            return createSnippetFromProvider()
                 .then((snippet) => {
                     this.snippet = snippet;
                     this.currentIntelliSense = this.snippet.getTypeScriptDefinitions();
@@ -64,11 +62,24 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
                     UxUtil.showErrorNotification("Could not display the snippet", null, e,
                         [] /* no buttons, so no way to cancel out the dialog */);
                 });
+
+            function createSnippetFromProvider(): Promise<Snippet> {
+                switch (provider) {
+                    case 'gist':
+                        return Snippet.createFromGist(id);
+                    default:
+                        throw new PlaygroundError([
+                            'Invalid provider specified. Expecting a URL of the form:',
+                            Utilities.playgroundBasePath + '/#/view/gist/' + GistUtilities.sampleGistId
+                        ]); 
+                }
+            }
         });
 
         this.markDispose(subscription);
 
         this.tabs.editorParent = this;
+
     }
 
     onSwitchFocusToJavaScript(): void {

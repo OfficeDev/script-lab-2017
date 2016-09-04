@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
 import {Router} from '@angular/router';
 import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, UxUtil} from '../shared/helpers';
+import {Utilities, UxUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager, SnippetNamingSuffixOption} from '../shared/services';
 
 declare var GitHub;
@@ -17,8 +17,6 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
 
     loaded: boolean;
     statusDescription = "Initializing editor for importing...";
-
-    sampleGistId = '8a58218a48d39d40431cf934e62a71a2';
 
     constructor(
         _snippetManager: SnippetManager,
@@ -158,5 +156,9 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
 
     get playgroundBasePath() {
         return Utilities.playgroundBasePath;
+    }
+
+    get sampleGistId() {
+        return GistUtilities.sampleGistId;
     }
 }

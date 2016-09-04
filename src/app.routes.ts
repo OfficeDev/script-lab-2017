@@ -35,7 +35,7 @@ export const AppRoutes: RouterConfig = [
         component: ImportComponent
     },
     {
-        path: 'view/:id',
+        path: 'view/:provider/:id',
         component: ViewComponent
     }
 ];
