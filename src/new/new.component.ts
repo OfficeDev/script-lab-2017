@@ -69,7 +69,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._router.navigate(['edit', snippet.meta.id]);
     }
 
-    import(gistId: string) {
+    importSnippet(gistId?: string) {
         this.loaded = false;
         Promise.resolve()
             .then(() => Snippet.createFromGist(gistId))
@@ -82,6 +82,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
                     "An error occurred while creating the template snippet.",
                     e);
             });
+    }
+
+    navigateToImport() {
+        this._router.navigate(['import'])
     }
 
     get title(): string {
