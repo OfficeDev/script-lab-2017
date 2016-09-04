@@ -18,10 +18,10 @@ export class ExceptionHelper extends ExceptionHandler {
             return; // skip showing error notification to user.  silently swallow.
         }
 
-        if (Utilities.stringifyPlusPlus(exception).indexOf("Uncaught (in promise): Error: Cannot match any routes: 'excel'") >= 0) {
-            window.location.href = Utilities.playgroundBasePath;
-            return;
-        }
+        // if (Utilities.stringifyPlusPlus(exception).indexOf("Uncaught (in promise): Error: Cannot match any routes: 'excel'") >= 0) {
+        //     window.location.href = Utilities.playgroundBasePath;
+        //     return;
+        // }
 
         UxUtil.showErrorNotification("An unexpected error occurred.", [], exception);
     }

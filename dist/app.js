@@ -12391,10 +12391,10 @@ webpackJsonp([0],{
 	        if (utilities_1.Utilities.stringifyPlusPlus(exception).indexOf('Attempt to use a destroyed view') >= 0) {
 	            return; // skip showing error notification to user.  silently swallow.
 	        }
-	        if (utilities_1.Utilities.stringifyPlusPlus(exception).indexOf("Uncaught (in promise): Error: Cannot match any routes: 'excel'") >= 0) {
-	            window.location.href = utilities_1.Utilities.playgroundBasePath;
-	            return;
-	        }
+	        // if (Utilities.stringifyPlusPlus(exception).indexOf("Uncaught (in promise): Error: Cannot match any routes: 'excel'") >= 0) {
+	        //     window.location.href = Utilities.playgroundBasePath;
+	        //     return;
+	        // }
 	        uxutil_1.UxUtil.showErrorNotification("An unexpected error occurred.", [], exception);
 	    };
 	    return ExceptionHelper;
@@ -78871,7 +78871,10 @@ webpackJsonp([0],{
 	                return helpers_1.Utilities.fetchEnvironmentConfig(_this._http)
 	                    .then(function (env) { return _this._environment = env; });
 	            })
-	                .then(function () { return _this.loaded = true; })
+	                .then(function () {
+	                _this.loaded = true;
+	                setTimeout(function () { return _this._monacoEditor.layout(); }, 100);
+	            })
 	                .catch(helpers_1.UxUtil.catchError("Could not load snippet", "An error occurred while fetching the snippet."));
 	        });
 	        this.markDispose(subscription);
@@ -78903,9 +78906,8 @@ webpackJsonp([0],{
 	                        arrowSize: 15
 	                    }
 	                });
-	                resolve();
-	                setTimeout(function () { return _this._monacoEditor.layout(); }, 20);
 	                console.log("Monaco editor initialized.");
+	                resolve();
 	            });
 	        });
 	    };

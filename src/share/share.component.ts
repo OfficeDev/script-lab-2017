@@ -65,7 +65,10 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                     return Utilities.fetchEnvironmentConfig(this._http)
                         .then((env) => this._environment = env);
                 })
-                .then(() => this.loaded = true)
+                .then(() => {
+                    this.loaded = true;
+                    setTimeout(() => this._monacoEditor.layout(), 100);
+                })
                 .catch(UxUtil.catchError("Could not load snippet", "An error occurred while fetching the snippet."));
         });
 
@@ -102,11 +105,9 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
                     }
                 });
 
-                resolve();
-
-                setTimeout(() => this._monacoEditor.layout(), 20);
-
                 console.log("Monaco editor initialized.");
+
+                resolve();
             });
         });
     }
