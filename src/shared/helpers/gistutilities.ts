@@ -81,7 +81,7 @@ export class GistUtilities {
         }
     }
 
-    static processPlaygroundSnippet(metaJson: ISnippetMeta, gist: IGistResponse): Promise<Snippet> {
+    static processPlaygroundSnippet(metaJson: ISnippetMeta, gist: IGistResponse, nameOverride?: string): Promise<Snippet> {
         if (_.isUndefined(metaJson.playgroundVersion)) {
             throw new PlaygroundError('Missing a metadata file with a "playgroundVersion" field in the Gist.');
         }
@@ -113,7 +113,7 @@ export class GistUtilities {
 
                 return new Snippet({
                     meta: {
-                        name: metaJson.name
+                        name: nameOverride ? nameOverride : metaJson.name
                     },
                     script: contentObject['app.ts'],
                     html: contentObject['index.html'],

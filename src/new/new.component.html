@@ -21,7 +21,7 @@
             </p>
             
             <section class="new-list__group local-snippets">
-                <article class="new-list__item ms-font-m" *ngFor="let snippet of localGallery">
+                <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
                     <i class="new-list__action ms-Icon ms-Icon--pencil" (click)="select(snippet)"></i>
                     <i class="new-list__action ms-Icon ms-Icon--play" (click)="run(snippet)"></i>
@@ -44,8 +44,11 @@
                 <section class="new-list__group from-template" *ngFor="let group of templateGallery?.groups; let i = index">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
                     <section class="new-list__group">
-                        <article class="new-list__item ms-font-m" *ngFor="let snippet of group?.items">
-                            <span (click)="importSnippet(snippet?.gistId)">{{snippet?.name}}</span>
+                        <article class="new-list__item new-list__item__template ms-font-m" *ngFor="let snippet of group?.items">
+                            <div (click)="importSnippet(snippet?.gistId, snippet?.name)">
+                                <div class="name">{{snippet?.name}}</div>
+                                <div class="description">{{snippet?.description}}</div>
+                            </div>
                         </article>
                     </section>
                 </section>

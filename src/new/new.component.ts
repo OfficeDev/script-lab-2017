@@ -69,10 +69,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._router.navigate(['edit', snippet.meta.id]);
     }
 
-    importSnippet(gistId?: string) {
+    importSnippet(gistId: string, nameOverride: string) {
         this.loaded = false;
         Promise.resolve()
-            .then(() => Snippet.createFromGist(gistId))
+            .then(() => Snippet.createFromGist(gistId, nameOverride))
             .then((snippet) => this._snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs))
             .then((snippet) => this._router.navigate(['edit', snippet.meta.id]))
             .catch((e) => {

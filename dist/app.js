@@ -10386,9 +10386,9 @@ webpackJsonp([0],{
 	__export(__webpack_require__(638));
 	__export(__webpack_require__(640));
 	__export(__webpack_require__(641));
-	__export(__webpack_require__(646));
-	__export(__webpack_require__(639));
 	__export(__webpack_require__(647));
+	__export(__webpack_require__(639));
+	__export(__webpack_require__(642));
 	__export(__webpack_require__(648));
 
 
@@ -12596,6 +12596,7 @@ webpackJsonp([0],{
 
 	"use strict";
 	var utilities_1 = __webpack_require__(637);
+	var contextutil_1 = __webpack_require__(642);
 	var SnippetWriter = (function () {
 	    function SnippetWriter() {
 	    }
@@ -12623,7 +12624,7 @@ webpackJsonp([0],{
 	        if (options.inlineJsAndCssIntoIframe) {
 	            html.push("    <style>");
 	            if (utilities_1.Utilities.isNullOrWhitespace(snippet.html) && utilities_1.Utilities.isNullOrWhitespace(snippet.css)) {
-	                html.push(utilities_1.Utilities.indentAll(utilities_1.Utilities.stripSpaces("\n                    body {\n                        padding: 5px 10px;\n                    }\n                "), 2));
+	                html.push(utilities_1.Utilities.indentAll(utilities_1.Utilities.stripSpaces("\n                    body {\n                        padding: 5px 10px;\n                    }\n\n                    #run {\n                        background: " + contextutil_1.ContextUtil.contextThemeColor + ";\n                        border: " + contextutil_1.ContextUtil.contextThemeColor + ";\n                    }\n\n                        #run > .ms-Button-label {\n                            color: white;\n                        }\n\n                        #run:hover, #run:active {\n                            background: " + contextutil_1.ContextUtil.contextThemeColorDarker + ";\n                        }\n                "), 2));
 	            }
 	            else {
 	                html.push(utilities_1.Utilities.indentAll(utilities_1.Utilities.stringOrEmpty(snippet.css).trim(), 2));
@@ -12635,7 +12636,7 @@ webpackJsonp([0],{
 	            }
 	            jsStringArray.push('$(document).ready(function () {');
 	            if (utilities_1.Utilities.isNullOrWhitespace(snippet.html)) {
-	                jsStringArray.push('$("#run-code").click(runCode);');
+	                jsStringArray.push('$("#run").click(runSnippet);');
 	            }
 	            else {
 	                jsStringArray.push(js.trim());
@@ -12645,9 +12646,9 @@ webpackJsonp([0],{
 	                jsStringArray.push('};');
 	            }
 	            if (utilities_1.Utilities.isNullOrWhitespace(snippet.html)) {
-	                jsStringArray.push('function runCode() {', js.trim(), '}');
+	                jsStringArray.push('function runSnippet() {', js.trim(), '}');
 	            }
-	            var beautify = __webpack_require__(642).js_beautify;
+	            var beautify = __webpack_require__(643).js_beautify;
 	            var jsString = utilities_1.Utilities.indentAll(utilities_1.Utilities.stripSpaces(beautify(jsStringArray.join("\n"))), 2);
 	            html.push("    <script>", jsString, "    </script>");
 	        }
@@ -12655,8 +12656,8 @@ webpackJsonp([0],{
 	            html.push("    <link type='text/css' rel='stylesheet' href='app.css' />", "    <script src='app.js'></script>");
 	        }
 	        var htmlBody = utilities_1.Utilities.isNullOrWhitespace(snippet.html) ?
-	            utilities_1.Utilities.stripSpaces("\n                <p>Your snippet contained only script code, with no user interface. We created a simple button to let you execute your code.</p>\n                <button id=\"run-code\" class=\"ms-font-mPlus ms-fontWeight-semibold\">Run code</button>\n            ") : snippet.html;
-	        html.push('</head>', '<body class="ms-font-mPlus ms-fontWeight-semilight">', utilities_1.Utilities.indentAll(htmlBody, 1), '</body>', '</html>');
+	            utilities_1.Utilities.stripSpaces("\n                <p class=\"ms-font-mPlus ms-fontWeight-semilight\">\n                    Your snippet contained only script code, with no user interface. We created a simple button to let you execute your code.\n                </p>\n                <button id=\"run\" class=\"ms-Button\">\n                    <span class=\"ms-Button-label\">Run code</span>\n                </button>\n            ") : snippet.html;
+	        html.push('</head>', '<body>', utilities_1.Utilities.indentAll(htmlBody, 1), '</body>', '</html>');
 	        return utilities_1.Utilities.stripSpaces(html.join('\n'));
 	    };
 	    return SnippetWriter;
@@ -12667,6 +12668,193 @@ webpackJsonp([0],{
 /***/ },
 
 /***/ 642:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {"use strict";
+	(function (ContextType) {
+	    ContextType[ContextType["Unknown"] = 0] = "Unknown";
+	    ContextType[ContextType["Excel"] = 1] = "Excel";
+	    ContextType[ContextType["Word"] = 2] = "Word";
+	    ContextType[ContextType["PowerPoint"] = 3] = "PowerPoint";
+	    ContextType[ContextType["OneNote"] = 4] = "OneNote";
+	})(exports.ContextType || (exports.ContextType = {}));
+	var ContextType = exports.ContextType;
+	var ContextUtil = (function () {
+	    function ContextUtil() {
+	    }
+	    ContextUtil.getGlobalState = function (sessionStorageKey) {
+	        return window[sessionStorageKey];
+	    };
+	    ContextUtil.setGlobalState = function (sessionStorageKey, value) {
+	        return window[sessionStorageKey] = value;
+	    };
+	    Object.defineProperty(ContextUtil, "contextString", {
+	        get: function () {
+	            return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_context);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ContextUtil, "isAddin", {
+	        get: function () {
+	            // Note: it's an intentional string comparison.
+	            return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ContextUtil, "context", {
+	        /**
+	         * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
+	         * though many of the derived ones (hostName, contextNamespace, etc.) do.
+	         */
+	        get: function () {
+	            switch (ContextUtil.contextString) {
+	                case 'excel':
+	                    return ContextType.Excel;
+	                case 'word':
+	                    return ContextType.Word;
+	                case 'powerpoint':
+	                    return ContextType.PowerPoint;
+	                case 'onenote':
+	                    return ContextType.OneNote;
+	                default:
+	                    return ContextType.Unknown;
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    ContextUtil.setContext = function (context) {
+	        window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
+	    };
+	    Object.defineProperty(ContextUtil, "isOfficeContext", {
+	        get: function () {
+	            switch (ContextUtil.context) {
+	                case ContextType.Excel:
+	                case ContextType.Word:
+	                case ContextType.PowerPoint:
+	                case ContextType.OneNote:
+	                    return true;
+	                default:
+	                    return false;
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ContextUtil, "hostName", {
+	        get: function () {
+	            switch (ContextUtil.context) {
+	                case ContextType.Excel:
+	                    return 'Excel';
+	                case ContextType.Word:
+	                    return 'Word';
+	                case ContextType.PowerPoint:
+	                    return 'PowerPoint';
+	                case ContextType.OneNote:
+	                    return 'OneNote';
+	                default:
+	                    throw new Error("Invalid context type for Office namespace");
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ContextUtil, "contextNamespace", {
+	        get: function () {
+	            switch (ContextUtil.context) {
+	                case ContextType.Excel:
+	                    return 'Excel';
+	                case ContextType.Word:
+	                    return 'Word';
+	                case ContextType.PowerPoint:
+	                    return null; // Intentionally missing until PowerPoint has the new host-specific API model
+	                case ContextType.OneNote:
+	                    return 'OneNote';
+	                default:
+	                    throw new Error("Invalid context type for Office namespace");
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ContextUtil, "contextThemeColor", {
+	        get: function () {
+	            switch (ContextUtil.context) {
+	                case ContextType.Excel:
+	                    return '#217346';
+	                case ContextType.Word:
+	                    return '#2b579a';
+	                case ContextType.PowerPoint:
+	                    return '#d04526';
+	                case ContextType.OneNote:
+	                    return '#80397b';
+	                default:
+	                    throw new Error("Invalid context type for Office namespace");
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(ContextUtil, "contextThemeColorDarker", {
+	        get: function () {
+	            switch (ContextUtil.context) {
+	                case ContextType.Excel:
+	                    return '#164b2e';
+	                case ContextType.Word:
+	                    return '#204072';
+	                case ContextType.PowerPoint:
+	                    return '#a5371e';
+	                case ContextType.OneNote:
+	                    return '#5d2959';
+	                default:
+	                    throw new Error("Invalid context type for Office namespace");
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    ContextUtil.applyTheme = function () {
+	        $('body').removeClass('excel');
+	        $('body').removeClass('word');
+	        $('body').removeClass('powerpoint');
+	        $('body').removeClass('onenote');
+	        $('body').removeClass('generic');
+	        switch (ContextUtil.context) {
+	            case ContextType.Excel:
+	                $('body').addClass('excel');
+	                break;
+	            case ContextType.Word:
+	                $('body').addClass('word');
+	                break;
+	            case ContextType.PowerPoint:
+	                $('body').addClass('powerpoint');
+	                break;
+	            case ContextType.OneNote:
+	                $('body').addClass('onenote');
+	                break;
+	            default:
+	                $('body').addClass('generic');
+	                break;
+	        }
+	    };
+	    ContextUtil.officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
+	    /** Indicates whether the getScript for Office.js has been initiated already */
+	    ContextUtil.windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
+	    /** Returns true after Office.initialized has been called */
+	    ContextUtil.windowkey_officeInitialized = 'officeInitialized';
+	    ContextUtil.sessionStorageKey_context = 'context';
+	    ContextUtil.sessionStorageKey_wasLaunchedFromAddin = 'wasLaunchedFromAddin';
+	    return ContextUtil;
+	}());
+	exports.ContextUtil = ContextUtil;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+
+/***/ 643:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -12707,9 +12895,9 @@ webpackJsonp([0],{
 	if (true) {
 	    // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
 	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	        __webpack_require__(643),
 	        __webpack_require__(644),
-	        __webpack_require__(645)
+	        __webpack_require__(645),
+	        __webpack_require__(646)
 	    ], __WEBPACK_AMD_DEFINE_RESULT__ = function(js_beautify, css_beautify, html_beautify) {
 	        return get_beautify(js_beautify, css_beautify, html_beautify);
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -12726,7 +12914,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 643:
+/***/ 644:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
@@ -15065,7 +15253,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 644:
+/***/ 645:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
@@ -15579,7 +15767,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 645:
+/***/ 646:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*jshint curly:true, eqeqeq:true, laxbreak:true, noempty:false */
@@ -16570,9 +16758,9 @@ webpackJsonp([0],{
 	
 	    if (true) {
 	        // Add support for AMD ( https://github.com/amdjs/amdjs-api/wiki/AMD#defineamd-property- )
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, __webpack_require__(643), __webpack_require__(644)], __WEBPACK_AMD_DEFINE_RESULT__ = function(requireamd) {
-	            var js_beautify = __webpack_require__(643);
-	            var css_beautify = __webpack_require__(644);
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, __webpack_require__(644), __webpack_require__(645)], __WEBPACK_AMD_DEFINE_RESULT__ = function(requireamd) {
+	            var js_beautify = __webpack_require__(644);
+	            var css_beautify = __webpack_require__(645);
 	
 	            return {
 	                html_beautify: function(html_source, options) {
@@ -16605,7 +16793,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 646:
+/***/ 647:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -16621,157 +16809,6 @@ webpackJsonp([0],{
 	}());
 	exports.MessageStrings = MessageStrings;
 
-
-/***/ },
-
-/***/ 647:
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function($) {"use strict";
-	(function (ContextType) {
-	    ContextType[ContextType["Unknown"] = 0] = "Unknown";
-	    ContextType[ContextType["Excel"] = 1] = "Excel";
-	    ContextType[ContextType["Word"] = 2] = "Word";
-	    ContextType[ContextType["PowerPoint"] = 3] = "PowerPoint";
-	    ContextType[ContextType["OneNote"] = 4] = "OneNote";
-	})(exports.ContextType || (exports.ContextType = {}));
-	var ContextType = exports.ContextType;
-	var ContextUtil = (function () {
-	    function ContextUtil() {
-	    }
-	    ContextUtil.getGlobalState = function (sessionStorageKey) {
-	        return window[sessionStorageKey];
-	    };
-	    ContextUtil.setGlobalState = function (sessionStorageKey, value) {
-	        return window[sessionStorageKey] = value;
-	    };
-	    Object.defineProperty(ContextUtil, "contextString", {
-	        get: function () {
-	            return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_context);
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ContextUtil, "isAddin", {
-	        get: function () {
-	            // Note: it's an intentional string comparison.
-	            return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ContextUtil, "context", {
-	        /**
-	         * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
-	         * though many of the derived ones (hostName, contextNamespace, etc.) do.
-	         */
-	        get: function () {
-	            switch (ContextUtil.contextString) {
-	                case 'excel':
-	                    return ContextType.Excel;
-	                case 'word':
-	                    return ContextType.Word;
-	                case 'powerpoint':
-	                    return ContextType.PowerPoint;
-	                case 'onenote':
-	                    return ContextType.OneNote;
-	                default:
-	                    return ContextType.Unknown;
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    ContextUtil.setContext = function (context) {
-	        window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
-	    };
-	    Object.defineProperty(ContextUtil, "isOfficeContext", {
-	        get: function () {
-	            switch (ContextUtil.context) {
-	                case ContextType.Excel:
-	                case ContextType.Word:
-	                case ContextType.PowerPoint:
-	                case ContextType.OneNote:
-	                    return true;
-	                default:
-	                    return false;
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ContextUtil, "hostName", {
-	        get: function () {
-	            switch (ContextUtil.context) {
-	                case ContextType.Excel:
-	                    return 'Excel';
-	                case ContextType.Word:
-	                    return 'Word';
-	                case ContextType.PowerPoint:
-	                    return 'PowerPoint';
-	                case ContextType.OneNote:
-	                    return 'OneNote';
-	                default:
-	                    throw new Error("Invalid context type for Office namespace");
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(ContextUtil, "contextNamespace", {
-	        get: function () {
-	            switch (ContextUtil.context) {
-	                case ContextType.Excel:
-	                    return 'Excel';
-	                case ContextType.Word:
-	                    return 'Word';
-	                case ContextType.PowerPoint:
-	                    return null; // Intentionally missing until PowerPoint has the new host-specific API model
-	                case ContextType.OneNote:
-	                    return 'OneNote';
-	                default:
-	                    throw new Error("Invalid context type for Office namespace");
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    ContextUtil.applyTheme = function () {
-	        $('body').removeClass('excel');
-	        $('body').removeClass('word');
-	        $('body').removeClass('powerpoint');
-	        $('body').removeClass('onenote');
-	        $('body').removeClass('generic');
-	        switch (ContextUtil.context) {
-	            case ContextType.Excel:
-	                $('body').addClass('excel');
-	                break;
-	            case ContextType.Word:
-	                $('body').addClass('word');
-	                break;
-	            case ContextType.PowerPoint:
-	                $('body').addClass('powerpoint');
-	                break;
-	            case ContextType.OneNote:
-	                $('body').addClass('onenote');
-	                break;
-	            default:
-	                $('body').addClass('generic');
-	                break;
-	        }
-	    };
-	    ContextUtil.officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
-	    /** Indicates whether the getScript for Office.js has been initiated already */
-	    ContextUtil.windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
-	    /** Returns true after Office.initialized has been called */
-	    ContextUtil.windowkey_officeInitialized = 'officeInitialized';
-	    ContextUtil.sessionStorageKey_context = 'context';
-	    ContextUtil.sessionStorageKey_wasLaunchedFromAddin = 'wasLaunchedFromAddin';
-	    return ContextUtil;
-	}());
-	exports.ContextUtil = ContextUtil;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
 
@@ -16834,7 +16871,7 @@ webpackJsonp([0],{
 	            return Promise.resolve(fileJson.content);
 	        }
 	    };
-	    GistUtilities.processPlaygroundSnippet = function (metaJson, gist) {
+	    GistUtilities.processPlaygroundSnippet = function (metaJson, gist, nameOverride) {
 	        if (_.isUndefined(metaJson.playgroundVersion)) {
 	            throw new uxutil_1.PlaygroundError('Missing a metadata file with a "playgroundVersion" field in the Gist.');
 	        }
@@ -16862,7 +16899,7 @@ webpackJsonp([0],{
 	                items.forEach(function (item) { return contentObject[item.filename] = item.content; });
 	                return new services_1.Snippet({
 	                    meta: {
-	                        name: metaJson.name
+	                        name: nameOverride ? nameOverride : metaJson.name
 	                    },
 	                    script: contentObject['app.ts'],
 	                    html: contentObject['index.html'],
@@ -17182,8 +17219,10 @@ webpackJsonp([0],{
 	    /**
 	     * snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API.
 	     * If the snippet contains a username, will do a best-effort to strip it out.
+	     *
+	     * nameOverride: a string (if overriding) or unspecified/undefined/null (if should use name from snippet gist)
 	    */
-	    Snippet.createFromGist = function (snippetId) {
+	    Snippet.createFromGist = function (snippetId, nameOverride) {
 	        var gistApiPrefix = 'https://api.github.com/gists/';
 	        snippetId = snippetId.trim();
 	        if (snippetId.endsWith('/')) {
@@ -17206,7 +17245,7 @@ webpackJsonp([0],{
 	            });
 	            function processGistResponse(gist) {
 	                return helpers_1.GistUtilities.getMetadata(gist)
-	                    .then(function (metaJson) { return helpers_1.GistUtilities.processPlaygroundSnippet(metaJson, gist); })
+	                    .then(function (metaJson) { return helpers_1.GistUtilities.processPlaygroundSnippet(metaJson, gist, nameOverride); })
 	                    .then(function (snippet) { return resolve(snippet); })
 	                    .catch(function (e) {
 	                    console.log(e);
@@ -77795,11 +77834,11 @@ webpackJsonp([0],{
 	        }
 	        this._router.navigate(['edit', snippet.meta.id]);
 	    };
-	    NewComponent.prototype.importSnippet = function (gistId) {
+	    NewComponent.prototype.importSnippet = function (gistId, nameOverride) {
 	        var _this = this;
 	        this.loaded = false;
 	        Promise.resolve()
-	            .then(function () { return services_1.Snippet.createFromGist(gistId); })
+	            .then(function () { return services_1.Snippet.createFromGist(gistId, nameOverride); })
 	            .then(function (snippet) { return _this._snippetManager.add(snippet, services_1.SnippetNamingSuffixOption.UseAsIs); })
 	            .then(function (snippet) { return _this._router.navigate(['edit', snippet.meta.id]); })
 	            .catch(function (e) {
@@ -77838,14 +77877,14 @@ webpackJsonp([0],{
 /***/ 691:
 /***/ function(module, exports) {
 
-	module.exports = "<section class=\"new\">\r\n    <section class=\"new__header ms-font-l\">\r\n        {{title}}\r\n    </section>\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n    </div>\r\n    <section class=\"new__section new__gallery\" [hidden]=\"!loaded\">\r\n        <section class=\"new-list\">\r\n            <h1 style=\"margin-top: 0;\" class=\"ms-font-m main-heading local-snippets\">\r\n                <span>My local snippets&nbsp;&nbsp;\r\n                    <i class='new-list__action ms-Icon ms-Icon--infoCircle' (click)=\"showInfo = !showInfo\"></i>\r\n                </span>\r\n                <i [hidden]=\"!localGallery?.length > 0\" class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"deleteAll()\"></i>\r\n            </h1>\r\n            <p [hidden]=\"!showInfo\" class=\"new-list__notice ms-font-m\">\r\n                Note: These snippets are stored in your browser's \"window.localStorage\", and will disappear if you clear your browser cache.\r\n                Please do <em>not</em> use the Playground for mission-critical snippets that you\r\n                haven't backed up via some other means (i.e., manual copying or the Sharing feature).\r\n            </p>\r\n            \r\n            <section class=\"new-list__group local-snippets\">\r\n                <article class=\"new-list__item ms-font-m\" *ngFor=\"let snippet of localGallery\">\r\n                    <span (click)=\"select(snippet)\">{{snippet?.meta.name}}</span>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--pencil\" (click)=\"select(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--play\" (click)=\"run(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"delete(snippet)\"></i>\r\n                </article>\r\n                <p class=\"new-list__message ms-font-m\" [hidden]=\"localGallery?.length > 0\">\r\n                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from\r\n                    the gallery below.\r\n                </p>\r\n            </section>\r\n\r\n            <section>\r\n                <h1 class=\"ms-font-m main-heading\">\r\n                    From a template\r\n                </h1>\r\n                <p [hidden]=\"templateGallery || templateGalleryError\"\r\n                    class=\"new-list__loading ms-font-m\">Loading...\r\n                </p>\r\n                <div [hidden]=\"!templateGalleryError\" class=\"new-list__template-error ms-font-m\">{{templateGalleryError}}</div>\r\n                <section class=\"new-list__group from-template\" *ngFor=\"let group of templateGallery?.groups; let i = index\">\r\n                    <h3 class=\"new-list__group-header ms-font-m\">{{group?.name}}</h3>\r\n                    <section class=\"new-list__group\">\r\n                        <article class=\"new-list__item ms-font-m\" *ngFor=\"let snippet of group?.items\">\r\n                            <span (click)=\"importSnippet(snippet?.gistId)\">{{snippet?.name}}</span>\r\n                        </article>\r\n                    </section>\r\n                </section>\r\n            </section>\r\n        </section>\r\n    </section>\r\n    <section class=\"new__section\" [hidden]=\"!loaded\">\r\n        <hr class=\"new__section--separator\" />\r\n        <button class=\"new__action ms-Button ms-Button--compound\" (click)=\"select()\">\r\n            <h1 class=\"ms-Button-label\">Create new</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a blank template</span>\r\n        </button>\r\n        <button class=\"new__action button-primary ms-Button ms-Button--compound\" (click)=\"navigateToImport()\">\r\n            <h1 class=\"ms-Button-label\">Create from link / JSON</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a shared link or from a JSON object</span>\r\n        </button>\r\n    </section>\r\n</section>";
+	module.exports = "<section class=\"new\">\r\n    <section class=\"new__header ms-font-l\">\r\n        {{title}}\r\n    </section>\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n    </div>\r\n    <section class=\"new__section new__gallery\" [hidden]=\"!loaded\">\r\n        <section class=\"new-list\">\r\n            <h1 style=\"margin-top: 0;\" class=\"ms-font-m main-heading local-snippets\">\r\n                <span>My local snippets&nbsp;&nbsp;\r\n                    <i class='new-list__action ms-Icon ms-Icon--infoCircle' (click)=\"showInfo = !showInfo\"></i>\r\n                </span>\r\n                <i [hidden]=\"!localGallery?.length > 0\" class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"deleteAll()\"></i>\r\n            </h1>\r\n            <p [hidden]=\"!showInfo\" class=\"new-list__notice ms-font-m\">\r\n                Note: These snippets are stored in your browser's \"window.localStorage\", and will disappear if you clear your browser cache.\r\n                Please do <em>not</em> use the Playground for mission-critical snippets that you\r\n                haven't backed up via some other means (i.e., manual copying or the Sharing feature).\r\n            </p>\r\n            \r\n            <section class=\"new-list__group local-snippets\">\r\n                <article class=\"new-list__item new-list__item__local ms-font-m\" *ngFor=\"let snippet of localGallery\">\r\n                    <span (click)=\"select(snippet)\">{{snippet?.meta.name}}</span>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--pencil\" (click)=\"select(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--play\" (click)=\"run(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"delete(snippet)\"></i>\r\n                </article>\r\n                <p class=\"new-list__message ms-font-m\" [hidden]=\"localGallery?.length > 0\">\r\n                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from\r\n                    the gallery below.\r\n                </p>\r\n            </section>\r\n\r\n            <section>\r\n                <h1 class=\"ms-font-m main-heading\">\r\n                    From a template\r\n                </h1>\r\n                <p [hidden]=\"templateGallery || templateGalleryError\"\r\n                    class=\"new-list__loading ms-font-m\">Loading...\r\n                </p>\r\n                <div [hidden]=\"!templateGalleryError\" class=\"new-list__template-error ms-font-m\">{{templateGalleryError}}</div>\r\n                <section class=\"new-list__group from-template\" *ngFor=\"let group of templateGallery?.groups; let i = index\">\r\n                    <h3 class=\"new-list__group-header ms-font-m\">{{group?.name}}</h3>\r\n                    <section class=\"new-list__group\">\r\n                        <article class=\"new-list__item new-list__item__template ms-font-m\" *ngFor=\"let snippet of group?.items\">\r\n                            <div (click)=\"importSnippet(snippet?.gistId, snippet?.name)\">\r\n                                <div class=\"name\">{{snippet?.name}}</div>\r\n                                <div class=\"description\">{{snippet?.description}}</div>\r\n                            </div>\r\n                        </article>\r\n                    </section>\r\n                </section>\r\n            </section>\r\n        </section>\r\n    </section>\r\n    <section class=\"new__section\" [hidden]=\"!loaded\">\r\n        <hr class=\"new__section--separator\" />\r\n        <button class=\"new__action ms-Button ms-Button--compound\" (click)=\"select()\">\r\n            <h1 class=\"ms-Button-label\">Create new</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a blank template</span>\r\n        </button>\r\n        <button class=\"new__action button-primary ms-Button ms-Button--compound\" (click)=\"navigateToImport()\">\r\n            <h1 class=\"ms-Button-label\">Create from link / JSON</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a shared link or from a JSON object</span>\r\n        </button>\r\n    </section>\r\n</section>";
 
 /***/ },
 
 /***/ 692:
 /***/ function(module, exports) {
 
-	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\n.new {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new__header {\n  padding: 7.5px 15px;\n  color: white;\n}\n\n.new__action {\n  width: 100%;\n  max-width: none;\n  display: block !important;\n  background-color: #f4f4f4;\n  color: #333;\n  margin: 0;\n  padding: 15px;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__action:last-child {\n  margin-bottom: 0;\n}\n\n.new__action:hover,\n.new__action:focus {\n  border: none;\n}\n\n.new__action .ms-Button-description,\n.new__action .ms-Button-label {\n  color: #333;\n}\n\n.new__section:last-child {\n  margin-bottom: 0;\n}\n\n.new__section--separator {\n  height: 0;\n  border: none;\n  outline: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__section-title {\n  padding: 15px !important;\n  display: table-cell;\n  box-sizing: border-box;\n}\n\n.new__gallery {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n}\n\n.new__input--text {\n  width: calc(100% - 10px);\n  padding: 0 10px;\n  box-sizing: border-box;\n  height: 30px;\n  font-size: 15px;\n  border: 1px solid lightgray;\n  outline: none;\n  display: table-cell;\n  background: aliceblue;\n}\n\n.new > .ms-progress {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  overflow: auto;\n  height: 100%;\n  overflow-x: hidden;\n}\n\n.new-list__group {\n  margin-bottom: 15px;\n}\n\n.new-list__group-header {\n  font-weight: bold;\n  padding: 7.5px 15px;\n}\n\n.new-list__item {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  width: 100%;\n}\n\n.new-list__item span {\n  padding: 15px;\n  -webkit-align-self: flex-start;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list__message {\n  padding: 7.5px 15px;\n}\n\n.new-list__notice {\n  background: #f4f4f4;\n  padding: 15px;\n}\n\n.new-list__loading {\n  padding: 15px 15px 15px 30px;\n  color: gray;\n}\n\n.new-list__action {\n  padding: 17px;\n  font-size: 15px;\n  -webkit-align-self: flex-end;\n  -ms-flex-item-align: end;\n  align-self: flex-end;\n}\n\n.new-list__template-error {\n  color: #999;\n  padding: 15px;\n}\n\n.main-heading.local-snippets {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  overflow: hidden;\n  -webkit-align-items: center;\n  -ms-flex-align: center;\n  align-items: center;\n}\n\n.main-heading.local-snippets > span {\n  -webkit-flex-grow: 1;\n  -ms-flex-positive: 1;\n  flex-grow: 1;\n}\n\n.main-heading.local-snippets i {\n  position: relative;\n  top: 0;\n  padding: 5px;\n  color: black;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n.main-heading.local-snippets > i:hover {\n  color: white;\n}\n\nh1.main-heading {\n  background-color: #f4f4f4;\n  padding-left: 15px !important;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n  padding: 10px;\n  border-top: solid 1px #E4E4E4;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n\nh1.ms-Button-label {\n  background: inherit;\n  text-transform: uppercase;\n}\n\n.from-template .new-list__group article {\n  padding-left: 20px;\n}\n\n.new-list__item:active,\n.new-list__item:hover {\n  color: white;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\nh1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {\n  padding-right: 7px;\n}\n\n@media (max-width: 600px) {\n  .new-list__action {\n    padding-right: 15px;\n    padding-left: 15px;\n  }\n\n  h1.main-heading {\n    padding-right: 10px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 500px) {\n  .new-list__action {\n    padding-right: 12px;\n    padding-left: 12px;\n  }\n\n  h1.main-heading {\n    padding-right: 7px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 400px) {\n  .new-list__action {\n    padding-right: 9px;\n    padding-left: 9px;\n  }\n\n  h1.main-heading {\n    padding-right: 4px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 300px) {\n  .new-list__action {\n    padding-right: 7px;\n    padding-left: 7px;\n  }\n\n  h1.main-heading {\n    padding-right: 2px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 250px) {\n  .new-list__action {\n    padding-right: 5px;\n    padding-left: 5px;\n  }\n\n  h1.main-heading {\n    padding-right: 0;\n    /* padding above minus 5 */\n  }\n}\n\n"
+	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\n.new {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new__header {\n  padding: 7.5px 15px;\n  color: white;\n}\n\n.new__action {\n  width: 100%;\n  max-width: none;\n  display: block !important;\n  background-color: #f4f4f4;\n  color: #333;\n  margin: 0;\n  padding: 15px;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__action:last-child {\n  margin-bottom: 0;\n}\n\n.new__action:hover,\n.new__action:focus {\n  border: none;\n}\n\n.new__action .ms-Button-description,\n.new__action .ms-Button-label {\n  color: #333;\n}\n\n.new__section:last-child {\n  margin-bottom: 0;\n}\n\n.new__section--separator {\n  height: 0;\n  border: none;\n  outline: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__section-title {\n  padding: 15px !important;\n  display: table-cell;\n  box-sizing: border-box;\n}\n\n.new__gallery {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n}\n\n.new__input--text {\n  width: calc(100% - 10px);\n  padding: 0 10px;\n  box-sizing: border-box;\n  height: 30px;\n  font-size: 15px;\n  border: 1px solid lightgray;\n  outline: none;\n  display: table-cell;\n  background: aliceblue;\n}\n\n.new > .ms-progress {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  overflow: auto;\n  height: 100%;\n  overflow-x: hidden;\n}\n\n.new-list__group {\n  margin-bottom: 15px;\n}\n\n.new-list__group-header {\n  font-weight: bold;\n  padding: 7.5px 15px;\n}\n\n.new-list__item {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  width: 100%;\n}\n\n.new-list__item__local span {\n  padding: 15px;\n  -webkit-align-self: flex-start;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list__item__template > div {\n  padding: 15px;\n  -webkit-align-self: flex-start;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list__item__template > div > .description {\n  display: none;\n  color: #ddd;\n  padding-right: 20px;\n  white-space: normal;\n}\n\n.new-list__item:hover,\n.new-list__item:active {\n  color: white;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n.new-list__message {\n  padding: 7.5px 15px;\n}\n\n.new-list__notice {\n  background: #f4f4f4;\n  padding: 15px;\n}\n\n.new-list__loading {\n  padding: 15px 15px 15px 30px;\n  color: gray;\n}\n\n.new-list__action {\n  padding: 17px;\n  font-size: 15px;\n  -webkit-align-self: flex-end;\n  -ms-flex-item-align: end;\n  align-self: flex-end;\n}\n\n.new-list__template-error {\n  color: #999;\n  padding: 15px;\n}\n\n.main-heading.local-snippets {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  overflow: hidden;\n  -webkit-align-items: center;\n  -ms-flex-align: center;\n  align-items: center;\n}\n\n.main-heading.local-snippets > span {\n  -webkit-flex-grow: 1;\n  -ms-flex-positive: 1;\n  flex-grow: 1;\n}\n\n.main-heading.local-snippets i {\n  position: relative;\n  top: 0;\n  padding: 5px;\n  color: black;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n.main-heading.local-snippets > i:hover {\n  color: white;\n}\n\nh1.main-heading {\n  background-color: #f4f4f4;\n  padding-left: 15px !important;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n  padding: 10px;\n  border-top: solid 1px #E4E4E4;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n\nh1.ms-Button-label {\n  background: inherit;\n  text-transform: uppercase;\n}\n\n.from-template .new-list__group article {\n  padding-left: 20px;\n}\n\n.new-list__item__template:active > div > .description,\n.new-list__item__template:hover > div > .description {\n  display: block;\n}\n\nh1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {\n  padding-right: 7px;\n}\n\n@media (max-width: 600px) {\n  .new-list__action {\n    padding-right: 15px;\n    padding-left: 15px;\n  }\n\n  h1.main-heading {\n    padding-right: 10px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 500px) {\n  .new-list__action {\n    padding-right: 12px;\n    padding-left: 12px;\n  }\n\n  h1.main-heading {\n    padding-right: 7px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 400px) {\n  .new-list__action {\n    padding-right: 9px;\n    padding-left: 9px;\n  }\n\n  h1.main-heading {\n    padding-right: 4px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 300px) {\n  .new-list__action {\n    padding-right: 7px;\n    padding-left: 7px;\n  }\n\n  h1.main-heading {\n    padding-right: 2px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 250px) {\n  .new-list__action {\n    padding-right: 5px;\n    padding-left: 5px;\n  }\n\n  h1.main-heading {\n    padding-right: 0;\n    /* padding above minus 5 */\n  }\n}\n\n"
 
 /***/ },
 
@@ -78542,7 +78581,7 @@ webpackJsonp([0],{
 /***/ 700:
 /***/ function(module, exports) {
 
-	module.exports = "<header class=\"editor__header\">\r\n    <ul class=\"editor-command-bar\">\r\n        <li class=\"editor-command-bar__command\" (click)=\"back()\"><i class=\"ms-Icon ms-Icon--chevronThinLeft\"></i></li>\r\n        <li class=\"editor-command-bar__command editor-command-bar__command--text ms-font-m\">\r\n            <span [hidden]=\"editMode\" (click)=\"editMode = !editMode; $event.stopPropagation();\">\r\n                <span (click)=\"editMode = !editMode; $event.stopPropagation();\">{{snippet?.meta?.name}}</span>\r\n                <i (click)=\"editMode = !editMode; $event.stopPropagation();\" class=\"edit-name-icon ms-Icon ms-Icon--styleRemove\"></i>\r\n            </span>\r\n            <input #name [hidden]=\"!editMode\" class=\"editor-command-bar__input--text\" type=\"text\" [(ngModel)]=\"snippet.meta.name\" placeholder=\"New name for snippet\" />\r\n        </li>\r\n        <li [hidden]=\"!editMode\" (click)=\"editMode = !editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\"><i class=\"ms-Icon ms-Icon--check\"></i></li>\r\n        <li [hidden]=\"editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"save()\"><i class=\"ms-Icon ms-Icon--save\"></i></li>\r\n        <li [hidden]=\"editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"duplicate()\"><i class=\"ms-Icon ms-Icon--copy\"></i></li>\r\n        <li [hidden]=\"editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"delete()\"><i class=\"ms-Icon ms-Icon--trash\"></i></li>\r\n        <li [hidden]=\"editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"share()\"><i class=\"ms-Icon ms-Icon--share\"></i></li>\r\n        <li [hidden]=\"editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"run()\"><i class=\"ms-Icon ms-Icon--play\"></i></li>\r\n    </ul>\r\n</header>\r\n<section class=\"editor__main\">\r\n    <tabs>\r\n        <tab name=\"Script\" language=\"typescript\" [content]=\"snippet.script\"></tab>\r\n        <tab name=\"HTML\" language=\"html\" [content]=\"snippet.html\"></tab>\r\n        <tab name=\"CSS\" language=\"css\" [content]=\"snippet.css\"></tab>\r\n        <tab name=\"Libraries\" language=\"text\" [content]=\"snippet.libraries\"></tab>\r\n    </tabs>\r\n</section>\r\n<section class=\"editor__footer ms-font-m\" [ngClass]=\"{\r\n    'editor__footer--warning': isStatusWarning, \r\n    'editor__footer--error': isStatusError\r\n}\">\r\n    <div id=\"editor-status-text\">\r\n        <div *ngIf=\"!!!status\" class=\"ms-u-slideUpIn20\">Office Add-in Playground</div>\r\n        <div *ngIf=\"!!status\" class=\"ms-u-slideUpIn20\" (click)=\"clearStatus\">{{status}}</div>\r\n    </div>\r\n\r\n    <div class=\"editor-command-bar__command display-if-office-js-dialog-enabled\" (click)=\"launchPopOutAddinEditor()\">\r\n        <i class=\"ms-Icon ms-Icon--popout \"></i>\r\n    </div>\r\n    <div class=\"editor-command-bar__command\" (click)=\"refresh()\">\r\n        <span id=\"refresh\">&#8635;</span>\r\n    </div>\r\n</section>";
+	module.exports = "<header class=\"editor__header\">\r\n    <ul class=\"editor-command-bar\">\r\n        <li class=\"editor-command-bar__command\" (click)=\"back()\"><i class=\"ms-Icon ms-Icon--chevronThinLeft\"></i></li>\r\n        <li class=\"editor-command-bar__command editor-command-bar__command--text ms-font-m\">\r\n            <span [hidden]=\"editMode\" (click)=\"editMode = !editMode; $event.stopPropagation();\">\r\n                <span (click)=\"editMode = !editMode; $event.stopPropagation();\">{{snippet?.meta?.name}}</span>\r\n                <i (click)=\"editMode = !editMode; $event.stopPropagation();\" class=\"edit-name-icon ms-Icon ms-Icon--styleRemove\"></i>\r\n            </span>\r\n            <input #name [hidden]=\"!editMode\" class=\"editor-command-bar__input--text\" type=\"text\" [(ngModel)]=\"snippet.meta.name\" placeholder=\"New name for snippet\" />\r\n        </li>\r\n        <li [hidden]=\"!editMode || !snippet\" (click)=\"editMode = !editMode\" class=\"editor-command-bar__command editor-command-bar__command--right\"><i class=\"ms-Icon ms-Icon--check\"></i></li>\r\n        <li [hidden]=\"editMode || !snippet\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"save()\"><i class=\"ms-Icon ms-Icon--save\"></i></li>\r\n        <li [hidden]=\"editMode || !snippet\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"duplicate()\"><i class=\"ms-Icon ms-Icon--copy\"></i></li>\r\n        <li [hidden]=\"editMode || !snippet\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"delete()\"><i class=\"ms-Icon ms-Icon--trash\"></i></li>\r\n        <li [hidden]=\"editMode || !snippet\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"share()\"><i class=\"ms-Icon ms-Icon--share\"></i></li>\r\n        <li [hidden]=\"editMode || !snippet\" class=\"editor-command-bar__command editor-command-bar__command--right\" (click)=\"run()\"><i class=\"ms-Icon ms-Icon--play\"></i></li>\r\n    </ul>\r\n</header>\r\n<section class=\"editor__main\">\r\n    <tabs>\r\n        <tab name=\"Script\" language=\"typescript\" [content]=\"snippet.script\"></tab>\r\n        <tab name=\"HTML\" language=\"html\" [content]=\"snippet.html\"></tab>\r\n        <tab name=\"CSS\" language=\"css\" [content]=\"snippet.css\"></tab>\r\n        <tab name=\"Libraries\" language=\"text\" [content]=\"snippet.libraries\"></tab>\r\n    </tabs>\r\n</section>\r\n<section class=\"editor__footer ms-font-m\" [ngClass]=\"{\r\n    'editor__footer--warning': isStatusWarning, \r\n    'editor__footer--error': isStatusError\r\n}\">\r\n    <div id=\"editor-status-text\">\r\n        <div *ngIf=\"!!!status\" class=\"ms-u-slideUpIn20\">Office Add-in Playground</div>\r\n        <div *ngIf=\"!!status\" class=\"ms-u-slideUpIn20\" (click)=\"clearStatus\">{{status}}</div>\r\n    </div>\r\n\r\n    <div class=\"editor-command-bar__command display-if-office-js-dialog-enabled\" (click)=\"launchPopOutAddinEditor()\">\r\n        <i class=\"ms-Icon ms-Icon--popout \"></i>\r\n    </div>\r\n    <div class=\"editor-command-bar__command\" (click)=\"refresh()\">\r\n        <span id=\"refresh\">&#8635;</span>\r\n    </div>\r\n</section>";
 
 /***/ },
 
@@ -79299,14 +79338,14 @@ webpackJsonp([0],{
 /***/ 712:
 /***/ function(module, exports) {
 
-	module.exports = "<section class=\"import__header\">\r\n    <span id=\"back\" (click)=\"back()\">&#8656;</span>\r\n    <span id=\"name\" class=\"ms-font-l\">Import a snippet</span>\r\n</section>\r\n\r\n<section class=\"import__main ms-font-m\">\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n        <div class=\"ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white\">{{statusDescription}}</div>\r\n    </div>\r\n\r\n    <div class=\"pre-import\" [hidden]=\"!loaded\">\r\n        <h1 class=\"ms-font-l gray-background\">\r\n            To import a snippet, you will need to have \r\n            <b class=\"theme-color\">one</b> of the following:\r\n        </h1>\r\n        <div class=\"info-panel\">\r\n            <ol>\r\n                <li>\r\n                    A URL for a <a href=\"https://gist.github.com/\" target=\"_blank\">GitHub&nbsp;Gist</a>\r\n                    that was exported by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"https://gist.github.com/{{sampleGistId}}\" target=\"_blank\">\r\n                            https://gist.github.com/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A \"View\" URL created by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"{{playgroundBasePath}}#/view/{{sampleGistId}}\" target=\"_blank\">\r\n                            {{playgroundBasePath}}#/view/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A manually-pasted JSON that has been exported from an Playground snippet. Something like:\r\n                    <pre class=\"link-or-id theme-color\">\r\n{\r\n  \"meta\": {\r\n    \"playgroundVersion\": 1,\r\n    \"name\": \"Basic snippet\"\r\n  },\r\n  \"script\": [\r\n    \"console.log(\\\"Hello world\\\");\"\r\n  ],\r\n  ...\r\n}\r\n                    </pre>\r\n                </li>\r\n            </ol>\r\n        </div>\r\n\r\n\r\n        <h1 class=\"ms-font-l gray-background\">Ready?</h1>\r\n        <p class=\"ms-font-m gray-background\">Please paste the Snippet URL or JSON into the text area below, \r\n            and then choose the \"Import\" button at the bottom of the screen.\r\n        </p>\r\n\r\n        <div class=\"info-panel\">\r\n            <div id=\"monaco-wrapper\">\r\n                <div #editor id=\"monaco\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section class=\"import__footer gray-background\" [hidden]=\"!loaded\">\r\n    <div class=\"right-aligned-button-container\">\r\n        <button class=\"ms-Button\" (click)=\"import()\">\r\n            <h1 class=\"ms-Button-label ms-font-l\">Import</h1>\r\n        </button>\r\n    </div>\r\n</section>";
+	module.exports = "<section class=\"import__header\">\r\n    <span id=\"back\" (click)=\"back()\">&#8656;</span>\r\n    <span id=\"name\" class=\"ms-font-l\">Import a snippet</span>\r\n</section>\r\n\r\n<section class=\"import__main ms-font-m\">\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n        <div class=\"ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white\">{{statusDescription}}</div>\r\n    </div>\r\n        \r\n    <div class=\"pre-import\" [hidden]=\"!loaded\">\r\n        <h1 class=\"ms-font-l gray-background\">Import a snippet</h1>\r\n        <p class=\"ms-font-m gray-background\">Please paste the Snippet URL or JSON into the text area below, \r\n            and then choose the \"Import\" button.\r\n        </p>\r\n        <div class=\"info-panel\">\r\n            <div id=\"monaco-wrapper\">\r\n                <div #editor id=\"monaco\"></div>\r\n            </div>\r\n\r\n            <div class=\"right-aligned-button-container\">\r\n                <button class=\"import-button theme-color ms-Button\" (click)=\"import()\">\r\n                    <h1 class=\"ms-Button-label ms-font-l\">Import</h1>\r\n                </button>\r\n            </div>\r\n        </div>\r\n\r\n        <h1 class=\"ms-font-l gray-background\">\r\n            To import a snippet, you will need to have \r\n            <b class=\"theme-color\">one</b> of the following:\r\n        </h1>\r\n        <div class=\"info-panel\">\r\n            <ol>\r\n                <li>\r\n                    A URL for a <a href=\"https://gist.github.com/\" target=\"_blank\">GitHub&nbsp;Gist</a>\r\n                    that was exported by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"https://gist.github.com/{{sampleGistId}}\" target=\"_blank\">\r\n                            https://gist.github.com/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A \"View\" URL created by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"{{playgroundBasePath}}#/view/{{sampleGistId}}\" target=\"_blank\">\r\n                            {{playgroundBasePath}}#/view/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A manually-pasted JSON that has been exported from an Playground snippet. Something like:\r\n                    <pre class=\"link-or-id theme-color\">\r\n{\r\n  \"meta\": {\r\n    \"playgroundVersion\": 1,\r\n    \"name\": \"Basic snippet\"\r\n  },\r\n  \"script\": [\r\n    \"console.log(\\\"Hello world\\\");\"\r\n  ],\r\n  ...\r\n}\r\n                    </pre>\r\n                </li>\r\n            </ol>\r\n        </div>\r\n    </div>\r\n</section>\r\n";
 
 /***/ },
 
 /***/ 713:
 /***/ function(module, exports) {
 
-	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\nimport {\n  overflow: hidden;\n}\n\n.import__header {\n  padding: 7.5px 15px;\n}\n\n.import__main {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  overflow: auto;\n}\n\n.import__main ol {\n  margin-left: 30px;\n  margin-top: 10px;\n}\n\n.import__main ol li {\n  margin: 10px 0;\n}\n\n#back {\n  font-size: 1.5em;\n  font-weight: bold;\n  color: white;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n#name {\n  color: white;\n  margin-left: 15px;\n}\n\n#monaco-wrapper {\n  margin-top: 10px;\n}\n\n#monaco {\n  box-sizing: border-box;\n  height: 300px;\n}\n\n.ms-progress {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.pre-import > h1 {\n  margin-top: 20px;\n}\n\n.pre-import .info-panel {\n  padding: 10px;\n  word-break: break-word;\n}\n\n.pre-import .info-panel pre {\n  white-space: pre-wrap;\n}\n\n.pre-import .link-or-id {\n  word-wrap: break-word;\n  font-weight: bold;\n  margin-left: 20px;\n  margin-bottom: 10px;\n  margin-top: 5px;\n}\n\n.gray-background {\n  background: #eee;\n  padding: 10px;\n}\n\n.import__footer {\n  padding: 10px;\n}\n\n.import__footer .right-aligned-button-container {\n  text-align: right;\n}\n\n.import__footer .right-aligned-button-container button {\n  height: auto;\n}\n\n.import__footer .ms-Button .ms-Button-label {\n  color: white;\n  font-weight: normal;\n}\n\n"
+	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\nimport {\n  overflow: hidden;\n}\n\n.import__header {\n  padding: 7.5px 15px;\n}\n\n.import__main {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  overflow: auto;\n}\n\n.import__main ol {\n  margin-left: 30px;\n  margin-top: 10px;\n}\n\n.import__main ol li {\n  margin: 10px 0;\n}\n\n#back {\n  font-size: 1.5em;\n  font-weight: bold;\n  color: white;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n#name {\n  color: white;\n  margin-left: 15px;\n}\n\n#monaco-wrapper {\n  margin-top: 10px;\n}\n\n#monaco {\n  box-sizing: border-box;\n  height: 300px;\n}\n\n.ms-progress {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  width: 100% !important;\n  height: 100% !important;\n}\n\n.pre-import > h1 {\n  margin-top: 20px;\n}\n\n.pre-import .info-panel {\n  padding: 10px;\n  word-break: break-word;\n}\n\n.pre-import .info-panel pre {\n  white-space: pre-wrap;\n}\n\n.pre-import .link-or-id {\n  word-wrap: break-word;\n  font-weight: bold;\n  margin-left: 20px;\n  margin-bottom: 10px;\n  margin-top: 5px;\n}\n\n.gray-background {\n  background: #eee;\n  padding: 10px;\n}\n\n.right-aligned-button-container {\n  text-align: right;\n}\n\n.import-button {\n  margin-top: 10px;\n  height: 40px;\n  width: 120px;\n}\n\n"
 
 /***/ },
 

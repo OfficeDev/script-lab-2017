@@ -521,6 +521,7 @@ body.excel .ms-Dialog-main .ms-Dialog-header .ms-Dialog-title {
 
 body.excel .ms-Dialog-main .ms-Button--primary {
     background-color: #217346 !important;
+    border: #217346 !important;
     color: #d3f3e1 !important;
 }
 
@@ -605,12 +606,19 @@ body.excel .theme-color {
     color: #217346;
 }
 
-body.excel .import__footer .ms-Button {
+body.excel .theme-color.ms-Button {
     background: #217346 !important;
+    border-color: #217346 !important;
 }
 
-body.excel .import__footer .ms-Button:hover {
+body.excel .theme-color.ms-Button .ms-Button-label {
+    color: white;
+}
+
+body.excel .theme-color.ms-Button:hover,
+body.excel .theme-color.ms-Button:active {
     background: #103822 !important;
+    border-color: #103822 !important;
 }
 
 body.excel .new__header {
@@ -827,6 +835,7 @@ body.word .ms-Dialog-main .ms-Dialog-header .ms-Dialog-title {
 
 body.word .ms-Dialog-main .ms-Button--primary {
     background-color: #2b579a !important;
+    border: #2b579a !important;
     color: #fafbfd !important;
 }
 
@@ -911,12 +920,18 @@ body.word .theme-color {
     color: #2b579a;
 }
 
-body.word .import__footer .ms-Button {
+body.word .theme-color.ms-Button {
     background: #2b579a !important;
+    border-color: #2b579a !important;
 }
 
-body.word .import__footer .ms-Button:hover {
+body.word .theme-color.ms-Button .ms-Button-label {
+    color: white;
+}
+
+body.word .theme-color.ms-Button:hover, body.word .theme-color.ms-Button:active {
     background: #1a355e !important;
+    border-color: #1a355e !important;
 }
 
 body.word .new__header {
@@ -1132,6 +1147,7 @@ body.powerpoint .ms-Dialog-main .ms-Dialog-header .ms-Dialog-title {
 
 body.powerpoint .ms-Dialog-main .ms-Button--primary {
     background-color: #d04526 !important;
+    border: #d04526 !important;
     color: white !important;
 }
 
@@ -1216,12 +1232,19 @@ body.powerpoint .theme-color {
     color: #d04526;
 }
 
-body.powerpoint .import__footer .ms-Button {
+body.powerpoint .theme-color.ms-Button {
     background: #d04526 !important;
+    border-color: #d04526 !important;
 }
 
-body.powerpoint .import__footer .ms-Button:hover {
+body.powerpoint .theme-color.ms-Button .ms-Button-label {
+    color: white;
+}
+
+body.powerpoint .theme-color.ms-Button:hover,
+body.powerpoint .theme-color.ms-Button:active {
     background: #8f301a !important;
+    border-color: #8f301a !important;
 }
 
 body.powerpoint .new__header {
@@ -1443,6 +1466,7 @@ body.onenote .ms-Dialog-main .ms-Dialog-header .ms-Dialog-title {
 
 body.onenote .ms-Dialog-main .ms-Button--primary {
     background-color: #80397b !important;
+    border: #80397b !important;
     color: #f9f2f9 !important;
 }
 
@@ -1527,12 +1551,19 @@ body.onenote .theme-color {
     color: #80397b;
 }
 
-body.onenote .import__footer .ms-Button {
+body.onenote .theme-color.ms-Button {
     background: #80397b !important;
+    border-color: #80397b !important;
 }
 
-body.onenote .import__footer .ms-Button:hover {
+body.onenote .theme-color.ms-Button .ms-Button-label {
+    color: white;
+}
+
+body.onenote .theme-color.ms-Button:hover,
+body.onenote .theme-color.ms-Button:active {
     background: #4b2148 !important;
+    border-color: #4b2148 !important;
 }
 
 body.onenote .new__header {
@@ -1750,6 +1781,7 @@ body.generic .ms-Dialog-main .ms-Dialog-header .ms-Dialog-title {
 
 body.generic .ms-Dialog-main .ms-Button--primary {
     background-color: #0078d7 !important;
+    border: #0078d7 !important;
     color: white !important;
 }
 
@@ -1838,12 +1870,19 @@ body.generic .theme-color {
     color: #0078d7;
 }
 
-body.generic .import__footer .ms-Button {
+body.generic .theme-color.ms-Button {
     background: #0078d7 !important;
+    border-color: #0078d7 !important;
 }
 
-body.generic .import__footer .ms-Button:hover {
+body.generic .theme-color.ms-Button .ms-Button-label {
+    color: white;
+}
+
+body.generic .theme-color.ms-Button:hover,
+body.generic .theme-color.ms-Button:active {
     background: #004d8b !important;
+    border-color: #004d8b !important;
 }
 
 body.generic .new__header {

@@ -323,8 +323,10 @@ export class Snippet implements ISnippet {
     /**
      * snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API.
      * If the snippet contains a username, will do a best-effort to strip it out.
+     * 
+     * nameOverride: a string (if overriding) or unspecified/undefined/null (if should use name from snippet gist)
     */
-    static createFromGist(snippetId: string): Promise<Snippet> {
+    static createFromGist(snippetId: string, nameOverride?: string): Promise<Snippet> {
         const gistApiPrefix = 'https://api.github.com/gists/';
         snippetId = snippetId.trim();
         if (snippetId.endsWith('/')) {
@@ -349,7 +351,7 @@ export class Snippet implements ISnippet {
 
             function processGistResponse(gist: IGistResponse): Promise<any> {
                 return GistUtilities.getMetadata(gist)
-                    .then((metaJson) => GistUtilities.processPlaygroundSnippet(metaJson, gist))
+                    .then((metaJson) => GistUtilities.processPlaygroundSnippet(metaJson, gist, nameOverride))
                     .then((snippet) => resolve(snippet))
                     .catch((e) => {
                         console.log(e);
