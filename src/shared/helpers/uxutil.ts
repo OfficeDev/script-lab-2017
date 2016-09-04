@@ -10,6 +10,11 @@ export class ExpectedError {
  */
 export class PlaygroundError {
     constructor(public message: string | string[]) { }
+    toString(): string {
+        var messages = [];
+        Utilities.appendToArray(messages, this.message);
+        return messages.join(' \n');
+    }
 }
 
 export class UxUtil {
@@ -29,14 +34,7 @@ export class UxUtil {
         var messages: string[] = UxUtil.getArrayOfMessages(messageOrMessageArray);
 
         if (e) {
-            var errorDataExtracted = UxUtil.extractErrorMessage(e);
-            if (_.isArray(errorDataExtracted)) {
-                errorDataExtracted.forEach((msg) => {
-                    messages.push(msg);
-                })
-            } else {
-                messages.push(errorDataExtracted);
-            }
+            Utilities.appendToArray(messages, UxUtil.extractErrorMessage(e));
         }
 
         console.log(Utilities.stringifyPlusPlus(messages));

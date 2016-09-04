@@ -106,33 +106,19 @@ export class SnippetManager {
         return [];
     }
 
-    getPlaylist(): Promise<any> {
-        // FIXME playlist
-        // this._http.get(location.origin + '/assets/snippets/' + ContextUtil.contextString + '.json')
-        //     .toPromise()
-        //     .then(response => {
-        //         response.json()
-        //     });
-
-        return Promise.resolve(this._playlist)
-            .then(data => {
-                return {
-                    name: data.name,
-                    items: _.groupBy(data.snippets, item => item.group)
-                };
+    getPlaylist(): Promise<ISnippetGallery> {
+        var snippetJsonUrl = location.origin + '/assets/snippets/' + ContextUtil.contextString + '.json';
+        
+        return this._http.get(snippetJsonUrl)
+            .toPromise()
+            .then(response => {
+                var json = response.json();
+                return json;
             })
-            .then(data => {
-                var remappedArray = _.map(data.items, (value, index) => {
-                    return {
-                        name: index,
-                        items: value
-                    };
-                });
-
-                return {
-                    name: data.name,
-                    items: remappedArray
-                };
+            .catch((e) => {
+                var messages = ['Could not retrieve default snippets for ' + ContextUtil.hostName + '.'];
+                Utilities.appendToArray(messages, UxUtil.extractErrorMessage(e)); 
+                throw new PlaygroundError(messages);
             });
     }
 
@@ -232,56 +218,15 @@ export class SnippetManager {
             });
         }
     }
+}
 
-    private _playlist = {
-        name: 'Microsoft',
-        snippets: [
-            {
-                id: 'abc',
-                name: 'Set range values',
-                group: 'Range Manipulation'
-            },
-            {
-                id: 'abc',
-                name: 'Set cell ranges',
-                group: 'Range Manipulation'
-            },
-            {
-                id: 'abc',
-                name: 'Set formulas',
-                group: 'Range Manipulation'
-            },
-            {
-                id: 'abc',
-                name: 'Set background',
-                group: 'Range Manipulation'
-            },
-            {
-                id: 'abc',
-                name: 'Set range values',
-                group: 'Tables'
-            },
-            {
-                id: 'abc',
-                name: 'Set range values',
-                group: 'Tables'
-            },
-            {
-                id: 'abc',
-                name: 'Set cell ranges',
-                group: 'Tables'
-            },
-            {
-                id: 'abc',
-                name: 'Set formulas',
-                group: 'Tables'
-            },
-            {
-                id: 'abc',
-                name: 'Set background',
-                group: 'Tables'
-            }
-        ]
-    };
-
+export interface ISnippetGallery {
+    groups: Array<{
+        name: string,
+        items: Array<{
+            name: string,
+            description: string,
+            gistId: string
+        }>
+    }>
 }

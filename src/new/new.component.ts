@@ -1,7 +1,7 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Utilities, ContextUtil, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
-import {ISnippet, ISnippetMeta, SnippetManager} from '../shared/services';
+import {ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SnippetNamingSuffixOption} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
 
 @Component({
@@ -13,15 +13,17 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     constructor(
         _router: Router,
         _snippetManager: SnippetManager,
-        private _route: ActivatedRoute
+        private _route: ActivatedRoute,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);        
     }
 
     link: string;
     localGallery: any;
-    gallery: any;
-    importFlag = false;
+    templateGallery: ISnippetGallery;
+    templateGalleryError: string;
+    loaded = true;
 
     ngOnInit() {
         if (!this._ensureContext()) {
@@ -29,7 +31,14 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         }
         
         this.localGallery = this._snippetManager.getLocal();
-        this._snippetManager.getPlaylist().then(data => this.gallery = data);
+        this._snippetManager.getPlaylist()
+            .then((data) => {
+                this.templateGallery = data;
+            })
+            .catch((e) => {
+                this.templateGalleryError = e.toString();
+            })
+            .then(() => this._changeDetectorRef.detectChanges());
     }
 
     delete(snippet: ISnippet): void {
@@ -60,8 +69,19 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._router.navigate(['edit', snippet.meta.id]);
     }
 
-    import() {
-        this._router.navigate(['import']);
+    import(gistId: string) {
+        this.loaded = false;
+        Promise.resolve()
+            .then(() => Snippet.createFromGist(gistId))
+            .then((snippet) => this._snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs))
+            .then((snippet) => this._router.navigate(['edit', snippet.meta.id]))
+            .catch((e) => {
+                this.loaded = true;
+                UxUtil.showErrorNotification(
+                    "Could not create the snippet",
+                    "An error occurred while creating the template snippet.",
+                    e);
+            });
     }
 
     get title(): string {

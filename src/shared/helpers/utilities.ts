@@ -169,6 +169,18 @@ export class Utilities {
         }
     }
 
+    static appendToArray<T>(array: T[], item: T);
+    static appendToArray<T>(array: T[], items: T[]);
+    static appendToArray<T>(array: T[], itemOrItems: T|T[]) {
+        if (_.isArray(itemOrItems)) {
+            itemOrItems.forEach((msg) => {
+                array.push(msg);
+            })
+        } else {
+            array.push(itemOrItems);
+        }
+    }
+
     static isUrl(entry: string): boolean {
         entry = entry.trim().toLowerCase();
         return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");

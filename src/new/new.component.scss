@@ -76,6 +76,10 @@
     }
 }
 
+.new > .ms-progress {
+    flex: 1 1 100%;
+}
+
 .new-list {
     flex: 1 1 100%;
     @include vScroll();   
@@ -105,15 +109,25 @@
         padding: $default-spacing/2 $default-spacing;
     }
 
-    &__localstorage-notice {
+    &__notice {
         background: $background-lightest;
         padding: $default-spacing;
+    }
+
+    &__loading {
+        padding: 15px 15px 15px 30px;
+        color: gray;
     }
 
     &__action {
         padding: $default-spacing + 2px;
         font-size: 15px;
         align-self: flex-end;
+    }
+
+    &__template-error {
+        color: #999;
+        padding: 15px;
     }
 }
 
@@ -155,6 +169,10 @@ h1.main-heading {
 h1.ms-Button-label {
     background: inherit;
     text-transform: uppercase;
+}
+
+.from-template .new-list__group article {
+    padding-left: 20px;
 }
 
 .new-list__item:active, .new-list__item:hover {
