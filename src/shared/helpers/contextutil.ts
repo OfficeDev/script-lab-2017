@@ -104,6 +104,36 @@ export class ContextUtil {
         }
     }
 
+    static get contextThemeColor() {
+        switch (ContextUtil.context) {
+            case ContextType.Excel:
+                return '#217346';
+            case ContextType.Word:
+                return '#2b579a';
+            case ContextType.PowerPoint:
+                return '#d04526'
+            case ContextType.OneNote:
+                return '#80397b';
+            default:
+                throw new Error("Invalid context type for Office namespace");
+        }
+    }
+
+    static get contextThemeColorDarker() {
+        switch (ContextUtil.context) {
+            case ContextType.Excel:
+                return '#164b2e';
+            case ContextType.Word:
+                return '#204072';
+            case ContextType.PowerPoint:
+                return '#a5371e'
+            case ContextType.OneNote:
+                return '#5d2959';
+            default:
+                throw new Error("Invalid context type for Office namespace");
+        }
+    }
+
     static applyTheme() {        
         $('body').removeClass('excel');
         $('body').removeClass('word');
