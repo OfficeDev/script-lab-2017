@@ -12296,6 +12296,16 @@ webpackJsonp([0],{
 	            }
 	        }
 	    };
+	    Utilities.appendToArray = function (array, itemOrItems) {
+	        if (_.isArray(itemOrItems)) {
+	            itemOrItems.forEach(function (msg) {
+	                array.push(msg);
+	            });
+	        }
+	        else {
+	            array.push(itemOrItems);
+	        }
+	    };
 	    Utilities.isUrl = function (entry) {
 	        entry = entry.trim().toLowerCase();
 	        return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
@@ -12372,6 +12382,10 @@ webpackJsonp([0],{
 	        if (utilities_1.Utilities.stringifyPlusPlus(exception).indexOf('Attempt to use a destroyed view') >= 0) {
 	            return; // skip showing error notification to user.  silently swallow.
 	        }
+	        if (utilities_1.Utilities.stringifyPlusPlus(exception).indexOf("Uncaught (in promise): Error: Cannot match any routes: 'excel'") >= 0) {
+	            window.location.href = utilities_1.Utilities.playgroundBasePath;
+	            return;
+	        }
 	        uxutil_1.UxUtil.showErrorNotification("An unexpected error occurred.", [], exception);
 	    };
 	    return ExceptionHelper;
@@ -12384,7 +12398,7 @@ webpackJsonp([0],{
 /***/ 639:
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(_, $) {"use strict";
+	/* WEBPACK VAR INJECTION */(function($, _) {"use strict";
 	var utilities_1 = __webpack_require__(637);
 	var ExpectedError = (function () {
 	    function ExpectedError() {
@@ -12400,34 +12414,34 @@ webpackJsonp([0],{
 	    function PlaygroundError(message) {
 	        this.message = message;
 	    }
+	    PlaygroundError.prototype.toString = function () {
+	        var messages = [];
+	        utilities_1.Utilities.appendToArray(messages, this.message);
+	        return messages.join(' \n');
+	    };
 	    return PlaygroundError;
 	}());
 	exports.PlaygroundError = PlaygroundError;
 	var UxUtil = (function () {
 	    function UxUtil() {
 	    }
-	    UxUtil.showErrorNotification = function (title, messageOrMessageArray, e) {
+	    UxUtil.showErrorNotification = function (title, messageOrMessageArray, e, buttons) {
 	        if (e instanceof ExpectedError) {
 	            return;
+	        }
+	        if (utilities_1.Utilities.isNull(buttons)) {
+	            buttons = ['OK'];
 	        }
 	        if (!messageOrMessageArray) {
 	            messageOrMessageArray = [];
 	        }
 	        var messages = UxUtil.getArrayOfMessages(messageOrMessageArray);
 	        if (e) {
-	            var errorDataExtracted = UxUtil.extractErrorMessage(e);
-	            if (_.isArray(errorDataExtracted)) {
-	                errorDataExtracted.forEach(function (msg) {
-	                    messages.push(msg);
-	                });
-	            }
-	            else {
-	                messages.push(errorDataExtracted);
-	            }
+	            utilities_1.Utilities.appendToArray(messages, UxUtil.extractErrorMessage(e));
 	        }
 	        console.log(utilities_1.Utilities.stringifyPlusPlus(messages));
 	        console.log(utilities_1.Utilities.stringifyPlusPlus(e));
-	        return UxUtil.showDialog(title, messages, "OK");
+	        return UxUtil.showDialog(title, messages, buttons);
 	    };
 	    UxUtil.catchError = function (title, messageOrMessageArray) {
 	        return function (e) { return UxUtil.showErrorNotification(title, messageOrMessageArray, e); };
@@ -12474,6 +12488,12 @@ webpackJsonp([0],{
 	            });
 	        });
 	    };
+	    UxUtil.hideDialog = function () {
+	        $(document).ready(function () {
+	            var $dialogRoot = $('.ms-Dialog--lgHeader');
+	            $dialogRoot.hide();
+	        });
+	    };
 	    UxUtil.getArrayOfMessages = function (messageOrMessageArray) {
 	        var messages;
 	        if (_.isArray(messageOrMessageArray)) {
@@ -12497,7 +12517,7 @@ webpackJsonp([0],{
 	}());
 	exports.UxUtil = UxUtil;
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(635), __webpack_require__(1)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(635)))
 
 /***/ },
 
@@ -12594,7 +12614,7 @@ webpackJsonp([0],{
 	        if (options.inlineJsAndCssIntoIframe) {
 	            html.push("    <style>");
 	            if (utilities_1.Utilities.isNullOrWhitespace(snippet.html) && utilities_1.Utilities.isNullOrWhitespace(snippet.css)) {
-	                html.push(utilities_1.Utilities.indentAll(utilities_1.Utilities.stripSpaces("\n                    body {\n                        padding: 5px 10px;\n                    }\n\n                    body, #invoke-action {\n                        font-family: Segoe UI Semilight, Segoe UI, Tahoma;\n                    }\n\n                    #invoke-action {\n                        font-weight: bold;\n                    }\n                "), 2));
+	                html.push(utilities_1.Utilities.indentAll(utilities_1.Utilities.stripSpaces("\n                    body {\n                        padding: 5px 10px;\n                    }\n                "), 2));
 	            }
 	            else {
 	                html.push(utilities_1.Utilities.indentAll(utilities_1.Utilities.stringOrEmpty(snippet.css).trim(), 2));
@@ -12606,7 +12626,7 @@ webpackJsonp([0],{
 	            }
 	            jsStringArray.push('$(document).ready(function () {');
 	            if (utilities_1.Utilities.isNullOrWhitespace(snippet.html)) {
-	                jsStringArray.push('$("#invoke-action").click(invokeAction);');
+	                jsStringArray.push('$("#run-code").click(runCode);');
 	            }
 	            else {
 	                jsStringArray.push(js.trim());
@@ -12616,7 +12636,7 @@ webpackJsonp([0],{
 	                jsStringArray.push('};');
 	            }
 	            if (utilities_1.Utilities.isNullOrWhitespace(snippet.html)) {
-	                jsStringArray.push('function invokeAction() {', js.trim(), '}');
+	                jsStringArray.push('function runCode() {', js.trim(), '}');
 	            }
 	            var beautify = __webpack_require__(642).js_beautify;
 	            var jsString = utilities_1.Utilities.indentAll(utilities_1.Utilities.stripSpaces(beautify(jsStringArray.join("\n"))), 2);
@@ -12626,8 +12646,8 @@ webpackJsonp([0],{
 	            html.push("    <link type='text/css' rel='stylesheet' href='app.css' />", "    <script src='app.js'></script>");
 	        }
 	        var htmlBody = utilities_1.Utilities.isNullOrWhitespace(snippet.html) ?
-	            utilities_1.Utilities.stripSpaces("\n                <p>Your snippet contained only script code, with no user interface. We created a simple button to let you execute your code.</p>\n                <button id=\"invoke-action\">Invoke action</button>\n            ") : snippet.html;
-	        html.push('</head>', '<body>', utilities_1.Utilities.indentAll(htmlBody, 1), '</body>', '</html>');
+	            utilities_1.Utilities.stripSpaces("\n                <p>Your snippet contained only script code, with no user interface. We created a simple button to let you execute your code.</p>\n                <button id=\"run-code\" class=\"ms-font-mPlus ms-fontWeight-semibold\">Run code</button>\n            ") : snippet.html;
+	        html.push('</head>', '<body class="ms-font-mPlus ms-fontWeight-semilight">', utilities_1.Utilities.indentAll(htmlBody, 1), '</body>', '</html>');
 	        return utilities_1.Utilities.stripSpaces(html.join('\n'));
 	    };
 	    return SnippetWriter;
@@ -17150,37 +17170,48 @@ webpackJsonp([0],{
 	            }
 	        }
 	    };
-	    /** snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API */
+	    /**
+	     * snippet id:  either the id of the snippet, or "id/revision". But both can be fed "as is" to the GitHub API.
+	     * If the snippet contains a username, will do a best-effort to strip it out.
+	    */
 	    Snippet.createFromGist = function (snippetId) {
-	        // FIXME automatically strip out username, remove comments about it.
-	        var apiUrl = 'https://api.github.com/gists/' + snippetId;
+	        var gistApiPrefix = 'https://api.github.com/gists/';
+	        snippetId = snippetId.trim();
+	        if (snippetId.endsWith('/')) {
+	            snippetId = snippetId.substr(0, snippetId.length - 1);
+	        }
+	        var apiUrl = gistApiPrefix + snippetId;
 	        return new Promise(function (resolve, reject) {
 	            $.getJSON(apiUrl)
-	                .then(function (gist) {
-	                helpers_1.GistUtilities.getMetadata(gist)
+	                .then(processGistResponse, function (e) {
+	                // Just in case there was a usernmae there, try stripping out
+	                // everything to the first slash, and see if that's any better:
+	                if (snippetId.indexOf('/') > 0) {
+	                    apiUrl = gistApiPrefix + snippetId.substr(snippetId.indexOf('/') + 1);
+	                    $.getJSON(apiUrl)
+	                        .then(processGistResponse, fail);
+	                }
+	                else {
+	                    fail(e);
+	                }
+	            });
+	            function processGistResponse(gist) {
+	                return helpers_1.GistUtilities.getMetadata(gist)
 	                    .then(function (metaJson) { return helpers_1.GistUtilities.processPlaygroundSnippet(metaJson, gist); })
 	                    .then(function (snippet) { return resolve(snippet); })
 	                    .catch(function (e) {
 	                    console.log(e);
 	                    reject(new helpers_1.PlaygroundError('An error occurred while importing the snippet. ' + helpers_1.UxUtil.extractErrorMessage(e)));
 	                });
-	            }, function (e) {
-	                reject(new helpers_1.PlaygroundError("Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?\n" +
-	                    "Also, please ensure that the URL does *not* include the username, only the Gist ID."));
-	            });
+	            }
+	            function fail(e) {
+	                reject(new helpers_1.PlaygroundError("Could not fetch the snippet. Are you sure that the GitHub Gist URL is correct?"));
+	            }
 	        });
 	    };
 	    return Snippet;
 	}());
 	exports.Snippet = Snippet;
-	(function (OfficeClient) {
-	    OfficeClient[OfficeClient["Word"] = 0] = "Word";
-	    OfficeClient[OfficeClient["Excel"] = 1] = "Excel";
-	    OfficeClient[OfficeClient["PowerPoint"] = 2] = "PowerPoint";
-	    OfficeClient[OfficeClient["Project"] = 3] = "Project";
-	    OfficeClient[OfficeClient["OneNote"] = 4] = "OneNote";
-	})(exports.OfficeClient || (exports.OfficeClient = {}));
-	var OfficeClient = exports.OfficeClient;
 	(function (SnippetNamingSuffixOption) {
 	    SnippetNamingSuffixOption[SnippetNamingSuffixOption["StripNumericSuffixAndIncrement"] = 0] = "StripNumericSuffixAndIncrement";
 	    SnippetNamingSuffixOption[SnippetNamingSuffixOption["UseAsIs"] = 1] = "UseAsIs";
@@ -76673,7 +76704,7 @@ webpackJsonp([0],{
 /***/ 678:
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(_) {"use strict";
+	"use strict";
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
 	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
 	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -76690,56 +76721,6 @@ webpackJsonp([0],{
 	var SnippetManager = (function () {
 	    function SnippetManager(_http) {
 	        this._http = _http;
-	        this._playlist = {
-	            name: 'Microsoft',
-	            snippets: [
-	                {
-	                    id: 'abc',
-	                    name: 'Set range values',
-	                    group: 'Range Manipulation'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set cell ranges',
-	                    group: 'Range Manipulation'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set formulas',
-	                    group: 'Range Manipulation'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set background',
-	                    group: 'Range Manipulation'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set range values',
-	                    group: 'Tables'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set range values',
-	                    group: 'Tables'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set cell ranges',
-	                    group: 'Tables'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set formulas',
-	                    group: 'Tables'
-	                },
-	                {
-	                    id: 'abc',
-	                    name: 'Set background',
-	                    group: 'Tables'
-	                }
-	            ]
-	        };
 	    }
 	    /**
 	     * Must be called from every controller to ensure that the snippet manager uses
@@ -76827,30 +76808,17 @@ webpackJsonp([0],{
 	        return [];
 	    };
 	    SnippetManager.prototype.getPlaylist = function () {
-	        // FIXME playlist
-	        // this._http.get(location.origin + '/assets/snippets/' + ContextUtil.contextString + '.json')
-	        //     .toPromise()
-	        //     .then(response => {
-	        //         response.json()
-	        //     });
-	        return Promise.resolve(this._playlist)
-	            .then(function (data) {
-	            return {
-	                name: data.name,
-	                items: _.groupBy(data.snippets, function (item) { return item.group; })
-	            };
+	        var snippetJsonUrl = location.origin + '/assets/snippets/' + helpers_1.ContextUtil.contextString + '.json';
+	        return this._http.get(snippetJsonUrl)
+	            .toPromise()
+	            .then(function (response) {
+	            var json = response.json();
+	            return json;
 	        })
-	            .then(function (data) {
-	            var remappedArray = _.map(data.items, function (value, index) {
-	                return {
-	                    name: index,
-	                    items: value
-	                };
-	            });
-	            return {
-	                name: data.name,
-	                items: remappedArray
-	            };
+	            .catch(function (e) {
+	            var messages = ['Could not retrieve default snippets for ' + helpers_1.ContextUtil.hostName + '.'];
+	            helpers_1.Utilities.appendToArray(messages, helpers_1.UxUtil.extractErrorMessage(e));
+	            throw new helpers_1.PlaygroundError(messages);
 	        });
 	    };
 	    SnippetManager.prototype.find = function (id) {
@@ -76906,8 +76874,7 @@ webpackJsonp([0],{
 	    return SnippetManager;
 	}());
 	exports.SnippetManager = SnippetManager;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(635)))
+
 
 /***/ },
 
@@ -77672,6 +77639,8 @@ webpackJsonp([0],{
 	        this._router = _router;
 	        this._snippetManager = _snippetManager;
 	        this._subscriptions = [];
+	        // Clear out any dialog that may have been left there from a previous page.
+	        helpers_1.UxUtil.hideDialog();
 	        if (helpers_1.ContextUtil.context !== helpers_1.ContextType.Unknown) {
 	            _snippetManager.initialize();
 	        }
@@ -77769,10 +77738,11 @@ webpackJsonp([0],{
 	var base_component_1 = __webpack_require__(685);
 	var NewComponent = (function (_super) {
 	    __extends(NewComponent, _super);
-	    function NewComponent(_router, _snippetManager, _route) {
+	    function NewComponent(_router, _snippetManager, _route, _changeDetectorRef) {
 	        _super.call(this, _router, _snippetManager);
 	        this._route = _route;
-	        this.importFlag = false;
+	        this._changeDetectorRef = _changeDetectorRef;
+	        this.loaded = true;
 	    }
 	    NewComponent.prototype.ngOnInit = function () {
 	        var _this = this;
@@ -77780,7 +77750,14 @@ webpackJsonp([0],{
 	            return;
 	        }
 	        this.localGallery = this._snippetManager.getLocal();
-	        this._snippetManager.getPlaylist().then(function (data) { return _this.gallery = data; });
+	        this._snippetManager.getPlaylist()
+	            .then(function (data) {
+	            _this.templateGallery = data;
+	        })
+	            .catch(function (e) {
+	            _this.templateGalleryError = e.toString();
+	        })
+	            .then(function () { return _this._changeDetectorRef.detectChanges(); });
 	    };
 	    NewComponent.prototype.delete = function (snippet) {
 	        var _this = this;
@@ -77809,8 +77786,17 @@ webpackJsonp([0],{
 	        }
 	        this._router.navigate(['edit', snippet.meta.id]);
 	    };
-	    NewComponent.prototype.import = function () {
-	        this._router.navigate(['import']);
+	    NewComponent.prototype.import = function (gistId) {
+	        var _this = this;
+	        this.loaded = false;
+	        Promise.resolve()
+	            .then(function () { return services_1.Snippet.createFromGist(gistId); })
+	            .then(function (snippet) { return _this._snippetManager.add(snippet, services_1.SnippetNamingSuffixOption.UseAsIs); })
+	            .then(function (snippet) { return _this._router.navigate(['edit', snippet.meta.id]); })
+	            .catch(function (e) {
+	            _this.loaded = true;
+	            helpers_1.UxUtil.showErrorNotification("Could not create the snippet", "An error occurred while creating the template snippet.", e);
+	        });
 	    };
 	    Object.defineProperty(NewComponent.prototype, "title", {
 	        get: function () {
@@ -77828,7 +77814,7 @@ webpackJsonp([0],{
 	            template: __webpack_require__(691),
 	            styles: [__webpack_require__(692)]
 	        }), 
-	        __metadata('design:paramtypes', [router_1.Router, services_1.SnippetManager, router_1.ActivatedRoute])
+	        __metadata('design:paramtypes', [router_1.Router, services_1.SnippetManager, router_1.ActivatedRoute, core_1.ChangeDetectorRef])
 	    ], NewComponent);
 	    return NewComponent;
 	}(base_component_1.BaseComponent));
@@ -77840,14 +77826,14 @@ webpackJsonp([0],{
 /***/ 691:
 /***/ function(module, exports) {
 
-	module.exports = "<section class=\"new\">\r\n    <section class=\"new__header ms-font-l\">\r\n        {{title}}\r\n    </section>\r\n    <section class=\"new__section new__gallery\">\r\n        <section class=\"new-list\">\r\n            <h1 style=\"margin-top: 0;\" class=\"ms-font-m main-heading local-snippets\">\r\n                <span>My local snippets&nbsp;&nbsp;\r\n                    <i class='new-list__action ms-Icon ms-Icon--infoCircle' (click)=\"showInfo = !showInfo\"></i>\r\n                </span>\r\n                <i [hidden]=\"!localGallery?.length > 0\" class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"deleteAll()\"></i>\r\n            </h1>\r\n            <p [hidden]=\"!showInfo\" class=\"new-list__localstorage-notice ms-font-m\">\r\n                Note: These snippets are stored in your browser's \"window.localStorage\", and will disappear if you clear your browser cache.\r\n                Please do <em>not</em> use the Playground for mission-critical snippets that you\r\n                haven't backed up via some other means (i.e., manual copying or the Sharing feature).\r\n            </p>\r\n            \r\n            <section class=\"new-list__group local-snippets\">\r\n                <article class=\"new-list__item ms-font-m\" *ngFor=\"let snippet of localGallery\">\r\n                    <span (click)=\"select(snippet)\">{{snippet?.meta.name}}</span>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--pencil\" (click)=\"select(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--play\" (click)=\"run(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"delete(snippet)\"></i>\r\n                </article>\r\n                <p class=\"new-list__message ms-font-m\" [hidden]=\"localGallery?.length > 0\">\r\n                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from\r\n                    the gallery below.\r\n                </p>\r\n            </section>\r\n\r\n            <section class=\"new-list__from-template\">\r\n                <h1 class=\"ms-font-m main-heading\">\r\n                    From a template\r\n                </h1>\r\n                <div class=\"ms-font-m\" style=\"\r\n                    padding: 15px;\r\n                    color: #999;\r\n                \">... Coming soon ...</div>\r\n                <!--<section class=\"new-list__group\" *ngFor=\"let group of gallery?.items; let i = index\">\r\n                    <h3 class=\"new-list__group-header ms-font-m\">{{group?.name}}</h3>\r\n                    <section class=\"new-list__group\">\r\n                        <article class=\"new-list__item ms-font-m\" *ngFor=\"let snippet of group?.items\">\r\n                            <span (click)=\"import(snippet)\">{{snippet?.name}}</span>\r\n                        </article>\r\n                    </section>\r\n                </section>-->\r\n            </section>\r\n        </section>\r\n    </section>\r\n    <section class=\"new__section\">\r\n        <hr class=\"new__section--separator\" />\r\n        <button class=\"new__action ms-Button ms-Button--compound\" (click)=\"select()\">\r\n            <h1 class=\"ms-Button-label\">Create new</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a blank template</span>\r\n        </button>\r\n        <button class=\"new__action button-primary ms-Button ms-Button--compound\" (click)=\"import()\">\r\n            <h1 class=\"ms-Button-label\">Create from link / JSON</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a shared link or from a JSON object</span>\r\n        </button>\r\n    </section>\r\n</section>";
+	module.exports = "<section class=\"new\">\r\n    <section class=\"new__header ms-font-l\">\r\n        {{title}}\r\n    </section>\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n    </div>\r\n    <section class=\"new__section new__gallery\" hidden=\"!loaded\">\r\n        <section class=\"new-list\">\r\n            <h1 style=\"margin-top: 0;\" class=\"ms-font-m main-heading local-snippets\">\r\n                <span>My local snippets&nbsp;&nbsp;\r\n                    <i class='new-list__action ms-Icon ms-Icon--infoCircle' (click)=\"showInfo = !showInfo\"></i>\r\n                </span>\r\n                <i [hidden]=\"!localGallery?.length > 0\" class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"deleteAll()\"></i>\r\n            </h1>\r\n            <p [hidden]=\"!showInfo\" class=\"new-list__notice ms-font-m\">\r\n                Note: These snippets are stored in your browser's \"window.localStorage\", and will disappear if you clear your browser cache.\r\n                Please do <em>not</em> use the Playground for mission-critical snippets that you\r\n                haven't backed up via some other means (i.e., manual copying or the Sharing feature).\r\n            </p>\r\n            \r\n            <section class=\"new-list__group local-snippets\">\r\n                <article class=\"new-list__item ms-font-m\" *ngFor=\"let snippet of localGallery\">\r\n                    <span (click)=\"select(snippet)\">{{snippet?.meta.name}}</span>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--pencil\" (click)=\"select(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--play\" (click)=\"run(snippet)\"></i>\r\n                    <i class=\"new-list__action ms-Icon ms-Icon--trash\" (click)=\"delete(snippet)\"></i>\r\n                </article>\r\n                <p class=\"new-list__message ms-font-m\" [hidden]=\"localGallery?.length > 0\">\r\n                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from\r\n                    the gallery below.\r\n                </p>\r\n            </section>\r\n\r\n            <section>\r\n                <h1 class=\"ms-font-m main-heading\">\r\n                    From a template\r\n                </h1>\r\n                <p [hidden]=\"templateGallery || templateGalleryError\"\r\n                    class=\"new-list__loading ms-font-m\">Loading...\r\n                </p>\r\n                <div [hidden]=\"!templateGalleryError\" class=\"new-list__template-error ms-font-m\">{{templateGalleryError}}</div>\r\n                <section class=\"new-list__group from-template\" *ngFor=\"let group of templateGallery?.groups; let i = index\">\r\n                    <h3 class=\"new-list__group-header ms-font-m\">{{group?.name}}</h3>\r\n                    <section class=\"new-list__group\">\r\n                        <article class=\"new-list__item ms-font-m\" *ngFor=\"let snippet of group?.items\">\r\n                            <span (click)=\"import(snippet?.gistId)\">{{snippet?.name}}</span>\r\n                        </article>\r\n                    </section>\r\n                </section>\r\n            </section>\r\n        </section>\r\n    </section>\r\n    <section class=\"new__section\" hidden=\"!loaded\">\r\n        <hr class=\"new__section--separator\" />\r\n        <button class=\"new__action ms-Button ms-Button--compound\" (click)=\"select()\">\r\n            <h1 class=\"ms-Button-label\">Create new</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a blank template</span>\r\n        </button>\r\n        <button class=\"new__action button-primary ms-Button ms-Button--compound\" (click)=\"import()\">\r\n            <h1 class=\"ms-Button-label\">Create from link / JSON</h1>\r\n            <span class=\"ms-Button-description\">Create a new snippet from a shared link or from a JSON object</span>\r\n        </button>\r\n    </section>\r\n</section>";
 
 /***/ },
 
 /***/ 692:
 /***/ function(module, exports) {
 
-	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\n.new {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new__header {\n  padding: 7.5px 15px;\n  color: white;\n}\n\n.new__action {\n  width: 100%;\n  max-width: none;\n  display: block !important;\n  background-color: #f4f4f4;\n  color: #333;\n  margin: 0;\n  padding: 15px;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__action:last-child {\n  margin-bottom: 0;\n}\n\n.new__action:hover,\n.new__action:focus {\n  border: none;\n}\n\n.new__action .ms-Button-description,\n.new__action .ms-Button-label {\n  color: #333;\n}\n\n.new__section:last-child {\n  margin-bottom: 0;\n}\n\n.new__section--separator {\n  height: 0;\n  border: none;\n  outline: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__section-title {\n  padding: 15px !important;\n  display: table-cell;\n  box-sizing: border-box;\n}\n\n.new__gallery {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n}\n\n.new__input--text {\n  width: calc(100% - 10px);\n  padding: 0 10px;\n  box-sizing: border-box;\n  height: 30px;\n  font-size: 15px;\n  border: 1px solid lightgray;\n  outline: none;\n  display: table-cell;\n  background: aliceblue;\n}\n\n.new-list {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  overflow: auto;\n  height: 100%;\n  overflow-x: hidden;\n}\n\n.new-list__group {\n  margin-bottom: 15px;\n}\n\n.new-list__group-header {\n  font-weight: bold;\n  padding: 7.5px 15px;\n}\n\n.new-list__item {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  width: 100%;\n}\n\n.new-list__item span {\n  padding: 15px;\n  -webkit-align-self: flex-start;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list__message {\n  padding: 7.5px 15px;\n}\n\n.new-list__localstorage-notice {\n  background: #f4f4f4;\n  padding: 15px;\n}\n\n.new-list__action {\n  padding: 17px;\n  font-size: 15px;\n  -webkit-align-self: flex-end;\n  -ms-flex-item-align: end;\n  align-self: flex-end;\n}\n\n.main-heading.local-snippets {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  overflow: hidden;\n  -webkit-align-items: center;\n  -ms-flex-align: center;\n  align-items: center;\n}\n\n.main-heading.local-snippets > span {\n  -webkit-flex-grow: 1;\n  -ms-flex-positive: 1;\n  flex-grow: 1;\n}\n\n.main-heading.local-snippets i {\n  position: relative;\n  top: 0;\n  padding: 5px;\n  color: black;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n.main-heading.local-snippets > i:hover {\n  color: white;\n}\n\nh1.main-heading {\n  background-color: #f4f4f4;\n  padding-left: 15px !important;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n  padding: 10px;\n  border-top: solid 1px #E4E4E4;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n\nh1.ms-Button-label {\n  background: inherit;\n  text-transform: uppercase;\n}\n\n.new-list__item:active,\n.new-list__item:hover {\n  color: white;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\nh1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {\n  padding-right: 7px;\n}\n\n@media (max-width: 600px) {\n  .new-list__action {\n    padding-right: 15px;\n    padding-left: 15px;\n  }\n\n  h1.main-heading {\n    padding-right: 10px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 500px) {\n  .new-list__action {\n    padding-right: 12px;\n    padding-left: 12px;\n  }\n\n  h1.main-heading {\n    padding-right: 7px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 400px) {\n  .new-list__action {\n    padding-right: 9px;\n    padding-left: 9px;\n  }\n\n  h1.main-heading {\n    padding-right: 4px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 300px) {\n  .new-list__action {\n    padding-right: 7px;\n    padding-left: 7px;\n  }\n\n  h1.main-heading {\n    padding-right: 2px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 250px) {\n  .new-list__action {\n    padding-right: 5px;\n    padding-left: 5px;\n  }\n\n  h1.main-heading {\n    padding-right: 0;\n    /* padding above minus 5 */\n  }\n}\n\n"
+	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\n.new {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new__header {\n  padding: 7.5px 15px;\n  color: white;\n}\n\n.new__action {\n  width: 100%;\n  max-width: none;\n  display: block !important;\n  background-color: #f4f4f4;\n  color: #333;\n  margin: 0;\n  padding: 15px;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__action:last-child {\n  margin-bottom: 0;\n}\n\n.new__action:hover,\n.new__action:focus {\n  border: none;\n}\n\n.new__action .ms-Button-description,\n.new__action .ms-Button-label {\n  color: #333;\n}\n\n.new__section:last-child {\n  margin-bottom: 0;\n}\n\n.new__section--separator {\n  height: 0;\n  border: none;\n  outline: none;\n  border-bottom: solid 1px #E4E4E4;\n}\n\n.new__section-title {\n  padding: 15px !important;\n  display: table-cell;\n  box-sizing: border-box;\n}\n\n.new__gallery {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n}\n\n.new__input--text {\n  width: calc(100% - 10px);\n  padding: 0 10px;\n  box-sizing: border-box;\n  height: 30px;\n  font-size: 15px;\n  border: 1px solid lightgray;\n  outline: none;\n  display: table-cell;\n  background: aliceblue;\n}\n\n.new > .ms-progress {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  overflow: auto;\n  height: 100%;\n  overflow-x: hidden;\n}\n\n.new-list__group {\n  margin-bottom: 15px;\n}\n\n.new-list__group-header {\n  font-weight: bold;\n  padding: 7.5px 15px;\n}\n\n.new-list__item {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  width: 100%;\n}\n\n.new-list__item span {\n  padding: 15px;\n  -webkit-align-self: flex-start;\n  -ms-flex-item-align: start;\n  align-self: flex-start;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n}\n\n.new-list__message {\n  padding: 7.5px 15px;\n}\n\n.new-list__notice {\n  background: #f4f4f4;\n  padding: 15px;\n}\n\n.new-list__loading {\n  padding: 15px 15px 15px 30px;\n  color: gray;\n}\n\n.new-list__action {\n  padding: 17px;\n  font-size: 15px;\n  -webkit-align-self: flex-end;\n  -ms-flex-item-align: end;\n  align-self: flex-end;\n}\n\n.new-list__template-error {\n  color: #999;\n  padding: 15px;\n}\n\n.main-heading.local-snippets {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  overflow: hidden;\n  -webkit-align-items: center;\n  -ms-flex-align: center;\n  align-items: center;\n}\n\n.main-heading.local-snippets > span {\n  -webkit-flex-grow: 1;\n  -ms-flex-positive: 1;\n  flex-grow: 1;\n}\n\n.main-heading.local-snippets i {\n  position: relative;\n  top: 0;\n  padding: 5px;\n  color: black;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n.main-heading.local-snippets > i:hover {\n  color: white;\n}\n\nh1.main-heading {\n  background-color: #f4f4f4;\n  padding-left: 15px !important;\n  border: none;\n  border-bottom: solid 1px #E4E4E4;\n  padding: 10px;\n  border-top: solid 1px #E4E4E4;\n  text-transform: uppercase;\n  font-weight: bold;\n}\n\nh1.ms-Button-label {\n  background: inherit;\n  text-transform: uppercase;\n}\n\n.from-template .new-list__group article {\n  padding-left: 20px;\n}\n\n.new-list__item:active,\n.new-list__item:hover {\n  color: white;\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\nh1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {\n  padding-right: 7px;\n}\n\n@media (max-width: 600px) {\n  .new-list__action {\n    padding-right: 15px;\n    padding-left: 15px;\n  }\n\n  h1.main-heading {\n    padding-right: 10px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 500px) {\n  .new-list__action {\n    padding-right: 12px;\n    padding-left: 12px;\n  }\n\n  h1.main-heading {\n    padding-right: 7px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 400px) {\n  .new-list__action {\n    padding-right: 9px;\n    padding-left: 9px;\n  }\n\n  h1.main-heading {\n    padding-right: 4px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 300px) {\n  .new-list__action {\n    padding-right: 7px;\n    padding-left: 7px;\n  }\n\n  h1.main-heading {\n    padding-right: 2px;\n    /* padding above minus 5 */\n  }\n}\n\n@media (max-width: 250px) {\n  .new-list__action {\n    padding-right: 5px;\n    padding-left: 5px;\n  }\n\n  h1.main-heading {\n    padding-right: 0;\n    /* padding above minus 5 */\n  }\n}\n\n"
 
 /***/ },
 
@@ -78849,9 +78835,7 @@ webpackJsonp([0],{
 	        this.gistSharePublic = true;
 	        this.tokenManager = new oauth_1.TokenManager();
 	        this.statusDescription = "Preparing the snippet for sharing...";
-	        // NOTE: setting token temporarily to an empty-but-non-null token
-	        // to allow anonymous sharing while we figure out the GitHub login issues
-	        this.token = { access_token: null, provider: null }; // this.tokenManager.get('GitHub');
+	        this.token = this.tokenManager.get('GitHub');
 	        this._snippet = new services_1.Snippet({});
 	    }
 	    ShareComponent.prototype.ngOnInit = function () {
@@ -78911,7 +78895,7 @@ webpackJsonp([0],{
 	        var endpointManager = new oauth_1.EndpointManager();
 	        var authenticator = new oauth_1.Authenticator(endpointManager, this.tokenManager);
 	        endpointManager.add('GitHub', {
-	            clientId: '6b2823cf0379dd5fc050',
+	            clientId: '7cc4f025e87f951919e4',
 	            scope: 'gist',
 	            baseUrl: 'https://github.com/login',
 	            authorizeUrl: '/oauth/authorize',
@@ -78961,7 +78945,7 @@ webpackJsonp([0],{
 	    ShareComponent.prototype._exchangeGithubCodeForToken = function (code) {
 	        return new Promise(function (resolve, reject) {
 	            var xhr = new XMLHttpRequest();
-	            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr');
+	            xhr.open('POST', 'https://api-playground-auth.azurewebsites.net/api/GithubAuthProd?code=jaFz4zawTO7BQyYwPBmYlOHck4dKaEIXN9GNtyx92LRhgiA1t3fOYw==');
 	            xhr.setRequestHeader('Accept', 'application/json');
 	            xhr.setRequestHeader('Content-Type', 'application/json');
 	            xhr.onload = function () {
@@ -79031,8 +79015,8 @@ webpackJsonp([0],{
 	            .then(function (gistId) {
 	            _this.loaded = true;
 	            _this.gistId = gistId;
-	            _this.viewUrl = helpers_1.Utilities.playgroundBasePath + '#/view/gist_' + _this.gistId;
-	            _this.embedScriptTag = "<iframe src=\"" + _this.viewUrl + "\" style=\"width: 100%; height: 450px\"></iframe>";
+	            _this.viewUrl = helpers_1.Utilities.playgroundBasePath + '#/view/' + _this.gistId;
+	            _this.embedScriptTag = "<iframe src=\"" + _this.viewUrl + "\" style=\"display: block; width: 800px; height: 600px;\"></iframe>";
 	            $(window).scrollTop(0);
 	        })
 	            .catch(function (e) {
@@ -79214,12 +79198,12 @@ webpackJsonp([0],{
 	        if (helpers_1.Utilities.isUrl(inputValue)) {
 	            var normalized = helpers_1.Utilities.normalizeUrl(inputValue);
 	            var normalizedGithubPrefix = "//gist.github.com/";
-	            var normalizedPlaygroundViewPrefix = helpers_1.Utilities.normalizeUrl(this.playgroundBasePath + "#/view/gist_");
+	            var normalizedPlaygroundViewPrefix = helpers_1.Utilities.normalizeUrl(this.playgroundBasePath + "#/view/");
 	            if (normalized.startsWith(normalizedGithubPrefix)) {
 	                addHelper(function () { return services_1.Snippet.createFromGist(normalized.substr(normalizedGithubPrefix.length)); });
 	            }
 	            else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
-	                addHelper(function () { return services_1.Snippet.createFromGist(normalized.substr(normalizedPlaygroundViewPrefix.length)); });
+	                addHelper(function () { return services_1.Snippet.createFromGist(normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')); });
 	            }
 	            else {
 	                this.loaded = true;
@@ -79293,7 +79277,7 @@ webpackJsonp([0],{
 /***/ 712:
 /***/ function(module, exports) {
 
-	module.exports = "<section class=\"import__header\">\r\n    <span id=\"back\" (click)=\"back()\">&#8656;</span>\r\n    <span id=\"name\" class=\"ms-font-l\">Import a snippet</span>\r\n</section>\r\n\r\n<section class=\"import__main ms-font-m\">\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n        <div class=\"ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white\">{{statusDescription}}</div>\r\n    </div>\r\n\r\n    <div class=\"pre-import\" [hidden]=\"!loaded\">\r\n        <h1 class=\"ms-font-l gray-background\">\r\n            To import a snippet, you will need to have \r\n            <b class=\"theme-color\">one</b> of the following:\r\n        </h1>\r\n        <div class=\"info-panel\">\r\n            <ol>\r\n                <li>\r\n                    A URL for a <a href=\"https://gist.github.com/\" target=\"_blank\">GitHub&nbsp;Gist</a>\r\n                    that was exported by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"https://gist.github.com/{{sampleGistId}}\" target=\"_blank\">\r\n                            https://gist.github.com/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n\r\n                    Note that the URL may NOT contain the username, just the gist ID. So if you have something like\r\n                    <span class=\"theme-color\">\r\n                        https://gist.github.com/<b>&lt;username&gt;/</b>&lt;snippetId&gt;</span>,\r\n                    just remove the username portion.\r\n                </li>\r\n                <li>\r\n                    A \"View\" URL created by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"{{playgroundBasePath}}#/view/gist_{{sampleGistId}}\" target=\"_blank\">\r\n                            {{playgroundBasePath}}#/view/gist_{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A manually-pasted JSON that has been exported from an Playground snippet. Something like:\r\n                    <pre class=\"link-or-id theme-color\">\r\n{\r\n  \"meta\": {\r\n    \"playgroundVersion\": 1,\r\n    \"name\": \"Basic snippet\"\r\n  },\r\n  \"script\": [\r\n    \"console.log(\\\"Hello world\\\");\"\r\n  ],\r\n  ...\r\n}\r\n                    </pre>\r\n                </li>\r\n            </ol>\r\n        </div>\r\n\r\n\r\n        <h1 class=\"ms-font-l gray-background\">Ready?</h1>\r\n        <p class=\"ms-font-m gray-background\">Please paste the Snippet URL or JSON into the text area below, \r\n            and then choose the \"Import\" button at the bottom of the screen.\r\n        </p>\r\n\r\n        <div class=\"info-panel\">\r\n            <div id=\"monaco-wrapper\">\r\n                <div #editor id=\"monaco\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section class=\"import__footer gray-background\" [hidden]=\"!loaded\">\r\n    <div class=\"right-aligned-button-container\">\r\n        <button class=\"ms-Button\" (click)=\"import()\">\r\n            <h1 class=\"ms-Button-label ms-font-l\">Import</h1>\r\n        </button>\r\n    </div>\r\n</section>";
+	module.exports = "<section class=\"import__header\">\r\n    <span id=\"back\" (click)=\"back()\">&#8656;</span>\r\n    <span id=\"name\" class=\"ms-font-l\">Import a snippet</span>\r\n</section>\r\n\r\n<section class=\"import__main ms-font-m\">\r\n    <div class=\"ms-progress\" [hidden]=\"loaded\">\r\n        <div class=\"ms-Spinner large\"></div>\r\n        <div class=\"ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white\">Just one moment...</div>\r\n        <div class=\"ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white\">{{statusDescription}}</div>\r\n    </div>\r\n\r\n    <div class=\"pre-import\" [hidden]=\"!loaded\">\r\n        <h1 class=\"ms-font-l gray-background\">\r\n            To import a snippet, you will need to have \r\n            <b class=\"theme-color\">one</b> of the following:\r\n        </h1>\r\n        <div class=\"info-panel\">\r\n            <ol>\r\n                <li>\r\n                    A URL for a <a href=\"https://gist.github.com/\" target=\"_blank\">GitHub&nbsp;Gist</a>\r\n                    that was exported by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"https://gist.github.com/{{sampleGistId}}\" target=\"_blank\">\r\n                            https://gist.github.com/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A \"View\" URL created by the Playground. For example:\r\n                    <div class=\"link-or-id theme-color\">\r\n                        <a href=\"{{playgroundBasePath}}#/view/{{sampleGistId}}\" target=\"_blank\">\r\n                            {{playgroundBasePath}}#/view/{{sampleGistId}}\r\n                        </a>\r\n                    </div>\r\n                </li>\r\n                <li>\r\n                    A manually-pasted JSON that has been exported from an Playground snippet. Something like:\r\n                    <pre class=\"link-or-id theme-color\">\r\n{\r\n  \"meta\": {\r\n    \"playgroundVersion\": 1,\r\n    \"name\": \"Basic snippet\"\r\n  },\r\n  \"script\": [\r\n    \"console.log(\\\"Hello world\\\");\"\r\n  ],\r\n  ...\r\n}\r\n                    </pre>\r\n                </li>\r\n            </ol>\r\n        </div>\r\n\r\n\r\n        <h1 class=\"ms-font-l gray-background\">Ready?</h1>\r\n        <p class=\"ms-font-m gray-background\">Please paste the Snippet URL or JSON into the text area below, \r\n            and then choose the \"Import\" button at the bottom of the screen.\r\n        </p>\r\n\r\n        <div class=\"info-panel\">\r\n            <div id=\"monaco-wrapper\">\r\n                <div #editor id=\"monaco\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section class=\"import__footer gray-background\" [hidden]=\"!loaded\">\r\n    <div class=\"right-aligned-button-container\">\r\n        <button class=\"ms-Button\" (click)=\"import()\">\r\n            <h1 class=\"ms-Button-label ms-font-l\">Import</h1>\r\n        </button>\r\n    </div>\r\n</section>";
 
 /***/ },
 
@@ -79361,16 +79345,20 @@ webpackJsonp([0],{
 	        var subscription = this._route.params.subscribe(function (params) {
 	            var id = params['id'];
 	            if (id.startsWith('gist_')) {
-	                return services_1.Snippet.createFromGist(id.substr('gist_'.length))
-	                    .then(function (snippet) {
-	                    _this.snippet = snippet;
-	                    _this.currentIntelliSense = _this.snippet.getTypeScriptDefinitions();
-	                    _this.headerName = "\"" + snippet.meta.name + "\" snippet";
-	                    helpers_1.ContextUtil.setContext(snippet.attemptToGuessContext());
-	                    helpers_1.ContextUtil.applyTheme();
-	                })
-	                    .catch(helpers_1.UxUtil.catchError("Could not display snippet", null));
+	                id = id.substr('gist_'.length);
 	            }
+	            id = id.replace('_', '/');
+	            return services_1.Snippet.createFromGist(id)
+	                .then(function (snippet) {
+	                _this.snippet = snippet;
+	                _this.currentIntelliSense = _this.snippet.getTypeScriptDefinitions();
+	                _this.headerName = "\"" + snippet.meta.name + "\" snippet";
+	                helpers_1.ContextUtil.setContext(snippet.attemptToGuessContext());
+	                helpers_1.ContextUtil.applyTheme();
+	            })
+	                .catch(function (e) {
+	                helpers_1.UxUtil.showErrorNotification("Could not display the snippet", null, e, [] /* no buttons, so no way to cancel out the dialog */);
+	            });
 	        });
 	        this.markDispose(subscription);
 	        this.tabs.editorParent = this;
@@ -79438,7 +79426,7 @@ webpackJsonp([0],{
 /***/ 717:
 /***/ function(module, exports) {
 
-	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\n.view__header {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  width: 100%;\n}\n\n.view__main {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n}\n\n.view__footer {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  overflow: hidden;\n  -webkit-align-items: center;\n  -ms-flex-align: center;\n  align-items: center;\n  transition: background-color 0.3s ease-in-out;\n  padding: 5px 10px;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n\n.view__edit-warning {\n  padding: 5px 10px;\n  background-color: #0d321e;\n  color: white;\n}\n\n.view__edit-warning a {\n  color: #cdf2de;\n  font-weight: bold;\n  text-decoration: underline;\n}\n\n.view-bar {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  list-style-type: none;\n  width: 100%;\n}\n\n.view-bar--text {\n  color: white;\n  -webkit-flex: 1 1 0px;\n  -ms-flex: 1 1 0px;\n  flex: 1 1 0px;\n  padding: 10px 15px;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n}\n\n.view-bar__command {\n  color: white;\n  padding: 12.5px 15px;\n}\n\n.view-bar__command--right {\n  -webkit-align-self: flex-end;\n  -ms-flex-item-align: end;\n  align-self: flex-end;\n}\n\n.view-bar__command span {\n  color: white;\n}\n\n.view-bar__command:active,\n.view-bar__command:hover,\n.view-bar__command i:active,\n.view-bar__command i:hover {\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n"
+	module.exports = "/* Default Variables */\n\n/* Background Colors */\n\n/* Foreground Colors */\n\n/* Accent Colors */\n\n.view__header {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  width: 100%;\n}\n\n.view__main {\n  -webkit-flex: 1 1 100%;\n  -ms-flex: 1 1 100%;\n  flex: 1 1 100%;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-flex-direction: column;\n  -ms-flex-direction: column;\n  flex-direction: column;\n  -webkit-flex-wrap: nowrap;\n  -ms-flex-wrap: nowrap;\n  flex-wrap: nowrap;\n}\n\n.view__footer {\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  overflow: hidden;\n  -webkit-align-items: center;\n  -ms-flex-align: center;\n  align-items: center;\n  background: #333;\n  color: white;\n  transition: background-color 0.3s ease-in-out;\n  padding: 5px 10px;\n  word-wrap: break-word;\n  word-break: break-all;\n}\n\n.view__edit-warning {\n  padding: 5px 10px;\n  background-color: #0d321e;\n  color: white;\n}\n\n.view__edit-warning a {\n  color: #cdf2de;\n  font-weight: bold;\n  text-decoration: underline;\n}\n\n.view-bar {\n  display: -webkit-inline-flex;\n  display: -ms-inline-flexbox;\n  display: inline-flex;\n  list-style-type: none;\n  width: 100%;\n}\n\n.view-bar--text {\n  color: white;\n  -webkit-flex: 1 1 0px;\n  -ms-flex: 1 1 0px;\n  flex: 1 1 0px;\n  padding: 10px 15px;\n  width: auto;\n  max-width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n}\n\n.view-bar__command {\n  color: white;\n  padding: 12.5px 15px;\n}\n\n.view-bar__command--right {\n  -webkit-align-self: flex-end;\n  -ms-flex-item-align: end;\n  align-self: flex-end;\n}\n\n.view-bar__command span {\n  color: white;\n}\n\n.view-bar__command:active,\n.view-bar__command:hover,\n.view-bar__command i:active,\n.view-bar__command i:hover {\n  /* different browsers use different terms for pointer vs. hand, so include both*/\n  cursor: pointer;\n  cursor: hand;\n}\n\n"
 
 /***/ },
 
