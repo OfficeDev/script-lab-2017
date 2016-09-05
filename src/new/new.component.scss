@@ -114,7 +114,6 @@
                 flex: 1 1 100%;
 
                 > .description {
-                    margin-left: 20px;
                     padding-right: 20px;
                     white-space: normal;
                     opacity: 0.6;
@@ -198,10 +197,6 @@ h1.from-template {
 h1.ms-Button-label {
     background: inherit;
     text-transform: uppercase;
-}
-
-.from-template .new-list__group article {
-    padding-left: 20px;
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {
