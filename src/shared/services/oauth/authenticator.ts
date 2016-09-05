@@ -164,9 +164,8 @@ export class Authenticator {
         let url = EndpointManager.getLoginUrl(endpoint);
 
         var options: Office.DialogOptions = {
-            height: 35,
-            width: 35,
-            requireHTTPS: true
+            height: 75,
+            width: 50
         };
 
         return new Promise<IToken | ICode | IError>((resolve, reject) => {
