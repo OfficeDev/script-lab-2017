@@ -220,7 +220,7 @@ export class Utilities {
     }
 
     static fetchEnvironmentConfig(http: Http) {
-         var envConfigJsonUrl = Utilities.playgroundBasePath + 'env.json';
+         var envConfigJsonUrl = Utilities.playgroundBasePath + 'env.json' + '?rand=' + new Date().getTime();
         
         return http.get(envConfigJsonUrl)
             .toPromise()

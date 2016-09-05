@@ -107,9 +107,10 @@ export class SnippetManager {
     }
 
     getPlaylist(): Promise<ISnippetGallery> {
-        var snippetJsonUrl = location.origin + '/assets/snippets/' + ContextUtil.contextString + '.json';
+        var snippetJsonUrl = location.origin + '/assets/snippets/' + ContextUtil.contextString +
+            '.json' + '?rand=' + + new Date().getTime();
         
-        return this._http.get(snippetJsonUrl)
+        return this._http.get(snippetJsonUrl, {})
             .toPromise()
             .then(response => {
                 var json = response.json();
