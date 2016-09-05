@@ -2,7 +2,6 @@ var webpack = require('webpack');
 var helpers = require('./helpers');
 
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
@@ -53,10 +52,6 @@ module.exports = {
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
-        }),
-
-        new HtmlWebpackPlugin({
-            template: 'src/index.html'
         }),
 
         new CopyWebpackPlugin([
