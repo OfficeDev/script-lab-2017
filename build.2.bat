@@ -1,8 +1,8 @@
 @echo off
 
 echo .
-echo git add -A Dist/\*.*
-git add -A Dist/*.*
+echo git add -A
+git add -A
 
 echo .
 echo git status

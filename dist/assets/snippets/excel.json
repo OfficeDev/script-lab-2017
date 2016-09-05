@@ -5,17 +5,17 @@
             "items": [
                 {
                     "name": "Add-in with notification toast",
-                    "description": "Highlights the currently-selected range, and reports its address via a Fabric-based notification toast.",
+                    "description": "Highlights the currently-selected range and reports its address via a Fabric-based notification toast.",
                     "gistId": "d1cb7df01dabb66b046cd2c7881248e4"
                 },
                 {
                     "name": "Document-object to DOM interaction",
-                    "description": "Lists all of the tables in the workbook, and creates clickable hyperlinks to activate the tables even after the initial \"Excel.run\" has finished.",
+                    "description": "Lists all of the tables in the workbook, and creates a clickable hyperlink for each table.",
                     "gistId": "0e5cceda6aa6f7eea63074cb7d19b1e5"
                 },
                 {
                     "name": "Report-generation",
-                    "description": "Writes data to the workbook, applies basic formatting, and adds a chart bound to the data.",
+                    "description": "Writes data to the workbook, applies basic formatting, and adds a chart bound to that data.",
                     "gistId": "0e5cceda6aa6f7eea63074cb7d19b1e5"
                 }
             ]
@@ -24,8 +24,8 @@
             "name": "Range manipulation",
             "items": [
                 {
-                    "name": "Perform action on selection",
-                    "description": "Highlights the currently-selected range",
+                    "name": "Basic \"set\" action",
+                    "description": "Gets the current selection and applies formatting to it.",
                     "gistId": "8a58218a48d39d40431cf934e62a71a2"
                 }
             ]
@@ -35,7 +35,7 @@
             "items": [
                 {
                     "name": "Get selected data",
-                    "description": "Gets the text of the current selection",
+                    "description": "Gets the text of the current selection using, the Common APIs that were first introduce in Office 2013.",
                     "gistId": "a48e903258c0e4cf74615e4c8aafaada"
                 }
             ]
