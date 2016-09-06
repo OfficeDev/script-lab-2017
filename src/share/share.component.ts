@@ -5,6 +5,7 @@ import {BaseComponent} from '../shared/components/base.component';
 import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 import {Authenticator, TokenManager, EndpointManager, IToken, ICode} from '../shared/services/oauth';
+declare var appInsights: any;
 
 @Component({
     selector: 'share',
@@ -23,6 +24,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     profile: any;
     tokenManager = new TokenManager();
     statusDescription = "Preparing the snippet for sharing...";
+    progress: boolean;
 
     _snippet: Snippet;
     _snippetExportString: string;
@@ -51,7 +53,11 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
         }
 
         if (this.token && this.token.access_token) {
-            this._getGithubProfile(this.token).then(profile => this.profile = profile);
+            appInsights.trackEvent('Get cached token', { type: 'Implicit Action' });
+            this._getGithubProfile(this.token).then(profile => {
+                this.profile = profile;
+                appInsights.setAuthenticatedUserContext(this.profile.login);
+            });
         }
 
         var subscription = this._route.params.subscribe(params => {
@@ -113,8 +119,11 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     signInToGithub(): void {
+        if (this.progress) return;
+        this.progress = true;
+        appInsights.trackEvent('Sign In', { type: 'UI Action' });
         var endpointManager = new EndpointManager();
-        
+
         endpointManager.add('GitHub', {
             clientId: this._environment.GITHUB_AUTH_CLIENT_ID,
             scope: 'gist',
@@ -140,13 +149,22 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             })
             .then(token => {
                 this.token = this.tokenManager.get('GitHub');
-                this._getGithubProfile(this.token).then(profile => this.profile = profile);
+                this.progress = false;
+                this._getGithubProfile(this.token).then(profile => {
+                    this.profile = profile;
+                    appInsights.setAuthenticatedUserContext(this.profile.login);
+                });
             })
-            .catch(UxUtil.catchError("Could not sign in to Github", null));
+            .catch(error => {
+                this.progress = false;
+                UxUtil.catchError("Could not sign in to Github", null)
+            });
     }
 
     logout() {
+        appInsights.trackEvent('Sign Out', { type: 'UI Action' });
         this.tokenManager.clear();
+        appInsights.clearAuthenticatedUserContext(this.profile.login);
         this.token = null;
     }
 
@@ -191,6 +209,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
 
     postToGist(): void {
         var compiledJs: string;
+        appInsights.trackEvent('Post to Gist', { type: 'UI Action' });
+
         try {
             compiledJs =
                 '// This is a compiled version of the TypeScript/JavaScript code ("app.ts").\n' +
@@ -269,8 +289,8 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     get githubViewableGistUrl() {
-        return 'https://gist.github.com/' + 
-            (this.profile ? (this.profile.login + '/') : '') + 
+        return 'https://gist.github.com/' +
+            (this.profile ? (this.profile.login + '/') : '') +
             Utilities.stringOrEmpty(this.gistId);
     }
 

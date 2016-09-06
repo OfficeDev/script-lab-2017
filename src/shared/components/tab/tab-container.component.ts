@@ -4,6 +4,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
+declare var appInsights: any;
 
 export interface IContentUpdated {
     name: string;
@@ -115,15 +116,15 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                     var response: IIntelliSenseResponse = {
                         url: url,
                         success: true,
-                        data: data.text(), 
+                        data: data.text(),
                     };
                     return response;
                 })
                 .catch((e) => {
                     var response: IIntelliSenseResponse = {
-                        url: url, 
+                        url: url,
                         success: false,
-                        error: e                        
+                        error: e
                     };
                     return response;
                 });
@@ -175,7 +176,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         $(this._editor.nativeElement).keydown((event) => {
             // Control (or Command) + S (83 = code for S)
-            if((event.ctrlKey || event.metaKey) && event.which == 83) {
+            if ((event.ctrlKey || event.metaKey) && event.which == 83) {
                 event.preventDefault();
                 if (this._saveAction) {
                     this._saveAction();
@@ -201,7 +202,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         if (!this._monacoEditor) {
             return null;
         }
-        
+
         this.selectedTab.state = this._monacoEditor.saveViewState();
         this.selectedTab.model = this._monacoEditor.getModel();
         this.selectedTab.content = this._monacoEditor.getValue();
@@ -229,6 +230,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     select(tab: Tab) {
+        appInsights.trackEvent('Switch editor tabs', { type: 'UI Action', name: tab.name });
+
         var currentTab = null;
         this.selectedTab = tab;
         this.values().forEach(tab => {

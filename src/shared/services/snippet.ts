@@ -1,6 +1,6 @@
 import {Utilities, GistUtilities, IGistResponse, MessageStrings, UxUtil, PlaygroundError} from '../helpers';
 import {SnippetManager} from './snippet.manager';
-import * as ts from '../../../node_modules/typescript';
+import * as ts from 'typescript';
 
 export class Snippet implements ISnippet {
     meta: ISnippetMeta;
@@ -13,7 +13,7 @@ export class Snippet implements ISnippet {
     private _compiledJs: string;
 
     constructor(snippet: ISnippet) {
-        this.meta = _.extend({}, snippet.meta || {name: undefined, id: undefined});
+        this.meta = _.extend({}, snippet.meta || { name: undefined, id: undefined });
         this.script = snippet.script || "";
         this.css = snippet.css || "";
         this.html = snippet.html || "";
@@ -23,10 +23,10 @@ export class Snippet implements ISnippet {
     }
 
     toJSON(): any {
-       return this.exportToJson(false /*forPlayground*/);
+        return this.exportToJson(false /*forPlayground*/);
     }
 
-    exportToJson(forPlayground: boolean) : any {
+    exportToJson(forPlayground: boolean): any {
         var data = {
             meta: {
                 name: this.meta.name
@@ -62,7 +62,7 @@ export class Snippet implements ISnippet {
 
     getCompiledJs(): string {
         // https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
-        let result = ts.transpileModule(this.script, {            
+        let result = ts.transpileModule(this.script, {
             compilerOptions: { module: ts.ModuleKind.CommonJS },
             reportDiagnostics: true,
         });
@@ -75,14 +75,14 @@ export class Snippet implements ISnippet {
             var firstLine = outputArray[0].trim();
             if (firstLine === '"use strict";' || firstLine === "'use strict';") {
                 outputArray.splice(0, 1);
-            } 
+            }
             return outputArray.join('\n');
         } else {
             var errors: string[] = [
-                'Invalid JavaScript or TypeScript. ' + 
+                'Invalid JavaScript or TypeScript. ' +
                 `Please return to the editor and fix the syntax errors.`
             ];
-            
+
             throw new PlaygroundError(errors);
         }
     }
@@ -166,7 +166,7 @@ export class Snippet implements ISnippet {
     }
 
     randomizeId(force: boolean, snippetManager: SnippetManager) {
-        var localSnippets = snippetManager.getLocal(); 
+        var localSnippets = snippetManager.getLocal();
         if (force || Utilities.isEmpty(this.meta.id) || this.meta.id.indexOf('~!L') == -1) {
             this.meta.id = '~!L' + Utilities.randomize(Math.max(10000, localSnippets.length * 10)).toString();
         }
@@ -183,7 +183,7 @@ export class Snippet implements ISnippet {
     }
 
     public makeNameUnique(suffixOption: SnippetNamingSuffixOption, snippetManager: SnippetManager): void {
-        var localSnippets = snippetManager.getLocal(); 
+        var localSnippets = snippetManager.getLocal();
 
         if (Utilities.isNullOrWhitespace(this.meta.name)) {
             this.meta.name = MessageStrings.NewSnippetName;
@@ -194,24 +194,24 @@ export class Snippet implements ISnippet {
         }
 
         var prefix = generatePrefix(this.meta.name);
-            
+
         var i = 1;
         while (true) {
             this.meta.name = prefix + ' ' + i;
             if (isNameUnique(this)) {
-                return;               
+                return;
             }
             i++;
         }
-        
+
 
         // Helper functions 
 
         function generatePrefix(name): string {
             var prefix = Utilities.stringOrEmpty(name);
-            
+
             switch (suffixOption) {
-                case SnippetNamingSuffixOption.UseAsIs: 
+                case SnippetNamingSuffixOption.UseAsIs:
                     return prefix + ' - ';
 
                 case SnippetNamingSuffixOption.AddCopySuffix:
@@ -228,14 +228,14 @@ export class Snippet implements ISnippet {
                             test - copy 222 gaga
                     */
                     var regexMatches = regex.exec(name);
-                    
+
                     if (regexMatches) {
                         prefix = regexMatches[1];
                     }
 
                     return prefix + ' - copy';
-                
-                case SnippetNamingSuffixOption.StripNumericSuffixAndIncrement:                
+
+                case SnippetNamingSuffixOption.StripNumericSuffixAndIncrement:
                     // Does it end with just a number on the end?  If so, grab just the text
                     var regex = /(.*) \d+$/;
                     /* Will match these:
@@ -248,7 +248,7 @@ export class Snippet implements ISnippet {
                     */
 
                     var regexMatches = regex.exec(name);
-                    
+
                     if (regexMatches) {
                         prefix = regexMatches[1];
                     }
@@ -258,7 +258,7 @@ export class Snippet implements ISnippet {
         }
 
         function isNameUnique(snippet: Snippet) {
-            return Utilities.isNull(localSnippets.find((item) => 
+            return Utilities.isNull(localSnippets.find((item) =>
                 (item.meta.id != snippet.meta.id && item.meta.name == snippet.meta.name)));
         }
     }
@@ -277,7 +277,7 @@ export class Snippet implements ISnippet {
 
     static createFromJson(inputValue: string): Snippet {
         var json: ISnippet = JSON.parse(inputValue);
-        
+
         if (Utilities.isEmpty(json.meta)) {
             throw new PlaygroundError('Missing "meta" field in snippet JSON.');
         }
@@ -289,7 +289,7 @@ export class Snippet implements ISnippet {
             case 1:
                 return createSnippetFromPlaygroundVersion1_0();
             default:
-                throw new PlaygroundError('Invalid playgroundVersion version "' + 
+                throw new PlaygroundError('Invalid playgroundVersion version "' +
                     json.meta.playgroundVersion + '" specified in the JSON metadata.');
         }
 
@@ -337,17 +337,17 @@ export class Snippet implements ISnippet {
         return new Promise((resolve, reject) => {
             $.getJSON(apiUrl)
                 .then(processGistResponse,
-                    (e) => {
-                        // Just in case there was a usernmae there, try stripping out
-                        // everything to the first slash, and see if that's any better:
-                        if (snippetId.indexOf('/') > 0) {
-                            apiUrl = gistApiPrefix + snippetId.substr(snippetId.indexOf('/') + 1);
-                            $.getJSON(apiUrl)
-                                .then(processGistResponse, fail);
-                        } else {
-                            fail(e);
-                        }
-                    });
+                (e) => {
+                    // Just in case there was a usernmae there, try stripping out
+                    // everything to the first slash, and see if that's any better:
+                    if (snippetId.indexOf('/') > 0) {
+                        apiUrl = gistApiPrefix + snippetId.substr(snippetId.indexOf('/') + 1);
+                        $.getJSON(apiUrl)
+                            .then(processGistResponse, fail);
+                    } else {
+                        fail(e);
+                    }
+                });
 
             function processGistResponse(gist: IGistResponse): Promise<any> {
                 return GistUtilities.getMetadata(gist)
@@ -355,7 +355,7 @@ export class Snippet implements ISnippet {
                     .then((snippet) => resolve(snippet))
                     .catch((e) => {
                         console.log(e);
-                        reject (new PlaygroundError(
+                        reject(new PlaygroundError(
                             'An error occurred while importing the snippet. ' + UxUtil.extractErrorMessage(e)));
                     });
             }

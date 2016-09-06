@@ -1,12 +1,13 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
 import {HTTP_PROVIDERS} from '@angular/http';
-import {Component, ExceptionHandler, enableProdMode} from '@angular/core';
+import {Component, ExceptionHandler, enableProdMode, OnDestroy} from '@angular/core';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
-import {ROUTER_DIRECTIVES} from '@angular/router';
+import {Router, NavigationStart, NavigationEnd, ROUTER_DIRECTIVES} from '@angular/router';
 import {APP_ROUTER_PROVIDERS} from './app.routes';
 import {MediatorService, SnippetManager} from './shared/services';
 import {Utilities, ContextUtil, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
 import {Authenticator, TokenManager} from './shared/services/oauth';
+declare var appInsights: any;
 
 require('./assets/styles/spinner.scss');
 require('./assets/styles/globals.scss');
@@ -18,6 +19,7 @@ require('./assets/styles/onenote.scss');
 require('./assets/styles/generic.scss');
 
 ContextUtil.applyTheme();
+
 if (!window.location.href.indexOf('localhost')) {
     enableProdMode();
 }
@@ -42,7 +44,36 @@ export const APP_PROVIDERS = [
     directives: [ROUTER_DIRECTIVES]
 })
 
-export class AppComponent { }
+export class AppComponent implements OnDestroy {
+    private subscription;
+
+    constructor(router: Router) {
+        var pagesViewedInSession = 1;
+        this.subscription = router.events.subscribe(next => {
+            if (next instanceof NavigationStart) {
+                if (Utilities.isEmpty(next.url)) return;
+                var name = next.url.split('/')[1];
+                console.log(appInsights);
+                appInsights.startTrackPage(name);
+            }
+            else if (next instanceof NavigationEnd) {
+                if (Utilities.isEmpty(next.url)) return;
+                var name = next.url.split('/')[1];
+
+                appInsights.stopTrackPage(
+                    name,
+                    next.url,
+                    { mode: ContextType[ContextUtil.context] },
+                    { pagesViewedInSession: pagesViewedInSession++ }
+                );
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+    }
+}
 
 export function launch() {
     $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');

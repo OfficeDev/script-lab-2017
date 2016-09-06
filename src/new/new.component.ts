@@ -3,6 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Utilities, ContextUtil, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SnippetNamingSuffixOption} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
+declare var appInsights: any;
 
 @Component({
     selector: 'new',
@@ -16,7 +17,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         private _route: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
-        super(_router, _snippetManager);        
+        super(_router, _snippetManager);
     }
 
     link: string;
@@ -29,7 +30,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         if (!this._ensureContext()) {
             return;
         }
-        
+
         this.localGallery = this._snippetManager.getLocal();
         this._snippetManager.getPlaylist()
             .then((data) => {
@@ -42,6 +43,8 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     delete(snippet: ISnippet): void {
+        appInsights.trackEvent('Delete snippet', { type: 'UI Action', id: snippet.meta.id, name: snippet.meta.name });
+
         this._snippetManager.delete(snippet, true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
@@ -49,6 +52,8 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     deleteAll(): void {
+        appInsights.trackEvent('Delete all snippets', { type: 'UI Action' });
+        
         this._snippetManager.deleteAll(true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
@@ -57,10 +62,14 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     run(snippet: ISnippet) {
+        appInsights.trackEvent('Run from new', { type: 'UI Action' });
+        
         this._router.navigate(['run', snippet.meta.id, false /*returnToEdit*/]);
     }
 
     select(snippet?: ISnippet) {
+        appInsights.trackEvent('Select snippet', { type: 'UI Action', id: snippet.meta.id, name: snippet.meta.name });
+        
         if (Utilities.isEmpty(snippet)) {
             return this._snippetManager.new().then(newSnippet => {
                 this._router.navigate(['edit', newSnippet.meta.id]);
@@ -70,6 +79,9 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     importSnippet(gistId: string, nameOverride: string) {
+        appInsights.trackEvent('Import', { type: 'UI Action' });
+
+
         this.loaded = false;
         Promise.resolve()
             .then(() => Snippet.createFromGist(gistId, nameOverride))
@@ -84,7 +96,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             });
     }
 
-    navigateToImport() {
+    navigateToImport() {        
         this._router.navigate(['import'])
     }
 
