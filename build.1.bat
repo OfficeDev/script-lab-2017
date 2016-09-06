@@ -25,4 +25,4 @@ echo All good? Will now do a build.
 pause
 
 echo .
-rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail
+npm run build
