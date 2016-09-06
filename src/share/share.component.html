@@ -20,8 +20,8 @@
                 <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a> </b>
         </div>
         <div class="option">
-            <button class="ms-Button" [hidden]="token" (click)="signInToGithub()">
-                <h1 class="ms-Button-label">Sign in to GitHub</h1>
+            <button class="ms-Button" [hidden]="token" (click)="signInToGithub()" [disabled]="progress">
+                <h1 class="ms-Button-label">{{ progress ? 'Signing in...' : 'Sign in to GitHub' }}</h1>
             </button>
             <div [hidden]="!token">
                 <div [hidden]="!showGithubPersona" class="ms-Persona">
@@ -34,8 +34,7 @@
                     </div>
                 </div>
 
-                <a [hidden]="!showGithubPersona" (click)="logout()"
-                    style="cursor: pointer; display:block; margin: 15px 0 30px;">Sign Out</a>
+                <a [hidden]="!showGithubPersona" (click)="logout()" style="cursor: pointer; display:block; margin: 15px 0 30px;">Sign Out</a>
 
                 <div class="ms-ChoiceFieldGroup">
                     <div class="ms-ChoiceFieldGroup-title">

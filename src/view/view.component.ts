@@ -5,6 +5,8 @@ import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetManager} from '../shared/services';
 import {Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError} from '../shared/helpers';
 
+declare var appInsights: any;
+
 enum EditWarning {
     NeverShown,
     Showing,
@@ -48,7 +50,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
             var provider: string = (params['provider'] as string).trim().toLowerCase();
             var id: string = (params['id'] as string).trim().toLowerCase();
             id = id.replace('_', '/');
-            
+
             return createSnippetFromProvider()
                 .then((snippet) => {
                     this.snippet = snippet;
@@ -56,7 +58,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
                     this.headerName = `"${snippet.meta.name}" snippet`;
 
                     ContextUtil.setContext(snippet.attemptToGuessContext());
-                    ContextUtil.applyTheme();              
+                    ContextUtil.applyTheme();
                 })
                 .catch((e) => {
                     UxUtil.showErrorNotification("Could not display the snippet", null, e,
@@ -71,7 +73,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
                         throw new PlaygroundError([
                             'Invalid provider specified. Expecting a URL of the form:',
                             Utilities.playgroundBasePath + '/#/view/gist/' + GistUtilities.sampleGistId
-                        ]); 
+                        ]);
                 }
             }
         });
@@ -89,11 +91,11 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     onChangeContent() {
         if (this.editWarning === EditWarning.NeverShown) {
             this.editWarning = EditWarning.Showing;
-            
+
             setTimeout(() => {
                 this.tabs.resize();
                 this._changeDetectorRef.detectChanges();
-            }, 100);    
+            }, 100);
 
             this._timeout = setTimeout(() => {
                 clearTimeout(this._timeout);
@@ -105,7 +107,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
 
     clearEditWarning() {
         this.editWarning = EditWarning.Dismissed;
-        
+
         this._changeDetectorRef.detectChanges();
         this.tabs.resize();
     }
@@ -115,7 +117,9 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     }
 
     openPlayground() {
-        window.open(Utilities.playgroundBasePath + 
+        appInsights.trackEvent('Open Playground clicked', { type: 'UI Action' });
+
+        window.open(Utilities.playgroundBasePath +
             (this.snippet.containsOfficeJsReference ? 'acquire.html' : ''));
     }
 }

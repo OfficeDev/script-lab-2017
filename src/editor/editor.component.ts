@@ -4,6 +4,7 @@ import {Tab, Tabs, IEditorParent} from '../shared/components';
 import {BaseComponent} from '../shared/components/base.component';
 import {ISnippet, Snippet, SnippetManager} from '../shared/services';
 import {Utilities, ContextUtil, ContextType, StorageHelper, MessageStrings, ExpectedError, PlaygroundError, UxUtil} from '../shared/helpers';
+declare var appInsights: any;
 
 enum StatusType {
     info,
@@ -19,7 +20,7 @@ enum StatusType {
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
     snippet: Snippet;
-    
+
     status: string;
     statusType: StatusType;
     editMode = false;
@@ -54,13 +55,13 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                     this.currentIntelliSense = snippet.getTypeScriptDefinitions();
                 })
                 .catch(this._errorHandler);
-            }
+        }
         );
 
         this.markDispose(subscription);
 
         this.tabs.setSaveAction(() => {
-             this.save();
+            this.save();
         })
 
         this.tabs.editorParent = this;
@@ -77,7 +78,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
             this._showStatus(StatusType.warning, 10 /*seconds*/,
-                'It looks like your IntelliSense references have changed. ' + 
+                'It looks like your IntelliSense references have changed. ' +
                 'To see those changes live, please re-load this page.');
         }
     }
@@ -87,7 +88,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             this.editMode = false;
             return;
         }
-        
+
         const navigateHomeAction = () => this._router.navigate(['new']);
 
         if (this._promptToSave) {
@@ -98,8 +99,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                     }
                     else if (choice == "Yes") {
                         this._saveHelper()
-                        .then(navigateHomeAction)
-                        .catch(this._errorHandler);
+                            .then(navigateHomeAction)
+                            .catch(this._errorHandler);
                     } else {
                         navigateHomeAction();
                     }
@@ -110,13 +111,15 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     refresh(): void {
+        appInsights.trackEvent('Refresh', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+
         if (this._promptToSave) {
             UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before re-loading the page?`, ['Save', 'Discard Changes'])
                 .then((choice) => {
                     if (choice == "Save") {
                         this._saveHelper()
-                        .then(Utilities.reloadPage)
-                        .catch(this._errorHandler);
+                            .then(Utilities.reloadPage)
+                            .catch(this._errorHandler);
                     } else {
                         Utilities.reloadPage();
                     }
@@ -127,6 +130,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     share() {
+        appInsights.trackEvent('Share', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+        
         const navigateToShareAction = () => this._router.navigate(['share', this.snippet.meta.id]);
 
         if (this._promptToSave) {
@@ -134,8 +139,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                 .then((choice) => {
                     if (choice === "Save and proceed") {
                         this._saveHelper()
-                        .then(navigateToShareAction)
-                        .catch(this._errorHandler);
+                            .then(navigateToShareAction)
+                            .catch(this._errorHandler);
                     } else {
                         Utilities.reloadPage();
                     }
@@ -149,15 +154,17 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         if (Utilities.isEmpty(this.snippet.meta.name)) {
             this._showNameFieldAndSetFocus();
             return Promise.reject(new Error(MessageStrings.PleaseProvideNameForSnippet));
-	    }
+        }
 
         return Promise.resolve();
     }
 
-	save(): Promise<void> {
+    save(): Promise<void> {
+        appInsights.trackEvent('Save', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+        
         return this._saveHelper()
             .then((snippet) => {
-	            this._showStatus(StatusType.info, 3 /*seconds*/,`Saved "${snippet.meta.name}"`);
+                this._showStatus(StatusType.info, 3 /*seconds*/, `Saved "${snippet.meta.name}"`);
             })
             .catch(this._errorHandler);
     }
@@ -165,11 +172,13 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     private _saveHelper(): Promise<Snippet> {
         return this._validateNameBeforeProceeding().then(() => {
             this.snippet = this._composeSnippetFromEditor();
-	        return this._snippetManager.save(this.snippet);
+            return this._snippetManager.save(this.snippet);
         });
     }
 
-	delete(): Promise<void> {
+    delete(): Promise<void> {
+        appInsights.trackEvent('Delete from Editor', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+        
         return this._snippetManager.delete(this.snippet, true /*askForConfirmation*/)
             .then(() => {
                 this._router.navigate(['new']);
@@ -178,13 +187,15 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     run(): Promise<any> {
+        appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+        
         return this._validateNameBeforeProceeding()
             .then(() => {
                 if (this._promptToSave) {
-                    const message = "You need to save the snippet before running it. " + 
-                        "Would you like to save now? Alternatively, if you're in the middle of a risky change, " + 
-                        "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet."; 
-                    
+                    const message = "You need to save the snippet before running it. " +
+                        "Would you like to save now? Alternatively, if you're in the middle of a risky change, " +
+                        "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet.";
+
                     return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel'])
                         .then((choice) => {
                             if (choice == 'Save') {
@@ -200,6 +211,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     duplicate(): Promise<void> {
+        appInsights.trackEvent('Duplicate', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+        
         return this._validateNameBeforeProceeding()
             .then(() => this._snippetManager.duplicate(this._composeSnippetFromEditor()))
             .then(duplicateSnippet => {
@@ -224,7 +237,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         setTimeout(() => {
             this.tabs.resize();
             this._changeDetectorRef.detectChanges();
-        }, 100);    
+        }, 100);
 
         this._timeout = setTimeout(() => {
             clearTimeout(this._timeout);
@@ -244,16 +257,18 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     get isStatusError() { return this.statusType === StatusType.error; }
 
     launchPopOutAddinEditor() {
-        var dialogOptions = {displayInIFrame: true, width: 85, height: 85};
+        appInsights.trackEvent('Popout Editor', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+
+        var dialogOptions = { displayInIFrame: true, width: 85, height: 85 };
         var url = Utilities.playgroundBasePath + 'addin/';
-        
+
         if (!Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
             UxUtil.showDialog("Dialog not supported",
                 "Launching a standalone-editor dialog window is not supported on this platform yet.", "OK")
             return;
         }
 
-        Office.context.ui.displayDialogAsync(url, dialogOptions, function(result) {
+        Office.context.ui.displayDialogAsync(url, dialogOptions, function (result) {
             if (result.status !== Office.AsyncResultStatus.Succeeded) {
                 UxUtil.showDialog("Error launching dialog", [
                     "Could not create a standalone-editor dialog window.",
@@ -262,7 +277,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             }
 
             var dialog = result.value;
-            dialog.addEventHandler("DialogMessageReceived", function(e) {
+            dialog.addEventHandler("DialogMessageReceived", function (e) {
                 UxUtil.showDialog("Event received", Utilities.stringifyPlusPlus(e), "OK");
             });
         });
@@ -273,7 +288,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             this.clearStatus();
             return;
         } else if (e instanceof PlaygroundError) {
-            this._showStatus(StatusType.error, 5 /*seconds*/, e.message);    
+            this._showStatus(StatusType.error, 5 /*seconds*/, e.message);
         } else {
             UxUtil.showErrorNotification('Error', [], e);
         }
