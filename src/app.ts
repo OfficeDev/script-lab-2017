@@ -53,7 +53,6 @@ export class AppComponent implements OnDestroy {
             if (next instanceof NavigationStart) {
                 if (Utilities.isEmpty(next.url)) return;
                 var name = next.url.split('/')[1];
-                console.log(appInsights);
                 appInsights.startTrackPage(name);
             }
             else if (next instanceof NavigationEnd) {
