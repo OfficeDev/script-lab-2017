@@ -5,7 +5,7 @@ import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetManager} from '../shared/services';
 import {Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError} from '../shared/helpers';
 
-declare var appInsights: any;
+
 
 enum EditWarning {
     NeverShown,

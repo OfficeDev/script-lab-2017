@@ -3,7 +3,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Utilities, ContextUtil, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
 import {ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SnippetNamingSuffixOption} from '../shared/services';
 import {BaseComponent} from '../shared/components/base.component';
-declare var appInsights: any;
+
 
 @Component({
     selector: 'new',

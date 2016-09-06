@@ -4,7 +4,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
-declare var appInsights: any;
+
 
 export interface IContentUpdated {
     name: string;

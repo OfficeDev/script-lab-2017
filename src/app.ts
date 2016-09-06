@@ -7,7 +7,6 @@ import {APP_ROUTER_PROVIDERS} from './app.routes';
 import {MediatorService, SnippetManager} from './shared/services';
 import {Utilities, ContextUtil, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper, ContextType} from './shared/helpers';
 import {Authenticator, TokenManager} from './shared/services/oauth';
-declare var appInsights: any;
 
 require('./assets/styles/spinner.scss');
 require('./assets/styles/globals.scss');
