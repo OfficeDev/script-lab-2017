@@ -5,7 +5,7 @@ import {BaseComponent} from '../shared/components/base.component';
 import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
 import {Snippet, SnippetManager} from '../shared/services';
 import {Authenticator, TokenManager, EndpointManager, IToken, ICode} from '../shared/services/oauth';
-declare var appInsights: any;
+
 
 @Component({
     selector: 'share',
@@ -164,7 +164,7 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
     logout() {
         appInsights.trackEvent('Sign Out', { type: 'UI Action' });
         this.tokenManager.clear();
-        appInsights.clearAuthenticatedUserContext(this.profile.login);
+        appInsights.clearAuthenticatedUserContext();
         this.token = null;
     }
 

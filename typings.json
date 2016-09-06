@@ -2,6 +2,7 @@
   "name": "office-api-playground",
   "dependencies": {},
   "globalDependencies": {
+    "applicationinsights-js": "registry:dt/applicationinsights-js#0.23.2+20160730040946",
     "bootstrap": "registry:dt/bootstrap#3.3.5+20160619023404",
     "core-js": "registry:dt/core-js#0.0.0+20160725163759",
     "jquery": "registry:dt/jquery#1.10.0+20160704162008",
