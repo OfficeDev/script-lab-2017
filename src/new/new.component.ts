@@ -67,14 +67,16 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this._router.navigate(['run', snippet.meta.id, false /*returnToEdit*/]);
     }
 
-    select(snippet?: ISnippet) {
-        appInsights.trackEvent('Select snippet', { type: 'UI Action', id: snippet.meta.id, name: snippet.meta.name });
-        
-        if (Utilities.isEmpty(snippet)) {
+    select(snippet?: ISnippet) {        
+        if (Utilities.isEmpty(snippet) || Utilities.isEmpty(snippet.meta)) {
+            appInsights.trackEvent('Create new snippet', { type: 'UI Action' });
             return this._snippetManager.new().then(newSnippet => {
                 this._router.navigate(['edit', newSnippet.meta.id]);
             });
+        } else {
+            appInsights.trackEvent('Select snippet', { type: 'UI Action', id: snippet.meta.id, name: snippet.meta.name });
         }
+        
         this._router.navigate(['edit', snippet.meta.id]);
     }
 
