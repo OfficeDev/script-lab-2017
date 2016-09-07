@@ -52,18 +52,23 @@ export class AppComponent implements OnDestroy {
             if (next instanceof NavigationStart) {
                 if (Utilities.isEmpty(next.url)) return;
                 var name = next.url.split('/')[1];
-                appInsights.startTrackPage(name);
+
+                if (appInsights && appInsights.startTrackPage && _.isFunction(appInsights.startTrackPage)) {
+                    appInsights.startTrackPage(name);
+                }
             }
             else if (next instanceof NavigationEnd) {
                 if (Utilities.isEmpty(next.url)) return;
                 var name = next.url.split('/')[1];
 
-                appInsights.stopTrackPage(
-                    name,
-                    next.url,
-                    { mode: ContextType[ContextUtil.context] },
-                    { pagesViewedInSession: pagesViewedInSession++ }
-                );
+                if (appInsights && appInsights.stopTrackPage && _.isFunction(appInsights.stopTrackPage)) {
+                    appInsights.stopTrackPage(
+                        name,
+                        next.url,
+                        { mode: ContextType[ContextUtil.context] },
+                        { pagesViewedInSession: pagesViewedInSession++ }
+                    );
+                }
             }
         });
     }
