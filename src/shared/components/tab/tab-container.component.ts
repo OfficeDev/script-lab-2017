@@ -143,8 +143,14 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 responses.forEach((responseIn: any) => {
                     var response: IIntelliSenseResponse = responseIn;
                     if (response.success) {
-                        this._existingMonacoLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
-                        console.log("Added " + response.url);
+                        try {
+                            this._existingMonacoLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
+                            console.log("Added " + response.url);
+                        } catch (e) {
+                            // Ignore error. Monaco will say that it's already an extra lib... Filed issue
+                            // https://github.com/Microsoft/monaco-editor/issues/174:
+                            // "Duplicate IntelliSense definitions, complaints about duplicate identifiers, on reloading Monaco editor on single-page-app"
+                        }
                     } else {
                         console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
                         errorUrls.push(response.url);
