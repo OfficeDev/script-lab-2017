@@ -39,7 +39,15 @@ export class SnippetManager {
         if (Utilities.isNull(snippet) || Utilities.isNull(snippet.meta)) {
             return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
         }
-        if (Utilities.isEmpty(snippet.meta.name)) return Promise.reject(new Error('Snippet name cannot be empty')) as any;
+        if (Utilities.isEmpty(snippet.meta.name)) {
+            return Promise.reject(new Error('Snippet name cannot be empty')) as any;
+        }
+        
+        snippet.meta.name = snippet.meta.name.trim();
+        if (!snippet.isNameUnique(this)) {
+            return Promise.reject(new Error('Snippet name must be unique')) as any;
+        }
+        
         snippet.lastSavedHash = snippet.getHash();
         return Promise.resolve(this._snippetsContainer.insert(snippet.meta.id, snippet));
     }
