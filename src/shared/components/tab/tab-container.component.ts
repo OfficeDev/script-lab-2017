@@ -2,21 +2,9 @@ import {Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, Ele
 import {Http} from '@angular/http';
 import {Subscription} from 'rxjs/Subscription';
 import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil} from '../../helpers';
+import {IntelliSenseHelper, IIntelliSenseResponse} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
-
-
-export interface IContentUpdated {
-    name: string;
-    content: string;
-}
-
-interface IIntelliSenseResponse {
-    url: string,
-    success: boolean,
-    data?: string,
-    error?: string
-}
 
 export interface IEditorParent {
     currentIntelliSense: string[];
@@ -107,32 +95,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     initiateLoadIntelliSense(): Promise<void> {
-        var urls: string[] = this.editorParent.currentIntelliSense;
-        var timeout = 10000;
-
-        var promises = urls.map((url) => {
-            return this._http.get(url)
-                .timeout(timeout, new Error("Server took too long to respond to " + url))
-                .toPromise()
-                .then((data) => {
-                    var response: IIntelliSenseResponse = {
-                        url: url,
-                        success: true,
-                        data: data.text(),
-                    };
-                    return response;
-                })
-                .catch((e) => {
-                    var response: IIntelliSenseResponse = {
-                        url: url,
-                        success: false,
-                        error: e
-                    };
-                    return response;
-                });
-        });
-
-        return Promise.all(promises)
+        return IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense)
             .then(responses => {
                 if (this._existingMonacoLibs) {
                     this._existingMonacoLibs.forEach(lib => lib.dispose());
