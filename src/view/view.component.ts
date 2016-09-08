@@ -5,14 +5,6 @@ import {BaseComponent} from '../shared/components/base.component';
 import {Snippet, SnippetManager} from '../shared/services';
 import {Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError} from '../shared/helpers';
 
-
-
-enum EditWarning {
-    NeverShown,
-    Showing,
-    Dismissed
-}
-
 @Component({
     selector: 'view',
     templateUrl: 'view.component.html',
@@ -27,10 +19,6 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
 
     headerName: string;
     thisUrl: string;
-
-    editWarning = EditWarning.NeverShown;
-
-    private _timeout;
 
     constructor(
         _router: Router,
@@ -81,39 +69,6 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
         this.markDispose(subscription);
 
         this.tabs.editorParent = this;
-
-    }
-
-    onSwitchFocusToJavaScript(): void {
-        /* nothing to do, need to implement this function only for fulfilling the IEditorParent contract */
-    }
-
-    onChangeContent() {
-        if (this.editWarning === EditWarning.NeverShown) {
-            this.editWarning = EditWarning.Showing;
-
-            setTimeout(() => {
-                this.tabs.resize();
-                this._changeDetectorRef.detectChanges();
-            }, 100);
-
-            this._timeout = setTimeout(() => {
-                clearTimeout(this._timeout);
-                this.clearEditWarning();
-            }, 10000);
-
-        }
-    }
-
-    clearEditWarning() {
-        this.editWarning = EditWarning.Dismissed;
-
-        this._changeDetectorRef.detectChanges();
-        this.tabs.resize();
-    }
-
-    get showEditWarning() {
-        return this.editWarning === EditWarning.Showing;
     }
 
     openPlayground() {

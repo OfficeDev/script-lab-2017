@@ -105,7 +105,7 @@ export class Snippet implements ISnippet {
                 }
 
                 // otherwise assume it's an NPM package name
-                return "//npmcdn.com/" + entry;
+                return "//unpkg.com/" + entry;
             })
             .filter((entry) => entry != null);
     }
@@ -144,7 +144,7 @@ export class Snippet implements ISnippet {
                 }
 
                 // otherwise assume it's an NPM package name
-                return "//npmcdn.com/" + entry;
+                return "//unpkg.com/" + entry;
             })
     }
 
@@ -157,7 +157,7 @@ export class Snippet implements ISnippet {
             .filter((entry) => !entry.startsWith("#") && (entry.startsWith("@types") || entry.endsWith(".ts")))
             .map((entry) => {
                 if (entry.startsWith("@types")) {
-                    return "//npmcdn.com/" + entry + "/index.d.ts";
+                    return "//unpkg.com/" + entry + "/index.d.ts";
                 }
 
                 return Utilities.normalizeUrl(entry);
@@ -183,13 +183,11 @@ export class Snippet implements ISnippet {
     }
 
     public makeNameUnique(suffixOption: SnippetNamingSuffixOption, snippetManager: SnippetManager): void {
-        var localSnippets = snippetManager.getLocal();
-
         if (Utilities.isNullOrWhitespace(this.meta.name)) {
             this.meta.name = MessageStrings.NewSnippetName;
         }
 
-        if (isNameUnique(this)) {
+        if (this.isNameUnique(snippetManager)) {
             return;
         }
 
@@ -198,7 +196,7 @@ export class Snippet implements ISnippet {
         var i = 1;
         while (true) {
             this.meta.name = prefix + ' ' + i;
-            if (isNameUnique(this)) {
+            if (this.isNameUnique(snippetManager)) {
                 return;
             }
             i++;
@@ -256,11 +254,14 @@ export class Snippet implements ISnippet {
                     return prefix;
             }
         }
+    }
 
-        function isNameUnique(snippet: Snippet) {
-            return Utilities.isNull(localSnippets.find((item) =>
-                (item.meta.id != snippet.meta.id && item.meta.name == snippet.meta.name)));
-        }
+    /** Note: assume both this snippet's name and all other snippets have had their names trimmed of spaces */
+    public isNameUnique(snippetManager: SnippetManager) {
+        return Utilities.isNull(
+            snippetManager.getLocal().find((item) => 
+                (item.meta.id != this.meta.id && item.meta.name == this.meta.name))
+        );
     }
 
     public attemptToGuessContext(): string {

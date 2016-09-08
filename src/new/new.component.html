@@ -10,7 +10,7 @@
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
                 <span>My local snippets&nbsp;&nbsp;
-                    <i class='new-list__action ms-Icon ms-Icon--infoCircle' (click)="showInfo = !showInfo"></i>
+                    <i class='new-list__action ms-Icon ms-Icon--infoCircle opacity-50' (click)="showInfo = !showInfo"></i>
                 </span>
                 <i [hidden]="!localGallery?.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
@@ -23,9 +23,6 @@
             <section class="new-list__group local-snippets">
                 <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
-                    <i class="new-list__action ms-Icon ms-Icon--pencil" (click)="select(snippet)"></i>
-                    <i class="new-list__action ms-Icon ms-Icon--play" (click)="run(snippet)"></i>
-                    <i class="new-list__action ms-Icon ms-Icon--trash" (click)="delete(snippet)"></i>
                 </article>
                 <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">
                     You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from
@@ -63,7 +60,7 @@
         </button>
         <button class="new__action button-primary ms-Button ms-Button--compound" (click)="navigateToImport()">
             <h1 class="ms-Button-label">Create from link / JSON</h1>
-            <span class="ms-Button-description">Create a new snippet from a shared link or from a JSON object</span>
+            <span class="ms-Button-description">Create from shared link or JSON</span>
         </button>
     </section>
 </section>

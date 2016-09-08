@@ -30,7 +30,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     private _initializeMonacoEditor(): Promise<any> {
-        var defaultText = '// Enter snippet ID or URL or JSON';
+        var defaultText = '// Enter snippet URL or JSON';
 
         return new Promise((resolve) => {
             console.log("Beginning to initialize Monaco editor");

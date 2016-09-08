@@ -2,26 +2,13 @@ import {Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, Ele
 import {Http} from '@angular/http';
 import {Subscription} from 'rxjs/Subscription';
 import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil} from '../../helpers';
+import {IntelliSenseHelper, IIntelliSenseResponse} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
 
-
-export interface IContentUpdated {
-    name: string;
-    content: string;
-}
-
-interface IIntelliSenseResponse {
-    url: string,
-    success: boolean,
-    data?: string,
-    error?: string
-}
-
-export class IEditorParent {
+export interface IEditorParent {
     currentIntelliSense: string[];
-    onSwitchFocusToJavaScript: () => void;
-    onChangeContent: () => void;
+    onSwitchFocusToJavaScript?: () => void;
 }
 
 @Component({
@@ -57,6 +44,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     editorParent: IEditorParent;
 
+    private _existingMonacoLibs: monaco.IDisposable[] = [];
+
     constructor(private _http: Http) {
         super();
     }
@@ -68,7 +57,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             .then(() => {
                 this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
-                    this._initiateLoadIntelliSense(this.editorParent.currentIntelliSense)
+                    this.initiateLoadIntelliSense()
                         .catch(UxUtil.catchError("An error occurred while loading IntelliSense.", []))
                         .then(() => {
                             this.progressMessage = "Loading the Monaco editor";
@@ -105,42 +94,25 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         }
     }
 
-    private _initiateLoadIntelliSense(urls: string[]): Promise<void> {
-        var timeout = 10000;
-
-        var promises = urls.map((url) => {
-            return this._http.get(url)
-                .timeout(timeout, new Error("Server took too long to respond to " + url))
-                .toPromise()
-                .then((data) => {
-                    var response: IIntelliSenseResponse = {
-                        url: url,
-                        success: true,
-                        data: data.text(),
-                    };
-                    return response;
-                })
-                .catch((e) => {
-                    var response: IIntelliSenseResponse = {
-                        url: url,
-                        success: false,
-                        error: e
-                    };
-                    return response;
-                });
-        });
-
-        return Promise.all(promises)
+    initiateLoadIntelliSense(): Promise<void> {
+        return IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense)
             .then(responses => {
+                if (this._existingMonacoLibs) {
+                    this._existingMonacoLibs.forEach(lib => lib.dispose());
+                    this._existingMonacoLibs = [];
+                }
+
                 var errorUrls: string[] = [];
-                responses.forEach((responseIn) => {
-                    var response: IIntelliSenseResponse = <any>responseIn;
+                responses.forEach((responseIn: any) => {
+                    var response: IIntelliSenseResponse = responseIn;
                     if (response.success) {
                         try {
-                            monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url);
+                            this._existingMonacoLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
                             console.log("Added " + response.url);
                         } catch (e) {
-                            // Ignore error. Monaco will say that it's already an extra lib... which is totally fine.
+                            // Ignore error. Monaco will say that it's already an extra lib... Filed issue
+                            // https://github.com/Microsoft/monaco-editor/issues/174:
+                            // "Duplicate IntelliSense definitions, complaints about duplicate identifiers, on reloading Monaco editor on single-page-app"
                         }
                     } else {
                         console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
@@ -264,8 +236,6 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
             if (Utilities.isNull(nextTab.model)) {
                 nextTab.model = monaco.editor.createModel(nextTab.content, nextTab.language);
-                nextTab.model.onDidChangeContent(() => this.editorParent.onChangeContent());
-
             }
 
             this._monacoEditor.updateOptions({
