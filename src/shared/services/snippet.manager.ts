@@ -188,13 +188,15 @@ export class SnippetManager {
 
                     # NPM CDN references
                     jquery
+                    core-js/client/core.min.js
                     office-ui-fabric/dist/js/jquery.fabric.min.js
                     office-ui-fabric/dist/css/fabric.min.css
                     office-ui-fabric/dist/css/fabric.components.min.css
 
                     # IntelliSense definitions
-                    //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/office-js/office-js.d.ts
-                    //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+                    @types/jquery
+                    @types/core-js
+                    @types/office-js
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)
@@ -207,12 +209,14 @@ export class SnippetManager {
                 libraries: Utilities.stripSpaces(`
                     # NPM CDN references
                     jquery
+                    core-js/client/core.min.js
                     office-ui-fabric/dist/js/jquery.fabric.min.js
                     office-ui-fabric/dist/css/fabric.min.css
                     office-ui-fabric/dist/css/fabric.components.min.css
 
                     # IntelliSense definitions
-                    //raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts
+                    @types/jquery
+                    @types/core-js
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)
