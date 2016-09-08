@@ -18,10 +18,9 @@ interface IIntelliSenseResponse {
     error?: string
 }
 
-export class IEditorParent {
+export interface IEditorParent {
     currentIntelliSense: string[];
-    onSwitchFocusToJavaScript: () => void;
-    onChangeContent: () => void;
+    onSwitchFocusToJavaScript?: () => void;
 }
 
 @Component({
@@ -57,6 +56,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     editorParent: IEditorParent;
 
+    private _existingMonacoLibs: monaco.IDisposable[] = [];
+
     constructor(private _http: Http) {
         super();
     }
@@ -68,7 +69,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             .then(() => {
                 this.progressMessage = "Initializing IntelliSense";
                 (<any>window).require(['vs/editor/editor.main'], () => {
-                    this._initiateLoadIntelliSense(this.editorParent.currentIntelliSense)
+                    this.initiateLoadIntelliSense()
                         .catch(UxUtil.catchError("An error occurred while loading IntelliSense.", []))
                         .then(() => {
                             this.progressMessage = "Loading the Monaco editor";
@@ -105,7 +106,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         }
     }
 
-    private _initiateLoadIntelliSense(urls: string[]): Promise<void> {
+    initiateLoadIntelliSense(): Promise<void> {
+        var urls: string[] = this.editorParent.currentIntelliSense;
         var timeout = 10000;
 
         var promises = urls.map((url) => {
@@ -132,16 +134,17 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         return Promise.all(promises)
             .then(responses => {
+                if (this._existingMonacoLibs) {
+                    this._existingMonacoLibs.forEach(lib => lib.dispose());
+                    this._existingMonacoLibs = [];
+                }
+
                 var errorUrls: string[] = [];
-                responses.forEach((responseIn) => {
-                    var response: IIntelliSenseResponse = <any>responseIn;
+                responses.forEach((responseIn: any) => {
+                    var response: IIntelliSenseResponse = responseIn;
                     if (response.success) {
-                        try {
-                            monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url);
-                            console.log("Added " + response.url);
-                        } catch (e) {
-                            // Ignore error. Monaco will say that it's already an extra lib... which is totally fine.
-                        }
+                        this._existingMonacoLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
+                        console.log("Added " + response.url);
                     } else {
                         console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
                         errorUrls.push(response.url);
@@ -264,8 +267,6 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
             if (Utilities.isNull(nextTab.model)) {
                 nextTab.model = monaco.editor.createModel(nextTab.content, nextTab.language);
-                nextTab.model.onDidChangeContent(() => this.editorParent.onChangeContent());
-
             }
 
             this._monacoEditor.updateOptions({

@@ -77,9 +77,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     onSwitchFocusToJavaScript(): void {
         var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
-            this._showStatus(StatusType.warning, 10 /*seconds*/,
-                'It looks like your IntelliSense references have changed. ' +
-                'To see those changes live, please re-load this page.');
+            this.currentIntelliSense = newIntelliSenseDefinitions;
+            this.tabs.initiateLoadIntelliSense()
+                .then(() => this._showStatus(StatusType.info, 4 /* seconds */,
+                    'Editor IntelliSense successfully reloaded.'))
+                .catch(UxUtil.catchError('Error refreshing IntelliSense', null));
         }
     }
 
@@ -311,9 +313,5 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     private get _promptToSave() {
         return this.snippet.lastSavedHash != this._composeSnippetFromEditor().getHash();
-    }
-
-    onChangeContent() {
-        // Do nothing. Needed in order to fulfill the IEditorParent interface
     }
 }
