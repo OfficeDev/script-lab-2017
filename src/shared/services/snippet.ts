@@ -105,7 +105,7 @@ export class Snippet implements ISnippet {
                 }
 
                 // otherwise assume it's an NPM package name
-                return "//npmcdn.com/" + entry;
+                return "//unpkg.com/" + entry;
             })
             .filter((entry) => entry != null);
     }
@@ -144,7 +144,7 @@ export class Snippet implements ISnippet {
                 }
 
                 // otherwise assume it's an NPM package name
-                return "//npmcdn.com/" + entry;
+                return "//unpkg.com/" + entry;
             })
     }
 
@@ -157,7 +157,7 @@ export class Snippet implements ISnippet {
             .filter((entry) => !entry.startsWith("#") && (entry.startsWith("@types") || entry.endsWith(".ts")))
             .map((entry) => {
                 if (entry.startsWith("@types")) {
-                    return "//npmcdn.com/" + entry + "/index.d.ts";
+                    return "//unpkg.com/" + entry + "/index.d.ts";
                 }
 
                 return Utilities.normalizeUrl(entry);
