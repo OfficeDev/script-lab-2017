@@ -132,6 +132,14 @@ span.console.error {
 	overflow: hidden;
 }
 
+.opacity-50 {
+    opacity: 0.5;
+}
+
+    .opacity-50:hover {
+        opacity: 1;
+    }
+
 .appwide-overlay-dialog.ui-dialog {
     overflow-y: auto;
     position: absolute;
