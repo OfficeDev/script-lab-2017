@@ -75,7 +75,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     onSwitchFocusToJavaScript(): void {
-        var newIntelliSenseDefinitions = this._composeSnippetFromEditor().getTypeScriptDefinitions();
+        var currentSnapshot = this._composeSnippetFromEditor();
+        if (currentSnapshot == null) {
+            return;
+        }
+
+        var newIntelliSenseDefinitions = currentSnapshot.getTypeScriptDefinitions();
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
             this.currentIntelliSense = newIntelliSenseDefinitions;
             this.tabs.initiateLoadIntelliSense()
@@ -173,7 +178,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     private _saveHelper(): Promise<Snippet> {
         return this._validateNameBeforeProceeding().then(() => {
-            this.snippet = this._composeSnippetFromEditor();
+            var currentSnapshot = this._composeSnippetFromEditor();
+            if (currentSnapshot == null) {
+                throw new PlaygroundError("Error while saving: could not retrieve current snippet state");
+            }
+
+            this.snippet = currentSnapshot;
             return this._snippetManager.save(this.snippet);
         });
     }
@@ -200,7 +210,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
                     return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel'])
                         .then((choice) => {
-                            if (choice == 'Save') {
+                            if (choice === 'Save') {
                                 return this._saveHelper();
                             } else {
                                 throw new ExpectedError();
@@ -213,19 +223,35 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     duplicate(): Promise<void> {
-        appInsights.trackEvent('Duplicate', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
+        return UxUtil.showDialog("Duplicate snippet?", "Would you like to save the current editor state into a new snippet?", ['Yes', 'Cancel'])
+            .then(choice => {
+                if (choice !== 'Yes') {
+                    throw new ExpectedError();
+                }
+            })
+            .then(() => {
+                appInsights.trackEvent('Duplicate', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
         
-        return this._validateNameBeforeProceeding()
-            .then(() => this._snippetManager.duplicate(this._composeSnippetFromEditor()))
-            .then(duplicateSnippet => {
-                this._router.navigate(['edit', duplicateSnippet.meta.id]);
-                return duplicateSnippet
+                return this._validateNameBeforeProceeding()
+                    .then(() => {
+                        var currentSnapshot = this._composeSnippetFromEditor();
+                        if (currentSnapshot == null) {
+                            throw new PlaygroundError("Error while duplicating snippet: could not retrieve current snippet state");
+                        }
+
+                        return this._snippetManager.duplicate(currentSnapshot);
+                    })
+                    .then(duplicateSnippet => {
+                        this._router.navigate(['edit', duplicateSnippet.meta.id]);
+                        return duplicateSnippet
+                    })
+                    .then((duplicateSnippet) => {
+                        this._showStatus(StatusType.info, 3 /*seconds*/, 'Created duplicate snippet');
+                        this._showNameFieldAndSetFocus();
+                    })
+                    .catch(this._errorHandler);
             })
-            .then((duplicateSnippet) => {
-                this._showStatus(StatusType.info, 3 /*seconds*/, 'Created duplicate snippet');
-                this._showNameFieldAndSetFocus();
-            })
-            .catch(this._errorHandler);
+            .catch(UxUtil.catchError("Error duplicating snippet", null));
     }
 
     private _showStatus(statusType: StatusType, seconds: number, message: string): void {
@@ -296,10 +322,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         }
     }
 
-    private _composeSnippetFromEditor() {
+    private _composeSnippetFromEditor(): Snippet {
         var currentEditorState = this.tabs.currentState;
+
         if (currentEditorState === null) {
-            return new Snippet({});
+            return null;
         }
 
         return new Snippet({
@@ -311,7 +338,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         });
     }
 
-    private get _promptToSave() {
-        return this.snippet.lastSavedHash != this._composeSnippetFromEditor().getHash();
+    private get _promptToSave(): boolean {
+        var currentSnapshot = this._composeSnippetFromEditor();
+        if (currentSnapshot == null) {
+            return false;
+        }
+
+        return this.snippet.lastSavedHash != currentSnapshot.getHash();
     }
 }
