@@ -157,6 +157,12 @@ export class Snippet implements ISnippet {
             .filter((entry) => !entry.startsWith("#") && (entry.startsWith("@types") || entry.endsWith(".ts")))
             .map((entry) => {
                 if (entry.startsWith("@types")) {
+                    if (entry === '@types/jquery') {
+                        // For some strange reason, type @types for jQuery does not behave correctly on
+                        // Internet Explorer.  So substitute the DefinitelyTyped version, which does work, instead.
+                        return  '//raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts';
+                    }
+                    
                     return "//unpkg.com/" + entry + "/index.d.ts";
                 }
 
