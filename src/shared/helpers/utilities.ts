@@ -25,7 +25,7 @@ export class Utilities {
         return this.isNull(obj) || _.isEmpty(obj);
     }
 
-    static stringOrEmpty(text: string): string {
+    static stringOrEmpty(text: any): string {
         if (text === null || text === undefined) {
             return '';
         }
@@ -148,18 +148,6 @@ export class Utilities {
                 var snapshot: any = {};
                 var current = object;
                 var hasOwnProperty = Object.prototype.hasOwnProperty;
-                function tryAddName(name: string) {
-                    if (name.indexOf("_") < 0 &&
-                        !hasOwnProperty.call(snapshot, name)) {
-                        Object.defineProperty(snapshot, name, {
-                            configurable: true,
-                            enumerable: true,
-                            get: function () {
-                                return object[name];
-                            }
-                        });
-                    }
-                }
                 do {
                     Object.keys(current).forEach(tryAddName);
                     current = Object.getPrototypeOf(current);
@@ -167,6 +155,19 @@ export class Utilities {
                 return snapshot;
             } catch (e) {
                 return object;
+            }
+
+            function tryAddName(name: string) {
+                if (name.indexOf("_") < 0 &&
+                    !hasOwnProperty.call(snapshot, name)) {
+                    Object.defineProperty(snapshot, name, {
+                        configurable: true,
+                        enumerable: true,
+                        get: function () {
+                            return object[name];
+                        }
+                    });
+                }
             }
         }
     }
@@ -179,7 +180,7 @@ export class Utilities {
                 array.push(msg);
             })
         } else {
-            array.push(itemOrItems);
+            array.push(<T>itemOrItems);
         }
     }
 

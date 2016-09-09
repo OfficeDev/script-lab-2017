@@ -316,7 +316,13 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             this.clearStatus();
             return;
         } else if (e instanceof PlaygroundError) {
-            this._showStatus(StatusType.error, 5 /*seconds*/, e.message);
+            var message: string;
+            if (_.isString(e.message)) {
+                message = e.message as string;
+            } else if (_.isArray(e.message)) {
+                message = (e.message as string[]).join(" \n");
+            }
+            this._showStatus(StatusType.error, 5 /*seconds*/, message);
         } else {
             UxUtil.showErrorNotification('Error', [], e);
         }

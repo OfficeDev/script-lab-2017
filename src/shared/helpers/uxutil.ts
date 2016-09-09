@@ -75,7 +75,7 @@ export class UxUtil {
                 if (_.isArray(buttons)) {
                     buttonsArray = buttons;
                 } else {
-                    buttonsArray = [buttons];
+                    buttonsArray = [<string>buttons];
                 }
 
                 var $buttonPane = $('.ms-Dialog-actionsRight', $dialogRoot);
@@ -111,7 +111,7 @@ export class UxUtil {
         if (_.isArray(messageOrMessageArray)) {
             messages = messageOrMessageArray;
         } else {
-            messages = [messageOrMessageArray];
+            messages = [<string>messageOrMessageArray];
         }
 
         var result = [];
