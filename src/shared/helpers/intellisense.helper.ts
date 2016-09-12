@@ -8,13 +8,14 @@ export interface IIntelliSenseResponse {
 }
 
 export class IntelliSenseHelper {
-    private static previouslyFetchedLibs: { [key: string]: string } = { };
+    private static _previouslyFetchedLibs: { [key: string]: string } = { };
+    private static _currentMonacoAddedLibs: monaco.IDisposable[] = [];
 
     static retrieveIntelliSense(http: Http, urls: string[]): Promise<IIntelliSenseResponse[]> {
         var timeout = 10000;
 
         var promises = urls.map(url => {
-            if (IntelliSenseHelper.previouslyFetchedLibs[url]) {
+            if (IntelliSenseHelper._previouslyFetchedLibs[url]) {
                 console.log("IntelliSense for " + url + " already cached; re-using it");
                 return createSuccessResponseFromLib();
             }
@@ -24,7 +25,7 @@ export class IntelliSenseHelper {
                 .timeout(timeout, new Error("Server took too long to respond to " + url))
                 .toPromise()
                 .then((data) => {
-                    IntelliSenseHelper.previouslyFetchedLibs[url] = data.text();
+                    IntelliSenseHelper._previouslyFetchedLibs[url] = data.text();
                     return createSuccessResponseFromLib();
                 })
                 .catch((e) => {
@@ -40,11 +41,20 @@ export class IntelliSenseHelper {
                 return <IIntelliSenseResponse> {
                     url: url,
                     success: true,
-                    data: IntelliSenseHelper.previouslyFetchedLibs[url],
+                    data: IntelliSenseHelper._previouslyFetchedLibs[url],
                 };
             }
         });
 
         return <any>Promise.all(promises);
+    }
+
+    static disposeAllMonacoLibInstances() {
+        IntelliSenseHelper._currentMonacoAddedLibs.forEach(lib => lib.dispose());
+        IntelliSenseHelper._currentMonacoAddedLibs = [];
+    }
+
+    static recordNewlyAddedLib(lib: monaco.IDisposable) {
+        IntelliSenseHelper._currentMonacoAddedLibs.push(lib);
     }
 }

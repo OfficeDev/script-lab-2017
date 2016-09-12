@@ -44,7 +44,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     editorParent: IEditorParent;
 
-    private _existingMonacoLibs: monaco.IDisposable[] = [];
+    private _modelsToDispose: monaco.IDisposable[] = [];
 
     constructor(private _http: Http) {
         super();
@@ -88,6 +88,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             }
         });
 
+        this._modelsToDispose.forEach(model => model.dispose());
+
         if (this._monacoEditor) {
             this._monacoEditor.dispose();
             console.log("Monaco editor disposed");
@@ -97,17 +99,15 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     initiateLoadIntelliSense(): Promise<void> {
         return IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense)
             .then(responses => {
-                if (this._existingMonacoLibs) {
-                    this._existingMonacoLibs.forEach(lib => lib.dispose());
-                    this._existingMonacoLibs = [];
-                }
+                IntelliSenseHelper.disposeAllMonacoLibInstances();
 
                 var errorUrls: string[] = [];
                 responses.forEach((responseIn: any) => {
                     var response: IIntelliSenseResponse = responseIn;
                     if (response.success) {
                         try {
-                            this._existingMonacoLibs.push(monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
+                            IntelliSenseHelper.recordNewlyAddedLib(
+                                monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
                             console.log("Added " + response.url);
                         } catch (e) {
                             // Ignore error. Monaco will say that it's already an extra lib... Filed issue
@@ -143,7 +143,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 vertical: 'visible',
                 verticalHasArrows: true,
                 arrowSize: 15
-            }
+            },
+            model: null
         });
 
         $(this._editor.nativeElement).keydown((event) => {
@@ -235,7 +236,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             }
 
             if (Utilities.isNull(nextTab.model)) {
-                nextTab.model = monaco.editor.createModel(nextTab.content, nextTab.language);
+                let newModel = monaco.editor.createModel(nextTab.content, nextTab.language);
+                this._modelsToDispose.push(newModel);
+                nextTab.model = newModel;
             }
 
             this._monacoEditor.updateOptions({
