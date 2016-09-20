@@ -192,19 +192,19 @@ export class SnippetManager {
                 script: script,
                 libraries: Utilities.stripSpaces(`
                     # Office.js CDN reference
-                    //appsforoffice.microsoft.com/lib/1/hosted/Office.js
+                    https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
 
-                    # NPM CDN references
+                    # Other CDN references. Syntax: NPM package name, NPM package path, or raw URL to CDN location.
                     jquery
                     core-js/client/core.min.js
                     office-ui-fabric/dist/js/jquery.fabric.min.js
                     office-ui-fabric/dist/css/fabric.min.css
                     office-ui-fabric/dist/css/fabric.components.min.css
 
-                    # IntelliSense definitions
-                    @types/jquery
-                    @types/core-js
-                    @types/office-js
+                    # IntelliSense definitions. Syntax: "dt~library_name" for DefinitelyTyped, "@typings/library_name" for Typings, or raw URL to d.ts location.
+                    dt~jquery
+                    dt~core-js
+                    dt~office-js
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)
@@ -215,16 +215,16 @@ export class SnippetManager {
             return new Snippet({
                 script: 'console.log("Hello world");',
                 libraries: Utilities.stripSpaces(`
-                    # NPM CDN references
+                    # CDN references. Syntax: NPM package name, NPM package path, or raw URL to CDN location.
                     jquery
                     core-js/client/core.min.js
                     office-ui-fabric/dist/js/jquery.fabric.min.js
                     office-ui-fabric/dist/css/fabric.min.css
                     office-ui-fabric/dist/css/fabric.components.min.css
 
-                    # IntelliSense definitions
-                    @types/jquery
-                    @types/core-js
+                    # IntelliSense definitions. Syntax: "dt~library_name" for DefinitelyTyped, "@typings/library_name" for Typings, or raw URL to d.ts location.
+                    dt~jquery
+                    dt~core-js
 
                     # Note: for any "loose" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the "Script" tab.
                 `)

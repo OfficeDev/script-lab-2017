@@ -94,7 +94,8 @@ export class Snippet implements ISnippet {
 
                 var lowercaseEntry = entry.toLowerCase();
 
-                if (lowercaseEntry.length === 0 || lowercaseEntry.startsWith("#") || lowercaseEntry.startsWith("@types") ||
+                if (lowercaseEntry.length === 0 || lowercaseEntry.startsWith("#") ||
+                    lowercaseEntry.startsWith("dt~") || lowercaseEntry.startsWith("@types") ||
                     lowercaseEntry.endsWith(".css") || lowercaseEntry.endsWith(".ts")
                 ) {
                     return null;
@@ -154,16 +155,16 @@ export class Snippet implements ISnippet {
     getTypeScriptDefinitions(): Array<string> {
         return Utilities.stringOrEmpty(this.libraries).split("\n")
             .map((entry) => entry.trim().toLowerCase())
-            .filter((entry) => !entry.startsWith("#") && (entry.startsWith("@types") || entry.endsWith(".ts")))
+            .filter((entry) => !entry.startsWith("#") && (
+                entry.startsWith("dt~") || entry.startsWith("@types") || entry.endsWith(".ts")))
             .map((entry) => {
                 if (entry.startsWith("@types")) {
-                    if (entry === '@types/jquery') {
-                        // For some strange reason, type @types for jQuery does not behave correctly on
-                        // Internet Explorer.  So substitute the DefinitelyTyped version, which does work, instead.
-                        return  '//raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/jquery/jquery.d.ts';
-                    }
-                    
                     return "//unpkg.com/" + entry + "/index.d.ts";
+                }
+
+                if (entry.startsWith("dt~")) {
+                    var libName = entry.substr(3); // 3 = length of "dt~"
+                    return  `//raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`;
                 }
 
                 return Utilities.normalizeUrl(entry);
