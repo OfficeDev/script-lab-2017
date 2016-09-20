@@ -30,7 +30,7 @@
         &:focus {
             border: none;
         }
-        
+
 
         .ms-Button-description,
         .ms-Button-label {
@@ -72,7 +72,6 @@
         outline: none;
         display: table-cell;
         background: aliceblue;
-
     }
 }
 
@@ -82,7 +81,7 @@
 
 .new-list {
     flex: 1 1 100%;
-    @include vScroll();   
+    @include vScroll();
 
     &__group {
         margin-bottom: $default-spacing;
@@ -99,7 +98,7 @@
 
         &__local {
             span {
-                padding: $default-spacing;            
+                padding: $default-spacing;
                 align-self: flex-start;
                 @include ellipsis();
                 flex: 1 1 100%;
@@ -108,7 +107,7 @@
 
         &__template {
             > div {
-                padding: $default-spacing*2/3 $default-spacing;            
+                padding: $default-spacing*2/3 $default-spacing;
                 align-self: flex-start;
                 @include ellipsis();
                 flex: 1 1 100%;
@@ -134,8 +133,12 @@
     }
 
     &__notice {
-        background: $background-lightest;
+        background: rgba(#FFF100, 0.6);
         padding: $default-spacing;
+
+        & .ms-Button {
+            margin-top: $default-spacing/2;
+        }
     }
 
     &__loading {
@@ -168,26 +171,29 @@
     .main-heading.local-snippets i {
         position: relative;
         top: 0;
-        padding: 5px;
+        padding: $default-spacing;
         color: black;
         /* different browsers use different terms for pointer vs. hand, so include both*/
         cursor: pointer;
-        cursor: hand;        
+        cursor: hand;
     }
 
     .main-heading.local-snippets > i:hover {
-        color: white;        
+        color: white;
     }
 
 h1.main-heading {
     background-color: $background-lightest;
-    padding-left: $default-spacing !important;
+    padding: $default-spacing !important;
+    padding-right: 0 !important;
     border: none;
-    border-bottom: solid 1px #E4E4E4;
-    padding: 10px;
-    border-top: solid 1px #E4E4E4;
     text-transform: uppercase;
     font-weight: bold;
+
+    &.action-bar {
+        padding: 0 $default-spacing !important;
+        padding-right: 0 !important;
+    }
 }
 
 h1.from-template {
@@ -200,7 +206,7 @@ h1.ms-Button-label {
 }
 
 h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {
-    padding-right: 7px;
+    padding-right: $default-spacing;
 }
 
 @media (max-width: 600px) {
