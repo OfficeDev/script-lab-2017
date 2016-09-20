@@ -66,9 +66,10 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     if (this._snippet.containsOfficeJsReference && 
                         !ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized))
                     {
-                        this.loadingMessage = 'Waiting for Office.js to initialize. ' + 
-                            'Note than a snippet that references Office.js can only run ' + 
-                            'inside of an Office Add-in, not a regular webpage.';
+                        this.loadingMessage = 'Your snippet specifies Office.js as one of the referenced libraries. ' +
+                            'The playground is waiting for Office.js to initialize. ' + 
+                            'Note that Office.js can only run inside of an Office Add-in, so if you\'re not using it, ' +
+                            'just remove it from te "Libraries" tab in the script editor.';
                         
                         return new Promise((resolve) => {
                             wait();

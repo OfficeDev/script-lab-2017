@@ -11,7 +11,7 @@
 </div>
 
 <section class="run__main" [hidden]="!loaded">
-    <iframe #runner id="runner-frame"></iframe>
+    <iframe #runner id="runner-frame" sandbox="allow-scripts allow-same-origin"></iframe>
 </section>
 
 <section #console class="run__console animate-show" id="console" [hidden]="!showConsole">

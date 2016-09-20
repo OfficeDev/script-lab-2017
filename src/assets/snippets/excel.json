@@ -21,16 +21,6 @@
             ]
         },
         {
-            "name": "TypeScript async/await",
-            "items": [
-                {
-                    "name": "Basic \"async/await\" use",
-                    "description": "Apply values and formatting to a range using the TypeScript \"async/await\" syntax",
-                    "gistId": "f3cdc0911d1b08ded60db3cf5bb7ffa1"
-                }
-            ]
-        },
-        {
             "name": "Range manipulation",
             "items": [
                 {
