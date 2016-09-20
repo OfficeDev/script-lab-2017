@@ -18,8 +18,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
+        this.showInfo = !!!(localStorage['Information']);
     }
 
+    showInfo: boolean;
     link: string;
     localGallery: any;
     templateGallery: ISnippetGallery;
@@ -42,6 +44,11 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             .then(() => this._changeDetectorRef.detectChanges());
     }
 
+    gotIt() {
+        this.showInfo = false;
+        localStorage['Information'] = true;
+    }
+
     delete(snippet: ISnippet): void {
         appInsights.trackEvent('Delete snippet', { type: 'UI Action', id: snippet.meta.id, name: snippet.meta.name });
 
@@ -53,7 +60,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
 
     deleteAll(): void {
         appInsights.trackEvent('Delete all snippets', { type: 'UI Action' });
-        
+
         this._snippetManager.deleteAll(true /*askForConfirmation*/)
             .then(() => {
                 this.localGallery = this._snippetManager.getLocal();
@@ -63,11 +70,11 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
 
     run(snippet: ISnippet) {
         appInsights.trackEvent('Run from new', { type: 'UI Action' });
-        
+
         this._router.navigate(['run', snippet.meta.id, false /*returnToEdit*/]);
     }
 
-    select(snippet?: ISnippet) {        
+    select(snippet?: ISnippet) {
         if (Utilities.isEmpty(snippet) || Utilities.isEmpty(snippet.meta)) {
             appInsights.trackEvent('Create new snippet', { type: 'UI Action' });
             return this._snippetManager.new().then(newSnippet => {
@@ -76,7 +83,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         } else {
             appInsights.trackEvent('Select snippet', { type: 'UI Action', id: snippet.meta.id, name: snippet.meta.name });
         }
-        
+
         this._router.navigate(['edit', snippet.meta.id]);
     }
 
@@ -98,7 +105,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             });
     }
 
-    navigateToImport() {        
+    navigateToImport() {
         this._router.navigate(['import'])
     }
 

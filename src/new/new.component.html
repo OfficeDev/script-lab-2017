@@ -8,19 +8,24 @@
     </div>
     <section class="new__section new__gallery" [hidden]="!loaded">
         <section class="new-list">
-            <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets">
+            <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets action-bar">
                 <span>My local snippets&nbsp;&nbsp;
                     <i class='new-list__action ms-Icon ms-Icon--infoCircle opacity-50' (click)="showInfo = !showInfo"></i>
                 </span>
                 <i [hidden]="!localGallery?.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
-            <p [hidden]="!showInfo" class="new-list__notice ms-font-m">
+            <div [hidden]="!showInfo" class="new-list__notice ms-font-m">
                 Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
-                Please do <em>not</em> use the Playground for mission-critical snippets that you
-                haven't backed up via some other means (i.e., manual copying or the Sharing feature).
-            </p>
-            
-            <section class="new-list__group local-snippets">
+                Please do <em>not</em> use the Playground for mission-critical snippets that you haven't
+                backed up via some other means (i.e., manual copying or the Sharing feature).
+
+                <br />
+                <button class="ms-Button ms-Button--primary" (click)=gotIt()>
+                    <span class="ms-Button-label">Got it</span>
+                </button>
+            </div>
+
+            <section class="new-list__group local-snippets" style="margin-bottom: 0">
                 <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
                 </article>
@@ -34,8 +39,7 @@
                 <h1 class="ms-font-m main-heading from-template">
                     From a template
                 </h1>
-                <p [hidden]="templateGallery || templateGalleryError"
-                    class="new-list__loading ms-font-m">Loading...
+                <p [hidden]="templateGallery || templateGalleryError" class="new-list__loading ms-font-m">Loading...
                 </p>
                 <div [hidden]="!templateGalleryError" class="new-list__template-error ms-font-m">{{templateGalleryError}}</div>
                 <section class="new-list__group from-template" *ngFor="let group of templateGallery?.groups; let i = index">
