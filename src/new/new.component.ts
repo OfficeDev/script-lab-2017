@@ -18,7 +18,6 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
-        this.showInfo = !!!(localStorage['Information']);
     }
 
     showInfo: boolean;
@@ -34,6 +33,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         }
 
         this.localGallery = this._snippetManager.getLocal();
+
+        var isEmpty = this.localGallery == null || this.localGallery.length <= 0;
+        this.showInfo = !isEmpty && !!!(localStorage['Information']);
+
         this._snippetManager.getPlaylist()
             .then((data) => {
                 this.templateGallery = data;
