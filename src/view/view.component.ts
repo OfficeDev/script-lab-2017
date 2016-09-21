@@ -47,6 +47,11 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
 
                     ContextUtil.setContext(snippet.attemptToGuessContext());
                     ContextUtil.applyTheme();
+
+                    // Initiate loading IntelliSense, but swallow errors silently if can't loading
+                    // (user can't do anything about it on a read-only snippet anyway)
+                    // So, no .then, no .catch.  Just let it run 
+                    this.tabs.initiateLoadIntelliSense();
                 })
                 .catch((e) => {
                     UxUtil.showErrorNotification("Could not display the snippet", null, e,

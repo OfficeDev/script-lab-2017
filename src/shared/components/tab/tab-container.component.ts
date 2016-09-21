@@ -31,11 +31,15 @@ export interface IEditorParent {
 })
 export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
+    private _monacoEditorInitialized: boolean;
+
     private _subscriptions: Subscription[] = [];
 
     selectedTab: Tab;
     @ViewChild('editor') private _editor: ElementRef;
     @ViewChild('loader') private _loader: ElementRef;
+
+    @Input() readonly: boolean;
 
     progressMessage = "Loading the snippet";
     editorLoaded: boolean;
@@ -53,32 +57,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     ngAfterViewInit() {
         var that = this;
 
-        waitForIntelliSenseListToBeReady()
-            .then(() => {
-                this.progressMessage = "Initializing IntelliSense";
-                (<any>window).require(['vs/editor/editor.main'], () => {
-                    this.initiateLoadIntelliSense()
-                        .catch(UxUtil.catchError("An error occurred while loading IntelliSense.", []))
-                        .then(() => {
-                            this.progressMessage = "Loading the Monaco editor";
-                            this._initializeMonacoEditor();
-                        });
-                });
-            });
-
-        function waitForIntelliSenseListToBeReady(): Promise<any> {
-            return new Promise((resolve, reject) => {
-                wait();
-
-                function wait() {
-                    if (that.editorParent == null || that.editorParent.currentIntelliSense == null) {
-                        setTimeout(wait, 20);
-                    } else {
-                        resolve();
-                    }
-                }
-            });
-        }
+        (<any>window).require(['vs/editor/editor.main'], () => {
+            this._initializeMonacoEditor();
+        });
     }
 
     ngOnDestroy() {
@@ -97,7 +78,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     initiateLoadIntelliSense(): Promise<void> {
-        return IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense)
+        return this._waitForMonacoInitialization()
+            .then(() => IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense))
             .then(responses => {
                 IntelliSenseHelper.disposeAllMonacoLibInstances();
 
@@ -105,15 +87,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 responses.forEach((responseIn: any) => {
                     var response: IIntelliSenseResponse = responseIn;
                     if (response.success) {
-                        try {
-                            IntelliSenseHelper.recordNewlyAddedLib(
-                                monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
-                            console.log("Added " + response.url);
-                        } catch (e) {
-                            // Ignore error. Monaco will say that it's already an extra lib... Filed issue
-                            // https://github.com/Microsoft/monaco-editor/issues/174:
-                            // "Duplicate IntelliSense definitions, complaints about duplicate identifiers, on reloading Monaco editor on single-page-app"
-                        }
+                        IntelliSenseHelper.recordNewlyAddedLib(
+                            monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
+                        console.log("Added " + response.url);
                     } else {
                         console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
                         errorUrls.push(response.url);
@@ -125,6 +101,21 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                         errorUrls.map((url) => "* " + url).join("\n"));
                 }
             });
+    }
+
+    private _waitForMonacoInitialization(): Promise<any> {
+        if (this._monacoEditorInitialized) {
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+            var interval = setInterval(() => {
+                if (this._monacoEditorInitialized) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 20);
+        });
     }
 
     private _initializeMonacoEditor(): void {
@@ -166,6 +157,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 verticalHasArrows: true,
                 arrowSize: 15
             },
+            readOnly: this.readonly,
             model: null
         });
 
@@ -187,6 +179,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         this._monacoEditor.layout();
 
         console.log("Monaco editor initialized.");
+
+        this._monacoEditorInitialized = true;
     }
 
     setSaveAction(action: () => void): void {
@@ -263,14 +257,11 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
                 nextTab.model = newModel;
             }
 
-            this._monacoEditor.updateOptions({
-                readOnly: nextTab.readonly
-            })
             this._monacoEditor.setModel(nextTab.model);
             this._monacoEditor.restoreViewState(nextTab.state);
             this._monacoEditor.focus();
 
-            if (nextTab.name === "Script" && this.editorParent != null) {
+            if (nextTab.name === "Script" && this.editorParent != null && this.editorParent.onSwitchFocusToJavaScript) {
                 this.editorParent.onSwitchFocusToJavaScript();
             }
         }

@@ -9,7 +9,6 @@ export class Tab implements OnChanges {
     @Input() active: boolean;
     @Input() content: string;
     @Input() language: string;
-    @Input() readonly: boolean;
 
     @Output() update = new EventEmitter();
 

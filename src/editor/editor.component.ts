@@ -25,6 +25,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
+    
+    private _doneWithInitialIntelliSenseLoad = false;
 
     private _timeout;
 
@@ -48,14 +50,24 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             return;
         }
 
+        this.tabs.editorParent = this;
+
         var subscription = this._route.params.subscribe(params => {
             this._snippetManager.find(params['id'])
                 .then(snippet => {
                     this.snippet = snippet;
                     this.currentIntelliSense = snippet.getTypeScriptDefinitions();
+
+                    this._showStatus(StatusType.warning, -1 /* seconds. negative = indefinite */, "Loading IntelliSense...");
+                    this.tabs.initiateLoadIntelliSense()
+                        .then(() => {
+                            this.clearStatus();
+                            this._doneWithInitialIntelliSenseLoad = true;
+                        })
+                        .catch(UxUtil.catchError("An error occurred while loading IntelliSense.", []))
                 })
                 .catch(this._errorHandler);
-        }
+            }
         );
 
         this.markDispose(subscription);
@@ -63,8 +75,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         this.tabs.setSaveAction(() => {
             this.save();
         })
-
-        this.tabs.editorParent = this;
     }
 
     private _showNameFieldAndSetFocus(): void {
@@ -75,6 +85,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     onSwitchFocusToJavaScript(): void {
+        if (!this._doneWithInitialIntelliSenseLoad) {
+            return;
+        }
+
         var currentSnapshot = this._composeSnippetFromEditor();
         if (currentSnapshot == null) {
             return;
@@ -85,7 +99,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             this.currentIntelliSense = newIntelliSenseDefinitions;
             this.tabs.initiateLoadIntelliSense()
                 .then(() => this._showStatus(StatusType.info, 4 /* seconds */,
-                    'Editor IntelliSense successfully reloaded.'))
+                    'IntelliSense successfully reloaded.'))
                 .catch(UxUtil.catchError('Error refreshing IntelliSense', null));
         }
     }
@@ -254,6 +268,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             .catch(UxUtil.catchError("Error duplicating snippet", null));
     }
 
+    /**
+     * Shows a status message. If seconds is <= 0, will show message for indefinite amount of time 
+     */
     private _showStatus(statusType: StatusType, seconds: number, message: string): void {
         if (!Utilities.isNull(this._timeout)) {
             clearTimeout(this._timeout);
@@ -267,10 +284,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             this._changeDetectorRef.detectChanges();
         }, 100);
 
-        this._timeout = setTimeout(() => {
-            clearTimeout(this._timeout);
-            this.clearStatus();
-        }, seconds * 1000);
+        if (seconds > 0) {
+            this._timeout = setTimeout(() => {
+                clearTimeout(this._timeout);
+                this.clearStatus();
+            }, seconds * 1000);
+        }
     }
 
     clearStatus() {

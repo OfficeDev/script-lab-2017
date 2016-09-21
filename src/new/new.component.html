@@ -25,7 +25,7 @@
                 </button>
             </div>
 
-            <section class="new-list__group local-snippets" style="margin-bottom: 0">
+            <section class="new-list__group local-snippets">
                 <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery">
                     <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
                 </article>
