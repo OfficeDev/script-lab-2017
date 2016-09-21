@@ -130,6 +130,28 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     private _initializeMonacoEditor(): void {
         console.log("Beginning to initialize Monaco editor");
 
+        monaco.languages.register({ id: 'script-references' });
+
+        monaco.languages.setMonarchTokensProvider('script-references', {
+            tokenizer: {
+                root: [
+                    [/^#.*/, "comment"],
+                    
+                    // Anything starting with @types or dt~ is IntelliSense 
+                    [/^(.types\/|dt~).*/i, "string"],
+
+                    [/^@.*/, ""],
+
+                    // Anything starting with @types or dt~ is IntelliSense 
+                    [/^.*\.ts$/i, "string"],
+
+                    // Anything else presumed to be JS or CSS reference
+                    [/.*/i, "keyword"],
+                ]
+            },
+            tokenPostfix: ""
+        });
+
         this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
             value: '',
             language: 'text',
