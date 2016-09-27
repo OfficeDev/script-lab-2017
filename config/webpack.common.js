@@ -28,21 +28,17 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                loaders: ['ts', 'angular2-template-loader']
+                loaders: ['awesome-typescript-loader', 'angular2-template-loader']
             },
             {
                 test: /^(?!.*component).*\.scss$/,
                 loader: ExtractTextPlugin.extract('css!postcss!sass')
             },
             {
-                test: /\.component\.scss$/,
-                loaders: ['raw', 'resolve-url', 'postcss', 'sass']
-            },
-            {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
                 loader: 'file?name=assets/[name].[ext]'
             }
-        ]        
+        ]
     },
 
     postcss: function () {

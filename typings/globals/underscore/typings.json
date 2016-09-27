@@ -1,8 +1,8 @@
 {
   "resolution": "main",
   "tree": {
-    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/f0990e288ac73d593e982995947567aa2643b828/underscore/underscore.d.ts",
-    "raw": "registry:dt/underscore#1.7.0+20160805164035",
-    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/f0990e288ac73d593e982995947567aa2643b828/underscore/underscore.d.ts"
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/31ece20d3990606f5a8e23bba2af352db5f84b70/underscore/underscore.d.ts",
+    "raw": "registry:dt/underscore#1.8.3+20160908111004",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/31ece20d3990606f5a8e23bba2af352db5f84b70/underscore/underscore.d.ts"
   }
 }

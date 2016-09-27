@@ -4,9 +4,9 @@
   "globalDependencies": {
     "applicationinsights-js": "registry:dt/applicationinsights-js#0.23.2+20160730040946",
     "bootstrap": "registry:dt/bootstrap#3.3.5+20160619023404",
-    "core-js": "registry:dt/core-js#0.0.0+20160725163759",
-    "jquery": "registry:dt/jquery#1.10.0+20160704162008",
-    "office-js": "registry:dt/office-js#0.0.0+20160627000258",
-    "underscore": "registry:dt/underscore#1.7.0+20160805164035"
+    "core-js": "registry:dt/core-js#0.0.0+20160914114559",
+    "jquery": "registry:dt/jquery#1.10.0+20160908203239",
+    "office-js": "registry:dt/office-js#0.0.0+20160827045723",
+    "underscore": "registry:dt/underscore#1.8.3+20160908111004"
   }
 }
