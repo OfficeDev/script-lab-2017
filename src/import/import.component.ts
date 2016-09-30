@@ -55,7 +55,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 this.loaded = true;
                 setTimeout(() => this._monacoEditor.layout(), 20);
 
-                this._monacoEditor.onMouseDown(() => {
+                this._monacoEditor.onDidFocusEditor(() => {
                     if (this._monacoEditor.getModel().getValue() === defaultText) {
                         this._monacoEditor.getModel().setValue('');
                     }

@@ -163,17 +163,17 @@ export class SnippetManager {
             }
 
             if (useHostSpecificApiSample) {
-                script = Utilities.stripSpaces(`
-                    ${ContextUtil.contextNamespace}.run(function(context) {
-                        // insert your code here...
-                        return context.sync();
-                    }).catch(function(error) {
-                        console.log(error);
-                        if (error instanceof OfficeExtension.Error) {
-                            console.log("Debug info: " + JSON.stringify(error.debugInfo));
-                        }
-                    });
-                `)
+                script = 
+                    Utilities.stripSpaces(`
+                        $('#run').click(function() {
+                            ${ContextUtil.contextNamespace}.run(function(context) {`) +
+                    '\n' + Utilities.indentAll(Utilities.stripSpaces(getHostSpecificSample()), 2) +
+                    '\n        ' +
+                    '\n' + Utilities.stripSpaces(`
+                                return context.sync();
+                            }).catch(OfficeHelpers.logError);
+                        });
+                    `);
             } else {
                 script = Utilities.stripSpaces(`
                     Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
@@ -188,8 +188,39 @@ export class SnippetManager {
                 `);
             }
 
+            function getHostSpecificSample() {
+                switch (ContextUtil.context) {
+                    case ContextType.Excel:
+                        return Utilities.stripSpaces(`
+                            // Insert your code here. For example:
+                            var range = context.workbook.getSelectedRange();
+                            range.format.fill.color = "yellow";
+                        `);
+
+                    case ContextType.Word:
+                        return Utilities.stripSpaces(`
+                            // Insert your code here. For example:
+                            var range = context.document.getSelection();
+                            range.font.color = "purple";
+                        `);
+                    
+                    default:
+                        return '// Insert your code here...';
+                }
+            }
+
             return new Snippet({
                 script: script,
+                html: Utilities.stripSpaces(`
+                    <p class="ms-font-m">
+                        Execute a code snippet in the Office Add-in Playground
+                    </p>
+
+                    <button id="run" class="ms-Button">
+                        <span class="ms-Button-label">Run code</span>
+                    </button>
+                `),
+                css: SnippetManager.getDefaultCss(),
                 libraries: Utilities.stripSpaces(`
                     # Office.js CDN reference
                     https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
@@ -230,6 +261,26 @@ export class SnippetManager {
                 `)
             });
         }
+    }
+
+    static getDefaultCss(): string {
+        return Utilities.stripSpaces(`
+            body {
+                padding: 5px 10px;
+            }
+
+            .ms-Button {
+                background: ${ContextUtil.themeColor};
+                border: ${ContextUtil.themeColor};
+            }
+                .ms-Button > .ms-Button-label,
+                .ms-Button:hover > .ms-Button-label {
+                    color: white;
+                }
+                .ms-Button:hover, .ms-Button:active {
+                    background: ${ContextUtil.themeColorDarker};
+                }`
+        );
     }
 }
 

@@ -330,6 +330,10 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         });
     }
 
+    get isOfficeSnippet() {
+        return this.snippet.containsOfficeJsReference;
+    }
+
     private _errorHandler(e: any): void {
         if (e instanceof ExpectedError) {
             this.clearStatus();

@@ -1,4 +1,4 @@
-import {Snippet} from '../services';
+import {Snippet, SnippetManager} from '../services';
 import {Utilities} from './utilities';
 import {ContextUtil, ContextType} from './contextutil';
 
@@ -47,24 +47,7 @@ export class SnippetWriter {
             html.push("    <style>");
             
             if (Utilities.isNullOrWhitespace(snippet.html) && Utilities.isNullOrWhitespace(snippet.css)) {
-                html.push(Utilities.indentAll(Utilities.stripSpaces(`
-                    body {
-                        padding: 5px 10px;
-                    }
-
-                    #run {
-                        background: ${ContextUtil.contextThemeColor};
-                        border: ${ContextUtil.contextThemeColor};
-                    }
-
-                        #run > .ms-Button-label {
-                            color: white;
-                        }
-
-                        #run:hover, #run:active {
-                            background: ${ContextUtil.contextThemeColorDarker};
-                        }
-                `), 2));
+                html.push(SnippetManager.getDefaultCss());
             } else {
                 html.push(Utilities.indentAll(Utilities.stringOrEmpty(snippet.css).trim(), 2));
             }
@@ -97,6 +80,11 @@ export class SnippetWriter {
                     js.trim(),
                     '}'
                 );
+            }
+
+            if (snippet.script.indexOf('OfficeHelpers') >= 0) {
+                jsStringArray.push('');
+                ContextUtil.officeHelpersManualJs.split('\n').forEach((line) => jsStringArray.push(line));
             }
 
             var beautify = require('js-beautify').js_beautify;
