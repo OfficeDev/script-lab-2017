@@ -110,10 +110,10 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 this.playgroundBasePath + "#/view/");
             if (normalized.startsWith(normalizedGithubPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedGithubPrefix.length)));
+                    normalized.substr(normalizedGithubPrefix.length)), "url");
             } else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')));
+                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')), "url");
             } else {
                 this.loaded = true;
                 UxUtil.showDialog("Invalid URL for import", [
@@ -125,7 +125,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 return;
             }            
         } else if (Utilities.isJson(inputValue)) {
-            addHelper(() => Snippet.createFromJson(inputValue));
+            addHelper(() => Snippet.createFromJson(inputValue), "json");
         } else {
             this.loaded = true;
             UxUtil.showDialog("Invalid Snippet URL or JSON", [
@@ -135,12 +135,13 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        function addHelper(createAction: () => Snippet | Promise<Snippet>) {
+        function addHelper(createAction: () => Snippet | Promise<Snippet>, fromType) {
             var snippet: Snippet;
             Promise.resolve()
                 .then(createAction)
                 .then((passedInSnippet: Snippet) => {
                     snippet = passedInSnippet;
+                    appInsights.trackEvent('Import', { type: 'UI Action', fromType: fromType });
                     return snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs);
                 })
                 .then(() => that._router.navigate(['edit', snippet.meta.id]))
