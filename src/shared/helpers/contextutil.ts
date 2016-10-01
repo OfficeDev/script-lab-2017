@@ -9,7 +9,8 @@ export enum ContextType {
 }
 
 export class ContextUtil {
-    static officeJsUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
+    static officeJsProdUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
+    static officeJsBetaUrl = '//appsforoffice.microsoft.com/lib/beta/hosted/office.js';
 
     static officeHelpersManualDTS = Utilities.stripSpaces(`
         declare module OfficeHelpers {

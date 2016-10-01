@@ -223,7 +223,7 @@ export class SnippetManager {
                 css: SnippetManager.getDefaultCss(),
                 libraries: Utilities.stripSpaces(`
                     # Office.js CDN reference
-                    https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
+                    ${ContextUtil.officeJsBetaUrl}
 
                     # Other CDN references. Syntax: NPM package name, NPM package path, or raw URL to CDN location.
                     jquery

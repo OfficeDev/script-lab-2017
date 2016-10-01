@@ -15,19 +15,6 @@ export class BaseComponent {
 
         if (ContextUtil.context !== ContextType.Unknown) {
             _snippetManager.initialize();
-
-            // Eventually, once can do dynamic Office.js loading, do this:
-            // if (ContextUtil.isAddin && !ContextUtil.initiatedOfficeLoading) {
-            //     // Dynamically load Office.js
-            //     ContextUtil.initiatedOfficeLoading = true;
-
-            //     var script = document.createElement('script');
-            //     script.setAttribute('src', '//appsforoffice.microsoft.com/lib/1/hosted/office.js');
-            //     script.onload = function() {
-            //         console.log("Office.js dynamically loaded.");
-            //     };
-            //     document.head.appendChild(script);
-            // }
         }
     }
 
