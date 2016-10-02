@@ -112,7 +112,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
         const navigateHomeAction = () => this._router.navigate(['new']);
 
-        if (this._promptToSave) {
+        if (this._haveUnsavedModifications) {
             UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before going back?`, ['Yes', 'No', 'Cancel'])
                 .then((choice) => {
                     if (choice == "Cancel") {
@@ -134,7 +134,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     refresh(): void {
         appInsights.trackEvent('Refresh', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
 
-        if (this._promptToSave) {
+        if (this._haveUnsavedModifications) {
             UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.meta.name}" before re-loading the page?`, ['Save', 'Discard Changes'])
                 .then((choice) => {
                     if (choice == "Save") {
@@ -155,7 +155,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         
         const navigateToShareAction = () => this._router.navigate(['share', this.snippet.meta.id]);
 
-        if (this._promptToSave) {
+        if (this._haveUnsavedModifications) {
             UxUtil.showDialog('Save the snippet?', `You must save the snippet before sharing it. Save it now?`, ['Save and proceed', 'Cancel'])
                 .then((choice) => {
                     if (choice === "Save and proceed") {
@@ -217,19 +217,8 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         
         return this._validateNameBeforeProceeding()
             .then(() => {
-                if (this._promptToSave) {
-                    const message = "You need to save the snippet before running it. " +
-                        "Would you like to save now? Alternatively, if you're in the middle of a risky change, " +
-                        "you can cancel out of this dialog and click \"duplicate\" instead before running the duplicated snippet.";
-
-                    return UxUtil.showDialog("Save your snippet?", message, ['Save', 'Cancel'])
-                        .then((choice) => {
-                            if (choice === 'Save') {
-                                return this._saveHelper();
-                            } else {
-                                throw new ExpectedError();
-                            }
-                        });
+                if (this._haveUnsavedModifications) {
+                    return this._saveHelper();
                 }
             })
             .then(() => this._router.navigate(['run', this.snippet.meta.id, true /*returnToEdit*/]))
@@ -367,7 +356,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         });
     }
 
-    private get _promptToSave(): boolean {
+    private get _haveUnsavedModifications(): boolean {
         var currentSnapshot = this._composeSnippetFromEditor();
         if (currentSnapshot == null) {
             return false;
