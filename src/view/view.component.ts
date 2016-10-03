@@ -76,6 +76,10 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
         this.tabs.editorParent = this;
     }
 
+    get isOfficeSnippet() {
+        return this.snippet.containsOfficeJsReference;
+    }
+
     openPlayground() {
         appInsights.trackEvent('Open Playground clicked', { type: 'UI Action' });
 

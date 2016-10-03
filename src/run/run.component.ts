@@ -86,24 +86,6 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                         });
                     }
                 })
-                .then(() => {
-                    if (this._snippet.containsOfficeJsReference) {
-                        var requestedOfficeJs = this._snippet.getOfficeJsReference();
-                        var normalizeReference = Utilities.normalizeUrl(requestedOfficeJs).toLowerCase(); 
-                        if (normalizeReference !== ContextUtil.officeJsUrl) {
-                            return UxUtil.showDialog('Unsupported Office.js reference', [
-                                "It looks like the snippet references a non-standard version of Office.js: " + requestedOfficeJs,
-                                '',
-                                'Right now the playground is set to reference the Beta CDN location for ' +
-                                'of Office.js: https://' + ContextUtil.officeJsUrl.replace('/', '/beta/'),
-                                '',
-                                'We will look into supporting other Office.js references ' + 
-                                '(i.e., Prod vs. Beta endpoint, Ship vs. Debug flavors, etc.) in the near future, ' +
-                                'but for now, the snippet will run using the Beta CDN endpoint.'],
-                            "OK");
-                        }
-                    }
-                })
                 .then(() => SnippetWriter.createHtml(this._snippet, createHtmlOptions))
                 .then(fullHtml => {
                     var iframe = this.runner.nativeElement;
@@ -125,12 +107,22 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                         this.loaded = true;
                         this._changeDetectorRef.detectChanges();
 
-                        if (ContextUtil.isOfficeContext) {
+                        if (this._snippet.containsOfficeJsReference) {
                             iframeWindow['Office'] = (<any>window).Office;
                             iframeWindow['OfficeExtension'] = (<any>window).OfficeExtension;
                             iframeWindow['Excel'] = (<any>window).Excel;
                             iframeWindow['Word'] = (<any>window).Word;
                             iframeWindow['OneNote'] = (<any>window).OneNote;
+
+                            var requestedOfficeJs = this._snippet.getOfficeJsReference();
+                            var normalizeReference = Utilities.normalizeUrl(requestedOfficeJs).toLowerCase(); 
+                            if (normalizeReference !== ContextUtil.officeJsBetaUrl) {
+                                this.logToConsole("warn", [
+                                    "FYI: For now, the playground is hard-coded to use the Beta CDN for Office.js " + 
+                                    "(regardless of the Library reference), " + 
+                                    "but we are working on enabling version-selection in the very near future."
+                                ]);
+                            }
                         }
                     };
 
@@ -188,7 +180,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         this.showConsole = false;
     }
 
-    private logToConsole(consoleMethodType: string, args: IArguments) {
+    private logToConsole(consoleMethodType: string, args: IArguments | Array<any>) {
         var message = '';
         _.each(args, arg => {
             if (_.isString(arg)) message += arg + ' ';
