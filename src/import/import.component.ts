@@ -22,10 +22,10 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
         _snippetManager: SnippetManager,
         _router: Router
     ) {
-        super(_router, _snippetManager);        
+        super(_router, _snippetManager);
     }
 
-    ngOnInit() {                    
+    ngOnInit() {
         return this._initializeMonacoEditor();
     }
 
@@ -62,6 +62,9 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 });
 
                 this._monacoEditor.onDidBlurEditorText(() => {
+                    this._monacoEditor.getModel().setValue(
+                        this._monacoEditor.getModel().getValue().trim().replace(defaultText, ''));
+
                     if (this._monacoEditor.getModel().getValue().trim().length === 0) {
                         this._monacoEditor.getModel().setValue(defaultText);
                     }
@@ -107,7 +110,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
             var normalized = Utilities.normalizeUrl(inputValue)
             var normalizedGithubPrefix = "//gist.github.com/";
             var normalizedPlaygroundViewPrefix = Utilities.normalizeUrl(
-                this.playgroundBasePath + "#/view/");
+                this.playgroundBasePath + "#/view/gist/");
             if (normalized.startsWith(normalizedGithubPrefix)) {
                 addHelper(() => Snippet.createFromGist(
                     normalized.substr(normalizedGithubPrefix.length)), "url");
