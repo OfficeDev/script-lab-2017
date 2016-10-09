@@ -84,11 +84,9 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             .then(responses => {
                 IntelliSenseHelper.disposeAllMonacoLibInstances();
 
-                if (this.editorParent.isOfficeSnippet) {
-                    IntelliSenseHelper.recordNewlyAddedLib(
-                        monaco.languages.typescript.typescriptDefaults.addExtraLib(
-                            ContextUtil.officeHelpersManualDTS, "OfficeHelpersManualAddition.d.ts"));
-                }
+                IntelliSenseHelper.recordNewlyAddedLib(
+                    monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                        ContextUtil.officeHelpersManualDTS, "OfficeHelpersManualAddition.d.ts"));
 
                 var errorUrls: string[] = [];
                 responses.forEach((responseIn: any) => {
