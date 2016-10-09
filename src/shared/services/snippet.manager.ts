@@ -163,28 +163,36 @@ export class SnippetManager {
             }
 
             if (useHostSpecificApiSample) {
-                script = 
-                    Utilities.stripSpaces(`
-                        $('#run').click(function() {
-                            ${ContextUtil.contextNamespace}.run(function(context) {`) +
-                    '\n' + Utilities.indentAll(Utilities.stripSpaces(getHostSpecificSample()), 2) +
-                    '\n        ' +
-                    '\n' + Utilities.stripSpaces(`
-                                return context.sync();
-                            }).catch(OfficeHelpers.logError);
+                script = Utilities.stripSpaces(`
+                    $('#run').click(function() {
+                        invokeRun()
+                            .catch(OfficeHelpers.logError);
+                    });
+
+                    function invokeRun() {
+                        return ${ContextUtil.contextNamespace}.run(function(context) {`) +
+                        '\n' + Utilities.indentAll(Utilities.stripSpaces(getHostSpecificSample()), 2) +
+                        '\n        ' +
+                        '\n' + Utilities.stripSpaces(`
+                            return context.sync();
                         });
-                    `);
+                    }
+                `);
             } else {
                 script = Utilities.stripSpaces(`
-                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
-                        function (asyncResult) {
-                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                                console.log(asyncResult.error.message);
-                            } else {
-                                console.log('Selected data is ' + asyncResult.value);
-                            }            
-                        }
-                    );
+                    $('#run').click(invokeRun);
+
+                    function invokeRun() {
+                        Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                            function (asyncResult) {
+                                if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                    console.log(asyncResult.error.message);
+                                } else {
+                                    console.log('Selected data is ' + asyncResult.value);
+                                }
+                            }
+                        );
+                    }
                 `);
             }
 
@@ -269,11 +277,12 @@ export class SnippetManager {
                 padding: 5px 10px;
             }
 
-            .ms-Button {
+            .ms-Button, .ms-Button:focus {
                 background: ${ContextUtil.themeColor};
                 border: ${ContextUtil.themeColor};
             }
                 .ms-Button > .ms-Button-label,
+                .ms-Button:focus > .ms-Button-label,
                 .ms-Button:hover > .ms-Button-label {
                     color: white;
                 }
