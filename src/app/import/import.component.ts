@@ -22,10 +22,10 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
         _snippetManager: SnippetManager,
         _router: Router
     ) {
-        super(_router, _snippetManager);        
+        super(_router, _snippetManager);
     }
 
-    ngOnInit() {                    
+    ngOnInit() {
         return this._initializeMonacoEditor();
     }
 
@@ -55,13 +55,16 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 this.loaded = true;
                 setTimeout(() => this._monacoEditor.layout(), 20);
 
-                this._monacoEditor.onMouseDown(() => {
+                this._monacoEditor.onDidFocusEditor(() => {
                     if (this._monacoEditor.getModel().getValue() === defaultText) {
                         this._monacoEditor.getModel().setValue('');
                     }
                 });
 
                 this._monacoEditor.onDidBlurEditorText(() => {
+                    this._monacoEditor.getModel().setValue(
+                        this._monacoEditor.getModel().getValue().trim().replace(defaultText, ''));
+
                     if (this._monacoEditor.getModel().getValue().trim().length === 0) {
                         this._monacoEditor.getModel().setValue(defaultText);
                     }
@@ -107,13 +110,13 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
             var normalized = Utilities.normalizeUrl(inputValue)
             var normalizedGithubPrefix = "//gist.github.com/";
             var normalizedPlaygroundViewPrefix = Utilities.normalizeUrl(
-                this.playgroundBasePath + "#/view/");
+                this.playgroundBasePath + "#/view/gist/");
             if (normalized.startsWith(normalizedGithubPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedGithubPrefix.length)));
+                    normalized.substr(normalizedGithubPrefix.length)), "url");
             } else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')));
+                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')), "url");
             } else {
                 this.loaded = true;
                 UxUtil.showDialog("Invalid URL for import", [
@@ -125,7 +128,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 return;
             }            
         } else if (Utilities.isJson(inputValue)) {
-            addHelper(() => Snippet.createFromJson(inputValue));
+            addHelper(() => Snippet.createFromJson(inputValue), "json");
         } else {
             this.loaded = true;
             UxUtil.showDialog("Invalid Snippet URL or JSON", [
@@ -135,12 +138,13 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
             return;
         }
 
-        function addHelper(createAction: () => Snippet | Promise<Snippet>) {
+        function addHelper(createAction: () => Snippet | Promise<Snippet>, fromType) {
             var snippet: Snippet;
             Promise.resolve()
                 .then(createAction)
                 .then((passedInSnippet: Snippet) => {
                     snippet = passedInSnippet;
+                    appInsights.trackEvent('Import', { type: 'UI Action', fromType: fromType });
                     return snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs);
                 })
                 .then(() => that._router.navigate(['edit', snippet.meta.id]))

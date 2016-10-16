@@ -1,7 +1,7 @@
 import {Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter} from '@angular/core';
 import {Http} from '@angular/http';
 import {Subscription} from 'rxjs/Subscription';
-import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil} from '../../helpers';
+import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil, ContextUtil} from '../../helpers';
 import {IntelliSenseHelper, IIntelliSenseResponse} from '../../helpers';
 import {Tab} from './tab.component';
 import {EditorComponent} from '../../../components';
@@ -9,6 +9,7 @@ import {EditorComponent} from '../../../components';
 export interface IEditorParent {
     currentIntelliSense: string[];
     onSwitchFocusToJavaScript?: () => void;
+    isOfficeSnippet?: boolean
 }
 
 @Component({
@@ -82,6 +83,10 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             .then(() => IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense))
             .then(responses => {
                 IntelliSenseHelper.disposeAllMonacoLibInstances();
+
+                IntelliSenseHelper.recordNewlyAddedLib(
+                    monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                        ContextUtil.officeHelpersManualDTS, "OfficeHelpersManualAddition.d.ts"));
 
                 var errorUrls: string[] = [];
                 responses.forEach((responseIn: any) => {

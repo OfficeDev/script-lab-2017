@@ -1,6 +1,10 @@
 import {Utilities, GistUtilities, IGistResponse, MessageStrings, UxUtil, PlaygroundError} from '../helpers';
 import {SnippetManager} from './snippet.manager';
 import * as ts from 'typescript';
+import 'github-url-raw';
+
+// ghr = github-url-raw default export
+declare function ghr(githubUrl: string): string;
 
 export class Snippet implements ISnippet {
     meta: ISnippetMeta;
@@ -101,7 +105,7 @@ export class Snippet implements ISnippet {
                     return null;
                 }
 
-                if (Utilities.isUrl(entry) && lowercaseEntry.endsWith(".js")) {
+                if (Utilities.isUrl(entry)) {
                     return Utilities.normalizeUrl(entry);
                 }
 
@@ -164,10 +168,16 @@ export class Snippet implements ISnippet {
 
                 if (entry.startsWith("dt~")) {
                     var libName = entry.substr(3); // 3 = length of "dt~"
-                    return  `//raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`;
+                    return `//raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`;
                 }
 
-                return Utilities.normalizeUrl(entry);
+                var normalized = Utilities.normalizeUrl(entry);
+
+                if (normalized.startsWith("//github.com/")) {
+                    return ghr(normalized);
+                }
+
+                return normalized;
             })
             .sort();
     }

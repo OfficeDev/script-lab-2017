@@ -1,23 +1,27 @@
 @echo off
 
 echo This script is designed to automate the simple 
-echo "dev -> master -> build -> push" flow
-echo To start, we'll checkout master and merge "dev" into it. Ready?
+echo "dev -> {publish-branch} -> build -> push" flow
+
+set /p PublishBranch=Enter the name of the publish branch (generally "staging" or "master"):
+set /p PullBranch=Enter the name of the branch to pull changes from (generally "dev" or "staging"):
+
+echo We will now checkout "%PublishBranch%" and merge "%PullBranch%" into it. Ready? If not, close the command prompt now.
 echo .
 pause
 
 
 echo .
-echo git checkout master
-git checkout master
+echo git checkout %PublishBranch%
+git checkout %PublishBranch%
 
 echo .
-echo git pull origin master
-git pull origin master
+echo git pull origin %PublishBranch%
+git pull origin %PublishBranch%
 
 echo .
-echo git merge dev
-git merge dev
+echo git merge %PullBranch%
+git merge %PullBranch%
 
 
 echo .

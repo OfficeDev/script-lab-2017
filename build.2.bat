@@ -1,5 +1,7 @@
 @echo off
 
+set /p PublishBranch = Enter the name of the publish branch (generally "staging" or "master"):
+
 echo .
 echo git add -A
 git add -A
@@ -19,12 +21,12 @@ git commit -m "Updated dist"
 
 
 echo .
-echo Final check before pushing to master?
+echo Final check before pushing to %PublishBranch%?
 pause
 
 echo .
-echo git push origin master
-git push origin master
+echo git push origin %PublishBranch%
+git push origin %PublishBranch%
 
 
 echo .

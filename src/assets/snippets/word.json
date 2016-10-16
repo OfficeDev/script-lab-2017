@@ -5,7 +5,7 @@
             "items": [
                 {
                     "name": "Add-in with notification toast",
-                    "description": "Reads the first sentance in the selection, and displays it in a Fabric-based notification toast.",
+                    "description": "Reads the first sentence in the selection, and displays it in a Fabric-based notification toast.",
                     "gistId": "bb684c50a02dc4167aca2f6e39f4bbf4"
                 }
             ]
