@@ -1,4 +1,5 @@
-﻿@import 'theme.scss';
+﻿@import 'vars.scss';
+@import 'theme.scss';
 @import 'mixins.scss';
 
 * {
@@ -72,7 +73,7 @@ ul {
     editor-tab {
         display: none;
         height: 100% !important;
-    }        
+    }
 }
 
 span.console {
@@ -156,7 +157,7 @@ span.console.error {
         flex-direction: column;
         height: 100%;
     }
-    
+
     .appwide-overlay-dialog.ui-dialog .ui-dialog-title {
         white-space: initial;
     }

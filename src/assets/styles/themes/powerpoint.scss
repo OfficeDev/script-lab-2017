@@ -1,5 +1,5 @@
-@import 'theme.scss';
-@import 'mixins.scss';
+@import '../vars.scss';
+@import '../mixins.scss';
 
 $accent-background-primary: $powerpoint;
 $accent-foreground-primary: lighten($accent-background-primary, 60%);
@@ -14,7 +14,7 @@ body.powerpoint {
     .ms-Dialog-main {
         .ms-Dialog-header {
             background-color: $accent-background-primary  !important;
-            
+
             .ms-Dialog-title {
                 color: $accent-foreground-primary  !important;
             }
@@ -23,7 +23,7 @@ body.powerpoint {
         .ms-Button--primary {
             background-color: $accent-background-primary  !important;
             border: $accent-background-primary  !important;
-            color: $accent-foreground-primary  !important;  
+            color: $accent-foreground-primary  !important;
         }
     }
 
@@ -34,7 +34,7 @@ body.powerpoint {
 
         &__footer {
             background-color: $accent-background-primary !important;
-            color: $accent-foreground-primary !important;    
+            color: $accent-foreground-primary !important;
         }
     }
 
@@ -42,7 +42,7 @@ body.powerpoint {
         &__command {
             @include focus-states($accent-background-primary, $accent-foreground-primary);
 
-            
+
             &:active,
             &:hover,
             i:active,
@@ -56,7 +56,7 @@ body.powerpoint {
         &__input--text {
             &:focus {
                 background-color: darken($accent-background-primary, 10%) !important;
-                color: $accent-foreground-primary !important; 
+                color: $accent-foreground-primary !important;
                 border: solid 1px $accent-background-primary !important;
             }
         }
@@ -73,7 +73,7 @@ body.powerpoint {
         .import__main a {
             color: $accent-background-primary
         }
-        
+
     #monaco {
         border: 5px solid $accent-background-primary !important;
     }
@@ -111,7 +111,7 @@ body.powerpoint {
             &:hover,
             &:focus {
                 background-color: $accent-background-primary !important;
-        
+
                 .ms-Button-description,
                 .ms-Button-label {
                     color: $accent-foreground-primary !important;
@@ -157,7 +157,7 @@ body.powerpoint {
     .run {
         &__header {
             background-color: $accent-background-primary !important;
-        
+
             h1 {
                 color: $accent-foreground-primary !important;
             }
@@ -192,8 +192,8 @@ body.powerpoint {
         }
 
         &__tab.ms-Pivot-link:hover {
-            background: darken($accent-background-primary, 15%) !important; 
-        }    
+            background: darken($accent-background-primary, 15%) !important;
+        }
     }
 
     li.tabs__tab.ms-Pivot-link.is-selected.tabs__tab--active {
