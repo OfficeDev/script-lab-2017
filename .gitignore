@@ -58,4 +58,5 @@ bin
 
 node_modules/**
 packages/**
-dist/**/*.js.map
+dist/**
+.vscode/**
