@@ -1,11 +1,9 @@
-import {ExceptionHandler} from '@angular/core';
-import {UxUtil} from "./uxutil";
-import {Utilities} from "./utilities";
+import { ErrorHandler } from '@angular/core';
+import { UxUtil } from "./uxutil";
+import { Utilities } from "./utilities";
 
-
-
-export class ExceptionHelper extends ExceptionHandler {
-    call(exception: any, stackTrace?: any, reason?: string) {
+export class ExceptionHelper implements ErrorHandler {
+    handleError(exception: any, stackTrace?: any, reason?: string) {
         console.group(exception.description || 'Handled Exception');
         console.error(exception);
         console.groupCollapsed('Stack Trace');
@@ -25,3 +23,5 @@ export class ExceptionHelper extends ExceptionHandler {
         UxUtil.showErrorNotification("An unexpected error occurred.", [], exception);
     }
 }
+
+export const EXCEPTION_PROVIDER = { provide: ErrorHandler, useClass: ExceptionHelper };

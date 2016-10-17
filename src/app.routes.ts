@@ -1,10 +1,8 @@
-import {provideRouter, RouterConfig} from '@angular/router';
-import {
-    HomeComponent, NewComponent, EditorComponent, RunComponent, 
-    ShareComponent, ImportComponent, ViewComponent,
-    } from './components';
+import { ModuleWithProviders } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { HomeComponent, NewComponent, EditorComponent, RunComponent, ShareComponent, ImportComponent, ViewComponent } from './app/components';
 
-export const AppRoutes: RouterConfig = [
+export const AppRoutes: Routes = [
     {
         path: '',
         redirectTo: 'home',
@@ -40,10 +38,4 @@ export const AppRoutes: RouterConfig = [
     }
 ];
 
-export const routes: RouterConfig = [
-    ...AppRoutes,
-];
-
-export const APP_ROUTER_PROVIDERS = [
-    provideRouter(routes)
-];
+export const APP_ROUTES = RouterModule.forRoot(AppRoutes, { useHash: true });

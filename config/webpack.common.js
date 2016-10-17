@@ -10,7 +10,7 @@ module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
         'vendor': './src/vendor.ts',
-        'app': './src/app.ts',
+        'app': './src/app.module.ts',
     },
 
     resolve: {
@@ -28,11 +28,16 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                loaders: ['awesome-typescript-loader', 'angular2-template-loader']
+                loaders: ['awesome-typescript-loader', 'angular2-template-loader'],
+                exclude: '/node_modules/'
             },
             {
                 test: /^(?!.*component).*\.scss$/,
                 loader: ExtractTextPlugin.extract('css!postcss!sass')
+            },
+            {
+                test: /\.component\.scss$/,
+                loaders: ['raw', 'resolve-url', 'postcss', 'sass']
             },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,

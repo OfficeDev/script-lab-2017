@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
-import {Router} from '@angular/router';
-import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, UxUtil, GistUtilities} from '../shared/helpers';
-import {Snippet, SnippetManager, SnippetNamingSuffixOption} from '../shared/services';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { BaseComponent } from '../shared/components/base.component';
+import { Utilities, UxUtil, GistUtilities } from '../shared/helpers';
+import { Snippet, SnippetManager, SnippetNamingSuffixOption } from '../shared/services';
 
 declare var GitHub;
 
@@ -126,7 +126,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                     `https:${normalizedPlaygroundViewPrefix}<gist-id>`
                 ], 'OK');
                 return;
-            }            
+            }
         } else if (Utilities.isJson(inputValue)) {
             addHelper(() => Snippet.createFromJson(inputValue), "json");
         } else {

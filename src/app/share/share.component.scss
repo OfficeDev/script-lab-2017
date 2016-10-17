@@ -1,5 +1,5 @@
-@import '../assets/styles/mixins.scss';
-@import '../assets/styles/theme.scss';
+@import '../../assets/styles/mixins.scss';
+@import '../../assets/styles/theme.scss';
 
 share {
     overflow: hidden;
@@ -15,7 +15,7 @@ share {
     flex: 1 1 100%;
     overflow: auto;
 }
-    
+
 
     .share__main ol {
         margin-left: 30px;
@@ -106,6 +106,6 @@ share {
 .ms-progress {
     @include flex();
     flex: 1 1 100%;
-    width: 100% !important;     
+    width: 100% !important;
     height: 100% !important;
 }

@@ -1,6 +1,5 @@
 import { NgModule, Component, enableProdMode } from '@angular/core';
 import { HttpModule } from '@angular/http';
-import { Routes, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
@@ -8,15 +7,16 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 import { COMPONENT_DECLARATIONS } from './app/components';
 import { SERVICE_PROVIDERS } from './app/shared/services';
-import { ContextUtil, UxUtil, ExceptionHelper, NotificationHelper, RequestHelper } from './app/shared/helpers';
+import { ContextUtil, UxUtil, EXCEPTION_PROVIDER, NotificationHelper, RequestHelper } from './app/shared/helpers';
+import { APP_ROUTES } from './app.routes';
 
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
-import './assets/styles/excel.scss';
-import './assets/styles/word.scss';
-import './assets/styles/powerpoint.scss';
-import './assets/styles/onenote.scss';
-import './assets/styles/generic.scss';
+import './assets/styles/themes/excel.scss';
+import './assets/styles/themes/word.scss';
+import './assets/styles/themes/powerpoint.scss';
+import './assets/styles/themes/onenote.scss';
+import './assets/styles/themes/generic.scss';
 
 if (process.env.ENV === 'production') {
     enableProdMode();
@@ -29,16 +29,19 @@ if (!window.location.href.indexOf('localhost')) {
 }
 
 export const APP_PROVIDERS = [
-    ExceptionHelper,
+    EXCEPTION_PROVIDER,
     NotificationHelper,
     RequestHelper
 ];
 
 @NgModule({
-    imports: [BrowserModule, HttpModule, FormsModule, RouterModule],
+    imports: [BrowserModule, HttpModule, FormsModule, APP_ROUTES],
     declarations: [...COMPONENT_DECLARATIONS],
     bootstrap: [AppComponent],
-    providers: [...SERVICE_PROVIDERS, ...APP_PROVIDERS]
+    providers: [
+        ...SERVICE_PROVIDERS,
+        ...APP_PROVIDERS,
+    ]
 })
 export class AppModule { }
 

@@ -1,5 +1,5 @@
-@import '../assets/styles/mixins.scss';
-@import '../assets/styles/theme.scss';
+@import '../../assets/styles/mixins.scss';
+@import '../../assets/styles/theme.scss';
 
 import {
     overflow: hidden;
@@ -52,7 +52,7 @@ import {
 .ms-progress {
     @include flex();
     flex: 1 1 100%;
-    width: 100% !important;     
+    width: 100% !important;
     height: 100% !important;
 }
 

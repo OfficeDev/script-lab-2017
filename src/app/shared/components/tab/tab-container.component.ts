@@ -1,10 +1,10 @@
-import {Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter} from '@angular/core';
-import {Http} from '@angular/http';
-import {Subscription} from 'rxjs/Subscription';
-import {Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil, ContextUtil} from '../../helpers';
-import {IntelliSenseHelper, IIntelliSenseResponse} from '../../helpers';
-import {Tab} from './tab.component';
-import {EditorComponent} from '../../../components';
+import { Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
+import { Http } from '@angular/http';
+import { Subscription } from 'rxjs/Subscription';
+import { Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil, ContextUtil } from '../../helpers';
+import { IntelliSenseHelper, IIntelliSenseResponse } from '../../helpers';
+import { Tab } from './tab.component';
+import { EditorComponent } from '../../../components';
 
 export interface IEditorParent {
     currentIntelliSense: string[];
@@ -65,7 +65,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     ngOnDestroy() {
         this._subscriptions.forEach(subscription => {
-            if (!subscription.isUnsubscribed) {
+            if (!subscription.closed) {
                 subscription.unsubscribe();
             }
         });
@@ -132,13 +132,13 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             tokenizer: {
                 root: [
                     [/^#.*/, "comment"],
-                    
-                    // Anything starting with @types or dt~ is IntelliSense 
+
+                    // Anything starting with @types or dt~ is IntelliSense
                     [/^(.types\/|dt~).*/i, "string"],
 
                     [/^@.*/, ""],
 
-                    // Anything starting with @types or dt~ is IntelliSense 
+                    // Anything starting with @types or dt~ is IntelliSense
                     [/^.*\.ts$/i, "string"],
 
                     // Anything else presumed to be JS or CSS reference

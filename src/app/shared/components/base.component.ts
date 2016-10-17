@@ -1,7 +1,7 @@
-import {Router} from '@angular/router';
-import {Subscription} from 'rxjs/Rx';
-import {UxUtil, Utilities, ContextUtil, ContextType} from '../helpers';
-import {SnippetManager} from '../../shared/services';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs/Rx';
+import { UxUtil, Utilities, ContextUtil, ContextType } from '../helpers';
+import { SnippetManager } from '../../shared/services';
 
 export class BaseComponent {
     private _subscriptions: Subscription[] = [];
@@ -21,7 +21,7 @@ export class BaseComponent {
     /**
      * Ensures that a context is specified (i.e., will navigate to "home" route if
      * ContextUtil.context === ContextType.Unknown).
-     * 
+     *
      * Returns true if context is already set, false if will need to redirect.
      */
     _ensureContext(): boolean {
@@ -29,7 +29,7 @@ export class BaseComponent {
             this._router.navigate(['home']);
             return false;
         }
-        
+
         return true;
     }
 

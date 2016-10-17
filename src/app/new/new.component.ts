@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {Utilities, ContextUtil, ContextType, ExpectedError, UxUtil} from '../shared/helpers';
-import {ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SnippetNamingSuffixOption} from '../shared/services';
-import {BaseComponent} from '../shared/components/base.component';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Utilities, ContextUtil, ContextType, ExpectedError, UxUtil } from '../shared/helpers';
+import { ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SnippetNamingSuffixOption } from '../shared/services';
+import { BaseComponent } from '../shared/components/base.component';
 
 
 @Component({
@@ -94,16 +94,17 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         name: string,
         gistId: string
     }) {
-        appInsights.trackEvent('CreateFromTemplate', { 
+        appInsights.trackEvent('CreateFromTemplate', {
             type: 'UI Action',
             context: ContextUtil.contextString,
             templateName: importData.name,
-            templateId: importData.gistId}
+            templateId: importData.gistId
+        }
         );
 
         this.loaded = false;
         Promise.resolve()
-            .then(() => Snippet.createFromGist(importData.gistId,importData.name))
+            .then(() => Snippet.createFromGist(importData.gistId, importData.name))
             .then((snippet) => this._snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs))
             .then((snippet) => this._router.navigate(['edit', snippet.meta.id]))
             .catch((e) => {

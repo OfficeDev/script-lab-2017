@@ -1,12 +1,12 @@
-@import '../assets/styles/mixins.scss';
-@import '../assets/styles/theme.scss';
+@import '../../assets/styles/mixins.scss';
+@import '../../assets/styles/theme.scss';
 
 .editor {
     &__header {
         padding-right: 30px;
         color: white;
     }
-    
+
     &__main {
         flex: 1 1 100%;
         @include flex();
@@ -27,7 +27,7 @@
         &--warning {
             background-color: orange;
             color: black;
-        } 
+        }
     }
 }
 

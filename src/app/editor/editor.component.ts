@@ -1,10 +1,9 @@
-import {Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {Tab, Tabs, IEditorParent} from '../shared/components';
-import {BaseComponent} from '../shared/components/base.component';
-import {ISnippet, Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextUtil, ContextType, StorageHelper, MessageStrings, ExpectedError, PlaygroundError, UxUtil} from '../shared/helpers';
-
+import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Tab, Tabs, IEditorParent } from '../shared/components';
+import { BaseComponent } from '../shared/components/base.component';
+import { ISnippet, Snippet, SnippetManager } from '../shared/services';
+import { Utilities, ContextUtil, ContextType, StorageHelper, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
 
 enum StatusType {
     info,
@@ -15,8 +14,7 @@ enum StatusType {
 @Component({
     selector: 'editor',
     templateUrl: 'editor.component.html',
-    styleUrls: ['editor.component.scss'],
-    directives: [Tab, Tabs]
+    styleUrls: ['editor.component.scss']
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
     snippet: Snippet;
@@ -25,7 +23,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
-    
+
     private _doneWithInitialIntelliSenseLoad = false;
 
     private _timeout;
@@ -67,7 +65,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                         .catch(UxUtil.catchError("An error occurred while loading IntelliSense.", []))
                 })
                 .catch(this._errorHandler);
-            }
+        }
         );
 
         this.markDispose(subscription);
@@ -152,7 +150,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     share() {
         appInsights.trackEvent('Share', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
-        
+
         const navigateToShareAction = () => this._router.navigate(['share', this.snippet.meta.id]);
 
         if (this._haveUnsavedModifications) {
@@ -182,7 +180,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     save(): Promise<void> {
         appInsights.trackEvent('Save', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
-        
+
         return this._saveHelper()
             .then((snippet) => {
                 this._showStatus(StatusType.info, 3 /*seconds*/, `Saved "${snippet.meta.name}"`);
@@ -204,7 +202,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     delete(): Promise<void> {
         appInsights.trackEvent('Delete from Editor', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
-        
+
         return this._snippetManager.delete(this.snippet, true /*askForConfirmation*/)
             .then(() => {
                 this._router.navigate(['new']);
@@ -214,7 +212,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     run(): Promise<any> {
         appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
-        
+
         return this._validateNameBeforeProceeding()
             .then(() => {
                 if (this._haveUnsavedModifications) {
@@ -234,7 +232,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             })
             .then(() => {
                 appInsights.trackEvent('Duplicate', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
-        
+
                 return this._validateNameBeforeProceeding()
                     .then(() => {
                         var currentSnapshot = this._composeSnippetFromEditor();
@@ -258,7 +256,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     /**
-     * Shows a status message. If seconds is <= 0, will show message for indefinite amount of time 
+     * Shows a status message. If seconds is <= 0, will show message for indefinite amount of time
      */
     private _showStatus(statusType: StatusType, seconds: number, message: string): void {
         if (!Utilities.isNull(this._timeout)) {

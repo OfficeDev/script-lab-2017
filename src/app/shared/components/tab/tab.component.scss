@@ -1,5 +1,5 @@
-@import '../../../assets/styles/mixins.scss';
-@import '../../../assets/styles/theme.scss';
+@import '../../../../assets/styles/mixins.scss';
+@import '../../../../assets/styles/theme.scss';
 
 .tabs {
     overflow: hidden;
@@ -11,14 +11,14 @@
 
     &__tab.ms-Pivot-link:hover {
         color: white !important;
-    }    
+    }
 
     &__container {
         @include flex();
         flex: 1 1 100%;
         width: 100%;
         padding-top: 10px;
-        background: #1e1e1e;  
+        background: #1e1e1e;
     }
 }
 
@@ -30,7 +30,7 @@ tabs {
 .monaco-editor {
     @include flex();
     flex: 1 1 100%;
-    width: 100% !important;     
+    width: 100% !important;
     height: 100% !important;
     display: none;
 }
@@ -38,6 +38,6 @@ tabs {
 .ms-progress {
     @include flex();
     flex: 1 1 100%;
-    width: 100% !important;     
+    width: 100% !important;
     height: 100% !important;
 }

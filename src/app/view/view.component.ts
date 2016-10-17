@@ -1,15 +1,14 @@
-import {Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {Tab, Tabs, IEditorParent} from '../shared/components';
-import {BaseComponent} from '../shared/components/base.component';
-import {Snippet, SnippetManager} from '../shared/services';
-import {Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError} from '../shared/helpers';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Tab, Tabs, IEditorParent } from '../shared/components';
+import { BaseComponent } from '../shared/components/base.component';
+import { Snippet, SnippetManager } from '../shared/services';
+import { Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError } from '../shared/helpers';
 
 @Component({
     selector: 'view',
     templateUrl: 'view.component.html',
-    styleUrls: ['view.component.scss'],
-    directives: [Tab, Tabs]
+    styleUrls: ['view.component.scss']
 })
 export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
     snippet: Snippet;
@@ -50,7 +49,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
 
                     // Initiate loading IntelliSense, but swallow errors silently if can't loading
                     // (user can't do anything about it on a read-only snippet anyway)
-                    // So, no .then, no .catch.  Just let it run 
+                    // So, no .then, no .catch.  Just let it run
                     this.tabs.initiateLoadIntelliSense();
                 })
                 .catch((e) => {

@@ -1,11 +1,11 @@
-@import '../assets/styles/mixins.scss';
-@import '../assets/styles/theme.scss';
+@import '../../assets/styles/mixins.scss';
+@import '../../assets/styles/theme.scss';
 
 .run {
     &__header {
         background-color: #1e1e1e;
         padding: $default-spacing/2 $default-spacing;
-        color: #bbb;                
+        color: #bbb;
     }
 
     &__main {
@@ -24,7 +24,7 @@
             width: 100%;
             height: 100%;
             font-family: "consolas", monospace;
-        }         
+        }
     }
 }
 

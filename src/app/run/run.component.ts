@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, ContextUtil, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil, PlaygroundError} from '../shared/helpers';
-import {Snippet, SnippetManager} from '../shared/services';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { BaseComponent } from '../shared/components/base.component';
+import { Utilities, ContextUtil, ContextType, SnippetWriter, ICreateHtmlOptions, UxUtil, PlaygroundError } from '../shared/helpers';
+import { Snippet, SnippetManager } from '../shared/services';
 
 interface IConsoleMessage {
     type: string,
@@ -23,7 +23,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
     private _originalConsole: Console;
     private _consoleMethodsToIntercept = ['log', 'warn', 'error'];
     private _originalConsoleMethods: { [key: string]: () => void; } = {};
-    
+
     private _returnToEdit: boolean;
 
     constructor(
@@ -45,7 +45,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         if (!this._ensureContext()) {
             return;
         }
-        
+
         this._originalConsole = window.console;
 
         this._consoleMethodsToIntercept.forEach(methodName => {
@@ -63,14 +63,13 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                     this._snippet = snippet;
                 })
                 .then(() => {
-                    if (this._snippet.containsOfficeJsReference && 
-                        !ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized))
-                    {
+                    if (this._snippet.containsOfficeJsReference &&
+                        !ContextUtil.getGlobalState(ContextUtil.windowkey_officeInitialized)) {
                         this.loadingMessage = 'Your snippet specifies Office.js as one of the referenced libraries. ' +
-                            'The playground is waiting for Office.js to initialize. ' + 
+                            'The playground is waiting for Office.js to initialize. ' +
                             'Note that Office.js can only run inside of an Office Add-in, so if you\'re not using it, ' +
                             'just remove it from te "Libraries" tab in the script editor.';
-                        
+
                         return new Promise((resolve) => {
                             wait();
 
@@ -103,7 +102,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
                     iframeWindow.onload = () => {
                         console.log("Frame loaded");
-                        
+
                         this.loaded = true;
                         this._changeDetectorRef.detectChanges();
 
@@ -115,11 +114,11 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
                             iframeWindow['OneNote'] = (<any>window).OneNote;
 
                             var requestedOfficeJs = this._snippet.getOfficeJsReference();
-                            var normalizeReference = Utilities.normalizeUrl(requestedOfficeJs).toLowerCase(); 
+                            var normalizeReference = Utilities.normalizeUrl(requestedOfficeJs).toLowerCase();
                             if (normalizeReference !== ContextUtil.officeJsBetaUrl) {
                                 this.logToConsole("warn", [
-                                    "FYI: For now, the playground is hard-coded to use the Beta CDN for Office.js " + 
-                                    "(regardless of the Library reference), " + 
+                                    "FYI: For now, the playground is hard-coded to use the Beta CDN for Office.js " +
+                                    "(regardless of the Library reference), " +
                                     "but we are working on enabling version-selection in the very near future."
                                 ]);
                             }
@@ -211,7 +210,7 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
         if (this._returnToEdit) {
             this._navigateToEdit();
         } else {
-            this._router.navigate(['new']);            
+            this._router.navigate(['new']);
         }
     }
 

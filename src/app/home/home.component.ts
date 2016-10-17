@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {SnippetManager} from '../shared/services';
-import {UxUtil, ContextUtil, ContextType} from '../shared/helpers';
-import {BaseComponent} from '../shared/components/base.component';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { SnippetManager } from '../shared/services';
+import { UxUtil, ContextUtil, ContextType } from '../shared/helpers';
+import { BaseComponent } from '../shared/components/base.component';
 
 @Component({
     selector: 'home',
@@ -15,7 +15,7 @@ export class HomeComponent extends BaseComponent {
         _snippetManager: SnippetManager
     ) {
         super(_router, _snippetManager);
-        
+
         ContextUtil.setContext('');
         ContextUtil.applyTheme();
     }
@@ -31,7 +31,7 @@ export class HomeComponent extends BaseComponent {
     navigateToPowerPoint() {
         this._navigateCommon("powerpoint");
     }
-    
+
     navigateToOneNote() {
         this._navigateCommon("onenote");
     }

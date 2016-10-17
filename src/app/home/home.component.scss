@@ -1,6 +1,6 @@
-@import '../assets/styles/globals.scss';
-@import '../assets/styles/mixins.scss';
-@import '../assets/styles/theme.scss';
+@import '../../assets/styles/globals.scss';
+@import '../../assets/styles/mixins.scss';
+@import '../../assets/styles/theme.scss';
 
 #title {
     margin-top: 40px;
@@ -36,7 +36,7 @@
             width: 100px;
             margin: 5px !important;
         }
-        
+
         .home main div.buttons button .ms-Button-label {
             color: white;
         }
@@ -54,4 +54,3 @@
         text-align: center;
     }
 
-        

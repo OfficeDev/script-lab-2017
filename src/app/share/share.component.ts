@@ -1,10 +1,11 @@
-import {Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener} from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {Http} from '@angular/http';
-import {BaseComponent} from '../shared/components/base.component';
-import {Utilities, UxUtil, ContextUtil, GistUtilities} from '../shared/helpers';
-import {Snippet, SnippetManager} from '../shared/services';
-import {Authenticator, TokenManager, EndpointManager, IToken, ICode} from '../shared/services/oauth';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Http } from '@angular/http';
+import { Authenticator, TokenManager, EndpointManager, IToken, ICode } from '@microsoft/office-js-helpers';
+
+import { BaseComponent } from '../shared/components/base.component';
+import { Utilities, UxUtil, ContextUtil, GistUtilities } from '../shared/helpers';
+import { Snippet, SnippetManager } from '../shared/services';
 
 
 @Component({
