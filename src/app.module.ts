@@ -34,23 +34,20 @@ export const APP_PROVIDERS = [
     RequestHelper
 ];
 
-@NgModule({
-    imports: [BrowserModule, HttpModule, FormsModule, APP_ROUTES],
-    declarations: [...COMPONENT_DECLARATIONS],
-    bootstrap: [AppComponent],
-    providers: [
-        ...SERVICE_PROVIDERS,
-        ...APP_PROVIDERS,
-    ]
-})
-export class AppModule { }
-
 @Component({
     selector: 'app',
     template: `<router-outlet></router-outlet>`
 })
 export class AppComponent {
 }
+
+@NgModule({
+    imports: [BrowserModule, HttpModule, FormsModule, APP_ROUTES],
+    declarations: [AppComponent, ...COMPONENT_DECLARATIONS],
+    bootstrap: [AppComponent],
+    providers: [...SERVICE_PROVIDERS, ...APP_PROVIDERS]
+})
+export class AppModule { }
 
 export function launch() {
     if (!window['Office']) {
@@ -60,6 +57,7 @@ export function launch() {
     if (Authenticator.isAuthDialog()) return;
 
     $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
+
     platformBrowserDynamic()
         .bootstrapModule(AppModule)
         .catch(UxUtil.catchError("Error", "An error occurred while loading the playground"));
@@ -76,3 +74,5 @@ export function launch() {
         ContextUtil.setGlobalState(ContextUtil.windowkey_officeInitialized, true);
     };
 }
+
+launch();

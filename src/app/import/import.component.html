@@ -1,59 +1,58 @@
 <section class="import__header">
-    <span id="back" (click)="back()">&#8656;</span>
-    <span id="name" class="ms-font-l">Import a snippet</span>
+	<span id="back" (click)="back()">&#8656;</span>
+	<span id="name" class="ms-font-l">Import a snippet</span>
 </section>
 
 <section class="import__main ms-font-m">
-    <div class="ms-progress" [hidden]="loaded">
-        <div class="ms-Spinner large"></div>
-        <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
-        <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">{{statusDescription}}</div>
-    </div>
-        
-    <div class="pre-import" [hidden]="!loaded">
-        <h1 class="ms-font-l gray-background">Import a snippet</h1>
-        <p class="ms-font-m gray-background">Please paste the Snippet URL or JSON into the text area below, 
-            and then choose the "Import" button.
-        </p>
-        <div class="info-panel">
-            <div id="monaco-wrapper">
-                <div #editor id="monaco"></div>
-            </div>
+	<div class="ms-progress" [hidden]="loaded">
+		<div class="ms-Spinner large"></div>
+		<div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
+		<div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">{{statusDescription}}</div>
+	</div>
 
-            <div class="right-aligned-button-container">
-                <button class="import-button theme-color ms-Button" (click)="import()">
+	<div class="pre-import" [hidden]="!loaded">
+		<h1 class="ms-font-l gray-background">Import a snippet</h1>
+		<p class="ms-font-m gray-background">Please paste the Snippet URL or JSON into the text area below, and then choose the "Import" button.
+		</p>
+		<div class="info-panel">
+			<div id="monaco-wrapper">
+				<div #editor id="monaco"></div>
+			</div>
+
+			<div class="right-aligned-button-container">
+				<button class="import-button theme-color ms-Button" (click)="import()">
                     <h1 class="ms-Button-label ms-font-l">Import</h1>
                 </button>
-            </div>
-        </div>
+			</div>
+		</div>
 
-        <h1 class="ms-font-l gray-background">
-            To import a snippet, you will need to have 
-            <b class="theme-color">one</b> of the following:
-        </h1>
-        <div class="info-panel">
-            <ol>
-                <li>
-                    A URL for a <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a>
-                    that was exported by the Playground. For example:
-                    <div class="link-or-id theme-color">
-                        <a href="https://gist.github.com/{{sampleGistId}}" target="_blank">
+		<h1 class="ms-font-l gray-background">
+			To import a snippet, you will need to have
+			<b class="theme-color">one</b> of the following:
+		</h1>
+		<div class="info-panel">
+			<ol>
+				<li>
+					A URL for a <a href="https://gist.github.com/" target="_blank">GitHub&nbsp;Gist</a> that was exported by the Playground.
+					For example:
+					<div class="link-or-id theme-color">
+						<a href="https://gist.github.com/{{sampleGistId}}" target="_blank">
                             https://gist.github.com/{{sampleGistId}}
                         </a>
-                    </div>
-                </li>
-                <li>
-                    A "View" URL created by the Playground. For example:
-                    <div class="link-or-id theme-color">
-                        <a href="{{playgroundBasePath}}#/view/gist/{{sampleGistId}}" target="_blank">
+					</div>
+				</li>
+				<li>
+					A "View" URL created by the Playground. For example:
+					<div class="link-or-id theme-color">
+						<a href="{{playgroundBasePath}}#/view/gist/{{sampleGistId}}" target="_blank">
                             {{playgroundBasePath}}#/view/gist/{{sampleGistId}}
                         </a>
-                    </div>
-                </li>
-                <li>
-                    A manually-pasted JSON that has been exported from an Playground snippet. Something like:
-                    <pre class="link-or-id theme-color">
-{
+					</div>
+				</li>
+				<li>
+					A manually-pasted JSON that has been exported from an Playground snippet. Something like:
+					<pre class="link-or-id theme-color">
+						<!--{
   "meta": {
     "playgroundVersion": 1,
     "name": "Basic snippet"
@@ -62,10 +61,10 @@
     "console.log(\"Hello world\");"
   ],
   ...
-}
-                    </pre>
-                </li>
-            </ol>
-        </div>
-    </div>
+}-->
+					</pre>
+				</li>
+			</ol>
+		</div>
+	</div>
 </section>
