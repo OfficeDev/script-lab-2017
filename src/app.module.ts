@@ -49,6 +49,7 @@ export class AppComponent {
 })
 export class AppModule { }
 
+
 export function launch() {
     if (!window['Office']) {
         window['Office'] = {};

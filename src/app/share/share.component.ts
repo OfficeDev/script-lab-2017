@@ -130,26 +130,15 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             scope: 'gist',
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
-            responseType: '',
+            tokenUrl: this._environment.GITHUB_TOKEN_SERVICE_URL,
             state: true
         });
 
         var authenticator = new Authenticator(endpointManager, this.tokenManager);
 
         authenticator.authenticate('GitHub', true /* force */)
-            .then(result => {
-                if ('code' in result) {
-                    return this._exchangeGithubCodeForToken((<ICode>result).code).then(token => {
-                        if (token == null) throw 'Invalid Token received';
-                        this.tokenManager.add('GitHub', token);
-                        return token;
-                    });
-                }
-                else if ('access_token' in result)
-                    return result as IToken;
-            })
             .then(token => {
-                this.token = this.tokenManager.get('GitHub');
+                this.token = token;
                 this.progress = false;
                 this._getGithubProfile(this.token).then(profile => {
                     this.profile = profile;
@@ -184,27 +173,6 @@ export class ShareComponent extends BaseComponent implements OnInit, OnDestroy {
             catch (e) {
                 reject(e);
             }
-        });
-    }
-
-    private _exchangeGithubCodeForToken(code: string): Promise<IToken> {
-        return new Promise((resolve, reject) => {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', this._environment.GITHUB_TOKEN_SERVICE_URL);
-            xhr.setRequestHeader('Accept', 'application/json');
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    resolve(JSON.parse(xhr.responseText));
-                }
-                else if (xhr.status !== 200) {
-                    reject('Request failed.  Returned status of ' + xhr.response);
-                }
-            };
-
-            xhr.send(JSON.stringify({
-                code: code
-            }));
         });
     }
 
