@@ -18,7 +18,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "webpack-dev-server --config config/webpack.dev.js --https --inline --progress --compress --port 3000",
-    "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail"
+    "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
+    "postinstall": "typings install"
   },
   "license": "MIT",
   "dependencies": {
@@ -38,11 +39,12 @@
     "office-ui-fabric": "^2.6.2",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.0.0-beta.12",
-    "typescript": "^2.0.6",
     "underscore": "^1.8.3",
     "zone.js": "^0.6.26",
     "github-url-raw": "^0.3.0",
-    "@microsoft/office-js-helpers": "^0.2.0"
+    "@microsoft/office-js-helpers": "^0.2.0",
+    "typescript": "^2.0.6",
+    "typings": "^1.4.0"
   },
   "devDependencies": {
     "angular2-template-loader": "^0.5.0",
