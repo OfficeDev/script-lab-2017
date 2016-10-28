@@ -1,5 +1,5 @@
 var webpack = require('webpack');
-var helpers = require('./helpers');
+var path = require('path');
 
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -15,7 +15,7 @@ module.exports = {
 
     resolve: {
         alias: {
-            'vs': helpers.node_modules('monaco-editor/min/vs')
+            'vs': path.resolve('node_modules/monaco-editor/min/vs')
         },
         extensions: ['', '.js', '.ts']
     },

@@ -4,11 +4,11 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
-var helpers = require('./helpers');
+var path = require('path');
 
 module.exports = webpackMerge(commonConfig, {
     output: {
-        path: helpers.root('dist'),
+        path: path.resolve('dist'),
         filename: '[name].[hash].js',
         chunkFilename: '[id].[hash].chunk.js',
         sourceMapFilename: '[name].[hash].map',
@@ -48,6 +48,6 @@ module.exports = webpackMerge(commonConfig, {
             aggregateTimeout: 300,
             poll: 1000
         },
-        outputPath: helpers.root('dist')
+        outputPath: path.resolve('dist')
     }
 });
