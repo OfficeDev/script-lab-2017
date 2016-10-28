@@ -7,7 +7,6 @@
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "node": "registry:dt/node#6.0.0+20161019125345",
     "office-js": "registry:dt/office-js#0.0.0+20161003175149",
-    "require": "registry:dt/require#2.1.20+20160919185614",
     "underscore": "registry:dt/underscore#1.8.3+20160908111004"
   }
 }

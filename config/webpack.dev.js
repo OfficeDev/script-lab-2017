@@ -11,7 +11,8 @@ module.exports = webpackMerge(commonConfig, {
         path: helpers.root('dist'),
         filename: '[name].[hash].js',
         chunkFilename: '[id].[hash].chunk.js',
-        sourceMapFilename: '[name].[hash].map'
+        sourceMapFilename: '[name].[hash].map',
+        publicPath: 'https://localhost:3000/'
     },
 
     tslint: {
@@ -43,6 +44,7 @@ module.exports = webpackMerge(commonConfig, {
     devServer: {
         historyApiFallback: true,
         stats: 'minimal',
+        publicPath: 'https://localhost:3000',
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
