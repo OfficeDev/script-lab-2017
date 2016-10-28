@@ -14,5 +14,8 @@
   },
   "exclude": [
     "node_modules"
+  ],
+  "files": [
+    "./monaco.d.ts"
   ]
 }

@@ -9,10 +9,9 @@ var helpers = require('./helpers');
 module.exports = webpackMerge(commonConfig, {
     output: {
         path: helpers.root('dist'),
-        publicPath: 'https://localhost:3000/',
-        filename: '[name].js',
-        chunkFilename: '[id].chunk.js',
-        sourceMapFilename: '[name].map'
+        filename: '[name].[hash].js',
+        chunkFilename: '[id].[hash].chunk.js',
+        sourceMapFilename: '[name].[hash].map'
     },
 
     tslint: {
@@ -23,13 +22,13 @@ module.exports = webpackMerge(commonConfig, {
 
     plugins: [
         new webpack.SourceMapDevToolPlugin({
-            filename: '[file].map',
+            filename: '[file].[hash].map',
             exclude: [
                 'vendor.js',
                 'polyfills.js'
             ]
         }),
-        new ExtractTextPlugin('[name].css'),
+        new ExtractTextPlugin('[name].[hash].css'),
         new CopyWebpackPlugin([
             {
                 from: './config/env.debug.json',

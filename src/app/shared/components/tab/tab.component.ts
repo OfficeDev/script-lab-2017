@@ -1,5 +1,5 @@
-import {Directive, EventEmitter, Input, Output, OnChanges, SimpleChanges} from '@angular/core';
-import {Tabs} from './tab-container.component';
+import { Directive, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Tabs } from './tab-container.component';
 
 @Directive({
     selector: 'tab'
@@ -27,8 +27,8 @@ export class Tab implements OnChanges {
         if (this.model) {
             this.model.dispose();
         }
-        
-        this.model = null;    
+
+        this.model = null;
         this.update.next(this.name);
     }
 }
