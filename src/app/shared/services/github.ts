@@ -2,129 +2,176 @@ import { Injectable } from '@angular/core';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request } from './request';
 
-// export interface UserProfile {
-//     user: GithubProfile,
-//     orgs: GithubProfile[],
-//     token: IToken
-// }
-
 @Injectable()
 export class GithubService {
-    private _baseUrl: string = "";
-    private _profile: IUserProfile;
-    private _profileStorage: Storage<IUserProfile>;
+    private _baseUrl: string = "${this._baseUrl}";
+    private _profileStorage: Storage<IProfile>;
     private _authenticator: Authenticator;
+    private _token: IToken;
 
     constructor(private _request: Request) {
-        this._profileStorage = new Storage<IUserProfile>('Profile');
+        this._profileStorage = new Storage<IProfile>('Profile');
         this._authenticator = new Authenticator();
         this._authenticator.endpoints.add('GitHub', {
             clientId: '53c1eb0d00a1ef6bf9ce',
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
             tokenUrl: 'https://markdowneditorforwordauth.azurewebsites.net/api/prod?code=oua1tkve93gx11hsk14avpldisyksksyqzc60dz6q3ia3sdcxrms7ofdt0njgug9u6ntlr6n7b9',
-            scope: 'repo',
+            scope: 'repo gist',
             state: true
         });
+
+        this._setDefaultHeaders(this._authenticator.tokens.get('GitHub'));
     }
 
-    user(): Observable<IProfileMetadata> {
-        return this._request.get<IProfileMetadata>("https://api.github.com/user") as Observable<IProfileMetadata>;
+    user(): Promise<IBasicProfile> {
+        return this._request.get<IBasicProfile>(`${this._baseUrl}/user`) as Promise<IBasicProfile>;
     }
 
-    orgs(username: string): Observable<IProfileMetadata[]> {
-        return this._request.get<IProfileMetadata[]>("https://api.github.com/users/" + username + "/orgs") as Observable<IProfileMetadata[]>;
+    orgs(user: string): Promise<IExtendedProfile[]> {
+        return this._request.get<IExtendedProfile[]>(`${this._baseUrl}/users/${user}/orgs`) as Promise<IExtendedProfile[]>;
     }
 
-    repos(page: number, orgName: string, personal: boolean): Observable<IRepository[]> {
-        var url = personal ? "https://api.github.com/user/repos?page=" + page + "&affiliation=owner,collaborator&sort=updated&direction=desc" : "https://api.github.com/orgs/" + orgName + "/repos?page=" + page;
-        return this._request.get<IRepository[]>(url) as Observable<IRepository[]>;
+    repos(org: string, personal: boolean, page: number = 0): Promise<IRepository[]> {
+        var url = personal ?
+            `${this._baseUrl}/user/repos?page=${page}&affiliation=owner,collaborator&sort=updated&direction=desc` :
+            `${this._baseUrl}/orgs/${org}/repos?page=${page}`;
+
+        return this._request.get<IRepository[]>(url) as Promise<IRepository[]>;
     }
 
-    files(orgName: string, repoName: string, branchName: string, path?: string): Observable<IContents[]> {
-        var url = "https://api.github.com/repos/" + orgName + "/" + repoName + "/contents";
-        if (!Utilities.isNull(path)) { url += "/" + path; }
-        return this._request.get<IContents[]>(url + "?ref=" + branchName) as Observable<IContents[]>;
+    files(org: string, repo: string, branch: string, path?: string): Promise<IContents[]> {
+        var url = `${this._baseUrl}/repos/${org}}/${repo}/contents`;
+        if (!(path == null)) {
+            url += `/${path}`;
+        }
+        return this._request.get<IContents[]>(url + `?ref=${branch}`) as Promise<IContents[]>;
     }
 
-    branches(orgName: string, repoName: string): Observable<IBranch[]> {
-        return this._request.get<IBranch[]>("https://api.github.com/repos/" + orgName + "/" + repoName + "/branches") as Observable<IBranch[]>;
+    branches(org: string, repo: string): Promise<IBranch[]> {
+        return this._request.get<IBranch[]>(`${this._baseUrl}/repos/${org}/${repo}/branches`) as Promise<IBranch[]>;
     }
 
-    file(orgName: string, repoName: string, branchName: string, filePath: string): Observable<string> {
-        return this._request.getWithMediaHeaders<string>("https://api.github.com/repos/" + orgName + "/" + repoName + "/contents/" + filePath + "?ref=" + branchName) as Observable<string>;
+    file(org: string, repo: string, branch: string, file: string): Promise<string> {
+        return this._request.get(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}?ref=${branch}`) as Promise<string>;
     }
 
-    commits(orgName: string, repoName: string, branchName: string, filePath: string): Observable<ICommit[]> {
-        return this._request.get<ICommit[]>("https://api.github.com/repos/" + orgName + "/" + repoName + "/commits?path=" + filePath + "&sha=" + branchName + "&until=" + (new Date().toISOString())) as Observable<ICommit[]>;
+    commits(org: string, repo: string, branch: string, file: string): Promise<ICommit[]> {
+        return this._request.get<ICommit[]>(`${this._baseUrl}/repos/${org}/${repo}/commits?path=${file}&sha=${branch}&until=${(new Date().toISOString())}`) as Promise<ICommit[]>;
     }
 
-    getSha(orgName: string, repoName: string, branchName: string, path?: string): Observable<IContents> {
-        var url = "https://api.github.com/repos/" + orgName + "/" + repoName + "/contents";
-        if (!Utilities.isNull(path)) { url += "/" + path; }
-        return this._request.get<IContents>(url + "?ref=" + branchName) as Observable<IContents>;
+    getSha(org: string, repo: string, branch: string, path?: string): Promise<IContents> {
+        var url = `${this._baseUrl}/repos/${org}/${repo}/contents`;
+        if (!(path == null)) {
+            url += `/${path}`;
+        }
+        return this._request.get<IContents>(url + `?ref=${branch}`) as Promise<IContents>;
     }
 
-    createFile(orgName: string, repoName: string, filePath: string, body: any): Observable<IUploadCommit> {
-        return this._request.put<IUploadCommit>("https://api.github.com/repos/" + orgName + "/" + repoName + "/contents/" + filePath, body) as Observable<IUploadCommit>;
+    createOrUpdate(org: string, repo: string, file: string, body: any): Promise<IUploadCommit> {
+        return this._request.put<IUploadCommit>(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}`, body) as Promise<IUploadCommit>;
     }
 
-    updateFile(orgName: string, repoName: string, filePath: string, body: any): Observable<IUploadCommit> {
-        return this._request.put<IUploadCommit>("https://api.github.com/repos/" + orgName + "/" + repoName + "/contents/" + filePath, body) as Observable<IUploadCommit>;
-    }
-
-    uploadImage(orgName: string, repoName: string, fileName: string, body: any): Observable<IUploadCommit> {
-        return this._request.put<IUploadCommit>("https://api.github.com/repos/" + orgName + "/" + repoName + "/contents/" + fileName, body) as Observable<IUploadCommit>;
-    }
-
-    getFileData(filename: string): Observable<string> {
-        if (filename == null) return Observable.of('');
-        return this._request.raw('assets/templates/' + filename + '.md') as Observable<string>;
-    }
-
-    login(): Promise<IUserProfile> {
+    login(): Promise<IProfile> {
         return this._authenticator.authenticate('GitHub')
-            .then(token => this._getProfile(token))
-            .then(profile => this.profile = profile);
+            .then(token => {
+                this._token = token;
+                this._setDefaultHeaders(this._token);
+                return this.me();
+            })
+            .then(profile => {
+                this.profile = profile;
+                return this.profile;
+            });
+    }
+
+    me() {
+        var _userMetadata: IBasicProfile;
+        return this.user()
+            .then(userMetadata => {
+                _userMetadata = userMetadata;
+                return this.orgs(_userMetadata.login);
+            })
+            .then(orgs => {
+                return <IProfile>{
+                    orgs: orgs,
+                    user: _userMetadata
+                };
+            })
     }
 
     logout() {
-        Storage.clearAll();
+        this._authenticator.tokens.clear();
+        this._profileStorage.clear();
     }
 
-    get profile(): IUserProfile {
-        if (Utilities.isEmpty(this._profile)) {
-            this._profile = this._profileStorage.values()[0];
+    gists(user?: string): Promise<IGist[]> {
+        var url;
+        user == null ? `${this._baseUrl}/gists` : `${this._baseUrl}/users/${user}/gists`;
+        return this._request.get<IGist[]>(url) as Promise<IGist[]>;
+    }
 
-            if (!Utilities.isEmpty(this._profile)) {
-                this._request.token(this._profile.token);
+    gist(id: string, sha?: string): Promise<IGist> {
+        var url = `${this._baseUrl}/gists/${id}`
+        if (!(sha == null)) {
+            url += `/${sha}`;
+        }
+
+        return this._request.get<IGist>(url) as Promise<IGist>;
+    }
+
+    createOrUpdateGist(description: string, files: IGistFiles, id?: string, isPublic: boolean = true): Promise<IGist> {
+        var body = {
+            description: description,
+            public: isPublic,
+            files: files
+        };
+
+        var url = `${this._baseUrl}/gists`
+        if (!(id == null)) {
+            url += `/${id}`;
+            return this._request.patch<IGist>(url, body) as Promise<IGist>;
+        }
+
+        return this._request.post<IGist>(url, body) as Promise<IGist>;
+    }
+
+    forkGist(id: string): Promise<IGist> {
+        return this._request.post<IGist>(`${this._baseUrl}/gists/${id}/forks`, undefined) as Promise<IGist>;
+    }
+
+    deleteGist(id: string): Promise<boolean> {
+        return this._request.delete(`${this._baseUrl}/gists/${id}`) as Promise<boolean>;
+    }
+
+    private _profile: IProfile;
+    get profile(): IProfile {
+        if (this._profile == null) {
+            this._profile = _.first(this._profileStorage.values());
+
+            if (this._profile == null) {
+                this.login();
             }
         }
 
         return this._profile;
     }
 
-    set profile(value: IUserProfile) {
-        if (!Utilities.isEmpty(value)) {
+    set profile(value: IProfile) {
+        if (!(value == null)) {
             this._profile = value;
-            this._profileStorage.insert(value.user.login, value);
+            this._profileStorage.add(this._profile.user.login, this.profile);
         }
     }
 
-    private _getProfile(token: IToken) {
-        var _userMetadata: IProfileMetadata;
-        this._request.token(token);
-        return this.user().toPromise()
-            .then(userMetadata => {
-                _userMetadata = userMetadata;
-                return this.orgs(_userMetadata.login).toPromise();
-            })
-            .then(orgs => {
-                return {
-                    token: token,
-                    orgs: orgs,
-                    user: _userMetadata
-                };
-            })
+    private _setDefaultHeaders(token?: IToken) {
+        this._request.headers = {
+            "Content-Type": "application/json",
+            "Acccept": "application/json"
+        };
+
+        if (!(token == null)) {
+            this._request.headers["Authorization"] = `Bearer ${token.access_token}`;
+        }
     }
 }
