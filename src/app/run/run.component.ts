@@ -181,9 +181,10 @@ export class RunComponent extends BaseComponent implements OnInit, OnDestroy {
 
     private logToConsole(consoleMethodType: string, args: IArguments | Array<any>) {
         var message = '';
+
         _.each(args, arg => {
             if (_.isString(arg)) message += arg + ' ';
-            else if (_.object(arg) || _.isArray(arg)) message += Utilities.stringifyPlusPlus(arg) + ' ';
+            else if (_.isObject(arg) || _.isArray(arg)) message += Utilities.stringifyPlusPlus(arg) + ' ';
         });
         message += '\n';
 
