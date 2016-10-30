@@ -17,9 +17,9 @@ export class Request {
         return url;
     }
 
-    local(path): Promise<string> {
+    local<T>(path, raw?: boolean) {
         var xhr = this._http.get(`assets/${path}`);
-        return this._text(xhr);
+        return raw ? this._text(xhr) : this._json<T>(xhr);
     }
 
     get<T>(url: string, headers?: Object, raw?: boolean) {

@@ -3,7 +3,7 @@ import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request } from './request';
 
 @Injectable()
-export class GithubService {
+export class Github {
     private _baseUrl: string = "${this._baseUrl}";
     private _profileStorage: Storage<IProfile>;
     private _authenticator: Authenticator;

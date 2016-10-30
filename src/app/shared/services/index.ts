@@ -1,12 +1,13 @@
-import { MediatorService } from './mediator.service';
+import { Github } from './github';
+import { Mediator } from './mediator';
 import { SnippetManager } from './snippet.manager';
 
-export * from './github.service';
-export * from './mediator.service';
+export * from './github';
+export * from './mediator';
 export * from './snippet';
 export * from './snippet.manager';
 
 export const SERVICE_PROVIDERS = [
-  MediatorService,
+  Mediator,
   SnippetManager
 ];

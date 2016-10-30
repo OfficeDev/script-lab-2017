@@ -17,7 +17,7 @@ export interface SubjectChannel extends Channel {
 }
 
 @Injectable()
-export class MediatorService extends Dictionary<Channel> {
+export class Mediator extends Dictionary<Channel> {
     constructor() {
         super();
     }
