@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<OfficeApp 
-  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:type="ContentApp">
   <Id>01aaa144-e55a-45a7-b6e3-f1cc60aaa126</Id>
   <AlternateId>en-US\WA123456789</AlternateId>
@@ -21,10 +21,11 @@
   </Hosts>
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
+    <AppDomain>https://office-playground-runner.azurewebsites.net</AppDomain>
   </AppDomains>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://api-playground.azurewebsites.net/addin.html" />
-    <RequestedWidth>800</RequestedWidth> 
+    <RequestedWidth>800</RequestedWidth>
     <RequestedHeight>600</RequestedHeight>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
