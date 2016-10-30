@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/74fc95e82b08b1795472a6a96df77791f9a5a4d9/office-js/office-js.d.ts",
+    "raw": "registry:dt/office-js#0.0.0+20161003175149",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/74fc95e82b08b1795472a6a96df77791f9a5a4d9/office-js/office-js.d.ts"
+  }
+}
