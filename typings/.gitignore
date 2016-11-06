@@ -1,0 +1,4 @@
+!.gitignore
+!github.d.ts
+!playground.d.ts
+!monaco.d.ts
