@@ -67,6 +67,7 @@
         "style-loader": "^0.13.1",
         "webpack-dev-server": "^1.16.2",
         "webpack-merge": "^0.15.0",
-        "webpack": "^1.13.3"
+        "webpack": "^1.13.3",
+        "tslint": "^3.15.1"
     }
 }
