@@ -210,16 +210,17 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             .catch(this._errorHandler);
     }
 
-    run(): Promise<any> {
+    run() {
         appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.meta.id, name: this.snippet.meta.name });
-
         return this._validateNameBeforeProceeding()
             .then(() => {
                 if (this._haveUnsavedModifications) {
                     return this._saveHelper();
                 }
             })
-            .then(() => this._router.navigate(['run', this.snippet.meta.id, true /*returnToEdit*/]))
+            .then(() => {
+                this.post('https://office-playground-runner.azurewebsites.net', { snippet: JSON.stringify(this.snippet.toJSON()) });
+            })
             .catch(this._errorHandler);
     }
 
@@ -361,5 +362,25 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         }
 
         return this.snippet.lastSavedHash != currentSnapshot.getHash();
+    }
+
+    post(path, params) {
+        var form = document.createElement("form");
+        form.setAttribute("method", 'post');
+        form.setAttribute("action", path);
+
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", key);
+                hiddenField.setAttribute("value", params[key]);
+
+                form.appendChild(hiddenField);
+            }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
     }
 }

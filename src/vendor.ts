@@ -7,6 +7,7 @@ import '@angular/forms';
 import '@angular/http';
 import '@angular/router';
 
-// RxJS
+// Externals
 import 'rxjs';
 import '@microsoft/office-js-helpers';
+import 'lodash';
