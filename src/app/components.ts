@@ -1,4 +1,3 @@
-import { HomeComponent } from './home';
 import { NewComponent } from './new';
 import { EditorComponent } from './editor';
 import { RunComponent } from './run';
@@ -7,7 +6,6 @@ import { ImportComponent } from './import';
 import { ViewComponent } from './view';
 import { Tab, Tabs } from './shared/components';
 
-export * from './home';
 export * from './new';
 export * from './editor';
 export * from './run';
@@ -16,7 +14,6 @@ export * from './import';
 export * from './view';
 
 export const COMPONENT_DECLARATIONS = [
-  HomeComponent,
   NewComponent,
   EditorComponent,
   RunComponent,

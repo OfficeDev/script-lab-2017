@@ -1,6 +1,6 @@
-import {Utilities} from './utilities'
-import {PlaygroundError} from './uxutil'
-import {ISnippetMeta, ISnippet, Snippet, SnippetManager} from '../services'
+import { Utilities } from './utilities';
+import { PlaygroundError } from './uxutil';
+import { Snippet, SnippetManager } from '../services';
 
 /** GistResponse. Note: only exposing the relevant bits */
 export interface IGistResponse {
@@ -25,11 +25,11 @@ export interface IGistPostData {
 export class GistUtilities {
     static sampleGistId = '8a58218a48d39d40431cf934e62a71a2';
 
-    static getMetadata(gist: IGistResponse): Promise<ISnippetMeta> {
+    static getMetadata(gist: IGistResponse): Promise<ISnippet> {
         return Promise.resolve().then(() => {
-            var metadataCandidates = [];
+            let metadataCandidates = [];
             for (let filename in gist.files) {
-                if (filename.toLowerCase().endsWith(".json")) {
+                if (filename.toLowerCase().endsWith('.json')) {
                     metadataCandidates.push(filename);
                 }
             }
@@ -42,12 +42,12 @@ export class GistUtilities {
                         'a single file named <filename>.json within it.');
 
                 case 1:
-                    var filename = metadataCandidates[0];
-                    var metaJson: ISnippetMeta;
+                    let filename = metadataCandidates[0];
+                    let metaJson: ISnippet;
 
                     return GistUtilities.getFileContent(gist.files[filename])
                         .then((metaFileContents) => {
-                            if (!Utilities.isJson(metaFileContents)) {
+                            if (!Utilities.isJSON(metaFileContents)) {
                                 throw new PlaygroundError('Contents of the file "' + filename +
                                     '" was not a valid JSON object.');
                             }
@@ -83,14 +83,14 @@ export class GistUtilities {
         }
     }
 
-    static processPlaygroundSnippet(metaJson: ISnippetMeta, gist: IGistResponse, nameOverride?: string): Promise<Snippet> {
+    static processPlaygroundSnippet(metaJson: ISnippet, gist: IGistResponse, nameOverride?: string): Promise<Snippet> {
         if (_.isUndefined(metaJson.playgroundVersion)) {
             throw new PlaygroundError('Missing a metadata file with a "playgroundVersion" field in the Gist.');
         }
 
-        var allNonMetaFiles = [];
+        let allNonMetaFiles = [];
         for (let filename in gist.files) {
-            if (!filename.toLowerCase().endsWith(".json")) {
+            if (!filename.toLowerCase().endsWith('.json')) {
                 allNonMetaFiles.push(filename);
             }
         }
@@ -107,20 +107,19 @@ export class GistUtilities {
             return Promise.all(allNonMetaFiles.map((filename) => {
                 return GistUtilities.getFileContent(gist.files[filename])
                     .then((content) => {
-                        return { filename: filename, content: content }
+                        return { filename: filename, content: content };
                     });
             })).then((items) => {
-                var contentObject = {};
+                let contentObject = {};
                 items.forEach((item: any) => contentObject[item.filename] = item.content);
 
                 return new Snippet({
-                    meta: {
-                        name: nameOverride ? nameOverride : metaJson.name
-                    },
+                    id: '',
+                    name: nameOverride ? nameOverride : metaJson.name,
                     script: contentObject['app.ts'],
-                    html: contentObject['index.html'],
-                    css: contentObject['style.css'],
-                    libraries: contentObject['libraries.txt']
+                    template: contentObject['index.html'],
+                    style: contentObject['style.css'],
+                    libraries: contentObject['libraries.txt'].split('/n')
                 });
             });
         }
@@ -131,17 +130,17 @@ export class GistUtilities {
             $.ajax({
                 url: 'https://api.github.com/gists',
                 type: 'POST',
-                beforeSend: function (xhr) {
+                beforeSend: xhr => {
                     if (token) {
-                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
                     }
                 },
                 data: JSON.stringify(createData)
             })
-            .then((response) => resolve(response.id))
-            .fail(function (e) {
-                reject(e.responseText);
-            });
+                .then((response) => resolve(response.id))
+                .fail(e => {
+                    reject(e.responseText);
+                });
         });
     }
 }

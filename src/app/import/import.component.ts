@@ -127,7 +127,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 ], 'OK');
                 return;
             }
-        } else if (Utilities.isJson(inputValue)) {
+        } else if (Utilities.isJSON(inputValue)) {
             addHelper(() => Snippet.createFromJson(inputValue), "json");
         } else {
             this.loaded = true;

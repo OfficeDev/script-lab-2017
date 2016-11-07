@@ -1,40 +1,35 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent, NewComponent, EditorComponent, RunComponent, ShareComponent, ImportComponent, ViewComponent } from './app/components';
+import * as Views from './app/components';
 
 export const AppRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'home',
-        pathMatch: 'full'
+        component: Views.EditorComponent
     },
     {
-        path: 'home',
-        component: HomeComponent
+        path: ':id',
+        component: Views.EditorComponent
     },
     {
         path: 'new',
-        component: NewComponent
-    },
-    {
-        path: 'edit/:id',
-        component: EditorComponent
+        component: Views.NewComponent
     },
     {
         path: 'run/:id/:returnToEdit',
-        component: RunComponent
+        component: Views.RunComponent
     },
     {
         path: 'share/:id',
-        component: ShareComponent
+        component: Views.ShareComponent
     },
     {
         path: 'import',
-        component: ImportComponent
+        component: Views.ImportComponent
     },
     {
         path: 'view/:provider/:id',
-        component: ViewComponent
+        component: Views.ViewComponent
     }
 ];
 

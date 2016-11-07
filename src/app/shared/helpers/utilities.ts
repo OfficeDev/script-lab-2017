@@ -1,50 +1,55 @@
-import {Http} from '@angular/http';
+import * as _ from 'lodash';
+export enum ContextTypes {
+    Web,
+    Word,
+    Excel,
+    PowerPoint,
+    OneNote,
+    Word_Old
+}
 
-export class Utilities {   
-    static replace(source: string): (key: string, value: string) => any {
-        return function self(key: string, value: string): any {
-            if (!key) return source;
-            source = source.replace(key, value);
-            return self;
-        };
-    }
+export class Utilities {
+    static _context: ContextTypes;
 
-    static regex(source: string): (key: RegExp, value: string) => any {
-        return function self(key: RegExp, value: string): any {
-            if (!key) return source;
-            source = source.replace(key, value);
-            return self;
-        };
-    }
+    static get context(): ContextTypes {
+        if (Utilities._context == null) {
+            let context: ContextTypes = ContextTypes.Web;
 
-    static isNull(obj: any): boolean {
-        return _.isUndefined(obj) || _.isNull(obj);
+            try {
+                if (Office.context.requirements.isSetSupported('ExcelApi')) {
+                    context = ContextTypes.Excel;
+                } else if (Office.context.requirements.isSetSupported('WordApi')) {
+                    context = ContextTypes.Word;
+                } else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
+                    context = ContextTypes.OneNote;
+                } else if (Office.context.requirements.isSetSupported('ActiveView')) {
+                    context = ContextTypes.PowerPoint;
+                } else if (Office.context.requirements.isSetSupported('OoxmlCoercion')) {
+                    context = ContextTypes.Word;
+                }
+            }
+            catch (exception) {
+                //TODO: log exception
+            }
+
+            Utilities._context = context;
+        }
+
+        return Utilities._context;
     }
 
     static isEmpty(obj: any): boolean {
-        return this.isNull(obj) || _.isEmpty(obj);
+        return !(obj == null) || _.isEmpty(obj);
     }
 
-    static stringOrEmpty(text: any): string {
-        if (text === null || text === undefined) {
+    static stripSpaces(text: string): string {
+        if (Utilities.isEmpty(text)) {
             return '';
         }
 
-        if (_.isString(text)) {
-            return text;
-        }
-        
-        return text.toString();
-    }
-
-    static isNullOrWhitespace(text: string) {
-        return Utilities.isNull(text) || Utilities.isEmpty(text.trim());
-    }
-
-    static stripSpaces(text: string) {
-        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map(function(item) {
-			return item.replace(new RegExp("\t", 'g'), "    ");
-		});
+        let lines: string[] = text.trim().split('\n').map(item => {
+            return item.replace(new RegExp('\t', 'g'), '    ');
+        });
 
         let isZeroLengthLine: boolean = true;
         let arrayPosition: number = 0;
@@ -57,7 +62,7 @@ export class Utilities {
             } else {
                 isZeroLengthLine = false;
             }
-        } while (isZeroLengthLine || (arrayPosition === lines.length))
+        } while (isZeroLengthLine || (arrayPosition === lines.length));
 
         arrayPosition = lines.length - 1;
         isZeroLengthLine = true;
@@ -71,10 +76,10 @@ export class Utilities {
             } else {
                 isZeroLengthLine = false;
             }
-        } while (isZeroLengthLine)
+        } while (isZeroLengthLine);
 
         // Get smallest indent for align left.
-        var shortestIndentSize: number = 1024;
+        let shortestIndentSize: number = 1024;
         for (let line of lines) {
             let currentLine: string = line;
             if (currentLine.trim() !== '') {
@@ -93,7 +98,7 @@ export class Utilities {
         }
 
         // Convert the array back into a string and return it.
-        var finalSetOfLines: string = '';
+        let finalSetOfLines: string = '';
         for (let i: number = 0; i < lines.length; i++) {
             if (i < lines.length - 1) {
                 finalSetOfLines += lines[i] + '\n';
@@ -102,15 +107,19 @@ export class Utilities {
                 finalSetOfLines += lines[i];
             }
         }
-        
+
         return finalSetOfLines;
     }
 
     static indentAll(text: string, indentSize: number) {
-        var lines: string[] = Utilities.stringOrEmpty(text).split('\n');
-        var indentString = "";
-        for (var i = 0; i < indentSize; i++) {
-            indentString += "    ";
+        if (Utilities.isEmpty(text)) {
+            return '';
+        }
+
+        let lines: string[] = text.trim().split('\n');
+        let indentString = '';
+        for (let i = 0; i < indentSize; i++) {
+            indentString += '    ';
         }
 
         return lines.map((line) => indentString + line).join('\n');
@@ -119,7 +128,7 @@ export class Utilities {
     static stringifyPlusPlus(object): string {
         // Don't JSON.stringify strings, because we don't want quotes in the output
         if (object === null) {
-            return "null";
+            return 'null';
         }
         if (_.isUndefined(object)) {
             return 'undefined';
@@ -130,26 +139,26 @@ export class Utilities {
         if (_.isArray(object)) {
             return '[' + (<any[]>object).map((item) => Utilities.stringifyPlusPlus(item)).join(', ') + ']';
         }
-        if (object.toString() !== "[object Object]") {
+        if (object.toString() !== '[object Object]') {
             return object.toString();
         }
 
         // Otherwise, stringify the object
 
         return JSON.stringify(object, (key, value) => {
-            if (value && typeof value === "object" && !$.isArray(value)) {
+            if (value && typeof value === 'object' && !$.isArray(value)) {
                 return getStringifiableSnapshot(value);
             }
             return value;
-        }, "  ");
+        }, '  ');
 
         function getStringifiableSnapshot(object: any) {
             try {
-                var snapshot: any = {};
-                var current = object;
-                var hasOwnProperty = Object.prototype.hasOwnProperty;
+                let snapshot: any = {};
+                let current = object;
+                let hasOwnProperty = Object.prototype.hasOwnProperty;
                 do {
-                    Object.keys(current).forEach(tryAddName);
+                    Object.keys(current).forEach(name => tryAddName(snapshot, name));
                     current = Object.getPrototypeOf(current);
                 } while (current);
                 return snapshot;
@@ -157,13 +166,13 @@ export class Utilities {
                 return object;
             }
 
-            function tryAddName(name: string) {
-                if (name.indexOf("_") < 0 &&
-                    !hasOwnProperty.call(snapshot, name)) {
+            function tryAddName(snapshot: any, name: string) {
+                if (name.indexOf('_') < 0 &&
+                    _.has(snapshot, name)) {
                     Object.defineProperty(snapshot, name, {
                         configurable: true,
                         enumerable: true,
-                        get: function () {
+                        get: () => {
                             return object[name];
                         }
                     });
@@ -174,11 +183,11 @@ export class Utilities {
 
     static appendToArray<T>(array: T[], item: T);
     static appendToArray<T>(array: T[], items: T[]);
-    static appendToArray<T>(array: T[], itemOrItems: T|T[]) {
+    static appendToArray<T>(array: T[], itemOrItems: T | T[]) {
         if (_.isArray(itemOrItems)) {
             itemOrItems.forEach((msg) => {
                 array.push(msg);
-            })
+            });
         } else {
             array.push(<T>itemOrItems);
         }
@@ -186,16 +195,16 @@ export class Utilities {
 
     static isUrl(entry: string): boolean {
         entry = entry.trim().toLowerCase();
-        return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
+        return entry.startsWith('http://') || entry.startsWith('https://') || entry.startsWith('//');
     }
-    
+
     static normalizeUrl(url: string): string {
         url = url.trim();
         if (Utilities.isUrl(url)) {
             // strip out https: or http:
-            return url.substr(url.indexOf("//"));
+            return url.substr(url.indexOf('//'));
         } else {
-            throw new Error("Could not normalize URL " + url);
+            throw new Error('Could not normalize URL ' + url);
         }
     }
 
@@ -206,28 +215,17 @@ export class Utilities {
     }
 
     static get playgroundBasePath(): string {
-        return window.location.protocol + "//" + window.location.hostname + 
-            (window.location.port ? (":" + window.location.port) : "") + window.location.pathname;
+        return window.location.protocol + '//' + window.location.hostname +
+            (window.location.port ? (':' + window.location.port) : '') + window.location.pathname;
     }
 
-    static isJson(input: string) {
+    static isJSON(input: string) {
         try {
             JSON.parse(input);
         } catch (e) {
             return false;
         }
-        
-        return true;
-    }
 
-    static fetchEnvironmentConfig(http: Http) {
-         var envConfigJsonUrl = Utilities.playgroundBasePath + 'env.json' + '?rand=' + new Date().getTime();
-        
-        return http.get(envConfigJsonUrl)
-            .toPromise()
-            .then(response => response.json())
-            .catch((e) => {
-                throw new Error('Could not retrieve the environment configuration');
-            });
+        return true;
     }
 }

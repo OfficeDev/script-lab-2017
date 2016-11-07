@@ -4,9 +4,10 @@
         <li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode; $event.stopPropagation();">
                 <span (click)="editMode = !editMode; $event.stopPropagation();">{{snippet?.meta?.name}}</span>
-                <i (click)="editMode = !editMode; $event.stopPropagation();" class="edit-name-icon ms-Icon ms-Icon--styleRemove"></i>
+            <i (click)="editMode = !editMode; $event.stopPropagation();" class="edit-name-icon ms-Icon ms-Icon--styleRemove"></i>
             </span>
-            <input #name [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet" />
+            <input #name [hidden]="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.meta.name" placeholder="New name for snippet"
+            />
         </li>
         <li [hidden]="!editMode || !snippet" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--check"></i></li>
         <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--save"></i></li>
@@ -25,7 +26,7 @@
     </tabs>
 </section>
 <section class="editor__footer ms-font-m" [ngClass]="{
-    'editor__footer--warning': isStatusWarning, 
+    'editor__footer--warning': isStatusWarning,
     'editor__footer--error': isStatusError
 }">
     <div id="editor-status-text">

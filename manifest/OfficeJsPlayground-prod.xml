@@ -24,7 +24,7 @@
     <Host Name="Project"/>
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://api-playground.azurewebsites.net/addin.html" />
+    <SourceLocation DefaultValue="https://api-playground.azurewebsites.net" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides
@@ -141,7 +141,7 @@
         <bt:Image id="Play_icon_80" DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://api-playground.azurewebsites.net/addin.html" />
+        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://api-playground.azurewebsites.net" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Play.GroupLabel" DefaultValue="Add-ins" />

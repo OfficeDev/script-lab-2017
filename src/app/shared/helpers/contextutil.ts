@@ -1,4 +1,5 @@
-import {Utilities} from '../helpers';
+import { Utilities } from '../helpers';
+import { Storage } from '@microsoft/office-js-helpers';
 
 export enum ContextType {
     Unknown,
@@ -11,29 +12,6 @@ export enum ContextType {
 export class ContextUtil {
     static officeJsProdUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
     static officeJsBetaUrl = '//appsforoffice.microsoft.com/lib/beta/hosted/office.js';
-
-    static officeHelpersManualDTS = Utilities.stripSpaces(`
-        declare module OfficeHelpers {
-            /**
-             * Logs the error, as well and its "debugInfo" (if it's an OfficeExtension.Error object).
-             * Will log to console by default, but can be redirected by providing a customLogger function)
-             */
-            function logError(error: Error, customLogger?: (data: any) => void): void;
-        }`);
-
-    static officeHelpersManualJs = Utilities.stripSpaces(`
-        var OfficeHelpers;
-        (function (OfficeHelpers) {
-            function logError(error, customLogger) {
-                var logFunction = customLogger || console.log;
-                logFunction(error);
-                if (error instanceof OfficeExtension.Error) {
-                    logFunction("Debug info: " + JSON.stringify(error.debugInfo));
-                }
-            }
-            OfficeHelpers.logError = logError;
-        })(OfficeHelpers || (OfficeHelpers = {}));
-    `);
 
     /** Indicates whether the getScript for Office.js has been initiated already */
     static windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
@@ -62,7 +40,7 @@ export class ContextUtil {
         return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
     }
 
-    /** 
+    /**
      * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
      * though many of the derived ones (hostName, contextNamespace, etc.) do.
      */
@@ -158,7 +136,7 @@ export class ContextUtil {
         }
     }
 
-    static applyTheme() {        
+    static applyTheme() {
         $('body').removeClass('excel');
         $('body').removeClass('word');
         $('body').removeClass('powerpoint');

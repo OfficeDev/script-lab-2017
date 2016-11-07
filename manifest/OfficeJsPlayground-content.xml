@@ -24,7 +24,7 @@
     <AppDomain>https://office-playground-runner.azurewebsites.net</AppDomain>
   </AppDomains>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://api-playground.azurewebsites.net/addin.html" />
+    <SourceLocation DefaultValue="https://api-playground.azurewebsites.net" />
     <RequestedWidth>800</RequestedWidth>
     <RequestedHeight>600</RequestedHeight>
   </DefaultSettings>
