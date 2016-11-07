@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Tab, Tabs, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
-import { Utilities, Theme, UxUtil, GistUtilities, PlaygroundError } from '../shared/helpers';
+import { Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
 
 @Component({
     selector: 'view',

@@ -80,29 +80,31 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     initiateLoadIntelliSense(): Promise<void> {
-        return this._waitForMonacoInitialization()
-            .then(() => IntelliSenseHelper.retrieveIntelliSense(this._http, this.editorParent.currentIntelliSense))
-            .then(responses => {
-                IntelliSenseHelper.disposeAllMonacoLibInstances();
+        if (this.selectedTab.intellisense) {
+            return this._waitForMonacoInitialization()
+                .then(() => IntelliSenseHelper.retrieveIntelliSense(this._http, this.selectedTab.intellisense))
+                .then(responses => {
+                    IntelliSenseHelper.disposeAllMonacoLibInstances();
 
-                let errorUrls: string[] = [];
-                responses.forEach((responseIn: any) => {
-                    let response: IIntelliSenseResponse = responseIn;
-                    if (response.success) {
-                        IntelliSenseHelper.recordNewlyAddedLib(
-                            monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
-                        console.log('Added ' + response.url);
-                    } else {
-                        console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
-                        errorUrls.push(response.url);
+                    let errorUrls: string[] = [];
+                    responses.forEach((responseIn: any) => {
+                        let response: IIntelliSenseResponse = responseIn;
+                        if (response.success) {
+                            IntelliSenseHelper.recordNewlyAddedLib(
+                                monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
+                            console.log('Added ' + response.url);
+                        } else {
+                            console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
+                            errorUrls.push(response.url);
+                        }
+                    });
+
+                    if (errorUrls.length > 0) {
+                        throw new PlaygroundError('Error fetching IntelliSense for: \n' +
+                            errorUrls.map((url) => '* ' + url).join('\n'));
                     }
                 });
-
-                if (errorUrls.length > 0) {
-                    throw new PlaygroundError('Error fetching IntelliSense for: \n' +
-                        errorUrls.map((url) => '* ' + url).join('\n'));
-                }
-            });
+        }
     }
 
     private _waitForMonacoInitialization(): Promise<any> {
@@ -152,7 +154,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             roundedSelection: false,
             scrollBeyondLastLine: false,
             wrappingColumn: 0,
-            theme: 'vs-light',
+            theme: 'vs-dark',
             wrappingIndent: 'indent',
             scrollbar: {
                 vertical: 'visible',
@@ -236,6 +238,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         this.selectedTab.active = true;
         this._updateEditor(tab, currentTab);
+        this.initiateLoadIntelliSense();
     }
 
     @HostListener('window:resize', ['$event'])

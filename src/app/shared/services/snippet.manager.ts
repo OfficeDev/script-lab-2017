@@ -3,7 +3,7 @@ import { Storage } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Request } from './request';
 import { Snippet } from './snippet';
-import { ContextTypes, Utilities, Theme, MessageStrings, ContextTypes, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
+import { ContextTypes, Utilities, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
 
 @Injectable()
 export class SnippetManager {

@@ -10,7 +10,7 @@ export const AppRoutes: Routes = [
     {
         path: ':id',
         component: Views.EditorComponent
-    },
+    }
     // {
     //     path: 'new',
     //     component: Views.NewComponent

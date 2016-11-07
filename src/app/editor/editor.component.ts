@@ -35,16 +35,15 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
-        this._snippetManager.new().then(snippet => this.snippet = snippet);
         this._errorHandler = this._errorHandler.bind(this);
     }
 
     ngOnInit() {
-        this.tabs.editorParent = this;
-
         let subscription = this._route.params.subscribe(params => {
             if (params['id'] == null) {
-                return;
+                this._snippetManager.new().then(snippet => {
+                    this.snippet = snippet;
+                });
             }
             else {
                 this._snippetManager.find(params['id'])
@@ -65,9 +64,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
         this.markDispose(subscription);
 
-        this.tabs.setSaveAction(() => {
-            this.save();
-        });
+        // this.tabs.setSaveAction(() => {
+        //     this.save();
+        // });
     }
 
     private _showNameFieldAndSetFocus(): void {
@@ -337,14 +336,25 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             return null;
         }
 
-        return new Snippet({
+        let snippet = new Snippet({
             id: this.snippet.content.id,
             name: this.snippet.content.name,
-            style: currentEditorState['CSS'],
-            libraries: currentEditorState['Libraries'],
-            script: currentEditorState['Script'],
-            template: currentEditorState['HTML']
+            style: {
+                language: 'css',
+                content: currentEditorState['CSS']
+            },
+            script: {
+                language: 'javascript',
+                content: currentEditorState['Script']
+            },
+            template: {
+                language: 'html',
+                content: currentEditorState['HTML']
+            }
         });
+
+        snippet.libraries = currentEditorState['Libraries'];
+        return snippet;
     }
 
     private get _haveUnsavedModifications(): boolean {

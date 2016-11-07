@@ -34,26 +34,45 @@ export class Theme {
 
     static applyTheme(): Promise<boolean> {
         return new Promise(resolve => {
-            let context = ContextTypes[Utilities.context].toLowerCase();
             let body = document.querySelector('body');
 
-            if (context === 'web') {
-                (require as any).ensure(['./assets/styles/themes/generic.scss'], () => {
-                    body.classList.add('generic');
-                    return resolve(true);
-                });
-            }
-            else if (context === 'word_old') {
-                (require as any).ensure(['./assets/styles/themes/word.scss'], () => {
-                    body.classList.add('word');
-                    return resolve(true);
-                });
-            }
-            else {
-                (require as any).ensure([`./assets/styles/themes/${context}.scss`], () => {
-                    body.classList.add(context);
-                    return resolve(true);
-                });
+            switch (Utilities.context) {
+                case ContextTypes.Excel:
+                    (require as any).ensure(['../../../assets/styles/themes/excel.scss'], () => {
+                        body.classList.add('excel');
+                        return resolve(true);
+                    });
+                    break;
+
+                case ContextTypes.Word_Old:
+                case ContextTypes.Word:
+                    (require as any).ensure(['../../../assets/styles/themes/word.scss'], () => {
+                        body.classList.add('word');
+                        return resolve(true);
+                    });
+                    break;
+
+                case ContextTypes.PowerPoint:
+                    (require as any).ensure(['../../../assets/styles/themes/powerpoint.scss'], () => {
+                        body.classList.add('powerpoint');
+                        return resolve(true);
+                    });
+                    break;
+
+                case ContextTypes.OneNote:
+                    (require as any).ensure(['../../../assets/styles/themes/onenote.scss'], () => {
+                        body.classList.add('onenote');
+                        return resolve(true);
+                    });
+                    break;
+
+                case ContextTypes.Web:
+                default:
+                    (require as any).ensure(['../../../assets/styles/themes/generic.scss'], () => {
+                        body.classList.add('generic');
+                        return resolve(true);
+                    });
+                    break;
             }
         });
     }

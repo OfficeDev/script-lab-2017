@@ -1,4 +1,4 @@
-import {Utilities} from './utilities';
+import { Utilities } from './utilities';
 
 export class ExpectedError {
     // Placeholder class just to indicate that the error was in fact an expected rejection.
@@ -11,7 +11,7 @@ export class ExpectedError {
 export class PlaygroundError {
     constructor(public message: string | string[]) { }
     toString(): string {
-        var messages = [];
+        let messages = [];
         Utilities.appendToArray(messages, this.message);
         return messages.join(' \n');
     }
@@ -23,7 +23,7 @@ export class UxUtil {
             return;
         }
 
-        if (Utilities.isNull(buttons)) {
+        if (buttons == null) {
             buttons = ['OK'];
         }
 
@@ -31,7 +31,7 @@ export class UxUtil {
             messageOrMessageArray = [];
         }
 
-        var messages: string[] = UxUtil.getArrayOfMessages(messageOrMessageArray);
+        let messages: string[] = UxUtil.getArrayOfMessages(messageOrMessageArray);
 
         if (e) {
             Utilities.appendToArray(messages, UxUtil.extractErrorMessage(e));
@@ -61,29 +61,29 @@ export class UxUtil {
     ): Promise<string> {
         return new Promise(function (resolve) {
             $(document).ready(function () {
-                var $dialogRoot = $('.ms-Dialog--lgHeader');
+                let $dialogRoot = $('.ms-Dialog--lgHeader');
                 $dialogRoot.find('.ms-Dialog-title').text(title);
 
-                var $dialogContent = $dialogRoot.find('.ms-Dialog-content').empty();
+                let $dialogContent = $dialogRoot.find('.ms-Dialog-content').empty();
 
                 UxUtil.getArrayOfMessages(messageOrMessageArray).forEach((message) => {
-                    var p = $(document.createElement('p')).text(message).addClass('ms-Dialog-subText');
+                    let p = $(document.createElement('p')).text(message).addClass('ms-Dialog-subText');
                     $dialogContent.append(p);
-                })
+                });
 
-                var buttonsArray: string[];
+                let buttonsArray: string[];
                 if (_.isArray(buttons)) {
                     buttonsArray = buttons;
                 } else {
                     buttonsArray = [<string>buttons];
                 }
 
-                var $buttonPane = $('.ms-Dialog-actionsRight', $dialogRoot);
+                let $buttonPane = $('.ms-Dialog-actionsRight', $dialogRoot);
                 $buttonPane.empty();
                 buttonsArray.forEach(function (buttonLabel, i) {
-                    var $button = $('<button class="ms-Dialog-action ms-Button"><span class="ms-Button-label">' + buttonLabel + '</span></button>');
+                    let $button = $('<button class="ms-Dialog-action ms-Button"><span class="ms-Button-label">' + buttonLabel + '</span></button>');
 
-                    if (i == 0) {
+                    if (i === 0) {
                         $button.addClass('ms-Button--primary');
                     }
 
@@ -95,36 +95,36 @@ export class UxUtil {
                 });
 
                 $dialogRoot.show();
-            })
+            });
         });
     }
 
     static hideDialog() {
-        $(document).ready(function () {
-            var $dialogRoot = $('.ms-Dialog--lgHeader');
+        $(document).ready(() => {
+            let $dialogRoot = $('.ms-Dialog--lgHeader');
             $dialogRoot.hide();
         });
     }
 
     static getArrayOfMessages(messageOrMessageArray: string | string[]) {
-        var messages: string[];
+        let messages: string[];
         if (_.isArray(messageOrMessageArray)) {
             messages = messageOrMessageArray;
         } else {
             messages = [<string>messageOrMessageArray];
         }
 
-        var result = [];
-        messages.map((message) => Utilities.stringOrEmpty(message).split('\n')).forEach((messageArray) => {
+        let result = [];
+        messages.map(message => message.split('\n')).forEach((messageArray) => {
             messageArray.forEach((message) => {
                 result.push(message);
-            })
-        })
+            });
+        });
 
         return result;
     }
 
     static debugAlert(msg) {
-        return UxUtil.showDialog("Alert!", msg, "OK");
+        return UxUtil.showDialog('Alert!', msg, 'OK');
     }
 }

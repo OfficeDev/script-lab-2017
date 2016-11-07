@@ -5,4 +5,3 @@ export * from './intellisense.helper';
 export * from './message-strings';
 export * from './uxutil';
 export * from './theme';
-export * from './gistutilities';

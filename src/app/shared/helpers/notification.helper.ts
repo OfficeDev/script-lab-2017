@@ -1,4 +1,4 @@
-import {Utilities} from '../helpers';
+import { Utilities } from '../helpers';
 
 export interface IProgress {
     isShown: boolean;
@@ -9,10 +9,12 @@ export class NotificationHelper {
     progress: IProgress;
 
     showProgress(promise: any, message: string) {
-        if (Utilities.isNull(promise)) return;
+        if (promise == null) {
+            return;
+        }
 
         this.progress.isShown = true;
-        this.progress.message = message || "Loading";
+        this.progress.message = message || 'Loading';
 
         return promise.then(
             success => {

@@ -1,5 +1,5 @@
 import { Utilities } from '../helpers';
-import * as md5 from 'js-md5';
+import * as crypto from 'crypto-js';
 
 export class Snippet {
     private _hash: string;
@@ -51,6 +51,6 @@ export class Snippet {
         if (this.content == null) {
             // TODO: Throw and error here
         }
-        return md5(JSON.stringify(this.content));
+        return crypto.SHA1(JSON.stringify(this.content));
     }
 }

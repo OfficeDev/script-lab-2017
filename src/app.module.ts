@@ -28,7 +28,6 @@ export class AppComponent {
 })
 export class AppModule { }
 
-
 export function launch() {
     if (!Authenticator.isAuthDialog()) {
         if (!window.location.href.indexOf('localhost')) {
@@ -42,17 +41,24 @@ export function launch() {
                 .bootstrapModule(AppModule)
                 .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
 
-            Office.initialize = reason => {
-                // Note: due to existing bug, this is not safe to call as is right now, need to check for requirements.
-                // However, given some of the other pending issues with the dialogs (no support on Online,
-                // inability to execute OM code from within the dialog) just disabling the dialog functionality for now.
-                // if (Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
-                // TODO (Bhargav): make this work.  For now just always showing by default regardless of host.
-                // $('.display-if-office-js-dialog-enabled').show();
-                // }
-            };
+            // Note: due to existing bug, this is not safe to call as is right now, need to check for requirements.
+            // However, given some of the other pending issues with the dialogs (no support on Online,
+            // inability to execute OM code from within the dialog) just disabling the dialog functionality for now.
+            // if (Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
+            // TODO (Bhargav): make this work.  For now just always showing by default regardless of host.
+            // $('.display-if-office-js-dialog-enabled').show();
+            // }
         });
     }
 }
 
-launch();
+(() => {
+    if (location.href.indexOf('web') === -1) {
+        Office.initialize = reason => {
+            launch();
+        };
+    }
+    else {
+        launch();
+    }
+})();

@@ -24,7 +24,7 @@ export class Mediator extends Dictionary<Channel> {
 
     createEventChannel<T>(name: string): EventChannel {
         let current = this.get(name);
-        if (!Utilities.isNull(current)) {
+        if (!(current == null)) {
             return current as EventChannel;
         }
 
@@ -34,7 +34,7 @@ export class Mediator extends Dictionary<Channel> {
 
     createSubjectChannel<T>(name: string): SubjectChannel {
         let current = this.get(name);
-        if (!Utilities.isNull(current)) {
+        if (!(current == null)) {
             return current as SubjectChannel;
         }
 
