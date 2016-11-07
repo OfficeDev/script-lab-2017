@@ -59,9 +59,20 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     ngAfterViewInit() {
         let that = this;
 
-        (<any>window).require(['vs/editor/editor.main'], () => {
-            this._initializeMonacoEditor();
-        });
+        let require = (<any>window).require;
+
+        if (require) {
+            const requireConfig = {
+                paths: {
+                    'vs': 'https://unpkg.com/monaco-editor/min/vs'
+                }
+            };
+
+            require.config(requireConfig);
+            require(['vs/editor/editor.main'], () => {
+                this._initializeMonacoEditor();
+            });
+        }
     }
 
     ngOnDestroy() {

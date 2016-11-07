@@ -13,13 +13,6 @@ module.exports = {
         'app': './src/app.module.ts',
     },
 
-    resolve: {
-        alias: {
-            'vs': path.resolve('node_modules/monaco-editor/min/vs')
-        },
-        extensions: ['', '.js', '.ts']
-    },
-
     module: {
         loaders: [
             {
@@ -46,7 +39,7 @@ module.exports = {
         ]
     },
 
-    postcss: function () {
+    postcss: function() {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 
@@ -63,10 +56,6 @@ module.exports = {
             {
                 from: 'src/addin.html',
                 to: 'addin.html'
-            },
-            {
-                from: 'node_modules/monaco-editor/min/vs',
-                to: 'vs',
             },
             {
                 from: './src/assets',
