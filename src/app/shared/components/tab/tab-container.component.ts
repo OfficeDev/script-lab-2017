@@ -1,7 +1,8 @@
 import { Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { Http } from '@angular/http';
+import { Dictionary } from '@microsoft/office-js-helpers';
 import { Subscription } from 'rxjs/Subscription';
-import { Dictionary, IDictionary, Utilities, PlaygroundError, UxUtil, ContextUtil } from '../../helpers';
+import { Utilities, PlaygroundError, UxUtil, Theme } from '../../helpers';
 import { IntelliSenseHelper, IIntelliSenseResponse } from '../../helpers';
 import { Tab } from './tab.component';
 import { EditorComponent } from '../../../components';
@@ -42,7 +43,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
     @Input() readonly: boolean;
 
-    progressMessage = "Loading the snippet";
+    progressMessage = 'Loading the snippet';
     editorLoaded: boolean;
 
     private _saveAction: () => void;
@@ -56,7 +57,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        var that = this;
+        let that = this;
 
         (<any>window).require(['vs/editor/editor.main'], () => {
             this._initializeMonacoEditor();
@@ -74,7 +75,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         if (this._monacoEditor) {
             this._monacoEditor.dispose();
-            console.log("Monaco editor disposed");
+            console.log('Monaco editor disposed');
         }
     }
 
@@ -84,26 +85,22 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             .then(responses => {
                 IntelliSenseHelper.disposeAllMonacoLibInstances();
 
-                IntelliSenseHelper.recordNewlyAddedLib(
-                    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-                        ContextUtil.officeHelpersManualDTS, "OfficeHelpersManualAddition.d.ts"));
-
-                var errorUrls: string[] = [];
+                let errorUrls: string[] = [];
                 responses.forEach((responseIn: any) => {
-                    var response: IIntelliSenseResponse = responseIn;
+                    let response: IIntelliSenseResponse = responseIn;
                     if (response.success) {
                         IntelliSenseHelper.recordNewlyAddedLib(
                             monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
-                        console.log("Added " + response.url);
+                        console.log('Added ' + response.url);
                     } else {
                         console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
                         errorUrls.push(response.url);
                     }
-                })
+                });
 
                 if (errorUrls.length > 0) {
-                    throw new PlaygroundError("Error fetching IntelliSense for: \n" +
-                        errorUrls.map((url) => "* " + url).join("\n"));
+                    throw new PlaygroundError('Error fetching IntelliSense for: \n' +
+                        errorUrls.map((url) => '* ' + url).join('\n'));
                 }
             });
     }
@@ -114,7 +111,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         }
 
         return new Promise((resolve) => {
-            var interval = setInterval(() => {
+            let interval = setInterval(() => {
                 if (this._monacoEditorInitialized) {
                     clearInterval(interval);
                     resolve();
@@ -124,28 +121,28 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     private _initializeMonacoEditor(): void {
-        console.log("Beginning to initialize Monaco editor");
+        console.log('Beginning to initialize Monaco editor');
 
         monaco.languages.register({ id: 'script-references' });
 
         monaco.languages.setMonarchTokensProvider('script-references', {
             tokenizer: {
                 root: [
-                    [/^#.*/, "comment"],
+                    [/^#.*/, 'comment'],
 
                     // Anything starting with @types or dt~ is IntelliSense
-                    [/^(.types\/|dt~).*/i, "string"],
+                    [/^(.types\/|dt~).*/i, 'string'],
 
-                    [/^@.*/, ""],
+                    [/^@.*/, ''],
 
                     // Anything starting with @types or dt~ is IntelliSense
-                    [/^.*\.ts$/i, "string"],
+                    [/^.*\.ts$/i, 'string'],
 
                     // Anything else presumed to be JS or CSS reference
-                    [/.*/i, "keyword"],
+                    [/.*/i, 'keyword'],
                 ]
             },
-            tokenPostfix: ""
+            tokenPostfix: ''
         });
 
         this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
@@ -155,8 +152,8 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             roundedSelection: false,
             scrollBeyondLastLine: false,
             wrappingColumn: 0,
-            theme: "vs-dark",
-            wrappingIndent: "indent",
+            theme: 'vs-light',
+            wrappingIndent: 'indent',
             scrollbar: {
                 vertical: 'visible',
                 verticalHasArrows: true,
@@ -168,7 +165,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
 
         $(this._editor.nativeElement).keydown((event) => {
             // Control (or Command) + S (83 = code for S)
-            if ((event.ctrlKey || event.metaKey) && event.which == 83) {
+            if ((event.ctrlKey || event.metaKey) && event.which === 83) {
                 event.preventDefault();
                 if (this._saveAction) {
                     this._saveAction();
@@ -183,7 +180,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         $(this._editor.nativeElement).show();
         this._monacoEditor.layout();
 
-        console.log("Monaco editor initialized.");
+        console.log('Monaco editor initialized.');
 
         this._monacoEditorInitialized = true;
     }
@@ -192,7 +189,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         this._saveAction = action;
     }
 
-    get currentState(): IDictionary<string> {
+    get currentState(): { [index: string]: string } {
         if (!this._monacoEditor) {
             return null;
         }
@@ -201,7 +198,7 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
         this.selectedTab.model = this._monacoEditor.getModel();
         this.selectedTab.content = this._monacoEditor.getValue();
 
-        var state = new Dictionary<string>();
+        let state = new Dictionary<string>();
         this.values().forEach(tab => {
             state.add(tab.name, tab.content);
         });
@@ -210,13 +207,15 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     add(name: string, tab: Tab) {
-        if (this.count == 0) {
+        if (this.count === 0) {
             this.select(tab);
         }
 
-        var subscription = tab.update.subscribe(name => {
+        let subscription = tab.update.subscribe(name => {
             this.get(name).model = null;
-            if (this.selectedTab.name === name) this._updateEditor(this.selectedTab);
+            if (this.selectedTab.name === name) {
+                this._updateEditor(this.selectedTab);
+            }
         });
 
         this._subscriptions.push(subscription);
@@ -226,13 +225,13 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     select(tab: Tab) {
         appInsights.trackEvent('Switch editor tabs', { type: 'UI Action', name: tab.name });
 
-        var currentTab = null;
+        let currentTab = null;
         this.selectedTab = tab;
         this.values().forEach(tab => {
             if (tab.active) {
                 currentTab = tab;
             }
-            tab.active = false
+            tab.active = false;
         });
 
         this.selectedTab.active = true;
@@ -249,26 +248,28 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
     }
 
     private _updateEditor(nextTab: Tab, currentTab?: Tab) {
-        if (!Utilities.isNull(this._monacoEditor)) {
-            if (!Utilities.isNull(currentTab)) {
-                currentTab.state = this._monacoEditor.saveViewState();
-                currentTab.model = this._monacoEditor.getModel();
-                currentTab.content = this._monacoEditor.getValue();
-            }
+        if (this._monacoEditor == null) {
+            return;
+        }
 
-            if (Utilities.isNull(nextTab.model)) {
-                let newModel = monaco.editor.createModel(nextTab.content, nextTab.language);
-                this._modelsToDispose.push(newModel);
-                nextTab.model = newModel;
-            }
+        if (!(currentTab == null)) {
+            currentTab.state = this._monacoEditor.saveViewState();
+            currentTab.model = this._monacoEditor.getModel();
+            currentTab.content = this._monacoEditor.getValue();
+        }
 
-            this._monacoEditor.setModel(nextTab.model);
-            this._monacoEditor.restoreViewState(nextTab.state);
-            this._monacoEditor.focus();
+        if (nextTab.model == null) {
+            let newModel = monaco.editor.createModel(nextTab.content, nextTab.language);
+            this._modelsToDispose.push(newModel);
+            nextTab.model = newModel;
+        }
 
-            if (nextTab.name === "Script" && this.editorParent != null && this.editorParent.onSwitchFocusToJavaScript) {
-                this.editorParent.onSwitchFocusToJavaScript();
-            }
+        this._monacoEditor.setModel(nextTab.model);
+        this._monacoEditor.restoreViewState(nextTab.state);
+        this._monacoEditor.focus();
+
+        if (nextTab.name === 'Script' && this.editorParent != null && this.editorParent.onSwitchFocusToJavaScript) {
+            this.editorParent.onSwitchFocusToJavaScript();
         }
     }
 }

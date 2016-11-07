@@ -4,7 +4,7 @@ import { Http } from '@angular/http';
 import { Authenticator, TokenManager, EndpointManager, IToken, ICode } from '@microsoft/office-js-helpers';
 
 import { BaseComponent } from '../shared/components/base.component';
-import { Utilities, UxUtil, ContextUtil, GistUtilities } from '../shared/helpers';
+import { Utilities, UxUtil, Theme, GistUtilities } from '../shared/helpers';
 import { Snippet, SnippetManager } from '../shared/services';
 
 

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Tab, Tabs, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
-import { Utilities, ContextUtil, ContextType, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
+import { Utilities, Theme, ContextTypes, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
 
 enum StatusType {
     info,
@@ -22,13 +22,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
-
-    private _doneWithInitialIntelliSenseLoad = false;
-
-    private _timeout;
-
     @ViewChild(Tabs) tabs: Tabs;
     @ViewChild('name') nameInputField: ElementRef;
+
+    private _doneWithInitialIntelliSenseLoad = false;
+    private _timeout;
 
     constructor(
         _router: Router,
@@ -37,34 +35,33 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super(_router, _snippetManager);
-        this.snippet = new Snippet();
+        this._snippetManager.new().then(snippet => this.snippet = snippet);
         this._errorHandler = this._errorHandler.bind(this);
     }
 
     ngOnInit() {
-        if (!this._ensureContext()) {
-            return;
-        }
-
         this.tabs.editorParent = this;
 
         let subscription = this._route.params.subscribe(params => {
-            this._snippetManager.find(params['id'])
-                .then(snippet => {
-                    this.snippet = snippet;
-                    this.currentIntelliSense = snippet.typings;
-
-                    this._showStatus(StatusType.warning, -1 /* seconds. negative = indefinite */, 'Loading IntelliSense...');
-                    this.tabs.initiateLoadIntelliSense()
-                        .then(() => {
-                            this.clearStatus();
-                            this._doneWithInitialIntelliSenseLoad = true;
-                        })
-                        .catch(UxUtil.catchError('An error occurred while loading IntelliSense.', []));
-                })
-                .catch(this._errorHandler);
-        }
-        );
+            if (params['id'] == null) {
+                return;
+            }
+            else {
+                this._snippetManager.find(params['id'])
+                    .then(snippet => {
+                        this.snippet = snippet;
+                        this.currentIntelliSense = snippet.typings;
+                        this._showStatus(StatusType.warning, -1 /* seconds. negative = indefinite */, 'Loading IntelliSense...');
+                        return this.tabs.initiateLoadIntelliSense();
+                    })
+                    .then(() => {
+                        this.clearStatus();
+                        this._doneWithInitialIntelliSenseLoad = true;
+                    })
+                    .catch(UxUtil.catchError('An error occurred while loading IntelliSense.', []))
+                    .catch(this._errorHandler);
+            }
+        });
 
         this.markDispose(subscription);
 
@@ -239,7 +236,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                             throw new PlaygroundError('Error while duplicating snippet: could not retrieve current snippet state');
                         }
 
-                        return this._snippetManager.copy(currentSnapshot.content);
+                        return this._snippetManager.copy(currentSnapshot);
                     })
                     .then(duplicateSnippet => {
                         this._router.navigate(['edit', duplicateSnippet.content.id]);
@@ -356,7 +353,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             return false;
         }
 
-        return this.snippet.hash != currentSnapshot.hash();
+        return this.snippet.isUpdated;
     }
 
     post(path, params) {

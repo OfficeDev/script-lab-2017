@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Tab, Tabs, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
-import { Utilities, ContextUtil, UxUtil, GistUtilities, PlaygroundError } from '../shared/helpers';
+import { Utilities, Theme, UxUtil, GistUtilities, PlaygroundError } from '../shared/helpers';
 
 @Component({
     selector: 'view',
@@ -44,8 +44,8 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
                     this.currentIntelliSense = this.snippet.getTypeScriptDefinitions();
                     this.headerName = `"${snippet.meta.name}" snippet`;
 
-                    ContextUtil.setContext(snippet.attemptToGuessContext());
-                    ContextUtil.applyTheme();
+                    Theme.setContext(snippet.attemptToGuessContext());
+                    Theme.applyTheme();
 
                     // Initiate loading IntelliSense, but swallow errors silently if can't loading
                     // (user can't do anything about it on a read-only snippet anyway)

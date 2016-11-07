@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } fro
 import { Router } from '@angular/router';
 import { BaseComponent } from '../shared/components/base.component';
 import { Utilities, UxUtil, GistUtilities } from '../shared/helpers';
-import { Snippet, SnippetManager, SuffixOption } from '../shared/services';
+import { Snippet, SnippetManager } from '../shared/services';
 
 declare var GitHub;
 
@@ -16,7 +16,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     @ViewChild('editor') private _editor: ElementRef;
 
     loaded: boolean;
-    statusDescription = "Initializing editor for importing...";
+    statusDescription = 'Initializing editor for importing...';
 
     constructor(
         _snippetManager: SnippetManager,
@@ -30,10 +30,10 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     private _initializeMonacoEditor(): Promise<any> {
-        var defaultText = '// Enter snippet URL or JSON';
+        let defaultText = '// Enter snippet URL or JSON';
 
         return new Promise((resolve) => {
-            console.log("Beginning to initialize Monaco editor");
+            console.log('Beginning to initialize Monaco editor');
 
             (<any>window).require(['vs/editor/editor.main'], () => {
                 this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
@@ -43,8 +43,8 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                     roundedSelection: false,
                     scrollBeyondLastLine: false,
                     wrappingColumn: 0,
-                    wrappingIndent: "indent",
-                    theme: "vs-dark",
+                    wrappingIndent: 'indent',
+                    theme: 'vs-dark',
                     scrollbar: {
                         vertical: 'visible',
                         verticalHasArrows: true,
@@ -70,7 +70,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                     }
                 });
 
-                console.log("Monaco editor initialized.");
+                console.log('Monaco editor initialized.');
             });
         });
     }
@@ -78,7 +78,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     ngOnDestroy() {
         if (this._monacoEditor) {
             this._monacoEditor.dispose();
-            console.log("Monaco editor disposed");
+            console.log('Monaco editor disposed');
         }
     }
 
@@ -100,27 +100,27 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
         this.statusDescription = 'Processing the snippet import request, please wait...';
         this.loaded = false;
 
-        var inputValue = this._monacoEditor.getValue().trim();
-        var lowercase = inputValue.toLowerCase();
+        let inputValue = this._monacoEditor.getValue().trim();
+        let lowercase = inputValue.toLowerCase();
 
-        var that = this;
-        var snippetManager = this._snippetManager;
+        let that = this;
+        let snippetManager = this._snippetManager;
 
         if (Utilities.isUrl(inputValue)) {
-            var normalized = Utilities.normalizeUrl(inputValue)
-            var normalizedGithubPrefix = "//gist.github.com/";
-            var normalizedPlaygroundViewPrefix = Utilities.normalizeUrl(
-                this.playgroundBasePath + "#/view/gist/");
+            let normalized = Utilities.normalizeUrl(inputValue);
+            let normalizedGithubPrefix = '//gist.github.com/';
+            let normalizedPlaygroundViewPrefix = Utilities.normalizeUrl(
+                this.playgroundBasePath + '#/view/gist/');
             if (normalized.startsWith(normalizedGithubPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedGithubPrefix.length)), "url");
+                    normalized.substr(normalizedGithubPrefix.length)), 'url');
             } else if (normalized.startsWith(normalizedPlaygroundViewPrefix)) {
                 addHelper(() => Snippet.createFromGist(
-                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')), "url");
+                    normalized.substr(normalizedPlaygroundViewPrefix.length).replace('_', '/')), 'url');
             } else {
                 this.loaded = true;
-                UxUtil.showDialog("Invalid URL for import", [
-                    "The supplied URL did not match the expected pattern of",
+                UxUtil.showDialog('Invalid URL for import', [
+                    'The supplied URL did not match the expected pattern of',
                     `https://gist.github.com/<gist-id>`,
                     'or',
                     `https:${normalizedPlaygroundViewPrefix}<gist-id>`
@@ -128,18 +128,18 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 return;
             }
         } else if (Utilities.isJSON(inputValue)) {
-            addHelper(() => Snippet.createFromJson(inputValue), "json");
+            addHelper(() => Snippet.createFromJson(inputValue), 'json');
         } else {
             this.loaded = true;
-            UxUtil.showDialog("Invalid Snippet URL or JSON", [
-                "The input was not recognized as either a URL or as a valid JSON string.",
-                "Please double-check the input and try again."
+            UxUtil.showDialog('Invalid Snippet URL or JSON', [
+                'The input was not recognized as either a URL or as a valid JSON string.',
+                'Please double-check the input and try again.'
             ], 'OK');
             return;
         }
 
         function addHelper(createAction: () => Snippet | Promise<Snippet>, fromType) {
-            var snippet: Snippet;
+            let snippet: Snippet;
             Promise.resolve()
                 .then(createAction)
                 .then((passedInSnippet: Snippet) => {
@@ -151,8 +151,8 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 .catch((e) => {
                     that.loaded = true;
                     UxUtil.showErrorNotification(
-                        "Could not import snippet",
-                        "An error occurred while importing the snippet.",
+                        'Could not import snippet',
+                        'An error occurred while importing the snippet.',
                         e);
                 });
         }

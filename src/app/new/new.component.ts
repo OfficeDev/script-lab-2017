@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Utilities, ContextUtil, ContextType, ExpectedError, UxUtil } from '../shared/helpers';
+import { Utilities, Theme, ContextTypes, ExpectedError, UxUtil } from '../shared/helpers';
 import { ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SuffixOption } from '../shared/services';
 import { BaseComponent } from '../shared/components/base.component';
 
@@ -96,7 +96,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }) {
         appInsights.trackEvent('CreateFromTemplate', {
             type: 'UI Action',
-            context: ContextUtil.contextString,
+            context: Theme.contextString,
             templateName: importData.name,
             templateId: importData.gistId
         }
@@ -121,10 +121,10 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     get title(): string {
-        if (ContextUtil.context === ContextType.Unknown) {
+        if (Theme.context === ContextTypes.Unknown) {
             return '';
         }
 
-        return ContextUtil.hostName + ' Snippets';
+        return Theme.hostName + ' Snippets';
     }
 }

@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Rx';
-import { UxUtil, Utilities, ContextUtil, ContextType } from '../helpers';
+import { UxUtil, Utilities, Theme, ContextTypes } from '../helpers';
 import { SnippetManager } from '../../shared/services';
 
 export class BaseComponent {
@@ -13,7 +13,7 @@ export class BaseComponent {
         // Clear out any dialog that may have been left there from a previous page.
         UxUtil.hideDialog();
 
-        if (ContextUtil.context !== ContextType.Unknown) {
+        if (Theme.context !== ContextTypes.Unknown) {
             _snippetManager.initialize();
         }
     }
@@ -25,7 +25,7 @@ export class BaseComponent {
      * Returns true if context is already set, false if will need to redirect.
      */
     _ensureContext(): boolean {
-        if (ContextUtil.context === ContextType.Unknown) {
+        if (Theme.context === ContextTypes.Unknown) {
             this._router.navigate(['home']);
             return false;
         }
