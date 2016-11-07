@@ -1,6 +1,6 @@
 interface ISnippet {
-    id: string;
-    name: string;
+    id?: string;
+    name?: string;
     author?: string;
     script?: {
         content: string;
@@ -14,6 +14,17 @@ interface ISnippet {
         content: string;
         language: string;
     };
-    libraries: string[];
+    libraries?: string[];
     readme?: string;
+}
+
+interface IPlaylist {
+    groups: {
+        name: string,
+        items: {
+            name: string,
+            description?: string,
+            gist: string
+        }[]
+    }[]
 }

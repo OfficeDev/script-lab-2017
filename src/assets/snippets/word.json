@@ -6,7 +6,7 @@
                 {
                     "name": "Add-in with notification toast",
                     "description": "Reads the first sentence in the selection, and displays it in a Fabric-based notification toast.",
-                    "gistId": "bb684c50a02dc4167aca2f6e39f4bbf4"
+                    "gist": "bb684c50a02dc4167aca2f6e39f4bbf4"
                 }
             ]
         },
@@ -16,7 +16,7 @@
                 {
                     "name": "Get selected data",
                     "description": "Gets the text of the current selection",
-                    "gistId": "a48e903258c0e4cf74615e4c8aafaada"
+                    "gist": "a48e903258c0e4cf74615e4c8aafaada"
                 }
             ]
         }

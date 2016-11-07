@@ -10,102 +10,6 @@ export enum ContextType {
 }
 
 export class ContextUtil {
-    static officeJsProdUrl = '//appsforoffice.microsoft.com/lib/1/hosted/office.js';
-    static officeJsBetaUrl = '//appsforoffice.microsoft.com/lib/beta/hosted/office.js';
-
-    /** Indicates whether the getScript for Office.js has been initiated already */
-    static windowkey_initiatedOfficeLoading = 'initiatedOfficeLoading';
-
-    /** Returns true after Office.initialized has been called */
-    static windowkey_officeInitialized = 'officeInitialized';
-
-    static sessionStorageKey_context = 'context'
-    static sessionStorageKey_wasLaunchedFromAddin = 'wasLaunchedFromAddin';
-
-
-    static getGlobalState(sessionStorageKey: string) {
-        return window[sessionStorageKey];
-    }
-
-    static setGlobalState(sessionStorageKey: string, value: any) {
-        return window[sessionStorageKey] = value;
-    }
-
-    static get contextString(): string {
-        return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_context);
-    }
-
-    static get isAddin(): boolean {
-        // Note: it's an intentional string comparison.
-        return window.sessionStorage.getItem(ContextUtil.sessionStorageKey_wasLaunchedFromAddin) === 'true';
-    }
-
-    /**
-     * Gets the context type or "unknown".  Note, this function does NOT throw on unknown,
-     * though many of the derived ones (hostName, contextNamespace, etc.) do.
-     */
-    static get context(): ContextType {
-        switch (ContextUtil.contextString) {
-            case 'excel':
-                return ContextType.Excel;
-            case 'word':
-                return ContextType.Word;
-            case 'powerpoint':
-                return ContextType.PowerPoint;
-            case 'onenote':
-                return ContextType.OneNote;
-            default:
-                return ContextType.Unknown;
-        }
-    }
-
-    static setContext(context: string): void {
-        window.sessionStorage.setItem(ContextUtil.sessionStorageKey_context, context);
-    }
-
-    static get isOfficeContext(): boolean {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-            case ContextType.Word:
-            case ContextType.PowerPoint:
-            case ContextType.OneNote:
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    static get hostName() {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-                return 'Excel';
-            case ContextType.Word:
-                return 'Word';
-            case ContextType.PowerPoint:
-                return 'PowerPoint'
-            case ContextType.OneNote:
-                return 'OneNote';
-            default:
-                throw new Error("Invalid context type for Office namespace");
-        }
-    }
-
-    static get contextNamespace() {
-        switch (ContextUtil.context) {
-            case ContextType.Excel:
-                return 'Excel';
-            case ContextType.Word:
-                return 'Word';
-            case ContextType.PowerPoint:
-                return null; // Intentionally missing until PowerPoint has the new host-specific API model
-            case ContextType.OneNote:
-                return 'OneNote';
-            default:
-                throw new Error("Invalid context type for Office namespace");
-        }
-    }
-
     static get themeColor() {
         switch (ContextUtil.context) {
             case ContextType.Excel:
@@ -113,7 +17,7 @@ export class ContextUtil {
             case ContextType.Word:
                 return '#2b579a';
             case ContextType.PowerPoint:
-                return '#d04526'
+                return '#d04526';
             case ContextType.OneNote:
                 return '#80397b';
             default:
@@ -128,7 +32,7 @@ export class ContextUtil {
             case ContextType.Word:
                 return '#204072';
             case ContextType.PowerPoint:
-                return '#a5371e'
+                return '#a5371e';
             case ContextType.OneNote:
                 return '#5d2959';
             default:

@@ -18,7 +18,6 @@ enum StatusType {
 })
 export class EditorComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
     snippet: Snippet;
-
     status: string;
     statusType: StatusType;
     editMode = false;
@@ -240,7 +239,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                             throw new PlaygroundError('Error while duplicating snippet: could not retrieve current snippet state');
                         }
 
-                        return this._snippetManager.duplicate(currentSnapshot.content);
+                        return this._snippetManager.copy(currentSnapshot.content);
                     })
                     .then(duplicateSnippet => {
                         this._router.navigate(['edit', duplicateSnippet.content.id]);
@@ -357,7 +356,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
             return false;
         }
 
-        return this.snippet.lastSavedHash != currentSnapshot.getHash();
+        return this.snippet.hash != currentSnapshot.hash();
     }
 
     post(path, params) {

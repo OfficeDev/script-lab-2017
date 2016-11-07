@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Utilities, ContextUtil, ContextType, ExpectedError, UxUtil } from '../shared/helpers';
-import { ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SnippetNamingSuffixOption } from '../shared/services';
+import { ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SuffixOption } from '../shared/services';
 import { BaseComponent } from '../shared/components/base.component';
 
 
@@ -32,12 +32,12 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.localGallery = this._snippetManager.getLocal();
+        this.localGallery = this._snippetManager.local();
 
         var isEmpty = this.localGallery == null || this.localGallery.length <= 0;
         this.showInfo = !isEmpty && !!!(localStorage['Information']);
 
-        this._snippetManager.getPlaylist()
+        this._snippetManager.playlist()
             .then((data) => {
                 this.templateGallery = data;
             })
@@ -57,7 +57,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
 
         this._snippetManager.delete(snippet, true /*askForConfirmation*/)
             .then(() => {
-                this.localGallery = this._snippetManager.getLocal();
+                this.localGallery = this._snippetManager.local();
             }).catch(UxUtil.catchError("Error deleting the snippet.", []));
     }
 
@@ -66,7 +66,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
 
         this._snippetManager.deleteAll(true /*askForConfirmation*/)
             .then(() => {
-                this.localGallery = this._snippetManager.getLocal();
+                this.localGallery = this._snippetManager.local();
             })
             .catch(UxUtil.catchError("Error deleting snippets.", []));
     }
@@ -105,7 +105,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
         this.loaded = false;
         Promise.resolve()
             .then(() => Snippet.createFromGist(importData.gistId, importData.name))
-            .then((snippet) => this._snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs))
+            .then((snippet) => this._snippetManager.create(snippet, SuffixOption.UseAsIs))
             .then((snippet) => this._router.navigate(['edit', snippet.meta.id]))
             .catch((e) => {
                 this.loaded = true;

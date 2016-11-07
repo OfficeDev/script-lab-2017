@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } fro
 import { Router } from '@angular/router';
 import { BaseComponent } from '../shared/components/base.component';
 import { Utilities, UxUtil, GistUtilities } from '../shared/helpers';
-import { Snippet, SnippetManager, SnippetNamingSuffixOption } from '../shared/services';
+import { Snippet, SnippetManager, SuffixOption } from '../shared/services';
 
 declare var GitHub;
 
@@ -145,7 +145,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
                 .then((passedInSnippet: Snippet) => {
                     snippet = passedInSnippet;
                     appInsights.trackEvent('Import', { type: 'UI Action', fromType: fromType });
-                    return snippetManager.add(snippet, SnippetNamingSuffixOption.UseAsIs);
+                    return snippetManager.create(snippet, SuffixOption.UseAsIs);
                 })
                 .then(() => that._router.navigate(['edit', snippet.meta.id]))
                 .catch((e) => {

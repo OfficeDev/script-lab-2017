@@ -1,13 +1,28 @@
+import { Utilities } from '../helpers';
 import * as md5 from 'js-md5';
 
 export class Snippet {
-    lastSavedHash: string;
+    private _hash: string;
 
-    constructor(public content?: ISnippet) {
+    constructor(public content: ISnippet) {
         if (content == null) {
-            // TODO: Create default snippet here from json.
+            // TODO: Handle empty snippet error here.
         }
-        this.lastSavedHash = this.getHash();
+
+        if (Utilities.isEmpty(content.id)) {
+            content.id = Utilities.guid();
+        }
+    }
+
+    get isUpdated() {
+        let newHash = this.hash();
+        if (this._hash !== newHash) {
+            this._hash = newHash;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     get typings(): string[] {
@@ -32,16 +47,10 @@ export class Snippet {
         this.content.libraries = value.split('\n');
     }
 
-    public getHash(): string {
+    public hash(): string {
         if (this.content == null) {
             // TODO: Throw and error here
         }
         return md5(JSON.stringify(this.content));
     }
-}
-
-export enum SnippetNamingSuffixOption {
-    StripNumericSuffixAndIncrement, /* for new snippets */
-    UseAsIs, /* i.e., for import */
-    AddCopySuffix /* for duplicate */
 }
