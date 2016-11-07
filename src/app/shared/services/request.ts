@@ -18,7 +18,7 @@ export class Request {
     }
 
     local<T>(path, raw?: boolean) {
-        var xhr = this._http.get(`assets/${path}`);
+        let xhr = this._http.get(`assets/${path}`);
         return raw ? this._text(xhr) : this._json<T>(xhr);
     }
 
@@ -53,10 +53,10 @@ export class Request {
     }
 
     private _generateHeaders(additionalHeaders: Object): RequestOptions {
-        var headersObj = _.extend({}, headers, additionalHeaders);
-        headersObj["Accept"] = "application/json";
+        let headersObj = _.extend({}, this.headers, additionalHeaders);
+        headersObj['Accept'] = 'application/json';
 
-        var headers = new Headers(headersObj);
+        let headers = new Headers(headersObj);
         return new RequestOptions({ headers: headers });
     }
 

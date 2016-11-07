@@ -1,3 +1,8 @@
+interface IProfile {
+    user: IBasicProfile,
+    orgs: IBasicProfile[]
+}
+
 interface IBasicProfile {
     login?: string,
     id?: number,
@@ -9,7 +14,7 @@ interface IBasicProfile {
     site_admin?: boolean
 }
 
-interface IProfile extends IBasicProfile {
+interface IExtendedProfile extends IBasicProfile {
     name?: string,
     company?: string,
     blog?: string,
@@ -25,7 +30,7 @@ interface IProfile extends IBasicProfile {
     updated_at?: Date
 }
 
-interface Repository {
+interface IRepository {
     id?: number,
     name?: string,
     full_name?: string,
@@ -60,16 +65,10 @@ interface Repository {
     }
 }
 
-interface IRepositoryCollection {
-    data: Repository[],
-    page_count?: number,
-    next_link?: string
-}
-
-interface Owner extends Repository {
+interface Owner extends IRepository {
     organization?: IBasicProfile,
-    parent?: Repository,
-    source?: Repository
+    parent?: IRepository,
+    source?: IRepository
 }
 
 interface IBranch {
@@ -155,5 +154,58 @@ interface IContents {
 
 interface IUploadCommit {
     commit: ICommit,
-    content: File
+    content: IContents
+}
+
+interface IGist {
+    url?: string,
+    forks_url?: string,
+    commits_url?: string,
+    id?: string,
+    description?: string,
+    public?: boolean,
+    owner?: IBasicProfile,
+    user?: any,
+    files?: IGistFiles,
+    truncated?: boolean,
+    comments?: number,
+    comments_url?: string,
+    html_url?: string,
+    git_pull_url?: string,
+    git_push_url?: string,
+    created_at?: string,
+    updated_at?: string,
+    forks?: [
+        {
+            user?: IBasicProfile,
+            url?: string,
+            id?: string,
+            created_at?: string,
+            updated_at?: string
+        }
+    ],
+    history?: [
+        {
+            url?: string,
+            version?: string,
+            user?: IBasicProfile,
+            change_status?: {
+                deletions?: number,
+                additions?: number,
+                total?: number
+            },
+            committed_at?: string
+        }
+    ]
+}
+
+interface IGistFiles {
+    [filename: string]: {
+        size?: number,
+        raw_url?: string,
+        type?: string,
+        language?: string,
+        truncated?: boolean,
+        content?: string
+    }
 }

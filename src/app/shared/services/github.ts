@@ -4,7 +4,7 @@ import { Request } from './request';
 
 @Injectable()
 export class Github {
-    private _baseUrl: string = "${this._baseUrl}";
+    private _baseUrl: string = '${this._baseUrl}';
     private _profileStorage: Storage<IProfile>;
     private _authenticator: Authenticator;
     private _token: IToken;
@@ -33,7 +33,7 @@ export class Github {
     }
 
     repos(org: string, personal: boolean, page: number = 0): Promise<IRepository[]> {
-        var url = personal ?
+        let url = personal ?
             `${this._baseUrl}/user/repos?page=${page}&affiliation=owner,collaborator&sort=updated&direction=desc` :
             `${this._baseUrl}/orgs/${org}/repos?page=${page}`;
 
@@ -41,7 +41,7 @@ export class Github {
     }
 
     files(org: string, repo: string, branch: string, path?: string): Promise<IContents[]> {
-        var url = `${this._baseUrl}/repos/${org}}/${repo}/contents`;
+        let url = `${this._baseUrl}/repos/${org}}/${repo}/contents`;
         if (!(path == null)) {
             url += `/${path}`;
         }
@@ -61,7 +61,7 @@ export class Github {
     }
 
     getSha(org: string, repo: string, branch: string, path?: string): Promise<IContents> {
-        var url = `${this._baseUrl}/repos/${org}/${repo}/contents`;
+        let url = `${this._baseUrl}/repos/${org}/${repo}/contents`;
         if (!(path == null)) {
             url += `/${path}`;
         }
@@ -86,7 +86,7 @@ export class Github {
     }
 
     me() {
-        var _userMetadata: IBasicProfile;
+        let _userMetadata: IBasicProfile;
         return this.user()
             .then(userMetadata => {
                 _userMetadata = userMetadata;
@@ -97,7 +97,7 @@ export class Github {
                     orgs: orgs,
                     user: _userMetadata
                 };
-            })
+            });
     }
 
     logout() {
@@ -106,13 +106,12 @@ export class Github {
     }
 
     gists(user?: string): Promise<IGist[]> {
-        var url;
-        user == null ? `${this._baseUrl}/gists` : `${this._baseUrl}/users/${user}/gists`;
+        let url = user == null ? `${this._baseUrl}/gists` : `${this._baseUrl}/users/${user}/gists`;
         return this._request.get<IGist[]>(url) as Promise<IGist[]>;
     }
 
     gist(id: string, sha?: string): Promise<IGist> {
-        var url = `${this._baseUrl}/gists/${id}`
+        let url = `${this._baseUrl}/gists/${id}`;
         if (!(sha == null)) {
             url += `/${sha}`;
         }
@@ -121,13 +120,13 @@ export class Github {
     }
 
     createOrUpdateGist(description: string, files: IGistFiles, id?: string, isPublic: boolean = true): Promise<IGist> {
-        var body = {
+        let body = {
             description: description,
             public: isPublic,
             files: files
         };
 
-        var url = `${this._baseUrl}/gists`
+        let url = `${this._baseUrl}/gists`;
         if (!(id == null)) {
             url += `/${id}`;
             return this._request.patch<IGist>(url, body) as Promise<IGist>;
@@ -166,12 +165,12 @@ export class Github {
 
     private _setDefaultHeaders(token?: IToken) {
         this._request.headers = {
-            "Content-Type": "application/json",
-            "Acccept": "application/json"
+            'Content-Type': 'application/json',
+            'Acccept': 'application/json'
         };
 
         if (!(token == null)) {
-            this._request.headers["Authorization"] = `Bearer ${token.access_token}`;
+            this._request.headers['Authorization'] = `Bearer ${token.access_token}`;
         }
     }
 }

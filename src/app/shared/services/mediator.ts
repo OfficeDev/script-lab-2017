@@ -23,19 +23,23 @@ export class Mediator extends Dictionary<Channel> {
     }
 
     createEventChannel<T>(name: string): EventChannel {
-        var current = this.get(name);
-        if (!Utilities.isNull(current)) return current as EventChannel;
+        let current = this.get(name);
+        if (!Utilities.isNull(current)) {
+            return current as EventChannel;
+        }
 
-        var event = new EventEmitter<T>();
+        let event = new EventEmitter<T>();
         return this.add(name, { name: name, source$: event.asObservable(), event: event } as Channel) as EventChannel;
     }
 
     createSubjectChannel<T>(name: string): SubjectChannel {
-        var current = this.get(name);
-        if (!Utilities.isNull(current)) return current as SubjectChannel;
+        let current = this.get(name);
+        if (!Utilities.isNull(current)) {
+            return current as SubjectChannel;
+        }
 
-        var dataSource = new Subject<T>();
-        var event = dataSource.asObservable();
+        let dataSource = new Subject<T>();
+        let event = dataSource.asObservable();
         return this.add(name, { name: name, source$: event, dataSource: dataSource } as Channel) as SubjectChannel;
     }
 }
