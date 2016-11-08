@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Tab, Tabs, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
-import { Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
+import { ContextTypes, Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
 
 @Component({
     selector: 'view',
@@ -80,6 +80,8 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     }
 
     openPlayground() {
+        // TODO: Redirect to playground or Store deep link
+
         appInsights.trackEvent('Open Playground clicked', { type: 'UI Action' });
 
         window.open(Utilities.playgroundBasePath +

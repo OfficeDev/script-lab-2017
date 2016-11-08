@@ -4,8 +4,7 @@ export enum ContextTypes {
     Word,
     Excel,
     PowerPoint,
-    OneNote,
-    Word_Old
+    OneNote
 }
 
 export class Utilities {

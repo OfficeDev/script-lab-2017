@@ -53,12 +53,14 @@ export function launch() {
 }
 
 (() => {
-    if (location.href.indexOf('web') === -1) {
+    //TODO: Add modernizr check for Crypto
+    let isRunningInWeb = location.href.indexOf('mode=web') > 0;
+    if (isRunningInWeb) {
+        launch();
+    }
+    else {
         Office.initialize = reason => {
             launch();
         };
-    }
-    else {
-        launch();
     }
 })();

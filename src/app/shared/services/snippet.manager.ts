@@ -16,6 +16,8 @@ export class SnippetManager {
     }
 
     new(): Promise<Snippet> {
+        //TODO: LOAD FROM Github Repo instead with the right folder structure.
+
         return (this._request.local<ISnippet>('snippets/default.json') as Promise<ISnippet>)
             .then(snippet => new Snippet(snippet));
     }
@@ -102,6 +104,16 @@ export class SnippetManager {
     }
 
     playlist(url, external?: boolean): Promise<IPlaylist> {
+        // TODO: still keep a playlist of snippets.
+
+        /*
+            ---- Excel
+                    --- default.json
+                    --- playlist.json
+                    --- Range
+                            ---- Range-Snippet.json
+        */
+
         let snippetJsonUrl = `snippets/${this._context.toLowerCase()}.json}`;
         return (this._request.local<IPlaylist>(snippetJsonUrl) as Promise<IPlaylist>)
             .catch(e => {

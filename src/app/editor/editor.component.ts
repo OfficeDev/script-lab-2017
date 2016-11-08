@@ -77,6 +77,9 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     onSwitchFocusToJavaScript(): void {
+        // DIFF THE typings and only add what's new.
+        // TODO: Do this in the Tabs directly
+
         if (!this._doneWithInitialIntelliSenseLoad) {
             return;
         }
