@@ -28,7 +28,7 @@ export class AppComponent {
 })
 export class AppModule { }
 
-export function launch() {
+export function start() {
     if (!Authenticator.isAuthDialog()) {
         if (!window.location.href.indexOf('localhost')) {
             enableProdMode();
@@ -40,14 +40,6 @@ export function launch() {
             platformBrowserDynamic()
                 .bootstrapModule(AppModule)
                 .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
-
-            // Note: due to existing bug, this is not safe to call as is right now, need to check for requirements.
-            // However, given some of the other pending issues with the dialogs (no support on Online,
-            // inability to execute OM code from within the dialog) just disabling the dialog functionality for now.
-            // if (Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
-            // TODO (Bhargav): make this work.  For now just always showing by default regardless of host.
-            // $('.display-if-office-js-dialog-enabled').show();
-            // }
         });
     }
 }
@@ -55,12 +47,5 @@ export function launch() {
 (() => {
     //TODO: Add modernizr check for Crypto
     let isRunningInWeb = location.href.indexOf('mode=web') > 0;
-    if (isRunningInWeb) {
-        launch();
-    }
-    else {
-        Office.initialize = reason => {
-            launch();
-        };
-    }
+    isRunningInWeb ? start() : Office.initialize = reason => start();
 })();
