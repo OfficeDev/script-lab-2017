@@ -28,3 +28,10 @@ interface IPlaylist {
         }[]
     }[]
 }
+
+interface IMonacoEditorState {
+    name?: string,
+    content?: string,
+    state?: monaco.editor.IEditorViewState,
+    model?: monaco.editor.IModel
+}

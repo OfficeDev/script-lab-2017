@@ -1,2 +1,2 @@
-export * from './tab';
+export * from './monaco-editor';
 export * from './base.component';

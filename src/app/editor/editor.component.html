@@ -18,13 +18,13 @@
     </ul>
 </header>
 <section class="editor__main" *ngIf="snippet">
-    <tabs>
-        <tab name="Script" language="{{snippet?.content?.script?.language}}" [content]="snippet?.content?.script?.content"></tab>
-        <tab name="Template" language="{{snippet?.content?.template?.language}}" [content]="snippet?.content?.template?.content"></tab>
-        <tab name="Style" language="{{snippet?.content?.style?.language}}" [content]="snippet?.content?.style?.content"></tab>
-        <tab name="Libraries" language="script-references" [content]="snippet?.libraries"></tab>
-        <tab name="Readme" language="md" [content]="snippet?.content?.readme"></tab>
-    </tabs>
+    <monaco-editor-tabs>
+        <monaco-editor-tab name="Script" language="snippet?.content.script?.language" [content]="snippet?.content.script?.content"></monaco-editor-tab>
+        <monaco-editor-tab name="Template" language="snippet?.content.template?.language" [content]="snippet?.content.template?.content"></monaco-editor-tab>
+        <monaco-editor-tab name="Style" language="snippet?.content.style?.language" [content]="snippet?.content.style?.content"></monaco-editor-tab>
+        <monaco-editor-tab name="Libraries" language="script-references" [content]="snippet?.libraries"></monaco-editor-tab>
+        <monaco-editor-tab name="Readme" language="md" [content]="snippet?.content?.readme"></monaco-editor-tab>
+    </monaco-editor-tabs>
 </section>
 <section class="editor__footer ms-font-m" [ngClass]="{
     'editor__footer--warning': isStatusWarning,

@@ -3,7 +3,7 @@ import { EditorComponent } from './editor';
 // import { ShareComponent } from './share';
 // import { ImportComponent } from './import';
 // import { ViewComponent } from './view';
-import { Tab, Tabs } from './shared/components';
+import { MonacoEditorTab, MonacoEditorTabs } from './shared/components';
 
 // export * from './new';
 export * from './editor';
@@ -17,6 +17,6 @@ export const COMPONENT_DECLARATIONS = [
   // ShareComponent,
   // ImportComponent,
   // ViewComponent,
-  Tab,
-  Tabs
+  MonacoEditorTab,
+  MonacoEditorTabs
 ];

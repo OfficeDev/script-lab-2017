@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Tab, Tabs, IEditorParent } from '../shared/components';
+import { MonacoEditorTab, MonacoEditorTabs, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
 import { Utilities, Theme, ContextTypes, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
@@ -22,7 +22,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
-    @ViewChild(Tabs) tabs: Tabs;
+    @ViewChild(MonacoEditorTabs) tabs: MonacoEditorTabs;
     @ViewChild('name') nameInputField: ElementRef;
 
     private _doneWithInitialIntelliSenseLoad = false;

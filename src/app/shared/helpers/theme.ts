@@ -1,5 +1,4 @@
-import { ContextTypes, Utilities } from './utilities';
-import { Storage } from '@microsoft/office-js-helpers';
+import { Storage, ContextTypes, Utilities } from '@microsoft/office-js-helpers';
 
 export class Theme {
     static get themeColor() {
@@ -44,7 +43,6 @@ export class Theme {
                     });
                     break;
 
-                case ContextTypes.Word_Old:
                 case ContextTypes.Word:
                     (require as any).ensure(['../../../assets/styles/themes/word.scss'], () => {
                         body.classList.add('word');
