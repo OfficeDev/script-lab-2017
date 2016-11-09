@@ -5,20 +5,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
-import { COMPONENT_DECLARATIONS } from './app/components';
 import { SERVICE_PROVIDERS } from './app/shared/services';
 import { Theme, UxUtil, EXCEPTION_PROVIDER, NotificationHelper } from './app/shared/helpers';
-import { APP_ROUTES } from './app.routes';
+import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
+import { AppComponent } from './app';
 
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
-
-@Component({
-    selector: 'app',
-    template: `<router-outlet></router-outlet>`
-})
-export class AppComponent {
-}
 
 @NgModule({
     imports: [BrowserModule, HttpModule, FormsModule, APP_ROUTES],

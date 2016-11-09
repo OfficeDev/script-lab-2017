@@ -1,5 +1,6 @@
 import { Utilities } from '../helpers';
 import * as crypto from 'crypto-js';
+import * as _ from 'lodash';
 
 export class Snippet {
     private _hash: string;
@@ -9,7 +10,7 @@ export class Snippet {
             // TODO: Handle empty snippet error here.
         }
 
-        if (Utilities.isEmpty(content.id)) {
+        if (_.isEmpty(content.id)) {
             content.id = Utilities.guid();
         }
     }

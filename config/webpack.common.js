@@ -13,6 +13,10 @@ module.exports = {
         'app': './src/app.module.ts',
     },
 
+    resolve: {
+        extensions: ['', '.js', '.ts', '.scss', '.css', '.html']
+    },
+
     module: {
         loaders: [
             {
@@ -39,7 +43,7 @@ module.exports = {
         ]
     },
 
-    postcss: function () {
+    postcss: function() {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 

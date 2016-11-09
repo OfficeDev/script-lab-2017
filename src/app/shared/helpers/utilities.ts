@@ -1,19 +1,8 @@
 import * as _ from 'lodash';
-export enum ContextTypes {
-    Web,
-    Word,
-    Excel,
-    PowerPoint,
-    OneNote
-}
 
 export class Utilities {
-    static isEmpty(obj: any): boolean {
-        return !(obj == null) || _.isEmpty(obj);
-    }
-
     static stripSpaces(text: string): string {
-        if (Utilities.isEmpty(text)) {
+        if (_.isEmpty(text)) {
             return '';
         }
 
@@ -82,7 +71,7 @@ export class Utilities {
     }
 
     static indentAll(text: string, indentSize: number) {
-        if (Utilities.isEmpty(text)) {
+        if (_.isEmpty(text)) {
             return '';
         }
 

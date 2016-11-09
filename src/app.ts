@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { Utilities, Theme, ContextTypes } from './shared/helpers';
+import { Utilities, ContextTypes } from '@microsoft/office-js-helpers';
+import * as _ from 'lodash';
+import { Theme } from './app/shared/helpers';
 
 @Component({
     selector: 'app',
@@ -15,7 +17,7 @@ export class AppComponent {
             let url = next.url;
 
             if (next instanceof NavigationStart) {
-                if (Utilities.isEmpty(url)) {
+                if (_.isEmpty(url)) {
                     return;
                 }
                 let name = url.split('/')[1];
@@ -25,7 +27,7 @@ export class AppComponent {
                 }
             }
             else if (next instanceof NavigationEnd) {
-                if (Utilities.isEmpty(url)) {
+                if (_.isEmpty(url)) {
                     return;
                 }
 

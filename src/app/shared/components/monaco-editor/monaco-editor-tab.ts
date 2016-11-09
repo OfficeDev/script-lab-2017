@@ -1,8 +1,8 @@
-import { Directive, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { Mediator, EventChannel } from '../../services';
 import { MonacoEditorTabs } from './monaco-editor-tabs';
 
-@Directive({
+@Component({
     selector: 'monaco-editor-tab'
 })
 export class MonacoEditorTab implements OnChanges {

@@ -1,8 +1,6 @@
-import { Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { Http } from '@angular/http';
+import { Component, OnDestroy, HostListener, Input, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { Subscription } from 'rxjs/Subscription';
-import { Utilities, PlaygroundError, UxUtil, Theme } from '../../helpers';
 import { Monaco, Snippet } from '../../services';
 import { MonacoEditorTab } from './monaco-editor-tab';
 

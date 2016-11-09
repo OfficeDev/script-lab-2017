@@ -1,5 +1,3 @@
-import { Utilities } from '../helpers';
-
 export interface IProgress {
     isShown: boolean;
     message: string;

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Utilities, Theme, ContextTypes, ExpectedError, UxUtil } from '../shared/helpers';
 import { ISnippet, ISnippetMeta, SnippetManager, ISnippetGallery, Snippet, SuffixOption } from '../shared/services';
 import { BaseComponent } from '../shared/components/base.component';
-
+import * as _ from 'lodash';
 
 @Component({
     selector: 'new',
@@ -78,7 +78,7 @@ export class NewComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
     select(snippet?: ISnippet) {
-        if (Utilities.isEmpty(snippet) || Utilities.isEmpty(snippet.meta)) {
+        if (_.isEmpty(snippet) || _.isEmpty(snippet.meta)) {
             appInsights.trackEvent('Create new snippet', { type: 'UI Action' });
             return this._snippetManager.new().then(newSnippet => {
                 this._router.navigate(['edit', newSnippet.meta.id]);

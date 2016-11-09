@@ -1,6 +1,7 @@
 import { ErrorHandler } from '@angular/core';
-import { UxUtil } from './uxutil';
 import { Utilities } from '@microsoft/office-js-helpers';
+import { UxUtil } from './uxutil';
+
 
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any, stackTrace?: any, reason?: string) {

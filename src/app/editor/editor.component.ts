@@ -3,7 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MonacoEditorTabs } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
-import { Utilities, Theme, ContextTypes, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
+import { Utilities, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
+import * as _ from 'lodash';
 
 enum StatusType {
     info,
@@ -29,12 +30,12 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     private _timeout;
 
     constructor(
-        _router: Router,
-        _snippetManager: SnippetManager,
+        private _router: Router,
+        private _snippetManager: SnippetManager,
         private _route: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
-        super(_router, _snippetManager);
+        super();
         this._errorHandler = this._errorHandler.bind(this);
     }
 
@@ -141,7 +142,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     private _validateNameBeforeProceeding(): Promise<void> {
-        if (Utilities.isEmpty(this.snippet.content.name)) {
+        if (_.isEmpty(this.snippet.content.name)) {
             this._showNameFieldAndSetFocus();
             return Promise.reject(new Error(MessageStrings.PleaseProvideNameForSnippet));
         }

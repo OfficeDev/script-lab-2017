@@ -7,6 +7,8 @@ var commonConfig = require('./webpack.common.js');
 var path = require('path');
 
 module.exports = webpackMerge(commonConfig, {
+    debug: true,
+
     output: {
         path: path.resolve('dist'),
         filename: '[name].[hash].js',
@@ -25,6 +27,7 @@ module.exports = webpackMerge(commonConfig, {
         new webpack.SourceMapDevToolPlugin({
             filename: '[file].[hash].map',
             exclude: [
+                /node_modules/,
                 'vendor.js',
                 'polyfills.js'
             ]
