@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MonacoEditorTab, MonacoEditorTabs, IEditorParent } from '../shared/components';
+import { MonacoEditorTabs } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
 import { Snippet, SnippetManager } from '../shared/services';
 import { Utilities, Theme, ContextTypes, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
@@ -16,13 +16,13 @@ enum StatusType {
     templateUrl: 'editor.component.html',
     styleUrls: ['editor.component.scss']
 })
-export class EditorComponent extends BaseComponent implements OnInit, OnDestroy, IEditorParent {
+export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
     snippet: Snippet;
     status: string;
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
-    @ViewChild(MonacoEditorTabs) tabs: MonacoEditorTabs;
+    @ViewChild(MonacoEditorTabs) monacoEditorTabs: MonacoEditorTabs;
     @ViewChild('name') nameInputField: ElementRef;
 
     private _doneWithInitialIntelliSenseLoad = false;
@@ -51,7 +51,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                         this.snippet = snippet;
                         this.currentIntelliSense = snippet.typings;
                         this._showStatus(StatusType.warning, -1 /* seconds. negative = indefinite */, 'Loading IntelliSense...');
-                        return this.tabs.initiateLoadIntelliSense();
                     })
                     .then(() => {
                         this.clearStatus();
@@ -92,10 +91,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         let newIntelliSenseDefinitions = currentSnapshot.typings;
         if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
             this.currentIntelliSense = newIntelliSenseDefinitions;
-            this.tabs.initiateLoadIntelliSense()
-                .then(() => this._showStatus(StatusType.info, 4 /* seconds */,
-                    'IntelliSense successfully reloaded.'))
-                .catch(UxUtil.catchError('Error refreshing IntelliSense', null));
         }
     }
 
@@ -244,7 +239,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         this.statusType = statusType;
 
         setTimeout(() => {
-            this.tabs.resize();
+            this.monacoEditorTabs.resize();
             this._changeDetectorRef.detectChanges();
         }, 100);
 
@@ -261,7 +256,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         this.statusType = StatusType.info;
 
         this._changeDetectorRef.detectChanges();
-        this.tabs.resize();
+        this.monacoEditorTabs.resize();
     }
 
     get isStatusWarning() { return this.statusType === StatusType.warning; }
@@ -285,31 +280,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
     }
 
     private _composeSnippetFromEditor(): Snippet {
-        let currentEditorState = this.tabs.currentState;
 
-        if (currentEditorState === null) {
-            return null;
-        }
-
-        let snippet = new Snippet({
+        let currentState = this.monacoEditorTabs.snippet;
+        let snippet = _.extend({
             id: this.snippet.content.id,
-            name: this.snippet.content.name,
-            style: {
-                language: 'css',
-                content: currentEditorState['CSS']
-            },
-            script: {
-                language: 'javascript',
-                content: currentEditorState['Script']
-            },
-            template: {
-                language: 'html',
-                content: currentEditorState['HTML']
-            }
-        });
+            name: this.snippet.content.name
+        }, currentState);
 
-        snippet.libraries = currentEditorState['Libraries'];
-        return snippet;
+        return new Snippet(snippet);
     }
 
     private get _haveUnsavedModifications(): boolean {

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@microsoft/office-js-helpers';
+import { Storage, Utilities } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Request } from './request';
 import { Snippet } from './snippet';
-import { ContextTypes, Utilities, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
+import { ContextTypes, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -38,7 +38,7 @@ export class SnippetManager {
             return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
         }
 
-        if (Utilities.isEmpty(snippet.content.name)) {
+        if (_.isEmpty(snippet.content.name)) {
             return Promise.reject(new Error('Snippet name cannot be empty')) as any;
         }
 
@@ -131,7 +131,7 @@ export class SnippetManager {
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = Utilities.isEmpty(name.trim()) ? 'New Snippet' : name.trim();
+        let newName = _.isEmpty(name.trim()) ? 'New Snippet' : name.trim();
         let regex = new RegExp(`^${name}`, 'gi');
         let maxSuffixNumber = _.reduce(this._store.values(), (max, item) => {
             if (regex.test(item.name)) {

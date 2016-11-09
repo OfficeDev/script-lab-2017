@@ -39,7 +39,7 @@ module.exports = {
         ]
     },
 
-    postcss: function() {
+    postcss: function () {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 
@@ -68,7 +68,6 @@ module.exports = {
         ]),
 
         new webpack.ProvidePlugin({
-            _: 'underscore',
             $: 'jquery',
             require: 'require'
         })
