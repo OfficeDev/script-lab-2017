@@ -8,35 +8,6 @@ export enum ContextTypes {
 }
 
 export class Utilities {
-    static _context: ContextTypes;
-
-    static get context(): ContextTypes {
-        if (Utilities._context == null) {
-            let context: ContextTypes = ContextTypes.Web;
-
-            try {
-                if (Office.context.requirements.isSetSupported('ExcelApi')) {
-                    context = ContextTypes.Excel;
-                } else if (Office.context.requirements.isSetSupported('WordApi')) {
-                    context = ContextTypes.Word;
-                } else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-                    context = ContextTypes.OneNote;
-                } else if (Office.context.requirements.isSetSupported('ActiveView')) {
-                    context = ContextTypes.PowerPoint;
-                } else if (Office.context.requirements.isSetSupported('OoxmlCoercion')) {
-                    context = ContextTypes.Word;
-                }
-            }
-            catch (exception) {
-                //TODO: log exception
-            }
-
-            Utilities._context = context;
-        }
-
-        return Utilities._context;
-    }
-
     static isEmpty(obj: any): boolean {
         return !(obj == null) || _.isEmpty(obj);
     }
@@ -227,22 +198,85 @@ export class Utilities {
         }
     }
 
-    static reloadPage() {
-        window.location.reload();
-    }
-
-    static get playgroundBasePath(): string {
-        return window.location.protocol + '//' + window.location.hostname +
-            (window.location.port ? (':' + window.location.port) : '') + window.location.pathname;
-    }
-
     static isJSON(input: string) {
+        let json = (!_.isString(input)) ? JSON.stringify(input) : input;
+
         try {
-            JSON.parse(input);
+            json = JSON.parse(json);
         } catch (e) {
+            return false;
+        }
+
+        if (json == null) {
             return false;
         }
 
         return true;
     }
+
+    static progressiveAll<T>(
+        promises: Promise<T>[],
+        notify?: (completed: number, total: number, errors: number) => any
+    ): Promise<{
+        total: number,
+        results: {
+            index: number,
+            result: T
+        }[],
+        errors: {
+            index: number,
+            error: any
+        }[]
+    }> {
+        if (promises == null) {
+            return Promise.reject(new Error('No promises were received')) as any;
+        }
+        else {
+            let length = promises.length;
+            let completed = 0;
+            let errors = [];
+            let results = [];
+
+            let mappedPromises = promises.map((promise, index) => {
+                promise
+                    .then(data => {
+                        results.push({
+                            index: index,
+                            result: data
+                        });
+
+                        ++completed;
+
+                        if (notify == null) {
+                            return;
+                        }
+
+                        notify(completed, length, errors.length);
+                    })
+                    .catch(error => {
+                        errors.push({
+                            index: index,
+                            error: error
+                        });
+
+                        ++completed;
+
+                        if (notify == null) {
+                            return;
+                        }
+
+                        notify(completed, length, errors.length);
+                    });
+            });
+
+            return Promise.all(mappedPromises).then(() => {
+                return {
+                    total: length,
+                    results: results,
+                    errors: errors
+                };
+            });
+        }
+    }
 }
+

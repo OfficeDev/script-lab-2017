@@ -3,15 +3,8 @@ import { Http } from '@angular/http';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { Subscription } from 'rxjs/Subscription';
 import { Utilities, PlaygroundError, UxUtil, Theme } from '../../helpers';
-import { IntelliSenseHelper, IIntelliSenseResponse } from '../../helpers';
+import { Monaco } from '../../services';
 import { Tab } from './tab.component';
-import { EditorComponent } from '../../../components';
-
-export interface IEditorParent {
-    currentIntelliSense: string[];
-    onSwitchFocusToJavaScript?: () => void;
-    isOfficeSnippet?: boolean
-}
 
 @Component({
     selector: 'tabs',
@@ -32,47 +25,21 @@ export interface IEditorParent {
     styleUrls: ['tab.component.scss']
 })
 export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
-    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _monacoEditorInitialized: boolean;
-
     private _subscriptions: Subscription[] = [];
+    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
 
     selectedTab: Tab;
     @ViewChild('editor') private _editor: ElementRef;
     @ViewChild('loader') private _loader: ElementRef;
-
     @Input() readonly: boolean;
-
     progressMessage = 'Loading the snippet';
-    editorLoaded: boolean;
 
-    private _saveAction: () => void;
-
-    editorParent: IEditorParent;
-
-    private _modelsToDispose: monaco.IDisposable[] = [];
-
-    constructor(private _http: Http) {
+    constructor(private _monaco: Monaco) {
         super();
     }
 
     ngAfterViewInit() {
-        let that = this;
-
-        let require = (<any>window).require;
-
-        if (require) {
-            const requireConfig = {
-                paths: {
-                    'vs': 'https://unpkg.com/monaco-editor/min/vs'
-                }
-            };
-
-            require.config(requireConfig);
-            require(['vs/editor/editor.main'], () => {
-                this._initializeMonacoEditor();
-            });
-        }
+        this._monaco.create(this._editor).then(monacoEditor => this._monacoEditor = monacoEditor);
     }
 
     ngOnDestroy() {
@@ -82,125 +49,25 @@ export class Tabs extends Dictionary<Tab> implements AfterViewInit, OnDestroy {
             }
         });
 
-        this._modelsToDispose.forEach(model => model.dispose());
-
         if (this._monacoEditor) {
             this._monacoEditor.dispose();
-            console.log('Monaco editor disposed');
         }
     }
 
-    initiateLoadIntelliSense(): Promise<void> {
+    initiateLoadIntelliSense() {
         if (this.selectedTab.intellisense) {
-            return this._waitForMonacoInitialization()
-                .then(() => IntelliSenseHelper.retrieveIntelliSense(this._http, this.selectedTab.intellisense))
-                .then(responses => {
-                    IntelliSenseHelper.disposeAllMonacoLibInstances();
-
-                    let errorUrls: string[] = [];
-                    responses.forEach((responseIn: any) => {
-                        let response: IIntelliSenseResponse = responseIn;
-                        if (response.success) {
-                            IntelliSenseHelper.recordNewlyAddedLib(
-                                monaco.languages.typescript.typescriptDefaults.addExtraLib(response.data, response.url));
-                            console.log('Added ' + response.url);
-                        } else {
-                            console.log(`Error fetching IntelliSense for "${response.url}": ${response.error}`);
-                            errorUrls.push(response.url);
-                        }
-                    });
-
-                    if (errorUrls.length > 0) {
-                        throw new PlaygroundError('Error fetching IntelliSense for: \n' +
-                            errorUrls.map((url) => '* ' + url).join('\n'));
-                    }
-                });
+            this._monaco.updateLibs(this.selectedTab.language, this.selectedTab.intellisense);
         }
     }
 
-    private _waitForMonacoInitialization(): Promise<any> {
-        if (this._monacoEditorInitialized) {
-            return Promise.resolve();
-        }
-
-        return new Promise((resolve) => {
-            let interval = setInterval(() => {
-                if (this._monacoEditorInitialized) {
-                    clearInterval(interval);
-                    resolve();
-                }
-            }, 20);
-        });
-    }
-
-    private _initializeMonacoEditor(): void {
-        console.log('Beginning to initialize Monaco editor');
-
-        monaco.languages.register({ id: 'script-references' });
-
-        monaco.languages.setMonarchTokensProvider('script-references', {
-            tokenizer: {
-                root: [
-                    [/^#.*/, 'comment'],
-
-                    // Anything starting with @types or dt~ is IntelliSense
-                    [/^(.types\/|dt~).*/i, 'string'],
-
-                    [/^@.*/, ''],
-
-                    // Anything starting with @types or dt~ is IntelliSense
-                    [/^.*\.ts$/i, 'string'],
-
-                    // Anything else presumed to be JS or CSS reference
-                    [/.*/i, 'keyword'],
-                ]
-            },
-            tokenPostfix: ''
-        });
-
-        this._monacoEditor = monaco.editor.create(this._editor.nativeElement, {
-            value: '',
-            language: 'text',
-            lineNumbers: true,
-            roundedSelection: false,
-            scrollBeyondLastLine: false,
-            wrappingColumn: 0,
-            theme: 'vs-dark',
-            wrappingIndent: 'indent',
-            scrollbar: {
-                vertical: 'visible',
-                verticalHasArrows: true,
-                arrowSize: 15
-            },
-            readOnly: this.readonly,
-            model: null
-        });
-
-        $(this._editor.nativeElement).keydown((event) => {
-            // Control (or Command) + S (83 = code for S)
-            if ((event.ctrlKey || event.metaKey) && event.which === 83) {
-                event.preventDefault();
-                if (this._saveAction) {
-                    this._saveAction();
-                }
-                return false;
-            }
-        });
-
-        this._updateEditor(this.selectedTab);
-
-        $(this._loader.nativeElement).hide();
-        $(this._editor.nativeElement).show();
-        this._monacoEditor.layout();
-
-        console.log('Monaco editor initialized.');
-
-        this._monacoEditorInitialized = true;
-    }
-
-    setSaveAction(action: () => void): void {
-        this._saveAction = action;
-    }
+    // private _initializeMonacoEditor(): void {
+    // $(this._editor.nativeElement).keydown(event => {
+    //     if ((event.ctrlKey || event.metaKey) && event.which === 83) {
+    //         event.preventDefault();
+    //         return false;
+    //     }
+    // });
+    // }
 
     get currentState(): { [index: string]: string } {
         if (!this._monacoEditor) {

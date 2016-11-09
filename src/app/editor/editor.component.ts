@@ -126,25 +126,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
         }
     }
 
-    refresh(): void {
-        appInsights.trackEvent('Refresh', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-
-        if (this._haveUnsavedModifications) {
-            UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.content.name}" before re-loading the page?`, ['Save', 'Discard Changes'])
-                .then((choice) => {
-                    if (choice === 'Save') {
-                        this._saveHelper()
-                            .then(Utilities.reloadPage)
-                            .catch(this._errorHandler);
-                    } else {
-                        Utilities.reloadPage();
-                    }
-                });
-        } else {
-            Utilities.reloadPage();
-        }
-    }
-
     share() {
         appInsights.trackEvent('Share', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
 
@@ -157,8 +138,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
                         this._saveHelper()
                             .then(navigateToShareAction)
                             .catch(this._errorHandler);
-                    } else {
-                        Utilities.reloadPage();
                     }
                 });
         } else {
@@ -287,33 +266,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy,
 
     get isStatusWarning() { return this.statusType === StatusType.warning; }
     get isStatusError() { return this.statusType === StatusType.error; }
-
-    launchPopOutAddinEditor() {
-        appInsights.trackEvent('Popout Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-
-        let dialogOptions = { displayInIFrame: true, width: 85, height: 85 };
-        let url = Utilities.playgroundBasePath + 'addin/';
-
-        if (!Office.context.requirements.isSetSupported('DialogAPI', 1.1)) {
-            UxUtil.showDialog('Dialog not supported',
-                'Launching a standalone-editor dialog window is not supported on this platform yet.', 'OK');
-            return;
-        }
-
-        Office.context.ui.displayDialogAsync(url, dialogOptions, function (result) {
-            if (result.status !== Office.AsyncResultStatus.Succeeded) {
-                UxUtil.showDialog('Error launching dialog', [
-                    'Could not create a standalone-editor dialog window.',
-                    'Error details: ' + result.error.message
-                ], 'OK');
-            }
-
-            let dialog = result.value;
-            dialog.addEventHandler('DialogMessageReceived', function (e) {
-                UxUtil.showDialog('Event received', Utilities.stringifyPlusPlus(e), 'OK');
-            });
-        });
-    }
 
     private _errorHandler(e: any): void {
         if (e instanceof ExpectedError) {
