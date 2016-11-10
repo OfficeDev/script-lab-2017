@@ -1,0 +1,38 @@
+﻿@import '../../../../assets/styles/mixins.scss';
+@import '../../../../assets/styles/theme.scss';
+
+.hamburger-menu {
+    position: fixed;
+    z-index: 999;
+    height: 100%;
+    width: 100%;
+    max-width: 350px;
+    top: 0;
+    left: 0;
+    background-color: #FFFFFF;
+    @include flex();
+    transform: translate3d(-100%, 0, 0);
+    transition: transform 0.4s cubic-bezier(0,1.13,.4,1);
+
+    &__close {
+        width: 20px;
+        padding: $default-spacing;
+        color: $foreground-light;
+        @include focus-states($accent-background-primary, $foreground-primary);
+
+        i {
+            top: 0;
+        }
+    }
+
+    &__container {
+        flex: 1 1 0px;
+        height: 100%;
+        overflow: auto;
+        overflow-x: hidden;
+    }
+
+    &--shown {
+        transform: translate3d(0, 0, 0);
+    }
+}

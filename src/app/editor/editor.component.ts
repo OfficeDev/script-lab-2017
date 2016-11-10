@@ -22,11 +22,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     status: string;
     statusType: StatusType;
     editMode = false;
-    currentIntelliSense: string[];
     @ViewChild('name') nameInputField: ElementRef;
-
-    private _doneWithInitialIntelliSenseLoad = false;
-    private _timeout;
 
     constructor(
         private _router: Router,
@@ -36,7 +32,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super();
-        this._errorHandler = this._errorHandler.bind(this);
     }
 
     ngOnInit() {
@@ -52,103 +47,11 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
                     .then(snippet => {
                         this.snippet = snippet;
                         this._monaco.updateLibs('typescript', this.snippet.typings);
-                        this._showStatus(StatusType.warning, -1 /* seconds. negative = indefinite */, 'Loading IntelliSense...');
-                    })
-                    .then(() => {
-                        this.clearStatus();
-                        this._doneWithInitialIntelliSenseLoad = true;
-                    })
-                    .catch(UxUtil.catchError('An error occurred while loading IntelliSense.', []))
-                    .catch(this._errorHandler);
+                    });
             }
         });
 
         this.markDispose(subscription);
-
-        // this.tabs.setSaveAction(() => {
-        //     this.save();
-        // });
-    }
-
-    private _showNameFieldAndSetFocus(): void {
-        this.editMode = true;
-        setTimeout(() => {
-            $(this.nameInputField.nativeElement).focus(); // TODO: doesn't seem to do anything
-        }, 100);
-    }
-
-    onSwitchFocusToJavaScript(): void {
-        // DIFF THE typings and only add what's new.
-        // TODO: Do this in the Tabs directly
-
-        if (!this._doneWithInitialIntelliSenseLoad) {
-            return;
-        }
-
-        let currentSnapshot = this._composeSnippetFromEditor();
-        if (currentSnapshot == null) {
-            return;
-        }
-
-        let newIntelliSenseDefinitions = currentSnapshot.typings;
-        if (!_.isEqual(this.currentIntelliSense, newIntelliSenseDefinitions)) {
-            this.currentIntelliSense = newIntelliSenseDefinitions;
-        }
-    }
-
-    back(): void {
-        if (this.editMode) {
-            this.editMode = false;
-            return;
-        }
-
-        const navigateHomeAction = () => this._router.navigate(['new']);
-
-        if (this._haveUnsavedModifications) {
-            UxUtil.showDialog('Save the snippet?', `Save the snippet "${this.snippet.content.name}" before going back?`, ['Yes', 'No', 'Cancel'])
-                .then((choice) => {
-                    if (choice === 'Cancel') {
-                        return;
-                    }
-                    else if (choice === 'Yes') {
-                        this._saveHelper()
-                            .then(navigateHomeAction)
-                            .catch(this._errorHandler);
-                    } else {
-                        navigateHomeAction();
-                    }
-                });
-        } else {
-            navigateHomeAction();
-        }
-    }
-
-    share() {
-        appInsights.trackEvent('Share', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-
-        const navigateToShareAction = () => this._router.navigate(['share', this.snippet.content.id]);
-
-        if (this._haveUnsavedModifications) {
-            UxUtil.showDialog('Save the snippet?', `You must save the snippet before sharing it. Save it now?`, ['Save and proceed', 'Cancel'])
-                .then((choice) => {
-                    if (choice === 'Save and proceed') {
-                        this._saveHelper()
-                            .then(navigateToShareAction)
-                            .catch(this._errorHandler);
-                    }
-                });
-        } else {
-            navigateToShareAction();
-        }
-    }
-
-    private _validateNameBeforeProceeding(): Promise<void> {
-        if (_.isEmpty(this.snippet.content.name)) {
-            this._showNameFieldAndSetFocus();
-            return Promise.reject(new Error(MessageStrings.PleaseProvideNameForSnippet));
-        }
-
-        return Promise.resolve();
     }
 
     save(): Promise<void> {
@@ -162,146 +65,15 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         //     .catch(this._errorHandler);
     }
 
-    private _saveHelper(): Promise<ISnippet> {
-        return this._validateNameBeforeProceeding().then(() => {
-            let currentSnapshot = this._composeSnippetFromEditor();
-            if (currentSnapshot == null) {
-                throw new PlaygroundError('Error while saving: could not retrieve current snippet state');
-            }
-
-            this.snippet = currentSnapshot;
-            return this._snippetManager.save(this.snippet);
-        });
-    }
-
-    delete(): Promise<void> {
-        appInsights.trackEvent('Delete from Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-
-        return this._snippetManager.delete(this.snippet, true /*askForConfirmation*/)
-            .then(() => {
-                this._router.navigate(['new']);
-            })
-            .catch(this._errorHandler);
-    }
-
     run() {
-        appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-        return this._validateNameBeforeProceeding()
-            .then(() => {
-                if (this._haveUnsavedModifications) {
-                    return this._saveHelper();
-                }
-            })
-            .then(() => {
-                this.post('https://office-playground-runner.azurewebsites.net', { snippet: JSON.stringify(this.snippet.content) });
-            })
-            .catch(this._errorHandler);
-    }
-
-    duplicate(): Promise<void> {
-        return UxUtil.showDialog('Duplicate snippet?', 'Would you like to save the current editor state into a new snippet?', ['Yes', 'Cancel'])
-            .then(choice => {
-                if (choice !== 'Yes') {
-                    throw new ExpectedError();
-                }
-            })
-            .then(() => {
-                appInsights.trackEvent('Duplicate', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-
-                return this._validateNameBeforeProceeding()
-                    .then(() => {
-                        let currentSnapshot = this._composeSnippetFromEditor();
-                        if (currentSnapshot == null) {
-                            throw new PlaygroundError('Error while duplicating snippet: could not retrieve current snippet state');
-                        }
-
-                        return this._snippetManager.copy(currentSnapshot);
-                    })
-                    .then(duplicateSnippet => {
-                        this._router.navigate(['edit', duplicateSnippet.content.id]);
-                        return duplicateSnippet;
-                    })
-                    .then((duplicateSnippet) => {
-                        this._showStatus(StatusType.info, 3 /*seconds*/, 'Created duplicate snippet');
-                        this._showNameFieldAndSetFocus();
-                    })
-                    .catch(this._errorHandler);
-            })
-            .catch(UxUtil.catchError('Error duplicating snippet', null));
-    }
-
-    /**
-     * Shows a status message. If seconds is <= 0, will show message for indefinite amount of time
-     */
-    private _showStatus(statusType: StatusType, seconds: number, message: string): void {
-        if (!(this._timeout == null)) {
-            clearTimeout(this._timeout);
-        }
-
-        this.status = message;
-        this.statusType = statusType;
-
-        setTimeout(() => {
-            this._changeDetectorRef.detectChanges();
-        }, 100);
-
-        if (seconds > 0) {
-            this._timeout = setTimeout(() => {
-                clearTimeout(this._timeout);
-                this.clearStatus();
-            }, seconds * 1000);
-        }
-    }
-
-    clearStatus() {
-        this.status = null;
-        this.statusType = StatusType.info;
-
-        this._changeDetectorRef.detectChanges();
+        // appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
+        this._post('https://office-playground-runner.azurewebsites.net', { snippet: JSON.stringify(this.snippet.content) });
     }
 
     get isStatusWarning() { return this.statusType === StatusType.warning; }
     get isStatusError() { return this.statusType === StatusType.error; }
 
-    private _errorHandler(e: any): void {
-        if (e instanceof ExpectedError) {
-            this.clearStatus();
-            return;
-        } else if (e instanceof PlaygroundError) {
-            let message: string;
-            if (_.isString(e.message)) {
-                message = e.message as string;
-            } else if (_.isArray(e.message)) {
-                message = (e.message as string[]).join(' \n');
-            }
-            this._showStatus(StatusType.error, 5 /*seconds*/, message);
-        } else {
-            UxUtil.showErrorNotification('Error', [], e);
-        }
-    }
-
-    private _composeSnippetFromEditor(): Snippet {
-
-        // let currentState = this.monacoEditorTabs.snippet;
-        // let snippet = _.extend({
-        //     id: this.snippet.content.id,
-        //     name: this.snippet.content.name
-        // }, currentState);
-
-        // return new Snippet(snippet);
-        return null;
-    }
-
-    private get _haveUnsavedModifications(): boolean {
-        let currentSnapshot = this._composeSnippetFromEditor();
-        if (currentSnapshot == null) {
-            return false;
-        }
-
-        return this.snippet.isUpdated;
-    }
-
-    post(path, params) {
+    private _post(path, params) {
         let form = document.createElement('form');
         form.setAttribute('method', 'post');
         form.setAttribute('action', path);

@@ -1,0 +1,23 @@
+<div class="ms-Dialog ms-Dialog--lgHeader" [hidden]="dialog == null">
+    <div class=" ms-Overlay ms-Overlay--dark js-DialogAction--close "></div>
+    <div class="ms-Dialog-main ">
+        <div class="ms-Dialog-header ">
+            <p class="ms-Dialog-title ">{{dialog?.title}}</p>
+        </div>
+        <div class="ms-Dialog-inner ">
+            <div class="ms-Dialog-content ">
+                <p class="ms-Dialog-subText ">{{dialog?.message}}</p>
+            </div>
+            <div class="ms-Dialog-actions ">
+                <div class="ms-Dialog-actionsRight ">
+                    <button class="ms-Dialog-action ms-Button ms-Button--primary " (click)="executeAction(false) ">
+                        <span class="ms-Button-label ">{{dialog?.primary?.text}}</span>
+                    </button>
+                    <button class="ms-Dialog-action ms-Button " [hidden]="dialog?.secondary == null" (click)="executeAction(true) ">
+                        <span class="ms-Button-label ">{{dialog?.secondary?.text}}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

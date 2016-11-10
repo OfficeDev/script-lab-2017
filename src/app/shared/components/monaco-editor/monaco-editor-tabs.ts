@@ -19,7 +19,7 @@ import * as _ from 'lodash';
 })
 export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _debouncedInput = _.debounce((event: KeyboardEvent) => this.currentTab.contentChange.next(this._monacoEditor.getValue()), 250);
+    private _debouncedInput = _.debounce((event: KeyboardEvent) => this.currentTab.contentChange.next(this._monacoEditor.getValue()), 200);
 
     currentTab: MonacoEditorTab;
     @ViewChild('editor') private _editor: ElementRef;
@@ -51,6 +51,8 @@ export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements Aft
     }
 
     select(tab: MonacoEditorTab) {
+        // If the current tab is not null
+        // then save its current state.
         if (!(this.currentTab == null)) {
             this.currentTab.state = {
                 name: this.currentTab.name,
@@ -62,13 +64,14 @@ export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements Aft
 
         this.currentTab = tab.activate();
 
+        // If this is the first time we are switching to this tab
+        // then create a new model and save that.
         if (this.currentTab.state.model == null) {
-            // If this is the first time we are switching to this tab
-            // then create a new model and save that.
             let newModel = monaco.editor.createModel(this.currentTab.content, this.currentTab.language);
             this.currentTab.state.model = newModel;
         }
 
+        // Update the editor state to reflect the new tab's data.
         this._monacoEditor.setModel(this.currentTab.state.model);
         this._monacoEditor.restoreViewState(this.currentTab.state.viewState);
         this.currentTab = tab.activate();

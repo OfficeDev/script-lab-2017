@@ -35,3 +35,15 @@ interface IMonacoEditorState {
     viewState?: monaco.editor.IEditorViewState,
     model?: monaco.editor.IModel
 }
+
+interface IDialog {
+    title: string;
+    message?: string;
+    primary: IDialogAction;
+    secondary?: IDialogAction;
+}
+
+interface IDialogAction {
+    text: string;
+    action: () => any;
+}
