@@ -1,8 +1,8 @@
-import { Component, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { Mediator, EventChannel } from '../../services';
+import { Directive, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Mediator, EventChannel, Monaco } from '../../services';
 import { MonacoEditorTabs } from './monaco-editor-tabs';
 
-@Component({
+@Directive({
     selector: 'monaco-editor-tab'
 })
 export class MonacoEditorTab implements OnChanges {
@@ -16,6 +16,7 @@ export class MonacoEditorTab implements OnChanges {
     view: IMonacoEditorState;
 
     constructor(
+        private _monaco: Monaco,
         private _tabs: MonacoEditorTabs,
         private _mediator: Mediator
     ) {
@@ -33,6 +34,15 @@ export class MonacoEditorTab implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (this.name === 'Libraries') {
+            let libraries = changes['content'].currentValue as string;
+            if (_.isEmpty(libraries)) {
+                return;
+            }
+
+            this._monaco.updateLibs('typescript', libraries.split('\n'));
+        }
+
         this.channel.event.next(this.view);
     }
 }

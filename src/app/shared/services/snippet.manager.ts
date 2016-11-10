@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Storage, Utilities } from '@microsoft/office-js-helpers';
+import { Storage, Utilities, ContextTypes } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Request } from './request';
 import { Snippet } from './snippet';
-import { ContextTypes, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
+import { MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
 
 @Injectable()
 export class SnippetManager {
@@ -18,7 +18,7 @@ export class SnippetManager {
     new(): Promise<Snippet> {
         //TODO: LOAD FROM Github Repo instead with the right folder structure.
 
-        return (this._request.local<ISnippet>('snippets/default.json') as Promise<ISnippet>)
+        return (this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.json`) as Promise<ISnippet>)
             .then(snippet => new Snippet(snippet));
     }
 
@@ -114,7 +114,7 @@ export class SnippetManager {
                             ---- Range-Snippet.json
         */
 
-        let snippetJsonUrl = `snippets/${this._context.toLowerCase()}.json}`;
+        let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json}`;
         return (this._request.local<IPlaylist>(snippetJsonUrl) as Promise<IPlaylist>)
             .catch(e => {
                 let messages = [`Could not retrieve default snippets for ${this._context}.`];

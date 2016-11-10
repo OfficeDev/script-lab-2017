@@ -13,14 +13,9 @@ import { MonacoEditorTab } from './monaco-editor-tab';
         </li>
     </ul>
     <div class="tabs__container">
-        <div #loader class="ms-progress">
-            <div class="ms-Spinner large"></div>
-            <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
-            <div class="ms-ProgressIndicator-itemDescription ms-font-s-plus ms-fontColor-white">{{progressMessage}}...</div>
-        </div>
         <section #editor class="monaco-editor"></section>
     </div>`,
-    styleUrls: ['tab.component.scss']
+    styleUrls: ['monaco-editor.component.scss']
 })
 export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements AfterViewInit, OnDestroy {
     private _subscriptions: Subscription[] = [];
@@ -91,25 +86,29 @@ export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements Aft
     }
 
     add(name: string, tab: MonacoEditorTab) {
-        if (this.count === 0) {
-            this.select(tab);
-        }
-
         let subscription = tab.channel.source$.subscribe(view => {
+            if (view == null) {
+                return;
+            }
+
             if (this.selectedTab.name === view.name) {
                 this._updateEditor(this.selectedTab);
             }
         });
 
         this._subscriptions.push(subscription);
-        return super.add(tab.name, tab);
+        super.add(tab.name, tab);
+
+        if (this.count === 1) {
+            this.select(tab);
+        }
+
+        return tab;
     }
 
     select(tab: MonacoEditorTab) {
-        appInsights.trackEvent('Switch editor tabs', { type: 'UI Action', name: tab.name });
-
+        // appInsights.trackEvent('Switch editor tabs', { type: 'UI Action', name: tab.name });
         let currentTab = null;
-        this.selectedTab = this.get(tab.name);
         this.values().forEach(tab => {
             if (tab.active) {
                 currentTab = tab;
@@ -117,9 +116,9 @@ export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements Aft
             tab.active = false;
         });
 
-        this.selectedTab.active = true;
+        tab.active = true;
+        this.selectedTab = tab;
         this._updateEditor(tab, currentTab);
-        this._monaco.updateLibs(this.selectedTab.language, this.selectedTab.intellisense);
     }
 
     @HostListener('window:resize', ['$event'])
@@ -136,7 +135,9 @@ export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements Aft
             return;
         }
 
-        currentTab.view = this._getCurrentTabState();
+        if (!(currentTab == null)) {
+            currentTab.view = this._getCurrentTabState();
+        }
 
         if (nextTab.view.model == null) {
             // If this is the first time we are switching to this tab

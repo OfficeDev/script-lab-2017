@@ -17,12 +17,10 @@
         @include flex();
         flex: 1 1 100%;
         width: 100%;
-        padding-top: 10px;
-        background: #1e1e1e;
     }
 }
 
-tabs {
+monaco-editor-tabs {
     @include flex();
     flex: 1 1 100%;
 }
@@ -32,7 +30,6 @@ tabs {
     flex: 1 1 100%;
     width: 100% !important;
     height: 100% !important;
-    display: none;
 }
 
 .ms-progress {

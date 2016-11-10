@@ -26,7 +26,7 @@ export class Monaco {
     private _intellisense: Dictionary<Dictionary<monaco.IDisposable>>;
 
     constructor(private intellisense: Intellisense) {
-        this._baseUrl = 'https://unpkg.com';
+        this._baseUrl = '/node_modules';
         this._intellisense = new Dictionary<Dictionary<monaco.IDisposable>>();
     }
 
@@ -39,81 +39,89 @@ export class Monaco {
         return this.current.then(() => monaco.editor.create(element.nativeElement, options));
     }
 
-    updateLibs(language: string, urls: string[], notify?: (completed: number, total: number, errors: number) => any) {
-        let languageCollection = this._intellisense.get(language);
-        Utilities.progressiveAll<{ content: string, filePath: string }>(this.intellisense.all(urls), notify)
-            .then(progress => {
-                if (languageCollection == null) {
-                    progress.results.forEach(item => {
-                        let {content, filePath} = item.result;
-                        this.addLib(language, content, filePath);
-                    });
-                }
-                else {
-                    let addedLibraries = _.differenceWith(progress.results, languageCollection.keys(), (newLib, loadedFile) => newLib.result.filePath === loadedFile);
-                    let removedLibraries = _.differenceWith(languageCollection.keys(), progress.results, (loadedFile, newLib) => newLib.result.filePath === loadedFile);
+    updateLibs(language: string, libraries: string[]) {
+        this.current.then(() => {
+            let urls = this.intellisense.parse(libraries);
+            let languageCollection = this._intellisense.get(language);
+            Promise.all(this.intellisense.all(urls))
+                .then(typings => {
+                    debugger;
 
-                    addedLibraries.forEach(item => {
-                        let {content, filePath} = item.result;
-                        this.addLib(language, content, filePath);
-                    });
+                    if (languageCollection == null) {
+                        typings.forEach(({content, filePath}) => this.addLib(language, content, filePath));
+                    }
+                    else {
+                        let addedLibraries = _.differenceWith(typings, languageCollection.keys(), (newLib, loadedFile) => newLib.filePath === loadedFile);
+                        let removedLibraries = _.differenceWith(languageCollection.keys(), typings, (loadedFile, newLib) => newLib.filePath === loadedFile);
 
-                    removedLibraries.forEach(item => this.removeLib(language, item));
-                }
-                return progress;
-            });
+                        debugger;
+
+                        addedLibraries.forEach(({ content, filePath }) => {
+                            this.addLib(language, content, filePath);
+                        });
+
+                        removedLibraries.forEach(item => this.removeLib(language, item));
+                    }
+                });
+        });
     }
 
     addLib(language: string, content: string, filePath: string) {
-        let instance: monaco.IDisposable;
-        language = language.toLowerCase().trim();
+        this.current.then(() => {
+            let instance: monaco.IDisposable;
+            language = language.toLowerCase().trim();
 
-        let languageCollection = this._intellisense.get(language);
-        if (languageCollection == null) {
-            languageCollection = this._intellisense.add(language, new Dictionary<monaco.IDisposable>());
-        }
+            let languageCollection = this._intellisense.get(language);
+            if (languageCollection == null) {
+                languageCollection = this._intellisense.add(language, new Dictionary<monaco.IDisposable>());
+            }
 
-        if (languageCollection.contains(filePath)) {
-            return;
-        }
+            if (languageCollection.contains(filePath)) {
+                return;
+            }
 
-        switch (language) {
-            case 'typescript':
-                instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
-                break;
+            debugger;
 
-            case 'javascript':
-                instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
-                break;
+            switch (language) {
+                case 'typescript':
+                    instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
+                    break;
 
-            case 'css': break;
-            case 'json': break;
-            case 'html': break;
-            default: break;
-        }
+                case 'javascript':
+                    instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
+                    break;
 
-        if (instance == null) {
-            return;
-        }
+                case 'css': break;
+                case 'json': break;
+                case 'html': break;
+                default: break;
+            }
 
-        languageCollection.add(filePath, instance);
+            if (instance == null) {
+                return;
+            }
+
+            languageCollection.add(filePath, instance);
+        });
     }
 
     removeLib(language: string, filePath: string) {
-        language = language.toLowerCase().trim();
+        this.current.then(() => {
+            language = language.toLowerCase().trim();
 
-        if (!this._intellisense.contains(language)) {
-            return;
-        }
+            if (!this._intellisense.contains(language)) {
+                return;
+            }
 
-        let languageCollection = this._intellisense.get(language);
-        let instance = languageCollection.get(filePath);
-        if (instance == null) {
-            return;
-        }
+            let languageCollection = this._intellisense.get(language);
+            let instance = languageCollection.get(filePath);
+            if (instance == null) {
+                return;
+            }
 
-        instance.dispose();
-        languageCollection.remove(filePath);
+            instance.dispose();
+            languageCollection.remove(filePath);
+        });
     }
 
     private _loadMonaco() {
@@ -137,22 +145,31 @@ export class Monaco {
     }
 
     private _registerLanguage() {
-        monaco.languages.register({ id: 'script-references' });
-        monaco.languages.setMonarchTokensProvider('script-references', {
-            tokenizer: {
-                root: [
-                    // Anything starting with # is considered as a comment
-                    [/^#.*/im, 'comment'],
+        return new Promise((resolve, reject) => {
+            try {
+                monaco.languages.register({ id: 'script-references' });
+                monaco.languages.setMonarchTokensProvider('script-references', {
+                    tokenizer: {
+                        root: [
+                            // Anything starting with # is considered as a comment
+                            [/^#.*/im, 'comment'],
 
-                    // Anything starting with @types or dt~ or ending with d.ts is IntelliSense
-                    [/^@types.*|^dt~.*/i, 'string'],
-                    [/.*\.d\.ts$/i, 'string'],
+                            // Anything starting with @types or dt~ or ending with d.ts is IntelliSense
+                            [/^.types.*|^dt~.*/i, 'string'],
+                            [/.*\.d\.ts$/i, 'string'],
 
-                    // Anything else presumed to be TS or JS or CSS reference
-                    [/.*\.js$|.*\.ts$|.*\.css$/i, 'keyword'],
-                ]
-            },
-            tokenPostfix: ''
+                            // Anything else presumed to be TS or JS or CSS reference
+                            [/.*/i, 'keyword']
+                        ]
+                    },
+                    tokenPostfix: ''
+                });
+
+                resolve();
+            }
+            catch (exception) {
+                reject(exception);
+            }
         });
     }
 }

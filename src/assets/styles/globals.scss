@@ -57,7 +57,7 @@ ul {
     @include flex();
     height: 100vh;
 
-    home, addin-launcher, new, editor, tabs, editor-tab, run, view, share, import {
+    home, addin-launcher, new, editor, monaco-editor-tabs, monaco-editor-tab, run, view, share, import {
         flex: 1 1 100%;
         @include flex();
     }
@@ -66,7 +66,7 @@ ul {
         overflow: hidden;
     }
 
-    tabs {
+    monaco-editor-tabs {
         overflow: hidden;
     }
 
