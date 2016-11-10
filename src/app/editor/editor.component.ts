@@ -23,7 +23,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     statusType: StatusType;
     editMode = false;
     currentIntelliSense: string[];
-    @ViewChild(MonacoEditorTabs) monacoEditorTabs: MonacoEditorTabs;
     @ViewChild('name') nameInputField: ElementRef;
 
     private _doneWithInitialIntelliSenseLoad = false;
@@ -240,7 +239,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         this.statusType = statusType;
 
         setTimeout(() => {
-            this.monacoEditorTabs.resize();
             this._changeDetectorRef.detectChanges();
         }, 100);
 
@@ -257,7 +255,6 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         this.statusType = StatusType.info;
 
         this._changeDetectorRef.detectChanges();
-        this.monacoEditorTabs.resize();
     }
 
     get isStatusWarning() { return this.statusType === StatusType.warning; }
@@ -282,13 +279,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     private _composeSnippetFromEditor(): Snippet {
 
-        let currentState = this.monacoEditorTabs.snippet;
-        let snippet = _.extend({
-            id: this.snippet.content.id,
-            name: this.snippet.content.name
-        }, currentState);
+        // let currentState = this.monacoEditorTabs.snippet;
+        // let snippet = _.extend({
+        //     id: this.snippet.content.id,
+        //     name: this.snippet.content.name
+        // }, currentState);
 
-        return new Snippet(snippet);
+        // return new Snippet(snippet);
+        return null;
     }
 
     private get _haveUnsavedModifications(): boolean {

@@ -1,48 +1,43 @@
-import { Directive, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { Mediator, EventChannel, Monaco } from '../../services';
+import { Directive, Input, Output, EventEmitter } from '@angular/core';
 import { MonacoEditorTabs } from './monaco-editor-tabs';
 
 @Directive({
     selector: 'monaco-editor-tab'
 })
-export class MonacoEditorTab implements OnChanges {
+export class MonacoEditorTab {
     @Input() name: string;
-    @Input() active: boolean;
-    @Input() content: string;
     @Input() language: string;
-    @Input() intellisense: string[];
 
-    channel: EventChannel<IMonacoEditorState>;
-    view: IMonacoEditorState;
+    @Input() active: boolean;
+    @Output() activeChange: EventEmitter<string> = new EventEmitter<string>();
 
-    constructor(
-        private _monaco: Monaco,
-        private _tabs: MonacoEditorTabs,
-        private _mediator: Mediator
-    ) {
-        this.channel = this._mediator.createEventChannel<IMonacoEditorState>('tab-updated');
+    @Input() content: string;
+    @Output() contentChange: EventEmitter<string> = new EventEmitter<string>();
+
+    state: IMonacoEditorState;
+
+    constructor(private _tabs: MonacoEditorTabs) {
     }
 
     ngOnInit() {
-        this.view = {
+        this.state = {
             name: this.name,
-            state: null,
+            viewState: null,
             model: null,
         };
 
         this._tabs.add(this.name, this);
+
+        this.activeChange.subscribe(name => {
+            if (name !== this.name) {
+                this.active = false;
+            }
+        });
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (this.name === 'Libraries') {
-            let libraries = changes['content'].currentValue as string;
-            if (_.isEmpty(libraries)) {
-                return;
-            }
-
-            this._monaco.updateLibs('typescript', libraries.split('\n'));
-        }
-
-        this.channel.event.next(this.view);
+    activate() {
+        this.active = true;
+        this.activeChange.next(this.name);
+        return this;
     }
 }
