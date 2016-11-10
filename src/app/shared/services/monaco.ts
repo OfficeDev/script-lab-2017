@@ -45,16 +45,12 @@ export class Monaco {
             let languageCollection = this._intellisense.get(language);
             Promise.all(this.intellisense.all(urls))
                 .then(typings => {
-                    debugger;
-
                     if (languageCollection == null) {
                         typings.forEach(({content, filePath}) => this.addLib(language, content, filePath));
                     }
                     else {
                         let addedLibraries = _.differenceWith(typings, languageCollection.keys(), (newLib, loadedFile) => newLib.filePath === loadedFile);
                         let removedLibraries = _.differenceWith(languageCollection.keys(), typings, (loadedFile, newLib) => newLib.filePath === loadedFile);
-
-                        debugger;
 
                         addedLibraries.forEach(({ content, filePath }) => {
                             this.addLib(language, content, filePath);
@@ -79,8 +75,6 @@ export class Monaco {
             if (languageCollection.contains(filePath)) {
                 return;
             }
-
-            debugger;
 
             switch (language) {
                 case 'typescript':
@@ -135,7 +129,7 @@ export class Monaco {
                         }
                     };
                     require.config(requireConfig);
-                    require(['vs/editor/editor.main'], () => resolve());
+                    require(['vs/loader', 'vs/editor/editor.main'], () => resolve());
                 }
             }
             catch (e) {
