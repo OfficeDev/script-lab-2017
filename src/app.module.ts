@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
-import { SERVICE_PROVIDERS } from './app/shared/services';
+import { SERVICE_PROVIDERS, Monaco } from './app/shared/services';
 import { Theme, UxUtil, EXCEPTION_PROVIDER, NotificationHelper } from './app/shared/helpers';
 import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
 import { AppComponent } from './app';
@@ -19,7 +19,11 @@ import './assets/styles/globals.scss';
     bootstrap: [AppComponent],
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER, NotificationHelper]
 })
-export class AppModule { }
+export class AppModule {
+    constructor(monaco: Monaco) {
+        monaco.initialize().then(instance => monaco.registerLanguageServices());
+    }
+}
 
 export function start() {
     if (!Authenticator.isAuthDialog()) {

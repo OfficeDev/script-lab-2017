@@ -1,0 +1,43 @@
+[
+    {
+        "label": "lodash",
+        "typings": "lodash",
+        "documentation": "Lodash modular utilities."
+    },
+    {
+        "label": "office-js",
+        "typings": "office-js",
+        "documentation": "Office JavaScript API."
+    },
+    {
+        "label": "office-ui-fabric-core",
+        "documentation": "The front-end framework for building experiences for Office 365."
+    },
+    {
+        "label": "office-ui-fabric-js",
+        "documentation": "The JavaScript front-end framework for building experiences for Office 365."
+    },
+    {
+        "label": "jquery",
+        "typings": "jquery",
+        "documentation": "JavaScript library for DOM operations."
+    },
+    {
+        "label": "@microsoft/office-js-helpers",
+        "documentation": "An open-source collection of helpers for developing Office Add-ins."
+    },
+    {
+        "label": "core-js",
+        "typings": "core-js",
+        "documentation": "Standard Shim library"
+    },
+    {
+        "label": "whatwg-fetch",
+        "typings": "whatwg-fetch",
+        "documentation": "A window.fetch polyfill."
+    },
+    {
+        "typings": "whatwg-streams",
+        "documentation": "A window.streams polyfill."
+    }
+]

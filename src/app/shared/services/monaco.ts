@@ -2,6 +2,7 @@ import { Injectable, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { Intellisense } from './intellisense';
 import { Utilities } from '../helpers';
+import { Request } from './request';
 
 @Injectable()
 export class Monaco {
@@ -23,27 +24,63 @@ export class Monaco {
         model: null
     };
 
-    private _intellisense: Dictionary<Dictionary<monaco.IDisposable>>;
+    static regexStrings = {
+        STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
+        STARTS_WITH_COMMENT: /^#.*/im,
+        ENDS_WITH_DTS: /.*\.d\.ts$/i,
+        GLOBAL: /.*/i
+    };
 
-    constructor(private intellisense: Intellisense) {
+    private intellisense: Dictionary<Dictionary<monaco.IDisposable>>;
+
+    constructor(private _intellisense: Intellisense) {
         this._baseUrl = '/node_modules';
-        this._intellisense = new Dictionary<Dictionary<monaco.IDisposable>>();
+        this.intellisense = new Dictionary<Dictionary<monaco.IDisposable>>();
     }
 
-    get current() {
-        return this._loadMonaco().then(() => this._registerLanguage());
+    current: Promise<typeof monaco>;
+    initialize() {
+        if (this.current == null) {
+            this.current = new Promise<typeof monaco>((resolve, reject) => {
+                try {
+                    let require = (<any>window).require;
+                    if (require) {
+                        const requireConfig = {
+                            paths: {
+                                'vs': `${this._baseUrl}/monaco-editor/min/vs`
+                            }
+                        };
+
+                        require.config(requireConfig);
+                        require(['vs/editor/editor.main'], () => {
+                            let interval = setInterval(() => {
+                                if (monaco && monaco.editor && monaco.editor.create) {
+                                    clearInterval(interval);
+                                    return resolve(monaco);
+                                }
+                            }, 300);
+                        });
+                    }
+                }
+                catch (e) {
+                    return reject(e);
+                }
+            });
+        }
+
+        return this.current;
     }
 
     create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
         let options = _.extend({}, this._defaults, overrides);
-        return this.current.then(() => monaco.editor.create(element.nativeElement, options));
+        return this.current.then(monaco => monaco.editor.create(element.nativeElement, options));
     }
 
     updateLibs(language: string, libraries: string[]) {
-        this.current.then(() => {
-            let urls = this.intellisense.parse(libraries);
-            let languageCollection = this._intellisense.get(language);
-            Promise.all(this.intellisense.all(urls))
+        this.current.then(monaco => {
+            let urls = this._intellisense.parse(libraries);
+            let languageCollection = this.intellisense.get(language);
+            Promise.all(this._intellisense.all(urls))
                 .then(typings => {
                     if (languageCollection == null) {
                         typings.forEach(({content, filePath}) => this.addLib(language, content, filePath));
@@ -63,13 +100,13 @@ export class Monaco {
     }
 
     addLib(language: string, content: string, filePath: string) {
-        this.current.then(() => {
+        this.current.then(monaco => {
             let instance: monaco.IDisposable;
             language = language.toLowerCase().trim();
 
-            let languageCollection = this._intellisense.get(language);
+            let languageCollection = this.intellisense.get(language);
             if (languageCollection == null) {
-                languageCollection = this._intellisense.add(language, new Dictionary<monaco.IDisposable>());
+                languageCollection = this.intellisense.add(language, new Dictionary<monaco.IDisposable>());
             }
 
             if (languageCollection.contains(filePath)) {
@@ -100,14 +137,14 @@ export class Monaco {
     }
 
     removeLib(language: string, filePath: string) {
-        this.current.then(() => {
+        this.current.then(monaco => {
             language = language.toLowerCase().trim();
 
-            if (!this._intellisense.contains(language)) {
+            if (!this.intellisense.contains(language)) {
                 return;
             }
 
-            let languageCollection = this._intellisense.get(language);
+            let languageCollection = this.intellisense.get(language);
             let instance = languageCollection.get(filePath);
             if (instance == null) {
                 return;
@@ -118,52 +155,46 @@ export class Monaco {
         });
     }
 
-    private _loadMonaco() {
-        return new Promise((resolve, reject) => {
-            try {
-                let require = (<any>window).require;
-                if (require) {
-                    const requireConfig = {
-                        paths: {
-                            'vs': `${this._baseUrl}/monaco-editor/min/vs`
-                        }
-                    };
-                    require.config(requireConfig);
-                    require(['vs/loader', 'vs/editor/editor.main'], () => resolve());
+    public registerLanguageServices() {
+        this.current.then(monaco => {
+            monaco.languages.register({ id: 'script-references' });
+            monaco.languages.setMonarchTokensProvider('script-references', {
+                tokenizer: {
+                    root: [
+                        [Monaco.regexStrings.STARTS_WITH_COMMENT, 'comment'],
+                        [Monaco.regexStrings.STARTS_WITH_TYPINGS, 'string'],
+                        [Monaco.regexStrings.ENDS_WITH_DTS, 'string'],
+                        [Monaco.regexStrings.GLOBAL, 'keyword']
+                    ]
+                },
+                tokenPostfix: ''
+            });
+
+            monaco.languages.registerCompletionItemProvider('script-references', {
+                provideCompletionItems: (model, position) => {
+                    let currentLine = model.getValueInRange({
+                        startLineNumber: position.lineNumber,
+                        startColumn: 1,
+                        endLineNumber: position.lineNumber,
+                        endColumn: position.column
+                    });
+
+                    if (Monaco.regexStrings.STARTS_WITH_TYPINGS.test(currentLine)) {
+                        return this._intellisense.typings;
+                    }
+                    else if (Monaco.regexStrings.GLOBAL.test(currentLine)) {
+                        return this._intellisense.libraries;
+                    }
+                    else {
+                        return [];
+                    }
                 }
-            }
-            catch (e) {
-                return reject(e);
-            }
-        });
-    }
+            });
 
-    private _registerLanguage() {
-        return new Promise((resolve, reject) => {
-            try {
-                monaco.languages.register({ id: 'script-references' });
-                monaco.languages.setMonarchTokensProvider('script-references', {
-                    tokenizer: {
-                        root: [
-                            // Anything starting with # is considered as a comment
-                            [/^#.*/im, 'comment'],
-
-                            // Anything starting with @types or dt~ or ending with d.ts is IntelliSense
-                            [/^.types.*|^dt~.*/i, 'string'],
-                            [/.*\.d\.ts$/i, 'string'],
-
-                            // Anything else presumed to be TS or JS or CSS reference
-                            [/.*/i, 'keyword']
-                        ]
-                    },
-                    tokenPostfix: ''
-                });
-
-                resolve();
-            }
-            catch (exception) {
-                reject(exception);
-            }
+            monaco.languages.typescript.typescriptDefaults.compilerOptions = {
+                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
+            };
         });
     }
 }

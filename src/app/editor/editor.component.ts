@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef 
 import { Router, ActivatedRoute } from '@angular/router';
 import { MonacoEditorTabs } from '../shared/components';
 import { BaseComponent } from '../shared/components/base.component';
-import { Snippet, SnippetManager } from '../shared/services';
+import { Monaco, Snippet, SnippetManager } from '../shared/services';
 import { Utilities, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
 import * as _ from 'lodash';
 
@@ -30,6 +30,7 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
 
     constructor(
         private _router: Router,
+        private _monaco: Monaco,
         private _snippetManager: SnippetManager,
         private _route: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef
@@ -43,13 +44,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
             if (params['id'] == null) {
                 this._snippetManager.new().then(snippet => {
                     this.snippet = snippet;
+                    this._monaco.updateLibs('typescript', this.snippet.typings);
                 });
             }
             else {
                 this._snippetManager.find(params['id'])
                     .then(snippet => {
                         this.snippet = snippet;
-                        this.currentIntelliSense = snippet.typings;
+                        this._monaco.updateLibs('typescript', this.snippet.typings);
                         this._showStatus(StatusType.warning, -1 /* seconds. negative = indefinite */, 'Loading IntelliSense...');
                     })
                     .then(() => {
@@ -150,13 +152,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
     }
 
     save(): Promise<void> {
-        appInsights.trackEvent('Save', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-
-        return this._saveHelper()
-            .then((snippet) => {
-                this._showStatus(StatusType.info, 3 /*seconds*/, `Saved "${snippet.name}"`);
-            })
-            .catch(this._errorHandler);
+        // appInsights.trackEvent('Save', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
+        console.log(JSON.stringify(this.snippet.content));
+        return;
+        // return this._saveHelper()
+        //     .then((snippet) => {
+        //         this._showStatus(StatusType.info, 3 /*seconds*/, `Saved "${snippet.name}"`);
+        //     })
+        //     .catch(this._errorHandler);
     }
 
     private _saveHelper(): Promise<ISnippet> {
