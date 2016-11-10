@@ -1,31 +1,30 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-// import { NewComponent } from './app/new';
-import { EditorComponent } from './app/editor';
-// import { ShareComponent } from './app/share';
-// import { ImportComponent } from './app/import';
-// import { ViewComponent } from './app/view';
-import { MonacoEditorTab, MonacoEditorTabs } from './app/shared/components';
+import { EditorView } from './app/editor';
+import { GalleryView } from './app/gallery';
+import { HamburgerComponent, Dialog, Tab, MonacoEditor } from './app/shared/components';
 
 export const COMPONENT_DECLARATIONS = [
     // NewComponent,
-    EditorComponent,
+    EditorView,
+    GalleryView,
     // ShareComponent,
     // ImportComponent,
     // ViewComponent,
-    MonacoEditorTab,
-    MonacoEditorTabs
+    Tab,
+    MonacoEditor,
+    HamburgerComponent,
+    Dialog
 ];
 
 export const AppRoutes: Routes = [
     {
         path: '',
-        component: EditorComponent
+        component: EditorView
     },
     {
         path: ':id',
-        component: EditorComponent
+        component: EditorView
     }
     // {
     //     path: 'new',

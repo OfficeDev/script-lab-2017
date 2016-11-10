@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Http } from '@angular/http';
 import { Authenticator, TokenManager, EndpointManager, IToken, ICode } from '@microsoft/office-js-helpers';
 
-import { BaseComponent } from '../shared/components/base.component';
+import { BaseComponent } from '../shared/components/base';
 import { Utilities, UxUtil, Theme } from '../shared/helpers';
 import { Snippet, SnippetManager } from '../shared/services';
 

@@ -10,7 +10,12 @@
     "noImplicitAny": false,
     "noEmitOnError": true,
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": [
+      "dom",
+      "es2015.promise",
+      "es5"
+    ]
   },
   "exclude": [
     "node_modules"

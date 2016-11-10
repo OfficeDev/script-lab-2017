@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Mediator, EventChannel } from '../../services';
-import { BaseComponent } from '../base.component';
+import { ViewBase } from '../base';
 
 @Component({
     selector: 'dialog',
     templateUrl: 'dialog.html'
 })
-export class DialogComponent extends BaseComponent {
-    private _channel: EventChannel<IDialog>;
-    public dialog: IDialog;
+export class Dialog extends ViewBase {
+    showDialog$: EventChannel<IDialog>;
+    dialog: IDialog;
 
     constructor(private _mediator: Mediator) {
         super();
-        this._channel = this._mediator.createEventChannel<IDialog>('ShowDialog');
-        let subscription = this._channel.source$.subscribe(dialog => this.dialog = dialog);
+        this.showDialog$ = this._mediator.createEventChannel<IDialog>('ShowDialog');
+        let subscription = this.showDialog$.source$.subscribe(dialog => this.dialog = dialog);
         this.markDispose(subscription);
     }
 

@@ -1,7 +1,7 @@
 ﻿import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Utilities } from '../../helpers';
-import { BaseComponent } from '../base.component';
-import './hamburger.component.scss';
+import { ViewBase } from '../base';
+import './hamburger.scss';
 
 @Component({
     selector: 'hamburger',
@@ -17,7 +17,7 @@ import './hamburger.component.scss';
     </section>
     `
 })
-export class HamburgerComponent extends BaseComponent {
+export class HamburgerComponent extends ViewBase {
     @Input() shown: boolean;
     @Output() shownChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 

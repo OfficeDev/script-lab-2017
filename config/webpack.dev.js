@@ -13,8 +13,7 @@ module.exports = webpackMerge(commonConfig, {
         path: path.resolve('dist'),
         filename: '[name].[hash].js',
         chunkFilename: '[id].[hash].chunk.js',
-        sourceMapFilename: '[name].[hash].map',
-        publicPath: 'https://localhost:3000/'
+        sourceMapFilename: '[name].[hash].map'
     },
 
     tslint: {

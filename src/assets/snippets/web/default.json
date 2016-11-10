@@ -28,5 +28,5 @@
         "dt~whatwg-fetch",
         "dt~whatwg-streams"
     ],
-    "readme": "# New Snippet\r\nSample snippet to demonstrate the use of the Add-in Playground."
+    "description": "# New Snippet\r\nSample snippet to demonstrate the use of the Add-in Playground."
 }

@@ -31,5 +31,5 @@
         "dt~office-js",
         "https://unpkg.com/@microsoft/office-js-helpers/dts/office.helpers.d.ts"
     ],
-    "readme": "# New Excel Snippet\r\nSample snippet to demonstrate the use of Office JavaScript APIs for Excel in the Add-in Playground."
+    "description": "# New Excel Snippet\r\nSample snippet to demonstrate the use of Office JavaScript APIs for Excel in the Add-in Playground."
 }

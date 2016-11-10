@@ -1,11 +1,12 @@
 import { Component, HostListener, Input, Output, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { Monaco, Snippet } from '../../services';
-import { MonacoEditorTab } from './monaco-editor-tab';
+import { Tab } from './tab';
 import * as _ from 'lodash';
+import './monaco-editor.scss';
 
 @Component({
-    selector: 'monaco-editor-tabs',
+    selector: 'monaco-editor',
     template: `
     <ul class="tabs ms-Pivot ms-Pivot--tabs">
         <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of values()" (click)="select(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.active}">
@@ -15,13 +16,13 @@ import * as _ from 'lodash';
     <div class="tabs__container">
         <section #editor class="monaco-editor" (keydown)="edit($event)"></section>
     </div>`,
-    styleUrls: ['monaco-editor.component.scss']
+    styleUrls: []
 })
-export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements AfterViewInit {
+export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     private _debouncedInput = _.debounce((event: KeyboardEvent) => this.currentTab.contentChange.next(this._monacoEditor.getValue()), 200);
 
-    currentTab: MonacoEditorTab;
+    currentTab: Tab;
     @ViewChild('editor') private _editor: ElementRef;
     @Input() readonly: boolean;
     @Output() save: EventEmitter<void> = new EventEmitter<void>();
@@ -50,7 +51,7 @@ export class MonacoEditorTabs extends Dictionary<MonacoEditorTab> implements Aft
         }
     }
 
-    select(tab: MonacoEditorTab) {
+    select(tab: Tab) {
         // If the current tab is not null
         // then save its current state.
         if (!(this.currentTab == null)) {

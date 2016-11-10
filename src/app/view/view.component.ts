@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MonacoEditorTab, MonacoEditorTabs, IEditorParent } from '../shared/components';
-import { BaseComponent } from '../shared/components/base.component';
+import { Tab, MonacoEditor, IEditorParent } from '../shared/components';
+import { BaseComponent } from '../shared/components/base';
 import { Snippet, SnippetManager } from '../shared/services';
 import { ContextTypes, Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
 
@@ -14,7 +14,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
     snippet: Snippet;
     currentIntelliSense: string[];
 
-    @ViewChild(MonacoEditorTabs) tabs: MonacoEditorTabs;
+    @ViewChild(MonacoEditor) tabs: MonacoEditor;
 
     headerName: string;
     thisUrl: string;

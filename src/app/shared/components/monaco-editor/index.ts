@@ -1,2 +1,2 @@
-export * from './monaco-editor-tabs';
-export * from './monaco-editor-tab';
+export * from './monaco-editor';
+export * from './tab';

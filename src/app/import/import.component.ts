@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseComponent } from '../shared/components/base.component';
+import { BaseComponent } from '../shared/components/base';
 import { Utilities, UxUtil } from '../shared/helpers';
 import { Snippet, SnippetManager } from '../shared/services';
-
 declare var GitHub;
 
 @Component({

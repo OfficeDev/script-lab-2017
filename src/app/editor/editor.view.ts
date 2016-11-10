@@ -1,10 +1,10 @@
-import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MonacoEditorTabs } from '../shared/components';
-import { BaseComponent } from '../shared/components/base.component';
+import { ViewBase } from '../shared/components/base';
 import { Monaco, Snippet, SnippetManager } from '../shared/services';
 import { Utilities, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
 import * as _ from 'lodash';
+import './editor.view.scss';
 
 enum StatusType {
     info,
@@ -13,11 +13,10 @@ enum StatusType {
 }
 
 @Component({
-    selector: 'editor',
-    templateUrl: 'editor.component.html',
-    styleUrls: ['editor.component.scss']
+    selector: 'editor-view',
+    templateUrl: 'editor.view.html'
 })
-export class EditorComponent extends BaseComponent implements OnInit, OnDestroy {
+export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges {
     snippet: Snippet;
     status: string;
     statusType: StatusType;
@@ -52,6 +51,14 @@ export class EditorComponent extends BaseComponent implements OnInit, OnDestroy 
         });
 
         this.markDispose(subscription);
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        console.log(changes);
+        if (!(changes['snippet'].currentValue == null)) {
+            debugger;
+            this._monaco.updateLibs('typescript', this.snippet.typings);
+        }
     }
 
     save(): Promise<void> {

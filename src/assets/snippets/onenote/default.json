@@ -30,5 +30,6 @@
         "dt~office-js",
         "",
         "# Note: for any \"loose\" typescript definitions, you can paste them at the bottom of your TypeScript/JavaScript code in the \"Script\" tab."
-    ]
+    ],
+    "description": "# New Excel Snippet\r\nSample snippet to demonstrate the use of Office JavaScript APIs for Excel in the Add-in Playground."
 }

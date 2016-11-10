@@ -1,12 +1,6 @@
 <section class="new">
-    <section class="new__header ms-font-l">
-        {{title}}
-    </section>
-    <div class="ms-progress" [hidden]="loaded">
-        <div class="ms-Spinner large"></div>
-        <div class="ms-ProgressIndicator-itemName ms-font-m ms-fontColor-white">Just one moment...</div>
-    </div>
-    <section class="new__section new__gallery" [hidden]="!loaded">
+    <section class="new__header ms-font-l"> {{title}} </section>
+    <section class="new__section new__gallery">
         <section class="new-list">
             <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets action-bar">
                 <span>My local snippets&nbsp;&nbsp;
@@ -14,7 +8,7 @@
                 </span>
                 <i [hidden]="!localGallery?.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
             </h1>
-            <div [hidden]="!showInfo" class="new-list__notice ms-font-m">
+            <div class="new-list__notice ms-font-m">
                 Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
                 Please do <em>not</em> use the Playground for mission-critical snippets that you haven't
                 backed up via some other means (i.e., manual copying or the Sharing feature).
@@ -26,8 +20,8 @@
             </div>
 
             <section class="new-list__group local-snippets">
-                <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery">
-                    <span (click)="select(snippet)">{{snippet?.meta.name}}</span>
+                <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery | async" (click)="select(snippet)">
+                    <span>{{snippet.name}}</span>
                 </article>
                 <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">
                     You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from
@@ -39,10 +33,7 @@
                 <h1 class="ms-font-m main-heading from-template">
                     From a template
                 </h1>
-                <p [hidden]="templateGallery || templateGalleryError" class="new-list__loading ms-font-m">Loading...
-                </p>
-                <div [hidden]="!templateGalleryError" class="new-list__template-error ms-font-m">{{templateGalleryError}}</div>
-                <section class="new-list__group from-template" *ngFor="let group of templateGallery?.groups; let i = index">
+                <section class="new-list__group from-template" *ngFor="let group of templateGallery.groups | async">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
                     <section class="new-list__group">
                         <article class="new-list__item new-list__item__template ms-font-m" *ngFor="let snippet of group?.items">
@@ -56,13 +47,13 @@
             </section>
         </section>
     </section>
-    <section class="new__section" [hidden]="!loaded">
+    <section class="new__section">
         <hr class="new__section--separator" />
-        <button class="new__action ms-Button ms-Button--compound" (click)="select()">
+        <button class="new__action ms-Button ms-Button--compound" (click)="new()">
             <h1 class="ms-Button-label">Create new</h1>
             <span class="ms-Button-description">Create a new snippet from a blank template</span>
         </button>
-        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="navigateToImport()">
+        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="import()">
             <h1 class="ms-Button-label">Create from link / JSON</h1>
             <span class="ms-Button-description">Create from shared link or JSON</span>
         </button>

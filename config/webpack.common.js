@@ -29,12 +29,8 @@ module.exports = {
                 exclude: '/node_modules/'
             },
             {
-                test: /^(?!.*component).*\.scss$/,
+                test: /\.scss$/,
                 loader: ExtractTextPlugin.extract('css!postcss!sass')
-            },
-            {
-                test: /\.component\.scss$/,
-                loaders: ['raw', 'resolve-url', 'postcss', 'sass']
             },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,

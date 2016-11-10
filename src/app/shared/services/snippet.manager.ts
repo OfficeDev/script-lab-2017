@@ -103,18 +103,8 @@ export class SnippetManager {
         return Promise.resolve(this._store.values());
     }
 
-    playlist(url, external?: boolean): Promise<IPlaylist> {
-        // TODO: still keep a playlist of snippets.
-
-        /*
-            ---- Excel
-                    --- default.json
-                    --- playlist.json
-                    --- Range
-                            ---- Range-Snippet.json
-        */
-
-        let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json}`;
+    playlist(url?: string, external?: boolean): Promise<IPlaylist> {
+        let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
         return (this._request.local<IPlaylist>(snippetJsonUrl) as Promise<IPlaylist>)
             .catch(e => {
                 let messages = [`Could not retrieve default snippets for ${this._context}.`];
