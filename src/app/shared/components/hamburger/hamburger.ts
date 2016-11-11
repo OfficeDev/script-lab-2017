@@ -7,11 +7,13 @@ import './hamburger.scss';
     selector: 'hamburger',
     template: `
     <section class="hamburger-menu" [ngClass]="{ 'hamburger-menu--shown': shown }">
-        <div class="hamburger-menu__header">
-            <div class="hamburger-menu__close" (click)="close()">
-                <i [hidden]="!shown" class="ms-Icon ms-Icon-large ms-Icon--Cancel"></i>
+        <div class="command-bar">
+            <div class="command" (click)="close()">
+                <i [hidden]="!shown" class="ms-Icon ms-Icon--Cancel"></i>
             </div>
-            <h2 class="hamburger-menu__title ms-font-l">{{ title || 'Add-in Playground' }}</h2>
+            <div class="command-title">
+                <span class="ms-font-m">{{ title || 'Add-in Playground' }}</span>
+            </div>
         </div>
         <div class="hamburger-menu__container">
             <ng-content></ng-content>

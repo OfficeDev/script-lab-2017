@@ -1,4 +1,5 @@
 ﻿@import '../../../../assets/styles/mixins';
+@import '../../../../assets/styles/vars';
 
 .hamburger-menu {
     width: 330px;
@@ -10,12 +11,11 @@
 
     &__header {
         @include inline-flex();
-        height: 48px;
         align-items: center
     }
 
     &__close {
-        padding: 11px;
+        padding: 12.5px $default-spacing;
         margin-right: 7.5px;
     }
 

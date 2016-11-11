@@ -22,7 +22,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     status: string;
     statusType: StatusType;
     editMode = false;
-    title: string = `${ContextTypes[Utilities.context]} Add-in Playground`;
+    title: string = `${ContextTypes[Utilities.context]} Snippets`;
 
     @ViewChild('name') nameInputField: ElementRef;
 
