@@ -1,70 +1,67 @@
-<section class="new">
-    <section class="new__section new__gallery">
-        <section class="new-list">
-            <div class="command__bar command--light">
+<section class="gallery">
+    <section class="gallery__section">
+        <section class="gallery-list">
+            <div class="command__bar command--light" (click)="snippetsHidden = !snippetsHidden">
                 <div class="command__title">
                     <span class="ms-font-m">My snippets</span>
                 </div>
-                <div class="command__icon">
+                <div class="command__icon" (click)="infoHidden = !infoHidden; $event.stopPropagation();">
                     <i class="ms-Icon ms-Icon--Info"></i>
                 </div>
                 <div class="command__icon">
-                    <i class="ms-Icon ms-Icon--ChevronDown"></i>
+                    <i class="ms-Icon" [ngClass]="snippetsHidden?'ms-Icon--ChevronUp':'ms-Icon--ChevronDown'"></i>
                 </div>
             </div>
-            <div class="new-list__notice ms-font-m">
+            <div class="gallery-list__notice ms-font-m" [hidden]="infoHidden">
                 Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
                 Please do <em>not</em> use the Playground for mission-critical snippets that you haven't
                 backed up via some other means (i.e., manual copying or the Sharing feature).
 
-                <br />
-                <button class="ms-Button ms-Button--primary" (click)=gotIt()>
+                <button class="ms-Button ms-Button--primary" (click)="infoHidden = !infoHidden">
                     <span class="ms-Button-label">Got it</span>
                 </button>
             </div>
 
-            <section class="new-list__group local-snippets">
-                <article class="new-list__item new-list__item__local ms-font-m" *ngFor="let snippet of localGallery | async" (click)="select(snippet)">
+            <section class="gallery-list__group local-snippets" [hidden]="snippetsHidden">
+                <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
                     <span>{{snippet.name}}</span>
                 </article>
-                <p class="new-list__message ms-font-m" [hidden]="localGallery?.length > 0">
-                    You have no local snippets. To get started, import one from a shared link or create a new snippet. You can also choose from
-                    the gallery below.
+                <p class="gallery-list__message ms-font-m" [hidden]="localGallery?.length > 0">
+                    You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose
+                    from the gallery below.
                 </p>
             </section>
 
             <section>
-                <div class="command__bar command--light">
+                <div class="command__bar command--light" (click)="playlistHidden = !playlistHidden">
                     <div class="command__title">
                         <span class="ms-font-m">Microsoft Templates</span>
                     </div>
                     <div class="command__icon">
-                        <i class="ms-Icon ms-Icon--ChevronDown"></i>
+                        <i class="ms-Icon" [ngClass]="playlistHidden?'ms-Icon--ChevronUp':'ms-Icon--ChevronDown'"></i>
                     </div>
                 </div>
-                <section class="new-list__group from-template" *ngFor="let group of templateGallery.groups | async">
-                    <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
-                    <section class="new-list__group">
-                        <article class="new-list__item new-list__item__template ms-font-m" *ngFor="let snippet of group?.items">
-                            <div (click)="importFromTemplate(snippet)">
-                                <div class="name">{{snippet?.name}}</div>
-                                <div class="description">{{snippet?.description}}</div>
-                            </div>
+                <section [hidden]="playlistHidden" class="gallery-list__group" *ngFor="let group of playlist.groups">
+                    <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>
+                    <section class="gallery-list__group">
+                        <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="importFromTemplate(snippet)">
+                            <div class="name">{{snippet?.name}}</div>
+                            <div class="description">{{snippet?.description}}</div>
                         </article>
                     </section>
                 </section>
             </section>
         </section>
     </section>
-    <section class="new__section">
-        <hr class="new__section--separator" />
-        <button class="new__action ms-Button ms-Button--compound" (click)="new()">
-            <h1 class="ms-Button-label">Create new</h1>
-            <span class="ms-Button-description">Create a new snippet from a blank template</span>
+    <section class="gallery__section">
+        <hr class="gallery__section--separator" />
+        <button class="gallery__action ms-Button ms-Button--compound" (click)="gallery()">
+            <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Generate"></i>New</h1>
+            <span class="ms-Button-description">Create a gallery snippet from a blank template.</span>
         </button>
-        <button class="new__action button-primary ms-Button ms-Button--compound" (click)="import()">
-            <h1 class="ms-Button-label">Create from link / JSON</h1>
-            <span class="ms-Button-description">Create from shared link or JSON</span>
+        <button class="gallery__action button-primary ms-Button ms-Button--compound" (click)="import()">
+            <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Download"></i>Import</h1>
+            <span class="ms-Button-description">Create from shared link or JSON.</span>
         </button>
     </section>
 </section>

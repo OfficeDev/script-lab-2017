@@ -2,15 +2,7 @@
 
 .tabs {
     overflow: hidden;
-    flex: 0 0 40px;
-
-    &__tab.ms-Pivot-link {
-        color: white !important;
-    }
-
-    &__tab.ms-Pivot-link:hover {
-        color: white !important;
-    }
+    flex: 0 0 43.5px;
 
     &__container {
         @include flex();

@@ -1,12 +1,12 @@
 @import '../../assets/styles/mixins';
 @import '../../assets/styles/vars';
 
-.new {
+.gallery {
     @include flex();
     flex: 1 1 100%;
 
     &__header {
-        padding: 7.5px 15px;
+        padding: $default-spacing/2 $default-spacing;
         color: white;
     }
 
@@ -25,20 +25,27 @@
             margin-bottom: 0;
         }
 
-
         &:hover,
         &:focus {
             border: none;
         }
 
-
         .ms-Button-description,
         .ms-Button-label {
             color: #333;
         }
+
+        .ms-Button-label > .ms-Icon {
+            margin-right: $default-spacing/2;
+        }
     }
 
     &__section {
+        &:first-child {
+            flex: 1 1 100%;
+            @include flex();
+        }
+
         &:last-child {
             margin-bottom: 0;
         }
@@ -57,209 +64,79 @@
         box-sizing: border-box;
     }
 
-    &__gallery {
+    &-list {
         flex: 1 1 100%;
-        @include flex();
-    }
+        @include vScroll();
 
-    &__input--text {
-        width: calc(100% - 10px);
-        padding: 0 10px;
-        box-sizing: border-box;
-        height: 30px;
-        font-size: 15px;
-        border: 1px solid lightgray;
-        outline: none;
-        display: table-cell;
-        background: aliceblue;
-    }
-}
-
-.new > .ms-progress {
-    flex: 1 1 100%;
-}
-
-.new-list {
-    flex: 1 1 100%;
-    @include vScroll();
-
-    &__group {
-        margin-bottom: $default-spacing;
-    }
-
-    &__group-header {
-        font-weight: bold;
-        padding: $default-spacing/2 $default-spacing;
-    }
-
-    &__item {
-        @include inline-flex();
-        width: 100%;
-
-        &__local {
-            span {
-                padding: $default-spacing;
-                align-self: flex-start;
-                @include ellipsis();
-                flex: 1 1 100%;
-            }
+        &__group {
+            margin-bottom: $default-spacing;
         }
 
-        &__template {
-            > div {
+        &__group-header {
+            font-weight: bold;
+            padding: $default-spacing/2 $default-spacing;
+        }
+
+        &__item {
+            @include inline-flex();
+            width: 100%;
+
+            &__local {
+                span {
+                    padding: $default-spacing;
+                    align-self: flex-start;
+                    @include ellipsis();
+                    flex: 1 1 100%;
+                }
+            }
+
+            &--template {
                 padding: $default-spacing*2/3 $default-spacing;
                 align-self: flex-start;
-                @include ellipsis();
+                @include flex();
                 flex: 1 1 100%;
 
-                > .description {
+                .description {
                     padding-right: 20px;
                     white-space: normal;
                     opacity: 0.6;
                 }
             }
         }
-    }
 
-    &__item:hover, &__item:active {
-        color: white;
-        /* different browsers use different terms for pointer vs. hand, so include both*/
-        cursor: pointer;
-        cursor: hand;
-    }
-
-    &__message {
-        padding: $default-spacing/2 $default-spacing;
-    }
-
-    &__notice {
-        background: rgba(#FFF100, 0.6);
-        padding: $default-spacing;
-
-        & .ms-Button {
-            margin-top: $default-spacing/2;
+        &__item:hover, &__item:active {
+            color: white;
+            cursor: pointer;
+            cursor: hand;
         }
-    }
 
-    &__loading {
-        padding: 15px 15px 15px 30px;
-        color: gray;
-    }
+        &__message {
+            padding: $default-spacing/2 $default-spacing;
+        }
 
-    &__action {
-        padding: $default-spacing + 2px;
-        font-size: 15px;
-        align-self: flex-end;
-    }
+        &__notice {
+            background: rgba(#FFF100, 0.6);
+            padding: $default-spacing;
 
-    &__template-error {
-        color: #999;
-        padding: 15px;
-    }
-}
+            & .ms-Button {
+                margin-top: $default-spacing/2;
+            }
+        }
 
-.main-heading.local-snippets {
-    display: flex;
-    overflow: hidden;
-    align-items: center;
-}
+        &__loading {
+            padding: 15px 15px 15px 30px;
+            color: gray;
+        }
 
-    .main-heading.local-snippets > span {
-        flex-grow: 1;
-    }
+        &__action {
+            padding: $default-spacing + 2px;
+            font-size: 15px;
+            align-self: flex-end;
+        }
 
-    .main-heading.local-snippets i {
-        position: relative;
-        top: 0;
-        padding: $default-spacing;
-        color: black;
-        /* different browsers use different terms for pointer vs. hand, so include both*/
-        cursor: pointer;
-        cursor: hand;
-    }
-
-    .main-heading.local-snippets > i:hover {
-        color: white;
-    }
-
-h1.main-heading {
-    background-color: $background-lightest;
-    padding: $default-spacing !important;
-    padding-right: 0 !important;
-    border: none;
-    text-transform: uppercase;
-    font-weight: bold;
-
-    &.action-bar {
-        padding: 0 $default-spacing !important;
-        padding-right: 0 !important;
-    }
-}
-
-h1.from-template {
-    margin-bottom: 10px;
-}
-
-h1.ms-Button-label {
-    background: inherit;
-    text-transform: uppercase;
-}
-
-h1.local-snippets i.new-list__action.ms-Icon.ms-Icon--trash {
-    padding-right: $default-spacing;
-}
-
-@media (max-width: 600px) {
-    .new-list__action {
-        padding-right: 15px;
-        padding-left: 15px;
-    }
-
-    h1.main-heading {
-        padding-right: 10px; /* padding above minus 5 */
-    }
-}
-
-@media (max-width: 500px) {
-    .new-list__action {
-        padding-right: 12px;
-        padding-left: 12px;
-    }
-
-    h1.main-heading {
-        padding-right: 7px; /* padding above minus 5 */
-    }
-}
-
-@media (max-width: 400px) {
-    .new-list__action {
-        padding-right: 9px;
-        padding-left: 9px;
-    }
-
-    h1.main-heading {
-        padding-right: 4px; /* padding above minus 5 */
-    }
-}
-
-@media (max-width: 300px) {
-    .new-list__action {
-        padding-right: 7px;
-        padding-left: 7px;
-    }
-
-    h1.main-heading {
-        padding-right: 2px; /* padding above minus 5 */
-    }
-}
-
-@media (max-width: 250px) {
-    .new-list__action {
-        padding-right: 5px;
-        padding-left: 5px;
-    }
-
-    h1.main-heading {
-        padding-right: 0; /* padding above minus 5 */
+        &__template-error {
+            color: #999;
+            padding: 15px;
+        }
     }
 }

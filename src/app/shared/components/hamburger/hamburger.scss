@@ -2,7 +2,7 @@
 @import '../../../../assets/styles/vars';
 
 .hamburger-menu {
-    width: 330px;
+    width: 350px;
     transform: translate3d(-100%, 0, 0);
     transition: transform 0.4s cubic-bezier(0,1.13,.4,1);
     @include flex();

@@ -20,14 +20,14 @@
             @include focus-states($accent-background-primary, $accent-foreground-primary);
 
             &:hover {
-                background: darken($accent-background-primary, 10%)  !important;
-                color: $accent-foreground-primary  !important;
+                background: darken($accent-background-primary, 10%) ;
+                color: $accent-foreground-primary ;
             }
 
             &:active,
             &:focus {
-                background: darken($accent-background-primary, 15%)  !important;
-                color: $accent-foreground-primary  !important;
+                background: darken($accent-background-primary, 15%) ;
+                color: $accent-foreground-primary ;
             }
         }
 
@@ -39,7 +39,20 @@
             .command__icon,
             .command__text,
             .command__title {
-                color: $foreground-light
+                color: $foreground-light;
+
+                @include focus-states($accent-background-primary, $accent-foreground-primary);
+
+                &:hover {
+                    background: darken($accent-background-primary, 10%) ;
+                    color: $accent-foreground-primary ;
+                }
+
+                &:active,
+                &:focus {
+                    background: darken($accent-background-primary, 15%) ;
+                    color: $accent-foreground-primary ;
+                }
             }
         }
     }
@@ -50,85 +63,55 @@
 
     .ms-progress-component {
         &__title {
-            color: $accent-foreground-primary !important;
+            color: $accent-foreground-primary;
         }
+    }
+
+    .ms-Pivot-link.is-selected:before {
+        background-color: $accent-foreground-primary;
     }
 
     .ms-Dialog-main {
         .ms-Dialog-header {
-            background-color: $accent-background-primary  !important;
+            background-color: $accent-background-primary ;
 
             .ms-Dialog-title {
-                color: $accent-foreground-primary  !important;
+                color: $accent-foreground-primary ;
             }
         }
 
         .ms-Button--primary {
-            background-color: $accent-background-primary  !important;
-            border: $accent-background-primary  !important;
-            color: $accent-foreground-primary  !important;
+            background-color: $accent-background-primary ;
+            border: $accent-background-primary ;
+            color: $accent-foreground-primary ;
         }
     }
 
     .editor {
         &__header {
-            background: $accent-background-primary !important;
+            background: $accent-background-primary;
         }
 
         &__footer {
-            background-color: $accent-background-primary !important;
-            color: $accent-foreground-primary !important;
+            background-color: $accent-background-primary;
+            color: $accent-foreground-primary;
         }
     }
 
-    .edit-name-icon {
-        color: $accent-background-primary  !important;
-    }
-
-    .home .add-in-note a {
-        color: #cdf2de !important;
-    }
-
     .import__header {
-        background-color: $accent-background-primary !important;
+        background-color: $accent-background-primary;
     }
 
         .import__main a {
             color: $accent-background-primary
         }
 
-    #monaco {
-        border: 5px solid $accent-background-primary !important;
-    }
-
-    .ms-progress {
-        background: $accent-background-primary !important;
-    }
-
-    .theme-color {
-        color: $accent-background-primary
-    }
-
-        .theme-color.ms-Button {
-            background: $accent-background-primary !important;
-            border-color: $accent-background-primary !important;
-        }
-
-            .theme-color.ms-Button .ms-Button-label {
-                color: white;
+   .gallery {
+        &__action {
+            h1.ms-Button-label {
+                color: $accent-background-primary;
             }
 
-        .theme-color.ms-Button:hover, .theme-color.ms-Button:active {
-            background: darken($accent-background-primary, 15%) !important;
-            border-color: darken($accent-background-primary, 15%) !important;
-        }
-
-    .new {
-        &__header {
-            background-color: $accent-background-primary !important;
-        }
-
-        &__action {
             @include focus-states($accent-background-primary, $accent-foreground-primary);
 
             &:hover,
@@ -143,56 +126,46 @@
         }
 
         &__section-title {
-            color: $accent-background-primary !important;
+            color: $accent-background-primary;
         }
 
-        &__input--text {
-            &:focus {
-                color: $accent-background-primary !important;
-                border: solid 1px $accent-background-primary !important;
+        &-list {
+            &__action {
+                @include focus-states($accent-background-primary, $accent-foreground-primary);
+            }
+
+            &__item:active, &__item:hover {
+                background: $accent-background-primary;
+            }
+
+            &__action:active, &__action:hover {
+                background: darken($accent-background-primary, 15%);
+                color: $accent-foreground-primary;
             }
         }
     }
 
-    .new-list {
-        &__action {
-            @include focus-states($accent-background-primary, $accent-foreground-primary);
+    .ms-Pivot.ms-Pivot--tabs {
+        background-color: darken($accent-background-primary, 15%);
+
+        & .ms-Pivot-link {
+            background: darken($accent-background-primary, 15%);
+            color: white !important;
         }
-    }
 
-    h1.main-heading {
-        color: $accent-background-primary !important;
-    }
-
-    .new__action h1.ms-Button-label {
-        color: $accent-background-primary !important;
-    }
-
-    .new-list__item:active, .new-list__item:hover {
-        background: $accent-background-primary !important;
-    }
-
-    .new-list__action:active, .new-list__action:hover {
-        background: darken($accent-background-primary, 15%) !important;
-        color: $accent-foreground-primary !important;
-    }
-
-    .run {
-        &__header {
-            background-color: $accent-background-primary !important;
-
-            h1 {
-                color: $accent-foreground-primary !important;
-            }
+        & .ms-Pivot-link:active,
+        & .ms-Pivot-link:hover {
+            background: darken($accent-background-primary, 20%);
+            color: white !important;
         }
     }
 
     .ms-progress {
-        background: $accent-background-primary !important;
+        background: $accent-background-primary;
     }
 
     .share__header {
-        background-color: $accent-background-primary !important;
+        background-color: $accent-background-primary;
     }
 
     .share__main a {
@@ -200,33 +173,21 @@
     }
 
     .share__main .pre-share .ms-Button {
-        background: $accent-background-primary !important;
+        background: $accent-background-primary;
     }
 
     .share__main .post-share .info-panel .link-or-id {
-        color: $accent-background-primary !important;
-    }
-
-    .tabs {
-        background-color: darken($accent-background-primary, 15%) !important;
-
-        &__tab.ms-Pivot-link {
-            background: darken($accent-background-primary, 15%) !important;
-        }
-
-        &__tab.ms-Pivot-link:hover {
-            background: darken($accent-background-primary, 15%) !important;
-        }
+        color: $accent-background-primary;
     }
 
     li.tabs__tab.ms-Pivot-link.is-selected.tabs__tab--active {
-        background-color: darken($accent-background-primary, 15%)  !important;
-        color: $accent-foreground-primary  !important;
+        background-color: darken($accent-background-primary, 15%) ;
+        color: $accent-foreground-primary ;
     }
 
     .view {
         &__header {
-            background-color: $accent-background-primary !important;
+            background-color: $accent-background-primary;
         }
     }
 
@@ -240,8 +201,8 @@
     .view-bar__command:hover,
     .view-bar__command i:active,
     .view-bar__command i:hover {
-        background: darken($accent-background-primary, 15%)  !important;
-        color: $accent-foreground-primary  !important;
+        background: darken($accent-background-primary, 15%) ;
+        color: $accent-foreground-primary ;
         /* different browsers use different terms for pointer vs. hand, so include both*/
     }
 }

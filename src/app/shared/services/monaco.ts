@@ -14,7 +14,7 @@ export class Monaco {
         roundedSelection: false,
         scrollBeyondLastLine: false,
         wrappingColumn: 0,
-        theme: 'vs',
+        theme: 'vs-dark',
         wrappingIndent: 'indent',
         scrollbar: {
             vertical: 'visible',

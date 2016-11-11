@@ -11,9 +11,8 @@ import './gallery.view.scss';
 })
 export class GalleryView extends ViewBase implements OnInit {
     link: string;
-    localGallery: Promise<ISnippet[]>;
-    templateGallery: Promise<IPlaylist>;
-    templateGalleryError: string;
+    snippets: ISnippet[] = [];
+    playlist: IPlaylist = {} as any;
     loaded = true;
 
     constructor(private _snippetManager: SnippetManager) {
@@ -21,8 +20,8 @@ export class GalleryView extends ViewBase implements OnInit {
     }
 
     ngOnInit() {
-        this.localGallery = this._snippetManager.local();
-        this.templateGallery = this._snippetManager.playlist();
+        this._snippetManager.local().then(snippets => this.snippets = snippets);
+        this._snippetManager.playlist().then(playlist => this.playlist = playlist);
     }
 
     // delete(snippet: ISnippet): void {

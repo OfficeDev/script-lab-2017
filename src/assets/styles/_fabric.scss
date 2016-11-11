@@ -1,10 +1,15 @@
 .ms-Button {
     &.ms-Button--compound {
-        max-width: initial;
+        max-width: none;
         width: 100%;
 
         &:not(:last-child) {
             margin-bottom: 0;
         }
     }
+}
+
+.ms-Pivot-link:before {
+    bottom: -4px;
+    height: 3px;
 }
