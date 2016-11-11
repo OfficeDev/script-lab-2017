@@ -4,33 +4,48 @@
 @mixin theme($accent-background-primary) {
     $accent-foreground-primary: lighten($accent-background-primary, 60%);
 
-    .command-bar {
-        background: $accent-background-primary;
-    }
-
-    .command-title {
-        color: $accent-foreground-primary;
-    }
-
     .command {
-        color: $accent-foreground-primary;
-
-        @include focus-states($accent-background-primary, $accent-foreground-primary);
-
-        &:hover {
-            background: darken($accent-background-primary, 10%)  !important;
-            color: $accent-foreground-primary  !important;
+        &__bar {
+            background: $accent-background-primary;
         }
 
-        &:active,
-        &:focus {
-            background: darken($accent-background-primary, 15%)  !important;
-            color: $accent-foreground-primary  !important;
+        &__title {
+            color: $accent-foreground-primary;
+        }
+
+        &__text,
+        &__icon {
+            color: $accent-foreground-primary;
+
+            @include focus-states($accent-background-primary, $accent-foreground-primary);
+
+            &:hover {
+                background: darken($accent-background-primary, 10%)  !important;
+                color: $accent-foreground-primary  !important;
+            }
+
+            &:active,
+            &:focus {
+                background: darken($accent-background-primary, 15%)  !important;
+                color: $accent-foreground-primary  !important;
+            }
+        }
+
+        &--light {
+            &.command__bar {
+                background: $background-light;
+            }
+
+            .command__icon,
+            .command__text,
+            .command__title {
+                color: $foreground-light
+            }
         }
     }
 
     .hamburger-menu {
-        background: #FFFFFF;
+        background: $background-lightest;
     }
 
     .ms-progress-component {

@@ -1,12 +1,17 @@
 <section class="new">
     <section class="new__section new__gallery">
         <section class="new-list">
-            <h1 style="margin-top: 0;" class="ms-font-m main-heading local-snippets action-bar">
-                <span>My local snippets&nbsp;&nbsp;
-                    <i class='new-list__action ms-Icon ms-Icon--infoCircle opacity-50' (click)="showInfo = !showInfo"></i>
-                </span>
-                <i [hidden]="!localGallery?.length > 0" class="new-list__action ms-Icon ms-Icon--trash" (click)="deleteAll()"></i>
-            </h1>
+            <div class="command__bar command--light">
+                <div class="command__title">
+                    <span class="ms-font-m">My snippets</span>
+                </div>
+                <div class="command__icon">
+                    <i class="ms-Icon ms-Icon--Info"></i>
+                </div>
+                <div class="command__icon">
+                    <i class="ms-Icon ms-Icon--ChevronDown"></i>
+                </div>
+            </div>
             <div class="new-list__notice ms-font-m">
                 Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
                 Please do <em>not</em> use the Playground for mission-critical snippets that you haven't
@@ -29,9 +34,14 @@
             </section>
 
             <section>
-                <h1 class="ms-font-m main-heading from-template">
-                    From a template
-                </h1>
+                <div class="command__bar command--light">
+                    <div class="command__title">
+                        <span class="ms-font-m">Microsoft Templates</span>
+                    </div>
+                    <div class="command__icon">
+                        <i class="ms-Icon ms-Icon--ChevronDown"></i>
+                    </div>
+                </div>
                 <section class="new-list__group from-template" *ngFor="let group of templateGallery.groups | async">
                     <h3 class="new-list__group-header ms-font-m">{{group?.name}}</h3>
                     <section class="new-list__group">

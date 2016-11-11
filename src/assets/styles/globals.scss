@@ -1,5 +1,6 @@
 ﻿@import 'vars';
 @import 'mixins';
+@import 'fabric';
 
 * {
     margin: 0;
@@ -47,6 +48,7 @@ ul {
     home, addin-launcher, gallery-view, editor-view, monaco-editor, tab, run, view, share, import, hamburger {
         flex: 1 1 100%;
         @include flex();
+        height: 100%;
     }
 
     hamburger {
@@ -71,22 +73,30 @@ ul {
     display: inline-block;
 }
 
-.command-bar {
-    @include inline-flex();
-    flex: 1 0 auto;
-    width: 100%;
-}
-
-.command-title,
 .command {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12.5px;
-    cursor: pointer;
-}
+    &__bar {
+        @include inline-flex();
+        flex: 1 0 auto;
+        width: 100%;
+    }
 
-.command-title {
-    flex: 1 0 auto;
-    justify-content: flex-start;
+    &__title,
+    &__icon,
+    &__text {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12.5px;
+        cursor: pointer;
+    }
+
+    &__text {
+        @include ellipsis();
+    }
+
+    &__title {
+        flex: 1 1 auto;
+        justify-content: flex-start;
+        @include ellipsis();
+    }
 }

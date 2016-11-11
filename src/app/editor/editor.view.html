@@ -2,16 +2,15 @@
     <gallery-view></gallery-view>
 </hamburger>
 <section class="editor">
-    <header class="command-bar">
-        <div class="command" (click)="menuOpen = true"><i class="ms-Icon ms-Icon--GlobalNavButton"></i></div>
-        <div class="command-title">
+    <header class="command__bar">
+        <div class="command__icon" (click)="menuOpen = true"><i class="ms-Icon ms-Icon--GlobalNavButton"></i></div>
+        <div class="command__title">
             <span class="ms-font-m">{{snippet?.content?.name}}</span>
         </div>
-        <div [hidden]="editMode || !snippet" class="command" (click)="save()"><i class="ms-Icon ms-Icon--Save"></i></div>
-        <div [hidden]="editMode || !snippet" class="command" (click)="duplicate()"><i class="ms-Icon ms-Icon--Copy"></i></div>
-        <div [hidden]="editMode || !snippet" class="command" (click)="delete()"><i class="ms-Icon ms-Icon--Delete"></i></div>
-        <div [hidden]="editMode || !snippet" class="command" (click)="share()"><i class="ms-Icon ms-Icon--Share"></i></div>
-        <div [hidden]="editMode || !snippet" class="command" (click)="run()"><i class="ms-Icon ms-Icon--Play"></i></div>
+        <div [hidden]="editMode || !snippet" class="command__icon" (click)="save()"><i class="ms-Icon ms-Icon--Save"></i></div>
+        <div [hidden]="editMode || !snippet" class="command__icon" (click)="run()"><i class="ms-Icon ms-Icon--Play"></i></div>
+        <div [hidden]="editMode || !snippet" class="command__icon" (click)="share()"><i class="ms-Icon ms-Icon--Share"></i></div>
+        <div [hidden]="editMode || !snippet" class="command__icon" (click)="share()"><i class="ms-Icon ms-Icon--Contact"></i></div>
     </header>
     <section class="editor__main" *ngIf="snippet">
         <monaco-editor (save)="save()">
@@ -31,7 +30,7 @@
             <div *ngIf="!!status" class="ms-u-slideUpIn20 ms-font-s" (click)="clearStatus">{{status}}</div>
         </div>
 
-        <div class="command display-if-office-js-dialog-enabled" (click)="launchPopOutAddinEditor()">
+        <div class="command__icon display-if-office-js-dialog-enabled" (click)="launchPopOutAddinEditor()">
             <i class="ms-Icon ms-Icon--popout "></i>
         </div>
     </section>

@@ -14,6 +14,10 @@
         align-items: center
     }
 
+    .command--light .command__title {
+        text-transform: uppercase;
+    }
+
     &__close {
         padding: 12.5px $default-spacing;
         margin-right: 7.5px;
@@ -34,20 +38,15 @@
         transform: translate3d(0, 0, 0);
         display: flex;
     }
-
-    &--inline {
-        position: fixed;
-        z-index: 999;
-        top: 0;
-        left: 0;
-    }
 }
 
 @media (min-width: 0px) and (max-width: 720px) {
     .hamburger-menu {
-        position: fixed;
+        position: absolute;
+        height: 100vh;
         z-index: 999;
         top: 0;
         left: 0;
+        box-shadow: 0px 1px 7px 1px rgba(0, 0, 0, 0.4);
     }
 }

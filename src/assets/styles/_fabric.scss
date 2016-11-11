@@ -1,0 +1,10 @@
+.ms-Button {
+    &.ms-Button--compound {
+        max-width: initial;
+        width: 100%;
+
+        &:not(:last-child) {
+            margin-bottom: 0;
+        }
+    }
+}
