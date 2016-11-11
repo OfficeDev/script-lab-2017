@@ -57,6 +57,16 @@
         }
     }
 
+    .editor {
+        &__footer {
+            .command__text {
+                .ms-Icon--Emoji2 {
+                    color: $accent-background-primary;
+                }
+            }
+        }
+    }
+
     .hamburger-menu {
         background: $background-lightest;
     }
@@ -73,7 +83,7 @@
 
     .ms-Dialog-main {
         .ms-Dialog-header {
-            background-color: $accent-background-primary ;
+            background-color: $accent-background-primary;
 
             .ms-Dialog-title {
                 color: $accent-foreground-primary ;
@@ -81,7 +91,7 @@
         }
 
         .ms-Button--primary {
-            background-color: $accent-background-primary ;
+            background-color: $accent-background-primary;
             border: $accent-background-primary ;
             color: $accent-foreground-primary ;
         }

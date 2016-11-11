@@ -21,17 +21,14 @@
             <tab name="Description" language="markdown" [(content)]="snippet.content.description"></tab>
         </monaco-editor>
     </section>
-    <section class="editor__footer ms-font-m" [ngClass]="{
-    'editor__footer--warning': isStatusWarning,
-    'editor__footer--error': isStatusError
-}">
-        <div id="editor-status-text">
-            <div *ngIf="!!!status" class="ms-u-slideUpIn20 ms-font-s">Office Add-in Playground</div>
-            <div *ngIf="!!status" class="ms-u-slideUpIn20 ms-font-s" (click)="clearStatus">{{status}}</div>
-        </div>
-
-        <div class="command__icon display-if-office-js-dialog-enabled" (click)="launchPopOutAddinEditor()">
-            <i class="ms-Icon ms-Icon--popout "></i>
+    <section class="editor__footer">
+        <div class="command__text"><i class="ms-Icon ms-Icon--StatusErrorFull"></i><span class="ms-font-s">0</span></div>
+        <div class="command__text"><i class="ms-Icon ms-Icon--IncidentTriangle"></i><span class="ms-font-s">0</span></div>
+        <div class="command__text"><span class="ms-font-s">TypeScript</span></div>
+        <div class="command__text"><i class="ms-Icon ms-Icon--Settings"></i></div>
+        <div class="command__text">
+            <i class="ms-Icon ms-Icon--CircleFill"></i>
+            <i class="ms-Icon ms-Icon--Emoji2"></i>
         </div>
     </section>
 </section>

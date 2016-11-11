@@ -54,9 +54,16 @@ export class Monaco {
                         require.config(requireConfig);
                         require(['vs/editor/editor.main'], () => {
                             let interval = setInterval(() => {
-                                if (monaco && monaco.editor && monaco.editor.create) {
-                                    clearInterval(interval);
-                                    return resolve(monaco);
+                                try {
+                                    if (monaco && monaco.editor && monaco.editor.create) {
+                                        clearInterval(interval);
+                                        return resolve(monaco);
+                                    }
+                                }
+                                catch (e) {
+                                    if (!(e instanceof ReferenceError)) {
+                                        return reject(e);
+                                    }
                                 }
                             }, 300);
                         });

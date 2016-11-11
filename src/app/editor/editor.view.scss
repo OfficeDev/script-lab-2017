@@ -19,134 +19,25 @@
         display: flex;
         overflow: hidden;
         align-items: center;
-        height: 19px;
-        padding: 2px 15px;
-
+        justify-content: flex-end;
+        height: 25px;
         transition: background-color 0.3s ease-in-out;
 
-        &--error {
-            background-color: #FF4444;
-            color: lighten(#FF4444, 60%);
-        }
+        .command__text {
+            padding: 5px $default-spacing/2;
+            margin: 0px 3px;
 
-        &--warning {
-            background-color: orange;
-            color: black;
-        }
-    }
-}
-
-.editor-command-bar {
-    @include inline-flex();
-    list-style-type: none;
-    width: 100%;
-
-    &__command {
-        padding: (40px - $default-spacing)/2 $default-spacing;
-
-        &--text {
-            color: white;
-            flex: 1 1 0px;
-            padding: 0;
-            @include ellipsis();
-
-            > span {
-                display: block;
-                padding: 12px;
-                width: calc(100% - 24px);
+            span {
+                margin-left: 5px;
             }
 
-            span[hidden] {
-                display: none;
+            .ms-Icon--CircleFill {
+                position: absolute;
             }
 
-            i {
-                padding-right: $default-spacing/2;
+            .ms-Icon--Emoji2 {
+                z-index: 2;
             }
         }
-
-        &--right {
-            align-self: flex-end;
-        }
     }
-
-    &__input--text {
-        width: calc(100% - 16px);
-        height: 25px;
-        padding: 8px;
-        font-size: 14px;
-        background-color: #1a1a1a;
-        border: solid 1px transparent;
-        outline: none;
-        color: white;
-    }
-}
-
-.editor-command-bar__command:active,
-.editor-command-bar__command:hover,
-.editor-command-bar__command i:active,
-.editor-command-bar__command i:hover {
-    /* different browsers use different terms for pointer vs. hand, so include both*/
-    cursor: pointer;
-    cursor: hand;
-}
-
-@media (max-width: 600px) {
-    .editor-command-bar__command {
-        padding-right: 10px;
-        padding-left: 10px;
-    }
-}
-
-@media (max-width: 500px) {
-    .editor-command-bar__command {
-        padding-right: 7px;
-        padding-left: 7x;
-    }
-}
-
-@media (max-width: 400px) {
-    .editor-command-bar__command {
-        padding-right: 5px;
-        padding-left: 5px;
-    }
-}
-
-@media (max-width: 300px) {
-    .editor-command-bar__command {
-        padding-right: 3px;
-        padding-left: 3px;
-    }
-}
-
-@media (max-width: 250px) {
-    .editor-command-bar__command {
-        padding-right: 2px;
-        padding-left: 2px;
-    }
-}
-
-.edit-name-icon {
-    font-size: 1.5em;
-    margin-left: 15px;
-    position: relative;
-    top: 4px;
-}
-
-.editor__footer .editor-command-bar__command {
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-#editor-status-text {
-    flex-grow: 1;
-}
-
-#refresh {
-    font-size: 1.5em;
-    font-weight: bold;
-
-    /* different browsers use different terms for pointer vs. hand, so include both*/
-    cursor: pointer;
-    cursor: hand;
 }
