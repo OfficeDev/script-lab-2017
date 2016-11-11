@@ -1,7 +1,10 @@
-@import '../../assets/styles/mixins.scss';
-@import '../../assets/styles/theme.scss';
+@import '../../assets/styles/mixins';
+@import '../../assets/styles/vars';
 
 .editor {
+    flex: 1 1 100%;
+    @include flex();
+
     &__header {
         padding-right: 30px;
         color: white;

@@ -1,10 +1,11 @@
-<hamburger [(shown)]="menuOpen">
+<hamburger [title]="title" [(shown)]="menuOpen">
     <gallery-view></gallery-view>
 </hamburger>
-<header class="editor__header">
-    <ul class="editor-command-bar">
-        <li class="editor-command-bar__command" (click)="back()"><i class="ms-Icon ms-Icon--GlobalNavButton"></i></li>
-        <!--<li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
+<section class="editor">
+    <header class="editor__header">
+        <ul class="editor-command-bar">
+            <li class="editor-command-bar__command" (click)="menuOpen = true"><i class="ms-Icon ms-Icon--GlobalNavButton"></i></li>
+            <!--<li class="editor-command-bar__command editor-command-bar__command--text ms-font-m">
             <span [hidden]="editMode" (click)="editMode = !editMode; $event.stopPropagation();">
                 <span (click)="editMode = !editMode; $event.stopPropagation();">{{snippet?.content?.name}}</span>
             <i (click)="editMode = !editMode; $event.stopPropagation();" class="edit-name-icon ms-Icon ms-Icon--styleRemove"></i>
@@ -12,33 +13,34 @@
             <input #name *ngIf="!editMode" class="editor-command-bar__input--text" type="text" [(ngModel)]="snippet.content.name" placeholder="New name for snippet"
             />
         </li>-->
-        <li [hidden]="!editMode || !snippet" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--CheckMark"></i></li>
-        <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--Save"></i></li>
-        <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="duplicate()"><i class="ms-Icon ms-Icon--Copy"></i></li>
-        <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="delete()"><i class="ms-Icon ms-Icon--Delete"></i></li>
-        <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="share()"><i class="ms-Icon ms-Icon--Share"></i></li>
-        <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="run()"><i class="ms-Icon ms-Icon--Play"></i></li>
-    </ul>
-</header>
-<section class="editor__main" *ngIf="snippet">
-    <monaco-editor (save)="save()">
-        <tab name="Script" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
-        <tab name="Template" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>
-        <tab name="Style" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>
-        <tab name="Libraries" language="script-references" [(content)]="snippet.libraries"></tab>
-        <tab name="Description" language="markdown" [(content)]="snippet.content.description"></tab>
-    </monaco-editor>
-</section>
-<section class="editor__footer ms-font-m" [ngClass]="{
+            <li [hidden]="!editMode || !snippet" (click)="editMode = !editMode" class="editor-command-bar__command editor-command-bar__command--right"><i class="ms-Icon ms-Icon--CheckMark"></i></li>
+            <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="save()"><i class="ms-Icon ms-Icon--Save"></i></li>
+            <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="duplicate()"><i class="ms-Icon ms-Icon--Copy"></i></li>
+            <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="delete()"><i class="ms-Icon ms-Icon--Delete"></i></li>
+            <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="share()"><i class="ms-Icon ms-Icon--Share"></i></li>
+            <li [hidden]="editMode || !snippet" class="editor-command-bar__command editor-command-bar__command--right" (click)="run()"><i class="ms-Icon ms-Icon--Play"></i></li>
+        </ul>
+    </header>
+    <section class="editor__main" *ngIf="snippet">
+        <monaco-editor (save)="save()">
+            <tab name="Script" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
+            <tab name="Template" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>
+            <tab name="Style" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>
+            <tab name="Libraries" language="script-references" [(content)]="snippet.libraries"></tab>
+            <tab name="Description" language="markdown" [(content)]="snippet.content.description"></tab>
+        </monaco-editor>
+    </section>
+    <section class="editor__footer ms-font-m" [ngClass]="{
     'editor__footer--warning': isStatusWarning,
     'editor__footer--error': isStatusError
 }">
-    <div id="editor-status-text">
-        <div *ngIf="!!!status" class="ms-u-slideUpIn20 ms-font-s">Office Add-in Playground</div>
-        <div *ngIf="!!status" class="ms-u-slideUpIn20 ms-font-s" (click)="clearStatus">{{status}}</div>
-    </div>
+        <div id="editor-status-text">
+            <div *ngIf="!!!status" class="ms-u-slideUpIn20 ms-font-s">Office Add-in Playground</div>
+            <div *ngIf="!!status" class="ms-u-slideUpIn20 ms-font-s" (click)="clearStatus">{{status}}</div>
+        </div>
 
-    <div class="editor-command-bar__command display-if-office-js-dialog-enabled" (click)="launchPopOutAddinEditor()">
-        <i class="ms-Icon ms-Icon--popout "></i>
-    </div>
+        <div class="editor-command-bar__command display-if-office-js-dialog-enabled" (click)="launchPopOutAddinEditor()">
+            <i class="ms-Icon ms-Icon--popout "></i>
+        </div>
+    </section>
 </section>

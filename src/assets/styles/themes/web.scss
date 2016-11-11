@@ -1,6 +1,6 @@
-/* Excel Theme */
+/* Generic Theme */
 
 @import '../vars';
 @import '../theme';
 
-@include theme($excel);
+@include theme($web);

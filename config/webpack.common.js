@@ -26,11 +26,12 @@ module.exports = {
             {
                 test: /\.ts$/,
                 loaders: ['awesome-typescript-loader', 'angular2-template-loader'],
-                exclude: '/node_modules/'
+                exclude: /node_modules/
             },
             {
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract('css!postcss!sass')
+                loader: ExtractTextPlugin.extract('css!postcss!sass'),
+                exclude: /theme/
             },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
@@ -47,18 +48,16 @@ module.exports = {
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
         }),
-
         new CopyWebpackPlugin([
             {
                 from: 'src/acquire.html',
                 to: 'acquire.html'
             },
             {
-                from: 'src/addin.html',
-                to: 'addin.html'
-            },
-            {
                 from: './src/assets',
+                ignore: [
+                    '*.scss'
+                ],
                 to: 'assets',
             },
             {

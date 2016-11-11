@@ -1,38 +1,53 @@
-﻿@import '../../../../assets/styles/mixins.scss';
-@import '../../../../assets/styles/theme.scss';
+﻿@import '../../../../assets/styles/mixins';
 
 .hamburger-menu {
-    position: fixed;
-    z-index: 999;
-    height: 100%;
-    width: 100%;
-    max-width: 350px;
-    top: 0;
-    left: 0;
-    background-color: #FFFFFF;
-    @include flex();
+    width: 330px;
     transform: translate3d(-100%, 0, 0);
     transition: transform 0.4s cubic-bezier(0,1.13,.4,1);
+    @include flex();
+    flex: 0 0 100%;
+    display: none;
+
+    &__header {
+        @include inline-flex();
+        height: 48px;
+        align-items: center
+    }
 
     &__close {
-        width: 20px;
-        padding: $default-spacing;
-        color: $foreground-light;
-        @include focus-states($accent-background-primary, $foreground-primary);
+        padding: 11px;
+        margin-right: 7.5px;
+    }
 
-        i {
-            top: 0;
-        }
+    &__title {
+        flex: 1 1 auto;
     }
 
     &__container {
-        flex: 1 1 0px;
-        height: 100%;
+        flex: 1 1 100%;
+        width: 100%;
         overflow: auto;
         overflow-x: hidden;
     }
 
     &--shown {
         transform: translate3d(0, 0, 0);
+        display: flex;
+    }
+
+    &--inline {
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+    }
+}
+
+@media (min-width: 0px) and (max-width: 720px) {
+    .hamburger-menu {
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
     }
 }

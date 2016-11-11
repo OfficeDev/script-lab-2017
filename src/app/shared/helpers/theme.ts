@@ -37,37 +37,32 @@ export class Theme {
 
             switch (Utilities.context) {
                 case ContextTypes.Excel:
-                    (require as any).ensure(['../../../assets/styles/themes/excel.scss'], () => {
-                        body.classList.add('excel');
+                    (require as any)(['style!raw!postcss!sass!../../../assets/styles/themes/excel.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
                 case ContextTypes.Word:
-                    (require as any).ensure(['../../../assets/styles/themes/word.scss'], () => {
-                        body.classList.add('word');
+                    (require as any)(['style!raw!postcss!sass!../../../assets/styles/themes/word.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
                 case ContextTypes.PowerPoint:
-                    (require as any).ensure(['../../../assets/styles/themes/powerpoint.scss'], () => {
-                        body.classList.add('powerpoint');
+                    (require as any)(['style!raw!postcss!sass!../../../assets/styles/themes/powerpoint.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
                 case ContextTypes.OneNote:
-                    (require as any).ensure(['../../../assets/styles/themes/onenote.scss'], () => {
-                        body.classList.add('onenote');
+                    (require as any)(['style!raw!postcss!sass!../../../assets/styles/themes/onenote.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
                 case ContextTypes.Web:
                 default:
-                    (require as any).ensure(['../../../assets/styles/themes/generic.scss'], () => {
-                        body.classList.add('generic');
+                    (require as any)(['style!raw!postcss!sass!../../../assets/styles/themes/web.scss'], file => {
                         return resolve(true);
                     });
                     break;

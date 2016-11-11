@@ -1,8 +1,9 @@
 import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Utilities, ContextTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
 import { Monaco, Snippet, SnippetManager } from '../shared/services';
-import { Utilities, Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
+import { Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
 
@@ -21,6 +22,8 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     status: string;
     statusType: StatusType;
     editMode = false;
+    title: string = `${ContextTypes[Utilities.context]} Add-in Playground`;
+
     @ViewChild('name') nameInputField: ElementRef;
 
     constructor(
@@ -56,7 +59,6 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     ngOnChanges(changes: SimpleChanges) {
         console.log(changes);
         if (!(changes['snippet'].currentValue == null)) {
-            debugger;
             this._monaco.updateLibs('typescript', this.snippet.typings);
         }
     }
