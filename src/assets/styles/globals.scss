@@ -90,6 +90,12 @@ ul {
         cursor: pointer;
     }
 
+    &__icon {
+        border-radius: 100%;
+        padding: 8px 9px;
+        margin: 5px;
+    }
+
     &__text {
         @include ellipsis();
     }

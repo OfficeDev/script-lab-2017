@@ -1,5 +1,5 @@
 ﻿@mixin focus-states($background: null, $foreground: null, $scale: true) {
-    transition: background ease-in-out 0.1s, color ease-in-out 0.1s;
+    transition: background ease-in-out 0.2s, color ease-in-out 0.2s;
 
     &:active, &:hover {
         @if $background != null {
