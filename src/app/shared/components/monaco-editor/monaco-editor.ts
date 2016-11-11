@@ -1,6 +1,6 @@
-import { Component, HostListener, Input, Output, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, Input, Output, OnChanges, SimpleChanges, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { Monaco, Snippet } from '../../services';
+import { Monaco, MonacoEvents, Snippet } from '../../services';
 import { Tab } from './tab';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
@@ -14,18 +14,20 @@ import './monaco-editor.scss';
         </li>
     </ul>
     <div class="tabs__container">
-        <section #editor class="monaco-editor" (keydown)="edit($event)"></section>
+        <section #editor class="monaco-editor"></section>
     </div>`,
     styleUrls: []
 })
 export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _debouncedInput = _.debounce((event: KeyboardEvent) => this.currentTab.contentChange.next(this._monacoEditor.getValue()), 200);
+    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => this.currentTab.contentChange.next(this._monacoEditor.getValue()), 200);
 
     currentTab: Tab;
     @ViewChild('editor') private _editor: ElementRef;
     @Input() readonly: boolean;
-    @Output() save: EventEmitter<void> = new EventEmitter<void>();
+    @Output() events: EventEmitter<MonacoEvents> = new EventEmitter<MonacoEvents>();
+    @Input() lang: string;
+    @Output() langChange: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(private _monaco: Monaco) {
         super();
@@ -34,19 +36,64 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     ngAfterViewInit() {
         this._monaco.create(this._editor).then(monacoEditor => {
             this._monacoEditor = monacoEditor;
+            monacoEditor.onKeyDown(event => this.edit(event));
             this.select(this.get('Script'));
         });
     }
 
-    edit(event: KeyboardEvent) {
+    ngOnChanges(changes: SimpleChanges) {
+        let lang = changes['lang'].currentValue;
+        if (this.currentTab && !_.isEmpty(lang)) {
+            this.currentTab.language = lang;
+        }
+    }
+
+    edit(event: monaco.IKeyboardEvent) {
         this._debouncedInput(event);
         if (event.ctrlKey || event.metaKey) {
-            switch (String.fromCharCode(event.which).toLowerCase()) {
-                case 's':
-                    this.save.next();
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
+            let monacoEvent: MonacoEvents;
+            switch (event.keyCode) {
+                case monaco.KeyCode.KEY_S:
+                    monacoEvent = MonacoEvents.SAVE;
                     break;
+
+                case monaco.KeyCode.KEY_B:
+                    monacoEvent = MonacoEvents.TOGGLE_MENU;
+                    break;
+
+                case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
+                    let index = this.currentTab.index;
+                    let key;
+                    if (index === this.count) {
+                        key = this.keys()[0];
+                    }
+                    else {
+                        key = this.keys()[index];
+                    }
+                    this.select(this.get(key));
+                    monacoEvent = -1;
+                    break;
+                }
+
+                case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
+                    let index = this.currentTab.index;
+                    let key;
+                    if (index === 1) {
+                        key = this.keys()[this.count - 1];
+                    }
+                    else {
+                        key = this.keys()[index - 2];
+                    }
+                    this.select(this.get(key));
+                    monacoEvent = -1;
+                    break;
+                }
+            }
+
+            if (!(monacoEvent == null)) {
+                this.events.emit(monacoEvent);
+                event.preventDefault();
+                event.stopPropagation();
             }
         }
     }
@@ -77,6 +124,7 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
         this._monacoEditor.restoreViewState(this.currentTab.state.viewState);
         this.currentTab = tab.activate();
         this._monacoEditor.focus();
+        this.langChange.emit(this.currentTab.language);
     }
 
     @HostListener('window:resize', ['$event'])

@@ -4,6 +4,14 @@ import { Intellisense } from './intellisense';
 import { Utilities } from '../helpers';
 import { Request } from './request';
 
+export enum MonacoEvents {
+    SAVE,
+    TOGGLE_MENU,
+    RUN,
+    SHARE,
+    SWITCH_TABS
+}
+
 @Injectable()
 export class Monaco {
     private _baseUrl: string;
@@ -13,6 +21,8 @@ export class Monaco {
         lineNumbers: true,
         roundedSelection: false,
         scrollBeyondLastLine: false,
+        formatOnType: true,
+        fontSize: 14,
         wrappingColumn: 0,
         theme: 'vs-dark',
         wrappingIndent: 'indent',
@@ -81,6 +91,15 @@ export class Monaco {
     create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
         let options = _.extend({}, this._defaults, overrides);
         return this.current.then(monaco => monaco.editor.create(element.nativeElement, options));
+    }
+
+    private update(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
+        if (editor == null || overrides == null) {
+            return;
+        }
+
+        let options = _.extend({}, this._defaults, overrides);
+        editor.updateOptions(options);
     }
 
     updateLibs(language: string, libraries: string[]) {

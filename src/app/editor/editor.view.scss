@@ -38,6 +38,11 @@
             .ms-Icon--Emoji2 {
                 z-index: 2;
             }
+
+            &.language {
+                text-transform: uppercase;
+                margin-left: 0;
+            }
         }
     }
 }

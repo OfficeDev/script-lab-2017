@@ -14,7 +14,7 @@ export class Tab extends ViewBase {
     @Input() content: string;
     @Output() contentChange: EventEmitter<string> = new EventEmitter<string>();
     tabChanged$: EventChannel<string>;
-
+    index: number;
     state: IMonacoEditorState;
 
     constructor(
@@ -33,6 +33,7 @@ export class Tab extends ViewBase {
         };
 
         this._tabs.add(this.name, this);
+        this.index = this._tabs.count;
 
         let subscription = this.tabChanged$.source$.subscribe(name => {
             if (name !== this.name) {

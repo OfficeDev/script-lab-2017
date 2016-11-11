@@ -1,4 +1,4 @@
-﻿import { Component, Input, Output, EventEmitter } from '@angular/core';
+﻿import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { Utilities } from '../../helpers';
 import { ViewBase } from '../base';
 import './hamburger.scss';
@@ -28,6 +28,10 @@ export class HamburgerComponent extends ViewBase {
 
     constructor() {
         super();
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        this.shown = !!changes['shown'].currentValue;
     }
 
     close() {

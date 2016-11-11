@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef,
 import { Router, ActivatedRoute } from '@angular/router';
 import { Utilities, ContextTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
-import { Monaco, Snippet, SnippetManager } from '../shared/services';
+import { Monaco, MonacoEvents, Snippet, SnippetManager } from '../shared/services';
 import { Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
@@ -22,6 +22,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     status: string;
     statusType: StatusType;
     editMode = false;
+    menuOpen = false;
     title: string = `${ContextTypes[Utilities.context]} Snippets`;
 
     @ViewChild('name') nameInputField: ElementRef;
@@ -79,8 +80,17 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
         this._post('https://office-playground-runner.azurewebsites.net', { snippet: JSON.stringify(this.snippet.content) });
     }
 
-    get isStatusWarning() { return this.statusType === StatusType.warning; }
-    get isStatusError() { return this.statusType === StatusType.error; }
+    interaction(event: MonacoEvents) {
+        switch (event) {
+            case MonacoEvents.SAVE:
+                this.save();
+                break;
+
+            case MonacoEvents.TOGGLE_MENU:
+                this.menuOpen = !this.menuOpen;
+                break;
+        }
+    }
 
     private _post(path, params) {
         let form = document.createElement('form');

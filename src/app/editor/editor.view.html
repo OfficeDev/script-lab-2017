@@ -13,7 +13,7 @@
         <div [hidden]="editMode || !snippet" class="command__icon" (click)="share()"><i class="ms-Icon ms-Icon--Contact"></i></div>
     </header>
     <section class="editor__main" *ngIf="snippet">
-        <monaco-editor (save)="save()">
+        <monaco-editor (events)="interaction($event)" [(lang)]="language">
             <tab name="Script" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
             <tab name="Template" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>
             <tab name="Style" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>
@@ -24,7 +24,7 @@
     <section class="editor__footer">
         <div class="command__text"><i class="ms-Icon ms-Icon--StatusErrorFull"></i><span class="ms-font-s">0</span></div>
         <div class="command__text"><i class="ms-Icon ms-Icon--IncidentTriangle"></i><span class="ms-font-s">0</span></div>
-        <div class="command__text"><span class="ms-font-s">TypeScript</span></div>
+        <div class="command__text language"><span class="ms-font-s">{{language}}</span></div>
         <div class="command__text"><i class="ms-Icon ms-Icon--Settings"></i></div>
         <div class="command__text">
             <i class="ms-Icon ms-Icon--CircleFill"></i>
