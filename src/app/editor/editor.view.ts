@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Utilities, ContextTypes } from '@microsoft/office-js-helpers';
+import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
 import { Monaco, MonacoEvents, Snippet, SnippetManager } from '../shared/services';
 import { Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
@@ -23,7 +23,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     statusType: StatusType;
     editMode = false;
     menuOpen = false;
-    title: string = `${ContextTypes[Utilities.context]} Snippets`;
+    title: string = `${HostTypes[Utilities.host]} Snippets`;
 
     @ViewChild('name') nameInputField: ElementRef;
 

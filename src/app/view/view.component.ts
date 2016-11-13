@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Tab, MonacoEditor, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base';
 import { Snippet, SnippetManager } from '../shared/services';
-import { ContextTypes, Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
+import { HostTypes, Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
 
 @Component({
     selector: 'view',

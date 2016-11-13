@@ -1,8 +1,10 @@
 interface ISnippet {
     id?: string;
+    gist?: string;
+    author?: string;
+    source?: string;
     name?: string;
     description?: string;
-    author?: string;
     script?: {
         content: string;
         language: string;
@@ -15,7 +17,7 @@ interface ISnippet {
         content: string;
         language: string;
     };
-    libraries?: string[];
+    libraries: string;
 }
 
 interface IPlaylist {

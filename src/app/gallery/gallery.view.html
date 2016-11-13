@@ -1,57 +1,37 @@
 <section class="gallery">
     <section class="gallery__section">
-        <section class="gallery-list">
-            <div class="command__bar command--light" (click)="snippetsHidden = !snippetsHidden">
-                <div class="command__title">
-                    <span class="ms-font-m">My snippets</span>
-                </div>
-                <div class="command__icon" (click)="infoHidden = !infoHidden; $event.stopPropagation();">
-                    <i class="ms-Icon ms-Icon--Info"></i>
-                </div>
-                <div class="command__icon">
-                    <i class="ms-Icon" [ngClass]="snippetsHidden?'ms-Icon--ChevronUp':'ms-Icon--ChevronDown'"></i>
-                </div>
-            </div>
-            <div class="gallery-list__notice ms-font-m" [hidden]="infoHidden">
-                Note: These snippets are stored in your browser's "window.localStorage", and will disappear if you clear your browser cache.
-                Please do <em>not</em> use the Playground for mission-critical snippets that you haven't
-                backed up via some other means (i.e., manual copying or the Sharing feature).
-
-                <button class="ms-Button ms-Button--primary" (click)="infoHidden = !infoHidden">
-                    <span class="ms-Button-label">Got it</span>
-                </button>
-            </div>
-
-            <section class="gallery-list__group local-snippets" [hidden]="snippetsHidden">
-                <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
-                    <span>{{snippet.name}}</span>
-                </article>
-                <p class="gallery-list__message ms-font-m" [hidden]="localGallery?.length > 0">
-                    You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose
-                    from the gallery below.
-                </p>
-            </section>
-
-            <section>
-                <div class="command__bar command--light" (click)="playlistHidden = !playlistHidden">
-                    <div class="command__title">
-                        <span class="ms-font-m">Microsoft Templates</span>
-                    </div>
-                    <div class="command__icon">
-                        <i class="ms-Icon" [ngClass]="playlistHidden?'ms-Icon--ChevronUp':'ms-Icon--ChevronDown'"></i>
-                    </div>
-                </div>
-                <section [hidden]="playlistHidden" class="gallery-list__group" *ngFor="let group of playlist.groups">
-                    <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>
-                    <section class="gallery-list__group">
-                        <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="importFromTemplate(snippet)">
-                            <div class="name">{{snippet?.name}}</div>
-                            <div class="description">{{snippet?.description}}</div>
+        <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
+            <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !playlistView}" (click)="playlistView = false">Snippets</li>
+            <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': playlistView}" (click)="playlistView = true">Playlists</li>
+        </ul>
+        <div class="gallery__tabs-container">
+            <section class="gallery-list" [hidden]="playlistView">
+                <collapse title="Local" info="These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent data loss.">
+                    <section class="gallery-list__group local-snippets">
+                        <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
+                            <span>{{snippet.name}}</span>
                         </article>
+                        <p class="gallery-list__message ms-font-m" [hidden]="localGallery?.length > 0">
+                            You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose
+                            from the gallery below.
+                        </p>
                     </section>
-                </section>
+                </collapse>
             </section>
-        </section>
+            <section class="gallery-list" [hidden]="!playlistView">
+                <collapse title="Microsoft">
+                    <section class="gallery-list__group" *ngFor="let group of playlist.groups">
+                        <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>
+                        <section class="gallery-list__group">
+                            <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="importFromTemplate(snippet)">
+                                <div class="name">{{snippet?.name}}</div>
+                                <div class="description">{{snippet?.description}}</div>
+                            </article>
+                        </section>
+                    </section>
+                </collapse>
+            </section>
+        </div>
     </section>
     <section class="gallery__section">
         <hr class="gallery__section--separator" />

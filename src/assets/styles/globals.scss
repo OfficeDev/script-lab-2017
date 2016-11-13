@@ -91,9 +91,11 @@ ul {
     }
 
     &__icon {
-        border-radius: 100%;
-        padding: 8px 9px;
-        margin: 5px;
+        padding: 12.5px;
+
+        & > span {
+            margin-left: 7.5px;
+        }
     }
 
     &__text {
@@ -104,5 +106,22 @@ ul {
         flex: 1 1 auto;
         justify-content: flex-start;
         @include ellipsis();
+    }
+
+    &--light {
+        .command__title {
+            padding: 12.5px 15px;
+        }
+    }
+}
+
+.collapse {
+    &__info {
+        background: rgba(#FFF100, 0.6);
+        padding: $default-spacing;
+
+        & .ms-Button {
+            margin-top: $default-spacing/2;
+        }
     }
 }

@@ -10,6 +10,17 @@
         color: white;
     }
 
+    &__tabs {
+        overflow: hidden;
+        flex: 0 0 40px;
+    }
+
+    &__tabs-container {
+        @include flex();
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
     &__action {
         width: 100%;
         max-width: none;
@@ -112,15 +123,6 @@
 
         &__message {
             padding: $default-spacing/2 $default-spacing;
-        }
-
-        &__notice {
-            background: rgba(#FFF100, 0.6);
-            padding: $default-spacing;
-
-            & .ms-Button {
-                margin-top: $default-spacing/2;
-            }
         }
 
         &__loading {

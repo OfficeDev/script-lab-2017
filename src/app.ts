@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { Utilities, ContextTypes } from '@microsoft/office-js-helpers';
+import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Theme } from './app/shared/helpers';
 
@@ -37,7 +37,7 @@ export class AppComponent {
                     appInsights.stopTrackPage(
                         name,
                         url,
-                        { mode: ContextTypes[Utilities.context] },
+                        { mode: HostTypes[Utilities.host] },
                         { pagesViewedInSession: pagesViewedInSession++ }
                     );
                 }

@@ -28,7 +28,7 @@
             margin: 0px 3px;
 
             span {
-                margin-left: 5px;
+                margin-left: $default-spacing/2;
             }
 
             .ms-Icon--CircleFill {
@@ -41,8 +41,19 @@
 
             &.language {
                 text-transform: uppercase;
-                margin-left: 0;
+
+                span {
+                    margin-left: 0;
+                }
             }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .editor {
+        .command__icon > span{
+            display: none;
         }
     }
 }

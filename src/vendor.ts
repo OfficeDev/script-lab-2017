@@ -11,3 +11,4 @@ import '@angular/router';
 import 'rxjs';
 import '@microsoft/office-js-helpers';
 import 'lodash';
+import 'js-yaml';

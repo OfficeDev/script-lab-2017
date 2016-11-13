@@ -5,7 +5,7 @@ import { UxUtil } from './uxutil';
 
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any, stackTrace?: any, reason?: string) {
-        Utilities.error(exception);
+        Utilities.log(exception);
         // appInsights.trackException(exception, 'Global Exception Handler', { 'global': 'true' });
         UxUtil.showErrorNotification('An unexpected error occurred.', [], exception);
     }

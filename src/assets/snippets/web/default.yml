@@ -1,0 +1,65 @@
+# Shared with Add-in Playground
+---
+id: ''
+gist: ''
+author: Bhargav Krishna
+source: Web
+name: New Snippet
+description: |-
+    Sample snippet to demonstrate the use of the Add-in Playground.
+
+script:
+  language: typescript
+  content: |-
+    document.querySelector('#run').addEventListener('click', function () {
+        getData().catch(OfficeHelpers.Utilities.log);
+    });
+
+    function getData() {
+        let url = 'https://jsonplaceholder.typicode.com';
+        return fetch(`${url}/posts/1`)
+            .then(res => res.json())
+            .then(data => console.log(data));
+    }
+
+style:
+  language: css
+  content: |-
+    .ms-Button, .ms-Button:focus {
+        background: #217346;
+        border: #217346;
+    }
+
+    .ms-Button > .ms-Button-label,
+    .ms-Button:focus > .ms-Button-label,
+    .ms-Button:hover > .ms-Button-label {
+        color: white;
+    }
+
+    .ms-Button:hover, .ms-Button:active {
+        background: #164b2e;
+    }
+
+template:
+  language: html
+  content: |-
+    <p class="ms-font-m">Execute a code snippet in the Office Add-in Playground for Web</p>
+    <button id="run" class="ms-Button">
+        <span class="ms-Button-label">Run code</span>
+    </button>
+
+libraries: |-
+    // CDN references.
+    // Syntax: NPM package name, NPM package path, or raw URL to CDN location.
+    core-js/client/core.min.js
+    whatwg-fetch
+    @microsoft/office-js-helpers@0.3.0-beta.8/dist/office.helpers.min.js
+    office-ui-fabric-core/dist/css/fabric.min.css
+
+    // IntelliSense definitions.
+    // Syntax: "dt~library_name" for DefinitelyTyped, "@typings/library_name" for Typings, or raw URL to d.ts location.
+    dt~core-js
+    dt~jquery
+    dt~whatwg-fetch
+    dt~whatwg-streams
+    @microsoft/office-js-helpers@0.3.0-beta.8/dts/office.helpers.d.ts

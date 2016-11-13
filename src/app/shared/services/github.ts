@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
-import { Request } from './request';
+import { Request, ResponseTypes } from './request';
 
 @Injectable()
 export class Github {
@@ -25,11 +25,11 @@ export class Github {
     }
 
     user(): Promise<IBasicProfile> {
-        return this._request.get<IBasicProfile>(`${this._baseUrl}/user`) as Promise<IBasicProfile>;
+        return this._request.get<IBasicProfile>(`${this._baseUrl}/user`, ResponseTypes.JSON) as Promise<IBasicProfile>;
     }
 
     orgs(user: string): Promise<IExtendedProfile[]> {
-        return this._request.get<IExtendedProfile[]>(`${this._baseUrl}/users/${user}/orgs`) as Promise<IExtendedProfile[]>;
+        return this._request.get<IExtendedProfile[]>(`${this._baseUrl}/users/${user}/orgs`, ResponseTypes.JSON) as Promise<IExtendedProfile[]>;
     }
 
     repos(org: string, personal: boolean, page: number = 0): Promise<IRepository[]> {
@@ -37,7 +37,7 @@ export class Github {
             `${this._baseUrl}/user/repos?page=${page}&affiliation=owner,collaborator&sort=updated&direction=desc` :
             `${this._baseUrl}/orgs/${org}/repos?page=${page}`;
 
-        return this._request.get<IRepository[]>(url) as Promise<IRepository[]>;
+        return this._request.get<IRepository[]>(url, ResponseTypes.JSON) as Promise<IRepository[]>;
     }
 
     files(org: string, repo: string, branch: string, path?: string): Promise<IContents[]> {
@@ -45,19 +45,19 @@ export class Github {
         if (!(path == null)) {
             url += `/${path}`;
         }
-        return this._request.get<IContents[]>(url + `?ref=${branch}`) as Promise<IContents[]>;
+        return this._request.get<IContents[]>(url + `?ref=${branch}`, ResponseTypes.JSON) as Promise<IContents[]>;
     }
 
     branches(org: string, repo: string): Promise<IBranch[]> {
-        return this._request.get<IBranch[]>(`${this._baseUrl}/repos/${org}/${repo}/branches`) as Promise<IBranch[]>;
+        return this._request.get<IBranch[]>(`${this._baseUrl}/repos/${org}/${repo}/branches`, ResponseTypes.JSON) as Promise<IBranch[]>;
     }
 
     file(org: string, repo: string, branch: string, file: string): Promise<string> {
-        return this._request.get(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}?ref=${branch}`) as Promise<string>;
+        return this._request.get(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}?ref=${branch}`, ResponseTypes.JSON) as Promise<string>;
     }
 
     commits(org: string, repo: string, branch: string, file: string): Promise<ICommit[]> {
-        return this._request.get<ICommit[]>(`${this._baseUrl}/repos/${org}/${repo}/commits?path=${file}&sha=${branch}&until=${(new Date().toISOString())}`) as Promise<ICommit[]>;
+        return this._request.get<ICommit[]>(`${this._baseUrl}/repos/${org}/${repo}/commits?path=${file}&sha=${branch}&until=${(new Date().toISOString())}`, ResponseTypes.JSON) as Promise<ICommit[]>;
     }
 
     getSha(org: string, repo: string, branch: string, path?: string): Promise<IContents> {
@@ -65,11 +65,11 @@ export class Github {
         if (!(path == null)) {
             url += `/${path}`;
         }
-        return this._request.get<IContents>(url + `?ref=${branch}`) as Promise<IContents>;
+        return this._request.get<IContents>(url + `?ref=${branch}`, ResponseTypes.JSON) as Promise<IContents>;
     }
 
     createOrUpdate(org: string, repo: string, file: string, body: any): Promise<IUploadCommit> {
-        return this._request.put<IUploadCommit>(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}`, body) as Promise<IUploadCommit>;
+        return this._request.put<IUploadCommit>(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}`, body, ResponseTypes.JSON) as Promise<IUploadCommit>;
     }
 
     login(): Promise<IProfile> {
@@ -107,7 +107,7 @@ export class Github {
 
     gists(user?: string): Promise<IGist[]> {
         let url = user == null ? `${this._baseUrl}/gists` : `${this._baseUrl}/users/${user}/gists`;
-        return this._request.get<IGist[]>(url) as Promise<IGist[]>;
+        return this._request.get<IGist[]>(url, ResponseTypes.JSON) as Promise<IGist[]>;
     }
 
     gist(id: string, sha?: string): Promise<IGist> {
@@ -116,7 +116,7 @@ export class Github {
             url += `/${sha}`;
         }
 
-        return this._request.get<IGist>(url) as Promise<IGist>;
+        return this._request.get<IGist>(url, ResponseTypes.JSON) as Promise<IGist>;
     }
 
     createOrUpdateGist(description: string, files: IGistFiles, id?: string, isPublic: boolean = true): Promise<IGist> {
@@ -129,18 +129,18 @@ export class Github {
         let url = `${this._baseUrl}/gists`;
         if (!(id == null)) {
             url += `/${id}`;
-            return this._request.patch<IGist>(url, body) as Promise<IGist>;
+            return this._request.patch<IGist>(url, body, ResponseTypes.JSON) as Promise<IGist>;
         }
 
-        return this._request.post<IGist>(url, body) as Promise<IGist>;
+        return this._request.post<IGist>(url, body, ResponseTypes.JSON) as Promise<IGist>;
     }
 
     forkGist(id: string): Promise<IGist> {
-        return this._request.post<IGist>(`${this._baseUrl}/gists/${id}/forks`, undefined) as Promise<IGist>;
+        return this._request.post<IGist>(`${this._baseUrl}/gists/${id}/forks`, undefined, ResponseTypes.JSON) as Promise<IGist>;
     }
 
     deleteGist(id: string): Promise<boolean> {
-        return this._request.delete(`${this._baseUrl}/gists/${id}`) as Promise<boolean>;
+        return this._request.delete(`${this._baseUrl}/gists/${id}`, ResponseTypes.JSON) as Promise<boolean>;
     }
 
     private _profile: IProfile;

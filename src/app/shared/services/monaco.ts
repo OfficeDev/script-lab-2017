@@ -36,7 +36,7 @@ export class Monaco {
 
     static regexStrings = {
         STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
-        STARTS_WITH_COMMENT: /^#.*/im,
+        STARTS_WITH_COMMENT: /^\/\/.*|^\/\*.*|.*\*\/$.*/im,
         ENDS_WITH_DTS: /.*\.d\.ts$/i,
         GLOBAL: /.*/i
     };

@@ -31,7 +31,7 @@
         "@angular/platform-browser": "^2.1.2",
         "@angular/platform-browser-dynamic": "^2.1.2",
         "@angular/router": "^3.1.2",
-        "@microsoft/office-js-helpers": "^0.3.0-beta.6",
+        "@microsoft/office-js-helpers": "^0.3.0-beta.8",
         "core-js": "^2.4.1",
         "github-url-raw": "^0.3.0",
         "jquery": "^3.1.1",
@@ -42,7 +42,8 @@
         "office-ui-fabric-js": "^1.2.0",
         "reflect-metadata": "^0.1.8",
         "rxjs": "5.0.0-beta.12",
-        "typescript": "rc",
+        "typescript": "^2.0.9",
+        "js-yaml": "^3.7.0",
         "typings": "^1.4.0",
         "zone.js": "^0.6.26",
         "lodash": "^4.16.4"

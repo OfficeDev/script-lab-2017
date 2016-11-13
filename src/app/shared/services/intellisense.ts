@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { Request } from './request';
+import { Request, ResponseTypes } from './request';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class Intellisense {
         this._cache = new Dictionary<string>();
     }
 
-    private _intellisenseFile = (this._request.local<any[]>('libraries.json') as Promise<any[]>);
+    private _intellisenseFile = (this._request.local<any[]>('libraries.json', ResponseTypes.JSON) as Promise<any[]>);
 
     private _typings: Promise<monaco.languages.CompletionItem[]>;
     get typings() {
@@ -64,8 +64,13 @@ export class Intellisense {
                     let libName = library.split('dt~')[1];
                     urls.push(`https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`);
                 }
-                else if (/^https?:/i.test(library) && /\.d\.ts$/i.test(library)) {
-                    urls.push(library);
+                else if (/\.d\.ts$/i.test(library)) {
+                    if (/^https?:/i.test(library)) {
+                        urls.push(library);
+                    }
+                    else {
+                        urls.push(`https://unpkg.com/${library}`);
+                    }
                 }
             });
 
@@ -80,7 +85,7 @@ export class Intellisense {
     }
 
     fetch(filePath: string) {
-        return this._request.get<string>(filePath, null, true)
+        return this._request.get<string>(filePath, null, ResponseTypes.RAW)
             .then(content => {
                 this._cache.add(content, filePath);
                 return { content, filePath };

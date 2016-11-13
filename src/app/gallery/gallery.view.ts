@@ -91,7 +91,7 @@ export class GalleryView extends ViewBase implements OnInit {
     // }
 
     // get title(): string {
-    //     if (Theme.context === ContextTypes.Unknown) {
+    //     if (Theme.context === HostTypes.Unknown) {
     //         return '';
     //     }
 

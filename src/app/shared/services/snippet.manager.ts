@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Storage, Utilities, ContextTypes } from '@microsoft/office-js-helpers';
+import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
-import { Request } from './request';
+import { Request, ResponseTypes } from './request';
 import { Snippet } from './snippet';
 import { MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
 
@@ -11,21 +11,21 @@ export class SnippetManager {
     private _context: string;
 
     constructor(private _request: Request) {
-        this._context = ContextTypes[Utilities.context];
+        this._context = HostTypes[Utilities.host];
         this._store = new Storage<ISnippet>(`${this._context.toLowerCase()}_snippets`);
     }
 
     new(): Promise<Snippet> {
         //TODO: LOAD FROM Github Repo instead with the right folder structure.
 
-        return (this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.json`) as Promise<ISnippet>)
+        return (this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML) as Promise<ISnippet>)
             .then(snippet => new Snippet(snippet));
     }
 
     create(snippet: Snippet, suffix: string): Promise<Snippet> {
         return new Promise(resolve => {
             snippet.content.name = this._generateName(snippet.content.name, suffix);
-            this._store.add(snippet.content.id, snippet.content.name);
+            this._store.add(snippet.content.id, snippet.content);
         });
     }
 
@@ -105,7 +105,7 @@ export class SnippetManager {
 
     playlist(url?: string, external?: boolean): Promise<IPlaylist> {
         let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
-        return (this._request.local<IPlaylist>(snippetJsonUrl) as Promise<IPlaylist>)
+        return (this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON) as Promise<IPlaylist>)
             .catch(e => {
                 let messages = [`Could not retrieve default snippets for ${this._context}.`];
                 _.concat(messages, UxUtil.extractErrorMessage(e));

@@ -190,6 +190,7 @@
         color: $accent-background-primary;
     }
 
+    li.gallery__tab.ms-Pivot-link.is-selected.gallery__tab--active,
     li.tabs__tab.ms-Pivot-link.is-selected.tabs__tab--active {
         background-color: darken($accent-background-primary, 15%) ;
         color: $accent-foreground-primary ;

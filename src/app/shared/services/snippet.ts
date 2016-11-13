@@ -30,22 +30,12 @@ export class Snippet {
         if (this.content == null) {
             return [];
         }
-        return this.content.libraries.filter(library => /(?:d.ts$|^dt~)/gmi.test(library));
-    }
-
-    get libraries(): string {
-        if (this.content == null) {
-            return '';
+        try {
+            return this.content.libraries.split('\n').filter(library => /(?:d.ts$|^dt~)/gmi.test(library));
         }
-        return this.content.libraries.join('\n');
-    }
-
-    set libraries(value: string) {
-        if (this.content == null) {
-            // TODO: Throw an error here
-            return;
+        catch (exception) {
+            return [];
         }
-        this.content.libraries = value.split('\n');
     }
 
     public hash(): string {

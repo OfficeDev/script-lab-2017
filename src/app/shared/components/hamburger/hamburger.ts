@@ -21,7 +21,7 @@ import './hamburger.scss';
     </section>
     `
 })
-export class HamburgerComponent extends ViewBase {
+export class Hamburger extends ViewBase {
     @Input() title: string;
     @Input() shown: boolean = false;
     @Output() shownChange: EventEmitter<boolean> = new EventEmitter<boolean>();
