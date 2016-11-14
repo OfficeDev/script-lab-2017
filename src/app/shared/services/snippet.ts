@@ -1,4 +1,5 @@
 import { Utilities } from '../helpers';
+import * as jsyaml from 'js-yaml';
 import * as crypto from 'crypto-js';
 import * as _ from 'lodash';
 
@@ -43,5 +44,9 @@ export class Snippet {
             // TODO: Throw and error here
         }
         return crypto.SHA1(JSON.stringify(this.content));
+    }
+
+    public toYaml(): Promise<string> {
+        return new Promise(resolve => resolve(jsyaml.safeDump(this.content)));
     }
 }

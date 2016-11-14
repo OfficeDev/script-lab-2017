@@ -69,6 +69,10 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
                     monacoEvent = MonacoEvents.TOGGLE_MENU;
                     break;
 
+                case monaco.KeyCode.F5:
+                    monacoEvent = MonacoEvents.RUN;
+                    break;
+
                 case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
                     let index = this.currentTab.index;
                     let key;

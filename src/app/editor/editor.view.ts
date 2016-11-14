@@ -67,8 +67,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
 
     save(): Promise<void> {
         // appInsights.trackEvent('Save', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-        console.log(JSON.stringify(this.snippet.content));
-        return;
+        console.log(this.snippet.content);
         // return this._saveHelper()
         //     .then((snippet) => {
         //         this._showStatus(StatusType.info, 3 /*seconds*/, `Saved "${snippet.name}"`);
@@ -78,7 +77,8 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
 
     run() {
         // appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-        this._post('https://office-playground-runner.azurewebsites.net', { snippet: JSON.stringify(this.snippet.content) });
+        this.snippet.toYaml().then(yaml => console.log(yaml));
+        this._post('https://office-playground-runner.azurewebsites.net', this.snippet.toYaml());
     }
 
     interaction(event: MonacoEvents) {
@@ -90,6 +90,9 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
             case MonacoEvents.TOGGLE_MENU:
                 this.menuOpen = !this.menuOpen;
                 break;
+
+            case MonacoEvents.RUN:
+                this.run();
         }
     }
 
