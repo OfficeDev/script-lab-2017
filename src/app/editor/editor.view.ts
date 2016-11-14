@@ -77,8 +77,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
 
     run() {
         // appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-        this.snippet.toYaml().then(yaml => console.log(yaml));
-        this._post('https://office-playground-runner.azurewebsites.net', this.snippet.toYaml());
+        this.snippet.toYaml().then(yaml => this._post('https://office-playground-runner.azurewebsites.net', yaml));
     }
 
     interaction(event: MonacoEvents) {
