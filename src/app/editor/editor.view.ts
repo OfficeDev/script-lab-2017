@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
 import { Monaco, MonacoEvents, Snippet, SnippetManager } from '../shared/services';
-import { Theme, MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../shared/helpers';
+import { Theme, PlaygroundError } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
 
@@ -23,6 +23,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     statusType: StatusType;
     editMode = false;
     menuOpen = false;
+    theme = 'vs';
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
     @ViewChild('name') nameInputField: ElementRef;

@@ -6,7 +6,10 @@ import { Theme } from './app/shared/helpers';
 
 @Component({
     selector: 'app',
-    template: '<router-outlet></router-outlet>'
+    template: `
+        <router-outlet></router-outlet>
+        <dialog></dialog>
+    `
 })
 
 export class AppComponent {

@@ -28,6 +28,8 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     @Output() events: EventEmitter<MonacoEvents> = new EventEmitter<MonacoEvents>();
     @Input() lang: string;
     @Output() langChange: EventEmitter<string> = new EventEmitter<string>();
+    @Input() theme: string;
+    @Output() themeChange: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(private _monaco: Monaco) {
         super();
@@ -42,9 +44,15 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        let lang = changes['lang'].currentValue;
-        if (this.currentTab && !_.isEmpty(lang)) {
-            this.currentTab.language = lang;
+        if (this.currentTab) {
+            if (!_.isEmpty(changes['lang'])) {
+                this.currentTab.language = changes['lang'].currentValue;
+            }
+            else if (!_.isEmpty(changes['theme'])) {
+                this._monaco.updateOptions(this._monacoEditor, {
+                    theme: changes['theme'].currentValue
+                });
+            }
         }
     }
 

@@ -24,7 +24,7 @@ export class Monaco {
         formatOnType: true,
         fontSize: 14,
         wrappingColumn: 0,
-        theme: 'vs-dark',
+        theme: 'vs',
         wrappingIndent: 'indent',
         scrollbar: {
             vertical: 'visible',
@@ -93,7 +93,7 @@ export class Monaco {
         return this.current.then(monaco => monaco.editor.create(element.nativeElement, options));
     }
 
-    private update(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
+    updateOptions(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
         if (editor == null || overrides == null) {
             return;
         }

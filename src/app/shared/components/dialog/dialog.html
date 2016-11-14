@@ -1,19 +1,17 @@
-<div class="ms-Dialog ms-Dialog--lgHeader" [hidden]="dialog == null">
+<div class="ms-Overlay" [ngClass]="{ 'is-visible': !(dialog == null) }"></div>
+<div class="ms-Dialog ms-Dialog--lgHeader" [ngClass]="{ 'is-open': !(dialog == null) }">
     <div class="ms-Dialog-main ">
         <div class="ms-Dialog-header ">
-            <p class="ms-Dialog-title ">{{dialog?.title}}</p>
+            <p class="ms-Dialog-title ">{{ dialog?.title }}</p>
         </div>
         <div class="ms-Dialog-inner ">
             <div class="ms-Dialog-content ">
-                <p class="ms-Dialog-subText ">{{dialog?.message}}</p>
+                <p class="ms-Dialog-subText ">{{ dialog?.message }}</p>
             </div>
             <div class="ms-Dialog-actions ">
-                <div class="ms-Dialog-actionsRight ">
-                    <button class="ms-Dialog-action ms-Button ms-Button--primary " (click)="executeAction(false) ">
-                        <span class="ms-Button-label ">{{dialog?.primary?.text}}</span>
-                    </button>
-                    <button class="ms-Dialog-action ms-Button " [hidden]="dialog?.secondary == null" (click)="executeAction(true) ">
-                        <span class="ms-Button-label ">{{dialog?.secondary?.text}}</span>
+                <div class="ms-Dialog-actionsRight">
+                    <button *ngFor="let action of actions" class="ms-Dialog-action ms-Button" (click)="execute(action)">
+                        <span class="ms-Button-label">{{action}}</span>
                     </button>
                 </div>
             </div>

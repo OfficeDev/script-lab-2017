@@ -1,13 +1,39 @@
 import { ErrorHandler } from '@angular/core';
 import { Utilities } from '@microsoft/office-js-helpers';
-import { UxUtil } from './uxutil';
+
+/**
+ * A class for signifying that an error is a "handleable" error that comes from the playground,
+ * as opposed to an error that comes from some internal operation or runtime error.
+ */
+export class PlaygroundError extends Error {
+    /**
+     * @constructor
+     *
+     * @param message Error message to be propagated.
+    */
+    constructor(message: string) {
+        super(message);
+        this.name = 'Playground Error';
+        this.message = message;
+        if ((Error as any).captureStackTrace) {
+            (Error as any).captureStackTrace(this, this.constructor);
+        }
+        else {
+            let error = new Error();
+            if (error.stack) {
+                let last_part = error.stack.match(/[^\s]+$/);
+                this.stack = `${this.name} at ${last_part}`;
+            }
+        }
+    }
+}
 
 
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any, stackTrace?: any, reason?: string) {
         Utilities.log(exception);
         // appInsights.trackException(exception, 'Global Exception Handler', { 'global': 'true' });
-        UxUtil.showErrorNotification('An unexpected error occurred.', [], exception);
+        // UxUtil.showErrorNotification('An unexpected error occurred.', [], exception);
     }
 }
 

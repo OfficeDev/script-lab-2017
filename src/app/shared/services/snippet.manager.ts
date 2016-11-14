@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
-import * as _ from 'lodash';
 import { Request, ResponseTypes } from './request';
 import { Snippet } from './snippet';
-import { MessageStrings, ExpectedError, PlaygroundError, UxUtil } from '../helpers';
+import { Notification } from './notification';
+import * as _ from 'lodash';
 
 @Injectable()
 export class SnippetManager {
     private _store: Storage<ISnippet>;
     private _context: string;
 
-    constructor(private _request: Request) {
+    constructor(
+        private _request: Request,
+        private _notification: Notification
+    ) {
         this._context = HostTypes[Utilities.host];
         this._store = new Storage<ISnippet>(`${this._context.toLowerCase()}_snippets`);
     }
@@ -57,15 +60,15 @@ export class SnippetManager {
         let that = this;
 
         if (askForConfirmation) {
-            return UxUtil.showDialog('Delete confirmation',
-                `Are you sure you want to delete the snippet "${snippet.content.name}"?`, ['Yes', 'No'])
-                .then((choice) => {
-                    if (choice === 'Yes') {
-                        return deleteAndResolvePromise();
-                    } else {
-                        return Promise.reject(new ExpectedError());
-                    }
-                });
+            // return UxUtil.showDialog('Delete confirmation',
+            //     `Are you sure you want to delete the snippet "${snippet.content.name}"?`, ['Yes', 'No'])
+            //     .then((choice) => {
+            //         if (choice === 'Yes') {
+            //             return deleteAndResolvePromise();
+            //         } else {
+            //             return Promise.reject(new ExpectedError());
+            //         }
+            //     });
         } else {
             return deleteAndResolvePromise();
         }
@@ -80,15 +83,15 @@ export class SnippetManager {
         let that = this;
 
         if (askForConfirmation) {
-            return UxUtil.showDialog('Delete confirmation',
-                'Are you sure you want to delete *ALL* of your local snippets?', ['Yes', 'No'])
-                .then((choice) => {
-                    if (choice === 'Yes') {
-                        return deleteAndResolvePromise();
-                    } else {
-                        return Promise.reject(new ExpectedError());
-                    }
-                });
+            // return UxUtil.showDialog('Delete confirmation',
+            //     'Are you sure you want to delete *ALL* of your local snippets?', ['Yes', 'No'])
+            //     .then((choice) => {
+            //         if (choice === 'Yes') {
+            //             return deleteAndResolvePromise();
+            //         } else {
+            //             return Promise.reject(new ExpectedError());
+            //         }
+            //     });
         } else {
             return deleteAndResolvePromise();
         }
@@ -107,9 +110,9 @@ export class SnippetManager {
         let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
         return (this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON) as Promise<IPlaylist>)
             .catch(e => {
-                let messages = [`Could not retrieve default snippets for ${this._context}.`];
-                _.concat(messages, UxUtil.extractErrorMessage(e));
-                throw new PlaygroundError(messages);
+                // let messages = [`Could not retrieve default snippets for ${this._context}.`];
+                // _.concat(messages, UxUtil.extractErrorMessage(e));
+                // throw new PlaygroundError(messages);
             });
     }
 

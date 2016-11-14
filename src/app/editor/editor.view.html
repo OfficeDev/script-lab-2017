@@ -4,7 +4,7 @@
 <section class="editor">
     <header class="command__bar">
         <div class="command__icon" (click)="menuOpen = true"><i class="ms-Icon ms-Icon--GlobalNavButton"></i></div>
-        <div class="command__icon">
+        <div class="command__icon" (click)="desc = !desc">
             <i class="ms-Icon ms-Icon--AppForOfficeLogo"></i>
             <span class="ms-font-m">{{snippet?.content?.name}}</span>
         </div>
@@ -16,17 +16,23 @@
             <i class="ms-Icon ms-Icon--Save"></i>
             <span class="ms-font-s-plus">Save</span>
         </div>
-        <div [hidden]="editMode || !snippet" class="command__icon" (click)="share()">
+        <div [hidden]="editMode || !snippet" class="command__icon" (click)="share = !share">
             <i class="ms-Icon ms-Icon--Share"></i>
             <span class="ms-font-s-plus">Share</span>
+            <panel title="Share" [(open)]="share">
+                <p class="ms-font-m">Component under development.</p>
+            </panel>
         </div>
-        <div [hidden]="editMode || !snippet" class="command__icon" (click)="share()">
+        <div [hidden]="editMode || !snippet" class="command__icon" (click)="profile = !profile">
             <i class="ms-Icon ms-Icon--Contact"></i>
             <span class="ms-font-s-plus">Profile</span>
+            <panel title="Profile" [(open)]="profile">
+                <p class="ms-font-m">Component under development</p>
+            </panel>
         </div>
     </header>
     <section class="editor__main" *ngIf="snippet">
-        <monaco-editor (events)="interaction($event)" [(lang)]="language">
+        <monaco-editor (events)="interaction($event)" [(lang)]="language" [(theme)]="theme">
             <tab name="Script" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
             <tab name="Template" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>
             <tab name="Style" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>
@@ -34,10 +40,12 @@
         </monaco-editor>
     </section>
     <section class="editor__footer">
-        <div class="command__text"><i class="ms-Icon ms-Icon--StatusErrorFull"></i><span class="ms-font-s">0</span></div>
-        <div class="command__text"><i class="ms-Icon ms-Icon--IncidentTriangle"></i><span class="ms-font-s">0</span></div>
         <div class="command__text language"><span class="ms-font-s">{{language}}</span></div>
-        <div class="command__text"><i class="ms-Icon ms-Icon--Settings"></i></div>
+        <div class="command__text">
+            <i class="ms-Icon ms-Icon--StatusErrorFull"></i>
+            <span class="ms-font-s">0</span>
+        </div>
+        <div class="command__text" (click)="theme === 'vs' ? theme = 'vs-dark' : theme = 'vs'"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs' ? 'Light': 'Dark'}}</span></div>
         <div class="command__text">
             <i class="ms-Icon ms-Icon--CircleFill"></i>
             <i class="ms-Icon ms-Icon--Emoji2"></i>

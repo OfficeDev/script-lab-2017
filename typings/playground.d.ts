@@ -41,11 +41,7 @@ interface IMonacoEditorState {
 interface IDialog {
     title: string;
     message?: string;
-    primary: IDialogAction;
-    secondary?: IDialogAction;
-}
-
-interface IDialogAction {
-    text: string;
-    action: () => any;
+    actions: {
+        [index: string]: (action: string) => any
+    }
 }

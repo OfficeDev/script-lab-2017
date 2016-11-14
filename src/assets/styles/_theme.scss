@@ -90,10 +90,28 @@
             }
         }
 
-        .ms-Button--primary {
+        .ms-Button.ms-Dialog-action:first-child {
             background-color: $accent-background-primary;
             border: $accent-background-primary ;
-            color: $accent-foreground-primary ;
+
+            .ms-Button-label {
+                color: $accent-foreground-primary ;
+            }
+
+            @include focus-states(darken($accent-background-primary, 10%), $accent-foreground-primary);
+        }
+    }
+
+    .panel {
+        background: $background-white;
+        color: $foreground-primary;
+
+        &__title {
+            color: $accent-background-primary
+        }
+
+        &::before {
+            color: $foreground-white;
         }
     }
 

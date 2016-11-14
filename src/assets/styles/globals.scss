@@ -45,7 +45,7 @@ ul {
     @include flex();
     height: 100vh;
 
-    home, addin-launcher, gallery-view, editor-view, monaco-editor, tab, run, view, share, import, hamburger {
+    home, dialog, addin-launcher, gallery-view, editor-view, monaco-editor, tab, run, view, share, import, hamburger {
         flex: 1 1 100%;
         @include flex();
         height: 100%;
@@ -88,6 +88,7 @@ ul {
         align-items: center;
         padding: 12.5px;
         cursor: pointer;
+        position: relative;
     }
 
     &__icon {

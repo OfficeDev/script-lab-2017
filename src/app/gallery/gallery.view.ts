@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ExpectedError, UxUtil } from '../shared/helpers';
 import { SnippetManager, Snippet } from '../shared/services';
 import { ViewBase } from '../shared/components/base';
 import * as _ from 'lodash';

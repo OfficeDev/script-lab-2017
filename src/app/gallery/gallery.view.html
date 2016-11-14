@@ -5,7 +5,7 @@
             <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': playlistView}" (click)="playlistView = true">Playlists</li>
         </ul>
         <div class="gallery__tabs-container">
-            <section class="gallery-list" [hidden]="playlistView">
+            <section class="gallery-list ms-u-slideUpIn10" [hidden]="playlistView">
                 <collapse title="Local" info="These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent data loss.">
                     <section class="gallery-list__group local-snippets">
                         <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
@@ -18,7 +18,7 @@
                     </section>
                 </collapse>
             </section>
-            <section class="gallery-list" [hidden]="!playlistView">
+            <section class="gallery-list ms-u-slideUpIn10" [hidden]="!playlistView">
                 <collapse title="Microsoft">
                     <section class="gallery-list__group" *ngFor="let group of playlist.groups">
                         <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>

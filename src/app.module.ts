@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator } from '@microsoft/office-js-helpers';
+
 import { SERVICE_PROVIDERS, Monaco } from './app/shared/services';
-import { Theme, UxUtil, EXCEPTION_PROVIDER, NotificationHelper } from './app/shared/helpers';
+import { EXCEPTION_PROVIDER, Theme } from './app/shared/helpers';
 import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
 import { AppComponent } from './app';
 
@@ -16,7 +17,7 @@ import './assets/styles/globals.scss';
     imports: [BrowserModule, HttpModule, FormsModule, APP_ROUTES],
     declarations: [AppComponent, ...COMPONENT_DECLARATIONS],
     bootstrap: [AppComponent],
-    providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER, NotificationHelper]
+    providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
 export class AppModule {
     constructor(monaco: Monaco) {
@@ -34,8 +35,8 @@ export function start() {
             $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
 
             platformBrowserDynamic()
-                .bootstrapModule(AppModule)
-                .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
+                .bootstrapModule(AppModule);
+            // .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
         });
     }
 }

@@ -1,12 +1,11 @@
 ﻿import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
-import { Utilities } from '../../helpers';
 import { ViewBase } from '../base';
 import './hamburger.scss';
 
 @Component({
     selector: 'hamburger',
     template: `
-    <section class="hamburger-menu" [ngClass]="{ 'hamburger-menu--shown': shown }">
+    <section class="hamburger-menu ms-u-slideRightIn10" [ngClass]="{ 'hamburger-menu--shown': shown }">
         <div class="command__bar">
             <div class="command__icon" (click)="close()">
                 <i [hidden]="!shown" class="ms-Icon ms-Icon--Cancel"></i>

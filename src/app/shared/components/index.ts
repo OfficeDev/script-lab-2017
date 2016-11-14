@@ -3,3 +3,5 @@ export * from './base';
 export * from './dialog';
 export * from './hamburger';
 export * from './collapse';
+export * from './panel';
+
