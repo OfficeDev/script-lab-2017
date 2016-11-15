@@ -10,7 +10,11 @@
     "noImplicitAny": false,
     "noEmitOnError": true,
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": [
+      "dom",
+      "es2015"
+    ]
   },
   "exclude": [
     "node_modules"

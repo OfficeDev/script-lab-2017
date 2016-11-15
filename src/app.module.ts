@@ -43,6 +43,7 @@ export function start() {
 
 (() => {
     //TODO: Add modernizr check for Crypto
-    let isRunningInWeb = location.href.indexOf('mode=web') > 0;
+    let isRunningInWeb = location.href.indexOf('web') > 0;
     isRunningInWeb ? start() : Office.initialize = reason => start();
+    start();
 })();

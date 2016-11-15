@@ -51,6 +51,11 @@ ul {
         height: 100%;
     }
 
+    dialog {
+        position: absolute;
+        border: none;
+    }
+
     hamburger {
         flex: 0 0 auto;
     }

@@ -3,7 +3,6 @@
   "dependencies": {},
   "globalDependencies": {
     "applicationinsights-js": "registry:dt/applicationinsights-js#0.23.2+20160730040946",
-    "core-js": "registry:dt/core-js#0.0.0+20160914114559",
     "crypto-js": "registry:dt/crypto-js#3.1.4+20160708041433",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "js-yaml": "registry:dt/js-yaml#3.5.2+20160316171810",
