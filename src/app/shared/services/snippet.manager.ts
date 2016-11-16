@@ -17,7 +17,7 @@ export class SnippetManager {
         private _notification: Notification
     ) {
         this._context = HostTypes[Utilities.host];
-        this._store = new Storage<ISnippet>(`${this._context.toLowerCase()}_snippets`);
+        this._store = new Storage<ISnippet>(`${this._context}Snippets`);
         this._store.onStorage(item => console.log(item));
     }
 
@@ -60,7 +60,7 @@ export class SnippetManager {
         return Promise.resolve(this._store.values());
     }
 
-    playlist(url?: string, external?: boolean): Promise<IPlaylist> {
+    templates(url?: string, external?: boolean): Promise<IPlaylist> {
         let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
         return this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON);
     }
@@ -95,21 +95,20 @@ export class SnippetManager {
 
     private _generateName(name: string, suffix: string = ''): string {
         let newName = _.isEmpty(name.trim()) ? 'New Snippet' : name.trim();
-        let regex = new RegExp(`^${name}`, 'gi');
-        let maxSuffixNumber = _.reduce(this._store.values(), (max, item) => {
-            if (regex.test(item.name)) {
-                let match = /(\d+)$/.exec(item.name);
-                if (match == null) {
-                    max = 1;
-                }
-                else if (max <= +match[1]) {
-                    max = +match[1] + 1;
-                }
+        let regex = new RegExp(`^${name}`);
+        let options = this._store.values().filter(item => regex.test(item.name.trim()));
+        let maxSuffixNumber = _.reduce(options, (max, item) => {
+            let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
+            if (match == null) {
+                max = 1;
+            }
+            else if (max <= +match[1]) {
+                max = +match[1] + 1;
             }
             return max;
         }, 0);
 
-        return `${name}${(suffix ? ' - ' + suffix : '')}${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')}`;
+        return `${newName}${(suffix ? ' - ' + suffix : '')}${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')}`;
     }
 
     private _post(path, params) {

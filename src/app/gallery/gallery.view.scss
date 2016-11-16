@@ -94,10 +94,15 @@
 
             &__local {
                 span {
-                    padding: $default-spacing;
+                    padding: 12.5px 15px;
                     align-self: flex-start;
                     @include ellipsis();
                     flex: 1 1 100%;
+                }
+
+                i {
+                    padding: 12.5px 15px;
+                    font-size: 12pt;
                 }
             }
 

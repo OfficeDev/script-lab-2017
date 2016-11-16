@@ -25,7 +25,7 @@ export class Intellisense {
                         kind: monaco.languages.CompletionItemKind.Module,
                         insertText: `${typings}\n`
                     })
-            )
+            );
         }
 
         return this._typings;

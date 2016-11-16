@@ -45,10 +45,6 @@
             <i class="ms-Icon ms-Icon--StatusErrorFull"></i>
             <span class="ms-font-s">0</span>
         </div>
-        <div class="command__text" (click)="theme === 'vs' ? theme = 'vs-dark' : theme = 'vs'"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs' ? 'Light': 'Dark'}}</span></div>
-        <div class="command__text">
-            <i class="ms-Icon ms-Icon--CircleFill"></i>
-            <i class="ms-Icon ms-Icon--Emoji2"></i>
-        </div>
+        <div class="command__text" (click)="switchTheme()"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs-dark' ? 'Dark': 'Light'}}</span></div>
     </section>
 </section>

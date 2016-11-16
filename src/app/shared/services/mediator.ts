@@ -1,45 +1,25 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { Subject, Observable } from 'rxjs/Rx';
-import { Dictionary } from '@microsoft/office-js-helpers';
-import { Utilities } from '../helpers';
+import { Injectable, EventEmitter, OnDestroy } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
-export interface Channel<T> {
+interface MediatorEvent<T> {
     name: string,
-    source$: Observable<T>
-}
-
-export interface EventChannel<T> extends Channel<T> {
-    event: EventEmitter<T>
-}
-
-export interface SubjectChannel<T> extends Channel<T> {
-    dataSource: Subject<T>
+    data: T
 }
 
 @Injectable()
-export class Mediator extends Dictionary<Channel<any>> {
-    constructor() {
-        super();
+export class Mediator {
+    private _channel: EventEmitter<MediatorEvent<any>> = new EventEmitter<MediatorEvent<any>>();
+
+    emit<T>(event: string, data: T) {
+        this._channel.emit(<MediatorEvent<T>>{
+            name: event,
+            data: data
+        });
     }
 
-    createEventChannel<T>(name: string): EventChannel<T> {
-        let current = this.get(name);
-        if (!(current == null)) {
-            return current as EventChannel<T>;
-        }
-
-        let event = new EventEmitter<T>();
-        return this.add(name, { name: name, source$: event.asObservable(), event: event } as Channel<T>) as EventChannel<T>;
-    }
-
-    createSubjectChannel<T>(name: string): SubjectChannel<T> {
-        let current = this.get(name);
-        if (!(current == null)) {
-            return current as SubjectChannel<T>;
-        }
-
-        let dataSource = new Subject<T>();
-        let event = dataSource.asObservable();
-        return this.add(name, { name: name, source$: event, dataSource: dataSource } as Channel<T>) as SubjectChannel<T>;
+    on<T>(type: string): Observable<T> {
+        return this._channel
+            .filter(value => value.name === type)
+            .map(value => value.data as T);
     }
 }

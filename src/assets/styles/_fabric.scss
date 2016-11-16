@@ -1,3 +1,6 @@
+@import 'vars';
+@import 'mixins';
+
 .ms-Button {
     &.ms-Button--compound {
         max-width: none;
@@ -9,10 +12,40 @@
     }
 }
 
-.ms-Dialog-action {
-    margin-right: 15px;
+.ms-Dialog {
+    max-height: calc(100vh - 200px);
 
-    &:last-child {
-        margin-right: 0;
+    .is-visible {
+        @include flex();
+    }
+
+    &-inner,
+    &-main {
+        @include flex();
+    }
+
+    &-content {
+        overflow: auto;
+    }
+
+    &-subText {
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    &-action {
+        margin-right: 15px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.ms-Pivot {
+    &--tabs {
+        .ms-Pivot-link {
+            padding: 0 15px;
+        }
     }
 }

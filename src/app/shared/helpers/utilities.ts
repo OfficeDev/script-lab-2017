@@ -179,7 +179,7 @@ export class Utilities {
 
             let buf: Uint16Array = new Uint16Array(8);
             let crypto = window.crypto || (window as any).msCrypto;
-            window.crypto.getRandomValues(buf);
+            crypto.getRandomValues(buf);
             return `${pad(buf[0])}${pad(buf[1])}-${pad(buf[2])}-${pad(buf[3])}-${pad(buf[4])}-${pad(buf[5])}${pad(buf[6])}${pad(buf[7])}`;
         }
         catch (exception) {

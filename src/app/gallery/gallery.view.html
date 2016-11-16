@@ -1,15 +1,24 @@
 <section class="gallery">
     <section class="gallery__section">
         <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
-            <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !playlistView}" (click)="playlistView = false">Snippets</li>
-            <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': playlistView}" (click)="playlistView = true">Playlists</li>
+            <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !templatesView}" (click)="templatesView = false">Snippets</li>
+            <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Templates</li>
         </ul>
         <div class="gallery__tabs-container">
-            <section class="gallery-list ms-u-slideUpIn10" [hidden]="playlistView">
-                <collapse title="Local" info="These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent data loss.">
+            <section class="gallery-list ms-u-slideUpIn10" [hidden]="templatesView">
+                <collapse title="Local" [actions]="['Info', 'Delete']" (events)="events($event)">
+                    <div class="collapse__info ms-font-m" [hidden]="hideWarn">
+                        These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent
+                        data loss.
+                        <br />
+                        <button class="ms-Button" (click)="toggleWarn()">
+                            <span class="ms-Button-label">Got it</span>
+                        </button>
+                    </div>
                     <section class="gallery-list__group local-snippets">
                         <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
                             <span>{{snippet.name}}</span>
+                            <i class="ms-Icon ms-Icon--Delete"></i>
                         </article>
                         <p class="gallery-list__message ms-font-m" [hidden]="snippets?.length > 0">
                             You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose
@@ -18,12 +27,12 @@
                     </section>
                 </collapse>
             </section>
-            <section class="gallery-list ms-u-slideUpIn10" [hidden]="!playlistView">
+            <section class="gallery-list ms-u-slideUpIn10" [hidden]="!templatesView">
                 <collapse title="Microsoft">
-                    <section class="gallery-list__group" *ngFor="let group of playlist.groups">
+                    <section class="gallery-list__group" *ngFor="let group of templates.groups">
                         <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>
                         <section class="gallery-list__group">
-                            <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="importFromTemplate(snippet)">
+                            <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="select(snippet)">
                                 <div class="name">{{snippet?.name}}</div>
                                 <div class="description">{{snippet?.description}}</div>
                             </article>
@@ -35,13 +44,13 @@
     </section>
     <section class="gallery__section">
         <hr class="gallery__section--separator" />
-        <button class="gallery__action ms-Button ms-Button--compound" (click)="gallery()">
+        <button class="gallery__action ms-Button ms-Button--compound" (click)="new()">
             <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Generate"></i>New</h1>
-            <span class="ms-Button-description">Create a gallery snippet from a blank template.</span>
+            <span class="ms-Button-description">Create a new snippet.</span>
         </button>
         <button class="gallery__action button-primary ms-Button ms-Button--compound" (click)="import()">
             <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Download"></i>Import</h1>
-            <span class="ms-Button-description">Create from shared link or JSON.</span>
+            <span class="ms-Button-description">Create from GIST or JSON.</span>
         </button>
     </section>
 </section>

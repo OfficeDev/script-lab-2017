@@ -83,9 +83,8 @@
 
     .ms-Dialog-main {
         .ms-Dialog-header {
-            background-color: $accent-background-primary;
-
             .ms-Dialog-title {
+                background-color: $accent-background-primary;
                 color: $accent-foreground-primary ;
             }
         }
@@ -164,7 +163,12 @@
 
             &__item:active, &__item:hover {
                 background: $accent-background-primary;
+
+                i {
+                    @include focus-states(darken($accent-background-primary, 10%), $accent-foreground-primary);
+                }
             }
+
 
             &__action:active, &__action:hover {
                 background: darken($accent-background-primary, 15%);

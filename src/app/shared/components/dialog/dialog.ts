@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Mediator, EventChannel } from '../../services';
+import { Mediator } from '../../services';
 import { ViewBase } from '../base';
 
 @Component({
@@ -7,18 +7,17 @@ import { ViewBase } from '../base';
     templateUrl: 'dialog.html'
 })
 export class Dialog extends ViewBase {
-    showDialog$: EventChannel<IDialog>;
     dialog: IDialog;
     actions: string[];
 
     constructor(private _mediator: Mediator) {
         super();
-        this.showDialog$ = this._mediator.createEventChannel<IDialog>('ShowDialog');
-        let subscription = this.showDialog$.source$.subscribe(dialog => {
-            this.dialog = dialog;
+        let subscription = this._mediator.on<IDialog>('DialogEvent').subscribe(dialog => {
             if (!_.isEmpty(dialog.actions)) {
                 this.actions = Object.keys(dialog.actions);
             }
+
+            this.dialog = dialog;
         });
         this.markDispose(subscription);
     }

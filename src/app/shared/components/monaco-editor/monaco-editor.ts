@@ -36,7 +36,9 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     }
 
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor);
+        this._monacoEditor = await this._monaco.create(this._editor, {
+            theme: this.theme || 'vs',
+        });
         this._monacoEditor.onKeyDown(event => this.edit(event));
         this.select(this.get('Script'));
     }

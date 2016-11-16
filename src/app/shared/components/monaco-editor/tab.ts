@@ -1,5 +1,6 @@
 import { Directive, Input, Output, EventEmitter } from '@angular/core';
-import { Mediator, EventChannel } from '../../services';
+import { Observable } from 'rxjs/Observable';
+import { Mediator } from '../../services';
 import { MonacoEditor } from './monaco-editor';
 import { ViewBase } from '../base';
 import './monaco-editor.scss';
@@ -13,7 +14,6 @@ export class Tab extends ViewBase {
     @Input() active: boolean;
     @Input() content: string;
     @Output() contentChange: EventEmitter<string> = new EventEmitter<string>();
-    tabChanged$: EventChannel<string>;
     index: number;
     state: IMonacoEditorState;
 
@@ -22,7 +22,6 @@ export class Tab extends ViewBase {
         private _mediator: Mediator
     ) {
         super();
-        this.tabChanged$ = this._mediator.createEventChannel<string>('TabChanged');
     }
 
     ngOnInit() {
@@ -35,7 +34,7 @@ export class Tab extends ViewBase {
         this._tabs.add(this.name, this);
         this.index = this._tabs.count;
 
-        let subscription = this.tabChanged$.source$.subscribe(name => {
+        let subscription = this._mediator.on<string>('TabChangedEvent').subscribe(name => {
             if (name !== this.name) {
                 this.active = false;
             }
@@ -46,7 +45,7 @@ export class Tab extends ViewBase {
 
     activate() {
         this.active = true;
-        this.tabChanged$.event.emit(this.name);
+        this._mediator.emit<string>('TabChangedEvent', this.name);
         return this;
     }
 }

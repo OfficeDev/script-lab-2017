@@ -13,10 +13,10 @@ import './editor.view.scss';
     templateUrl: 'editor.view.html'
 })
 export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges {
+    theme: string;
     snippet: Snippet;
     menuOpen = false;
     readonly = false;
-    theme = 'vs';
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
     private _store: Storage<string>;
@@ -34,26 +34,34 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     }
 
     ngOnInit() {
+        this.switchTheme();
         let subscription = this._route.params.subscribe(async params => {
             try {
-                if (_.isEmpty(params['store']) || _.isEmpty(params['id'])) {
+                if (_.isEmpty(params['store'])) {
+                    // default path, the user wants to create a new snippet.
                     let lastOpened = this._store.get('LastOpened');
-                    let snippet = await this._snippets.find(lastOpened);
-                    this.snippet = snippet;
+                    if (_.isEmpty(lastOpened)) {
+                        this.snippet = await this._snippets.new();
+                    }
+                    else {
+                        this.snippet = await this._snippets.find(lastOpened);
+                    }
+                    this._location.replaceState(`/local/${this.snippet.content.id}`);
                 }
                 else if (params['store'].toLowerCase() === 'local') {
+                    // if the user correctly provides a path and an id
                     this.snippet = await this._snippets.find(params['id']);
+                    this._store.insert('LastOpened', this.snippet.content.id);
                 }
                 else {
-                    // import from gist
+                    // if the user wishes to import from a gist
                     this.readonly = true;
                 }
 
                 this._monaco.updateLibs('typescript', this.snippet.typings);
-                this.save();
             }
             catch (error) {
-                let result = await this._notification.confirm('Unable to find snippet. Do you want to create a new snippet?', 'Oops', 'Create', 'Cancel');
+                let result = await this._notification.confirm('Unable to find snippet. Do you want to create a new snippet instead?', 'Oops', 'Create', 'Cancel');
                 if (result === 'Create') {
                     this.snippet = await this._snippets.new();
                     this._location.replaceState(`/local/${this.snippet.content.id}`);
@@ -86,6 +94,16 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     async run() {
         await this.save();
         await this._snippets.run(this.snippet.content);
+    }
+
+    async switchTheme() {
+        if (_.isEmpty(this.theme)) {
+            this.theme = this._store.get('Theme') || 'vs';
+        }
+        else {
+            this.theme = this.theme === 'vs' ? 'vs-dark' : 'vs';
+        }
+        this._store.insert('Theme', this.theme);
     }
 
     interaction(event: MonacoEvents) {

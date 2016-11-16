@@ -1,21 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Mediator, EventChannel } from './mediator';
-import { Dialog } from '../components';
+import { Mediator } from './mediator';
 import * as _ from 'lodash';
 
 @Injectable()
 export class Notification {
-    private _channel: EventChannel<IDialog>;
     private _error: string[] = [];
     private _info: string[] = [];
 
-    constructor(mediator: Mediator) {
-        this._channel = mediator.createEventChannel<IDialog>('ShowDialog');
+    constructor(private _mediator: Mediator) {
     }
 
     alert(message: string, title?: string, primary?: string, secondary?: string): Promise<boolean> {
         return new Promise(resolve => {
-            return this._channel.event.emit({
+            return this._mediator.emit<IDialog>('DialogEvent', {
                 title: title || 'Alert',
                 message: message,
                 actions: {
@@ -34,7 +31,7 @@ export class Notification {
                 dialogActions[action] = action => resolve(action);
             });
 
-            return this._channel.event.emit({
+            return this._mediator.emit<IDialog>('DialogEvent', {
                 title: title || 'Alert',
                 message: message,
                 actions: dialogActions
