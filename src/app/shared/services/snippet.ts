@@ -1,5 +1,4 @@
-import { Utilities } from '../helpers';
-import * as jsyaml from 'js-yaml';
+import { Utilities, PlaygroundError } from '../helpers';
 import * as crypto from 'crypto-js';
 import * as _ from 'lodash';
 
@@ -7,13 +6,15 @@ export class Snippet {
     private _hash: string;
 
     constructor(public content: ISnippet) {
-        if (content == null) {
-            // TODO: Handle empty snippet error here.
+        if (_.isEmpty(this.content)) {
+            throw new PlaygroundError('Snippet creation failed. No content was received');
         }
 
-        if (_.isEmpty(content.id)) {
-            content.id = Utilities.guid();
+        if (_.isEmpty(this.content.id)) {
+            this.content.id = Utilities.guid();
         }
+
+        this._hash = this.hash();
     }
 
     get isUpdated() {
@@ -28,7 +29,7 @@ export class Snippet {
     }
 
     get typings(): string[] {
-        if (this.content == null) {
+        if (_.isEmpty(this.content)) {
             return [];
         }
         try {
@@ -40,13 +41,10 @@ export class Snippet {
     }
 
     public hash(): string {
-        if (this.content == null) {
-            // TODO: Throw and error here
+        if (_.isEmpty(this.content)) {
+            throw new PlaygroundError('Snippet hash failed. Cannot create hash of null or undefined');
         }
-        return crypto.SHA1(JSON.stringify(this.content));
-    }
 
-    public toYaml(): Promise<string> {
-        return new Promise(resolve => resolve(jsyaml.safeDump(this.content)));
+        return crypto.SHA1(JSON.stringify(this.content)).toString();
     }
 }

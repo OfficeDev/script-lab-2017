@@ -1,17 +1,12 @@
 import { Component, ViewChild, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
+import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
-import { Monaco, MonacoEvents, Snippet, SnippetManager } from '../shared/services';
+import { Monaco, MonacoEvents, Snippet, SnippetManager, Notification } from '../shared/services';
 import { Theme, PlaygroundError } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
-
-enum StatusType {
-    info,
-    warning,
-    error
-}
 
 @Component({
     selector: 'editor-view',
@@ -19,39 +14,52 @@ enum StatusType {
 })
 export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges {
     snippet: Snippet;
-    status: string;
-    statusType: StatusType;
-    editMode = false;
     menuOpen = false;
+    readonly = false;
     theme = 'vs';
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
-    @ViewChild('name') nameInputField: ElementRef;
+    private _store: Storage<string>;
 
     constructor(
-        private _router: Router,
+        private _location: Location,
         private _monaco: Monaco,
-        private _snippetManager: SnippetManager,
+        private _snippets: SnippetManager,
+        private _notification: Notification,
         private _route: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         super();
+        this._store = new Storage<string>('Playground');
     }
 
     ngOnInit() {
-        let subscription = this._route.params.subscribe(params => {
-            if (params['id'] == null) {
-                this._snippetManager.new().then(snippet => {
+        let subscription = this._route.params.subscribe(async params => {
+            try {
+                if (_.isEmpty(params['store']) || _.isEmpty(params['id'])) {
+                    let lastOpened = this._store.get('LastOpened');
+                    let snippet = await this._snippets.find(lastOpened);
                     this.snippet = snippet;
-                    this._monaco.updateLibs('typescript', this.snippet.typings);
-                });
+                }
+                else if (params['store'].toLowerCase() === 'local') {
+                    this.snippet = await this._snippets.find(params['id']);
+                }
+                else {
+                    // import from gist
+                    this.readonly = true;
+                }
+
+                this._monaco.updateLibs('typescript', this.snippet.typings);
+                this.save();
             }
-            else {
-                this._snippetManager.find(params['id'])
-                    .then(snippet => {
-                        this.snippet = snippet;
-                        this._monaco.updateLibs('typescript', this.snippet.typings);
-                    });
+            catch (error) {
+                let result = await this._notification.confirm('Unable to find snippet. Do you want to create a new snippet?', 'Oops', 'Create', 'Cancel');
+                if (result === 'Create') {
+                    this.snippet = await this._snippets.new();
+                    this._location.replaceState(`/local/${this.snippet.content.id}`);
+                    this._monaco.updateLibs('typescript', this.snippet.typings);
+                    this.save();
+                }
             }
         });
 
@@ -65,19 +73,19 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
         }
     }
 
-    save(): Promise<void> {
-        // appInsights.trackEvent('Save', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-        console.log(this.snippet.content);
-        // return this._saveHelper()
-        //     .then((snippet) => {
-        //         this._showStatus(StatusType.info, 3 /*seconds*/, `Saved "${snippet.name}"`);
-        //     })
-        //     .catch(this._errorHandler);
+    async save() {
+        try {
+            this._store.insert('LastOpened', this.snippet.content.id);
+            await this._snippets.save(this.snippet.content);
+        }
+        catch (error) {
+            this._notification.confirm(error, 'Unable to save snippet', 'Ok');
+        }
     }
 
-    run() {
-        // appInsights.trackEvent('Run from Editor', { type: 'UI Action', id: this.snippet.content.id, name: this.snippet.content.name });
-        this.snippet.toYaml().then(yaml => this._post('https://office-playground-runner.azurewebsites.net', yaml));
+    async run() {
+        await this.save();
+        await this._snippets.run(this.snippet.content);
     }
 
     interaction(event: MonacoEvents) {
@@ -93,25 +101,5 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
             case MonacoEvents.RUN:
                 this.run();
         }
-    }
-
-    private _post(path, params) {
-        let form = document.createElement('form');
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', path);
-
-        for (let key in params) {
-            if (params.hasOwnProperty(key)) {
-                let hiddenField = document.createElement('input');
-                hiddenField.setAttribute('type', 'hidden');
-                hiddenField.setAttribute('name', key);
-                hiddenField.setAttribute('value', params[key]);
-
-                form.appendChild(hiddenField);
-            }
-        }
-
-        document.body.appendChild(form);
-        form.submit();
     }
 }

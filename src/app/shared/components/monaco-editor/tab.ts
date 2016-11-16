@@ -46,7 +46,7 @@ export class Tab extends ViewBase {
 
     activate() {
         this.active = true;
-        this.tabChanged$.event.next(this.name);
+        this.tabChanged$.event.emit(this.name);
         return this;
     }
 }

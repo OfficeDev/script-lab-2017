@@ -11,7 +11,7 @@
                         <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
                             <span>{{snippet.name}}</span>
                         </article>
-                        <p class="gallery-list__message ms-font-m" [hidden]="localGallery?.length > 0">
+                        <p class="gallery-list__message ms-font-m" [hidden]="snippets?.length > 0">
                             You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose
                             from the gallery below.
                         </p>

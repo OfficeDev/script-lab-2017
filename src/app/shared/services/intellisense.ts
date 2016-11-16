@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Dictionary } from '@microsoft/office-js-helpers';
+import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
 import * as _ from 'lodash';
 
 @Injectable()
 export class Intellisense {
-    private _cache: Dictionary<string>;
+    private _cache: Storage<string>;
 
     constructor(private _request: Request) {
-        this._cache = new Dictionary<string>();
+        this._cache = new Storage<string>('IntellisenseCache', StorageType.SessionStorage);
     }
 
     private _intellisenseFile = (this._request.local<any[]>('libraries.json', ResponseTypes.JSON) as Promise<any[]>);
@@ -25,7 +25,7 @@ export class Intellisense {
                         kind: monaco.languages.CompletionItemKind.Module,
                         insertText: `${typings}\n`
                     })
-            );
+            )
         }
 
         return this._typings;
@@ -43,7 +43,7 @@ export class Intellisense {
                         kind: monaco.languages.CompletionItemKind.Property,
                         insertText: `${label}\n`,
                     })
-            );
+            )
         }
 
         return this._libraries;
@@ -84,12 +84,10 @@ export class Intellisense {
         return urls.map(url => this._tryGetCached(url));
     }
 
-    fetch(filePath: string) {
-        return this._request.get<string>(filePath, null, ResponseTypes.RAW)
-            .then(content => {
-                this._cache.add(content, filePath);
-                return { content, filePath };
-            });
+    async fetch(filePath: string) {
+        let content = await this._request.get<string>(filePath, null, ResponseTypes.RAW);
+        this._cache.add(filePath, content);
+        return { content, filePath };
     }
 
     private _tryGetCached = filePath => {

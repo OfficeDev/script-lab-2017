@@ -102,17 +102,19 @@ export class Request {
             .catch(this._errorHandler);
     }
 
-    private _yaml<T>(request: Observable<any>): Promise<T> {
-        return this._text(request)
-            .then(yaml => jsyaml.safeLoad(yaml));
+    private async _yaml<T>(request: Observable<any>): Promise<T> {
+        let yaml = await this._text(request);
+        return jsyaml.safeLoad(yaml);
     }
 
-    private _boolean(request: Observable<any>): Promise<boolean> {
-        return request
-            .map(response => response.text() as string)
-            .toPromise()
-            .then(result => true)
-            .catch(error => false);
+    private async _boolean(request: Observable<any>): Promise<boolean> {
+        try {
+            await request.map(response => response.text()).toPromise();
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
     }
 
     private _errorHandler(error) {

@@ -21,11 +21,7 @@ export const AppRoutes: Routes = [
         component: EditorView
     },
     {
-        path: 'gist/:id',
-        component: EditorView
-    },
-    {
-        path: 'local/:id',
+        path: ':store/:id',
         component: EditorView
     }
 ];

@@ -20,7 +20,7 @@ import './monaco-editor.scss';
 })
 export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => this.currentTab.contentChange.next(this._monacoEditor.getValue()), 200);
+    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => this.currentTab.contentChange.emit(this._monacoEditor.getValue()), 200);
 
     currentTab: Tab;
     @ViewChild('editor') private _editor: ElementRef;
@@ -35,12 +35,10 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit {
         super();
     }
 
-    ngAfterViewInit() {
-        this._monaco.create(this._editor).then(monacoEditor => {
-            this._monacoEditor = monacoEditor;
-            monacoEditor.onKeyDown(event => this.edit(event));
-            this.select(this.get('Script'));
-        });
+    async ngAfterViewInit() {
+        this._monacoEditor = await this._monaco.create(this._editor);
+        this._monacoEditor.onKeyDown(event => this.edit(event));
+        this.select(this.get('Script'));
     }
 
     ngOnChanges(changes: SimpleChanges) {

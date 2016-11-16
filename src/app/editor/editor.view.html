@@ -31,8 +31,8 @@
             </panel>
         </div>
     </header>
-    <section class="editor__main" *ngIf="snippet">
-        <monaco-editor (events)="interaction($event)" [(lang)]="language" [(theme)]="theme">
+    <section class="editor__main">
+        <monaco-editor *ngIf="snippet" [readonly]="readonly" (events)="interaction($event)" [(lang)]="language" [(theme)]="theme">
             <tab name="Script" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
             <tab name="Template" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>
             <tab name="Style" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>

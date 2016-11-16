@@ -7,13 +7,12 @@ var commonConfig = require('./webpack.common.js');
 var path = require('path');
 
 module.exports = webpackMerge(commonConfig, {
-    debug: true,
+    devtool: 'inline-source-map',
 
     output: {
         path: path.resolve('dist'),
         filename: '[name].[hash].js',
-        chunkFilename: '[id].[hash].chunk.js',
-        sourceMapFilename: '[name].[hash].map'
+        chunkFilename: '[name].[hash].chunk.js'
     },
 
     tslint: {
@@ -23,14 +22,6 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        new webpack.SourceMapDevToolPlugin({
-            filename: '[file].[hash].map',
-            exclude: [
-                /node_modules/,
-                'vendor.js',
-                'polyfills.js'
-            ]
-        }),
         new ExtractTextPlugin('[name].[hash].css'),
         new CopyWebpackPlugin([
             {

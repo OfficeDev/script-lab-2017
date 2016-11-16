@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
+import * as jsyaml from 'js-yaml';
+import { PlaygroundError } from '../helpers';
 import { Request, ResponseTypes } from './request';
 import { Snippet } from './snippet';
 import { Notification } from './notification';
@@ -16,90 +18,42 @@ export class SnippetManager {
     ) {
         this._context = HostTypes[Utilities.host];
         this._store = new Storage<ISnippet>(`${this._context.toLowerCase()}_snippets`);
+        this._store.onStorage(item => console.log(item));
     }
 
-    new(): Promise<Snippet> {
-        //TODO: LOAD FROM Github Repo instead with the right folder structure.
-
-        return (this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML) as Promise<ISnippet>)
-            .then(snippet => new Snippet(snippet));
+    async new(): Promise<Snippet> {
+        let snippet = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML);
+        return new Snippet(snippet);
     }
 
-    create(snippet: Snippet, suffix: string): Promise<Snippet> {
-        return new Promise(resolve => {
-            snippet.content.name = this._generateName(snippet.content.name, suffix);
-            this._store.add(snippet.content.id, snippet.content);
+    import() {
+
+    }
+
+    save(snippet: ISnippet, suffix?: string): Promise<ISnippet> {
+        return new Promise((resolve, reject) => {
+            this._validate(snippet);
+            if (this._store.contains(snippet.id)) {
+                return Promise.resolve(this._store.insert(snippet.id, snippet));
+            }
+            else {
+                if (this.exists(snippet.name)) {
+                    snippet.name = this._generateName(snippet.name);
+                }
+                return Promise.resolve(this._store.add(snippet.id, snippet));
+            }
         });
     }
 
-    copy(snippet: Snippet): Promise<Snippet> {
-        return this.create(new Snippet(snippet.content), 'copy');
+    delete(snippet: ISnippet): Promise<any> {
+        return new Promise(resolve => {
+            this._validate(snippet);
+            this._store.remove(snippet.id);
+        });
     }
 
-    save(snippet: Snippet): Promise<ISnippet> {
-        if (snippet == null) {
-            return Promise.reject(new Error('Snippet metadata cannot be empty')) as any;
-        }
-
-        if (_.isEmpty(snippet.content.name)) {
-            return Promise.reject(new Error('Snippet name cannot be empty')) as any;
-        }
-
-        if (!this._isNameUnique(snippet.content.name)) {
-            return Promise.reject(new Error('Snippet name must be unique')) as any;
-        }
-
-        return Promise.resolve(this._store.insert(snippet.content.id, snippet.content));
-    }
-
-    delete(snippet: Snippet, askForConfirmation: boolean): Promise<any> {
-        if (snippet == null) {
-            return Promise.reject(new Error('Snippet metadata cannot be empty'));
-        }
-
-        let that = this;
-
-        if (askForConfirmation) {
-            // return UxUtil.showDialog('Delete confirmation',
-            //     `Are you sure you want to delete the snippet "${snippet.content.name}"?`, ['Yes', 'No'])
-            //     .then((choice) => {
-            //         if (choice === 'Yes') {
-            //             return deleteAndResolvePromise();
-            //         } else {
-            //             return Promise.reject(new ExpectedError());
-            //         }
-            //     });
-        } else {
-            return deleteAndResolvePromise();
-        }
-
-        function deleteAndResolvePromise(): Promise<any> {
-            that._store.remove(snippet.content.id);
-            return Promise.resolve();
-        }
-    }
-
-    deleteAll(askForConfirmation: boolean): Promise<any> {
-        let that = this;
-
-        if (askForConfirmation) {
-            // return UxUtil.showDialog('Delete confirmation',
-            //     'Are you sure you want to delete *ALL* of your local snippets?', ['Yes', 'No'])
-            //     .then((choice) => {
-            //         if (choice === 'Yes') {
-            //             return deleteAndResolvePromise();
-            //         } else {
-            //             return Promise.reject(new ExpectedError());
-            //         }
-            //     });
-        } else {
-            return deleteAndResolvePromise();
-        }
-
-        function deleteAndResolvePromise(): Promise<any> {
-            that._store.clear();
-            return Promise.resolve();
-        }
+    deleteAll(): Promise<any> {
+        return Promise.resolve(this._store.clear());
     }
 
     local(): Promise<ISnippet[]> {
@@ -108,19 +62,35 @@ export class SnippetManager {
 
     playlist(url?: string, external?: boolean): Promise<IPlaylist> {
         let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
-        return (this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON) as Promise<IPlaylist>)
-            .catch(e => {
-                // let messages = [`Could not retrieve default snippets for ${this._context}.`];
-                // _.concat(messages, UxUtil.extractErrorMessage(e));
-                // throw new PlaygroundError(messages);
-            });
+        return this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON);
     }
 
     find(id: string): Promise<Snippet> {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             let result = this._store.get(id);
-            resolve(new Snippet(result));
+            return resolve(new Snippet(result));
         });
+    }
+
+    run(snippet: ISnippet) {
+        return new Promise(resolve => {
+            let yaml = jsyaml.safeDump(snippet);
+            this._post('https://office-playground-runner.azurewebsites.net', yaml);
+        });
+    }
+
+    exists(name: string) {
+        return this._store.values().some(item => item.name.trim() === name.trim());
+    }
+
+    private _validate(snippet: ISnippet) {
+        if (_.isEmpty(snippet)) {
+            throw new PlaygroundError('Snippet cannot be empty');
+        }
+
+        if (_.isEmpty(snippet.name)) {
+            throw new PlaygroundError('Snippet name cannot be empty');
+        }
     }
 
     private _generateName(name: string, suffix: string = ''): string {
@@ -129,7 +99,10 @@ export class SnippetManager {
         let maxSuffixNumber = _.reduce(this._store.values(), (max, item) => {
             if (regex.test(item.name)) {
                 let match = /(\d+)$/.exec(item.name);
-                if (max <= +match[1]) {
+                if (match == null) {
+                    max = 1;
+                }
+                else if (max <= +match[1]) {
                     max = +match[1] + 1;
                 }
             }
@@ -139,5 +112,23 @@ export class SnippetManager {
         return `${name}${(suffix ? ' - ' + suffix : '')}${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')}`;
     }
 
-    private _isNameUnique = (name: string) => !(this._store.values().find(item => item.name.trim() === name.trim()) == null);
+    private _post(path, params) {
+        let form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', path);
+
+        for (let key in params) {
+            if (params.hasOwnProperty(key)) {
+                let hiddenField = document.createElement('input');
+                hiddenField.setAttribute('type', 'hidden');
+                hiddenField.setAttribute('name', key);
+                hiddenField.setAttribute('value', params[key]);
+
+                form.appendChild(hiddenField);
+            }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
 }

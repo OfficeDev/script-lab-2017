@@ -21,23 +21,25 @@ import './assets/styles/globals.scss';
 })
 export class AppModule {
     constructor(monaco: Monaco) {
-        monaco.initialize().then(instance => monaco.registerLanguageServices());
+        this._initialize(monaco);
+    }
+
+    private async _initialize(monaco: Monaco) {
+        await monaco.initialize();
+        await monaco.registerLanguageServices();
     }
 }
 
-export function start() {
+export async function start() {
     if (!Authenticator.isAuthDialog()) {
         if (!window.location.href.indexOf('localhost')) {
             enableProdMode();
         }
 
-        Theme.applyTheme().then(result => {
-            $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
-
-            platformBrowserDynamic()
-                .bootstrapModule(AppModule);
-            // .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
-        });
+        await Theme.applyTheme();
+        $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
+        platformBrowserDynamic().bootstrapModule(AppModule);
+        // .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
     }
 }
 

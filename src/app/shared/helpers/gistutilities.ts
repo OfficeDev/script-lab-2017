@@ -126,21 +126,24 @@ export class GistUtilities {
     }
 
     static postGist(token: string, createData: IGistPostData): Promise<string> {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: 'https://api.github.com/gists',
-                type: 'POST',
-                beforeSend: xhr => {
-                    if (token) {
-                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-                    }
-                },
-                data: JSON.stringify(createData)
-            })
-                .then((response) => resolve(response.id))
-                .fail(e => {
-                    reject(e.responseText);
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await $.ajax({
+                    url: 'https://api.github.com/gists',
+                    type: 'POST',
+                    beforeSend: xhr => {
+                        if (token) {
+                            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                        }
+                    },
+                    data: JSON.stringify(createData)
                 });
+
+                resolve(response.id);
+            }
+            catch (e) {
+                reject(e.responseText);
+            };
         });
     }
 }

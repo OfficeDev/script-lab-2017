@@ -72,32 +72,20 @@ export class Github {
         return this._request.put<IUploadCommit>(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}`, body, ResponseTypes.JSON) as Promise<IUploadCommit>;
     }
 
-    login(): Promise<IProfile> {
-        return this._authenticator.authenticate('GitHub')
-            .then(token => {
-                this._token = token;
-                this._setDefaultHeaders(this._token);
-                return this.me();
-            })
-            .then(profile => {
-                this.profile = profile;
-                return this.profile;
-            });
+    async login(): Promise<IProfile> {
+        this._token = await this._authenticator.authenticate('GitHub');
+        this._setDefaultHeaders(this._token);
+        this.profile = await this.me();
+        return this.profile;
     }
 
-    me() {
-        let _userMetadata: IBasicProfile;
-        return this.user()
-            .then(userMetadata => {
-                _userMetadata = userMetadata;
-                return this.orgs(_userMetadata.login);
-            })
-            .then(orgs => {
-                return <IProfile>{
-                    orgs: orgs,
-                    user: _userMetadata
-                };
-            });
+    async me() {
+        let userMetadata = await this.user();
+        let orgs = await this.orgs(userMetadata.login);
+        return <IProfile>{
+            orgs: orgs,
+            user: userMetadata
+        };
     }
 
     logout() {
