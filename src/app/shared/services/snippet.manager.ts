@@ -20,26 +20,20 @@ export class SnippetManager {
         this._store = new Storage<ISnippet>(`${this._context}Snippets`);
     }
 
-    async new(): Promise<Snippet> {
+    async create(suffix?: 'string'): Promise<Snippet> {
         let snippet = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML);
         this._notification.emit<ISnippet>('StorageEvent', snippet);
+        if (this.exists(snippet.name)) {
+            snippet.name = this._generateName(snippet.name);
+        }
         return new Snippet(snippet);
     }
 
-    save(snippet: ISnippet, suffix?: string): Promise<ISnippet> {
+    save(snippet: ISnippet): Promise<ISnippet> {
         return new Promise((resolve, reject) => {
             this._validate(snippet);
-            if (this._store.contains(snippet.id)) {
-                this._notification.emit<ISnippet>('StorageEvent', snippet);
-                return Promise.resolve(this._store.insert(snippet.id, snippet));
-            }
-            else {
-                if (this.exists(snippet.name)) {
-                    snippet.name = this._generateName(snippet.name);
-                }
-                this._notification.emit<ISnippet>('StorageEvent', snippet);
-                return Promise.resolve(this._store.add(snippet.id, snippet));
-            }
+            this._notification.emit<ISnippet>('StorageEvent', snippet);
+            return Promise.resolve(this._store.insert(snippet.id, snippet));
         });
     }
 
@@ -99,11 +93,8 @@ export class SnippetManager {
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = _.reduce(options, (max, item) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
-            if (match == null) {
-                max = 1;
-            }
-            else if (max <= +match[1]) {
-                max = +match[1] + 1;
+            if (max <= ~~match[1]) {
+                max = ~~match[1] + 1;
             }
             return max;
         }, 0);

@@ -92,7 +92,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
                     // default path, the user wants to create a new snippet.
                     let lastOpened = this._store.get('LastOpened');
                     if (_.isEmpty(lastOpened)) {
-                        this.snippet = await this._snippets.new();
+                        this.snippet = await this._snippets.create();
                     }
                     else {
                         this.snippet = await this._snippets.find(lastOpened);
@@ -111,7 +111,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
             catch (error) {
                 let result = await this._notification.showDialog('Unable to find snippet. Do you want to create a new snippet instead?', 'Oops', 'Create', 'Cancel');
                 if (result === 'Create') {
-                    let snippet = await this._snippets.new();
+                    let snippet = await this._snippets.create();
                     this.snippet = snippet;
                 }
                 else {
@@ -131,7 +131,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
     snippetEvents() {
         let subscription = this._notification.on<ISnippet>('SnippetEvents').subscribe(async snippet => {
             if (snippet == null) {
-                this.snippet = await this._snippets.new();
+                this.snippet = await this._snippets.create();
             }
             else {
                 try {
@@ -140,7 +140,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
                 catch (error) {
                     let result = await this._notification.showDialog('Unable to find snippet. Do you want to create a new snippet instead?', 'Oops', 'Create', 'Cancel');
                     if (result === 'Create') {
-                        this.snippet = await this._snippets.new();
+                        this.snippet = await this._snippets.create();
                     }
                     else {
                         return;
