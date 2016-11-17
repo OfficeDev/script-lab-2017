@@ -2,7 +2,7 @@ import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditorView } from './app/editor';
 import { GalleryView } from './app/gallery';
-import { Collapse, Hamburger, Dialog, Tab, MonacoEditor, Panel } from './app/shared/components';
+import { Collapse, Hamburger, Dialog, Tab, MonacoEditor } from './app/shared/components';
 
 export const COMPONENT_DECLARATIONS = [
     EditorView,
@@ -11,8 +11,7 @@ export const COMPONENT_DECLARATIONS = [
     MonacoEditor,
     Hamburger,
     Collapse,
-    Dialog,
-    Panel
+    Dialog
 ];
 
 export const AppRoutes: Routes = [

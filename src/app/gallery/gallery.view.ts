@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
 import { SnippetManager, Snippet, Notification } from '../shared/services';
 import { ViewBase } from '../shared/components/base';
@@ -18,9 +17,9 @@ export class GalleryView extends ViewBase implements OnInit {
     private _store: Storage<string>;
 
     constructor(
+        private _appRef: ApplicationRef,
         private _snippets: SnippetManager,
-        private _notification: Notification,
-        private _router: Router
+        private _notification: Notification
     ) {
         super();
         this._store = new Storage<string>('Playground');
@@ -28,18 +27,31 @@ export class GalleryView extends ViewBase implements OnInit {
     }
 
     async ngOnInit() {
-        this.snippets = await this._snippets.local();
+        this.snippets = this._snippets.local();
         this.templates = await this._snippets.templates();
+        let subscription = this._notification.on<ISnippet>('StorageEvent').subscribe(async items => {
+            this.snippets = this._snippets.local();
+            console.log(this.snippets.length);
+        });
+
+        this.markDispose(subscription);
     }
 
     async delete(snippet: ISnippet) {
+        let result = await this._notification.showDialog('Are you sure you want to delete your snippet?', `Delete '${snippet.name}'`, 'Delete', 'Keep');
+        if (result === 'Keep') {
+            return;
+        }
         await this._snippets.delete(snippet);
-        this.snippets = await this._snippets.local();
     }
 
     async deleteAll() {
+        let result = await this._notification.showDialog('Are you sure you want to delete all your local snippets?', 'Delete All', 'Delete all', 'Keep them');
+        if (result === 'Keep them') {
+            return;
+        }
         await this._snippets.deleteAll();
-        this.snippets = await this._snippets.local();
+        this.snippets = [];
     }
 
     toggleWarn() {
@@ -48,11 +60,11 @@ export class GalleryView extends ViewBase implements OnInit {
     }
 
     new() {
-        this._router.navigate(['']);
+        this._notification.emit<ISnippet>('SnippetEvents', null);
     }
 
     select(snippet: ISnippet) {
-        this._router.navigate(['local', snippet.id]);
+        this._notification.emit<ISnippet>('SnippetEvents', snippet);
     }
 
     async events($event: any) {
@@ -60,7 +72,7 @@ export class GalleryView extends ViewBase implements OnInit {
             switch ($event.action) {
                 case 'Info': return this.toggleWarn();
                 case 'Delete': {
-                    let result = await this._notification.confirm('Are you sure you want to delete all your local snippets?', 'Delete Local Snippets?', 'Delete All', 'Cancel');
+                    let result = await this._notification.showDialog('Are you sure you want to delete all your local snippets?', 'Delete Local Snippets?', 'Delete All', 'Cancel');
                     if (result === 'Delete All') {
                         this._snippets.deleteAll();
                     }

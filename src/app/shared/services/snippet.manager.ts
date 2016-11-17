@@ -18,34 +18,33 @@ export class SnippetManager {
     ) {
         this._context = HostTypes[Utilities.host];
         this._store = new Storage<ISnippet>(`${this._context}Snippets`);
-        this._store.onStorage(item => console.log(item));
     }
 
     async new(): Promise<Snippet> {
         let snippet = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML);
+        this._notification.emit<ISnippet>('StorageEvent', snippet);
         return new Snippet(snippet);
-    }
-
-    import() {
-
     }
 
     save(snippet: ISnippet, suffix?: string): Promise<ISnippet> {
         return new Promise((resolve, reject) => {
             this._validate(snippet);
             if (this._store.contains(snippet.id)) {
+                this._notification.emit<ISnippet>('StorageEvent', snippet);
                 return Promise.resolve(this._store.insert(snippet.id, snippet));
             }
             else {
                 if (this.exists(snippet.name)) {
                     snippet.name = this._generateName(snippet.name);
                 }
+                this._notification.emit<ISnippet>('StorageEvent', snippet);
                 return Promise.resolve(this._store.add(snippet.id, snippet));
             }
         });
     }
 
     delete(snippet: ISnippet): Promise<any> {
+        this._notification.emit<ISnippet>('StorageEvent', snippet);
         return new Promise(resolve => {
             this._validate(snippet);
             this._store.remove(snippet.id);
@@ -53,11 +52,12 @@ export class SnippetManager {
     }
 
     deleteAll(): Promise<any> {
+        this._notification.emit<ISnippet>('StorageEvent', null);
         return Promise.resolve(this._store.clear());
     }
 
-    local(): Promise<ISnippet[]> {
-        return Promise.resolve(this._store.values());
+    local(): ISnippet[] {
+        return this._store.values();
     }
 
     templates(url?: string, external?: boolean): Promise<IPlaylist> {

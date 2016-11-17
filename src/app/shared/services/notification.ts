@@ -1,29 +1,19 @@
-import { Injectable } from '@angular/core';
-import { Mediator } from './mediator';
+import { Injectable, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import * as _ from 'lodash';
+
+interface NotificationEvent<T> {
+    name: string,
+    data: T
+}
 
 @Injectable()
 export class Notification {
     private _error: string[] = [];
     private _info: string[] = [];
+    private _channel: EventEmitter<NotificationEvent<any>> = new EventEmitter<NotificationEvent<any>>();
 
-    constructor(private _mediator: Mediator) {
-    }
-
-    alert(message: string, title?: string, primary?: string, secondary?: string): Promise<boolean> {
-        return new Promise(resolve => {
-            return this._mediator.emit<IDialog>('DialogEvent', {
-                title: title || 'Alert',
-                message: message,
-                actions: {
-                    [primary || 'Ok']: action => resolve(true),
-                    [secondary || 'Cancel']: action => resolve(false)
-                },
-            });
-        });
-    }
-
-    confirm(message: string, title?: string, ...actions: string[]): Promise<string> {
+    showDialog(message: string, title?: string, ...actions: string[]): Promise<string> {
         return new Promise(resolve => {
             let dialogActions = {};
 
@@ -31,7 +21,7 @@ export class Notification {
                 dialogActions[action] = action => resolve(action);
             });
 
-            return this._mediator.emit<IDialog>('DialogEvent', {
+            return this.emit<IDialog>('DialogEvent', {
                 title: title || 'Alert',
                 message: message,
                 actions: dialogActions
@@ -39,21 +29,16 @@ export class Notification {
         });
     }
 
-    error(message: string | string[]) {
-        let errorMessage = message as string;
-        if (_.isArray(message)) {
-            errorMessage = message.join('\n');
-        }
-
-        this._error.push(errorMessage);
+    emit<T>(event: string, data: T) {
+        this._channel.emit(<NotificationEvent<T>>{
+            name: event,
+            data: data
+        });
     }
 
-    info(message: string | string[]) {
-        let infoMessage = message as string;
-        if (_.isArray(message)) {
-            infoMessage = message.join('\n');
-        }
-
-        this._info.push(infoMessage);
+    on<T>(type: string): Observable<T> {
+        return this._channel
+            .filter(value => value.name === type)
+            .map(value => value.data as T);
     }
 }

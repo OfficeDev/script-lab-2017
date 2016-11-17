@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Mediator } from '../../services';
+import { Notification } from '../../services';
 import { ViewBase } from '../base';
 
 @Component({
@@ -10,9 +10,9 @@ export class Dialog extends ViewBase {
     dialog: IDialog;
     actions: string[];
 
-    constructor(private _mediator: Mediator) {
+    constructor(private _notification: Notification) {
         super();
-        let subscription = this._mediator.on<IDialog>('DialogEvent').subscribe(dialog => {
+        let subscription = this._notification.on<IDialog>('DialogEvent').subscribe(dialog => {
             if (!_.isEmpty(dialog.actions)) {
                 this.actions = Object.keys(dialog.actions);
             }

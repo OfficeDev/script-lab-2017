@@ -1,6 +1,6 @@
 import { Directive, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Mediator } from '../../services';
+import { Notification } from '../../services';
 import { MonacoEditor } from './monaco-editor';
 import { ViewBase } from '../base';
 import './monaco-editor.scss';
@@ -19,7 +19,7 @@ export class Tab extends ViewBase {
 
     constructor(
         private _tabs: MonacoEditor,
-        private _mediator: Mediator
+        private _mediator: Notification
     ) {
         super();
     }
