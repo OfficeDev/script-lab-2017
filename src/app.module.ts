@@ -39,7 +39,6 @@ export async function start() {
         await Theme.applyTheme();
         $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
         platformBrowserDynamic().bootstrapModule(AppModule);
-        // .catch(UxUtil.catchError('Error', 'An error occurred while loading the playground'));
     }
 }
 
@@ -47,5 +46,4 @@ export async function start() {
     //TODO: Add modernizr check for Crypto
     let isRunningInWeb = location.href.indexOf('web') > 0;
     isRunningInWeb ? start() : Office.initialize = reason => start();
-    start();
 })();
