@@ -20,34 +20,58 @@ export class SnippetManager {
         this._store = new Storage<ISnippet>(`${this._context}Snippets`);
     }
 
-    async create(suffix?: 'string'): Promise<Snippet> {
-        let snippet = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML);
-        this._notification.emit<ISnippet>('StorageEvent', snippet);
-        if (this.exists(snippet.name)) {
-            snippet.name = this._generateName(snippet.name);
-        }
-        return new Snippet(snippet);
+    async create(id?: string, suffix?: string): Promise<Snippet> {
+        return new Promise<Snippet>(async (resolve, reject) => {
+            let result: ISnippet;
+
+            // if an ID is provided check the store to find it else return a default snippet.
+            if (id == null) {
+                result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML);
+
+                if (result == null) {
+                    reject(new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
+                }
+
+                // check if we need to generate a new name. The default one is always going to be 'New Snippet'.
+                if (this._exists(result.name)) {
+                    result.name = this._generateName(result.name, suffix);
+                }
+            }
+            else {
+                result = await this._find(id);
+                if (result == null) {
+                    reject(new PlaygroundError('Cannot retrieve snippet from localStorage. Make sure the ID is correct'));
+                }
+            }
+
+            return resolve(new Snippet(result));
+        });
     }
 
     save(snippet: ISnippet): Promise<ISnippet> {
         return new Promise((resolve, reject) => {
             this._validate(snippet);
+            let result = this._store.insert(snippet.id, snippet);
             this._notification.emit<ISnippet>('StorageEvent', snippet);
-            return Promise.resolve(this._store.insert(snippet.id, snippet));
+            return resolve(result);
         });
     }
 
-    delete(snippet: ISnippet): Promise<any> {
-        this._notification.emit<ISnippet>('StorageEvent', snippet);
+    delete(snippet: ISnippet): Promise<ISnippet> {
         return new Promise(resolve => {
             this._validate(snippet);
-            this._store.remove(snippet.id);
+            let result = this._store.remove(snippet.id);
+            this._notification.emit<ISnippet>('StorageEvent', snippet);
+            return resolve(result);
         });
     }
 
-    deleteAll(): Promise<any> {
-        this._notification.emit<ISnippet>('StorageEvent', null);
-        return Promise.resolve(this._store.clear());
+    clear(): Promise<boolean> {
+        return new Promise(resolve => {
+            this._store.clear();
+            this._notification.emit<ISnippet>('StorageEvent', null);
+            return resolve(true);
+        });
     }
 
     local(): ISnippet[] {
@@ -59,22 +83,22 @@ export class SnippetManager {
         return this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON);
     }
 
-    find(id: string): Promise<Snippet> {
-        return new Promise((resolve, reject) => {
-            let result = this._store.get(id);
-            return resolve(new Snippet(result));
-        });
-    }
-
-    run(snippet: ISnippet) {
+    run(snippet: ISnippet): Promise<boolean> {
         return new Promise(resolve => {
             let yaml = jsyaml.safeDump(snippet);
             this._post('https://office-playground-runner.azurewebsites.net', yaml);
+            return resolve(true);
         });
     }
 
-    exists(name: string) {
+    private _exists(name: string) {
         return this._store.values().some(item => item.name.trim() === name.trim());
+    }
+
+    private _find(id: string): Promise<ISnippet> {
+        return new Promise((resolve, reject) => {
+            resolve(this._store.get(id));
+        });
     }
 
     private _validate(snippet: ISnippet) {

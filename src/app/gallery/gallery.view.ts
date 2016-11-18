@@ -18,7 +18,7 @@ export class GalleryView extends ViewBase implements OnInit {
 
     constructor(
         private _appRef: ApplicationRef,
-        private _snippets: SnippetManager,
+        private _snippetStore: SnippetManager,
         private _notification: Notification
     ) {
         super();
@@ -27,12 +27,13 @@ export class GalleryView extends ViewBase implements OnInit {
     }
 
     async ngOnInit() {
-        this.snippets = this._snippets.local();
-        this.templates = await this._snippets.templates();
-        let subscription = this._notification.on<ISnippet>('StorageEvent').subscribe(async items => {
-            this.snippets = this._snippets.local();
-            console.log(this.snippets.length);
-        });
+        this.snippets = this._snippetStore.local();
+        this.templates = await this._snippetStore.templates();
+        let subscription = this._notification.on<ISnippet>('StorageEvent')
+            .throttleTime(100)
+            .subscribe(items => {
+                this.snippets = this._snippetStore.local();
+            });
 
         this.markDispose(subscription);
     }
@@ -42,7 +43,11 @@ export class GalleryView extends ViewBase implements OnInit {
         if (result === 'Keep') {
             return;
         }
-        await this._snippets.delete(snippet);
+        if (this._store.get('LastOpened') === snippet.id) {
+            return await this._store.remove('LastOpened');
+        }
+
+        return await this._snippetStore.delete(snippet);
     }
 
     async deleteAll() {
@@ -50,8 +55,8 @@ export class GalleryView extends ViewBase implements OnInit {
         if (result === 'Keep them') {
             return;
         }
-        await this._snippets.deleteAll();
-        this.snippets = [];
+        await this._snippetStore.clear();
+        return await this._store.remove('LastOpened');
     }
 
     toggleWarn() {
@@ -71,12 +76,7 @@ export class GalleryView extends ViewBase implements OnInit {
         if ($event.title === 'Local') {
             switch ($event.action) {
                 case 'Info': return this.toggleWarn();
-                case 'Delete': {
-                    let result = await this._notification.showDialog('Are you sure you want to delete all your local snippets?', 'Delete Local Snippets?', 'Delete All', 'Cancel');
-                    if (result === 'Delete All') {
-                        this._snippets.deleteAll();
-                    }
-                }
+                case 'Delete': return await this.deleteAll();
             }
         }
     }

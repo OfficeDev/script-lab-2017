@@ -180,8 +180,8 @@ export class Monaco {
 
     async registerLanguageServices() {
         let monaco = await this.current;
-        monaco.languages.register({ id: 'script-references' });
-        monaco.languages.setMonarchTokensProvider('script-references', {
+        monaco.languages.register({ id: 'libraries' });
+        monaco.languages.setMonarchTokensProvider('libraries', {
             tokenizer: {
                 root: [
                     [Monaco.regexStrings.STARTS_WITH_COMMENT, 'comment'],
@@ -193,7 +193,7 @@ export class Monaco {
             tokenPostfix: ''
         });
 
-        monaco.languages.registerCompletionItemProvider('script-references', {
+        monaco.languages.registerCompletionItemProvider('libraries', {
             provideCompletionItems: (model, position) => {
                 let currentLine = model.getValueInRange({
                     startLineNumber: position.lineNumber,

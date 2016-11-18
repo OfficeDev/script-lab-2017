@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
-import { Monaco, MonacoEvents, Snippet, SnippetManager, Notification } from '../shared/services';
+import { MonacoEvents, Snippet, SnippetManager, Notification } from '../shared/services';
 import { Theme, PlaygroundError } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
@@ -12,19 +12,19 @@ import './editor.view.scss';
     selector: 'editor-view',
     templateUrl: 'editor.view.html'
 })
-export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges {
+export class EditorView extends ViewBase implements OnInit, OnDestroy {
     theme: string;
     snippet: Snippet;
-    menuOpen = false;
+    menuOpen = true;
     readonly = false;
+    activeTab: string;
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
     private _store: Storage<string>;
 
     constructor(
         private _location: Location,
-        private _monaco: Monaco,
-        private _snippets: SnippetManager,
+        private _snippetStore: SnippetManager,
         private _notification: Notification,
         private _route: ActivatedRoute
     ) {
@@ -34,30 +34,25 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
 
     ngOnInit() {
         this.switchTheme();
-        this.routerEvents();
-        this.snippetEvents();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        console.log(changes);
-        if (!(changes['snippet'].currentValue == null)) {
-            this._monaco.updateLibs('typescript', this.snippet.typings);
-        }
+        this._routerEvents();
+        this._snippetEvents();
     }
 
     async save() {
         try {
             this._store.insert('LastOpened', this.snippet.content.id);
-            await this._snippets.save(this.snippet.content);
+            let result = await this._snippetStore.save(this.snippet.content);
+            this.snippet.updateHash();
+            return result;
         }
         catch (error) {
-            this._notification.showDialog(error, 'Unable to save snippet', 'Ok');
+            return await this._notification.showDialog(error, 'Unable to save snippet', 'Ok');
         }
     }
 
     async run() {
         await this.save();
-        await this._snippets.run(this.snippet.content);
+        return await this._snippetStore.run(this.snippet.content);
     }
 
     async switchTheme() {
@@ -67,93 +62,65 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy, OnChanges
         else {
             this.theme = this.theme === 'vs' ? 'vs-dark' : 'vs';
         }
-        this._store.insert('Theme', this.theme);
+        return await this._store.insert('Theme', this.theme);
     }
 
-    editorEvents(event: MonacoEvents) {
+    async editorEvents(event: MonacoEvents) {
         switch (event) {
             case MonacoEvents.SAVE:
-                this.save();
-                break;
+                return await this.save();
 
             case MonacoEvents.TOGGLE_MENU:
                 this.menuOpen = !this.menuOpen;
                 break;
 
             case MonacoEvents.RUN:
-                this.run();
+                return await this.run();
         }
     }
 
-    routerEvents() {
+    private _routerEvents() {
         let subscription = this._route.params.subscribe(async params => {
-            try {
-                if (_.isEmpty(params['store'])) {
-                    // default path, the user wants to create a new snippet.
-                    let lastOpened = this._store.get('LastOpened');
-                    if (_.isEmpty(lastOpened)) {
-                        this.snippet = await this._snippets.create();
-                    }
-                    else {
-                        this.snippet = await this._snippets.find(lastOpened);
-                    }
-                }
-                else if (params['store'].toLowerCase() === 'local') {
-                    // if the user correctly provides a path and an id
-                    this.snippet = await this._snippets.find(params['id']);
-                }
-                else {
-                    // if the user wishes to import from a gist
-                    this.readonly = true;
-                }
+            let lastOpened = this._store.get('LastOpened');
+            this.snippet = await this._createSnippet(lastOpened);
+        });
 
-            }
-            catch (error) {
-                let result = await this._notification.showDialog('Unable to find snippet. Do you want to create a new snippet instead?', 'Oops', 'Create', 'Cancel');
-                if (result === 'Create') {
-                    let snippet = await this._snippets.create();
-                    this.snippet = snippet;
+        this.markDispose(subscription);
+    }
+
+    private _snippetEvents() {
+        let subscription = this._notification.on<ISnippet>('SnippetEvents').subscribe(async snippet => {
+            if (this.snippet.isUpdated) {
+                let result = await this._notification.showDialog('Do you want to save your changes?', 'Unsaved Snippet', 'Save', 'Discard', 'Cancel');
+                if (result === 'Save') {
+                    this.save();
                 }
-                else {
+                else if (result === 'Cancel') {
                     return;
                 }
             }
 
-            this.save();
-            this._store.insert('LastOpened', this.snippet.content.id);
-            this._location.replaceState(`/local/${this.snippet.content.id}`);
-            this._monaco.updateLibs('typescript', this.snippet.typings);
+            let id = snippet && snippet.id;
+            this.snippet = await this._createSnippet(id);
         });
 
         this.markDispose(subscription);
     }
 
-    snippetEvents() {
-        let subscription = this._notification.on<ISnippet>('SnippetEvents').subscribe(async snippet => {
-            if (snippet == null) {
-                this.snippet = await this._snippets.create();
+    private async _createSnippet(id?: string) {
+        try {
+            let newSnippet = await this._snippetStore.create(id);
+            await this._store.insert('LastOpened', newSnippet.content.id);
+            await this._snippetStore.save(newSnippet.content);
+            this._location.replaceState(`/local/${newSnippet.content.id}`);
+            return newSnippet;
+        }
+        catch (error) {
+            let title = _.isEmpty(id) ? 'Create a snippet' : 'Unable to find snippet';
+            let result = await this._notification.showDialog('Do you want to create a new snippet?', title, 'Create', 'Cancel');
+            if (result === 'Create') {
+                return await this._createSnippet();
             }
-            else {
-                try {
-                    this.snippet = await this._snippets.find(snippet.id);
-                }
-                catch (error) {
-                    let result = await this._notification.showDialog('Unable to find snippet. Do you want to create a new snippet instead?', 'Oops', 'Create', 'Cancel');
-                    if (result === 'Create') {
-                        this.snippet = await this._snippets.create();
-                    }
-                    else {
-                        return;
-                    }
-                }
-            }
-
-            this.save();
-            this._store.insert('LastOpened', this.snippet.content.id);
-            this._location.replaceState(`/local/${this.snippet.content.id}`);
-            this._monaco.updateLibs('typescript', this.snippet.typings);
-        });
-
-        this.markDispose(subscription);
+        }
     }
 }

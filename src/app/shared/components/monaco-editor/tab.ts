@@ -1,6 +1,6 @@
-import { Directive, Input, Output, EventEmitter } from '@angular/core';
+import { Directive, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Notification } from '../../services';
+import { Monaco, Notification } from '../../services';
 import { MonacoEditor } from './monaco-editor';
 import { ViewBase } from '../base';
 import './monaco-editor.scss';
@@ -8,44 +8,75 @@ import './monaco-editor.scss';
 @Directive({
     selector: 'tab'
 })
-export class Tab extends ViewBase {
+export class Tab extends ViewBase implements OnChanges, ITab {
     @Input() name: string;
     @Input() language: string;
-    @Input() active: boolean;
+
+    @Input() active: string;
+    @Output() activeChange: EventEmitter<string> = new EventEmitter<string>();
+
     @Input() content: string;
     @Output() contentChange: EventEmitter<string> = new EventEmitter<string>();
+
     index: number;
     state: IMonacoEditorState;
 
+    private _initialized: boolean;
+
     constructor(
         private _tabs: MonacoEditor,
-        private _mediator: Notification
+        private _monaco: Monaco,
+        private _notification: Notification
     ) {
         super();
     }
 
-    ngOnInit() {
-        this.state = {
-            name: this.name,
-            viewState: null,
-            model: null,
-        };
-
-        this._tabs.add(this.name, this);
-        this.index = this._tabs.count;
-
-        let subscription = this._mediator.on<string>('TabChangedEvent').subscribe(name => {
-            if (name !== this.name) {
-                this.active = false;
+    async ngOnChanges(changes: SimpleChanges) {
+        if (changes['content']) {
+            if (changes['content'].isFirstChange()) {
+                this._tabs.add(this.name, this);
+                this.index = this._tabs.count;
             }
-        });
 
-        this.markDispose(subscription);
+            if (this.name === 'Libraries') {
+                // update intellisense here
+            }
+        }
+    }
+
+    get isActive(): boolean {
+        return this.name === this.active;
+    }
+
+    async checkForRefresh(id: string) {
+        let monaco = await this._monaco.current;
+
+        if (!this._initialized) {
+            this.state = {
+                id: null,
+                name: this.name,
+                viewState: null,
+                model: null,
+            };
+        }
+
+        if (this.state.id === id) {
+            return;
+        }
+
+        if (this.state.model) {
+            this.state.model.dispose();
+        }
+
+        this.state.id = id;
+        this.state.model = monaco.editor.createModel(this.content, this.language);
+        this.state.viewState = null;
+        this._initialized = true;
     }
 
     activate() {
-        this.active = true;
-        this._mediator.emit<string>('TabChangedEvent', this.name);
+        this.active = this.name;
+        this.activeChange.next(this.name);
         return this;
     }
 }

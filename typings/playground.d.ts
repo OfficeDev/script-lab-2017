@@ -32,8 +32,8 @@ interface IPlaylist {
 }
 
 interface IMonacoEditorState {
+    id?: string;
     name?: string,
-    content?: string,
     viewState?: monaco.editor.IEditorViewState,
     model?: monaco.editor.IModel
 }
@@ -44,4 +44,10 @@ interface IDialog {
     actions: {
         [index: string]: (action: string) => any
     }
+}
+
+interface ITab {
+    name?: string,
+    language?: string,
+    content?: string
 }

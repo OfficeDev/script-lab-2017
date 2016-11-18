@@ -16,7 +16,9 @@ export class ViewBase {
 
     ngOnDestroy() {
         _.each(this._subscriptions, subscription => {
-            subscription.unsubscribe();
+            if (!subscription.closed) {
+                subscription.unsubscribe();
+            }
         });
 
         this._subscriptions = [];

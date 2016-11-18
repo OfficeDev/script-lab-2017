@@ -13,7 +13,7 @@ export class Notification {
     private _info: string[] = [];
     private _channel: EventEmitter<NotificationEvent<any>> = new EventEmitter<NotificationEvent<any>>();
 
-    showDialog(message: string, title?: string, ...actions: string[]): Promise<string> {
+    showDialog(message: string, title: string, ...actions: string[]): Promise<string> {
         return new Promise(resolve => {
             let dialogActions = {};
 

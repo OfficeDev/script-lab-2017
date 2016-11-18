@@ -14,18 +14,12 @@ export class Snippet {
             this.content.id = Utilities.guid();
         }
 
-        this._hash = this.hash();
+        this._hash = this._generateHash();
     }
 
     get isUpdated() {
-        let newHash = this.hash();
-        if (this._hash !== newHash) {
-            this._hash = newHash;
-            return true;
-        }
-        else {
-            return false;
-        }
+        let newHash = this._generateHash();
+        return this._hash !== newHash;
     }
 
     get typings(): string[] {
@@ -40,7 +34,11 @@ export class Snippet {
         }
     }
 
-    public hash(): string {
+    public updateHash() {
+        this._hash = this._generateHash();
+    }
+
+    private _generateHash(): string {
         if (_.isEmpty(this.content)) {
             throw new PlaygroundError('Snippet hash failed. Cannot create hash of null or undefined');
         }
