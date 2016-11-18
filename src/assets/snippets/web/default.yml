@@ -43,7 +43,7 @@ style:
 template:
   language: html
   content: |-
-    <p class="ms-font-m">Execute a code snippet in the API Explorer for Web</p>
+    <p class="ms-font-m">Execute a code snippet in the Add-in Playground for Web</p>
     <button id="run" class="ms-Button">
         <span class="ms-Button-label">Run code</span>
     </button>

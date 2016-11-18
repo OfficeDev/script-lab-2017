@@ -8,7 +8,7 @@
   <Version>1.0.0.2</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="API Explorer (local)" />
+  <DisplayName DefaultValue="Add-in Playground (local)" />
   <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />

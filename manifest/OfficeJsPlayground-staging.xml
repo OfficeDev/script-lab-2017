@@ -8,7 +8,7 @@
   <Version>1.0.0.2</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="API Explorer (staging)" />
+  <DisplayName DefaultValue="Add-in Playground (staging)" />
   <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-64.png" />
@@ -146,10 +146,10 @@
       <bt:ShortStrings>
         <bt:String id="Play.GroupLabel" DefaultValue="Add-ins (staging)" />
         <bt:String id="Play.TaskpaneButton.Label" DefaultValue="Launch Playground" />
-        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="API Explorer" />
+        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Add-in Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the API Explorer to create, test, and share your Office Add-in snippets." />
+        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Add-in Playground to create, test, and share your Office Add-in snippets." />
         <bt:String id="Play.Description" DefaultValue="Create, test and share your Office Add-in snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>

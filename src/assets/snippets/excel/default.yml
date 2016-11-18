@@ -44,7 +44,7 @@ style:
 template:
   language: html
   content: |-
-    <p class="ms-font-m">Execute a code snippet in the API Explorer for Excel</p>
+    <p class="ms-font-m">Execute a code snippet in the Add-in Playground for Excel</p>
     <button id="run" class="ms-Button">
         <span class="ms-Button-label">Run code</span>
     </button>

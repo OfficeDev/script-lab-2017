@@ -8,7 +8,7 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="API Explorer (content)" />
+  <DisplayName DefaultValue="Add-in Playground (content)" />
   <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://api-playground.azurewebsites.net/assets/images/icon-64.png" />
