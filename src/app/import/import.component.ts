@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } fro
 import { Router } from '@angular/router';
 import { BaseComponent } from '../shared/components/base';
 import { Utilities, UxUtil } from '../shared/helpers';
-import { Snippet, SnippetManager } from '../shared/services';
+import { Snippet, SnippetStore } from '../shared/services';
 declare var GitHub;
 
 @Component({
@@ -18,7 +18,7 @@ export class ImportComponent extends BaseComponent implements OnInit, OnDestroy 
     statusDescription = 'Initializing editor for importing...';
 
     constructor(
-        _snippetManager: SnippetManager,
+        _snippetManager: SnippetStore,
         _router: Router
     ) {
         super(_router, _snippetManager);

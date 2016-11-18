@@ -1,6 +1,6 @@
 import { Utilities } from './utilities';
 import { PlaygroundError } from './uxutil';
-import { Snippet, SnippetManager } from '../services';
+import { Snippet, SnippetStore } from '../services';
 
 /** GistResponse. Note: only exposing the relevant bits */
 export interface IGistResponse {

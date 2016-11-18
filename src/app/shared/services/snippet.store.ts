@@ -8,7 +8,7 @@ import { Notification } from './notification';
 import * as _ from 'lodash';
 
 @Injectable()
-export class SnippetManager {
+export class SnippetStore {
     private _store: Storage<ISnippet>;
     private _context: string;
 
@@ -26,7 +26,7 @@ export class SnippetManager {
 
             // if an ID is provided check the store to find it else return a default snippet.
             if (id == null) {
-                result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yml`, ResponseTypes.YAML);
+                result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
 
                 if (result == null) {
                     reject(new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));

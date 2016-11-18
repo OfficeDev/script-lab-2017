@@ -1,6 +1,6 @@
 import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
-import { SnippetManager, Snippet, Notification } from '../shared/services';
+import { SnippetStore, Snippet, Notification } from '../shared/services';
 import { ViewBase } from '../shared/components/base';
 import * as _ from 'lodash';
 import './gallery.view.scss';
@@ -18,7 +18,7 @@ export class GalleryView extends ViewBase implements OnInit {
 
     constructor(
         private _appRef: ApplicationRef,
-        private _snippetStore: SnippetManager,
+        private _snippetStore: SnippetStore,
         private _notification: Notification
     ) {
         super();

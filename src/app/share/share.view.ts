@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Http } from '@angular/http';
 import { ViewBase } from '../shared/components/base';
-import { Snippet, SnippetManager, Github } from '../shared/services';
+import { Snippet, SnippetStore, Github } from '../shared/services';
 import './share.view.scss';
 
 @Component({
@@ -10,7 +10,7 @@ import './share.view.scss';
 })
 export class ShareView extends ViewBase {
     constructor(
-        private _snippetManager: SnippetManager,
+        private _snippetManager: SnippetStore,
         private _github: Github
     ) {
         super();

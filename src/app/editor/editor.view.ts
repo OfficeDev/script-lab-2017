@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components/base';
-import { MonacoEvents, Snippet, SnippetManager, Notification } from '../shared/services';
+import { MonacoEvents, Snippet, SnippetStore, Notification } from '../shared/services';
 import { Theme, PlaygroundError } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
@@ -24,7 +24,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
 
     constructor(
         private _location: Location,
-        private _snippetStore: SnippetManager,
+        private _snippetStore: SnippetStore,
         private _notification: Notification,
         private _route: ActivatedRoute
     ) {

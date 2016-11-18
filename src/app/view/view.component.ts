@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@ang
 import { Router, ActivatedRoute } from '@angular/router';
 import { Tab, MonacoEditor, IEditorParent } from '../shared/components';
 import { BaseComponent } from '../shared/components/base';
-import { Snippet, SnippetManager } from '../shared/services';
+import { Snippet, SnippetStore } from '../shared/services';
 import { HostTypes, Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
 
 @Component({
@@ -21,7 +21,7 @@ export class ViewComponent extends BaseComponent implements OnInit, OnDestroy, I
 
     constructor(
         _router: Router,
-        _snippetManager: SnippetManager,
+        _snippetManager: SnippetStore,
         private _route: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
