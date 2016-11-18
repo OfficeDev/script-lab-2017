@@ -19,6 +19,12 @@
         color: #666;
     }
 
+     &__sub-title {
+        text-align: center;
+        padding: $default-spacing;
+        color: #999;
+    }
+
     &__logo {
         height: 100px;
         margin-bottom: $default-spacing;
@@ -105,7 +111,7 @@ body {
 .cs-loader-inner {
   transform: translateY(-50%);
   width: calc(100% - 200px);
-  color: rgb(0, 120, 215);
+  color: #f96618;
   padding: 0 100px;
   text-align: center;
 }

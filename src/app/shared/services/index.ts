@@ -1,6 +1,6 @@
 import { Github } from './github';
 import { Request } from './request';
-import { SnippetStore } from './snippet.manager';
+import { SnippetStore } from './snippet.store';
 import { Monaco } from './monaco';
 import { Intellisense } from './intellisense';
 import { Notification } from './notification';
