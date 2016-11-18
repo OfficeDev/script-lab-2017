@@ -25,8 +25,7 @@ export class Tab extends ViewBase implements OnChanges, ITab {
 
     constructor(
         private _tabs: MonacoEditor,
-        private _monaco: Monaco,
-        private _notification: Notification
+        private _monaco: Monaco
     ) {
         super();
     }

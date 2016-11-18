@@ -12,7 +12,7 @@ import './editor.view.scss';
     selector: 'editor-view',
     templateUrl: 'editor.view.html'
 })
-export class EditorView extends ViewBase implements OnInit, OnDestroy {
+export class EditorView extends ViewBase implements OnInit, OnChanges, OnDestroy {
     theme: string;
     snippet: Snippet;
     menuOpen = true;
@@ -36,6 +36,10 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
         this.switchTheme();
         this._routerEvents();
         this._snippetEvents();
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        console.log(changes);
     }
 
     async save() {

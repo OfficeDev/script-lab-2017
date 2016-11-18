@@ -44,7 +44,7 @@ style:
 template:
   language: html
   content: |-
-    <p class="ms-font-m">Execute a code snippet in the Office Add-in Playground for PowerPoint</p>
+    <p class="ms-font-m">Execute a code snippet in the API Explorer for PowerPoint</p>
     <button id="run" class="ms-Button">
         <span class="ms-Button-label">Run code</span>
     </button>
