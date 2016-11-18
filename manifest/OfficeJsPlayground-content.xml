@@ -21,7 +21,7 @@
   </Hosts>
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
-    <AppDomain>https://office-playground-runner.azurewebsites.net</AppDomain>
+    <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
   </AppDomains>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://api-playground.azurewebsites.net" />

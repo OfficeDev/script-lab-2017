@@ -15,7 +15,7 @@ import './editor.view.scss';
 export class EditorView extends ViewBase implements OnInit, OnChanges, OnDestroy {
     theme: string;
     snippet: Snippet;
-    menuOpen = true;
+    menuOpen = false;
     readonly = false;
     activeTab: string;
     title: string = `${HostTypes[Utilities.host]} Snippets`;

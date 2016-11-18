@@ -14,7 +14,7 @@
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
-    <AppDomain>https://office-playground-runner.azurewebsites.net</AppDomain>
+    <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
