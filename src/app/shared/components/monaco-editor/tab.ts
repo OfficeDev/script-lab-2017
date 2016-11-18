@@ -38,7 +38,7 @@ export class Tab extends ViewBase implements OnChanges, ITab {
             }
 
             if (this.name === 'Libraries') {
-                // update intellisense here
+                await this._monaco.updateLibs('typescript', this.content.split('\n'));
             }
         }
     }

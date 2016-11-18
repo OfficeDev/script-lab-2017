@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, OnDestroy, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
@@ -12,7 +12,7 @@ import './editor.view.scss';
     selector: 'editor-view',
     templateUrl: 'editor.view.html'
 })
-export class EditorView extends ViewBase implements OnInit, OnChanges, OnDestroy {
+export class EditorView extends ViewBase implements OnInit, OnDestroy {
     theme: string;
     snippet: Snippet;
     menuOpen = false;
@@ -36,10 +36,6 @@ export class EditorView extends ViewBase implements OnInit, OnChanges, OnDestroy
         this.switchTheme();
         this._routerEvents();
         this._snippetEvents();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        console.log(changes);
     }
 
     async save() {

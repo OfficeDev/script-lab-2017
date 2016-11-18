@@ -86,7 +86,7 @@ export class SnippetManager {
     run(snippet: ISnippet): Promise<boolean> {
         return new Promise(resolve => {
             let yaml = jsyaml.safeDump(snippet);
-            this._post('https://office-playground-runner.azurewebsites.net', yaml);
+            this._post('https://addin-playground-runner.azurewebsites.net', { snippet: yaml });
             return resolve(true);
         });
     }
