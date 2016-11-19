@@ -14,7 +14,7 @@ import './monaco-editor.scss';
         </li>
     </ul>
     <div class="tabs__container">
-        <section #editor class="monaco-editor"></section>
+        <section #editor class="monaco-editor" (keydown)="bindToEdit()"></section>
     </div>`,
     styleUrls: []
 })
@@ -52,7 +52,6 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         });
 
         await this.updateView(this.get('Script'), true);
-        this._monacoEditor.onKeyDown(event => this.bindToEdit(event));
     }
 
     async ngOnChanges(changes: SimpleChanges) {
