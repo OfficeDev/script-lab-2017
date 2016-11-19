@@ -15,15 +15,7 @@ export enum ResponseTypes {
 export class Request {
     headers: Object;
 
-    constructor(private _http: Http) {
-        this._warmUpRunner();
-    }
-
-    private async _warmUpRunner() {
-        let response = await this._http.get('https://addin-playground-runner.azurewebsites.net').toPromise();
-        let text = await response.text();
-        console.log(text);
-    }
+    constructor(private _http: Http) { }
 
     url(url: string, params: Object) {
         _.forEach(params, (value, key) => {

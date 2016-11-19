@@ -1,6 +1,6 @@
 import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
-import { SnippetStore, Snippet, Notification } from '../shared/services';
+import { SnippetStore, Snippet, Notification, Events, GalleryEvents } from '../shared/services';
 import { ViewBase } from '../shared/components/base';
 import * as _ from 'lodash';
 import './gallery.view.scss';
@@ -13,13 +13,13 @@ export class GalleryView extends ViewBase implements OnInit {
     snippets: ISnippet[] = [];
     templates: IPlaylist = {} as any;
     hideWarn: boolean;
-
     private _store: Storage<string>;
 
     constructor(
         private _appRef: ApplicationRef,
         private _snippetStore: SnippetStore,
-        private _notification: Notification
+        private _notification: Notification,
+        private _events: Events
     ) {
         super();
         this._store = new Storage<string>('Playground');
@@ -47,7 +47,8 @@ export class GalleryView extends ViewBase implements OnInit {
             return await this._store.remove('LastOpened');
         }
 
-        return await this._snippetStore.delete(snippet);
+        await this._snippetStore.delete(snippet);
+        this._events.emit('GalleryEvents', GalleryEvents.DELETE, snippet);
     }
 
     async deleteAll() {
@@ -56,7 +57,8 @@ export class GalleryView extends ViewBase implements OnInit {
             return;
         }
         await this._snippetStore.clear();
-        return await this._store.remove('LastOpened');
+        await this._store.remove('LastOpened');
+        this._events.emit('GalleryEvents', GalleryEvents.DELETE_ALL, null);
     }
 
     toggleWarn() {
@@ -65,14 +67,18 @@ export class GalleryView extends ViewBase implements OnInit {
     }
 
     new() {
-        this._notification.emit<ISnippet>('SnippetEvents', null);
+        this._events.emit('GalleryEvents', GalleryEvents.CREATE, null);
+    }
+
+    copy(snippet: ISnippet) {
+        this._events.emit('GalleryEvents', GalleryEvents.COPY, snippet);
     }
 
     select(snippet: ISnippet) {
-        this._notification.emit<ISnippet>('SnippetEvents', snippet);
+        this._events.emit('GalleryEvents', GalleryEvents.SELECT, snippet);
     }
 
-    async events($event: any) {
+    async commandEvents($event: any) {
         if ($event.title === 'Local') {
             switch ($event.action) {
                 case 'Info': return this.toggleWarn();

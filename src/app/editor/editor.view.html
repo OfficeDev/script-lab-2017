@@ -33,6 +33,8 @@
             <tab name="Style" [(active)]="activeTab" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>
             <tab name="Libraries" [(active)]="activeTab" language="libraries" [(content)]="snippet.content.libraries"></tab>
         </monaco-editor>
+        <div [hidden]="snippet" class="editor__placeholder">
+        </div>
     </section>
     <section class="editor__footer">
         <div class="command__text" (click)="switchTheme()"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs-dark' ? 'Dark': 'Light'}}</span></div>

@@ -51,3 +51,9 @@ interface ITab {
     language?: string,
     content?: string
 }
+
+interface IEvent<T> {
+    type: string,
+    action: number,
+    data: T
+}

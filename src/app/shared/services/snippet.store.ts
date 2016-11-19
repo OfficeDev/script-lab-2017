@@ -20,28 +20,18 @@ export class SnippetStore {
         this._store = new Storage<ISnippet>(`${this._context}Snippets`);
     }
 
-    async create(id?: string, suffix?: string): Promise<Snippet> {
+    async create(suffix?: string): Promise<Snippet> {
         return new Promise<Snippet>(async (resolve, reject) => {
             let result: ISnippet;
+            result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
 
-            // if an ID is provided check the store to find it else return a default snippet.
-            if (id == null) {
-                result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
-
-                if (result == null) {
-                    reject(new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
-                }
-
-                // check if we need to generate a new name. The default one is always going to be 'New Snippet'.
-                if (this._exists(result.name)) {
-                    result.name = this._generateName(result.name, suffix);
-                }
+            if (result == null) {
+                reject(new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
             }
-            else {
-                result = await this._find(id);
-                if (result == null) {
-                    reject(new PlaygroundError('Cannot retrieve snippet from localStorage. Make sure the ID is correct'));
-                }
+
+            // check if we need to generate a new name. The default one is always going to be 'New Snippet'.
+            if (this._exists(result.name)) {
+                result.name = this._generateName(result.name, suffix);
             }
 
             return resolve(new Snippet(result));
@@ -91,14 +81,18 @@ export class SnippetStore {
         });
     }
 
-    private _exists(name: string) {
-        return this._store.values().some(item => item.name.trim() === name.trim());
+    find(id: string): Promise<Snippet> {
+        return new Promise((resolve, reject) => {
+            let snippet = this._store.get(id);
+            if (snippet == null) {
+                return reject('Could not find snippet in localStorage');
+            }
+            return resolve(new Snippet(snippet));
+        });
     }
 
-    private _find(id: string): Promise<ISnippet> {
-        return new Promise((resolve, reject) => {
-            resolve(this._store.get(id));
-        });
+    private _exists(name: string) {
+        return this._store.values().some(item => item.name.trim() === name.trim());
     }
 
     private _validate(snippet: ISnippet) {

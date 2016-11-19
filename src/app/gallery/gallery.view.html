@@ -6,7 +6,7 @@
         </ul>
         <div class="gallery__tabs-container">
             <section class="gallery-list ms-u-slideUpIn10" [hidden]="templatesView">
-                <collapse title="Local" [actions]="['Info', 'Delete']" (events)="events($event)">
+                <collapse title="Local" [actions]="['Info', 'Delete']" (events)="commandEvents($event)">
                     <div class="collapse__info ms-font-m" [hidden]="hideWarn">
                         These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent
                         data loss.
