@@ -14,17 +14,17 @@ import './monaco-editor.scss';
         </li>
     </ul>
     <div class="tabs__container">
-        <section #editor class="monaco-editor"></section>
+        <section #editor class="monaco-editor" (keydown)="bindToEdit($event)"></section>
     </div>`,
     styleUrls: []
 })
 export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnChanges {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => {
+    private _debouncedInput = _.debounce((event: KeyboardEvent) => {
         let value = this._monacoEditor.getValue();
         this._activeTab.content = value;
         this._activeTab.contentChange.emit(value);
-    }, 200);
+    }, 300);
 
     private _activeTab: Tab;
 
@@ -46,16 +46,15 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         super();
     }
 
-    async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, {
+    ngAfterViewInit() {
+        this._monaco.create(this._editor, {
             theme: this.theme || 'vs',
-        });
-
-        await this.updateView(this.get('Script'), true);
-        this._monacoEditor.onKeyDown(event => this.bindToEdit(event));
+        })
+            .then(editor => this._monacoEditor = editor)
+            .then(() => this.updateView(this.get('Script'), true));
     }
 
-    async ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges) {
         if (this._activeTab) {
             if (!_.isEmpty(changes['theme'])) {
                 this._monaco.updateOptions(this._monacoEditor, {
@@ -68,7 +67,7 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         }
     }
 
-    async updateView(tab: Tab, skipSave?: boolean) {
+    updateView(tab: Tab, skipSave?: boolean) {
         let saveCurrentTabState = !(this._activeTab == null);
         if (!skipSave && saveCurrentTabState) {
             this._activeTab.state.model = this._monacoEditor.getModel();
@@ -76,15 +75,16 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         };
 
         this._activeTab = tab.activate();
-        await this._activeTab.checkForRefresh(this.id);
-        this._monacoEditor.setModel(this._activeTab.state.model);
-        this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
-        this._monacoEditor.focus();
-        this.activeLanguageChange.emit(this._activeTab.language);
+        this._activeTab.checkForRefresh(this.id).then(() => {
+            this._monacoEditor.setModel(this._activeTab.state.model);
+            this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
+            this._monacoEditor.focus();
+            this.activeLanguageChange.emit(this._activeTab.language);
+        });
     }
 
-    bindToEdit(event: monaco.IKeyboardEvent) {
-        this._debouncedInput(event);
+    bindToEdit(event: KeyboardEvent) {
+        // this._debouncedInput(event);
         if (event.ctrlKey || event.metaKey) {
             let monacoEvent: MonacoEvents;
             switch (event.keyCode) {

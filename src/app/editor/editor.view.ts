@@ -39,51 +39,48 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
         this._snippetEvents();
     }
 
-    async save() {
-        try {
-            let result = await this._snippetStore.save(this.snippet.content);
-            this.snippet.updateHash();
-            return result;
-        }
-        catch (error) {
-            return await this._notification.showDialog(error, 'Unable to save snippet', 'Ok');
-        }
+    save() {
+        return this._snippetStore
+            .save(this.snippet.content)
+            .then(result => this.snippet.updateHash())
+            .catch(error => this._notification.showDialog(error, 'Unable to save snippet', 'Ok'));
     }
 
-    async run() {
-        await this.save();
-        return await this._snippetStore.run(this.snippet.content);
+    run() {
+        return this.save().then(() => this._snippetStore.run(this.snippet.content));
     }
 
-    async switchTheme() {
+    switchTheme() {
         if (_.isEmpty(this.theme)) {
             this.theme = this._store.get('Theme') || 'vs';
         }
         else {
             this.theme = this.theme === 'vs' ? 'vs-dark' : 'vs';
         }
-        return await this._store.insert('Theme', this.theme);
+        return this._store.insert('Theme', this.theme);
     }
 
-    async editorEvents(event: MonacoEvents) {
+    editorEvents(event: MonacoEvents) {
         switch (event) {
             case MonacoEvents.SAVE:
-                return await this.save();
+                return this.save();
 
             case MonacoEvents.TOGGLE_MENU:
                 this.menuOpen = !this.menuOpen;
                 break;
 
             case MonacoEvents.RUN:
-                return await this.run();
+                return this.run();
         }
     }
 
     private _routerEvents() {
-        let subscription = this._route.params.subscribe(async params => {
-            let id = params['id'] || this._store.get('LastOpened');
+        let subscription = this._route.params.subscribe(params => {
+            let id: string = params['id'] || this._store.get('LastOpened');
             if (!_.isEmpty(id)) {
-                this.snippet = await this._loadSnippet(id);
+                return this._loadSnippet(id).then(snippet => {
+                    this.snippet = snippet as any;
+                });
             }
         });
 
@@ -92,7 +89,7 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
 
     private _snippetEvents() {
         let subscription = this._events.on<ISnippet>('GalleryEvents')
-            .subscribe(async event => {
+            .subscribe(event => {
                 switch (event.action) {
                     case GalleryEvents.DELETE:
                         if (!(this.snippet == null) && this.snippet.content.id === event.data.id) {
@@ -114,23 +111,25 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
                     case GalleryEvents.CREATE:
                     case GalleryEvents.SELECT:
                         if (this.snippet && this.snippet.isUpdated) {
-                            let result = await this._notification.showDialog('Do you want to save your changes?', 'Unsaved Snippet', 'Save', 'Discard', 'Cancel');
-                            if (result === 'Save') {
-                                this.save();
-                            }
-                            else if (result === 'Cancel') {
-                                return;
-                            }
+                            this._notification.showDialog('Do you want to save your changes?', 'Unsaved Snippet', 'Save', 'Discard', 'Cancel')
+                                .then(result => {
+                                    if (result === 'Save') {
+                                        this.save();
+                                    }
+                                    else if (result === 'Cancel') {
+                                        return;
+                                    }
+                                });
                         }
 
                         if (event.action === GalleryEvents.SELECT) {
                             this.snippet = new Snippet(event.data);
                         }
                         else if (event.action === GalleryEvents.CREATE) {
-                            this.snippet = await this._createSnippet();
+                            this._createSnippet().then(snippet => this.snippet = snippet);
                         }
                         else if (event.action === GalleryEvents.COPY) {
-                            // this.snippet = await this._snippetStore.create('copy');
+                            this._snippetStore.create('copy').then(snippet => this.snippet = snippet);
                         }
                         break;
                 }
@@ -139,34 +138,40 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
         this.markDispose(subscription);
     }
 
-    private async _loadSnippet(id: string) {
-        try {
-            let newSnippet: Snippet;
-            newSnippet = await this._snippetStore.find(id);
-            this._store.insert('LastOpened', newSnippet.content.id);
-            await this._snippetStore.save(newSnippet.content);
-            this._location.replaceState(`/local/${newSnippet.content.id}`);
-            return newSnippet;
-        }
-        catch (error) {
-            let title = _.isEmpty(id) ? 'Create a snippet' : 'Unable to find snippet';
-            let result = await this._notification.showDialog('Do you want to create a new snippet?', title, 'Create', 'Cancel');
-            if (result === 'Create') {
-                this._createSnippet();
-            }
-        }
+    private _loadSnippet(id: string) {
+        let newSnippet: Snippet;
+        return this._snippetStore.find(id)
+            .then(snippet => {
+                newSnippet = snippet;
+                this._store.insert('LastOpened', newSnippet.content.id);
+                return this._snippetStore.save(newSnippet.content);
+            })
+            .then(snippet => {
+                this._location.replaceState(`/local/${newSnippet.content.id}`);
+                return newSnippet;
+            })
+            .catch(error => {
+                let title = _.isEmpty(id) ? 'Create a snippet' : 'Unable to find snippet';
+                return this._notification.showDialog('Do you want to create a new snippet?', title, 'Create', 'Cancel');
+            })
+            .then(result => {
+                if (result === 'Create') {
+                    return this._createSnippet();
+                }
+            });
     }
 
-    private async _createSnippet() {
-        try {
-            let newSnippet = await this._snippetStore.create();
-            this._store.insert('LastOpened', newSnippet.content.id);
-            await this._snippetStore.save(newSnippet.content);
-            this._location.replaceState(`/local/${newSnippet.content.id}`);
-            return newSnippet;
-        }
-        catch (error) {
-
-        }
+    private _createSnippet() {
+        let newSnippet: Snippet;
+        return this._snippetStore.create()
+            .then(snippet => {
+                newSnippet = snippet;
+                this._store.insert('LastOpened', newSnippet.content.id);
+                return this._snippetStore.save(newSnippet.content);
+            })
+            .then(snippet => {
+                this._location.replaceState(`/local/${newSnippet.content.id}`);
+                return newSnippet;
+            });
     }
 }

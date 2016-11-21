@@ -84,10 +84,12 @@ export class Intellisense {
         return urls.map(url => this._tryGetCached(url));
     }
 
-    async fetch(filePath: string) {
-        let content = await this._request.get<string>(filePath, null, ResponseTypes.RAW);
-        this._cache.add(filePath, content);
-        return { content, filePath };
+    fetch(filePath: string) {
+        return this._request.get<string>(filePath, null, ResponseTypes.RAW)
+            .then(content => {
+                this._cache.add(filePath, content);
+                return { content, filePath };
+            });
     }
 
     private _tryGetCached = filePath => {
