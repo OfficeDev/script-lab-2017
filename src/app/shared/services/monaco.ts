@@ -157,8 +157,12 @@ export class Monaco {
                 if (require) {
                     const requireConfig = {
                         paths: {
-                            'vs': `${this._baseUrl}/monaco-editor/min/vs`
+                            'vs': `https://unpkg.com/monaco-editor@0.6.1/min/vs`
                         }
+                    };
+
+                    (window as any).MonacoEnvironment = {
+                        getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
                     };
 
                     require.config(requireConfig);

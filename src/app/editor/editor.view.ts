@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
-import { ViewBase } from '../shared/components/base';
+import { ViewBase } from '../shared/components';
 import { MonacoEvents, Snippet, SnippetStore, Notification, Events, GalleryEvents } from '../shared/services';
 import { Theme, PlaygroundError } from '../shared/helpers';
 import * as _ from 'lodash';
@@ -78,8 +78,8 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
         let subscription = this._route.params.subscribe(params => {
             let id: string = params['id'] || this._store.get('LastOpened');
             if (!_.isEmpty(id)) {
-                return this._loadSnippet(id).then(snippet => {
-                    this.snippet = snippet as any;
+                this._loadSnippet(id).then(snippet => {
+                    this.snippet = snippet;
                 });
             }
         });
@@ -139,25 +139,22 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
     }
 
     private _loadSnippet(id: string) {
-        let newSnippet: Snippet;
         return this._snippetStore.find(id)
             .then(snippet => {
-                newSnippet = snippet;
+                let newSnippet = snippet;
                 this._store.insert('LastOpened', newSnippet.content.id);
-                return this._snippetStore.save(newSnippet.content);
-            })
-            .then(snippet => {
+                this._snippetStore.save(newSnippet.content);
                 this._location.replaceState(`/local/${newSnippet.content.id}`);
                 return newSnippet;
             })
             .catch(error => {
                 let title = _.isEmpty(id) ? 'Create a snippet' : 'Unable to find snippet';
-                return this._notification.showDialog('Do you want to create a new snippet?', title, 'Create', 'Cancel');
-            })
-            .then(result => {
-                if (result === 'Create') {
-                    return this._createSnippet();
-                }
+                return this._notification.showDialog('Do you want to create a new snippet?', title, 'Create', 'Cancel')
+                    .then(result => {
+                        if (result === 'Create') {
+                            return this._createSnippet();
+                        }
+                    });
             });
     }
 
