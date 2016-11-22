@@ -35,6 +35,11 @@ module.exports = webpackMerge(commonConfig, {
     ],
 
     devServer: {
+        https: true,
+        inline: true,
+        compress: true,
+        open: true,
+        port: 3000,
         historyApiFallback: true,
         stats: 'minimal',
         watchOptions: {

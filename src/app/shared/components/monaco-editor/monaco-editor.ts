@@ -85,6 +85,10 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
     }
 
     bindToEdit(event: monaco.IKeyboardEvent) {
+        if (event == null) {
+            return;
+        }
+
         this._debouncedInput(event);
         if (event.ctrlKey || event.metaKey) {
             let monacoEvent: MonacoEvents;
