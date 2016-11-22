@@ -26,11 +26,11 @@ export class GalleryView extends ViewBase implements OnInit {
         this.hideWarn = this._store.get('LocalStorageWarn') as any || false;
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.snippets = this._snippetStore.local();
-        this.templates = await this._snippetStore.templates();
+        this._snippetStore.templates().then(templates => this.templates = templates);
         let subscription = this._notification.on<ISnippet>('StorageEvent')
-            .throttleTime(100)
+            .debounceTime(400)
             .subscribe(items => {
                 this.snippets = this._snippetStore.local();
             });
@@ -38,27 +38,32 @@ export class GalleryView extends ViewBase implements OnInit {
         this.markDispose(subscription);
     }
 
-    async delete(snippet: ISnippet) {
-        let result = await this._notification.showDialog('Are you sure you want to delete your snippet?', `Delete '${snippet.name}'`, 'Delete', 'Keep');
-        if (result === 'Keep') {
-            return;
-        }
-        if (this._store.get('LastOpened') === snippet.id) {
-            return await this._store.remove('LastOpened');
-        }
-
-        await this._snippetStore.delete(snippet);
-        this._events.emit('GalleryEvents', GalleryEvents.DELETE, snippet);
+    delete(snippet: ISnippet) {
+        return this._notification.showDialog('Are you sure you want to delete your snippet?', `Delete '${snippet.name}'`, 'Delete', 'Keep')
+            .then(result => {
+                if (result === 'Keep') {
+                    throw 'Keep data';
+                }
+                if (this._store.get('LastOpened') === snippet.id) {
+                    return this._store.remove('LastOpened');
+                }
+            })
+            .then(() => this._snippetStore.delete(snippet))
+            .then(() => this._events.emit('GalleryEvents', GalleryEvents.DELETE, snippet))
+            .catch(() => { });
     }
 
-    async deleteAll() {
-        let result = await this._notification.showDialog('Are you sure you want to delete all your local snippets?', 'Delete All', 'Delete all', 'Keep them');
-        if (result === 'Keep them') {
-            return;
-        }
-        await this._snippetStore.clear();
-        await this._store.remove('LastOpened');
-        this._events.emit('GalleryEvents', GalleryEvents.DELETE_ALL, null);
+    deleteAll() {
+        return this._notification.showDialog('Are you sure you want to delete all your local snippets?', 'Delete All', 'Delete all', 'Keep them')
+            .then(result => {
+                if (result === 'Keep them') {
+                    return;
+                }
+
+                return this._snippetStore.clear();
+            })
+            .then(() => this._store.remove('LastOpened'))
+            .then(() => this._events.emit('GalleryEvents', GalleryEvents.DELETE_ALL, null));
     }
 
     toggleWarn() {
@@ -78,11 +83,11 @@ export class GalleryView extends ViewBase implements OnInit {
         this._events.emit('GalleryEvents', GalleryEvents.SELECT, snippet);
     }
 
-    async commandEvents($event: any) {
+    commandEvents($event: any) {
         if ($event.title === 'Local') {
             switch ($event.action) {
-                case 'Info': return this.toggleWarn();
-                case 'Delete': return await this.deleteAll();
+                case 'Info': return Promise.resolve(this.toggleWarn());
+                case 'Delete': return this.deleteAll();
             }
         }
     }

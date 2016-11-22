@@ -51,47 +51,15 @@ export class Monaco {
     current: Promise<typeof monaco>;
     initialize() {
         if (this.current == null) {
-            this.current = new Promise<typeof monaco>((resolve, reject) => {
-                try {
-                    let require = (<any>window).require;
-                    if (require) {
-                        const requireConfig = {
-                            paths: {
-                                'vs': `${this._baseUrl}/monaco-editor/min/vs`
-                            }
-                        };
-
-                        require.config(requireConfig);
-                        require(['vs/editor/editor.main'], () => {
-                            let interval = setInterval(() => {
-                                try {
-                                    if (monaco && monaco.editor && monaco.editor.create) {
-                                        clearInterval(interval);
-                                        return resolve(monaco);
-                                    }
-                                }
-                                catch (e) {
-                                    if (!(e instanceof ReferenceError)) {
-                                        return reject(e);
-                                    }
-                                }
-                            }, 300);
-                        });
-                    }
-                }
-                catch (e) {
-                    return reject(e);
-                }
-            });
+            this.current = this._loadMonaco().then(monaco => this._registerLanguageServices(monaco));
         }
 
         return this.current;
     }
 
-    async create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
+    create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
         let options = _.extend({}, this._defaults, overrides);
-        await this.current;
-        return monaco.editor.create(element.nativeElement, options);
+        return this.current.then(monaco => monaco.editor.create(element.nativeElement, options));
     }
 
     updateOptions(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
@@ -103,85 +71,127 @@ export class Monaco {
         editor.updateOptions(options);
     }
 
-    async updateLibs(language: string, libraries: string[]) {
-        await this.current;
-        let urls = this._intellisense.parse(libraries);
-        let languageCollection = this.intellisense.get(language);
+    updateLibs(language: string, libraries: string[]) {
+        this.current.then(monaco => {
+            let urls = this._intellisense.parse(libraries);
+            let languageCollection = this.intellisense.get(language);
 
-        let typings = await Promise.all(this._intellisense.all(urls));
-        if (languageCollection == null) {
-            typings.forEach(({content, filePath}) => this.addLib(language, content, filePath));
-        }
-        else {
-            let addedLibraries = _.differenceWith(typings, languageCollection.keys(), (newLib, loadedFile) => newLib.filePath === loadedFile);
-            let removedLibraries = _.differenceWith(languageCollection.keys(), typings, (loadedFile, newLib) => newLib.filePath === loadedFile);
+            return Promise.all(this._intellisense.all(urls)).then(typings => {
+                if (languageCollection == null) {
+                    typings.forEach(({content, filePath}) => this.addLib(language, content, filePath));
+                }
+                else {
+                    let addedLibraries = _.differenceWith(typings, languageCollection.keys(), (newLib, loadedFile) => newLib.filePath === loadedFile);
+                    let removedLibraries = _.differenceWith(languageCollection.keys(), typings, (loadedFile, newLib) => newLib.filePath === loadedFile);
 
-            addedLibraries.forEach(({ content, filePath }) => {
-                this.addLib(language, content, filePath);
+                    addedLibraries.forEach(({ content, filePath }) => {
+                        this.addLib(language, content, filePath);
+                    });
+
+                    removedLibraries.forEach(item => this.removeLib(language, item));
+                }
             });
-
-            removedLibraries.forEach(item => this.removeLib(language, item));
-        }
+        });
     }
 
-    async addLib(language: string, content: string, filePath: string) {
-        await this.current;
-        let instance: monaco.IDisposable;
-        language = language.toLowerCase().trim();
+    addLib(language: string, content: string, filePath: string) {
+        return this.current.then(monaco => {
+            let instance: monaco.IDisposable;
+            language = language.toLowerCase().trim();
 
-        let languageCollection = this.intellisense.get(language);
-        if (languageCollection == null) {
-            languageCollection = this.intellisense.add(language, new Dictionary<monaco.IDisposable>());
-        }
+            let languageCollection = this.intellisense.get(language);
+            if (languageCollection == null) {
+                languageCollection = this.intellisense.add(language, new Dictionary<monaco.IDisposable>());
+            }
 
-        if (languageCollection.contains(filePath)) {
-            return;
-        }
+            if (languageCollection.contains(filePath)) {
+                return;
+            }
 
-        switch (language) {
-            case 'typescript':
-                instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
-                break;
+            switch (language) {
+                case 'typescript':
+                    instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
+                    break;
 
-            case 'javascript':
-                instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
-                break;
+                case 'javascript':
+                    instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
+                    break;
 
-            case 'css': break;
-            case 'json': break;
-            case 'html': break;
-            default: break;
-        }
+                case 'css': break;
+                case 'json': break;
+                case 'html': break;
+                default: break;
+            }
 
-        if (instance == null) {
-            return;
-        }
+            if (instance == null) {
+                return;
+            }
 
-        languageCollection.add(filePath, instance);
+            return languageCollection.add(filePath, instance);
+        });
     }
 
-    async removeLib(language: string, filePath: string) {
-        await this.current;
-        language = language.toLowerCase().trim();
+    removeLib(language: string, filePath: string) {
+        return this.current.then(monaco => {
+            language = language.toLowerCase().trim();
 
-        if (!this.intellisense.contains(language)) {
-            return;
-        }
+            if (!this.intellisense.contains(language)) {
+                return;
+            }
 
-        let languageCollection = this.intellisense.get(language);
-        let instance = languageCollection.get(filePath);
-        if (instance == null) {
-            return;
-        }
+            let languageCollection = this.intellisense.get(language);
+            let instance = languageCollection.get(filePath);
+            if (instance == null) {
+                return;
+            }
 
-        instance.dispose();
-        languageCollection.remove(filePath);
+            instance.dispose();
+            return languageCollection.remove(filePath);
+        });
     }
 
-    async registerLanguageServices() {
-        let monaco = await this.current;
-        monaco.languages.register({ id: 'libraries' });
-        monaco.languages.setMonarchTokensProvider('libraries', {
+    private _loadMonaco() {
+        return new Promise<typeof monaco>((resolve, reject) => {
+            try {
+                let require = (<any>window).require;
+                if (require) {
+                    const requireConfig = {
+                        paths: {
+                            'vs': `https://unpkg.com/monaco-editor@0.6.1/min/vs`
+                        }
+                    };
+
+                    (window as any).MonacoEnvironment = {
+                        getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
+                    };
+
+                    require.config(requireConfig);
+                    require(['vs/editor/editor.main'], () => {
+                        let interval = setInterval(() => {
+                            try {
+                                if (monaco && monaco.editor && monaco.editor.create) {
+                                    clearInterval(interval);
+                                    return resolve(monaco);
+                                }
+                            }
+                            catch (e) {
+                                if (!(e instanceof ReferenceError)) {
+                                    return reject(e);
+                                }
+                            }
+                        }, 300);
+                    });
+                }
+            }
+            catch (e) {
+                return reject(e);
+            }
+        });
+    }
+
+    private _registerLanguageServices(current: typeof monaco) {
+        current.languages.register({ id: 'libraries' });
+        current.languages.setMonarchTokensProvider('libraries', {
             tokenizer: {
                 root: [
                     [Monaco.regexStrings.STARTS_WITH_COMMENT, 'comment'],
@@ -193,7 +203,7 @@ export class Monaco {
             tokenPostfix: ''
         });
 
-        monaco.languages.registerCompletionItemProvider('libraries', {
+        current.languages.registerCompletionItemProvider('libraries', {
             provideCompletionItems: (model, position) => {
                 let currentLine = model.getValueInRange({
                     startLineNumber: position.lineNumber,
@@ -214,9 +224,11 @@ export class Monaco {
             }
         });
 
-        monaco.languages.typescript.typescriptDefaults.compilerOptions = {
-            module: monaco.languages.typescript.ModuleKind.CommonJS,
-            moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
+        current.languages.typescript.typescriptDefaults.compilerOptions = {
+            module: current.languages.typescript.ModuleKind.CommonJS,
+            moduleResolution: current.languages.typescript.ModuleResolutionKind.NodeJs
         };
+
+        return current;
     }
 }

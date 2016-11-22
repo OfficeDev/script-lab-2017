@@ -24,10 +24,10 @@ export class Collapse {
     @Output() events: EventEmitter<any> = new EventEmitter<any>();
 
     clicked(action: string, $event: Event) {
+        $event.stopPropagation();
         this.events.emit({
             action: action,
             title: this.title
         });
-        $event.stopPropagation();
     }
 }

@@ -30,7 +30,7 @@ export class Tab extends ViewBase implements OnChanges, ITab {
         super();
     }
 
-    async ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges) {
         if (changes['content']) {
             if (changes['content'].isFirstChange()) {
                 this._tabs.add(this.name, this);
@@ -38,7 +38,7 @@ export class Tab extends ViewBase implements OnChanges, ITab {
             }
 
             if (this.name === 'Libraries') {
-                await this._monaco.updateLibs('typescript', this.content.split('\n'));
+                return this._monaco.updateLibs('typescript', this.content.split('\n'));
             }
         }
     }
@@ -47,30 +47,30 @@ export class Tab extends ViewBase implements OnChanges, ITab {
         return this.name === this.active;
     }
 
-    async checkForRefresh(id: string) {
-        let monaco = await this._monaco.current;
+    checkForRefresh(id: string) {
+        return this._monaco.current.then(monaco => {
+            if (!this._initialized) {
+                this.state = {
+                    id: null,
+                    name: this.name,
+                    viewState: null,
+                    model: null,
+                };
+            }
 
-        if (!this._initialized) {
-            this.state = {
-                id: null,
-                name: this.name,
-                viewState: null,
-                model: null,
-            };
-        }
+            if (this.state.id === id) {
+                return;
+            }
 
-        if (this.state.id === id) {
-            return;
-        }
+            if (this.state.model) {
+                this.state.model.dispose();
+            }
 
-        if (this.state.model) {
-            this.state.model.dispose();
-        }
-
-        this.state.id = id;
-        this.state.model = monaco.editor.createModel(this.content, this.language);
-        this.state.viewState = null;
-        this._initialized = true;
+            this.state.id = id;
+            this.state.model = monaco.editor.createModel(this.content, this.language);
+            this.state.viewState = null;
+            this._initialized = true;
+        });
     }
 
     activate() {

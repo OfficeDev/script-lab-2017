@@ -67,7 +67,6 @@ module.exports = {
         ]),
 
         new webpack.ProvidePlugin({
-            $: 'jquery',
             require: 'require'
         })
     ]

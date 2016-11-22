@@ -21,29 +21,24 @@ import './assets/styles/globals.scss';
 })
 export class AppModule {
     constructor(monaco: Monaco) {
-        this._initialize(monaco);
-    }
-
-    private async _initialize(monaco: Monaco) {
-        await monaco.initialize();
-        await monaco.registerLanguageServices();
+        monaco.initialize();
     }
 }
 
-export async function start() {
+export function start() {
     if (!Authenticator.isAuthDialog()) {
         if (!window.location.href.indexOf('localhost')) {
             enableProdMode();
         }
 
-        await Theme.applyTheme();
-        $('.app .ms-ProgressIndicator-itemDescription').text('Loading the runtime...');
-        platformBrowserDynamic().bootstrapModule(AppModule);
+        Theme.applyTheme()
+            .then(() => {
+                platformBrowserDynamic().bootstrapModule(AppModule);
+            });
     }
 }
 
 (() => {
-    //TODO: Add modernizr check for Crypto
     let isRunningInWeb = location.href.indexOf('web') > 0;
     isRunningInWeb ? start() : Office.initialize = reason => start();
 })();

@@ -20,22 +20,20 @@ export class SnippetStore {
         this._store = new Storage<ISnippet>(`${this._context}Snippets`);
     }
 
-    async create(suffix?: string): Promise<Snippet> {
-        return new Promise<Snippet>(async (resolve, reject) => {
-            let result: ISnippet;
-            result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
+    create(suffix?: string): Promise<Snippet> {
+        return this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
+            .then(result => {
+                if (result == null) {
+                    throw (new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
+                }
 
-            if (result == null) {
-                reject(new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
-            }
+                // check if we need to generate a new name. The default one is always going to be 'New Snippet'.
+                if (this._exists(result.name)) {
+                    result.name = this._generateName(result.name, suffix);
+                }
 
-            // check if we need to generate a new name. The default one is always going to be 'New Snippet'.
-            if (this._exists(result.name)) {
-                result.name = this._generateName(result.name, suffix);
-            }
-
-            return resolve(new Snippet(result));
-        });
+                return new Snippet(result);
+            });
     }
 
     save(snippet: ISnippet): Promise<ISnippet> {
