@@ -1,4 +1,5 @@
 import { Component, HostListener, Input, Output, OnChanges, OnDestroy, SimpleChanges, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { Monaco, MonacoEvents, Snippet, Notification } from '../../services';
 import { Tab } from './tab';
@@ -14,15 +15,14 @@ import './monaco-editor.scss';
         </li>
     </ul>
     <div class="tabs__container">
-        <section #editor class="monaco-editor" (keydown)="bindToEdit($event)"></section>
+        <section #editor class="monaco-editor"></section>
     </div>`,
     styleUrls: []
 })
 export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnChanges {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _debouncedInput = _.debounce((event: KeyboardEvent) => {
+    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => {
         let value = this._monacoEditor.getValue();
-        this._activeTab.content = value;
         this._activeTab.contentChange.emit(value);
     }, 300);
 
@@ -51,7 +51,8 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
             theme: this.theme || 'vs',
         })
             .then(editor => this._monacoEditor = editor)
-            .then(() => this.updateView(this.get('Script'), true));
+            .then(() => this.updateView(this.get('Script'), true))
+            .then(() => this._monacoEditor.onKeyDown(e => this.bindToEdit(e)));
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -83,8 +84,8 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         });
     }
 
-    bindToEdit(event: KeyboardEvent) {
-        // this._debouncedInput(event);
+    bindToEdit(event: monaco.IKeyboardEvent) {
+        this._debouncedInput(event);
         if (event.ctrlKey || event.metaKey) {
             let monacoEvent: MonacoEvents;
             switch (event.keyCode) {

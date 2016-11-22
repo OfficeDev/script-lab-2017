@@ -29,13 +29,13 @@ export class GalleryView extends ViewBase implements OnInit {
     ngOnInit() {
         this.snippets = this._snippetStore.local();
         this._snippetStore.templates().then(templates => this.templates = templates);
-        // let subscription = this._notification.on<ISnippet>('StorageEvent')
-        //     .throttleTime(100)
-        //     .subscribe(items => {
-        //         this.snippets = this._snippetStore.local();
-        //     });
+        let subscription = this._notification.on<ISnippet>('StorageEvent')
+            .debounceTime(400)
+            .subscribe(items => {
+                this.snippets = this._snippetStore.local();
+            });
 
-        // this.markDispose(subscription);
+        this.markDispose(subscription);
     }
 
     delete(snippet: ISnippet) {
