@@ -46,30 +46,29 @@ export class Tab extends Disposable implements OnChanges, ITab {
         return this.name === this.active;
     }
 
-    checkForRefresh(id: string) {
-        return Monaco.current.then(monaco => {
-            if (!this._initialized) {
-                this.state = {
-                    id: null,
-                    name: this.name,
-                    viewState: null,
-                    model: null,
-                };
-            }
+    async checkForRefresh(id: string) {
+        let current = await Monaco.current;
+        if (!this._initialized) {
+            this.state = {
+                id: null,
+                name: this.name,
+                viewState: null,
+                model: null,
+            };
+        }
 
-            if (this.state.id === id) {
-                return;
-            }
+        if (this.state.id === id) {
+            return;
+        }
 
-            if (this.state.model) {
-                this.state.model.dispose();
-            }
+        if (this.state.model) {
+            this.state.model.dispose();
+        }
 
-            this.state.id = id;
-            this.state.model = monaco.editor.createModel(this.content, this.language);
-            this.state.viewState = null;
-            this._initialized = true;
-        });
+        this.state.id = id;
+        this.state.model = monaco.editor.createModel(this.content, this.language);
+        this.state.viewState = null;
+        this._initialized = true;
     }
 
     activate() {

@@ -21,15 +21,14 @@ import './assets/styles/globals.scss';
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
 export class AppModule {
-    static start() {
+    static async start() {
         if (!Authenticator.isAuthDialog()) {
             if (!window.location.href.indexOf('localhost')) {
                 enableProdMode();
             }
 
-            Theme.applyTheme().then(next => {
-                platformBrowserDynamic().bootstrapModule(AppModule);
-            });
+            await Theme.applyTheme()
+            platformBrowserDynamic().bootstrapModule(AppModule);
         }
     }
 }

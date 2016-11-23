@@ -49,12 +49,10 @@ export class Intellisense {
         return Promise.all(promises);
     }
 
-    fetch(filePath: string) {
-        return this._request.get<string>(filePath, null, ResponseTypes.RAW)
-            .then(content => {
-                this._cache.insert(filePath, content);
-                return { content, filePath };
-            });
+    async fetch(filePath: string) {
+        let content = await this._request.get<string>(filePath, null, ResponseTypes.RAW);
+        this._cache.insert(filePath, content);
+        return { content, filePath };
     }
 
     private _tryGetCached = filePath => {

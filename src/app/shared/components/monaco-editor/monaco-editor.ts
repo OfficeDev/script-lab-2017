@@ -48,13 +48,10 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
         this.tabs = new Dictionary<Tab>();
     }
 
-    ngAfterViewInit() {
-        this._monaco.create(this._editor, {
-            theme: this.theme || 'vs',
-        })
-            .then(editor => this._monacoEditor = editor)
-            .then(() => this.updateView(this.tabs.get('Script'), true))
-            .then(() => this._monacoEditor.onKeyDown(e => this.bindToEdit(e)));
+    async ngAfterViewInit() {
+        this._monacoEditor = await this._monaco.create(this._editor, { theme: this.theme || 'vs' });
+        this._monacoEditor.onKeyDown(e => this.bindToEdit(e));
+        return await this.updateView(this.tabs.get('Script'), true);
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -70,7 +67,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
         }
     }
 
-    updateView(tab: Tab, skipSave?: boolean) {
+    async updateView(tab: Tab, skipSave?: boolean) {
         let saveCurrentTabState = !(this._activeTab == null);
         if (!skipSave && saveCurrentTabState) {
             this._activeTab.state.model = this._monacoEditor.getModel();
@@ -78,12 +75,11 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
         };
 
         this._activeTab = tab.activate();
-        return this._activeTab.checkForRefresh(this.id).then(() => {
-            this._monacoEditor.setModel(this._activeTab.state.model);
-            this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
-            this._monacoEditor.focus();
-            this.activeLanguageChange.emit(this._activeTab.language);
-        });
+        await this._activeTab.checkForRefresh(this.id);
+        this._monacoEditor.setModel(this._activeTab.state.model);
+        this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
+        this._monacoEditor.focus();
+        this.activeLanguageChange.emit(this._activeTab.language);
     }
 
     bindToEdit(event: monaco.IKeyboardEvent) {

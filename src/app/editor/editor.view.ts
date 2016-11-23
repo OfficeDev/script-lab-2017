@@ -37,15 +37,20 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         this._snippetEvents();
     }
 
-    save() {
-        return this._snippetStore
-            .save(this.snippet.content)
-            .then(result => this.snippet.updateHash())
-            .catch(error => this._notification.showDialog(error, 'Unable to save snippet', 'Ok'));
+    async save() {
+        try {
+            this.snippet.updateHash();
+            let result = await this._snippetStore.save(this.snippet.content);
+            return result;
+        }
+        catch (error) {
+            this._notification.showDialog(error, 'Unable to save snippet', 'Ok');
+        };
     }
 
-    run() {
-        return this.save().then(() => this._snippetStore.run(this.snippet.content));
+    async run() {
+        await this.save();
+        this._snippetStore.run(this.snippet.content);
     }
 
     switchTheme() {
@@ -155,17 +160,11 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         };
     }
 
-    private _createSnippet() {
-        let newSnippet: Snippet;
-        return this._snippetStore.create()
-            .then(snippet => {
-                newSnippet = snippet;
-                this._store.insert('LastOpened', newSnippet.content.id);
-                return this._snippetStore.save(newSnippet.content);
-            })
-            .then(snippet => {
-                this._location.replaceState(`/local/${newSnippet.content.id}`);
-                return newSnippet;
-            });
+    private async _createSnippet() {
+        let snippet = await this._snippetStore.create();
+        this._store.insert('LastOpened', snippet.content.id);
+        await this._snippetStore.save(snippet.content);
+        this._location.replaceState(`/local/${snippet.content.id}`);
+        return snippet;
     }
 }
