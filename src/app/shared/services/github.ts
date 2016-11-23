@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
+import * as _ from 'lodash';
 
 @Injectable()
 export class Github {
-    private _baseUrl: string = '${this._baseUrl}';
+    private _baseUrl: string = 'https://api.github.com';
     private _profileStorage: Storage<IProfile>;
     private _authenticator: Authenticator;
     private _token: IToken;
@@ -21,7 +22,8 @@ export class Github {
             state: true
         });
 
-        this._setDefaultHeaders(this._authenticator.tokens.get('GitHub'));
+        this._token = this._authenticator.tokens.get('GitHub');
+        this._setDefaultHeaders(this._token);
     }
 
     user(): Promise<IBasicProfile> {
@@ -160,8 +162,7 @@ export class Github {
 
     private _setDefaultHeaders(token?: IToken) {
         this._request.headers = {
-            'Content-Type': 'application/json',
-            'Acccept': 'application/json'
+            'Content-Type': 'application/json'
         };
 
         if (!(token == null)) {

@@ -21,5 +21,6 @@ export const SERVICE_PROVIDERS = [
   Intellisense,
   Notification,
   Events,
-  Monaco
+  Monaco,
+  Github
 ];

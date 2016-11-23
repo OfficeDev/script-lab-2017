@@ -32,7 +32,7 @@
                     <section class="gallery-list__group" *ngFor="let group of templates.groups">
                         <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>
                         <section class="gallery-list__group">
-                            <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="select(snippet)">
+                            <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="import(snippet.gist)">
                                 <div class="name">{{snippet?.name}}</div>
                                 <div class="description">{{snippet?.description}}</div>
                             </article>
