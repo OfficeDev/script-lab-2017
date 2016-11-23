@@ -20,9 +20,7 @@ import './assets/styles/globals.scss';
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
 export class AppModule {
-    constructor(monaco: Monaco) {
-        monaco.initialize();
-    }
+
 }
 
 export function start() {
@@ -31,10 +29,12 @@ export function start() {
             enableProdMode();
         }
 
-        Theme.applyTheme()
-            .then(() => {
-                platformBrowserDynamic().bootstrapModule(AppModule);
-            });
+        Promise.all([
+            Monaco.initialize(),
+            Theme.applyTheme()
+        ]).then(() => {
+            platformBrowserDynamic().bootstrapModule(AppModule);
+        });
     }
 }
 

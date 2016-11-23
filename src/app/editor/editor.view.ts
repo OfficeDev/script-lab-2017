@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { ViewBase } from '../shared/components';
 import { MonacoEvents, Snippet, SnippetStore, Notification, Events, GalleryEvents } from '../shared/services';
-import { Theme, PlaygroundError } from '../shared/helpers';
+import { PlaygroundError, Theme } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
 
@@ -13,7 +13,7 @@ import './editor.view.scss';
     templateUrl: 'editor.view.html'
 })
 export class EditorView extends ViewBase implements OnInit, OnDestroy {
-    theme: string;
+    theme: string = Theme.editorTheme;
     snippet: Snippet;
     menuOpen = false;
     readonly = false;
@@ -34,7 +34,6 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.switchTheme();
         this._routerEvents();
         this._snippetEvents();
     }
@@ -51,13 +50,8 @@ export class EditorView extends ViewBase implements OnInit, OnDestroy {
     }
 
     switchTheme() {
-        if (_.isEmpty(this.theme)) {
-            this.theme = this._store.get('Theme') || 'vs';
-        }
-        else {
-            this.theme = this.theme === 'vs' ? 'vs-dark' : 'vs';
-        }
-        return this._store.insert('Theme', this.theme);
+        Theme.editorTheme = Theme.editorTheme === 'vs' ? 'vs-dark' : 'vs';
+        this.theme = Theme.editorTheme;
     }
 
     editorEvents(event: MonacoEvents) {

@@ -48,7 +48,7 @@ export class Tab extends ViewBase implements OnChanges, ITab {
     }
 
     checkForRefresh(id: string) {
-        return this._monaco.current.then(monaco => {
+        return Monaco.current.then(monaco => {
             if (!this._initialized) {
                 this.state = {
                     id: null,
