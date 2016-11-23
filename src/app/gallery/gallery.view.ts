@@ -1,7 +1,6 @@
 import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
-import { SnippetStore, Snippet, Notification, Events, GalleryEvents } from '../shared/services';
-import { ViewBase } from '../shared/components/base';
+import { SnippetStore, Snippet, Notification, Events, GalleryEvents, Disposable } from '../shared/services';
 import * as _ from 'lodash';
 import './gallery.view.scss';
 
@@ -9,7 +8,7 @@ import './gallery.view.scss';
     selector: 'gallery-view',
     templateUrl: 'gallery.view.html'
 })
-export class GalleryView extends ViewBase implements OnInit {
+export class GalleryView extends Disposable implements OnInit {
     snippets: ISnippet[] = [];
     templates: IPlaylist = {} as any;
     hideWarn: boolean;

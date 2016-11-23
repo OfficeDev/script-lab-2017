@@ -1,7 +1,7 @@
 import { Component, HostListener, Input, Output, OnChanges, OnDestroy, SimpleChanges, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { Monaco, MonacoEvents, Snippet, Notification } from '../../services';
+import { Monaco, MonacoEvents, Snippet, Notification, Disposable } from '../../services';
 import { Tab } from './tab';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
@@ -10,7 +10,7 @@ import './monaco-editor.scss';
     selector: 'monaco-editor',
     template: `
     <ul class="tabs ms-Pivot ms-Pivot--tabs">
-        <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of values()" (click)="updateView(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.isActive}">
+        <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="updateView(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.isActive}">
             {{tab.name}}
         </li>
     </ul>
@@ -19,7 +19,7 @@ import './monaco-editor.scss';
     </div>`,
     styleUrls: []
 })
-export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnChanges {
+export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => {
         let value = this._monacoEditor.getValue();
@@ -27,6 +27,7 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
     }, 300);
 
     private _activeTab: Tab;
+    public tabs: Dictionary<Tab>;
 
     @ViewChild('editor') private _editor: ElementRef;
     @Input() id: string;
@@ -44,6 +45,7 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         private _notification: Notification
     ) {
         super();
+        this.tabs = new Dictionary<Tab>();
     }
 
     ngAfterViewInit() {
@@ -51,7 +53,7 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
             theme: this.theme || 'vs',
         })
             .then(editor => this._monacoEditor = editor)
-            .then(() => this.updateView(this.get('Script'), true))
+            .then(() => this.updateView(this.tabs.get('Script'), true))
             .then(() => this._monacoEditor.onKeyDown(e => this.bindToEdit(e)));
     }
 
@@ -76,7 +78,7 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
         };
 
         this._activeTab = tab.activate();
-        this._activeTab.checkForRefresh(this.id).then(() => {
+        return this._activeTab.checkForRefresh(this.id).then(() => {
             this._monacoEditor.setModel(this._activeTab.state.model);
             this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
             this._monacoEditor.focus();
@@ -108,13 +110,13 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
                 case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
                     let index = this._activeTab.index;
                     let key;
-                    if (index === this.count) {
-                        key = this.keys()[0];
+                    if (index === this.tabs.count) {
+                        key = this.tabs.keys()[0];
                     }
                     else {
-                        key = this.keys()[index];
+                        key = this.tabs.keys()[index];
                     }
-                    this.updateView(this.get(key));
+                    this.updateView(this.tabs.get(key));
                     monacoEvent = -1;
                     break;
                 }
@@ -123,12 +125,12 @@ export class MonacoEditor extends Dictionary<Tab> implements AfterViewInit, OnCh
                     let index = this._activeTab.index;
                     let key;
                     if (index === 1) {
-                        key = this.keys()[this.count - 1];
+                        key = this.tabs.keys()[this.tabs.count - 1];
                     }
                     else {
-                        key = this.keys()[index - 2];
+                        key = this.tabs.keys()[index - 2];
                     }
-                    this.updateView(this.get(key));
+                    this.updateView(this.tabs.get(key));
                     monacoEvent = -1;
                     break;
                 }

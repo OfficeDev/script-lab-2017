@@ -1,8 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
-import { Dictionary } from '@microsoft/office-js-helpers';
-import { Intellisense } from './intellisense';
-import { Utilities } from '../helpers';
-import { Request } from './request';
+import { Request, ResponseTypes } from './request';
+import { Disposable } from './disposable';
 
 export enum MonacoEvents {
     SAVE,
@@ -12,9 +10,18 @@ export enum MonacoEvents {
     SWITCH_TABS
 }
 
+const Regex = {
+    STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
+    STARTS_WITH_COMMENT: /^\/\/.*|^\/\*.*|.*\*\/$.*/im,
+    ENDS_WITH_DTS: /.*\.d\.ts$/i,
+    GLOBAL: /.*/i
+};
+
 @Injectable()
-export class Monaco {
+export class Monaco extends Disposable {
     private _baseUrl: string;
+    private _intellisenseFile = this._request.local<any[]>('libraries.json', ResponseTypes.JSON);
+
     private _defaults: monaco.editor.IEditorConstructionOptions = {
         value: '',
         language: 'text',
@@ -34,26 +41,54 @@ export class Monaco {
         model: null
     };
 
-    static regexStrings = {
-        STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
-        STARTS_WITH_COMMENT: /^\/\/.*|^\/\*.*|.*\*\/$.*/im,
-        ENDS_WITH_DTS: /.*\.d\.ts$/i,
-        GLOBAL: /.*/i
-    };
-
-    private intellisense: Dictionary<Dictionary<monaco.IDisposable>>;
-
-    constructor(private _intellisense: Intellisense) {
+    constructor(private _request: Request) {
+        super();
         this._baseUrl = '/node_modules';
-        this.intellisense = new Dictionary<Dictionary<monaco.IDisposable>>();
         this._registerLanguageServices();
     }
 
     static current: Promise<typeof monaco>;
 
-    create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
+    private _typings: Promise<monaco.languages.CompletionItem[]>;
+    get typings() {
+        if (this._typings == null) {
+            this._typings = this._intellisenseFile.then(
+                item => item
+                    .filter(({typings}) => !_.isEmpty(typings))
+                    .map(({typings, documentation}) => <monaco.languages.CompletionItem>{
+                        label: typings,
+                        documentation: documentation,
+                        kind: monaco.languages.CompletionItemKind.Module,
+                        insertText: `${typings}\n`
+                    })
+            );
+        }
+
+        return this._typings;
+    }
+
+    private _libraries: Promise<monaco.languages.CompletionItem[]>;
+    get libraries() {
+        if (this._libraries == null) {
+            this._libraries = this._intellisenseFile.then(
+                item => item
+                    .filter(({label}) => !_.isEmpty(label))
+                    .map(({label, documentation}) => <monaco.languages.CompletionItem>{
+                        label: label,
+                        documentation: documentation,
+                        kind: monaco.languages.CompletionItemKind.Property,
+                        insertText: `${label}\n`,
+                    })
+            )
+        }
+
+        return this._libraries;
+    }
+
+    async create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
         let options = _.extend({}, this._defaults, overrides);
-        return Monaco.current.then(monaco => monaco.editor.create(element.nativeElement, options));
+        let monaco = await Monaco.current;
+        return monaco.editor.create(element.nativeElement, options);
     }
 
     updateOptions(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
@@ -65,170 +100,98 @@ export class Monaco {
         editor.updateOptions(options);
     }
 
-    updateLibs(language: string, libraries: string[]) {
-        Monaco.current.then(monaco => {
-            let urls = this._intellisense.parse(libraries);
-            let languageCollection = this.intellisense.get(language);
-
-            return Promise.all(this._intellisense.all(urls)).then(typings => {
-                if (languageCollection == null) {
-                    typings.forEach(({content, filePath}) => this.addLib(language, content, filePath));
-                }
-                else {
-                    let addedLibraries = _.differenceWith(typings, languageCollection.keys(), (newLib, loadedFile) => newLib.filePath === loadedFile);
-                    let removedLibraries = _.differenceWith(languageCollection.keys(), typings, (loadedFile, newLib) => newLib.filePath === loadedFile);
-
-                    addedLibraries.forEach(({ content, filePath }) => {
-                        this.addLib(language, content, filePath);
-                    });
-
-                    removedLibraries.forEach(item => this.removeLib(language, item));
-                }
-            });
-        });
-    }
-
-    addLib(language: string, content: string, filePath: string) {
-        return Monaco.current.then(monaco => {
-            let instance: monaco.IDisposable;
-            language = language.toLowerCase().trim();
-
-            let languageCollection = this.intellisense.get(language);
-            if (languageCollection == null) {
-                languageCollection = this.intellisense.add(language, new Dictionary<monaco.IDisposable>());
-            }
-
-            if (languageCollection.contains(filePath)) {
-                return;
-            }
-
-            switch (language) {
-                case 'typescript':
-                    instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
-                    break;
-
-                case 'javascript':
-                    instance = monaco.languages.typescript.typescriptDefaults.addExtraLib(content, filePath);
-                    break;
-
-                case 'css': break;
-                case 'json': break;
-                case 'html': break;
-                default: break;
-            }
-
-            if (instance == null) {
-                return;
-            }
-
-            return languageCollection.add(filePath, instance);
-        });
-    }
-
-    removeLib(language: string, filePath: string) {
-        return Monaco.current.then(monaco => {
-            language = language.toLowerCase().trim();
-
-            if (!this.intellisense.contains(language)) {
-                return;
-            }
-
-            let languageCollection = this.intellisense.get(language);
-            let instance = languageCollection.get(filePath);
-            if (instance == null) {
-                return;
-            }
-
-            instance.dispose();
-            return languageCollection.remove(filePath);
-        });
-    }
-
     static initialize() {
         if (Monaco.current == null) {
-            Monaco.current = new Promise<typeof monaco>((resolve, reject) => {
-                try {
-                    let require = (<any>window).require;
-                    if (require) {
-                        const requireConfig = {
-                            paths: {
-                                'vs': `https://unpkg.com/monaco-editor@0.7.0/min/vs`
-                            }
-                        };
-
-                        (window as any).MonacoEnvironment = {
-                            getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
-                        };
-
-                        require.config(requireConfig);
-                        require(['vs/editor/editor.main'], () => {
-                            let interval = setInterval(() => {
-                                try {
-                                    if (monaco && monaco.editor && monaco.editor.create) {
-                                        clearInterval(interval);
-                                        return resolve(monaco);
-                                    }
-                                }
-                                catch (e) {
-                                    if (!(e instanceof ReferenceError)) {
-                                        return reject(e);
-                                    }
-                                }
-                            }, 300);
-                        });
-                    }
-                }
-                catch (e) {
-                    return reject(e);
-                }
-            });
+            Monaco.current = Monaco._loadMonaco();
         }
 
         return Monaco.current;
     }
 
-    private _registerLanguageServices() {
-        return Monaco.current.then(monaco => {
-            monaco.languages.register({ id: 'libraries' });
-            monaco.languages.setMonarchTokensProvider('libraries', {
-                tokenizer: {
-                    root: [
-                        [Monaco.regexStrings.STARTS_WITH_COMMENT, 'comment'],
-                        [Monaco.regexStrings.STARTS_WITH_TYPINGS, 'string'],
-                        [Monaco.regexStrings.ENDS_WITH_DTS, 'string'],
-                        [Monaco.regexStrings.GLOBAL, 'keyword']
-                    ]
-                },
-                tokenPostfix: ''
-            });
+    static _loadMonaco() {
+        return new Promise((resolve, reject) => {
+            try {
+                let start = performance.now();
+                let require = (<any>window).require;
+                if (require) {
+                    const requireConfig = {
+                        paths: {
+                            'vs': `https://unpkg.com/monaco-editor@0.7.0/min/vs`
+                        }
+                    };
 
-            monaco.languages.registerCompletionItemProvider('libraries', {
-                provideCompletionItems: (model, position) => {
-                    let currentLine = model.getValueInRange({
-                        startLineNumber: position.lineNumber,
-                        startColumn: 1,
-                        endLineNumber: position.lineNumber,
-                        endColumn: position.column
+                    (window as any).MonacoEnvironment = {
+                        getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
+                    };
+
+                    require.config(requireConfig);
+                    require(['vs/editor/editor.main'], () => {
+                        let interval = setInterval(() => {
+                            try {
+                                if (monaco && monaco.editor && monaco.editor.create) {
+                                    let end = performance.now();
+                                    console.log(`Moanco loaded in : ${(end - start) / 1000}s`);
+                                    clearInterval(interval);
+                                    return resolve(monaco);
+                                }
+                            }
+                            catch (error) {
+                                if (!(error instanceof ReferenceError)) {
+                                    return reject(error);
+                                }
+                            }
+                        }, 300);
                     });
-
-                    if (Monaco.regexStrings.STARTS_WITH_TYPINGS.test(currentLine)) {
-                        return this._intellisense.typings;
-                    }
-                    else if (Monaco.regexStrings.GLOBAL.test(currentLine)) {
-                        return this._intellisense.libraries;
-                    }
-                    else {
-                        return [];
-                    }
                 }
-            });
-
-            monaco.languages.typescript.typescriptDefaults.compilerOptions = {
-                module: monaco.languages.typescript.ModuleKind.CommonJS,
-                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
-            };
-
-            return monaco;
+            }
+            catch (error) {
+                reject(error);
+            }
         });
     }
+
+    private async _registerLanguageServices() {
+        let monaco = await Monaco.current;
+
+        monaco.languages.register({ id: 'libraries' });
+        monaco.languages.setMonarchTokensProvider('libraries', {
+            tokenizer: {
+                root: [
+                    [Regex.STARTS_WITH_COMMENT, 'comment'],
+                    [Regex.STARTS_WITH_TYPINGS, 'string'],
+                    [Regex.ENDS_WITH_DTS, 'string'],
+                    [Regex.GLOBAL, 'keyword']
+                ]
+            },
+            tokenPostfix: ''
+        });
+
+        monaco.languages.registerCompletionItemProvider('libraries', {
+            provideCompletionItems: (model, position) => {
+                let currentLine = model.getValueInRange({
+                    startLineNumber: position.lineNumber,
+                    startColumn: 1,
+                    endLineNumber: position.lineNumber,
+                    endColumn: position.column
+                });
+
+                if (Regex.STARTS_WITH_TYPINGS.test(currentLine)) {
+                    return this.typings;
+                }
+                else if (Regex.GLOBAL.test(currentLine)) {
+                    return this.libraries;
+                }
+                else {
+                    return [];
+                }
+            }
+        });
+
+        monaco.languages.typescript.typescriptDefaults.compilerOptions = {
+            module: monaco.languages.typescript.ModuleKind.CommonJS,
+            moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
+        };
+
+        return monaco;
+    };
 }

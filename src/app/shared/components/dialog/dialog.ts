@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Notification } from '../../services';
-import { ViewBase } from '../base';
+import { Notification, Disposable } from '../../services';
 
 @Component({
     selector: 'dialog',
     templateUrl: 'dialog.html'
 })
-export class Dialog extends ViewBase {
+export class Dialog extends Disposable {
     dialog: IDialog;
     actions: string[];
 

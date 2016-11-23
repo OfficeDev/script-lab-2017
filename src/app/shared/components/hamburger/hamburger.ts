@@ -1,5 +1,5 @@
 ﻿import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
-import { ViewBase } from '../base';
+import { Disposable } from '../../services';
 import './hamburger.scss';
 
 @Component({
@@ -20,7 +20,7 @@ import './hamburger.scss';
     </section>
     `
 })
-export class Hamburger extends ViewBase {
+export class Hamburger extends Disposable {
     @Input() title: string;
     @Input() shown: boolean = false;
     @Output() shownChange: EventEmitter<boolean> = new EventEmitter<boolean>();

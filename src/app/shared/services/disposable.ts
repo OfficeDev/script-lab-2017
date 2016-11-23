@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs/Rx';
 
-export class ViewBase {
+export class Disposable {
     private _subscriptions: Subscription[] = [];
 
     protected markDispose(subscription: Subscription[])

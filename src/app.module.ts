@@ -1,4 +1,5 @@
 import { NgModule, Component, enableProdMode } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -20,25 +21,20 @@ import './assets/styles/globals.scss';
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
 export class AppModule {
+    static start() {
+        if (!Authenticator.isAuthDialog()) {
+            if (!window.location.href.indexOf('localhost')) {
+                enableProdMode();
+            }
 
-}
-
-export function start() {
-    if (!Authenticator.isAuthDialog()) {
-        if (!window.location.href.indexOf('localhost')) {
-            enableProdMode();
+            Theme.applyTheme().then(next => {
+                platformBrowserDynamic().bootstrapModule(AppModule);
+            });
         }
-
-        Promise.all([
-            Monaco.initialize(),
-            Theme.applyTheme()
-        ]).then(() => {
-            platformBrowserDynamic().bootstrapModule(AppModule);
-        });
     }
 }
 
-(() => {
+Monaco.initialize().then(() => {
     let isRunningInWeb = location.href.indexOf('web') > 0;
-    isRunningInWeb ? start() : Office.initialize = reason => start();
-})();
+    isRunningInWeb ? AppModule.start() : Office.initialize = reason => AppModule.start();
+});

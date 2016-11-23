@@ -1,14 +1,13 @@
 import { Directive, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Monaco, Notification } from '../../services';
+import { Monaco, Intellisense, Notification, Disposable } from '../../services';
 import { MonacoEditor } from './monaco-editor';
-import { ViewBase } from '../base';
 import './monaco-editor.scss';
 
 @Directive({
     selector: 'tab'
 })
-export class Tab extends ViewBase implements OnChanges, ITab {
+export class Tab extends Disposable implements OnChanges, ITab {
     @Input() name: string;
     @Input() language: string;
 
@@ -24,8 +23,8 @@ export class Tab extends ViewBase implements OnChanges, ITab {
     private _initialized: boolean;
 
     constructor(
-        private _tabs: MonacoEditor,
-        private _monaco: Monaco
+        private _monacoEditor: MonacoEditor,
+        private _intellisense: Intellisense
     ) {
         super();
     }
@@ -33,12 +32,12 @@ export class Tab extends ViewBase implements OnChanges, ITab {
     ngOnChanges(changes: SimpleChanges) {
         if (changes['content']) {
             if (changes['content'].isFirstChange()) {
-                this._tabs.add(this.name, this);
-                this.index = this._tabs.count;
+                this._monacoEditor.tabs.add(this.name, this);
+                this.index = this._monacoEditor.tabs.count;
             }
 
             if (this.name === 'Libraries') {
-                return this._monaco.updateLibs('typescript', this.content.split('\n'));
+                return this._intellisense.updateLibs('typescript', this.content.split('\n'));
             }
         }
     }

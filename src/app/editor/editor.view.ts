@@ -2,8 +2,7 @@ import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
-import { ViewBase } from '../shared/components';
-import { MonacoEvents, Snippet, SnippetStore, Notification, Events, GalleryEvents } from '../shared/services';
+import { MonacoEvents, Snippet, SnippetStore, Notification, Events, GalleryEvents, Disposable } from '../shared/services';
 import { PlaygroundError, Theme } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
@@ -12,7 +11,7 @@ import './editor.view.scss';
     selector: 'editor-view',
     templateUrl: 'editor.view.html'
 })
-export class EditorView extends ViewBase implements OnInit, OnDestroy {
+export class EditorView extends Disposable implements OnInit, OnDestroy {
     theme: string = Theme.editorTheme;
     snippet: Snippet;
     menuOpen = false;
