@@ -157,7 +157,7 @@ export class Monaco {
                 if (require) {
                     const requireConfig = {
                         paths: {
-                            'vs': `https://unpkg.com/monaco-editor@0.6.1/min/vs`
+                            'vs': `https://unpkg.com/monaco-editor@0.7.0/min/vs`
                         }
                     };
 

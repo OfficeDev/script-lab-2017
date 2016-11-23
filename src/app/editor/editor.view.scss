@@ -28,8 +28,12 @@
         overflow: hidden;
         align-items: center;
         justify-content: flex-start;
-        height: 25px;
+        height: 23px;
         transition: background-color 0.3s ease-in-out;
+
+        .ms-Icon {
+            font-size: 13px;
+        }
 
         .command__text {
             padding: 5px $default-spacing/2;
