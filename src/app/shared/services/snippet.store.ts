@@ -4,6 +4,7 @@ import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
 import { Request, ResponseTypes } from './request';
 import { Snippet } from './snippet';
+import { Github } from './github';
 import { Notification } from './notification';
 import * as _ from 'lodash';
 
@@ -14,6 +15,7 @@ export class SnippetStore {
 
     constructor(
         private _request: Request,
+        private _github: Github,
         private _notification: Notification
     ) {
         this._context = HostTypes[Utilities.host];
@@ -34,6 +36,25 @@ export class SnippetStore {
 
                 return new Snippet(result);
             });
+    }
+
+    import(id: string): Promise<Snippet> {
+        return new Promise<Snippet>(async (resolve, reject) => {
+            let gist = await this._github.gist(id);
+            let snippet = gist.files['snippet.yml'];
+            let output: ISnippet;
+            if (snippet == null) {
+                output = await this._upgrade(gist.files);
+                output.description = '';
+                output.author = '';
+                output.source = '';
+                output.gist = id;
+            }
+            else {
+                output = jsyaml.safeLoad(snippet.content);
+            }
+            resolve(new Snippet(output));
+        });
     }
 
     save(snippet: ISnippet): Promise<ISnippet> {
@@ -136,5 +157,54 @@ export class SnippetStore {
 
         document.body.appendChild(form);
         form.submit();
+    }
+
+    private _upgrade(files: IGistFiles) {
+        let snippet: ISnippet = {
+            script: {
+                content: '',
+                language: 'typescript'
+            },
+            style: {
+                content: '',
+                language: 'css'
+            },
+            template: {
+                content: '',
+                language: 'html'
+            },
+            libraries: ''
+        };
+
+        _.forIn(files, (file, name) => {
+            switch (name) {
+                case 'libraries.txt':
+                    snippet.libraries = file.content;
+                    snippet.libraries = snippet.libraries.replace(/^\/\//gm, 'https://');
+                    snippet.libraries = snippet.libraries.replace(/^#/gm, '//');
+                    break;
+
+                case 'app.ts':
+                    snippet.script.content = file.content;
+                    break;
+
+                case 'index.html':
+                    snippet.template.content = file.content;
+                    break;
+
+                case 'style.css':
+                    snippet.style.content = file.content;
+                    break;
+
+                default:
+                    if (!/\.json$/.test(name)) {
+                        break;
+                    }
+                    snippet.name = JSON.parse(file.content).name;
+                    break;
+            }
+        });
+
+        return snippet;
     }
 }

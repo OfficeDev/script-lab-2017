@@ -61,8 +61,6 @@ export class Request {
 
     private _generateHeaders(additionalHeaders: Object): RequestOptions {
         let headersObj = _.extend({}, this.headers, additionalHeaders);
-        headersObj['Accept'] = 'application/json';
-
         let headers = new Headers(headersObj);
         return new RequestOptions({ headers: headers });
     }

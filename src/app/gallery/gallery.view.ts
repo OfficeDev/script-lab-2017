@@ -82,6 +82,10 @@ export class GalleryView extends Disposable implements OnInit {
         this._events.emit('GalleryEvents', GalleryEvents.SELECT, snippet);
     }
 
+    import(id: string) {
+        this._events.emit('GalleryEvents', GalleryEvents.IMPORT, id);
+    }
+
     commandEvents($event: any) {
         if ($event.title === 'Local') {
             switch ($event.action) {

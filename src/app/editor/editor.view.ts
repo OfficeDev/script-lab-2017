@@ -68,12 +68,11 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     }
 
     private _routerEvents() {
-        let subscription = this._route.params.subscribe(params => {
+        let subscription = this._route.params.subscribe(async params => {
             let id: string = params['id'] || this._store.get('LastOpened');
             if (!_.isEmpty(id)) {
-                this._loadSnippet(id).then(snippet => {
-                    this.snippet = snippet;
-                });
+                let snippet = await this._loadSnippet(id, params['store']);
+                this.snippet = snippet;
             }
         });
 
@@ -82,7 +81,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
 
     private _snippetEvents() {
         let subscription = this._events.on<ISnippet>('GalleryEvents')
-            .subscribe(event => {
+            .subscribe(async event => {
                 switch (event.action) {
                     case GalleryEvents.DELETE:
                         if (!(this.snippet == null) && this.snippet.content.id === event.data.id) {
@@ -104,25 +103,26 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
                     case GalleryEvents.CREATE:
                     case GalleryEvents.SELECT:
                         if (this.snippet && this.snippet.isUpdated) {
-                            this._notification.showDialog('Do you want to save your changes?', 'Unsaved Snippet', 'Save', 'Discard', 'Cancel')
-                                .then(result => {
-                                    if (result === 'Save') {
-                                        this.save();
-                                    }
-                                    else if (result === 'Cancel') {
-                                        return;
-                                    }
-                                });
+                            let result = await this._notification.showDialog('Do you want to save your changes?', 'Unsaved Snippet', 'Save', 'Discard', 'Cancel');
+                            if (result === 'Save') {
+                                this.save();
+                            }
+                            else if (result === 'Cancel') {
+                                return;
+                            }
                         }
 
                         if (event.action === GalleryEvents.SELECT) {
                             this.snippet = new Snippet(event.data);
                         }
+                        else if (event.action === GalleryEvents.IMPORT) {
+                            this.snippet = await this._loadSnippet(event.data as string, 'gist');
+                        }
                         else if (event.action === GalleryEvents.CREATE) {
-                            this._createSnippet().then(snippet => this.snippet = snippet);
+                            this.snippet = await this._createSnippet();
                         }
                         else if (event.action === GalleryEvents.COPY) {
-                            this._snippetStore.create('copy').then(snippet => this.snippet = snippet);
+                            this.snippet = await this._snippetStore.create('copy');
                         }
                         break;
                 }
@@ -131,24 +131,28 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         this.markDispose(subscription);
     }
 
-    private _loadSnippet(id: string) {
-        return this._snippetStore.find(id)
-            .then(snippet => {
-                let newSnippet = snippet;
-                this._store.insert('LastOpened', newSnippet.content.id);
-                this._snippetStore.save(newSnippet.content);
-                this._location.replaceState(`/local/${newSnippet.content.id}`);
-                return newSnippet;
-            })
-            .catch(error => {
-                let title = _.isEmpty(id) ? 'Create a snippet' : 'Unable to find snippet';
-                return this._notification.showDialog('Do you want to create a new snippet?', title, 'Create', 'Cancel')
-                    .then(result => {
-                        if (result === 'Create') {
-                            return this._createSnippet();
-                        }
-                    });
-            });
+    private async _loadSnippet(id: string, store: string) {
+        try {
+            let newSnippet: Snippet;
+
+            if (store === 'local') {
+                newSnippet = await this._snippetStore.find(id);
+            }
+            else if (store === 'gist') {
+                newSnippet = await this._snippetStore.import(id);
+            }
+
+            this._store.insert('LastOpened', newSnippet.content.id);
+            this._snippetStore.save(newSnippet.content);
+            this._location.replaceState(`/local/${newSnippet.content.id}`);
+            return newSnippet;
+        }
+        catch (error) {
+            let result = await this._notification.showDialog('Do you want to create a new snippet?', 'Unable to find snippet', 'Create', 'Cancel');
+            if (result === 'Create') {
+                return this._createSnippet();
+            }
+        };
     }
 
     private _createSnippet() {

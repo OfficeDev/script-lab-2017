@@ -4,7 +4,7 @@ import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator } from '@microsoft/office-js-helpers';
+import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, Monaco } from './app/shared/services';
 import { EXCEPTION_PROVIDER, Theme } from './app/shared/helpers';

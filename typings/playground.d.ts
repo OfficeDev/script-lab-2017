@@ -17,7 +17,7 @@ interface ISnippet {
         content: string;
         language: string;
     };
-    libraries: string;
+    libraries?: string;
 }
 
 interface IPlaylist {
