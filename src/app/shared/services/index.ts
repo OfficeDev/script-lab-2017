@@ -11,6 +11,7 @@ export * from './snippet';
 export * from './snippet.store';
 export * from './request';
 export * from './monaco';
+export * from './disposable';
 export * from './events';
 export * from './intellisense';
 export * from './notification';

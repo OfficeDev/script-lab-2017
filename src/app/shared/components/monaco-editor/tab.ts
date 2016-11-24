@@ -1,14 +1,13 @@
 import { Directive, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Monaco, Notification } from '../../services';
+import { Monaco, Intellisense, Notification, Disposable } from '../../services';
 import { MonacoEditor } from './monaco-editor';
-import { ViewBase } from '../base';
 import './monaco-editor.scss';
 
 @Directive({
     selector: 'tab'
 })
-export class Tab extends ViewBase implements OnChanges, ITab {
+export class Tab extends Disposable implements OnChanges, ITab {
     @Input() name: string;
     @Input() language: string;
 
@@ -24,8 +23,8 @@ export class Tab extends ViewBase implements OnChanges, ITab {
     private _initialized: boolean;
 
     constructor(
-        private _tabs: MonacoEditor,
-        private _monaco: Monaco
+        private _monacoEditor: MonacoEditor,
+        private _intellisense: Intellisense
     ) {
         super();
     }
@@ -33,12 +32,12 @@ export class Tab extends ViewBase implements OnChanges, ITab {
     ngOnChanges(changes: SimpleChanges) {
         if (changes['content']) {
             if (changes['content'].isFirstChange()) {
-                this._tabs.add(this.name, this);
-                this.index = this._tabs.count;
+                this._monacoEditor.tabs.add(this.name, this);
+                this.index = this._monacoEditor.tabs.count;
             }
 
             if (this.name === 'Libraries') {
-                return this._monaco.updateLibs('typescript', this.content.split('\n'));
+                return this._intellisense.updateLibs('typescript', this.content.split('\n'));
             }
         }
     }
@@ -47,30 +46,29 @@ export class Tab extends ViewBase implements OnChanges, ITab {
         return this.name === this.active;
     }
 
-    checkForRefresh(id: string) {
-        return Monaco.current.then(monaco => {
-            if (!this._initialized) {
-                this.state = {
-                    id: null,
-                    name: this.name,
-                    viewState: null,
-                    model: null,
-                };
-            }
+    async checkForRefresh(id: string) {
+        let current = await Monaco.current;
+        if (!this._initialized) {
+            this.state = {
+                id: null,
+                name: this.name,
+                viewState: null,
+                model: null,
+            };
+        }
 
-            if (this.state.id === id) {
-                return;
-            }
+        if (this.state.id === id) {
+            return;
+        }
 
-            if (this.state.model) {
-                this.state.model.dispose();
-            }
+        if (this.state.model) {
+            this.state.model.dispose();
+        }
 
-            this.state.id = id;
-            this.state.model = monaco.editor.createModel(this.content, this.language);
-            this.state.viewState = null;
-            this._initialized = true;
-        });
+        this.state.id = id;
+        this.state.model = monaco.editor.createModel(this.content, this.language);
+        this.state.viewState = null;
+        this._initialized = true;
     }
 
     activate() {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
 import * as jsyaml from 'js-yaml';
@@ -65,53 +65,22 @@ export class Request {
         return new RequestOptions({ headers: headers });
     }
 
-    private _response(request: Observable<any>, responseType: ResponseTypes): Promise<any> {
+    private async _response(xhr: Observable<Response>, responseType: ResponseTypes): Promise<any> {
+        let res = await xhr.toPromise();
         switch (responseType) {
-            case ResponseTypes.YAML: return this._yaml(request);
+            case ResponseTypes.YAML:
+                let data = await res.text();
+                return jsyaml.safeLoad(data);
 
-            case ResponseTypes.JSON: return this._json(request);
+            case ResponseTypes.JSON:
+                return res.json();
 
-            case ResponseTypes.BLOB: return this._blob(request);
+            case ResponseTypes.BLOB:
+                return res.blob();
 
             case ResponseTypes.RAW:
-            default: return this._text(request);
+            default:
+                return res.text();
         }
-    }
-
-    private _text(request: Observable<any>): Promise<string> {
-        return request
-            .map(response => response.text() as string)
-            .toPromise()
-            .catch(this._errorHandler);
-    }
-
-    private _blob<T>(request: Observable<any>): Promise<Blob> {
-        return request
-            .map(response => response.blob())
-            .toPromise()
-            .catch(this._errorHandler);
-    }
-
-    private _json<T>(request: Observable<any>): Promise<T> {
-        return request
-            .map(response => response.json() as T)
-            .toPromise()
-            .catch(this._errorHandler);
-    }
-
-    private _yaml<T>(request: Observable<any>): Promise<T> {
-        return this._text(request).then(yaml => jsyaml.safeLoad(yaml));
-    }
-
-    private _boolean(request: Observable<any>): Promise<boolean> {
-        return request.map(response => response.text()).toPromise()
-            .then(() => true)
-            .catch(() => false);
-    }
-
-
-    private _errorHandler(error) {
-        // TODO: handle errors
-        throw error;
     }
 }
