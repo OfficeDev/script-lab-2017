@@ -50,8 +50,8 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
 
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: this.theme || 'vs' });
+        await this.updateView(this.tabs.get('Script'), true);
         this._monacoEditor.onKeyDown(e => this.bindToEdit(e));
-        return await this.updateView(this.tabs.get('Script'), true);
     }
 
     ngOnChanges(changes: SimpleChanges) {
