@@ -7,7 +7,7 @@ import * as jsyaml from 'js-yaml';
 export enum ResponseTypes {
     YAML,
     JSON,
-    RAW,
+    TEXT,
     BLOB
 }
 
@@ -65,22 +65,22 @@ export class Request {
         return new RequestOptions({ headers: headers });
     }
 
-    private async _response(xhr: Observable<Response>, responseType: ResponseTypes): Promise<any> {
-        let res = await xhr.toPromise();
-        switch (responseType) {
-            case ResponseTypes.YAML:
-                let data = await res.text();
-                return jsyaml.safeLoad(data);
+    private _response(xhr: Observable<Response>, responseType: ResponseTypes): Promise<any> {
+        return xhr.map(res => {
+            switch (responseType) {
+                case ResponseTypes.YAML:
+                    return jsyaml.safeLoad(res.text());
 
-            case ResponseTypes.JSON:
-                return res.json();
+                case ResponseTypes.JSON:
+                    return res.json();
 
-            case ResponseTypes.BLOB:
-                return res.blob();
+                case ResponseTypes.BLOB:
+                    return res.blob();
 
-            case ResponseTypes.RAW:
-            default:
-                return res.text();
-        }
+                case ResponseTypes.TEXT:
+                default:
+                    return res.text();
+            }
+        }).toPromise();
     }
 }

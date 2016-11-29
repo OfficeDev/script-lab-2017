@@ -50,7 +50,7 @@ export class Intellisense {
     }
 
     async fetch(filePath: string) {
-        let content = await this._request.get<string>(filePath, null, ResponseTypes.RAW);
+        let content = await this._request.get<string>(filePath, null, ResponseTypes.TEXT);
         this._cache.insert(filePath, content);
         return { content, filePath };
     }

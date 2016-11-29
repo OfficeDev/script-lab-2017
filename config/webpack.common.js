@@ -40,7 +40,7 @@ module.exports = {
         ]
     },
 
-    postcss: function() {
+    postcss: function () {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 
@@ -64,10 +64,6 @@ module.exports = {
                 from: './web.config',
                 to: 'web.config',
             },
-        ]),
-
-        new webpack.ProvidePlugin({
-            require: 'require'
-        })
+        ])
     ]
 };
