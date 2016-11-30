@@ -76,8 +76,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         let subscription = this._route.params.subscribe(async params => {
             let id: string = params['id'] || this._store.get('LastOpened');
             if (!_.isEmpty(id)) {
-                let snippet = await this._loadSnippet(id, params['store']);
-                this.snippet = snippet;
+                this.snippet = await this._loadSnippet(id, params['store']);
             }
         });
 
@@ -136,7 +135,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         this.markDispose(subscription);
     }
 
-    private async _loadSnippet(id: string, store: string) {
+    private async _loadSnippet(id: string, store: string = 'local') {
         try {
             let newSnippet: Snippet;
 

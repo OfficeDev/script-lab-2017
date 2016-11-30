@@ -51,7 +51,6 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: this.theme || 'vs' });
         await this.updateView(this.tabs.get('Script'), true);
-        this._monacoEditor.onKeyDown(e => this.bindToEdit(e));
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -88,56 +87,56 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
         }
 
         this._debouncedInput(event);
-        if (event.ctrlKey || event.metaKey) {
-            let monacoEvent: MonacoEvents;
-            switch (event.keyCode) {
-                case monaco.KeyCode.KEY_S:
-                    monacoEvent = MonacoEvents.SAVE;
-                    break;
+        // if (event.ctrlKey || event.metaKey) {
+        //     let monacoEvent: MonacoEvents;
+        //     switch (event.keyCode) {
+        //         case monaco.KeyCode.KEY_S:
+        //             monacoEvent = MonacoEvents.SAVE;
+        //             break;
 
-                case monaco.KeyCode.KEY_B:
-                    monacoEvent = MonacoEvents.TOGGLE_MENU;
-                    break;
+        //         case monaco.KeyCode.KEY_B:
+        //             monacoEvent = MonacoEvents.TOGGLE_MENU;
+        //             break;
 
-                case monaco.KeyCode.F5:
-                    monacoEvent = MonacoEvents.RUN;
-                    break;
+        //         case monaco.KeyCode.F5:
+        //             monacoEvent = MonacoEvents.RUN;
+        //             break;
 
-                case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
-                    let index = this._activeTab.index;
-                    let key;
-                    if (index === this.tabs.count) {
-                        key = this.tabs.keys()[0];
-                    }
-                    else {
-                        key = this.tabs.keys()[index];
-                    }
-                    this.updateView(this.tabs.get(key));
-                    monacoEvent = -1;
-                    break;
-                }
+        //         case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
+        //             let index = this._activeTab.index;
+        //             let key;
+        //             if (index === this.tabs.count) {
+        //                 key = this.tabs.keys()[0];
+        //             }
+        //             else {
+        //                 key = this.tabs.keys()[index];
+        //             }
+        //             this.updateView(this.tabs.get(key));
+        //             monacoEvent = -1;
+        //             break;
+        //         }
 
-                case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
-                    let index = this._activeTab.index;
-                    let key;
-                    if (index === 1) {
-                        key = this.tabs.keys()[this.tabs.count - 1];
-                    }
-                    else {
-                        key = this.tabs.keys()[index - 2];
-                    }
-                    this.updateView(this.tabs.get(key));
-                    monacoEvent = -1;
-                    break;
-                }
-            }
+        //         case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
+        //             let index = this._activeTab.index;
+        //             let key;
+        //             if (index === 1) {
+        //                 key = this.tabs.keys()[this.tabs.count - 1];
+        //             }
+        //             else {
+        //                 key = this.tabs.keys()[index - 2];
+        //             }
+        //             this.updateView(this.tabs.get(key));
+        //             monacoEvent = -1;
+        //             break;
+        //         }
+        //     }
 
-            if (!(monacoEvent == null)) {
-                this.events.emit(monacoEvent);
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        }
+        //     if (!(monacoEvent == null)) {
+        //         this.events.emit(monacoEvent);
+        //         event.preventDefault();
+        //         event.stopPropagation();
+        //     }
+        // }
     }
 
     @HostListener('window:resize', ['$event'])
