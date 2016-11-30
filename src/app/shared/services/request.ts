@@ -13,8 +13,6 @@ export enum ResponseTypes {
 
 @Injectable()
 export class Request {
-    headers: Object;
-
     constructor(private _http: Http) { }
 
     url(url: string, params: Object) {
@@ -60,9 +58,9 @@ export class Request {
     }
 
     private _generateHeaders(additionalHeaders: Object): RequestOptions {
-        let headersObj = _.extend({}, this.headers, additionalHeaders);
+        let headersObj = _.extend({}, additionalHeaders);
         let headers = new Headers(headersObj);
-        return new RequestOptions({ headers: headers });
+        return new RequestOptions({ headers });
     }
 
     private _response(xhr: Observable<Response>, responseType: ResponseTypes): Promise<any> {

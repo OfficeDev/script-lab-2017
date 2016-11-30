@@ -55,7 +55,7 @@ libraries: |-
     // Syntax: NPM package name, NPM package path, or raw URL to CDN location.
     core-js/client/core.min.js
     jquery
-    @microsoft/office-js-helpers@0.3.0-beta.8/dist/office.helpers.min.js
+    @microsoft/office-js-helpers
     office-ui-fabric-core/dist/css/fabric.min.css
     office-ui-fabric-js/dist/css/fabric.min.css
 
@@ -64,4 +64,4 @@ libraries: |-
     dt~core-js
     dt~jquery
     dt~office-js
-    @microsoft/office-js-helpers@0.3.0-beta.8/dts/office.helpers.d.ts
+    @microsoft/office-js-helpers/dts/office.helpers.d.ts
