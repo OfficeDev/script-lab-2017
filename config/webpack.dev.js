@@ -25,12 +25,12 @@ module.exports = webpackMerge(commonConfig, {
         new ExtractTextPlugin('[name].[hash].css'),
         new CopyWebpackPlugin([
             {
-                from: './config/env.debug.json',
+                from: './config/env.json',
                 to: 'env.json',
             }
         ]),
         new HtmlWebpackPlugin({
-            template: 'src/index.dev.html'
+            template: 'src/index.html'
         }),
     ],
 
