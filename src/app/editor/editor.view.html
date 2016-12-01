@@ -37,6 +37,7 @@
         </div>
     </section>
     <section class="editor__footer">
+        <div class="command__text ms-font-s" (click)="about()"><i class="ms-Icon ms-Icon--Info"></i></div>
         <div class="command__text" (click)="switchTheme()"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs-dark' ? 'Dark': 'Light'}}</span></div>
         <div [hidden]="!snippet" class="command__text language"><span class="ms-font-s">{{activeLanguage}}</span></div>
         <div [hidden]="!snippet" class="command__text">

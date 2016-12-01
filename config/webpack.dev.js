@@ -29,6 +29,12 @@ module.exports = webpackMerge(commonConfig, {
                 to: 'env.json',
             }
         ]),
+        new webpack.DefinePlugin({
+            PLAYGROUND: JSON.stringify({
+                ENV: 'Development',
+                INFO: commonConfig.meta
+            })
+        }),
         new HtmlWebpackPlugin({
             template: 'src/index.html'
         }),

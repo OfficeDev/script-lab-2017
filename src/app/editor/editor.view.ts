@@ -6,6 +6,7 @@ import { MonacoEvents, Snippet, SnippetStore, Notification, Events, GalleryEvent
 import { PlaygroundError, Theme } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
+declare let PLAYGROUND: any;
 
 @Component({
     selector: 'editor-view',
@@ -14,9 +15,10 @@ import './editor.view.scss';
 export class EditorView extends Disposable implements OnInit, OnDestroy {
     theme: string = Theme.editorTheme;
     snippet: Snippet;
-    menuOpen = false;
+    menuOpen = true;
     readonly = false;
     activeTab: string;
+    info: any = PLAYGROUND.INFO;
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
     private _store: Storage<string>;
@@ -56,6 +58,11 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     switchTheme() {
         Theme.editorTheme = Theme.editorTheme === 'vs' ? 'vs-dark' : 'vs';
         this.theme = Theme.editorTheme;
+    }
+
+    async about() {
+        let message = `Version: ${this.info.full_version}\nDate: ${new Date(this.info.build)}`;
+        let result = await this._notification.showDialog(message, this.info.name, 'Ok');
     }
 
     editorEvents(event: MonacoEvents) {

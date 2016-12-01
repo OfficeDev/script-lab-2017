@@ -31,9 +31,10 @@ module.exports = webpackMerge(commonConfig, {
         }),
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
-            'process.env': {
-                'ENV': JSON.stringify(ENV)
-            }
+            PLAYGROUND: JSON.stringify({
+                ENV: 'Production',
+                INFO: commonConfig.meta
+            })
         }),
         new CopyWebpackPlugin([
             {

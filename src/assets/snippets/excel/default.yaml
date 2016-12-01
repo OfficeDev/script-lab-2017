@@ -66,4 +66,4 @@ libraries: |-
     dt~core-js
     dt~jquery
     dt~office-js
-    @microsoft/office-js-helpers/dts/office.helpers.d.ts
+    @microsoft/office-js-helpers/dist/office.helpers.d.ts

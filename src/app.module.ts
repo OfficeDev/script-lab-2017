@@ -14,6 +14,8 @@ import { AppComponent } from './app';
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
 
+declare let PLAYGROUND: any;
+
 @NgModule({
     imports: [BrowserModule, HttpModule, FormsModule, APP_ROUTES],
     declarations: [AppComponent, ...COMPONENT_DECLARATIONS],
@@ -22,18 +24,31 @@ import './assets/styles/globals.scss';
 })
 export class AppModule {
     static async start() {
+        let monacoPromise = Monaco.initialize();
+        console.log(location.href);
+        let isAddin = location.href.indexOf('mode=web') === -1;
+        if (isAddin) {
+            Office.initialize = async () => {
+                await monacoPromise;
+                AppModule._bootstrap();
+            };
+        }
+        else {
+            await monacoPromise;
+            AppModule._bootstrap();
+        }
+    }
+
+    static async _bootstrap() {
         if (!Authenticator.isAuthDialog()) {
-            if (!window.location.href.indexOf('localhost')) {
+            if (PLAYGROUND.ENV === 'Production') {
                 enableProdMode();
             }
 
-            await Theme.applyTheme()
+            await Theme.applyTheme();
             platformBrowserDynamic().bootstrapModule(AppModule);
         }
     }
 }
 
-Monaco.initialize().then(() => {
-    let isRunningInWeb = location.href.indexOf('web') > 0;
-    isRunningInWeb ? AppModule.start() : Office.initialize = reason => AppModule.start();
-});
+AppModule.start();

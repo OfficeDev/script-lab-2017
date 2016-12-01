@@ -79,7 +79,7 @@ export class Monaco extends Disposable {
                         kind: monaco.languages.CompletionItemKind.Property,
                         insertText: `${label}\n`,
                     })
-            )
+            );
         }
 
         return this._libraries;
@@ -125,23 +125,7 @@ export class Monaco extends Disposable {
                     };
 
                     require.config(requireConfig);
-                    require(['vs/editor/editor.main'], () => {
-                        let interval = setInterval(() => {
-                            try {
-                                if (monaco && monaco.editor && monaco.editor.create) {
-                                    let end = performance.now();
-                                    console.log(`Moanco loaded in : ${(end - start) / 1000}s`);
-                                    clearInterval(interval);
-                                    return resolve(monaco);
-                                }
-                            }
-                            catch (error) {
-                                if (!(error instanceof ReferenceError)) {
-                                    return reject(error);
-                                }
-                            }
-                        }, 300);
-                    });
+                    require(['vs/editor/editor.main'], () => resolve(monaco));
                 }
             }
             catch (error) {

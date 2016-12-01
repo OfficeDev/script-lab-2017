@@ -1,10 +1,22 @@
 var webpack = require('webpack');
 var path = require('path');
-
+var package = require('../package.json');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
+
+var meta = (function() {
+    var timestamp = new Date().getTime();
+
+    return {
+        name: 'Add-in Playground',
+        version: package.version,
+        build: timestamp,
+        author: 'Microsoft',
+        full_version: `${package.version}.${timestamp}`
+    };
+})();
 
 module.exports = {
     entry: {
@@ -40,7 +52,9 @@ module.exports = {
         ]
     },
 
-    postcss: function () {
+    meta: meta,
+
+    postcss: function() {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 
@@ -48,6 +62,7 @@ module.exports = {
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
         }),
+        new webpack.BannerPlugin(`v.${meta.name} ${meta.full_version} © ${meta.author}`),
         new CopyWebpackPlugin([
             {
                 from: 'src/acquire.html',

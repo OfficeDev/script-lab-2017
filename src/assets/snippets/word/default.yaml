@@ -12,7 +12,7 @@ script:
   language: typescript
   content: |-
     $('#run').click(function () {
-        invokeRun().catch(OfficeHelpers.Utilities.error);
+        invokeRun().catch(OfficeHelpers.Utilities.log);
     });
 
     function invokeRun() {
@@ -66,4 +66,4 @@ libraries: |-
     dt~core-js
     dt~jquery
     dt~office-js
-    @microsoft/office-js-helpers/dts/office.helpers.d.ts
+    @microsoft/office-js-helpers/dist/office.helpers.d.ts

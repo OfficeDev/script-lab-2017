@@ -15,7 +15,7 @@ import './monaco-editor.scss';
         </li>
     </ul>
     <div class="tabs__container">
-        <section #editor class="monaco-editor" (keydown)="bindToEdit()"></section>
+        <section #editor class="monaco-editor"></section>
     </div>`,
     styleUrls: []
 })
@@ -50,6 +50,11 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
 
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: this.theme || 'vs' });
+        let binding = this._monacoEditor.onDidChangeModel(() => {
+            console.log('Registering keydown event');
+            binding.dispose();
+            this._monacoEditor.onKeyDown(event => this._onKeyDown(event));
+        });
         await this.updateView(this.tabs.get('Script'), true);
     }
 
@@ -81,66 +86,66 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
         this.activeLanguageChange.emit(this._activeTab.language);
     }
 
-    bindToEdit(event: monaco.IKeyboardEvent) {
+    private _onKeyDown(event: monaco.IKeyboardEvent) {
         if (event == null) {
             return;
         }
 
         this._debouncedInput(event);
-        // if (event.ctrlKey || event.metaKey) {
-        //     let monacoEvent: MonacoEvents;
-        //     switch (event.keyCode) {
-        //         case monaco.KeyCode.KEY_S:
-        //             monacoEvent = MonacoEvents.SAVE;
-        //             break;
+        if (event.ctrlKey || event.metaKey) {
+            let monacoEvent: MonacoEvents;
+            switch (event.keyCode) {
+                case monaco.KeyCode.KEY_S:
+                    monacoEvent = MonacoEvents.SAVE;
+                    break;
 
-        //         case monaco.KeyCode.KEY_B:
-        //             monacoEvent = MonacoEvents.TOGGLE_MENU;
-        //             break;
+                case monaco.KeyCode.KEY_B:
+                    monacoEvent = MonacoEvents.TOGGLE_MENU;
+                    break;
 
-        //         case monaco.KeyCode.F5:
-        //             monacoEvent = MonacoEvents.RUN;
-        //             break;
+                case monaco.KeyCode.F5:
+                    monacoEvent = MonacoEvents.RUN;
+                    break;
 
-        //         case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
-        //             let index = this._activeTab.index;
-        //             let key;
-        //             if (index === this.tabs.count) {
-        //                 key = this.tabs.keys()[0];
-        //             }
-        //             else {
-        //                 key = this.tabs.keys()[index];
-        //             }
-        //             this.updateView(this.tabs.get(key));
-        //             monacoEvent = -1;
-        //             break;
-        //         }
+                case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
+                    let index = this._activeTab.index;
+                    let key;
+                    if (index === this.tabs.count) {
+                        key = this.tabs.keys()[0];
+                    }
+                    else {
+                        key = this.tabs.keys()[index];
+                    }
+                    this.updateView(this.tabs.get(key));
+                    monacoEvent = -1;
+                    break;
+                }
 
-        //         case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
-        //             let index = this._activeTab.index;
-        //             let key;
-        //             if (index === 1) {
-        //                 key = this.tabs.keys()[this.tabs.count - 1];
-        //             }
-        //             else {
-        //                 key = this.tabs.keys()[index - 2];
-        //             }
-        //             this.updateView(this.tabs.get(key));
-        //             monacoEvent = -1;
-        //             break;
-        //         }
-        //     }
+                case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
+                    let index = this._activeTab.index;
+                    let key;
+                    if (index === 1) {
+                        key = this.tabs.keys()[this.tabs.count - 1];
+                    }
+                    else {
+                        key = this.tabs.keys()[index - 2];
+                    }
+                    this.updateView(this.tabs.get(key));
+                    monacoEvent = -1;
+                    break;
+                }
+            }
 
-        //     if (!(monacoEvent == null)) {
-        //         this.events.emit(monacoEvent);
-        //         event.preventDefault();
-        //         event.stopPropagation();
-        //     }
-        // }
+            if (!(monacoEvent == null)) {
+                this.events.emit(monacoEvent);
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
     }
 
     @HostListener('window:resize', ['$event'])
-    resize() {
+    private _resize() {
         if (this._monacoEditor) {
             this._monacoEditor.layout();
             this._monacoEditor.setScrollTop(0);
