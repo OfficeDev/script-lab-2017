@@ -21,7 +21,6 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     info: any = PLAYGROUND.INFO;
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
-    private _store: Storage<string>;
 
     constructor(
         private _location: Location,
@@ -31,7 +30,6 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         private _route: ActivatedRoute
     ) {
         super();
-        this._store = new Storage<string>('Playground');
     }
 
     ngOnInit() {
@@ -81,7 +79,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
 
     private _routerEvents() {
         let subscription = this._route.params.subscribe(async params => {
-            let id: string = params['id'] || this._store.get('LastOpened');
+            let id: string = params['id'] || this._snippetStore.lastOpened;
             if (!_.isEmpty(id)) {
                 this.snippet = await this._loadSnippet(id, params['store']);
             }
@@ -96,18 +94,14 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
                 switch (event.action) {
                     case GalleryEvents.DELETE:
                         if (!(this.snippet == null) && this.snippet.content.id === event.data.id) {
-                            if (this._store.contains('LastOpened')) {
-                                this._store.remove('LastOpened');
-                            }
+                            this._snippetStore.lastOpened = null;
                             this.snippet = null;
                         }
                         break;
 
                     case GalleryEvents.DELETE_ALL:
                         this.snippet = null;
-                        if (this._store.contains('LastOpened')) {
-                            this._store.remove('LastOpened');
-                        }
+                        this._snippetStore.lastOpened = null;
                         break;
 
                     case GalleryEvents.IMPORT:
@@ -142,33 +136,39 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         this.markDispose(subscription);
     }
 
-    private async _loadSnippet(id: string, store: string = 'local') {
+    private async _loadSnippet(id: string, store: string = 'last') {
         try {
             let newSnippet: Snippet;
 
-            if (store === 'local') {
-                newSnippet = await this._snippetStore.find(id);
-            }
-            else if (store === 'gist') {
-                newSnippet = await this._snippetStore.import(id);
+            switch (store) {
+                case 'gist':
+                    newSnippet = await this._snippetStore.import(id);
+                    break;
+
+                case 'local':
+                default:
+                    newSnippet = await this._snippetStore.find(id);
+                    break;
             }
 
-            this._store.insert('LastOpened', newSnippet.content.id);
             this._snippetStore.save(newSnippet.content);
             this._location.replaceState(`/local/${newSnippet.content.id}`);
             return newSnippet;
         }
         catch (error) {
-            let result = await this._notification.showDialog('Do you want to create a new snippet?', 'Unable to find snippet', 'Create', 'Cancel');
+            let result = await this._notification.showDialog(`We couldn't find your ${store} snippet with the id ${id}.\n\nDo you want to create a new snippet instead?`, `The missing snippet`, 'Create', 'Cancel');
             if (result === 'Create') {
                 return this._createSnippet();
+            }
+            else {
+                this._snippetStore.lastOpened = null;
+                return null;
             }
         };
     }
 
     private async _createSnippet() {
         let snippet = await this._snippetStore.create();
-        this._store.insert('LastOpened', snippet.content.id);
         await this._snippetStore.save(snippet.content);
         this._location.replaceState(`/local/${snippet.content.id}`);
         return snippet;

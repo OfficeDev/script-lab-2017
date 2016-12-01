@@ -10,16 +10,31 @@ import * as _ from 'lodash';
 
 @Injectable()
 export class SnippetStore {
-    private _store: Storage<ISnippet>;
-    private _context: string;
+    private _snippets = new Storage<ISnippet>(`${this._context}Snippets`);
+    private _settings = new Storage<string>('Playground');
+    private _context = HostTypes[Utilities.host];
 
     constructor(
         private _request: Request,
         private _github: Github,
         private _notification: Notification
     ) {
-        this._context = HostTypes[Utilities.host];
-        this._store = new Storage<ISnippet>(`${this._context}Snippets`);
+
+    }
+
+    get lastOpened(): string {
+        return this._settings.get('LastOpened');
+    }
+
+    set lastOpened(value: string) {
+        if (!(value == null) && value.trim() !== '') {
+            this._settings.insert('LastOpened', value);
+        }
+        else {
+            if (this._settings.contains('LastOpened')) {
+                this._settings.remove('LastOpened');
+            }
+        }
     }
 
     async create(suffix?: string): Promise<Snippet> {
@@ -58,7 +73,8 @@ export class SnippetStore {
     save(snippet: ISnippet): Promise<ISnippet> {
         return new Promise((resolve, reject) => {
             this._validate(snippet);
-            let result = this._store.insert(snippet.id, snippet);
+            let result = this._snippets.insert(snippet.id, snippet);
+            this.lastOpened = snippet.id;
             this._notification.emit<ISnippet>('StorageEvent', snippet);
             return resolve(result);
         });
@@ -67,7 +83,7 @@ export class SnippetStore {
     delete(snippet: ISnippet): Promise<ISnippet> {
         return new Promise(resolve => {
             this._validate(snippet);
-            let result = this._store.remove(snippet.id);
+            let result = this._snippets.remove(snippet.id);
             this._notification.emit<ISnippet>('StorageEvent', snippet);
             return resolve(result);
         });
@@ -75,14 +91,14 @@ export class SnippetStore {
 
     clear(): Promise<boolean> {
         return new Promise(resolve => {
-            this._store.clear();
+            this._snippets.clear();
             this._notification.emit<ISnippet>('StorageEvent', null);
             return resolve(true);
         });
     }
 
     local(): ISnippet[] {
-        return this._store.values();
+        return this._snippets.values();
     }
 
     templates(url?: string, external?: boolean): Promise<IPlaylist> {
@@ -100,7 +116,7 @@ export class SnippetStore {
 
     find(id: string): Promise<Snippet> {
         return new Promise((resolve, reject) => {
-            let snippet = this._store.get(id);
+            let snippet = this._snippets.get(id);
             if (snippet == null) {
                 return reject('Could not find snippet in localStorage');
             }
@@ -109,7 +125,7 @@ export class SnippetStore {
     }
 
     private _exists(name: string) {
-        return this._store.values().some(item => item.name.trim() === name.trim());
+        return this._snippets.values().some(item => item.name.trim() === name.trim());
     }
 
     private _validate(snippet: ISnippet) {
@@ -125,7 +141,7 @@ export class SnippetStore {
     private _generateName(name: string, suffix: string = ''): string {
         let newName = _.isEmpty(name.trim()) ? 'New Snippet' : name.trim();
         let regex = new RegExp(`^${name}`);
-        let options = this._store.values().filter(item => regex.test(item.name.trim()));
+        let options = this._snippets.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = _.reduce(options, (max, item) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
             if (max <= ~~match[1]) {
