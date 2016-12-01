@@ -15,13 +15,14 @@ import './monaco-editor.scss';
         </li>
     </ul>
     <div class="tabs__container">
-        <section #editor class="monaco-editor"></section>
+        <section id="editor" #editor class="monaco-editor"></section>
     </div>`,
     styleUrls: []
 })
 export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => {
+        console.log(event);
         let value = this._monacoEditor.getValue();
         this._activeTab.contentChange.emit(value);
     }, 300);
@@ -50,11 +51,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
 
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: this.theme || 'vs' });
-        let binding = this._monacoEditor.onDidChangeModel(() => {
-            console.log('Registering keydown event');
-            binding.dispose();
-            this._monacoEditor.onKeyDown(event => this._onKeyDown(event));
-        });
+        (document.querySelector('#editor') as HTMLElement).onkeydown = event => this._onKeyDown(event as any);
         await this.updateView(this.tabs.get('Script'), true);
     }
 

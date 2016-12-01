@@ -46,7 +46,8 @@
         "js-yaml": "^3.7.0",
         "typings": "^2.0.0",
         "zone.js": "0.7.2",
-        "lodash": "^4.17.2"
+        "lodash": "^4.17.2",
+        "lz-string": "^1.4.4"
     },
     "devDependencies": {
         "codelyzer": "^2.0.0-beta.1",

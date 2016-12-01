@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import { MonacoEvents, Snippet, SnippetStore, Notification, Events, GalleryEvents, Disposable } from '../shared/services';
-import { PlaygroundError, Theme } from '../shared/helpers';
+import { PlaygroundError, Theme, Utilities as Utils } from '../shared/helpers';
 import * as _ from 'lodash';
 import './editor.view.scss';
 declare let PLAYGROUND: any;
@@ -61,7 +61,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     }
 
     async about() {
-        let message = `Version: ${this.info.full_version}\nDate: ${new Date(this.info.build)}`;
+        let message = `Version: ${this.info.full_version}\nDate: ${new Date(this.info.build)}\n\nUsage:\n${Utils.storageSize(localStorage, HostTypes[Utilities.host] + 'Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
         let result = await this._notification.showDialog(message, this.info.name, 'Ok');
     }
 

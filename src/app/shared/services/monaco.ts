@@ -126,7 +126,11 @@ export class Monaco extends Disposable {
 
                     console.log('Loading monaco');
                     require.config(requireConfig);
-                    require(['vs/editor/editor.main'], () => resolve(monaco));
+                    require(['vs/editor/editor.main'], () => {
+                        let end = performance.now();
+                        console.log(`Monco loaded in ${(end - start) / 1000}s`);
+                        resolve(monaco);
+                    });
                 }
             }
             catch (error) {

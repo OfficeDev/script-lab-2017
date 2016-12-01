@@ -49,7 +49,9 @@ export class Intellisense {
 
     get(url: string): Observable<IIntellisenseFile> {
         if (this._cache.contains(url)) {
-            return Observable.of({ url, content: this._cache.get(url) });
+            let content = this._cache.get(url);
+            console.info(`Loading from cache: ${url}`);
+            return Observable.of({ url, content });
         }
         else {
             return this._request.get<string>(url, null, ResponseTypes.TEXT)
@@ -76,16 +78,23 @@ export class Intellisense {
                 else {
                     intellisense.retain = true;
                 }
+
+                return file.url;
             })
-            .subscribe(null, Utilities.log, () =>
-                this._current.values().forEach(file => {
+            .subscribe(
+            url => console.info(`Added: ${url}`),
+            error => Utilities.log(error),
+            () => {
+                return this._current.values().forEach(file => {
                     if (!file.retain) {
+                        console.info(`Removed: ${file.url}`);
                         file.disposable.dispose();
                         this._current.remove(file.url);
                     }
                     else {
                         file.retain = false;
                     }
-                }));
+                });
+            });
     }
 }
