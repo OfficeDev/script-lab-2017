@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { PlaygroundError } from '../helpers';
 import * as _ from 'lodash';
 import * as jsyaml from 'js-yaml';
 
@@ -22,39 +23,57 @@ export class Request {
         return url;
     }
 
-    local<T>(path, responseType: ResponseTypes) {
-        let xhr = this._http.get(`assets/${path}`);
-        return this._response(xhr, responseType) as Promise<T>;
+    local<T>(path, responseType: ResponseTypes): Observable<T> {
+        let xhr = this._http.get(`assets/${path}`)
+            .retryWhen(error => error.delay(500))
+            .timeout(2000, new PlaygroundError(`Request failed: ${path}`));
+
+        return this._response(xhr, responseType);
     }
 
-    get<T>(url: string, responseType: ResponseTypes, headers?: Object) {
+    get<T>(url: string, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.get(url, options);
-        return this._response(xhr, responseType) as Promise<T>;
+        let xhr = this._http.get(url, options)
+            .retryWhen(error => error.delay(500))
+            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
+
+        return this._response(xhr, responseType);
     }
 
-    post<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean) {
+    post<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.post(url, body, options);
-        return this._response(xhr, responseType) as Promise<T>;
+        let xhr = this._http.post(url, body, options)
+            .retryWhen(error => error.delay(500))
+            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
+
+        return this._response(xhr, responseType);
     }
 
-    put<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean) {
+    put<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.put(url, body, options);
-        return this._response(xhr, responseType) as Promise<T>;
+        let xhr = this._http.put(url, body, options)
+            .retryWhen(error => error.delay(500))
+            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
+
+        return this._response(xhr, responseType);
     }
 
-    patch<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean) {
+    patch<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.patch(url, body, options);
-        return this._response(xhr, responseType) as Promise<T>;
+        let xhr = this._http.patch(url, body, options)
+            .retryWhen(error => error.delay(500))
+            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
+
+        return this._response(xhr, responseType);
     }
 
-    delete<T>(url: string, responseType: ResponseTypes, headers?: Object) {
+    delete<T>(url: string, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.delete(url, options);
-        return this._response(xhr, responseType) as Promise<T>;
+        let xhr = this._http.delete(url, options)
+            .retryWhen(error => error.delay(500))
+            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
+
+        return this._response(xhr, responseType);
     }
 
     private _generateHeaders(additionalHeaders: Object): RequestOptions {
@@ -63,7 +82,7 @@ export class Request {
         return new RequestOptions({ headers });
     }
 
-    private _response(xhr: Observable<Response>, responseType: ResponseTypes): Promise<any> {
+    private _response(xhr: Observable<Response>, responseType: ResponseTypes): Observable<any> {
         return xhr.map(res => {
             switch (responseType) {
                 case ResponseTypes.YAML:
@@ -79,6 +98,6 @@ export class Request {
                 default:
                     return res.text();
             }
-        }).toPromise();
+        });
     }
 }

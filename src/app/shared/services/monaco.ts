@@ -52,7 +52,7 @@ export class Monaco extends Disposable {
     private _typings: Promise<monaco.languages.CompletionItem[]>;
     get typings() {
         if (this._typings == null) {
-            this._typings = this._intellisenseFile.then(
+            this._typings = this._intellisenseFile.toPromise().then(
                 item => item
                     .filter(({typings}) => !_.isEmpty(typings))
                     .map(({typings, documentation}) => <monaco.languages.CompletionItem>{
@@ -70,7 +70,7 @@ export class Monaco extends Disposable {
     private _libraries: Promise<monaco.languages.CompletionItem[]>;
     get libraries() {
         if (this._libraries == null) {
-            this._libraries = this._intellisenseFile.then(
+            this._libraries = this._intellisenseFile.toPromise().then(
                 item => item
                     .filter(({label}) => !_.isEmpty(label))
                     .map(({label, documentation}) => <monaco.languages.CompletionItem>{
@@ -124,6 +124,7 @@ export class Monaco extends Disposable {
                         getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
                     };
 
+                    console.log('Loading monaco');
                     require.config(requireConfig);
                     require(['vs/editor/editor.main'], () => resolve(monaco));
                 }

@@ -8,7 +8,7 @@ import '@angular/http';
 import '@angular/router';
 
 // Externals
-import 'rxjs';
+import 'rxjs/Rx';
 import '@microsoft/office-js-helpers';
 import 'lodash';
 import 'js-yaml';

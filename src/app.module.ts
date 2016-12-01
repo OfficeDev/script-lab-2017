@@ -24,30 +24,37 @@ declare let PLAYGROUND: any;
 })
 export class AppModule {
     static async start() {
-        let monacoPromise = Monaco.initialize();
-        console.log(location.href);
-        let isAddin = location.href.indexOf('mode=web') === -1;
-        if (isAddin) {
-            Office.initialize = async () => {
-                await monacoPromise;
-                AppModule._bootstrap();
-            };
-        }
-        else {
-            await monacoPromise;
-            AppModule._bootstrap();
-        }
-    }
-
-    static async _bootstrap() {
-        if (!Authenticator.isAuthDialog()) {
+        try {
             if (PLAYGROUND.ENV === 'Production') {
                 enableProdMode();
             }
 
+            await Promise.all([
+                Monaco.initialize(),
+                AppModule.initialize()
+            ]);
+
             await Theme.applyTheme();
-            platformBrowserDynamic().bootstrapModule(AppModule);
+
+            if (!Authenticator.isAuthDialog()) {
+                platformBrowserDynamic().bootstrapModule(AppModule);
+            }
         }
+        catch (e) {
+            Utilities.log(e);
+        }
+    }
+
+    static initialize() {
+        return new Promise<boolean>(resolve => {
+            let isAddin = location.href.indexOf('mode=web') === -1;
+            if (isAddin) {
+                Office.initialize = reason => resolve(true);
+            }
+            else {
+                return resolve(isAddin);
+            }
+        });
     }
 }
 

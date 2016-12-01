@@ -23,7 +23,7 @@ export class SnippetStore {
     }
 
     async create(suffix?: string): Promise<Snippet> {
-        let result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
+        let result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML).toPromise();
         if (result == null) {
             throw (new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
         }
@@ -38,7 +38,7 @@ export class SnippetStore {
 
     import(id: string): Promise<Snippet> {
         return new Promise<Snippet>(async (resolve, reject) => {
-            let gist = await this._github.gist(id);
+            let gist = await this._github.gist(id).toPromise();
             let snippet = gist.files['snippet.yml'];
             let output: ISnippet;
             if (snippet == null) {
@@ -87,7 +87,7 @@ export class SnippetStore {
 
     templates(url?: string, external?: boolean): Promise<IPlaylist> {
         let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
-        return this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON);
+        return this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON).toPromise();
     }
 
     run(snippet: ISnippet): Promise<boolean> {

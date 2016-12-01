@@ -1,5 +1,5 @@
 import { Directive, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subscription } from 'rxjs';
 import { Monaco, Intellisense, Notification, Disposable } from '../../services';
 import { MonacoEditor } from './monaco-editor';
 import './monaco-editor.scss';
@@ -21,6 +21,7 @@ export class Tab extends Disposable implements OnChanges, ITab {
     state: IMonacoEditorState;
 
     private _initialized: boolean;
+    private _susbcription: Subscription;
 
     constructor(
         private _monacoEditor: MonacoEditor,
@@ -29,7 +30,7 @@ export class Tab extends Disposable implements OnChanges, ITab {
         super();
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    async ngOnChanges(changes: SimpleChanges) {
         if (changes['content']) {
             if (changes['content'].isFirstChange()) {
                 this._monacoEditor.tabs.add(this.name, this);
@@ -37,7 +38,12 @@ export class Tab extends Disposable implements OnChanges, ITab {
             }
 
             if (this.name === 'Libraries') {
-                return this._intellisense.updateLibs('typescript', this.content.split('\n'));
+                if (this._susbcription && !this._susbcription.closed) {
+                    console.log('stopping intellisense load');
+                    this._susbcription.unsubscribe();
+                }
+
+                this._susbcription = await this._intellisense.updateIntellisense(this.content.split('\n'));
             }
         }
     }
