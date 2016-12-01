@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 var package = require('../package.json');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
