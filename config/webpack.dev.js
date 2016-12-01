@@ -23,21 +23,12 @@ module.exports = webpackMerge(commonConfig, {
 
     plugins: [
         new ExtractTextPlugin('[name].[hash].css'),
-        new CopyWebpackPlugin([
-            {
-                from: './config/env.json',
-                to: 'env.json',
-            }
-        ]),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 ENV: 'Development',
                 INFO: commonConfig.meta
             })
-        }),
-        new HtmlWebpackPlugin({
-            template: 'src/index.html'
-        }),
+        })
     ],
 
     devServer: {

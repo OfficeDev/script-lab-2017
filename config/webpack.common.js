@@ -79,6 +79,15 @@ module.exports = {
                 from: './web.config',
                 to: 'web.config',
             },
-        ])
+        ]),
+        new CopyWebpackPlugin([
+            {
+                from: './config/env.json',
+                to: 'env.json',
+            }
+        ]),
+        new HtmlWebpackPlugin({
+            template: 'src/index.html'
+        })
     ]
 };

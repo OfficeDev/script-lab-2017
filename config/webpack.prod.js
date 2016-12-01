@@ -22,28 +22,19 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        new webpack.NoErrorsPlugin(),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            mangle: {
-                keep_fnames: true
-            }
-        }),
+        // new webpack.NoErrorsPlugin(),
+        // new webpack.optimize.DedupePlugin(),
+        // new webpack.optimize.UglifyJsPlugin({
+        //     mangle: {
+        //         keep_fnames: true
+        //     }
+        // }),
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 ENV: 'Production',
                 INFO: commonConfig.meta
             })
-        }),
-        new CopyWebpackPlugin([
-            {
-                from: './config/env.prod.json',
-                to: 'env.json',
-            }
-        ]),
-        new HtmlWebpackPlugin({
-            template: 'src/index.prod.html'
-        }),
+        })
     ]
 });
