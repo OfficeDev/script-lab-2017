@@ -3,7 +3,7 @@
 
 .ms-Button {
     &.ms-Button--compound {
-        max-width: none;
+        max-width: initial;
         width: 100%;
 
         &:not(:last-child) {
@@ -13,7 +13,13 @@
 }
 
 .ms-Dialog {
-    max-height: calc(100vh - 200px);
+    min-height: 250px !important;
+    min-width: 350px;
+    padding: 0;
+
+    &-wide {
+        width: calc(100vw - 250px) !important;
+    }
 
     .is-visible {
         @include flex();
@@ -21,11 +27,26 @@
 
     &-inner,
     &-main {
+        height: 100%;
         @include flex();
+        min-width: initial !important;
+        max-width: initial !important;
+    }
+
+    &-inner {
+        padding: $default-spacing;
     }
 
     &-content {
+        height: 100%;
         overflow: auto;
+    }
+
+    &.ms-Dialog--lgHeader {
+        .ms-Dialog-title {
+            padding: $default-spacing;
+            margin: 0;
+        }
     }
 
     &-subText {
@@ -36,7 +57,7 @@
     }
 
     &-action {
-        margin-right: 15px;
+        margin-right: $default-spacing;
 
         &:last-child {
             margin-right: 0;
@@ -44,10 +65,21 @@
     }
 }
 
+@media (max-width: 350px) {
+    .ms-Dialog {
+        width: 100%;
+        min-width: initial;
+
+        &-wide {
+            width: 100%;
+        }
+    }
+}
+
 .ms-Pivot {
     &--tabs {
         .ms-Pivot-link {
-            padding: 0 15px;
+            padding: 0 $default-spacing;
         }
     }
 }
