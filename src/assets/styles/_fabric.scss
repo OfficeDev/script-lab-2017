@@ -17,8 +17,15 @@
     min-width: 350px;
     padding: 0;
 
-    &-wide {
-        width: calc(100vw - 250px) !important;
+    &-panel {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: initial;
+
+        .ms-Dialog-content {
+            height: 100%;
+            overflow: hidden;
+        }
     }
 
     .is-visible {
@@ -39,7 +46,8 @@
 
     &-content {
         height: 100%;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     &.ms-Dialog--lgHeader {
@@ -69,10 +77,6 @@
     .ms-Dialog {
         width: 100%;
         min-width: initial;
-
-        &-wide {
-            width: 100%;
-        }
     }
 }
 

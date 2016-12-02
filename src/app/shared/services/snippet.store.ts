@@ -37,10 +37,16 @@ export class SnippetStore {
         }
     }
 
-    async create(suffix?: string): Promise<Snippet> {
-        let result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML).toPromise();
-        if (result == null) {
-            throw (new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
+    async create(content?: string, suffix?: string): Promise<Snippet> {
+        let result: ISnippet;
+        if (content == null) {
+            await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML).toPromise();
+            if (result == null) {
+                throw (new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
+            }
+        }
+        else {
+            result = jsyaml.safeLoad(content);
         }
 
         // check if we need to generate a new name. The default one is always going to be 'New Snippet'.

@@ -1,0 +1,23 @@
+<div class="ms-Overlay" [ngClass]="{ 'is-visible': open }"></div>
+<div class="ms-Dialog ms-Dialog-panel ms-Dialog--lgHeader ms-u-fadeIn200" [ngClass]="{ 'is-open': open }">
+	<div class="ms-Dialog-main">
+		<div class="ms-Dialog-header">
+			<p class="ms-Dialog-title">Import</p>
+		</div>
+		<div class="ms-Dialog-inner">
+			<div class="ms-Dialog-content">
+				<div id="editor" #editor class="monaco-editor"></div>
+			</div>
+			<div class=" ms-Dialog-actions ">
+				<div class="ms-Dialog-actionsRight ">
+					<button class="ms-Dialog-action ms-Button " (click)="import() ">
+                        <span class="ms-Button-label ">Import</span>
+                    </button>
+					<button class="ms-Dialog-action ms-Button " (click)="cancel() ">
+                        <span class="ms-Button-label ">Cancel</span>
+                    </button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

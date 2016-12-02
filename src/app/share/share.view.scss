@@ -92,16 +92,6 @@ share {
     margin-left: 15px;
 }
 
-#monaco-wrapper {
-    margin-top: 10px;
-}
-
-#monaco {
-    border: 5px solid gray;
-    box-sizing: border-box;
-    height: 250px;
-}
-
 .ms-progress {
     @include flex();
     flex: 1 1 100%;

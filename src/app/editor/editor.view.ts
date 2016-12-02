@@ -21,7 +21,6 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     info: any = PLAYGROUND.INFO;
     title: string = `${HostTypes[Utilities.host]} Snippets`;
 
-
     constructor(
         private _location: Location,
         private _snippetStore: SnippetStore,
@@ -121,7 +120,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
                             this.snippet = new Snippet(event.data);
                         }
                         else if (event.action === GalleryEvents.IMPORT) {
-                            this.snippet = await this._loadSnippet(event.data as string, 'gist');
+                            this.snippet = await this._createSnippet(event.data as string);
                         }
                         else if (event.action === GalleryEvents.CREATE) {
                             this.snippet = await this._createSnippet();
@@ -167,8 +166,8 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
         };
     }
 
-    private async _createSnippet() {
-        let snippet = await this._snippetStore.create();
+    private async _createSnippet(content?: string) {
+        let snippet = await this._snippetStore.create(content);
         await this._snippetStore.save(snippet.content);
         this._location.replaceState(`/local/${snippet.content.id}`);
         return snippet;

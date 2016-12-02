@@ -12,6 +12,7 @@ export class GalleryView extends Disposable implements OnInit {
     snippets: ISnippet[] = [];
     templates: IPlaylist = {} as any;
     hideWarn: boolean;
+    showImport = false;
     private _store: Storage<string>;
 
     constructor(
@@ -79,7 +80,7 @@ export class GalleryView extends Disposable implements OnInit {
     }
 
     import(id: string) {
-        this._events.emit('GalleryEvents', GalleryEvents.IMPORT, id);
+        this.showImport = true;
     }
 
     commandEvents($event: any) {
