@@ -3,7 +3,7 @@
 
 .ms-Button {
     &.ms-Button--compound {
-        max-width: initial;
+        max-width: none;
         width: 100%;
 
         &:not(:last-child) {
@@ -20,7 +20,7 @@
     &-panel {
         width: 100% !important;
         height: 100% !important;
-        max-width: initial;
+        max-width: none;
 
         .ms-Dialog-content {
             height: 100%;
@@ -36,8 +36,8 @@
     &-main {
         height: 100%;
         @include flex();
-        min-width: initial !important;
-        max-width: initial !important;
+        min-width: none !important;
+        max-width: none !important;
     }
 
     &-inner {
@@ -76,7 +76,7 @@
 @media (max-width: 350px) {
     .ms-Dialog {
         width: 100%;
-        min-width: initial;
+        min-width: none;
     }
 }
 

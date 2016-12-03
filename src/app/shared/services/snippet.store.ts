@@ -10,16 +10,15 @@ import * as _ from 'lodash';
 
 @Injectable()
 export class SnippetStore {
+    private _context = HostTypes[Utilities.host];
     private _snippets = new Storage<ISnippet>(`${this._context}Snippets`);
     private _settings = new Storage<string>('Playground');
-    private _context = HostTypes[Utilities.host];
 
     constructor(
         private _request: Request,
         private _github: Github,
         private _notification: Notification
     ) {
-
     }
 
     get lastOpened(): string {
@@ -40,7 +39,7 @@ export class SnippetStore {
     async create(content?: string, suffix?: string): Promise<Snippet> {
         let result: ISnippet;
         if (content == null) {
-            await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML).toPromise();
+            result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML).toPromise();
             if (result == null) {
                 throw (new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
             }

@@ -1,4 +1,4 @@
-import { Directive, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Directive, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Monaco, Intellisense, Notification, Disposable } from '../../services';
 import { MonacoEditor } from './monaco-editor';
@@ -7,7 +7,7 @@ import './monaco-editor.scss';
 @Directive({
     selector: 'tab'
 })
-export class Tab extends Disposable implements OnChanges, ITab {
+export class Tab extends Disposable implements OnInit, OnChanges, ITab {
     @Input() name: string;
     @Input() language: string;
 
@@ -18,7 +18,11 @@ export class Tab extends Disposable implements OnChanges, ITab {
     @Output() contentChange: EventEmitter<string> = new EventEmitter<string>();
 
     index: number;
-    state: IMonacoEditorState;
+    state: IMonacoEditorState = {
+        snippetId: null,
+        viewState: null,
+        model: null,
+    };
 
     private _initialized: boolean;
     private _susbcription: Subscription;
@@ -32,11 +36,6 @@ export class Tab extends Disposable implements OnChanges, ITab {
 
     async ngOnChanges(changes: SimpleChanges) {
         if (changes['content']) {
-            if (changes['content'].isFirstChange()) {
-                this._monacoEditor.tabs.add(this.name, this);
-                this.index = this._monacoEditor.tabs.count;
-            }
-
             if (this.name === 'Libraries') {
                 if (this._susbcription && !this._susbcription.closed) {
                     console.log('stopping intellisense load');
@@ -48,22 +47,18 @@ export class Tab extends Disposable implements OnChanges, ITab {
         }
     }
 
+    ngOnInit() {
+        this._monacoEditor.tabs.add(this.name, this);
+        this.index = this._monacoEditor.tabs.count;
+    }
+
     get isActive(): boolean {
         return this.name === this.active;
     }
 
-    async checkForRefresh(id: string) {
-        let current = await Monaco.current;
-        if (!this._initialized) {
-            this.state = {
-                id: null,
-                name: this.name,
-                viewState: null,
-                model: null,
-            };
-        }
-
-        if (this.state.id === id) {
+    async updateTabState(id: string) {
+        let monaco = await Monaco.current;
+        if (this.state.snippetId === id) {
             return;
         }
 
@@ -71,7 +66,7 @@ export class Tab extends Disposable implements OnChanges, ITab {
             this.state.model.dispose();
         }
 
-        this.state.id = id;
+        this.state.snippetId = id;
         this.state.model = monaco.editor.createModel(this.content, this.language);
         this.state.viewState = null;
         this._initialized = true;

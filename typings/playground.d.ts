@@ -32,8 +32,7 @@ interface IPlaylist {
 }
 
 interface IMonacoEditorState {
-    id?: string;
-    name?: string,
+    snippetId?: string;
     viewState?: monaco.editor.IEditorViewState,
     model?: monaco.editor.IModel
 }

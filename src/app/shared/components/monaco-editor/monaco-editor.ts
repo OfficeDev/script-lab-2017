@@ -10,7 +10,7 @@ import './monaco-editor.scss';
     selector: 'monaco-editor',
     template: `
     <ul class="tabs ms-Pivot ms-Pivot--tabs">
-        <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="updateView(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.isActive}">
+        <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.isActive}">
             {{tab.name}}
         </li>
     </ul>
@@ -31,7 +31,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
     public tabs: Dictionary<Tab>;
 
     @ViewChild('editor') private _editor: ElementRef;
-    @Input() id: string;
+    @Input() snippetId: string;
     @Input() readonly: boolean;
     @Output() events: EventEmitter<MonacoEvents> = new EventEmitter<MonacoEvents>();
 
@@ -50,9 +50,13 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
     }
 
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: this.theme || 'vs' });
-        (document.querySelector('#editor') as HTMLElement).onkeydown = event => this._onKeyDown(event as any);
-        await this.updateView(this.tabs.get('Script'), true);
+        this._activeTab = this.tabs.get('Script');
+        this._monacoEditor = await this._monaco.create(this._editor, {
+            theme: this.theme || 'vs',
+            value: this._activeTab.content,
+            language: this._activeTab.language
+        });
+        this._monacoEditor.onKeyDown(event => this._onKeyDown(event));
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -62,21 +66,20 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
                     theme: changes['theme'].currentValue
                 });
             }
-            if (!_.isEmpty(changes['id'])) {
-                this.updateView(this._activeTab);
+            if (!_.isEmpty(changes['snippetId'])) {
+                this.changeTab(this._activeTab);
             }
         }
     }
 
-    async updateView(tab: Tab, skipSave?: boolean) {
-        let saveCurrentTabState = !(this._activeTab == null);
-        if (!skipSave && saveCurrentTabState) {
+    async changeTab(tab: Tab) {
+        if (!(this._activeTab == null)) {
             this._activeTab.state.model = this._monacoEditor.getModel();
             this._activeTab.state.viewState = this._monacoEditor.saveViewState();
         };
 
         this._activeTab = tab.activate();
-        await this._activeTab.checkForRefresh(this.id);
+        await this._activeTab.updateTabState(this.snippetId);
         this._monacoEditor.setModel(this._activeTab.state.model);
         this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
         this._monacoEditor.focus();
@@ -113,7 +116,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
                     else {
                         key = this.tabs.keys()[index];
                     }
-                    this.updateView(this.tabs.get(key));
+                    this.changeTab(this.tabs.get(key));
                     monacoEvent = -1;
                     break;
                 }
@@ -127,7 +130,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
                     else {
                         key = this.tabs.keys()[index - 2];
                     }
-                    this.updateView(this.tabs.get(key));
+                    this.changeTab(this.tabs.get(key));
                     monacoEvent = -1;
                     break;
                 }
