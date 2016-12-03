@@ -37,7 +37,9 @@ export class ImportView extends Disposable implements OnInit, OnDestroy {
     async ngOnInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { lineNumbers: false });
         this._monacoEditor.setModel(this._model);
-        this._resize();
+        this._monacoEditor.restoreViewState(null);
+        this._monacoEditor.layout();
+        this._monacoEditor.focus();
     }
 
     ngOnDestroy() {
