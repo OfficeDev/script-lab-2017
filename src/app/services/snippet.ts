@@ -1,4 +1,5 @@
-import { Utilities, PlaygroundError } from '../helpers';
+import { PlaygroundError } from '../helpers';
+import cuid = require('cuid');
 import * as crypto from 'crypto-js';
 import * as _ from 'lodash';
 
@@ -11,7 +12,7 @@ export class Snippet {
         }
 
         if (_.isEmpty(this.content.id)) {
-            this.content.id = Utilities.guid();
+            this.content.id = cuid();
         }
 
         this._hash = this._generateHash();

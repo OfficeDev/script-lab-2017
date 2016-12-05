@@ -27,31 +27,31 @@ export class Theme {
             body.classList.add(Theme.editorTheme);
 
             switch (Utilities.host) {
-                case HostTypes.Excel:
+                case HostTypes.EXCEL:
                     (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/excel.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
-                case HostTypes.Word:
+                case HostTypes.WORD:
                     (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/word.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
-                case HostTypes.PowerPoint:
+                case HostTypes.POWERPOINT:
                     (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/powerpoint.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
-                case HostTypes.OneNote:
+                case HostTypes.ONENOTE:
                     (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/onenote.scss'], file => {
                         return resolve(true);
                     });
                     break;
 
-                case HostTypes.Web:
+                case HostTypes.WEB:
                 default:
                     (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/web.scss'], file => {
                         return resolve(true);

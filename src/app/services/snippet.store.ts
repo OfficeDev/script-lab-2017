@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Storage, Utilities, HostTypes } from '@microsoft/office-js-helpers';
+import { Utilities, Storage } from '@microsoft/office-js-helpers';
+import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
 import { Request, ResponseTypes } from './request';
@@ -10,9 +11,7 @@ import * as _ from 'lodash';
 
 @Injectable()
 export class SnippetStore {
-    private _context = HostTypes[Utilities.host];
-    private _snippets = new Storage<ISnippet>(`${this._context}Snippets`);
-    private _settings = new Storage<string>('Playground');
+    private _snippets = new Storage<ISnippet>(`${Utilities.host} Snippets`);
 
     constructor(
         private _request: Request,
@@ -21,68 +20,71 @@ export class SnippetStore {
     ) {
     }
 
-    get lastOpened(): string {
-        return this._settings.get('LastOpened');
+    import(data: string = null, suffix = ''): Observable<ISnippet> {
+        let observable: Observable<ISnippet>;
+        let importType = this._determineImportType(data);
+        console.info(`Importing ${importType} Snippet`);
+
+        switch (importType) {
+            case 'LOCAL':
+                observable = this._request
+                    .local<string>(`snippets/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
+                    .map<ISnippet>(snippet => jsyaml.safeLoad(snippet));
+
+            case 'CUID':
+                observable = Observable.of(this._snippets.get(data));
+
+            case 'GIST':
+                observable = this._github.gist(data).map<ISnippet>(gist => {
+                    let snippet = gist.files['snippet.yml'];
+                    if (snippet == null) {
+                        let output = this._upgrade(gist.files);
+                        output.description = '';
+                        output.author = '';
+                        output.source = '';
+                        output.gist = data;
+                        return output;
+                    }
+                    else {
+                        return jsyaml.safeLoad(snippet.content);
+                    }
+                });
+
+            case 'URL':
+                observable = this._request.get<string>(data, ResponseTypes.TEXT)
+                    .map<ISnippet>(snippet => jsyaml.safeLoad(snippet));
+
+            default:
+                observable = Observable.of(jsyaml.safeLoad(data));
+        }
+
+        return observable
+            .map(snippet => {
+                if (this._exists(snippet.name)) {
+                    snippet.name = this._generateName(snippet.name, suffix);
+                }
+
+                return snippet;
+            })
+            .catch(error => {
+                Utilities.log(error);
+                return null;
+            });
     }
 
-    set lastOpened(value: string) {
-        if (!(value == null) && value.trim() !== '') {
-            this._settings.insert('LastOpened', value);
+    createOrUpdate(snippet: ISnippet) {
+        this._validate(snippet);
+
+        if (this._snippets.contains(snippet.id)) {
+            console.info(`Saving ${snippet.id}:${snippet.name}`);
+            this._snippets.insert(snippet.id, snippet);
         }
         else {
-            if (this._settings.contains('LastOpened')) {
-                this._settings.remove('LastOpened');
-            }
-        }
-    }
-
-    async create(content?: string, suffix?: string): Promise<Snippet> {
-        let result: ISnippet;
-        if (content == null) {
-            result = await this._request.local<ISnippet>(`snippets/${this._context.toLowerCase()}/default.yaml`, ResponseTypes.YAML).toPromise();
-            if (result == null) {
-                throw (new PlaygroundError('Cannot retrieve snippet template. Make sure you have an active internet connection.'));
-            }
-        }
-        else {
-            result = jsyaml.safeLoad(content);
+            console.info(`Creating ${snippet.id}:${snippet.name}`);
+            this._snippets.add(snippet.id, snippet);
         }
 
-        // check if we need to generate a new name. The default one is always going to be 'New Snippet'.
-        if (this._exists(result.name)) {
-            result.name = this._generateName(result.name, suffix);
-        }
-
-        return new Snippet(result);
-    }
-
-    import(id: string): Promise<Snippet> {
-        return new Promise<Snippet>(async (resolve, reject) => {
-            let gist = await this._github.gist(id).toPromise();
-            let snippet = gist.files['snippet.yml'];
-            let output: ISnippet;
-            if (snippet == null) {
-                output = await this._upgrade(gist.files);
-                output.description = '';
-                output.author = '';
-                output.source = '';
-                output.gist = id;
-            }
-            else {
-                output = jsyaml.safeLoad(snippet.content);
-            }
-            resolve(new Snippet(output));
-        });
-    }
-
-    save(snippet: ISnippet): Promise<ISnippet> {
-        return new Promise((resolve, reject) => {
-            this._validate(snippet);
-            let result = this._snippets.insert(snippet.id, snippet);
-            this.lastOpened = snippet.id;
-            this._notification.emit<ISnippet>('StorageEvent', snippet);
-            return resolve(result);
-        });
+        return snippet;
     }
 
     delete(snippet: ISnippet): Promise<ISnippet> {
@@ -107,7 +109,7 @@ export class SnippetStore {
     }
 
     templates(url?: string, external?: boolean): Promise<IPlaylist> {
-        let snippetJsonUrl = `snippets/${this._context.toLowerCase()}/playlist.json`;
+        let snippetJsonUrl = `snippets/ ${this._context.toLowerCase()} /playlist.json`;
         return this._request.local<IPlaylist>(snippetJsonUrl, ResponseTypes.JSON).toPromise();
     }
 
@@ -127,6 +129,26 @@ export class SnippetStore {
             }
             return resolve(new Snippet(snippet));
         });
+    }
+
+    private _determineImportType(data: string): 'LOCAL' | 'CUID' | 'URL' | 'GIST' | 'YAML' {
+        if (data == null || data.trim() === '') {
+            return 'LOCAL';
+        }
+
+        if (data.length === 25) {
+            return 'CUID';
+        }
+
+        if (data.length === 32) {
+            return 'GIST';
+        }
+
+        if (/^https ? /.test(data)) {
+            return 'URL';
+        }
+
+        return 'YAML';
     }
 
     private _exists(name: string) {

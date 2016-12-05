@@ -39,7 +39,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     async save() {
         try {
             this.snippet.updateHash();
-            let result = await this._snippetStore.save(this.snippet.content);
+            let result = await this._snippetStore.createOrUpdate(this.snippet.content);
             return result;
         }
         catch (error) {
@@ -150,7 +150,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
                     break;
             }
 
-            this._snippetStore.save(newSnippet.content);
+            this._snippetStore.createOrUpdate(newSnippet.content);
             this._location.replaceState(`/local/${newSnippet.content.id}`);
             return newSnippet;
         }
@@ -168,7 +168,7 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
 
     private async _createSnippet(content?: string) {
         let snippet = await this._snippetStore.create(content);
-        await this._snippetStore.save(snippet.content);
+        await this._snippetStore.createOrUpdate(snippet.content);
         this._location.replaceState(`/local/${snippet.content.id}`);
         return snippet;
     }

@@ -4,11 +4,13 @@
   "globalDependencies": {
     "applicationinsights-js": "registry:dt/applicationinsights-js#0.23.2+20160730040946",
     "crypto-js": "registry:dt/crypto-js#3.1.4+20160708041433",
+    "cuid": "registry:dt/cuid#0.0.0+20160316155526",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "js-yaml": "registry:dt/js-yaml#3.5.2+20160316171810",
     "lodash": "registry:dt/lodash#4.14.0+20161110215204",
     "lz-string": "registry:dt/lz-string#0.0.0+20160317120654",
     "node": "registry:dt/node#6.0.0+20161121110008",
-    "office-js": "registry:dt/office-js#0.0.0+20161115233034"
+    "office-js": "registry:dt/office-js#0.0.0+20161115233034",
+    "reselect": "registry:dt/reselect#2.0.2+20160319031821"
   }
 }
