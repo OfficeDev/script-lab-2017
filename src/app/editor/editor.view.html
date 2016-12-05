@@ -26,7 +26,7 @@
         </div>
     </header>
     <section class="editor__main">
-        <monaco-editor *ngIf="snippet" [id]="snippet.content.id" [readonly]="readonly" [(theme)]="theme" [(activeLanguage)]="activeLanguage"
+        <monaco-editor *ngIf="snippet" [snippetId]="snippet.content.id" [readonly]="readonly" [(theme)]="theme" [(activeLanguage)]="activeLanguage"
             (events)="editorEvents($event)">
             <tab name="Script" [(active)]="activeTab" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
             <tab name="Template" [(active)]="activeTab" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>

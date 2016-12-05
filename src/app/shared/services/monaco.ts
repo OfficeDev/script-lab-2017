@@ -37,8 +37,7 @@ export class Monaco extends Disposable {
             vertical: 'visible',
             verticalHasArrows: true,
             arrowSize: 15
-        },
-        model: null
+        }
     };
 
     constructor(private _request: Request) {

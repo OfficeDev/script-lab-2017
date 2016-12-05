@@ -10,16 +10,15 @@ import * as _ from 'lodash';
 
 @Injectable()
 export class SnippetStore {
+    private _context = HostTypes[Utilities.host];
     private _snippets = new Storage<ISnippet>(`${this._context}Snippets`);
     private _settings = new Storage<string>('Playground');
-    private _context = HostTypes[Utilities.host];
 
     constructor(
         private _request: Request,
         private _github: Github,
         private _notification: Notification
     ) {
-
     }
 
     get lastOpened(): string {
