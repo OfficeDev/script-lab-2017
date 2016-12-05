@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { EditorView } from './app/editor';
 import { GalleryView } from './app/gallery';
 import { ImportView } from './app/import';
-import { Collapse, Hamburger, Dialog, Tab, MonacoEditor } from './app/shared/components';
+import { Collapse, Hamburger, Dialog, Tab, MonacoEditor } from './app/components';
 
 export const COMPONENT_DECLARATIONS = [
     EditorView,

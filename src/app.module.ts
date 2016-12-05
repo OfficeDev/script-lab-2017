@@ -6,8 +6,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
 
-import { SERVICE_PROVIDERS, Monaco } from './app/shared/services';
-import { EXCEPTION_PROVIDER, Theme } from './app/shared/helpers';
+import { SERVICE_PROVIDERS, Monaco } from './app/services';
+import { EXCEPTION_PROVIDER, Theme } from './app/helpers';
 import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
 import { AppComponent } from './app';
 

@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { Disposable, Monaco, Events, GalleryEvents } from '../shared/services';
+import { Disposable, Monaco, Events, GalleryEvents } from '../services';
 import { sample } from './sample';
 
 @Component({

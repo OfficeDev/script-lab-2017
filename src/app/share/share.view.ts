@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Snippet, SnippetStore, Disposable, Github } from '../shared/services';
+import { Snippet, SnippetStore, Disposable, Github } from '../services';
 import './share.view.scss';
 
 @Component({

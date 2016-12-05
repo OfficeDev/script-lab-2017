@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Tab, MonacoEditor, IEditorParent } from '../shared/components';
-import { BaseComponent } from '../shared/components/base';
+import { Tab, MonacoEditor, IEditorParent } from '../components';
 import { Snippet, SnippetStore } from '../shared/services';
 import { HostTypes, Utilities, Theme, UxUtil, PlaygroundError } from '../shared/helpers';
 

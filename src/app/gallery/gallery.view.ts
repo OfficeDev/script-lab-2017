@@ -1,6 +1,6 @@
 import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
-import { SnippetStore, Snippet, Notification, Events, GalleryEvents, Disposable } from '../shared/services';
+import { SnippetStore, Snippet, Notification, Events, GalleryEvents, Disposable } from '../services';
 import * as _ from 'lodash';
 import './gallery.view.scss';
 
