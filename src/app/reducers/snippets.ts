@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { Utilities, Storage } from '@microsoft/office-js-helpers';
-import { Actions, ActionTypes } from '../actions/editor';
+import { Actions, ActionTypes } from '../actions/snippets';
 import { SnippetStore } from '../services';
 
 export interface IEditorState {
@@ -19,7 +19,7 @@ export function reducer(state = initialState, action: Actions): IEditorState {
     switch (action.type) {
         case ActionTypes.IMPORT:
 
-        case ActionTypes.LOAD:
+        case ActionTypes.IMPORT_SUCCESS:
 
         case ActionTypes.RUN:
 

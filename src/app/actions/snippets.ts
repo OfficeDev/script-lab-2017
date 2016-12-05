@@ -1,3 +1,4 @@
+import { Utilities } from '@microsoft/office-js-helpers';
 import { Action } from '@ngrx/store';
 import { type } from '../helpers';
 
@@ -10,12 +11,15 @@ import { type } from '../helpers';
  * action types in the application are unique.
  */
 export const ActionTypes = {
-    VIEW: type('[Editor] View'),
-    IMPORT: type('[Editor] Import'),
-    LOAD: type('[Editor] Load'),
-    RUN: type('[Editor] Run'),
-    SAVE: type('[Editor] Save'),
-    SHARE: type('[Editor] Share')
+    VIEW: type('[Snippets] View'),
+    IMPORT: type('[Snippets] Import'),
+    IMPORT_SUCCESS: type('[Snippets] Load'),
+    RUN: type('[Snippets] Run'),
+    SAVE: type('[Snippets] Save'),
+    SHARE: type('[Snippets] Share'),
+    DELETE: type('[Snippets] Delete'),
+    DELETE_ALL: type('[Snippets] Delete All'),
+    STORE_UPDATED: type('[Snippets] Storage Updated')
 };
 
 
@@ -35,11 +39,11 @@ export class ViewAction implements Action {
 export class ImportAction implements Action {
     type = ActionTypes.IMPORT;
 
-    constructor(public payload: string) { }
+    constructor(public payload: string, public params: string = '') { }
 }
 
-export class LoadAction implements Action {
-    type = ActionTypes.LOAD;
+export class ImportSuccess implements Action {
+    type = ActionTypes.IMPORT_SUCCESS;
 
     constructor(public payload: ISnippet) { }
 }
@@ -62,6 +66,24 @@ export class ShareAction implements Action {
     constructor(public payload: ISnippet) { }
 }
 
+export class DeleteAction implements Action {
+    type = ActionTypes.DELETE;
+
+    constructor(public payload: string) { }
+}
+
+export class DeleteAllAction implements Action {
+    type = ActionTypes.DELETE_ALL;
+
+    constructor() { }
+}
+
+export class StoreUpdated implements Action {
+    type = ActionTypes.STORE_UPDATED;
+
+    constructor() { }
+}
+
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
@@ -69,7 +91,10 @@ export class ShareAction implements Action {
 export type Actions
     = ViewAction
     | ImportAction
-    | LoadAction
+    | ImportSuccess
     | RunAction
     | SaveAction
-    | ShareAction;
+    | ShareAction
+    | DeleteAction
+    | DeleteAllAction
+    | StoreUpdated;

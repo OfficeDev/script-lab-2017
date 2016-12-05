@@ -57,7 +57,7 @@ export class GalleryView extends Disposable implements OnInit {
             return;
         }
 
-        await this._snippetStore.clear();
+        await this._snippetStore.deleteAll();
         this._store.remove('LastOpened');
         this._events.emit('GalleryEvents', GalleryEvents.DELETE_ALL, null);
     }
