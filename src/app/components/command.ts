@@ -1,18 +1,17 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'command',
     template: `
-        <div class="command__icon" (click)="click.emit($event)">
+        <div class="command__icon">
             <i class="ms-Icon" [ngClass]="icon"></i>
             <span class="ms-font-m" *ngIf="title">{{title}}</span>
         </div>
     `
 })
 export class CommandIcon {
-    @Output() click = new EventEmitter();
-
     private _icon: string;
+
     @Input()
     get icon() {
         if (this._icon) {

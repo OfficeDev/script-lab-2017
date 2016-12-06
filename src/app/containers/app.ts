@@ -1,18 +1,22 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Theme } from '../helpers';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../reducers';
+import { OpenMenuAction, ChangeThemeAction } from '../actions/ui';
 
 @Component({
     selector: 'app',
     template: `
-        <hamburger [title]="title" [shown]="true">
+        <hamburger [title]="title" [shown]="menuOpened$|async">
             <gallery-view></gallery-view>
         </hamburger>
-        <main>
+        <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command icon="GlobalNavButton"></command>
+                <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command icon="AppForOfficeLogo" title="Snippet 1"></command>
                 <command icon="Play" title="Run"></command>
                 <command icon="Save" title="Save"></command>
@@ -20,44 +24,37 @@ import { Theme } from '../helpers';
                 <command icon="Contact" title="Profile"></command>
             </header>
             <router-outlet></router-outlet>
-            <dialog></dialog>
+            <footer class="command__bar command__bar--condensed">
+                <command icon="Info" title="About"></command>
+                <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
+                <command class="language" title="Typescript"></command>
+                <command icon="StatusErrorFull" title="0"></command>
+            </footer>
         </main>
+        <dialog></dialog>
     `
 })
 
 export class AppComponent {
+    menuOpened$: Observable<boolean>;
+    alert$: Observable<IDialog>;
+    theme$: Observable<string>;
 
-    constructor(router: Router) {
-        let pagesViewedInSession = 1;
-        router.events.subscribe(next => {
-            let url = next.url;
+    constructor(
+        private _store: Store<fromRoot.State>,
+        private _router: Router
+    ) {
+        this.menuOpened$ = this._store.select(fromRoot.getMenu);
+        this.alert$ = this._store.select(fromRoot.getAlert);
+        this.theme$ = this._store.select(fromRoot.getTheme)
+            .map(isLight => isLight ? 'Light' : 'Dark');
+    }
 
-            if (next instanceof NavigationStart) {
-                if (_.isEmpty(url)) {
-                    return;
-                }
-                let name = url.split('/')[1];
+    showMenu() {
+        this._store.dispatch(new OpenMenuAction());
+    }
 
-                if (appInsights && appInsights.startTrackPage && _.isFunction(appInsights.startTrackPage)) {
-                    appInsights.startTrackPage(name);
-                }
-            }
-            else if (next instanceof NavigationEnd) {
-                if (_.isEmpty(url)) {
-                    return;
-                }
-
-                let name = url.split('/')[1];
-
-                if (appInsights && appInsights.stopTrackPage && _.isFunction(appInsights.stopTrackPage)) {
-                    appInsights.stopTrackPage(
-                        name,
-                        url,
-                        { mode: HostTypes[Utilities.host] },
-                        { pagesViewedInSession: pagesViewedInSession++ }
-                    );
-                }
-            }
-        });
+    changeTheme() {
+        this._store.dispatch(new ChangeThemeAction());
     }
 }

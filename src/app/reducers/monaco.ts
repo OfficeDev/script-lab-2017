@@ -5,42 +5,21 @@ import { updateState } from '../helpers';
 
 export interface MonacoState {
     activeTab?: string;
-    language?: string;
-    theme?: string;
     loading?: boolean;
-    errors?: Error[];
 }
 
 const initialState = {
     activeTab: null,
-    activeLanguage: null,
-    activeTheme: 'vs',
-    loading: false,
-    errors: []
+    loading: false
 };
 
 export function reducer(state = initialState, action: any): MonacoState {
     let newState = updateState<MonacoState>(state);
 
     switch (action.type) {
-        case MonacoActionTypes.CHANGE_LANGUAGE:
-            return newState({
-                language: action.payload
-            });
-
         case MonacoActionTypes.CHANGE_TAB:
             return newState({
                 activeTab: action.payload
-            });
-
-        case MonacoActionTypes.CHANGE_THEME:
-            return newState({
-                theme: action.payload || 'vs'
-            });
-
-        case MonacoActionTypes.REPORT_ERROR:
-            return newState({
-                errors: [...state.errors, action.payload]
             });
 
         case MonacoActionTypes.UPDATE_INTELLISENSE:
@@ -69,8 +48,3 @@ export function reducer(state = initialState, action: any): MonacoState {
 
 export const getActiveTab = (state: MonacoState) => state.activeTab;
 
-export const getActiveLanguage = (state: MonacoState) => state.language;
-
-export const getErrors = (state: MonacoState) => state.errors;
-
-export const getTheme = (state: MonacoState) => state.theme;

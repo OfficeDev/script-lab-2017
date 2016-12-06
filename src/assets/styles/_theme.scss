@@ -4,12 +4,12 @@
 @mixin theme($accent-background-primary) {
     $accent-foreground-primary: lighten($accent-background-primary, 60%);
 
-    body {
-        &.vs {
+    main {
+        &.Light {
             background-color: #FFFFFE;
         }
 
-        &.vs-dark {
+        &.Dark {
             background-color:#1e1e1e
         }
     }

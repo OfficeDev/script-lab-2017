@@ -10,9 +10,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'editor',
-    template: `
-        <monaco-editor [(snippet)]="snippet"></monaco-editor>
-    `
+    template: `<monaco-editor [(snippet)]="snippet"></monaco-editor>`
 })
 export class EditorView extends Disposable implements OnInit, OnDestroy {
     source: string;

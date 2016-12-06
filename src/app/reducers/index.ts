@@ -44,11 +44,12 @@ export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
 export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
 
 const getMonacoState = (state: State) => state.monaco;
-export const getActiveTab = (state: State) => createSelector(getMonacoState, monaco.getActiveTab);
-export const getActiveLanguage = (state: State) => createSelector(getMonacoState, monaco.getActiveLanguage);
-export const getErrors = (state: State) => createSelector(getMonacoState, monaco.getErrors);
+export const getActiveTab = createSelector(getMonacoState, monaco.getActiveTab);
 
 const getUIState = (state: State) => state.ui;
-export const getMenu = (state: State) => createSelector(getUIState, ui.getMenuOpened);
-export const getAlert = (state: State) => createSelector(getUIState, ui.getAlert);
-export const getConfig = (state: State) => createSelector(getUIState, ui.getConfig);
+export const getMenu = createSelector(getUIState, ui.getMenuOpened);
+export const getAlert = createSelector(getUIState, ui.getAlert);
+export const getTheme = createSelector(getUIState, ui.getTheme);
+export const getConfig = createSelector(getUIState, ui.getConfig);
+export const getLanugage = createSelector(getUIState, ui.getLanguage);
+export const getErrors = createSelector(getUIState, ui.getErrors);

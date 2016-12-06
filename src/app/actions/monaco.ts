@@ -12,9 +12,6 @@ import { Subscription } from 'rxjs/Subscription';
  */
 export const MonacoActionTypes = {
     CHANGE_TAB: type('[Monaco] Change Tab'),
-    CHANGE_THEME: type('[Monaco] Change Theme'),
-    CHANGE_LANGUAGE: type('[Monaco] Change Language'),
-    REPORT_ERROR: type('[Monaco] Report Error'),
     UPDATE_INTELLISENSE: type('[Monaco] Update Intellisense'),
     UPDATE_INTELLISENSE_SUCCESS: type('[Monaco] Update Intellisense Success'),
 };
@@ -30,24 +27,6 @@ export class ChangeTabAction implements Action {
     type = MonacoActionTypes.CHANGE_TAB;
 
     constructor(public payload: string) { }
-}
-
-export class ChangeThemeAction implements Action {
-    type = MonacoActionTypes.CHANGE_THEME;
-
-    constructor(public payload: string) { }
-}
-
-export class ChangeLanguageAction implements Action {
-    type = MonacoActionTypes.CHANGE_LANGUAGE;
-
-    constructor(public payload: string) { }
-}
-
-export class ReportErrorAction implements Action {
-    type = MonacoActionTypes.REPORT_ERROR;
-
-    constructor(public payload: PlaygroundError) { }
 }
 
 export class UpdateIntellisenseAction implements Action {
@@ -68,8 +47,5 @@ export class UpdateIntellisenseSuccessAction implements Action {
  */
 export type MonacoActions
     = ChangeTabAction
-    | ChangeThemeAction
-    | ChangeLanguageAction
-    | ReportErrorAction
     | UpdateIntellisenseAction
     | UpdateIntellisenseSuccessAction;

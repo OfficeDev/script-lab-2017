@@ -6,15 +6,13 @@
         </ul>
         <div class="gallery__tabs-container">
             <section class="gallery-list ms-u-slideUpIn10" [hidden]="templatesView">
+                <div class="collapse__info ms-font-m" [hidden]="hideWarn">
+                    These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent
+                    data loss.
+                    <br />
+                    <button class="ms-Button" (click)="toggleWarn()"><span class="ms-Button-label">Got it</span></button>
+                </div>
                 <collapse title="Local" [actions]="['Info', 'Delete']" (events)="commandEvents($event)">
-                    <div class="collapse__info ms-font-m" [hidden]="hideWarn">
-                        These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent
-                        data loss.
-                        <br />
-                        <button class="ms-Button" (click)="toggleWarn()">
-                            <span class="ms-Button-label">Got it</span>
-                        </button>
-                    </div>
                     <section class="gallery-list__group local-snippets">
                         <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
                             <span>{{snippet.name}}</span>
@@ -27,19 +25,7 @@
                     </section>
                 </collapse>
             </section>
-            <section class="gallery-list ms-u-slideUpIn10" [hidden]="!templatesView">
-                <collapse title="Microsoft">
-                    <section class="gallery-list__group" *ngFor="let group of templates.groups">
-                        <h3 class="gallery-list__group-header ms-font-m">{{group?.name}}</h3>
-                        <section class="gallery-list__group">
-                            <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let snippet of group?.items" (click)="import(snippet.gist)">
-                                <div class="name">{{snippet?.name}}</div>
-                                <div class="description">{{snippet?.description}}</div>
-                            </article>
-                        </section>
-                    </section>
-                </collapse>
-            </section>
+            <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates"></gallery-list>
         </div>
     </section>
     <section class="gallery__section">
@@ -54,4 +40,3 @@
         </button>
     </section>
 </section>
-<!--<import-view [(open)]="showImport"></import-view>-->

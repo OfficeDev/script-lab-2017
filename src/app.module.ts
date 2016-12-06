@@ -7,6 +7,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
+import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, Theme } from './app/helpers';
 import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
 import { AppComponent } from './app/containers';
@@ -33,7 +34,7 @@ import './assets/styles/globals.scss';
         EffectsModule.run(SnippetEffects),
         EffectsModule.run(IntellisenseEffects)
     ],
-    declarations: [AppComponent, ...COMPONENT_DECLARATIONS],
+    declarations: [AppComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
     bootstrap: [AppComponent],
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })

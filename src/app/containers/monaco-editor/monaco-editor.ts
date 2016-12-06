@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges, HostListener, AfterViewInit
 import { Observable } from 'rxjs';
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../../reducers';
+import { Store } from '@ngrx/store';
 import { MonacoService, Disposable } from '../../services';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
@@ -16,12 +17,6 @@ import './monaco-editor.scss';
         </ul>
         <section [hidden]="!snippet" id="editor" #editor class="viewport"></section>
         <section [hidden]="snippet" class="viewport__placeholder"></section>
-        <footer class="command__bar command__bar--condensed">
-            <command icon="Info" title="About"></command>
-            <command icon="Color" title="Dark"></command>
-            <command class="language" title="Typescript"></command>
-            <command icon="StatusErrorFull" title="0"></command>
-        </footer>
     `
 })
 export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit, OnDestroy {
@@ -33,6 +28,7 @@ export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit
     activeTab: IMonacoEditorState;
 
     constructor(
+        private _store: Store<fromRoot.State>,
         private _monaco: MonacoService,
     ) {
         super();
@@ -52,6 +48,15 @@ export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit
             value: this.activeTab.content,
             language: this.activeTab.language
         });
+
+        let subscription =
+            this._store.select(fromRoot.getTheme)
+                .subscribe(isLight =>
+                    this._monacoEditor.updateOptions({
+                        theme: isLight ? 'vs' : 'vs-dark'
+                    }));
+
+        this.markDispose(subscription);
     }
 
     changeTab(tab: IMonacoEditorState) {

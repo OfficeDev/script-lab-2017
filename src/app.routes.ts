@@ -1,15 +1,15 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { Collapse, Hamburger, Dialog, CommandIcon } from './app/components';
-import { MonacoEditor, EditorView, GalleryView } from './app/containers';
+import { Collapse, Hamburger, CommandIcon } from './app/components';
+import { MonacoEditor, EditorView, GalleryView, GalleryList } from './app/containers';
 
 export const COMPONENT_DECLARATIONS = [
     EditorView,
     GalleryView,
+    GalleryList,
     MonacoEditor,
     Hamburger,
     Collapse,
-    Dialog,
     CommandIcon
 ];
 
