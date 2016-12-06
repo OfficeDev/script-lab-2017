@@ -38,9 +38,6 @@ export class Utilities {
             return total + len;
         }, 0);
 
-        console.log(`Total = ${(total / 1024).toFixed(2)} KB`);
+        return `Total = ${(total / 1024).toFixed(2)} KB`;
     }
 }
-
-(window as any).size = Utilities.storageSize;
-

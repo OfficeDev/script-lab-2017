@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
-import { Theme } from './app/helpers';
+import { Theme } from '../helpers';
 
 @Component({
     selector: 'app',

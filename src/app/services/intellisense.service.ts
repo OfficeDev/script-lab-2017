@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Utilities, Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
-import { Monaco } from './monaco';
+import { MonacoService } from './monaco.service';
 import * as _ from 'lodash';
 
 export interface IIntellisenseFile {
@@ -17,7 +17,7 @@ export interface IDisposableFile {
 }
 
 @Injectable()
-export class Intellisense {
+export class IntellisenseService {
     private _cache: Storage<string>;
     private _current: Dictionary<IDisposableFile>;
 
@@ -61,7 +61,7 @@ export class Intellisense {
     }
 
     async updateIntellisense(libraries: string[], isJavaScript: Boolean = false) {
-        let monaco = await Monaco.current;
+        let monaco = await MonacoService.current;
         let source = isJavaScript ?
             monaco.languages.typescript.javascriptDefaults :
             monaco.languages.typescript.typescriptDefaults;

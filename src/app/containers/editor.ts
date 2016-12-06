@@ -7,11 +7,12 @@ import { Disposable } from '../services';
 import * as fromRoot from '../reducers';
 import * as snippet from '../actions/snippet';
 import * as _ from 'lodash';
-import './editor.view.scss';
 
 @Component({
-    selector: 'editor-view',
-    templateUrl: 'editor.view.html'
+    selector: 'editor',
+    template: `
+        <monaco-editor [(snippet)]="snippet"></monaco-editor>
+    `
 })
 export class EditorView extends Disposable implements OnInit, OnDestroy {
     source: string;
@@ -45,10 +46,12 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     }
 
     save() {
+        console.info('SAVE INVOKED');
         this._store.dispatch(new snippet.SaveAction(this.snippet));
     }
 
     run() {
+        console.info('RUN INVOKED');
         this.save();
         this._store.dispatch(new snippet.RunAction(this.snippet));
     }
@@ -79,11 +82,14 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
 
     private _routerEvents() {
         let subscription = this._route.params.subscribe(({id, source}) => {
-            if (id == null) {
-                return null;
+            if (id == null || id.trim() === '') {
+                return;
             }
-            this._store.dispatch(new snippet.ImportAction(id));
-            this.source = source;
+            else {
+                console.log('Dispatching Import Action');
+                this._store.dispatch(new snippet.ImportAction(id));
+                this.source = source;
+            }
         });
 
         this.markDispose(subscription);

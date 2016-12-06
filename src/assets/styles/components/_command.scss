@@ -4,6 +4,17 @@
         flex: 1 0 40px;
         width: 100%;
         overflow: hidden;
+        height: 40px;
+
+        &--condensed {
+            height: 22px;
+
+            .command__icon {
+                padding: 5px 7.5px;
+                margin: 0 3px;
+                font-size: 12px !important;
+            }
+        }
     }
 
     &__title,

@@ -10,7 +10,7 @@ import { type } from '../helpers';
  * literal types and runs a simple check to guarantee all
  * action types in the application are unique.
  */
-export const ActionTypes = {
+export const SnippetActionTypes = {
     VIEW: type('[Snippets] View'),
     IMPORT: type('[Snippets] Import'),
     IMPORT_SUCCESS: type('[Snippets] Import Successful'),
@@ -31,61 +31,61 @@ export const ActionTypes = {
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
 export class ViewAction implements Action {
-    type = ActionTypes.VIEW;
+    type = SnippetActionTypes.VIEW;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class ImportAction implements Action {
-    type = ActionTypes.IMPORT;
+    type = SnippetActionTypes.IMPORT;
 
     constructor(public payload: string, public params: string = '') { }
 }
 
 export class ImportSuccess implements Action {
-    type = ActionTypes.IMPORT_SUCCESS;
+    type = SnippetActionTypes.IMPORT_SUCCESS;
 
     constructor(public payload: ISnippet, public params: boolean) { }
 }
 
 export class RunAction implements Action {
-    type = ActionTypes.RUN;
+    type = SnippetActionTypes.RUN;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class SaveAction implements Action {
-    type = ActionTypes.SAVE;
+    type = SnippetActionTypes.SAVE;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class ShareAction implements Action {
-    type = ActionTypes.SHARE;
+    type = SnippetActionTypes.SHARE;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class DeleteAction implements Action {
-    type = ActionTypes.DELETE;
+    type = SnippetActionTypes.DELETE;
 
     constructor(public payload: string) { }
 }
 
 export class DeleteAllAction implements Action {
-    type = ActionTypes.DELETE_ALL;
+    type = SnippetActionTypes.DELETE_ALL;
 
     constructor() { }
 }
 
 export class StoreUpdated implements Action {
-    type = ActionTypes.STORE_UPDATED;
+    type = SnippetActionTypes.STORE_UPDATED;
 
     constructor() { }
 }
 
 export class FailedAction implements Action {
-    type = ActionTypes.FAILED;
+    type = SnippetActionTypes.FAILED;
 
     constructor(payload: Error) { }
 }
@@ -94,7 +94,7 @@ export class FailedAction implements Action {
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
  */
-export type Actions
+export type SnippetActions
     = ViewAction
     | ImportAction
     | ImportSuccess

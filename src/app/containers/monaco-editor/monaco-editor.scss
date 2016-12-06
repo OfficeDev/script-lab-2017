@@ -1,0 +1,50 @@
+@import '../../../assets/styles/mixins';
+@import '../../../assets/styles/vars';
+
+monaco-editor {
+    @include flex();
+    flex: 1 1 100%;
+
+    .tabs {
+        overflow: hidden;
+        flex: 0 0 40px;
+    }
+
+    footer.command__bar--condensed {
+        flex: 0 0 62px;
+
+        .ms-font-m {
+            font-size: 12px;
+        }
+
+        .command__icon {
+            padding: 3px 7.5px
+        }
+
+        command:first-child .command__icon {
+            margin-left: 0px;
+        }
+
+        command.language {
+            span {
+                margin-left: 0;
+                text-transform: uppercase;
+            }
+        }
+    }
+}
+
+.viewport {
+    @include flex();
+    flex: 1 1 100%;
+    width: 100% !important;
+    height: 100% !important;
+
+    &__placeholder {
+        background: transparent center center no-repeat;
+        background-image: url('../../../assets/images/playground-background.png');
+        background-size: contain;
+        width: 100%;
+        height: 100%;
+    }
+}

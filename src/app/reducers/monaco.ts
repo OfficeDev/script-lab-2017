@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import * as monaco from '../actions/monaco';
+import { MonacoActions, MonacoActionTypes } from '../actions/monaco';
 
-export interface State {
+export interface MonacoState {
     activeTab?: string;
     language?: string;
     theme?: string;
@@ -18,34 +18,36 @@ const initialState = {
     errors: []
 };
 
-export function reducer(state = initialState, action: any): State {
+export function reducer(state = initialState, action: any): MonacoState {
+    console.log(state, action);
+
     switch (action.type) {
-        case monaco.ActionTypes.CHANGE_LANGUAGE:
+        case MonacoActionTypes.CHANGE_LANGUAGE:
             return Object.assign({}, state, {
                 language: action.payload
             });
 
-        case monaco.ActionTypes.CHANGE_TAB:
+        case MonacoActionTypes.CHANGE_TAB:
             return Object.assign({}, state, {
                 current: action.payload
             });
 
-        case monaco.ActionTypes.CHANGE_THEME:
+        case MonacoActionTypes.CHANGE_THEME:
             return Object.assign({}, state, {
                 theme: action.payload || 'vs'
             });
 
-        case monaco.ActionTypes.REPORT_ERROR:
+        case MonacoActionTypes.REPORT_ERROR:
             return Object.assign({}, state, {
                 errors: [...state.errors, action.payload]
             });
 
-        case monaco.ActionTypes.UPDATE_INTELLISENSE:
+        case MonacoActionTypes.UPDATE_INTELLISENSE:
             return Object.assign({}, state, {
                 loading: true
             });
 
-        case monaco.ActionTypes.UPDATE_INTELLISENSE_SUCCESS:
+        case MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS:
             return Object.assign({}, state, {
                 loading: false
             });
@@ -64,10 +66,10 @@ export function reducer(state = initialState, action: any): State {
  * use-case.
  */
 
-export const getActiveTab = (state: State) => state.activeTab;
+export const getActiveTab = (state: MonacoState) => state.activeTab;
 
-export const getActiveLanguage = (state: State) => state.language;
+export const getActiveLanguage = (state: MonacoState) => state.language;
 
-export const getErrors = (state: State) => state.errors;
+export const getErrors = (state: MonacoState) => state.errors;
 
-export const getTheme = (state: State) => state.theme;
+export const getTheme = (state: MonacoState) => state.theme;

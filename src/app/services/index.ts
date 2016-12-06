@@ -1,23 +1,17 @@
 import { Github } from './github';
 import { Request } from './request';
-import { Monaco } from './monaco';
-import { Events } from './events';
-import { Intellisense } from './intellisense';
-import { Notification } from './notification';
+import { MonacoService } from './monaco.service';
+import { IntellisenseService } from './intellisense.service';
 
 export * from './github';
 export * from './request';
-export * from './monaco';
+export * from './monaco.service';
 export * from './disposable';
-export * from './events';
-export * from './intellisense';
-export * from './notification';
+export * from './intellisense.service';
 
 export const SERVICE_PROVIDERS = [
-  Request,
-  Intellisense,
-  Notification,
-  Events,
-  Monaco,
-  Github
+    Request,
+    IntellisenseService,
+    MonacoService,
+    Github
 ];

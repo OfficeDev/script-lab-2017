@@ -6,10 +6,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
 
-import { SERVICE_PROVIDERS, Monaco } from './app/services';
+import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { EXCEPTION_PROVIDER, Theme } from './app/helpers';
 import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
-import { AppComponent } from './app';
+import { AppComponent } from './app/containers';
 
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -44,7 +44,7 @@ export class AppModule {
             }
 
             await Promise.all([
-                Monaco.initialize(),
+                MonacoService.initialize(),
                 AppModule.initialize()
             ]);
 

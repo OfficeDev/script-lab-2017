@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Notification, Disposable } from '../../services';
+import { Disposable } from '../../services';
 
 @Component({
     selector: 'dialog',
@@ -9,16 +9,16 @@ export class Dialog extends Disposable {
     dialog: IDialog;
     actions: string[];
 
-    constructor(private _notification: Notification) {
+    constructor() {
         super();
-        let subscription = this._notification.on<IDialog>('DialogEvent').subscribe(dialog => {
-            if (!_.isEmpty(dialog.actions)) {
-                this.actions = Object.keys(dialog.actions);
-            }
+        // let subscription = this._notification.on<IDialog>('DialogEvent').subscribe(dialog => {
+        //     if (!_.isEmpty(dialog.actions)) {
+        //         this.actions = Object.keys(dialog.actions);
+        //     }
 
-            this.dialog = dialog;
-        });
-        this.markDispose(subscription);
+        //     this.dialog = dialog;
+        // });
+        // this.markDispose(subscription);
     }
 
     execute(action: string) {

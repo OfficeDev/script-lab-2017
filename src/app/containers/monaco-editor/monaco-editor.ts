@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges, HostListener, AfterViewInit
 import { Observable } from 'rxjs';
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../../reducers';
-import { Monaco, Disposable } from '../../services';
+import { MonacoService, Disposable } from '../../services';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
 
@@ -14,17 +14,14 @@ import './monaco-editor.scss';
                 {{tab.view}}
             </li>
         </ul>
-        <section [hidden]="!snippet" id="editor" #editor class="monaco-editor"></section>
-        <section [hidden]="snippet" class="editor__placeholder"></section>
-        <section class="editor__footer">
-            <div class="command__text ms-font-s" (click)="about()"><i class="ms-Icon ms-Icon--Info"></i></div>
-            <div class="command__text" (click)="switchTheme()"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs-dark' ? 'Dark': 'Light'}}</span></div>
-            <div class="command__text language"><span class="ms-font-s">{{activeLanguage}}</span></div>
-            <div class="command__text">
-                <i class="ms-Icon ms-Icon--StatusErrorFull"></i>
-                <span class="ms-font-s">0</span>
-            </div>
-        </section>
+        <section [hidden]="!snippet" id="editor" #editor class="viewport"></section>
+        <section [hidden]="snippet" class="viewport__placeholder"></section>
+        <footer class="command__bar command__bar--condensed">
+            <command icon="Info" title="About"></command>
+            <command icon="Color" title="Dark"></command>
+            <command class="language" title="Typescript"></command>
+            <command icon="StatusErrorFull" title="0"></command>
+        </footer>
     `
 })
 export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit, OnDestroy {
@@ -36,14 +33,14 @@ export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit
     activeTab: IMonacoEditorState;
 
     constructor(
-        private _monaco: Monaco,
+        private _monaco: MonacoService,
     ) {
         super();
         this._initialize();
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (!_.isEmpty(changes['snippet'])) {
+        if (changes['snippet'] && changes['snippet'].currentValue) {
             this._update();
         }
     }

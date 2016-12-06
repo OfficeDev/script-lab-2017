@@ -1,28 +1,30 @@
 import { createSelector } from 'reselect';
-import { Actions, ActionTypes } from '../actions/snippet';
+import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
 
-export interface State {
+export interface SnippetState {
     lastOpened: ISnippet;
     loading: boolean;
     readonly: boolean;
 };
 
-const initialState: State = {
+const initialState: SnippetState = {
     lastOpened: null,
     loading: false,
     readonly: false
 };
 
-export function reducer(state = initialState, action: any): State {
+export function reducer(state = initialState, action: any): SnippetState {
+    console.log(state, action);
+
     switch (action.type) {
-        case ActionTypes.IMPORT: {
+        case SnippetActionTypes.IMPORT: {
             console.log(action.payload);
             return Object.assign({}, state, {
                 loading: true
             });
         }
 
-        case ActionTypes.IMPORT_SUCCESS: {
+        case SnippetActionTypes.IMPORT_SUCCESS: {
             return {
                 loading: false,
                 lastOpened: action.payload,
@@ -30,25 +32,25 @@ export function reducer(state = initialState, action: any): State {
             };
         }
 
-        case ActionTypes.RUN: {
+        case SnippetActionTypes.RUN: {
             return Object.assign({}, state, {
                 loading: true
             });
         }
 
-        case ActionTypes.VIEW: {
+        case SnippetActionTypes.VIEW: {
             return Object.assign({}, state, {
                 readonly: true
             });
         }
 
-        case ActionTypes.STORE_UPDATED: {
+        case SnippetActionTypes.STORE_UPDATED: {
             return Object.assign({}, state, {
                 loading: false
             });
         }
 
-        case ActionTypes.FAILED: {
+        case SnippetActionTypes.FAILED: {
             console.log(action);
             return Object.assign({}, state, {
                 loading: false
@@ -67,8 +69,8 @@ export function reducer(state = initialState, action: any): State {
  * focused so they can be combined and composed to fit each particular
  * use-case.
  */
-export const getReadOnly = (state: State) => state.readonly;
+export const getReadOnly = (state: SnippetState) => state.readonly;
 
-export const getCurrent = (state: State) => state.lastOpened;
+export const getCurrent = (state: SnippetState) => state.lastOpened;
 
-export const getLoading = (state: State) => state.loading;
+export const getLoading = (state: SnippetState) => state.loading;

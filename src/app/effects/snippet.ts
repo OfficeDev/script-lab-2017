@@ -5,7 +5,7 @@ import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
 import { Request, ResponseTypes, Github } from '../services';
 import { Action } from '@ngrx/store';
-import * as snippets from '../actions/snippet';
+import * as SnippetActions from '../actions/snippet';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 
@@ -22,8 +22,8 @@ export class SnippetEffects {
 
     @Effect()
     import$: Observable<Action> = this.actions$
-        .ofType(snippets.ActionTypes.IMPORT)
-        .map((action: snippets.ImportAction) => ({ data: action.payload, suffix: action.params }))
+        .ofType(SnippetActions.SnippetActionTypes.IMPORT)
+        .map((action: SnippetActions.ImportAction) => ({ data: action.payload, suffix: action.params }))
         .mergeMap(({ data, suffix }) => {
             console.log(data, suffix);
             let observable: Observable<ISnippet>;
@@ -68,14 +68,14 @@ export class SnippetEffects {
                     snippet.name = this._generateName(snippet.name, suffix);
                 }
 
-                return new snippets.ImportSuccess(snippet, importType !== 'CUID');
+                return new SnippetActions.ImportSuccess(snippet, importType !== 'CUID');
             });
         });
 
     @Effect()
     save$: Observable<Action> = this.actions$
-        .ofType(snippets.ActionTypes.SAVE)
-        .map((action: snippets.SaveAction) => action.payload)
+        .ofType(SnippetActions.SnippetActionTypes.SAVE)
+        .map((action: SnippetActions.SaveAction) => action.payload)
         .map(snippet => {
             this._validate(snippet);
 
@@ -88,21 +88,21 @@ export class SnippetEffects {
                 this._store.add(snippet.id, snippet);
             }
 
-            return new snippets.StoreUpdated();
+            return new SnippetActions.StoreUpdated();
         });
 
     @Effect()
     delete$: Observable<Action> = this.actions$
-        .ofType(snippets.ActionTypes.DELETE)
-        .map((action: snippets.DeleteAction) => action.payload)
+        .ofType(SnippetActions.SnippetActionTypes.DELETE)
+        .map((action: SnippetActions.DeleteAction) => action.payload)
         .map(id => this._store.remove(id))
-        .map(() => new snippets.StoreUpdated());
+        .map(() => new SnippetActions.StoreUpdated());
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
-        .ofType(snippets.ActionTypes.DELETE_ALL)
-        .map((action: snippets.DeleteAllAction) => this._store.clear())
-        .map(() => new snippets.StoreUpdated());
+        .ofType(SnippetActions.SnippetActionTypes.DELETE_ALL)
+        .map((action: SnippetActions.DeleteAllAction) => this._store.clear())
+        .map(() => new SnippetActions.StoreUpdated());
 
     @Effect()
     local(): ISnippet[] {

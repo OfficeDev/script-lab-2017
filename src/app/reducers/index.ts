@@ -17,8 +17,8 @@ import * as monaco from './monaco';
  * our top level state interface is just a map of keys to inner state types.
  */
 export interface State {
-    snippet: snippets.State;
-    monaco: monaco.State;
+    snippet: snippets.SnippetState;
+    monaco: monaco.MonacoState;
 }
 
 /**

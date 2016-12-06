@@ -2,14 +2,6 @@ import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
 
-export enum MonacoEvents {
-    SAVE,
-    TOGGLE_MENU,
-    RUN,
-    SHARE,
-    SWITCH_TABS
-}
-
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
     STARTS_WITH_COMMENT: /^\/\/.*|^\/\*.*|.*\*\/$.*/im,
@@ -18,7 +10,7 @@ const Regex = {
 };
 
 @Injectable()
-export class Monaco extends Disposable {
+export class MonacoService extends Disposable {
     private _baseUrl: string;
     private _intellisenseFile = this._request.local<any[]>('libraries.json', ResponseTypes.JSON);
 
@@ -86,7 +78,7 @@ export class Monaco extends Disposable {
 
     async create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
         let options = _.extend({}, this._defaults, overrides);
-        let monaco = await Monaco.current;
+        let monaco = await MonacoService.current;
         return monaco.editor.create(element.nativeElement, options);
     }
 
@@ -100,11 +92,11 @@ export class Monaco extends Disposable {
     }
 
     static initialize() {
-        if (Monaco.current == null) {
-            Monaco.current = Monaco._loadMonaco();
+        if (MonacoService.current == null) {
+            MonacoService.current = MonacoService._loadMonaco();
         }
 
-        return Monaco.current;
+        return MonacoService.current;
     }
 
     static _loadMonaco() {
@@ -139,7 +131,7 @@ export class Monaco extends Disposable {
     }
 
     private async _registerLanguageServices() {
-        let monaco = await Monaco.current;
+        let monaco = await MonacoService.current;
 
         monaco.languages.register({ id: 'libraries' });
         monaco.languages.setMonarchTokensProvider('libraries', {

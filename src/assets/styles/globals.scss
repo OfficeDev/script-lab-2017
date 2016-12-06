@@ -46,7 +46,7 @@ ul {
     @include flex();
     height: 100vh;
 
-    home, dialog, addin-launcher, gallery-view, editor-view, monaco-editor, tab, run, view, share, import, hamburger {
+    home, dialog, gallery, editor, hamburger {
         flex: 1 1 100%;
         @include flex();
         height: 100%;
