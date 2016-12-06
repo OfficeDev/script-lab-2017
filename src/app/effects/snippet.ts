@@ -3,15 +3,14 @@ import { Utilities, Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
-import { Request, ResponseTypes } from './request';
-import { Github } from './github';
+import { Request, ResponseTypes, Github } from '../services';
 import { Action } from '@ngrx/store';
-import * as snippets from '../actions/snippets';
+import * as snippets from '../actions/snippet';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 
 @Injectable()
-export class SnippetStore {
+export class SnippetEffects {
     private _store = new Storage<ISnippet>(`${Utilities.host} Snippets`);
 
     constructor(
@@ -31,7 +30,7 @@ export class SnippetStore {
             console.info(`Importing ${importType} Snippet`);
 
             switch (importType) {
-                case 'LOCAL':
+                case 'DEFAULT':
                     observable = this._request
                         .local<string>(`snippets/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
                         .map<ISnippet>(snippet => jsyaml.safeLoad(snippet));
@@ -68,10 +67,9 @@ export class SnippetStore {
                     snippet.name = this._generateName(snippet.name, suffix);
                 }
 
-                return snippet;
+                return new snippets.ImportSuccess(snippet, importType !== 'CUID');
             });
-        })
-        .map(snippet => new snippets.ImportSuccess(snippet));
+        });
 
     @Effect()
     save$: Observable<Action> = this.actions$
@@ -110,9 +108,9 @@ export class SnippetStore {
         return this._store.values();
     }
 
-    private _determineImportType(data: string): 'LOCAL' | 'CUID' | 'URL' | 'GIST' | 'YAML' {
-        if (data == null || data.trim() === '') {
-            return 'LOCAL';
+    private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' {
+        if (data === 'default') {
+            return 'DEFAULT';
         }
 
         if (data.length === 25) {

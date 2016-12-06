@@ -1,12 +1,12 @@
-<hamburger [title]="title" [(shown)]="menuOpen">
+<!--<hamburger [title]="title" [(shown)]="menuOpen">
     <gallery-view></gallery-view>
-</hamburger>
+</hamburger>-->
 <section class="editor">
     <header class="command__bar">
         <div class="command__icon" (click)="menuOpen = true"><i class="ms-Icon ms-Icon--GlobalNavButton"></i></div>
         <div [hidden]="!snippet" class="command__icon" (click)="desc = !desc">
             <i class="ms-Icon ms-Icon--AppForOfficeLogo"></i>
-            <span class="ms-font-m">{{ snippet?.content?.name }}{{ snippet?.isUpdated ? '*' : '' }}</span>
+            <span class="ms-font-m">{{ snippet?.name }}</span>
         </div>
         <div [hidden]="!snippet" class="command__icon" (click)="run()">
             <i class="ms-Icon ms-Icon--Play"></i>
@@ -26,17 +26,17 @@
         </div>
     </header>
     <section class="editor__main">
-        <monaco-editor *ngIf="snippet" [snippetId]="snippet.content.id" [readonly]="readonly" [(theme)]="theme" [(activeLanguage)]="activeLanguage"
+        <monaco-editor *ngIf="snippet" [snippetId]="snippet.id" [readonly]="readonly" [(theme)]="theme" [(activeLanguage)]="activeLanguage"
             (events)="editorEvents($event)">
-            <tab name="Script" [(active)]="activeTab" [language]="snippet.content.script.language" [(content)]="snippet.content.script.content"></tab>
-            <tab name="Template" [(active)]="activeTab" [language]="snippet.content.template.language" [(content)]="snippet.content.template.content"></tab>
-            <tab name="Style" [(active)]="activeTab" [language]="snippet.content.style.language" [(content)]="snippet.content.style.content"></tab>
-            <tab name="Libraries" [(active)]="activeTab" language="libraries" [(content)]="snippet.content.libraries"></tab>
+            <tab name="Script" [(active)]="activeTab" [language]="snippet.script.language" [(content)]="snippet.script.content"></tab>
+            <tab name="Template" [(active)]="activeTab" [language]="snippet.template.language" [(content)]="snippet.template.content"></tab>
+            <tab name="Style" [(active)]="activeTab" [language]="snippet.style.language" [(content)]="snippet.style.content"></tab>
+            <tab name="Libraries" [(active)]="activeTab" language="libraries" [(content)]="snippet.libraries"></tab>
         </monaco-editor>
         <div [hidden]="snippet" class="editor__placeholder">
         </div>
     </section>
-    <section class="editor__footer">
+    <!--<section class="editor__footer">
         <div class="command__text ms-font-s" (click)="about()"><i class="ms-Icon ms-Icon--Info"></i></div>
         <div class="command__text" (click)="switchTheme()"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs-dark' ? 'Dark': 'Light'}}</span></div>
         <div [hidden]="!snippet" class="command__text language"><span class="ms-font-s">{{activeLanguage}}</span></div>
@@ -44,5 +44,5 @@
             <i class="ms-Icon ms-Icon--StatusErrorFull"></i>
             <span class="ms-font-s">0</span>
         </div>
-    </section>
+    </section>-->
 </section>

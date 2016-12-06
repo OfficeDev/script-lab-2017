@@ -9,14 +9,14 @@ import { combineReducers } from '@ngrx/store';
  * the state of the reducer plus any selector functions. The `* as`
  * notation packages up all of the exports into a single object.
  */
-import * as fromEditor from './editor';
+import * as snippets from './snippet';
 
 /**
  * As mentioned, we treat each reducer like a table in a database. This means
  * our top level state interface is just a map of keys to inner state types.
  */
 export interface State {
-    editor: fromEditor.IEditorState;
+    snippet: snippets.State;
 }
 
 /**
@@ -27,16 +27,12 @@ export interface State {
  * the result from right to left.
  */
 const reducers = {
-    editor: fromEditor.reducer,
+    snippet: snippets.reducer,
 };
 
-export function reducer(state: any, action: any) {
-    return combineReducers(reducers)(state, action);
-}
+export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
 
-export const getEditorState = (state: State) => state.editor;
-export const getReadOnly = createSelector(getEditorState, fromEditor.getReadOnly);
-export const getSnippets = createSelector(getEditorState, fromEditor.getSnippets);
-export const getSnippetsLookup = createSelector(getEditorState, fromEditor.getSnippetsLookup);
-export const getLastOpened = createSelector(getEditorState, fromEditor.getLastOpened);
-export const getCurrent = createSelector(getEditorState, fromEditor.getCurrent);
+const getSnippetsState = (state: State) => state.snippet;
+export const getReadOnly = createSelector(getSnippetsState, snippets.getReadOnly);
+export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
+export const getLoading = createSelector(getSnippetsState, snippets.getLoading);

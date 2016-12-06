@@ -6,13 +6,16 @@ import { Utilities } from '@microsoft/office-js-helpers';
  * as opposed to an error that comes from some internal operation or runtime error.
  */
 export class PlaygroundError extends Error {
+    innerError: Error;
+
     /**
      * @constructor
      *
      * @param message Error message to be propagated.
     */
-    constructor(message: string) {
+    constructor(message: string, error?: Error) {
         super(message);
+        this.innerError = error;
         this.name = 'Playground Error';
         this.message = message;
         if ((Error as any).captureStackTrace) {

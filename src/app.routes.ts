@@ -1,14 +1,14 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditorView } from './app/editor';
-import { GalleryView } from './app/gallery';
+// import { GalleryView } from './app/gallery';
 import { ImportView } from './app/import';
 import { Collapse, Hamburger, Dialog, Tab, MonacoEditor } from './app/components';
 
 export const COMPONENT_DECLARATIONS = [
     EditorView,
     ImportView,
-    GalleryView,
+    // GalleryView,
     Tab,
     MonacoEditor,
     Hamburger,
@@ -22,7 +22,7 @@ export const AppRoutes: Routes = [
         component: EditorView
     },
     {
-        path: ':store/:id',
+        path: ':source/:id',
         component: EditorView
     }
 ];

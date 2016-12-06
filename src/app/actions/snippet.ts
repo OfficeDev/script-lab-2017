@@ -13,13 +13,14 @@ import { type } from '../helpers';
 export const ActionTypes = {
     VIEW: type('[Snippets] View'),
     IMPORT: type('[Snippets] Import'),
-    IMPORT_SUCCESS: type('[Snippets] Load'),
+    IMPORT_SUCCESS: type('[Snippets] Import Successful'),
     RUN: type('[Snippets] Run'),
     SAVE: type('[Snippets] Save'),
     SHARE: type('[Snippets] Share'),
     DELETE: type('[Snippets] Delete'),
     DELETE_ALL: type('[Snippets] Delete All'),
-    STORE_UPDATED: type('[Snippets] Storage Updated')
+    STORE_UPDATED: type('[Snippets] Storage Updated'),
+    FAILED: type('[Snippets] Failed')
 };
 
 
@@ -45,7 +46,7 @@ export class ImportAction implements Action {
 export class ImportSuccess implements Action {
     type = ActionTypes.IMPORT_SUCCESS;
 
-    constructor(public payload: ISnippet) { }
+    constructor(public payload: ISnippet, public params: boolean) { }
 }
 
 export class RunAction implements Action {
@@ -84,6 +85,12 @@ export class StoreUpdated implements Action {
     constructor() { }
 }
 
+export class FailedAction implements Action {
+    type = ActionTypes.FAILED;
+
+    constructor(payload: Error) { }
+}
+
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
@@ -97,4 +104,5 @@ export type Actions
     | ShareAction
     | DeleteAction
     | DeleteAllAction
+    | FailedAction
     | StoreUpdated;

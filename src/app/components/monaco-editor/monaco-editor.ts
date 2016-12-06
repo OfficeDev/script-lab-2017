@@ -1,7 +1,7 @@
 import { Component, HostListener, Input, Output, OnChanges, OnDestroy, SimpleChanges, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { Monaco, MonacoEvents, Snippet, Notification, Disposable } from '../../services';
+import { Monaco, MonacoEvents, Notification, Disposable } from '../../services';
 import { Tab } from './tab';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
