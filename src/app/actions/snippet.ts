@@ -23,7 +23,6 @@ export const ActionTypes = {
     FAILED: type('[Snippets] Failed')
 };
 
-
 /**
  * Every action is comprised of at least a type and an optional
  * payload. Expressing actions as classes enables powerful

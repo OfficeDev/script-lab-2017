@@ -25,6 +25,7 @@ export class SnippetEffects {
         .ofType(snippets.ActionTypes.IMPORT)
         .map((action: snippets.ImportAction) => ({ data: action.payload, suffix: action.params }))
         .mergeMap(({ data, suffix }) => {
+            console.log(data, suffix);
             let observable: Observable<ISnippet>;
             let importType = this._determineImportType(data);
             console.info(`Importing ${importType} Snippet`);

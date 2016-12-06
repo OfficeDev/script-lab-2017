@@ -10,6 +10,7 @@ import { combineReducers } from '@ngrx/store';
  * notation packages up all of the exports into a single object.
  */
 import * as snippets from './snippet';
+import * as monaco from './monaco';
 
 /**
  * As mentioned, we treat each reducer like a table in a database. This means
@@ -17,6 +18,7 @@ import * as snippets from './snippet';
  */
 export interface State {
     snippet: snippets.State;
+    monaco: monaco.State;
 }
 
 /**
@@ -28,6 +30,7 @@ export interface State {
  */
 const reducers = {
     snippet: snippets.reducer,
+    monaco: monaco.reducer
 };
 
 export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
@@ -36,3 +39,9 @@ const getSnippetsState = (state: State) => state.snippet;
 export const getReadOnly = createSelector(getSnippetsState, snippets.getReadOnly);
 export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
 export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
+
+const getMonacoState = (state: State) => state.monaco;
+export const getActiveTab = (state: State) => createSelector(getMonacoState, monaco.getActiveTab);
+export const getActiveLanguage = (state: State) => createSelector(getMonacoState, monaco.getActiveLanguage);
+export const getErrors = (state: State) => createSelector(getMonacoState, monaco.getErrors);
+export const getTheme = (state: State) => createSelector(getMonacoState, monaco.getTheme);

@@ -1,146 +1,76 @@
-import { Component, HostListener, Input, Output, OnChanges, OnDestroy, SimpleChanges, EventEmitter, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, HostListener, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Dictionary } from '@microsoft/office-js-helpers';
-import { Monaco, MonacoEvents, Notification, Disposable } from '../../services';
-import { Tab } from './tab';
+import { Storage, StorageType } from '@microsoft/office-js-helpers';
+import * as fromRoot from '../../reducers';
+import { Monaco, Disposable } from '../../services';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
 
 @Component({
     selector: 'monaco-editor',
     template: `
-    <ul class="tabs ms-Pivot ms-Pivot--tabs">
-        <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.isActive}">
-            {{tab.name}}
-        </li>
-    </ul>
-    <div class="tabs__container">
-        <section id="editor" #editor class="monaco-editor"></section>
-    </div>`,
-    styleUrls: []
+        <ul class="tabs ms-Pivot ms-Pivot--tabs">
+            <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.name === activeTab?.name}">
+                {{tab.view}}
+            </li>
+        </ul>
+        <section [hidden]="!snippet" id="editor" #editor class="monaco-editor"></section>
+        <section [hidden]="snippet" class="editor__placeholder"></section>
+        <section class="editor__footer">
+            <div class="command__text ms-font-s" (click)="about()"><i class="ms-Icon ms-Icon--Info"></i></div>
+            <div class="command__text" (click)="switchTheme()"><i class="ms-Icon ms-Icon--Color"></i><span class="ms-font-s">{{theme === 'vs-dark' ? 'Dark': 'Light'}}</span></div>
+            <div class="command__text language"><span class="ms-font-s">{{activeLanguage}}</span></div>
+            <div class="command__text">
+                <i class="ms-Icon ms-Icon--StatusErrorFull"></i>
+                <span class="ms-font-s">0</span>
+            </div>
+        </section>
+    `
 })
-export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges {
+export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit, OnDestroy {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => {
-        console.log(event);
-        let value = this._monacoEditor.getValue();
-        this._activeTab.contentChange.emit(value);
-    }, 300);
 
-    private _activeTab: Tab;
-    public tabs: Dictionary<Tab>;
-
+    @Input() snippet: ISnippet;
     @ViewChild('editor') private _editor: ElementRef;
-    @Input() snippetId: string;
-    @Input() readonly: boolean;
-    @Output() events: EventEmitter<MonacoEvents> = new EventEmitter<MonacoEvents>();
-
-    @Input() activeLanguage: string;
-    @Output() activeLanguageChange: EventEmitter<string> = new EventEmitter<string>();
-
-    @Input() theme: string;
-    @Output() themeChange: EventEmitter<string> = new EventEmitter<string>();
+    tabs = new Storage<IMonacoEditorState>('MonacoState', StorageType.SessionStorage);
+    activeTab: IMonacoEditorState;
 
     constructor(
         private _monaco: Monaco,
-        private _notification: Notification
     ) {
         super();
-        this.tabs = new Dictionary<Tab>();
-    }
-
-    async ngAfterViewInit() {
-        this._activeTab = this.tabs.get('Script');
-        this._monacoEditor = await this._monaco.create(this._editor, {
-            theme: this.theme || 'vs',
-            value: this._activeTab.content,
-            language: this._activeTab.language
-        });
-        this._monacoEditor.onKeyDown(event => this._onKeyDown(event));
+        this._initialize();
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this._activeTab) {
-            if (!_.isEmpty(changes['theme'])) {
-                this._monaco.updateOptions(this._monacoEditor, {
-                    theme: changes['theme'].currentValue
-                });
-            }
-            if (!_.isEmpty(changes['snippetId'])) {
-                this.changeTab(this._activeTab);
-            }
+        if (!_.isEmpty(changes['snippet'])) {
+            this._update();
         }
     }
 
-    async changeTab(tab: Tab) {
-        if (!(this._activeTab == null)) {
-            this._activeTab.state.model = this._monacoEditor.getModel();
-            this._activeTab.state.viewState = this._monacoEditor.saveViewState();
-        };
-
-        this._activeTab = tab.activate();
-        await this._activeTab.updateTabState(this.snippetId);
-        this._monacoEditor.setModel(this._activeTab.state.model);
-        this._monacoEditor.restoreViewState(this._activeTab.state.viewState);
-        this._monacoEditor.focus();
-        this.activeLanguageChange.emit(this._activeTab.language);
+    async ngAfterViewInit() {
+        this.activeTab = this.tabs.get('script');
+        this._monacoEditor = await this._monaco.create(this._editor, {
+            theme: 'vs',
+            value: this.activeTab.content,
+            language: this.activeTab.language
+        });
     }
 
-    private _onKeyDown(event: monaco.IKeyboardEvent) {
-        if (event == null) {
-            return;
+    changeTab(tab: IMonacoEditorState) {
+        if (this.snippet) {
+            if (!(this.activeTab == null)) {
+                this.activeTab.content = this._monacoEditor.getValue();
+                this.activeTab.model = this._monacoEditor.getModel();
+                this.activeTab.viewState = this._monacoEditor.saveViewState();
+            };
         }
 
-        this._debouncedInput(event);
-        if (event.ctrlKey || event.metaKey) {
-            let monacoEvent: MonacoEvents;
-            switch (event.keyCode) {
-                case monaco.KeyCode.KEY_S:
-                    monacoEvent = MonacoEvents.SAVE;
-                    break;
-
-                case monaco.KeyCode.KEY_B:
-                    monacoEvent = MonacoEvents.TOGGLE_MENU;
-                    break;
-
-                case monaco.KeyCode.F5:
-                    monacoEvent = MonacoEvents.RUN;
-                    break;
-
-                case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
-                    let index = this._activeTab.index;
-                    let key;
-                    if (index === this.tabs.count) {
-                        key = this.tabs.keys()[0];
-                    }
-                    else {
-                        key = this.tabs.keys()[index];
-                    }
-                    this.changeTab(this.tabs.get(key));
-                    monacoEvent = -1;
-                    break;
-                }
-
-                case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
-                    let index = this._activeTab.index;
-                    let key;
-                    if (index === 1) {
-                        key = this.tabs.keys()[this.tabs.count - 1];
-                    }
-                    else {
-                        key = this.tabs.keys()[index - 2];
-                    }
-                    this.changeTab(this.tabs.get(key));
-                    monacoEvent = -1;
-                    break;
-                }
-            }
-
-            if (!(monacoEvent == null)) {
-                this.events.emit(monacoEvent);
-                event.preventDefault();
-                event.stopPropagation();
-            }
+        this.activeTab = tab;
+        if (this.snippet) {
+            this._monacoEditor.setModel(this.activeTab.model);
+            this._monacoEditor.restoreViewState(this.activeTab.viewState);
+            this._monacoEditor.focus();
         }
     }
 
@@ -152,4 +82,99 @@ export class MonacoEditor extends Disposable implements AfterViewInit, OnChanges
             this._monacoEditor.setScrollLeft(0);
         }
     }
+
+    private async _initialize() {
+        ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
+            let name = title.toLowerCase();
+
+            let tab = <IMonacoEditorState>{
+                name: name,
+                view: title,
+                viewState: null
+            };
+
+            this.tabs.insert(name, tab);
+        });
+    }
+
+    private async _update() {
+        this.tabs.values().forEach(item => {
+            if (item.model) {
+                item.model.dispose();
+            }
+
+            if (item.name === 'libraries') {
+                item.content = this.snippet[item.name];
+                item.language = item.name;
+                item.model = monaco.editor.createModel(this.snippet[item.name], item.name);
+                item.viewState = null;
+            }
+            else {
+                item.content = this.snippet[item.name].content;
+                item.language = this.snippet[item.name].language;
+                item.model = monaco.editor.createModel(this.snippet[item.name].content, this.snippet[item.name].language);
+                item.viewState = null;
+            }
+        });
+
+        this.activeTab = this.tabs.get('script');
+    }
 }
+
+
+// private _onKeyDown(event: monaco.IKeyboardEvent) {
+    //     if (event == null) {
+    //         return;
+    //     }
+
+    //     if (event.ctrlKey || event.metaKey) {
+    //         let monacoEvent: MonacoEvents;
+    //         switch (event.keyCode) {
+    //             case monaco.KeyCode.KEY_S:
+    //                 monacoEvent = MonacoEvents.SAVE;
+    //                 break;
+
+    //             case monaco.KeyCode.KEY_B:
+    //                 monacoEvent = MonacoEvents.TOGGLE_MENU;
+    //                 break;
+
+    //             case monaco.KeyCode.F5:
+    //                 monacoEvent = MonacoEvents.RUN;
+    //                 break;
+
+    //             case monaco.KeyCode.US_OPEN_SQUARE_BRACKET: {
+    //                 let index = this._activeTab.index;
+    //                 let key;
+    //                 if (index === this.tabs.count) {
+    //                     key = this.tabs.keys()[0];
+    //                 }
+    //                 else {
+    //                     key = this.tabs.keys()[index];
+    //                 }
+    //                 this.changeTab(this.tabs.get(key));
+    //                 monacoEvent = -1;
+    //                 break;
+    //             }
+
+    //             case monaco.KeyCode.US_CLOSE_SQUARE_BRACKET: {
+    //                 let index = this._activeTab.index;
+    //                 let key;
+    //                 if (index === 1) {
+    //                     key = this.tabs.keys()[this.tabs.count - 1];
+    //                 }
+    //                 else {
+    //                     key = this.tabs.keys()[index - 2];
+    //                 }
+    //                 this.changeTab(this.tabs.get(key));
+    //                 monacoEvent = -1;
+    //                 break;
+    //             }
+    //         }
+
+    //         if (!(monacoEvent == null)) {
+    //             this.events.emit(monacoEvent);
+    //             event.preventDefault();
+    //             event.stopPropagation();
+    //         }
+    //     }
+    // }

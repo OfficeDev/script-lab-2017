@@ -32,9 +32,12 @@ interface IPlaylist {
 }
 
 interface IMonacoEditorState {
-    snippetId?: string;
-    viewState?: monaco.editor.IEditorViewState,
-    model?: monaco.editor.IModel
+    name?: string;
+    view?: string;
+    content?: string;
+    language?: string;
+    viewState?: monaco.editor.IEditorViewState;
+    model?: monaco.editor.IModel;
 }
 
 interface IDialog {

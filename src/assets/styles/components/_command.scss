@@ -1,0 +1,31 @@
+.command {
+    &__bar {
+        @include inline-flex();
+        flex: 1 0 40px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    &__title,
+    &__icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    &__icon {
+        i + span {
+            @include ellipsis();
+            margin-left: 7.5px;
+        }
+    }
+
+    &__title {
+        flex: 1 1 auto;
+        justify-content: flex-start;
+        @include ellipsis();
+    }
+}

@@ -7,8 +7,21 @@ import { Theme } from './app/helpers';
 @Component({
     selector: 'app',
     template: `
-        <router-outlet></router-outlet>
-        <dialog></dialog>
+        <!--<hamburger [title]="title" [(shown)]="menuOpen">
+            <gallery-view></gallery-view>
+        </hamburger>-->
+        <main>
+            <header class="command__bar">
+                <command icon="GlobalNavButton"></command>
+                <command icon="AppForOfficeLogo" title="Snippet 1"></command>
+                <command icon="Play" title="Run"></command>
+                <command icon="Save" title="Save"></command>
+                <command icon="Share" title="Share"></command>
+                <command icon="Contact" title="Profile"></command>
+            </header>
+            <router-outlet></router-outlet>
+            <dialog></dialog>
+        </main>
     `
 })
 
