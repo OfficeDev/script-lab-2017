@@ -7,9 +7,9 @@ import { Theme } from '../helpers';
 @Component({
     selector: 'app',
     template: `
-        <!--<hamburger [title]="title" [(shown)]="menuOpen">
+        <hamburger [title]="title" [shown]="true">
             <gallery-view></gallery-view>
-        </hamburger>-->
+        </hamburger>
         <main>
             <header class="command__bar">
                 <command icon="GlobalNavButton"></command>

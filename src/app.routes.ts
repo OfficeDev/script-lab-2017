@@ -1,10 +1,11 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Collapse, Hamburger, Dialog, CommandIcon } from './app/components';
-import { MonacoEditor, EditorView } from './app/containers';
+import { MonacoEditor, EditorView, GalleryView } from './app/containers';
 
 export const COMPONENT_DECLARATIONS = [
     EditorView,
+    GalleryView,
     MonacoEditor,
     Hamburger,
     Collapse,

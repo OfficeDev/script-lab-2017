@@ -1,9 +1,10 @@
-@import '../../assets/styles/mixins';
-@import '../../assets/styles/vars';
+@import '../../../assets/styles/mixins';
+@import '../../../assets/styles/vars';
 
 .gallery {
     @include flex();
     flex: 1 1 100%;
+    height: 100%;
 
     &__header {
         padding: $default-spacing/2 $default-spacing;
