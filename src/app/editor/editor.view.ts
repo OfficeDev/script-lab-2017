@@ -8,7 +8,6 @@ import * as fromRoot from '../reducers';
 import * as snippet from '../actions/snippet';
 import * as _ from 'lodash';
 import './editor.view.scss';
-declare let PLAYGROUND: any;
 
 @Component({
     selector: 'editor-view',

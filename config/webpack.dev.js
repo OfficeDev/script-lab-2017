@@ -23,8 +23,8 @@ module.exports = webpackMerge(commonConfig, {
         new ExtractTextPlugin('[name].[hash].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
-                ENV: 'Development',
-                INFO: commonConfig.meta
+                env: 'DEVELOPMENT',
+                build: commonConfig.meta
             })
         })
     ],

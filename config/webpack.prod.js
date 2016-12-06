@@ -30,7 +30,7 @@ module.exports = webpackMerge(commonConfig, {
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
-                ENV: 'Production',
+                ENV: 'PRODUCTION',
                 INFO: commonConfig.meta
             })
         })

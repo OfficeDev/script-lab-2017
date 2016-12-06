@@ -16,11 +16,11 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { rootReducer } from './app/reducers';
 import { SnippetEffects } from './app/effects/snippet';
+import { CONFIG } from './environment';
 
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
 
-declare let PLAYGROUND: any;
 
 @NgModule({
     imports: [
@@ -39,7 +39,7 @@ declare let PLAYGROUND: any;
 export class AppModule {
     static async start() {
         try {
-            if (PLAYGROUND.ENV === 'Production') {
+            if (CONFIG.env === 'PRODUCTION') {
                 enableProdMode();
             }
 
