@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { type, PlaygroundError } from '../helpers';
+import { Subscription } from 'rxjs/Subscription';
 
 /**
  * For each action type in an action group, make a simple
@@ -16,7 +17,6 @@ export const MonacoActionTypes = {
     REPORT_ERROR: type('[Monaco] Report Error'),
     UPDATE_INTELLISENSE: type('[Monaco] Update Intellisense'),
     UPDATE_INTELLISENSE_SUCCESS: type('[Monaco] Update Intellisense Success'),
-    INFO: type('[Monaco] Show Info')
 };
 
 /**
@@ -50,12 +50,6 @@ export class ReportErrorAction implements Action {
     constructor(public payload: PlaygroundError) { }
 }
 
-export class InfoAction implements Action {
-    type = MonacoActionTypes.INFO;
-
-    constructor(public payload: any) { }
-}
-
 export class UpdateIntellisenseAction implements Action {
     type = MonacoActionTypes.UPDATE_INTELLISENSE;
 
@@ -65,7 +59,7 @@ export class UpdateIntellisenseAction implements Action {
 export class UpdateIntellisenseSuccessAction implements Action {
     type = MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS;
 
-    constructor(public payload: string[]) { }
+    constructor(public payload: Subscription) { }
 }
 
 /**
@@ -77,6 +71,5 @@ export type MonacoActions
     | ChangeThemeAction
     | ChangeLanguageAction
     | ReportErrorAction
-    | InfoAction
     | UpdateIntellisenseAction
     | UpdateIntellisenseSuccessAction;

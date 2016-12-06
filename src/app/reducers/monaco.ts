@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { MonacoActions, MonacoActionTypes } from '../actions/monaco';
+import { updateState } from '../helpers';
 
 export interface MonacoState {
     activeTab?: string;
@@ -19,36 +20,36 @@ const initialState = {
 };
 
 export function reducer(state = initialState, action: any): MonacoState {
-    console.log(state, action);
+    let newState = updateState<MonacoState>(state);
 
     switch (action.type) {
         case MonacoActionTypes.CHANGE_LANGUAGE:
-            return Object.assign({}, state, {
+            return newState({
                 language: action.payload
             });
 
         case MonacoActionTypes.CHANGE_TAB:
-            return Object.assign({}, state, {
-                current: action.payload
+            return newState({
+                activeTab: action.payload
             });
 
         case MonacoActionTypes.CHANGE_THEME:
-            return Object.assign({}, state, {
+            return newState({
                 theme: action.payload || 'vs'
             });
 
         case MonacoActionTypes.REPORT_ERROR:
-            return Object.assign({}, state, {
+            return newState({
                 errors: [...state.errors, action.payload]
             });
 
         case MonacoActionTypes.UPDATE_INTELLISENSE:
-            return Object.assign({}, state, {
+            return newState({
                 loading: true
             });
 
         case MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS:
-            return Object.assign({}, state, {
+            return newState({
                 loading: false
             });
 

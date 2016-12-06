@@ -42,10 +42,8 @@ interface IMonacoEditorState {
 
 interface IDialog {
     title: string;
-    message?: string;
-    actions: {
-        [index: string]: (action: string) => any
-    }
+    message: string;
+    actions: string[];
 }
 
 interface ITab {

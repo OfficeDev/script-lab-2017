@@ -1,10 +1,11 @@
 import { createSelector } from 'reselect';
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
+import { updateState } from '../helpers';
 
 export interface SnippetState {
-    lastOpened: ISnippet;
-    loading: boolean;
-    readonly: boolean;
+    lastOpened?: ISnippet;
+    loading?: boolean;
+    readonly?: boolean;
 };
 
 const initialState: SnippetState = {
@@ -14,45 +15,42 @@ const initialState: SnippetState = {
 };
 
 export function reducer(state = initialState, action: any): SnippetState {
-    console.log(state, action);
+    let newState = updateState<SnippetState>(state);
 
     switch (action.type) {
-        case SnippetActionTypes.IMPORT: {
-            console.log(action.payload);
-            return Object.assign({}, state, {
+        case SnippetActionTypes.IMPORT:
+            return newState({
                 loading: true
             });
-        }
 
         case SnippetActionTypes.IMPORT_SUCCESS: {
-            return {
+            return newState({
                 loading: false,
                 lastOpened: action.payload,
                 readonly: action.params
-            };
+            });
         }
 
         case SnippetActionTypes.RUN: {
-            return Object.assign({}, state, {
+            return newState({
                 loading: true
             });
         }
 
         case SnippetActionTypes.VIEW: {
-            return Object.assign({}, state, {
-                readonly: true
+            return newState({
+                loading: true
             });
         }
 
         case SnippetActionTypes.STORE_UPDATED: {
-            return Object.assign({}, state, {
+            return newState({
                 loading: false
             });
         }
 
         case SnippetActionTypes.FAILED: {
-            console.log(action);
-            return Object.assign({}, state, {
+            return newState({
                 loading: false
             });
         }

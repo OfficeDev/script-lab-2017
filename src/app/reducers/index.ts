@@ -11,6 +11,7 @@ import { combineReducers } from '@ngrx/store';
  */
 import * as snippets from './snippet';
 import * as monaco from './monaco';
+import * as ui from './ui';
 
 /**
  * As mentioned, we treat each reducer like a table in a database. This means
@@ -19,6 +20,7 @@ import * as monaco from './monaco';
 export interface State {
     snippet: snippets.SnippetState;
     monaco: monaco.MonacoState;
+    ui: ui.UIState;
 }
 
 /**
@@ -30,7 +32,8 @@ export interface State {
  */
 const reducers = {
     snippet: snippets.reducer,
-    monaco: monaco.reducer
+    monaco: monaco.reducer,
+    ui: ui.reducer
 };
 
 export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
@@ -44,4 +47,8 @@ const getMonacoState = (state: State) => state.monaco;
 export const getActiveTab = (state: State) => createSelector(getMonacoState, monaco.getActiveTab);
 export const getActiveLanguage = (state: State) => createSelector(getMonacoState, monaco.getActiveLanguage);
 export const getErrors = (state: State) => createSelector(getMonacoState, monaco.getErrors);
-export const getTheme = (state: State) => createSelector(getMonacoState, monaco.getTheme);
+
+const getUIState = (state: State) => state.ui;
+export const getMenu = (state: State) => createSelector(getUIState, ui.getMenuOpened);
+export const getAlert = (state: State) => createSelector(getUIState, ui.getAlert);
+export const getConfig = (state: State) => createSelector(getUIState, ui.getConfig);
