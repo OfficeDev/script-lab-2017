@@ -1,6 +1,9 @@
 import { Component, ApplicationRef } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
 import { Disposable } from '../../services';
+import { ImportAction } from '../../actions/snippet';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../reducers';
 import * as _ from 'lodash';
 import './gallery.view.scss';
 
@@ -9,16 +12,8 @@ import './gallery.view.scss';
     templateUrl: 'gallery.view.html'
 })
 export class GalleryView extends Disposable {
-    snippets: ISnippet[] = [];
-    templates: IPlaylist = {} as any;
-    hideWarn: boolean;
-    showImport = false;
-    private _store: Storage<string>;
-
-    constructor() {
+    constructor(private _store: Store<fromRoot.State>) {
         super();
-        this._store = new Storage<string>('Playground');
-        this.hideWarn = this._store.get('LocalStorageWarn') as any || false;
     }
 
     // async ngOnInit() {
@@ -62,9 +57,9 @@ export class GalleryView extends Disposable {
     //     this._store.insert('LocalStorageWarn', this.hideWarn as any);
     // }
 
-    // new() {
-    //     this._events.emit('GalleryEvents', GalleryEvents.CREATE, null);
-    // }
+    new() {
+        this._store.dispatch(new ImportAction('default'));
+    }
 
     // copy(snippet: ISnippet) {
     //     this._events.emit('GalleryEvents', GalleryEvents.COPY, snippet);

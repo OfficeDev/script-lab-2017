@@ -1,8 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges, HostListener, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, HostListener, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../../reducers';
 import { Store } from '@ngrx/store';
+import { ChangeTabAction } from '../../actions/monaco';
 import { MonacoService, Disposable } from '../../services';
 import * as _ from 'lodash';
 import './monaco-editor.scss';
@@ -10,82 +11,39 @@ import './monaco-editor.scss';
 @Component({
     selector: 'monaco-editor',
     template: `
-        <ul class="tabs ms-Pivot ms-Pivot--tabs">
-            <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab)" [ngClass]="{'is-selected tabs__tab--active': tab.name === activeTab?.name}">
+        <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
+            <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === (activeTab$|async)}">
                 {{tab.view}}
             </li>
         </ul>
-        <section [hidden]="!snippet" id="editor" #editor class="viewport"></section>
-        <section [hidden]="snippet" class="viewport__placeholder"></section>
+        <section [hidden]="hide" id="editor" #editor class="viewport"></section>
+        <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
 })
-export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit, OnDestroy {
+export class MonacoEditor extends Disposable implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-
-    @Input() snippet: ISnippet;
     @ViewChild('editor') private _editor: ElementRef;
     tabs = new Storage<IMonacoEditorState>('MonacoState', StorageType.SessionStorage);
-    activeTab: IMonacoEditorState;
+    currentState: IMonacoEditorState;
+    hide: boolean = true;
+
+    source$: string;
+    readonly$: Observable<boolean>;
 
     constructor(
         private _store: Store<fromRoot.State>,
         private _monaco: MonacoService,
     ) {
         super();
-        this._initialize();
+        this.readonly$ = this._store.select(fromRoot.getReadOnly);
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes['snippet'] && changes['snippet'].currentValue) {
-            this._update();
-        }
-    }
-
+    /**
+     * Initialize the component and subscribe to all the neccessary actions.
+     */
     async ngAfterViewInit() {
-        this.activeTab = this.tabs.get('script');
-        this._monacoEditor = await this._monaco.create(this._editor, {
-            theme: 'vs',
-            value: this.activeTab.content,
-            language: this.activeTab.language
-        });
+        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs', });
 
-        let subscription =
-            this._store.select(fromRoot.getTheme)
-                .subscribe(isLight =>
-                    this._monacoEditor.updateOptions({
-                        theme: isLight ? 'vs' : 'vs-dark'
-                    }));
-
-        this.markDispose(subscription);
-    }
-
-    changeTab(tab: IMonacoEditorState) {
-        if (this.snippet) {
-            if (!(this.activeTab == null)) {
-                this.activeTab.content = this._monacoEditor.getValue();
-                this.activeTab.model = this._monacoEditor.getModel();
-                this.activeTab.viewState = this._monacoEditor.saveViewState();
-            };
-        }
-
-        this.activeTab = tab;
-        if (this.snippet) {
-            this._monacoEditor.setModel(this.activeTab.model);
-            this._monacoEditor.restoreViewState(this.activeTab.viewState);
-            this._monacoEditor.focus();
-        }
-    }
-
-    @HostListener('window:resize', ['$event'])
-    private _resize() {
-        if (this._monacoEditor) {
-            this._monacoEditor.layout();
-            this._monacoEditor.setScrollTop(0);
-            this._monacoEditor.setScrollLeft(0);
-        }
-    }
-
-    private async _initialize() {
         ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
             let name = title.toLowerCase();
 
@@ -97,32 +55,78 @@ export class MonacoEditor extends Disposable implements OnChanges, AfterViewInit
 
             this.tabs.insert(name, tab);
         });
+
+        this._store.select(fromRoot.getCurrent)
+            .filter(data => {
+                this.hide = data == null;
+                return !this.hide;
+            })
+            .subscribe(snippet => this._changeSnippet(snippet));
+
+        this._store.select(fromRoot.getActiveTab)
+            .filter(data => !(data == null))
+            .subscribe(tab => {
+                // If there's a current state, then save it
+                if (!(this.currentState == null)) {
+                    this.currentState.content = this._monacoEditor.getValue();
+                    this.currentState.model = this._monacoEditor.getModel();
+                    this.currentState.viewState = this._monacoEditor.saveViewState();
+                    this.tabs.insert(this.currentState.name, this.currentState);
+                }
+
+                // Update the current state to the new tab
+                this.currentState = this.tabs.get(tab);
+                this._monacoEditor.setModel(this.currentState.model);
+                this._monacoEditor.restoreViewState(this.currentState.viewState);
+                this._monacoEditor.focus();
+                this._monacoEditor.layout();
+            });
     }
 
-    private async _update() {
+    changeTab = (name: string = 'script') => this._store.dispatch(new ChangeTabAction(name));
+
+    /**
+     * Triggered when the snippet is changed and a new snippet is loaded
+     */
+    private async _changeSnippet(snippet) {
         this.tabs.values().forEach(item => {
             if (item.model) {
                 item.model.dispose();
             }
 
+            let content, language, model, viewState = null;
+
             if (item.name === 'libraries') {
-                item.content = this.snippet[item.name];
-                item.language = item.name;
-                item.model = monaco.editor.createModel(this.snippet[item.name], item.name);
-                item.viewState = null;
+                [content, language] = [snippet[item.name], item.name];
             }
             else {
-                item.content = this.snippet[item.name].content;
-                item.language = this.snippet[item.name].language;
-                item.model = monaco.editor.createModel(this.snippet[item.name].content, this.snippet[item.name].language);
-                item.viewState = null;
+                content = snippet[item.name].content;
+                language = snippet[item.name].language;
             }
+            model = monaco.editor.createModel(content, language);
+
+            item.model = model;
+            item.content = content;
+            item.language = language;
+            item.viewState = viewState;
         });
 
-        this.activeTab = this.tabs.get('script');
+        this.changeTab();
+    }
+
+    /**
+     * Resize the Monaco Editor when ever there's a change in the
+     * resolution. Also invoked when the menu is dismissed.
+     */
+    @HostListener('window:resize', ['$event'])
+    private _resize() {
+        if (this._monacoEditor) {
+            this._monacoEditor.layout();
+            this._monacoEditor.setScrollTop(0);
+            this._monacoEditor.setScrollLeft(0);
+        }
     }
 }
-
 
 // private _onKeyDown(event: monaco.IKeyboardEvent) {
     //     if (event == null) {

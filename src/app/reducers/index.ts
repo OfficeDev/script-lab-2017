@@ -45,6 +45,7 @@ export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
 
 const getMonacoState = (state: State) => state.monaco;
 export const getActiveTab = createSelector(getMonacoState, monaco.getActiveTab);
+export const getProgress = createSelector(getMonacoState, monaco.getLoading);
 
 const getUIState = (state: State) => state.ui;
 export const getMenu = createSelector(getUIState, ui.getMenuOpened);

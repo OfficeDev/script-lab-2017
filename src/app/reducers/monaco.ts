@@ -47,4 +47,4 @@ export function reducer(state = initialState, action: any): MonacoState {
  */
 
 export const getActiveTab = (state: MonacoState) => state.activeTab;
-
+export const getLoading = (state: MonacoState) => state.loading;

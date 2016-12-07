@@ -8,10 +8,23 @@ import { Action } from '@ngrx/store';
 import * as Snippet from '../actions/snippet';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
+import cuid = require('cuid');
 
 @Injectable()
 export class SnippetEffects {
     private _store = new Storage<ISnippet>(`${Utilities.host} Snippets`);
+    private _defaults = <ISnippet>{
+        id: '',
+        gist: '',
+        source: Utilities.host,
+        author: '',
+        name: 'New Snippet',
+        description: '',
+        script: { content: '', language: 'typescript' },
+        style: { content: '', language: 'css' },
+        template: { content: '', language: 'html' },
+        libraries: ''
+    };
 
     constructor(
         private actions$: Actions,
@@ -25,19 +38,18 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.IMPORT)
         .map((action: Snippet.ImportAction) => ({ data: action.payload, suffix: action.params }))
         .mergeMap(({ data, suffix }) => {
-            console.log(data, suffix);
             let observable: Observable<ISnippet>;
             let importType = this._determineImportType(data);
             console.info(`Importing ${importType} Snippet`);
 
             switch (importType) {
                 case 'DEFAULT':
-                    observable = this._request
-                        .local<string>(`snippets/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
-                        .map<ISnippet>(snippet => jsyaml.safeLoad(snippet));
+                    observable = this._request.local<string>(`snippets/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
+                    break;
 
                 case 'CUID':
                     observable = Observable.of(this._store.get(data));
+                    break;
 
                 case 'GIST':
                     observable = this._github.gist(data).map<ISnippet>(gist => {
@@ -54,21 +66,35 @@ export class SnippetEffects {
                             return jsyaml.safeLoad(snippet.content);
                         }
                     });
+                    break;
 
                 case 'URL':
-                    observable = this._request.get<string>(data, ResponseTypes.TEXT)
-                        .map<ISnippet>(snippet => jsyaml.safeLoad(snippet));
+                    observable = this._request.get<string>(data, ResponseTypes.YAML);
+                    break;
 
-                default:
+                case 'YAML':
                     observable = Observable.of(jsyaml.safeLoad(data));
+                    break;
+
+                default: return;
             }
 
             return observable.map(snippet => {
-                if (this._exists(snippet.name)) {
-                    snippet.name = this._generateName(snippet.name, suffix);
+                if (snippet == null) {
+                    return;
                 }
 
-                return new Snippet.ImportSuccess(snippet, importType !== 'CUID');
+                let newSnippet = _.assign({}, this._defaults, snippet);
+
+                if (snippet.id === '') {
+                    snippet.id = cuid();
+                }
+
+                if (this._exists(snippet.name)) {
+                    snippet.name = this._generateName(snippet.name);
+                }
+
+                return new Snippet.ImportSuccess(snippet, false);
             });
         });
 
@@ -109,7 +135,11 @@ export class SnippetEffects {
         return this._store.values();
     }
 
-    private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' {
+    private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
+        if (data == null) {
+            return null;
+        }
+
         if (data === 'default') {
             return 'DEFAULT';
         }

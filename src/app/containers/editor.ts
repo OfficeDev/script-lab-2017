@@ -10,9 +10,9 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'editor',
-    template: `<monaco-editor [(snippet)]="snippet"></monaco-editor>`
+    template: `<monaco-editor></monaco-editor>`
 })
-export class EditorView extends Disposable implements OnInit, OnDestroy {
+export class EditorView extends Disposable implements OnDestroy {
     source: string;
     snippet: ISnippet;
     loading$: Observable<boolean>;
@@ -32,16 +32,16 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
                     return;
                 }
 
-                this._location.replaceState(`/${this.source}/${snippet.id}`);
+                this._location.go(`/${this.source}/${snippet.id}`);
                 this.snippet = snippet;
             });
 
         this.markDispose(subscription);
     }
 
-    ngOnInit() {
-        this._routerEvents();
-    }
+    // ngOnInit() {
+    //     this._routerEvents();
+    // }
 
     save() {
         console.info('SAVE INVOKED');
@@ -78,20 +78,20 @@ export class EditorView extends Disposable implements OnInit, OnDestroy {
     //     }
     // }
 
-    private _routerEvents() {
-        let subscription = this._route.params.subscribe(({id, source}) => {
-            if (id == null || id.trim() === '') {
-                return;
-            }
-            else {
-                console.log('Dispatching Import Action');
-                this._store.dispatch(new snippet.ImportAction(id));
-                this.source = source;
-            }
-        });
+    // private _routerEvents() {
+    //     let subscription = this._route.params.subscribe(({id, source}) => {
+    //         if (id == null || id.trim() === '') {
+    //             return;
+    //         }
+    //         else {
+    //             console.log('Dispatching Import Action');
+    //             this._store.dispatch(new snippet.ImportAction(id));
+    //             this.source = source;
+    //         }
+    //     });
 
-        this.markDispose(subscription);
-    }
+    //     this.markDispose(subscription);
+    // }
 
     // private _snippetEvents() {
     //     let subscription = this._events.on<ISnippet>('GalleryEvents')
