@@ -5,7 +5,7 @@ import { updateState } from '../helpers';
 
 export interface UIState {
     menuOpened?: boolean;
-    alert?: IDialog;
+    dialog?: IDialog;
     language?: string;
     theme?: boolean;
     errors?: Error[];
@@ -17,7 +17,7 @@ const initialState: UIState = {
     theme: false,
     menuOpened: false,
     errors: [],
-    alert: null,
+    dialog: null,
     config: CONFIG
 };
 
@@ -35,12 +35,12 @@ export function reducer(state = initialState, action: any): UIState {
                 menuOpened: false
             });
 
-        case UIActionTypes.SHOW_ALERT:
+        case UIActionTypes.SHOW_DIALOG:
             return newState({
                 alert: action.payload
             });
 
-        case UIActionTypes.DISMISS_ALERT:
+        case UIActionTypes.DISMISS_DIALOG:
             return newState({
                 alert: null
             });
@@ -72,7 +72,7 @@ export function reducer(state = initialState, action: any): UIState {
  * focused so they can be combined and composed to fit each particular
  * use-case.
  */
-export const getAlert = (state: UIState) => state.alert;
+export const getDialog = (state: UIState) => state.dialog;
 
 export const getConfig = (state: UIState) => state.config;
 

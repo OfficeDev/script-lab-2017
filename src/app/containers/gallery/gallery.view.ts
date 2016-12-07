@@ -14,13 +14,21 @@ import './gallery.view.scss';
     templateUrl: 'gallery.view.html'
 })
 export class GalleryView extends Disposable {
+    templatesView: boolean;
     snippets$: Observable<ISnippet[]>;
     templates$: Observable<ITemplate[]>;
 
     constructor(private _store: Store<fromRoot.State>) {
         super();
 
-        this.snippets$ = this._store.select(fromRoot.getSnippets);
+        this.snippets$ = this._store.select(fromRoot.getSnippets)
+            .map(snippets => {
+                if (_.isEmpty(snippets)) {
+                    this._store.dispatch(new UI.OpenMenuAction());
+                    this.templatesView = true;
+                }
+                return snippets;
+            });
 
         this.templates$ = this._store.select(fromRoot.getTemplates);
 
@@ -81,9 +89,14 @@ export class GalleryView extends Disposable {
     //     this._events.emit('GalleryEvents', GalleryEvents.SELECT, snippet);
     // }
 
-    // import(id: string) {
-    //     this.showImport = true;
-    // }
+    import(item?: ITemplate) {
+        if (item == null) {
+            // show the Import UI Here
+        }
+        else {
+            this._store.dispatch(new Snippet.ImportAction(item.id || item.gist));
+        }
+    }
 
     // commandEvents($event: any) {
     //     if ($event.title === 'Local') {

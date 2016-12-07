@@ -12,8 +12,8 @@
                 </div>
                 -->
         <div class="gallery__tabs-container">
-            <gallery-list [hidden]="templatesView" title="Local Snippets" [items]="snippets$|async"></gallery-list>
-            <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async"></gallery-list>
+            <gallery-list [hidden]="templatesView" title="Local Snippets" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
+            <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async" (select)="import($event)"></gallery-list>
         </div>
     </section>
     <section class="gallery__section">

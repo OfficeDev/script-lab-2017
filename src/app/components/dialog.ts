@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { Disposable } from '../services';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'dialog',
@@ -16,7 +15,7 @@ import { Disposable } from '../services';
                 </div>
                 <div class="ms-Dialog-actions">
                     <div class="ms-Dialog-actionsRight">
-                        <button *ngFor="let action of actions" class="ms-Dialog-action ms-Button" (click)="execute(action)">
+                        <button *ngFor="let action of dialog?.actions" class="ms-Dialog-action ms-Button" (click)="dismiss.emit(action)">
                             <span class="ms-Button-label">{{action}}</span>
                         </button>
                     </div>
@@ -26,28 +25,7 @@ import { Disposable } from '../services';
     </div>
 `
 })
-export class Dialog extends Disposable {
-    dialog: IDialog;
-    actions: string[];
-
-    constructor() {
-        super();
-        // let subscription = this._notification.on<IDialog>('DialogEvent').subscribe(dialog => {
-        //     if (!_.isEmpty(dialog.actions)) {
-        //         this.actions = Object.keys(dialog.actions);
-        //     }
-
-        //     this.dialog = dialog;
-        // });
-        // this.markDispose(subscription);
-    }
-
-    execute(action: string) {
-        if (!_.isFunction(this.dialog.actions[action])) {
-            return;
-        }
-
-        this.dialog.actions[action](action);
-        this.dialog = null;
-    }
+export class Dialog {
+    @Input('show') dialog: IDialog;
+    @Output() dismiss = new EventEmitter<string>();
 }

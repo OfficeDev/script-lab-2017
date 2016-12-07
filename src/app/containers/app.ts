@@ -11,7 +11,7 @@ import { UI, Snippet } from '../actions';
 @Component({
     selector: 'app',
     template: `
-        <hamburger [title]="title" [shown]="menuOpened$|async">
+        <hamburger>
             <gallery-view></gallery-view>
         </hamburger>
         <main [ngClass]="theme$|async">
@@ -32,27 +32,23 @@ import { UI, Snippet } from '../actions';
                 <command icon="StatusErrorFull" title="0"></command>
             </footer>
         </main>
-        <dialog></dialog>
+        <dialog [show]="dialog$|async" (dismiss)="dismiss($event)"></dialog>
     `
 })
 
 export class AppComponent {
-    menuOpened$: Observable<boolean>;
-    alert$: Observable<IDialog>;
+    dialog$: Observable<IDialog>;
     theme$: Observable<string>;
     readonly$: Observable<boolean>;
 
     snippet: ISnippet;
     isEmpty: boolean;
 
-
     constructor(
         private _store: Store<fromRoot.State>,
         private _router: Router
     ) {
-        this.menuOpened$ = this._store.select(fromRoot.getMenu);
-
-        this.alert$ = this._store.select(fromRoot.getAlert);
+        this.dialog$ = this._store.select(fromRoot.getDialog);
 
         this.readonly$ = this._store.select(fromRoot.getReadOnly);
 
@@ -85,5 +81,9 @@ export class AppComponent {
 
     changeTheme() {
         this._store.dispatch(new UI.ChangeThemeAction());
+    }
+
+    dismiss(action: string) {
+        this._store.dispatch(new UI.DismissDialogAction(action));
     }
 }

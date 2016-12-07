@@ -79,23 +79,20 @@ export class SnippetEffects {
                 default: return;
             }
 
-            return observable.map(snippet => {
-                if (snippet == null) {
-                    return;
-                }
+            return observable
+                .filter(snippet => !(snippet == null))
+                .map(snippet => _.assign({}, this._defaults, snippet))
+                .map(snippet => {
+                    if (snippet.id === '') {
+                        snippet.id = cuid();
+                    }
 
-                let newSnippet = _.assign({}, this._defaults, snippet);
+                    if (this._exists(snippet.name)) {
+                        snippet.name = this._generateName(snippet.name, suffix);
+                    }
 
-                if (snippet.id === '') {
-                    snippet.id = cuid();
-                }
-
-                if (this._exists(snippet.name)) {
-                    snippet.name = this._generateName(snippet.name, suffix);
-                }
-
-                return new Snippet.ImportSuccess(snippet, importType !== 'CUID');
-            });
+                    return new Snippet.ImportSuccess(snippet, importType !== 'CUID');
+                });
         });
 
     @Effect()
@@ -148,7 +145,7 @@ export class SnippetEffects {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
             }
         })
-        .map(data => { console.log(data); return new Snippet.LoadTemplatesSuccess(data) });
+        .map(data => new Snippet.LoadTemplatesSuccess(data));
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {
