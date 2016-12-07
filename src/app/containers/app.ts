@@ -17,7 +17,7 @@ import { UI, Snippet } from '../actions';
         <main [ngClass]="theme$|async">
             <header class="command__bar">
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
-                <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="(snippet$|async)?.name"></command>
+                <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" title="Run"></command>
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="create()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
