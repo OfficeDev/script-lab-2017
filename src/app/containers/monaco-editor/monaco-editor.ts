@@ -100,7 +100,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit {
             return;
         }
 
-        this._store.dispatch(new Monaco.UpdateIntellisenseAction(this.snippet.libraries.split('\n')));
+        this._store.dispatch(new Monaco.UpdateIntellisenseAction(this.snippet.libraries.split('\n'), 'typescript'));
     }
     /**
      * Triggered when the snippet is changed and a new snippet is loaded

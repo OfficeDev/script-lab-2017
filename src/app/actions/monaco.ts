@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs/Subscription';
 export const MonacoActionTypes = {
     CHANGE_TAB: type('[Monaco] Change Tab'),
     UPDATE_INTELLISENSE: type('[Monaco] Update Intellisense'),
+    ADD_INTELLISENSE: type('[Monaco] Add Intellisense'),
     UPDATE_INTELLISENSE_SUCCESS: type('[Monaco] Update Intellisense Success'),
 };
 
@@ -32,13 +33,19 @@ export class ChangeTabAction implements Action {
 export class UpdateIntellisenseAction implements Action {
     type = MonacoActionTypes.UPDATE_INTELLISENSE;
 
-    constructor(public payload: string[], language: string = 'typescript') { }
+    constructor(public payload: string[], public language: string) { }
+}
+
+export class AddIntellisenseAction implements Action {
+    type = MonacoActionTypes.ADD_INTELLISENSE;
+
+    constructor(public payload: string[], public language: string) { }
 }
 
 export class UpdateIntellisenseSuccessAction implements Action {
     type = MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS;
 
-    constructor(public payload: Subscription) { }
+    constructor() { }
 }
 
 /**
@@ -48,4 +55,5 @@ export class UpdateIntellisenseSuccessAction implements Action {
 export type MonacoActions
     = ChangeTabAction
     | UpdateIntellisenseAction
+    | AddIntellisenseAction
     | UpdateIntellisenseSuccessAction;

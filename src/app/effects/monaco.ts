@@ -34,84 +34,72 @@ export class MonacoEffects {
 
     @Effect()
     updateIntellisense$: Observable<Action> = this.actions$
+        .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
+        .map((action: Monaco.AddIntellisenseAction) => ({ payload: action.payload, language: action.language }))
+        .concatMap<string>(({ payload, language }) => this._parseAndUpdate(payload, language))
+        .map(data => new Monaco.UpdateIntellisenseSuccessAction());
+
+    @Effect()
+    clearUnusedIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
-        .map((action: Monaco.UpdateIntellisenseAction) => Observable.from(action.payload))
-        .mergeMap(libraries => this._parseAndUpdate(libraries))
-        .map(data => {
-            console.log(data);
-            return new Monaco.UpdateIntellisenseSuccessAction(data as any);
-        });
-
-    private async _parseAndUpdate(libraries: Observable<string>, isJavaScript = false) {
-        let monaco = await MonacoService.current;
-        let source = isJavaScript ?
-            monaco.languages.typescript.javascriptDefaults :
-            monaco.languages.typescript.typescriptDefaults;
-
-        return this._parse(libraries)
-            .filter(url => url && url.trim() !== '')
-            .flatMap<IIntellisenseFile>((url: string) => this._get(url))
-            .map(file => {
-                let intellisense = this._current.get(file.url);
-                if (intellisense!) {
-                    let disposable = source.addExtraLib(file.content, file.url);
-                    intellisense = this._current.add(file.url, { url: file.url, disposable, retain: true });
+        .map((action: Monaco.UpdateIntellisenseAction) => ({ payload: action.payload, language: action.language }))
+        .map(({payload, language}) => {
+            this._current.values().forEach(file => {
+                if (!file.retain) {
+                    console.info(file);
+                    file.disposable.dispose();
+                    this._current.remove(file.url);
                 }
                 else {
-                    intellisense.retain = true;
+                    file.retain = false;
                 }
-
-                return file.url;
             });
 
-        // return new Observable(observer => {
-        //     let subscription = typings.subscribe(
-        //         url => console.info(`Added: ${url}`),
-        //         error => {
-        //             Utilities.log(error);
-        //             observer.error(error);
-        //         },
-        //         () => {
-        //             this._current.values().forEach(file => {
-        //                 if (!file.retain) {
-        //                     console.info(`Removed: ${file.url}`);
-        //                     file.disposable.dispose();
-        //                     this._current.remove(file.url);
-        //                 }
-        //                 else {
-        //                     file.retain = false;
-        //                 }
-        //             });
+            return new Monaco.AddIntellisenseAction(payload, language);
+        });
 
-        //             observer.next(this._current.values());
-        //         });
+    private _parseAndUpdate(libraries: string[], language: string) {
+        return Observable.fromPromise(MonacoService.current)
+            .mergeMap<string>(monaco => {
+                let source = this._determineSource(language);
 
-        //     return () => {
-        //         if (!subscription.closed) {
-        //             subscription.unsubscribe();
-        //         }
-        //     };
-        // });
+                return this._parse(libraries)
+                    .filter(url => url && url.trim() !== '')
+                    .mergeMap<IIntellisenseFile>((url: string) => this._get(url))
+                    .map(file => {
+                        let intellisense = this._current.get(file.url);
+                        if (intellisense == null) {
+                            let disposable = source.addExtraLib(file.content, file.url);
+                            intellisense = this._current.add(file.url, { url: file.url, disposable, retain: true });
+                        }
+                        else {
+                            intellisense.retain = true;
+                        }
+
+                        return file.url;
+                    });
+            });
     }
 
-    private _parse(libraries: Observable<string>) {
-        return libraries.map(library => {
-            if (/^@types/.test(library)) {
-                return `https://unpkg.com/${library}/index.d.ts`;
-            }
-            else if (/^dt~/.test(library)) {
-                let libName = library.split('dt~')[1];
-                return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`;
-            }
-            else if (/\.d\.ts$/i.test(library)) {
-                if (/^https?:/i.test(library)) {
-                    return library;
+    private _parse(libraries: string[]) {
+        return Observable.from(libraries)
+            .map(library => {
+                if (/^@types/.test(library)) {
+                    return `https://unpkg.com/${library}/index.d.ts`;
                 }
-                else {
-                    return `https://unpkg.com/${library}`;
+                else if (/^dt~/.test(library)) {
+                    let libName = library.split('dt~')[1];
+                    return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`;
                 }
-            }
-        })
+                else if (/\.d\.ts$/i.test(library)) {
+                    if (/^https?:/i.test(library)) {
+                        return library;
+                    }
+                    else {
+                        return `https://unpkg.com/${library}`;
+                    }
+                }
+            })
             .catch(error => {
                 Utilities.log(error);
                 return '';
@@ -128,6 +116,13 @@ export class MonacoEffects {
             return this._request.get<string>(url, null, ResponseTypes.TEXT)
                 .map(content => this._cache.insert(url, content))
                 .map(content => ({ content, url }));
+        }
+    }
+
+    private _determineSource(language: string) {
+        switch (language) {
+            case 'javascript': return monaco.languages.typescript.javascriptDefaults;
+            default: return monaco.languages.typescript.typescriptDefaults;
         }
     }
 }
