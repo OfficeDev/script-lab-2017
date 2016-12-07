@@ -41,6 +41,8 @@ export const rootReducer = (state: any, action: any) => combineReducers(reducers
 const getSnippetsState = (state: State) => state.snippet;
 export const getReadOnly = createSelector(getSnippetsState, snippets.getReadOnly);
 export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
+export const getSnippets = createSelector(getSnippetsState, snippets.getSnippets);
+export const getTemplates = createSelector(getSnippetsState, snippets.getTemplates);
 export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
 
 const getMonacoState = (state: State) => state.monaco;

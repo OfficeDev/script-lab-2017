@@ -4,28 +4,16 @@
             <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !templatesView}" (click)="templatesView = false">Snippets</li>
             <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Templates</li>
         </ul>
-        <div class="gallery__tabs-container">
-            <section class="gallery-list ms-u-slideUpIn10" [hidden]="templatesView">
-                <div class="collapse__info ms-font-m" [hidden]="hideWarn">
+        <!--<div class="collapse__info ms-font-m" [hidden]="hideWarn">
                     These snippets are stored in your browser and will disappear if you clear your browser cache. Backup using Gists to prevent
                     data loss.
                     <br />
                     <button class="ms-Button" (click)="toggleWarn()"><span class="ms-Button-label">Got it</span></button>
                 </div>
-                <collapse title="Local" [actions]="['Info', 'Delete']" (events)="commandEvents($event)">
-                    <section class="gallery-list__group local-snippets">
-                        <article class="gallery-list__item gallery-list__item__local ms-font-m" *ngFor="let snippet of snippets" (click)="select(snippet)">
-                            <span>{{snippet.name}}</span>
-                            <i class="ms-Icon ms-Icon--Delete" (click)="delete(snippet)"></i>
-                        </article>
-                        <p class="gallery-list__message ms-font-m" [hidden]="snippets?.length > 0">
-                            You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose
-                            from the gallery below.
-                        </p>
-                    </section>
-                </collapse>
-            </section>
-            <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates"></gallery-list>
+                -->
+        <div class="gallery__tabs-container">
+            <gallery-list [hidden]="templatesView" title="Local Snippets" [items]="snippets$|async"></gallery-list>
+            <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async"></gallery-list>
         </div>
     </section>
     <section class="gallery__section">

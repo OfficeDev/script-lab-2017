@@ -21,7 +21,10 @@ export const SnippetActionTypes = {
     DELETE: type('[Snippet] Delete'),
     DELETE_ALL: type('[Snippet] Delete All'),
     STORE_UPDATED: type('[Snippet] Storage Updated'),
-    FAILED: type('[Snippet] Failed')
+    LOAD_SNIPPETS: type('[Snippet] Load Snippets'),
+    LOAD_SNIPPETS_SUCCESS: type('[Snippet] Load Snippets Success'),
+    LOAD_TEMPLATES: type('[Snippet] Load Templates'),
+    LOAD_TEMPLATES_SUCCESS: type('[Snippet] Load Templates Success')
 };
 
 /**
@@ -91,10 +94,28 @@ export class StoreUpdated implements Action {
     constructor() { }
 }
 
-export class FailedAction implements Action {
-    type = SnippetActionTypes.FAILED;
+export class LoadSnippets implements Action {
+    type = SnippetActionTypes.LOAD_SNIPPETS;
 
-    constructor(payload: Error) { }
+    constructor() { }
+}
+
+export class LoadTemplates implements Action {
+    type = SnippetActionTypes.LOAD_TEMPLATES;
+
+    constructor(public payload: string = 'LOCAL') { }
+}
+
+export class LoadSnippetsSuccess implements Action {
+    type = SnippetActionTypes.LOAD_SNIPPETS_SUCCESS;
+
+    constructor(public payload: ISnippet[]) { }
+}
+
+export class LoadTemplatesSuccess implements Action {
+    type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
+
+    constructor(public payload: ITemplate[]) { }
 }
 
 /**
@@ -110,5 +131,6 @@ export type SnippetActions
     | ShareAction
     | DeleteAction
     | DeleteAllAction
-    | FailedAction
-    | StoreUpdated;
+    | StoreUpdated
+    | LoadSnippets
+    | LoadTemplates;

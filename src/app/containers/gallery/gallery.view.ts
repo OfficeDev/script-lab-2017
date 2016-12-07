@@ -1,7 +1,9 @@
 import { Component, ApplicationRef } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Theme } from '../../helpers';
+import { UI, Snippet } from '../../actions';
 import { Storage } from '@microsoft/office-js-helpers';
 import { Disposable } from '../../services';
-import { ImportAction } from '../../actions/snippet';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../../reducers';
 import * as _ from 'lodash';
@@ -12,8 +14,18 @@ import './gallery.view.scss';
     templateUrl: 'gallery.view.html'
 })
 export class GalleryView extends Disposable {
+    snippets$: Observable<ISnippet[]>;
+    templates$: Observable<ITemplate[]>;
+
     constructor(private _store: Store<fromRoot.State>) {
         super();
+
+        this.snippets$ = this._store.select(fromRoot.getSnippets);
+
+        this.templates$ = this._store.select(fromRoot.getTemplates);
+
+        this._store.dispatch(new Snippet.LoadSnippets());
+        this._store.dispatch(new Snippet.LoadTemplates());
     }
 
     // async ngOnInit() {
@@ -58,7 +70,7 @@ export class GalleryView extends Disposable {
     // }
 
     new() {
-        this._store.dispatch(new ImportAction('default'));
+        this._store.dispatch(new Snippet.ImportAction('default'));
     }
 
     // copy(snippet: ISnippet) {

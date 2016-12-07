@@ -6,12 +6,16 @@ export interface SnippetState {
     lastOpened?: ISnippet;
     loading?: boolean;
     readonly?: boolean;
+    snippets: ISnippet[];
+    templates: ISnippet[];
 };
 
 const initialState: SnippetState = {
     lastOpened: null,
     loading: false,
-    readonly: false
+    readonly: false,
+    snippets: [],
+    templates: []
 };
 
 export function reducer(state = initialState, action: any): SnippetState {
@@ -28,6 +32,16 @@ export function reducer(state = initialState, action: any): SnippetState {
                 loading: false,
                 lastOpened: action.payload,
                 readonly: action.params
+            });
+
+        case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:
+            return newState({
+                snippets: [...action.payload]
+            });
+
+        case SnippetActionTypes.LOAD_TEMPLATES_SUCCESS:
+            return newState({
+                templates: [...action.payload]
             });
 
         case SnippetActionTypes.CREATE:
@@ -59,12 +73,6 @@ export function reducer(state = initialState, action: any): SnippetState {
             });
         }
 
-        case SnippetActionTypes.FAILED: {
-            return newState({
-                loading: false
-            });
-        }
-
         default: return state;
     }
 }
@@ -80,5 +88,9 @@ export function reducer(state = initialState, action: any): SnippetState {
 export const getReadOnly = (state: SnippetState) => state.readonly;
 
 export const getCurrent = (state: SnippetState) => state.lastOpened;
+
+export const getSnippets = (state: SnippetState) => state.snippets;
+
+export const getTemplates = (state: SnippetState) => state.templates;
 
 export const getLoading = (state: SnippetState) => state.loading;

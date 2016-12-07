@@ -1,10 +1,13 @@
-interface ISnippet {
+interface ITemplate {
     id?: string;
     gist?: string;
     author?: string;
     source?: string;
     name?: string;
     description?: string;
+}
+
+interface ISnippet extends ITemplate {
     script?: {
         content: string;
         language: string;
@@ -18,17 +21,6 @@ interface ISnippet {
         language: string;
     };
     libraries?: string;
-}
-
-interface IPlaylist {
-    groups: {
-        name: string,
-        items: {
-            name: string,
-            description?: string,
-            gist: string
-        }[]
-    }[]
 }
 
 interface IMonacoEditorState {

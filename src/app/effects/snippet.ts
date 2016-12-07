@@ -130,9 +130,25 @@ export class SnippetEffects {
         .map((action: Snippet.DeleteAllAction) => this._store.clear())
         .map(() => new Snippet.StoreUpdated());
 
-    local(): ISnippet[] {
-        return this._store.values();
-    }
+    @Effect()
+    loadSnippets$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
+        .map(() => new Snippet.LoadSnippetsSuccess(this._store.values()));
+
+    @Effect()
+    loadTemplates$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.LOAD_TEMPLATES)
+        .map((action: Snippet.LoadTemplates) => action.payload)
+        .mergeMap(source => {
+            if (source === 'LOCAL') {
+                let snippetJsonUrl = `snippets/${Utilities.host.toLowerCase()}/templates.json`;
+                return this._request.local<ITemplate[]>(snippetJsonUrl, ResponseTypes.JSON);
+            }
+            else {
+                return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
+            }
+        })
+        .map(data => { console.log(data); return new Snippet.LoadTemplatesSuccess(data) });
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {

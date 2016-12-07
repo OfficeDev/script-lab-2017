@@ -41,8 +41,10 @@ export class AppComponent {
     alert$: Observable<IDialog>;
     theme$: Observable<string>;
     readonly$: Observable<boolean>;
+
     snippet: ISnippet;
     isEmpty: boolean;
+
 
     constructor(
         private _store: Store<fromRoot.State>,
