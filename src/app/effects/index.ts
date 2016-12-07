@@ -1,2 +1,2 @@
-export * from './intellisense';
+export * from './monaco';
 export * from './snippet';

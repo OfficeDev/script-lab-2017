@@ -39,58 +39,17 @@ export class EditorView extends Disposable implements OnDestroy {
         this.markDispose(subscription);
     }
 
+    ngOnDestroy() {
+        console.warn('view destroyed');
+    }
+
     // ngOnInit() {
     //     this._routerEvents();
-    // }
-
-    save() {
-        console.info('SAVE INVOKED');
-        this._store.dispatch(new snippet.SaveAction(this.snippet));
-    }
-
-    run() {
-        console.info('RUN INVOKED');
-        this.save();
-        this._store.dispatch(new snippet.RunAction(this.snippet));
-    }
-
-    // switchTheme() {
-    //     Theme.editorTheme = Theme.editorTheme === 'vs' ? 'vs-dark' : 'vs';
-    //     this.theme = Theme.editorTheme;
     // }
 
     // about() {
     //     let message = `Version: ${this.info.full_version}\nDate: ${new Date(this.info.build)}\n\nUsage:\n${Utils.storageSize(localStorage, HostTypes[Utilities.host] + 'Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
     //     let result = this._notification.showDialog(message, this.info.name, 'Ok');
-    // }
-
-    // editorEvents(event: MonacoEvents) {
-    //     switch (event) {
-    //         case MonacoEvents.SAVE:
-    //             return this.save();
-
-    //         case MonacoEvents.TOGGLE_MENU:
-    //             this.menuOpen = !this.menuOpen;
-    //             break;
-
-    //         case MonacoEvents.RUN:
-    //             return this.run();
-    //     }
-    // }
-
-    // private _routerEvents() {
-    //     let subscription = this._route.params.subscribe(({id, source}) => {
-    //         if (id == null || id.trim() === '') {
-    //             return;
-    //         }
-    //         else {
-    //             console.log('Dispatching Import Action');
-    //             this._store.dispatch(new snippet.ImportAction(id));
-    //             this.source = source;
-    //         }
-    //     });
-
-    //     this.markDispose(subscription);
     // }
 
     // private _snippetEvents() {

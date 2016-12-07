@@ -23,13 +23,23 @@ export function reducer(state = initialState, action: any): SnippetState {
                 loading: true
             });
 
-        case SnippetActionTypes.IMPORT_SUCCESS: {
+        case SnippetActionTypes.IMPORT_SUCCESS:
             return newState({
                 loading: false,
                 lastOpened: action.payload,
                 readonly: action.params
             });
-        }
+
+        case SnippetActionTypes.CREATE:
+            return newState({
+                readonly: false,
+                lastOpened: action.payload
+            });
+
+        case SnippetActionTypes.SAVE:
+            return newState({
+                lastOpened: action.payload
+            });
 
         case SnippetActionTypes.RUN: {
             return newState({

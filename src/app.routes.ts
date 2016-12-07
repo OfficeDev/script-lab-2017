@@ -1,10 +1,9 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Collapse, Hamburger, CommandIcon } from './app/components';
-import { MonacoEditor, EditorView, GalleryView, GalleryList } from './app/containers';
+import { MonacoEditor, GalleryView, GalleryList } from './app/containers';
 
 export const COMPONENT_DECLARATIONS = [
-    EditorView,
     GalleryView,
     GalleryList,
     MonacoEditor,
@@ -16,11 +15,11 @@ export const COMPONENT_DECLARATIONS = [
 export const AppRoutes: Routes = [
     {
         path: '',
-        component: EditorView
+        component: MonacoEditor
     },
     {
         path: ':source/:id',
-        component: EditorView
+        component: MonacoEditor
     }
 ];
 

@@ -91,16 +91,16 @@ export class SnippetEffects {
                 }
 
                 if (this._exists(snippet.name)) {
-                    snippet.name = this._generateName(snippet.name);
+                    snippet.name = this._generateName(snippet.name, suffix);
                 }
 
-                return new Snippet.ImportSuccess(snippet, false);
+                return new Snippet.ImportSuccess(snippet, importType !== 'CUID');
             });
         });
 
     @Effect()
     save$: Observable<Action> = this.actions$
-        .ofType(Snippet.SnippetActionTypes.SAVE)
+        .ofType(Snippet.SnippetActionTypes.SAVE, Snippet.SnippetActionTypes.CREATE)
         .map((action: Snippet.SaveAction) => action.payload)
         .map(snippet => {
             this._validate(snippet);
@@ -130,7 +130,6 @@ export class SnippetEffects {
         .map((action: Snippet.DeleteAllAction) => this._store.clear())
         .map(() => new Snippet.StoreUpdated());
 
-    @Effect()
     local(): ISnippet[] {
         return this._store.values();
     }

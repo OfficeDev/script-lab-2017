@@ -20,7 +20,7 @@ export interface IDisposableFile {
 }
 
 @Injectable()
-export class IntellisenseEffects {
+export class MonacoEffects {
     private _cache: Storage<string>;
     private _current: Dictionary<IDisposableFile>;
 
@@ -37,7 +37,10 @@ export class IntellisenseEffects {
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
         .map((action: Monaco.UpdateIntellisenseAction) => Observable.from(action.payload))
         .mergeMap(libraries => this._parseAndUpdate(libraries))
-        .map(data => new Monaco.UpdateIntellisenseSuccessAction(data));
+        .map(data => {
+            console.log(data);
+            return new Monaco.UpdateIntellisenseSuccessAction(data as any);
+        });
 
     private async _parseAndUpdate(libraries: Observable<string>, isJavaScript = false) {
         let monaco = await MonacoService.current;
@@ -46,7 +49,7 @@ export class IntellisenseEffects {
             monaco.languages.typescript.typescriptDefaults;
 
         return this._parse(libraries)
-            .filter(url => url!.trim() !== '')
+            .filter(url => url && url.trim() !== '')
             .flatMap<IIntellisenseFile>((url: string) => this._get(url))
             .map(file => {
                 let intellisense = this._current.get(file.url);
@@ -59,22 +62,36 @@ export class IntellisenseEffects {
                 }
 
                 return file.url;
-            })
-            .subscribe(
-            url => console.info(`Added: ${url}`),
-            error => Utilities.log(error),
-            () => {
-                return this._current.values().forEach(file => {
-                    if (!file.retain) {
-                        console.info(`Removed: ${file.url}`);
-                        file.disposable.dispose();
-                        this._current.remove(file.url);
-                    }
-                    else {
-                        file.retain = false;
-                    }
-                });
             });
+
+        // return new Observable(observer => {
+        //     let subscription = typings.subscribe(
+        //         url => console.info(`Added: ${url}`),
+        //         error => {
+        //             Utilities.log(error);
+        //             observer.error(error);
+        //         },
+        //         () => {
+        //             this._current.values().forEach(file => {
+        //                 if (!file.retain) {
+        //                     console.info(`Removed: ${file.url}`);
+        //                     file.disposable.dispose();
+        //                     this._current.remove(file.url);
+        //                 }
+        //                 else {
+        //                     file.retain = false;
+        //                 }
+        //             });
+
+        //             observer.next(this._current.values());
+        //         });
+
+        //     return () => {
+        //         if (!subscription.closed) {
+        //             subscription.unsubscribe();
+        //         }
+        //     };
+        // });
     }
 
     private _parse(libraries: Observable<string>) {

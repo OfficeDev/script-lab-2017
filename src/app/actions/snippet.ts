@@ -11,16 +11,17 @@ import { type } from '../helpers';
  * action types in the application are unique.
  */
 export const SnippetActionTypes = {
-    VIEW: type('[Snippets] View'),
-    IMPORT: type('[Snippets] Import'),
-    IMPORT_SUCCESS: type('[Snippets] Import Successful'),
-    RUN: type('[Snippets] Run'),
-    SAVE: type('[Snippets] Save'),
-    SHARE: type('[Snippets] Share'),
-    DELETE: type('[Snippets] Delete'),
-    DELETE_ALL: type('[Snippets] Delete All'),
-    STORE_UPDATED: type('[Snippets] Storage Updated'),
-    FAILED: type('[Snippets] Failed')
+    VIEW: type('[Snippet] View'),
+    IMPORT: type('[Snippet] Import'),
+    IMPORT_SUCCESS: type('[Snippet] Import Successful'),
+    RUN: type('[Snippet] Run'),
+    CREATE: type('[Snippet] Create'),
+    SAVE: type('[Snippet] Save'),
+    SHARE: type('[Snippet] Share'),
+    DELETE: type('[Snippet] Delete'),
+    DELETE_ALL: type('[Snippet] Delete All'),
+    STORE_UPDATED: type('[Snippet] Storage Updated'),
+    FAILED: type('[Snippet] Failed')
 };
 
 /**
@@ -50,6 +51,12 @@ export class ImportSuccess implements Action {
 
 export class RunAction implements Action {
     type = SnippetActionTypes.RUN;
+
+    constructor(public payload: ISnippet) { }
+}
+
+export class CreateAction implements Action {
+    type = SnippetActionTypes.CREATE;
 
     constructor(public payload: ISnippet) { }
 }

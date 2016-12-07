@@ -32,7 +32,7 @@ export class ChangeTabAction implements Action {
 export class UpdateIntellisenseAction implements Action {
     type = MonacoActionTypes.UPDATE_INTELLISENSE;
 
-    constructor(public payload: string[]) { }
+    constructor(public payload: string[], language: string = 'typescript') { }
 }
 
 export class UpdateIntellisenseSuccessAction implements Action {

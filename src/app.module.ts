@@ -16,7 +16,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { rootReducer } from './app/reducers';
-import { SnippetEffects, IntellisenseEffects } from './app/effects';
+import { SnippetEffects, MonacoEffects } from './app/effects';
 import { CONFIG } from './environment';
 
 import './assets/styles/spinner.scss';
@@ -32,7 +32,7 @@ import './assets/styles/globals.scss';
         StoreModule.provideStore(rootReducer),
         StoreDevtoolsModule.instrumentOnlyWithExtension(),
         EffectsModule.run(SnippetEffects),
-        EffectsModule.run(IntellisenseEffects)
+        EffectsModule.run(MonacoEffects)
     ],
     declarations: [AppComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
     bootstrap: [AppComponent],
