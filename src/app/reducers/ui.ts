@@ -9,15 +9,13 @@ export interface UIState {
     language?: string;
     theme?: boolean;
     errors?: Error[];
-    config?: typeof CONFIG
 };
 
 const initialState: UIState = {
     theme: false,
     menuOpened: false,
     errors: [],
-    dialog: null,
-    config: CONFIG
+    dialog: null
 };
 
 export function reducer(state = initialState, action: any): UIState {
@@ -36,12 +34,12 @@ export function reducer(state = initialState, action: any): UIState {
 
         case UIActionTypes.SHOW_DIALOG:
             return newState({
-                alert: action.payload
+                dialog: action.payload
             });
 
         case UIActionTypes.DISMISS_DIALOG:
             return newState({
-                alert: null
+                dialog: null
             });
 
         case UIActionTypes.CHANGE_THEME:
@@ -72,8 +70,6 @@ export function reducer(state = initialState, action: any): UIState {
  * use-case.
  */
 export const getDialog = (state: UIState) => state.dialog;
-
-export const getConfig = (state: UIState) => state.config;
 
 export const getMenuOpened = (state: UIState) => state.menuOpened;
 

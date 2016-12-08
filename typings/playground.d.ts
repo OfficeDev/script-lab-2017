@@ -49,3 +49,14 @@ interface IEvent<T> {
     action: number,
     data: T
 }
+
+interface IGlobalConfig {
+    env: 'DEVELOPMENT' | 'PRODUCTION';
+    build: {
+        name: string;
+        version: string;
+        build: number;
+        author: string;
+        full_version: string;
+    }
+}

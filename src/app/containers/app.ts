@@ -3,10 +3,12 @@ import { Observable } from 'rxjs/Observable';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
-import { Theme } from '../helpers';
+import { Theme, Utilities as Utils } from '../helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet } from '../actions';
+import { UIEffects } from '../effects/ui';
+import { CONFIG } from '../../environment';
 
 @Component({
     selector: 'app',
@@ -28,13 +30,13 @@ import { UI, Snippet } from '../actions';
             </header>
             <router-outlet></router-outlet>
             <footer class="command__bar command__bar--condensed">
-                <command icon="Info" title="About"></command>
+                <command icon="Info" title="About" (click)="about()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
                 <command icon="StatusErrorFull" [title]="(errors$|async)?.length"></command>
                 <command class="language" [title]="language$|async"></command>
             </footer>
         </main>
-        <dialog [show]="dialog$|async" (dismiss)="dismiss($event)"></dialog>
+        <dialog [show]="dialog$|async"></dialog>
     `
 })
 
@@ -50,7 +52,8 @@ export class AppComponent {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _router: Router
+        private _router: Router,
+        private _effects: UIEffects
     ) {
         this.dialog$ = this._store.select(fromRoot.getDialog);
 
@@ -107,6 +110,16 @@ export class AppComponent {
     }
 
     dismiss(action: string) {
-        this._store.dispatch(new UI.DismissDialogAction(action));
+        console.log(action);
+    }
+
+    async about() {
+        let message = `Version: ${CONFIG.build.full_version}\nDate: ${new Date(CONFIG.build.build)}\n\nUsage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
+
+        let result = await this._effects.showDialog({
+            title: 'Add-in Playground',
+            message: message,
+            actions: ['Ok']
+        });
     }
 }

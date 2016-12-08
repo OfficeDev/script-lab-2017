@@ -14,7 +14,6 @@ export const UIActionTypes = {
     CLOSE_MENU: type('[UI] Close Menu'),
     SHOW_DIALOG: type('[UI] Show Alert'),
     DISMISS_DIALOG: type('[UI] Dismiss Alert'),
-    INFO: type('[UI] Show Info'),
     CHANGE_THEME: type('[UI] Change Theme'),
     CHANGE_LANGUAGE: type('[UI] Change Language'),
     REPORT_ERROR: type('[UI] Report Error')
@@ -27,12 +26,6 @@ export const UIActionTypes = {
  *
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
-export class InfoAction implements Action {
-    type = UIActionTypes.INFO;
-
-    constructor() { }
-}
-
 export class OpenMenuAction implements Action {
     type = UIActionTypes.OPEN_MENU;
 
@@ -81,9 +74,8 @@ export class ReportErrorAction implements Action {
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
  */
-export type UIActions
-    = InfoAction
-    | ChangeThemeAction
+export type UIActions =
+    ChangeThemeAction
     | ChangeLanguageAction
     | ReportErrorAction
     | OpenMenuAction

@@ -54,5 +54,4 @@ const getUIState = (state: State) => state.ui;
 export const getMenu = createSelector(getUIState, ui.getMenuOpened);
 export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
-export const getConfig = createSelector(getUIState, ui.getConfig);
 export const getErrors = createSelector(getUIState, ui.getErrors);

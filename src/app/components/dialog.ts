@@ -1,4 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../reducers';
+import { UI } from '../actions';
 
 @Component({
     selector: 'dialog',
@@ -15,7 +18,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
                 </div>
                 <div class="ms-Dialog-actions">
                     <div class="ms-Dialog-actionsRight">
-                        <button *ngFor="let action of dialog?.actions" class="ms-Dialog-action ms-Button" (click)="dismiss.emit(action)">
+                        <button *ngFor="let action of dialog?.actions" class="ms-Dialog-action ms-Button" (click)="dismiss(action)">
                             <span class="ms-Button-label">{{action}}</span>
                         </button>
                     </div>
@@ -27,5 +30,12 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class Dialog {
     @Input('show') dialog: IDialog;
-    @Output() dismiss = new EventEmitter<string>();
+
+    constructor(private _store: Store<fromRoot.State>) {
+
+    }
+
+    dismiss(action: string) {
+        this._store.dispatch(new UI.DismissDialogAction(action));
+    }
 }
