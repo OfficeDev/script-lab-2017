@@ -5,11 +5,13 @@ import { updateState } from '../helpers';
 
 export interface MonacoState {
     activeTab?: string;
+    activeLanguage?: string;
     loading?: boolean;
 }
 
 const initialState = {
     activeTab: null,
+    activeLanguage: null,
     loading: false
 };
 
@@ -19,7 +21,8 @@ export function reducer(state = initialState, action: any): MonacoState {
     switch (action.type) {
         case MonacoActionTypes.CHANGE_TAB:
             return newState({
-                activeTab: action.payload
+                activeTab: action.payload,
+                activeLanguage: action.language
             });
 
         case MonacoActionTypes.UPDATE_INTELLISENSE:
@@ -47,4 +50,5 @@ export function reducer(state = initialState, action: any): MonacoState {
  */
 
 export const getActiveTab = (state: MonacoState) => state.activeTab;
+export const getActiveLanguage = (state: MonacoState) => state.activeLanguage;
 export const getLoading = (state: MonacoState) => state.loading;

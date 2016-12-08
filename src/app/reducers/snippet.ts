@@ -55,23 +55,39 @@ export function reducer(state = initialState, action: any): SnippetState {
                 lastOpened: action.payload
             });
 
-        case SnippetActionTypes.RUN: {
+        case SnippetActionTypes.DELETE: {
+            let clear = false;
+            if (state.lastOpened && state.lastOpened.id === action.payload) {
+                clear = true;
+            }
+
             return newState({
-                loading: true
+                lastOpened: clear ? null : state.lastOpened
             });
         }
 
-        case SnippetActionTypes.VIEW: {
+        case SnippetActionTypes.DELETE_ALL:
+            return newState({
+                lastOpened: null
+            });
+
+        case SnippetActionTypes.RUN:
             return newState({
                 loading: true
             });
-        }
 
-        case SnippetActionTypes.STORE_UPDATED: {
+
+        case SnippetActionTypes.VIEW:
+            return newState({
+                loading: true
+            });
+
+
+        case SnippetActionTypes.STORE_UPDATED:
             return newState({
                 loading: false
             });
-        }
+
 
         default: return state;
     }

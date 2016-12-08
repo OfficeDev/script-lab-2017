@@ -13,7 +13,6 @@ export interface UIState {
 };
 
 const initialState: UIState = {
-    language: null,
     theme: false,
     menuOpened: false,
     errors: [],
@@ -77,8 +76,6 @@ export const getDialog = (state: UIState) => state.dialog;
 export const getConfig = (state: UIState) => state.config;
 
 export const getMenuOpened = (state: UIState) => state.menuOpened;
-
-export const getLanguage = (state: UIState) => state.language;
 
 export const getErrors = (state: UIState) => state.errors;
 

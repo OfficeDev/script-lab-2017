@@ -27,7 +27,7 @@ export const MonacoActionTypes = {
 export class ChangeTabAction implements Action {
     type = MonacoActionTypes.CHANGE_TAB;
 
-    constructor(public payload: string) { }
+    constructor(public payload: string, public language: string) { }
 }
 
 export class UpdateIntellisenseAction implements Action {

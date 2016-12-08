@@ -22,14 +22,16 @@ import { UI, Snippet } from '../actions';
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="create()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share"></command>
+                <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
+                <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Contact" title="Profile"></command>
             </header>
             <router-outlet></router-outlet>
             <footer class="command__bar command__bar--condensed">
                 <command icon="Info" title="About"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
-                <command class="language" title="Typescript"></command>
-                <command icon="StatusErrorFull" title="0"></command>
+                <command icon="StatusErrorFull" [title]="(errors$|async)?.length"></command>
+                <command class="language" [title]="language$|async"></command>
             </footer>
         </main>
         <dialog [show]="dialog$|async" (dismiss)="dismiss($event)"></dialog>
@@ -39,6 +41,8 @@ import { UI, Snippet } from '../actions';
 export class AppComponent {
     dialog$: Observable<IDialog>;
     theme$: Observable<string>;
+    errors$: Observable<Error[]>;
+    language$: Observable<string>;
     readonly$: Observable<boolean>;
 
     snippet: ISnippet;
@@ -55,6 +59,10 @@ export class AppComponent {
         this.theme$ = this._store.select(fromRoot.getTheme)
             .map(isLight => isLight ? 'Light' : 'Dark');
 
+        this.language$ = this._store.select(fromRoot.getLanguage);
+
+        this.errors$ = this._store.select(fromRoot.getErrors);
+
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
@@ -70,6 +78,21 @@ export class AppComponent {
             return;
         }
         this._store.dispatch(new Snippet.SaveAction(this.snippet));
+    }
+
+    delete() {
+        if (this.snippet == null) {
+            return;
+        }
+
+        this._store.dispatch(new Snippet.DeleteAction((this.snippet.id)));
+    }
+
+    duplicate() {
+        if (this.snippet == null) {
+            return;
+        }
+        this._store.dispatch(new Snippet.DuplicateAction(this.snippet.id));
     }
 
     create() {

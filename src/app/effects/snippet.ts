@@ -83,15 +83,16 @@ export class SnippetEffects {
                 .filter(snippet => !(snippet == null))
                 .map(snippet => _.assign({}, this._defaults, snippet))
                 .map(snippet => {
+                    let readonly = importType !== 'CUID';
                     if (snippet.id === '') {
                         snippet.id = cuid();
                     }
 
-                    if (this._exists(snippet.name)) {
+                    if (readonly && this._exists(snippet.name)) {
                         snippet.name = this._generateName(snippet.name, suffix);
                     }
 
-                    return new Snippet.ImportSuccess(snippet, importType !== 'CUID');
+                    return new Snippet.ImportSuccess(snippet, readonly);
                 });
         });
 
@@ -112,6 +113,19 @@ export class SnippetEffects {
             }
 
             return new Snippet.StoreUpdated();
+        });
+
+    @Effect()
+    duplicate$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.DUPLICATE)
+        .map((action: Snippet.DuplicateAction) => action.payload)
+        .map(id => {
+            let orignial = this._store.get(id);
+            let copy: ISnippet = _.assign({}, this._defaults, orignial);
+            copy.id = cuid();
+            copy.name = this._generateName(copy.name, 'copy');
+            this._store.add(copy.id, copy);
+            return new Snippet.ImportSuccess(copy, true);
         });
 
     @Effect()

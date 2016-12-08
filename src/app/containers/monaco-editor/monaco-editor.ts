@@ -93,7 +93,7 @@ export class MonacoEditor extends Disposable implements AfterViewInit {
             });
     }
 
-    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name));
+    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
 
     upadateIntellisense() {
         if (this.snippet == null) {

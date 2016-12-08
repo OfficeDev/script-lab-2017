@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
     template: `
         <div class="command__icon">
             <i class="ms-Icon" [ngClass]="icon"></i>
-            <span class="ms-font-m" *ngIf="title">{{title}}</span>
+            <span class="ms-font-m" *ngIf="!(title == null)">{{title}}</span>
         </div>
     `
 })

@@ -47,6 +47,7 @@ export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
 
 const getMonacoState = (state: State) => state.monaco;
 export const getActiveTab = createSelector(getMonacoState, monaco.getActiveTab);
+export const getLanguage = createSelector(getMonacoState, monaco.getActiveLanguage);
 export const getProgress = createSelector(getMonacoState, monaco.getLoading);
 
 const getUIState = (state: State) => state.ui;
@@ -54,5 +55,4 @@ export const getMenu = createSelector(getUIState, ui.getMenuOpened);
 export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
 export const getConfig = createSelector(getUIState, ui.getConfig);
-export const getLanugage = createSelector(getUIState, ui.getLanguage);
 export const getErrors = createSelector(getUIState, ui.getErrors);

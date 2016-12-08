@@ -16,6 +16,7 @@ export const SnippetActionTypes = {
     IMPORT_SUCCESS: type('[Snippet] Import Successful'),
     RUN: type('[Snippet] Run'),
     CREATE: type('[Snippet] Create'),
+    DUPLICATE: type('[Snippet] Duplicate'),
     SAVE: type('[Snippet] Save'),
     SHARE: type('[Snippet] Share'),
     DELETE: type('[Snippet] Delete'),
@@ -62,6 +63,12 @@ export class CreateAction implements Action {
     type = SnippetActionTypes.CREATE;
 
     constructor(public payload: ISnippet) { }
+}
+
+export class DuplicateAction implements Action {
+    type = SnippetActionTypes.DUPLICATE;
+
+    constructor(public payload: string) { }
 }
 
 export class SaveAction implements Action {
