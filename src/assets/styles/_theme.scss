@@ -103,6 +103,10 @@
             background-color: $accent-background-primary;
             border: $accent-background-primary ;
 
+            i {
+                color: $accent-foreground-primary ;
+            }
+
             .ms-Button-label {
                 color: $accent-foreground-primary ;
             }

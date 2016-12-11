@@ -9,7 +9,7 @@ import { Component, Input } from '@angular/core';
         </div>
     `
 })
-export class CommandIcon {
+export class Command {
     private _icon: string;
 
     @Input()

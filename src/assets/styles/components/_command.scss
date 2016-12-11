@@ -30,6 +30,7 @@
     &__icon {
         i + span {
             @include ellipsis();
+            max-width: 200px;
             margin-left: 7.5px;
         }
     }

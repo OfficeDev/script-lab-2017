@@ -21,7 +21,7 @@ import { CONFIG } from '../../environment';
                 <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" title="Run"></command>
-                <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="create()"></command>
+                <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo = true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
@@ -37,6 +37,7 @@ import { CONFIG } from '../../environment';
             </footer>
         </main>
         <alert [show]="dialog$|async"></alert>
+        <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
     `
 })
 
@@ -105,10 +106,15 @@ export class AppComponent {
         this._store.dispatch(new Snippet.DuplicateAction(this.snippet.id));
     }
 
-    create() {
+    create(save?: boolean) {
         if (this.snippet == null) {
             return;
         }
+
+        if (!save) {
+            return;
+        }
+
         this._store.dispatch(new Snippet.CreateAction(this.snippet));
     }
 

@@ -40,6 +40,10 @@
         max-width: none !important;
     }
 
+    &-main {
+        max-height: 100vh;
+    }
+
     &-inner {
         padding: $default-spacing;
     }
@@ -66,6 +70,13 @@
 
     &-action {
         margin-right: $default-spacing;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+
+        & > i {
+            margin-right: $default-spacing/2;
+        }
 
         &:last-child {
             margin-right: 0;
@@ -86,4 +97,8 @@
             padding: 0 $default-spacing;
         }
     }
+}
+
+textarea.ms-TextField-field {
+    min-height: 125px;
 }
