@@ -5,7 +5,7 @@ import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
 import { Request, ResponseTypes, Github } from '../services';
 import { Action } from '@ngrx/store';
-import * as Snippet from '../actions/snippet';
+import { Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 import cuid = require('cuid');
@@ -133,7 +133,10 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.DELETE)
         .map((action: Snippet.DeleteAction) => action.payload)
         .map(id => this._store.remove(id))
-        .map(() => new Snippet.StoreUpdated());
+        .mergeMap(() => Observable.from([
+            new Snippet.StoreUpdated(),
+            new UI.OpenMenuAction()
+        ]));
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$

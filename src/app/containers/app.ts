@@ -13,12 +13,12 @@ import { CONFIG } from '../../environment';
 @Component({
     selector: 'app',
     template: `
-        <hamburger>
+        <hamburger [open]="menuOpened$" (dismiss)="hideMenu()">
             <gallery-view></gallery-view>
         </hamburger>
         <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command icon="GlobalNavButton" (click)="showMenu()"></command>
+                <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" title="Run"></command>
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="create()"></command>
@@ -46,6 +46,7 @@ export class AppComponent {
     errors$: Observable<Error[]>;
     language$: Observable<string>;
     readonly$: Observable<boolean>;
+    menuOpened$: Observable<boolean>;
 
     snippet: ISnippet;
     isEmpty: boolean;
@@ -58,6 +59,8 @@ export class AppComponent {
         this.dialog$ = this._store.select(fromRoot.getDialog);
 
         this.readonly$ = this._store.select(fromRoot.getReadOnly);
+
+        this.menuOpened$ = this._store.select(fromRoot.getMenu);
 
         this.theme$ = this._store.select(fromRoot.getTheme)
             .map(isLight => isLight ? 'Light' : 'Dark');
@@ -74,6 +77,10 @@ export class AppComponent {
 
     showMenu() {
         this._store.dispatch(new UI.OpenMenuAction());
+    }
+
+    hideMenu() {
+        this._store.dispatch(new UI.CloseMenuAction());
     }
 
     save() {
