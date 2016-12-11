@@ -1,6 +1,6 @@
 {
-  "name": "office-playground",
-  "description": "Create, test and share your OfficeJS snippets directly from Word, Excel or PowerPoint.",
+  "name": "addin-playground",
+  "description": "Create, run and share your snippets using Office JavaScript API, from Word, Excel or PowerPoint.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Zlatkovsky/OfficeJsPlayground"
@@ -51,7 +51,7 @@
     "office-ui-fabric-js": "^1.2.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.0.0-beta.12",
-    "typescript": "^2.1.1",
+    "typescript": "^2.1.4",
     "typings": "^2.0.0",
     "zone.js": "^0.6.21"
   },
