@@ -7,7 +7,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
 
-var meta = (function() {
+var meta = (function () {
     var timestamp = new Date().getTime();
 
     return {
@@ -55,7 +55,7 @@ module.exports = {
 
     meta: meta,
 
-    postcss: function() {
+    postcss: function () {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 

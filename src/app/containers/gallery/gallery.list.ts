@@ -7,7 +7,7 @@ import * as _ from 'lodash';
         <section class="gallery-list ms-u-slideUpIn10" [hidden]="empty">
             <collapse [title]="title" [actions]="actions" (events)="action.emit($event)">
                 <section class="gallery-list__group" *ngFor="let group of (groupedItems|keys)">
-                    <h3 class="gallery-list__group-header ms-font-m" *ngIf="group?.key">{{group?.key}}</h3>
+                    <h3 class="gallery-list__group-header ms-font-m" *ngIf="group?.key != 'undefined'">{{group?.key}}</h3>
                     <section class="gallery-list__group">
                         <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let item of group?.value" (click)="select.emit(item)">
                             <div class="name">{{item?.name}}</div>

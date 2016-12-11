@@ -15,8 +15,5 @@
       "dom",
       "es2015"
     ]
-  },
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }

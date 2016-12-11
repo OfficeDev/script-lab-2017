@@ -20,6 +20,7 @@
         @include flex();
         flex: 1 1 100%;
         width: 100%;
+        @include vScroll();
     }
 
     &__action {
@@ -80,10 +81,6 @@
         flex: 1 1 100%;
         @include vScroll();
 
-        &__group {
-            margin-bottom: $default-spacing;
-        }
-
         &__group-header {
             font-weight: bold;
             padding: $default-spacing/2 $default-spacing;
@@ -112,9 +109,9 @@
                 align-self: flex-start;
                 @include flex();
                 flex: 1 1 100%;
+                width: calc(100% - 30px);
 
                 .description {
-                    padding-right: 20px;
                     white-space: normal;
                     opacity: 0.6;
                 }
