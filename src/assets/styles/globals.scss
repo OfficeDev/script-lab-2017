@@ -45,6 +45,7 @@ ul {
 .app {
     @include inline-flex();
     height: 100vh;
+    width: 100vw;
 
     home, dialog, gallery, editor, hamburger {
         flex: 1 1 100%;
@@ -65,7 +66,7 @@ ul {
     main {
         @include flex();
         height: 100vh;
-        width: 100vw;
+        width: 100%;
     }
 
     editor-view {
