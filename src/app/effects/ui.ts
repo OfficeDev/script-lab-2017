@@ -21,12 +21,12 @@ export class UIEffects {
 
     @Effect({ dispatch: false })
     dismissDialog$ = this.actions$
-        .ofType(UI.UIActionTypes.DISMISS_DIALOG)
-        .map((action: UI.DismissDialogAction) => action.payload)
+        .ofType(UI.UIActionTypes.DISMISS_ALERT)
+        .map((action: UI.DismissAlertAction) => action.payload)
         .do(action => this._resolve(action))
         .catch(error => this._reject(new PlaygroundError('An error occurred in Dialog', error)));
 
-    async showDialog(dialog: IDialog): Promise<string> {
+    async showAlert(dialog: IAlert): Promise<string> {
         if (!(this._resolve == null)) {
             return Promise.reject(new PlaygroundError('A dialog is already open.'));
         }
@@ -35,7 +35,7 @@ export class UIEffects {
             let result = await new Promise<string>((resolve, reject) => {
                 this._resolve = resolve;
                 this._reject = reject;
-                this._store.dispatch(new UI.ShowDialogAction(dialog));
+                this._store.dispatch(new UI.ShowAlertAction(dialog));
             });
 
             this._resolve = null;

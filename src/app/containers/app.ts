@@ -36,12 +36,12 @@ import { CONFIG } from '../../environment';
                 <command class="language" [title]="language$|async"></command>
             </footer>
         </main>
-        <dialog [show]="dialog$|async"></dialog>
+        <alert [show]="dialog$|async"></alert>
     `
 })
 
 export class AppComponent {
-    dialog$: Observable<IDialog>;
+    dialog$: Observable<IAlert>;
     theme$: Observable<string>;
     errors$: Observable<Error[]>;
     language$: Observable<string>;
@@ -123,7 +123,7 @@ export class AppComponent {
     async about() {
         let message = `Version: ${CONFIG.build.full_version}\nDate: ${new Date(CONFIG.build.build)}\n\nUsage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
 
-        let result = await this._effects.showDialog({
+        let result = await this._effects.showAlert({
             title: 'Add-in Playground',
             message: message,
             actions: ['Ok']

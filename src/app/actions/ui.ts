@@ -12,8 +12,8 @@ import { type, PlaygroundError } from '../helpers';
 export const UIActionTypes = {
     OPEN_MENU: type('[UI] Open Menu'),
     CLOSE_MENU: type('[UI] Close Menu'),
-    SHOW_DIALOG: type('[UI] Show Alert'),
-    DISMISS_DIALOG: type('[UI] Dismiss Alert'),
+    SHOW_ALERT: type('[UI] Show Alert'),
+    DISMISS_ALERT: type('[UI] Dismiss Alert'),
     CHANGE_THEME: type('[UI] Change Theme'),
     CHANGE_LANGUAGE: type('[UI] Change Language'),
     REPORT_ERROR: type('[UI] Report Error')
@@ -38,14 +38,14 @@ export class CloseMenuAction implements Action {
     constructor() { }
 }
 
-export class ShowDialogAction implements Action {
-    type = UIActionTypes.SHOW_DIALOG;
+export class ShowAlertAction implements Action {
+    type = UIActionTypes.SHOW_ALERT;
 
-    constructor(public payload: IDialog) { }
+    constructor(public payload: IAlert) { }
 }
 
-export class DismissDialogAction implements Action {
-    type = UIActionTypes.DISMISS_DIALOG;
+export class DismissAlertAction implements Action {
+    type = UIActionTypes.DISMISS_ALERT;
 
     constructor(public payload: string) { }
 }
@@ -80,5 +80,5 @@ export type UIActions =
     | ReportErrorAction
     | OpenMenuAction
     | CloseMenuAction
-    | ShowDialogAction
-    | DismissDialogAction;
+    | ShowAlertAction
+    | DismissAlertAction;

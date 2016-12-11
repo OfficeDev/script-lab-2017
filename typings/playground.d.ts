@@ -32,7 +32,7 @@ interface IMonacoEditorState {
     model?: monaco.editor.IModel;
 }
 
-interface IDialog {
+interface IAlert {
     title: string;
     message: string;
     actions: string[];

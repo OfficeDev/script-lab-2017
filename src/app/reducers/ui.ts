@@ -5,7 +5,7 @@ import { updateState } from '../helpers';
 
 export interface UIState {
     menuOpened?: boolean;
-    dialog?: IDialog;
+    dialog?: IAlert;
     language?: string;
     theme?: boolean;
     errors?: Error[];
@@ -32,12 +32,12 @@ export function reducer(state = initialState, action: any): UIState {
                 menuOpened: false
             });
 
-        case UIActionTypes.SHOW_DIALOG:
+        case UIActionTypes.SHOW_ALERT:
             return newState({
                 dialog: action.payload
             });
 
-        case UIActionTypes.DISMISS_DIALOG:
+        case UIActionTypes.DISMISS_ALERT:
             return newState({
                 dialog: null
             });
