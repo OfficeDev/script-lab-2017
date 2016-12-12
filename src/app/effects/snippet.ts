@@ -52,7 +52,7 @@ export class SnippetEffects {
                     break;
 
                 case 'GIST':
-                    observable = this._github.gist(data).map<ISnippet>(gist => {
+                    observable = this._github.gist(data).map(gist => {
                         let snippet = gist.files['snippet.yml'];
                         if (snippet == null) {
                             let output = this._upgrade(gist.files);

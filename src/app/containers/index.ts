@@ -1,3 +1,4 @@
-export * from './monaco-editor';
+export * from './editor';
 export * from './app';
-export * from './gallery';
+export * from './gallery.list';
+export * from './gallery.view';

@@ -36,7 +36,7 @@ export class MonacoEffects {
     updateIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
         .map((action: Monaco.AddIntellisenseAction) => ({ payload: action.payload, language: action.language }))
-        .concatMap<string>(({ payload, language }) => this._parseAndUpdate(payload, language))
+        .mergeMap(({ payload, language }) => this._parseAndUpdate(payload, language))
         .map(data => new Monaco.UpdateIntellisenseSuccessAction());
 
     @Effect()
@@ -59,13 +59,14 @@ export class MonacoEffects {
         });
 
     private _parseAndUpdate(libraries: string[], language: string) {
-        return Observable.fromPromise(MonacoService.current)
-            .mergeMap<string>(monaco => {
+        return Observable
+            .fromPromise(MonacoService.current)
+            .mergeMap((monaco, index) => {
                 let source = this._determineSource(language);
 
                 return this._parse(libraries)
                     .filter(url => url && url.trim() !== '')
-                    .mergeMap<IIntellisenseFile>((url: string) => this._get(url))
+                    .mergeMap(url => this._get(url))
                     .map(file => {
                         let intellisense = this._current.get(file.url);
                         if (intellisense == null) {
