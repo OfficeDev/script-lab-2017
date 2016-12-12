@@ -35,7 +35,7 @@ interface IMonacoEditorState {
 interface IAlert {
     title: string;
     message: string;
-    actions: string[];
+    actions: { name: string, icon?: string }[];
 }
 
 interface ITab {

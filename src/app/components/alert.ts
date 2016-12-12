@@ -13,7 +13,8 @@ import { UI } from '../actions';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button *ngFor="let action of dialog?.actions" class="ms-Dialog-action ms-Button" (click)="dismiss(action)">
-                        <span class="ms-Button-label">{{action}}</span>
+                        <i class="ms-Icon" [hidden]="!(action?.icon)" [ngClass]="'ms-Icon--'+action?.icon"></i>
+                        <span class="ms-Button-label">{{action.name}}</span>
                     </button>
                 </div>
             </div>

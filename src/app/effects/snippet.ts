@@ -92,7 +92,7 @@ export class SnippetEffects {
                         snippet.name = this._generateName(snippet.name, suffix);
                     }
 
-                    return new Snippet.ImportSuccess(snippet, readonly);
+                    return new Snippet.ImportSuccessAction(snippet, readonly);
                 });
         });
 
@@ -125,7 +125,7 @@ export class SnippetEffects {
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
             this._store.add(copy.id, copy);
-            return new Snippet.ImportSuccess(copy, true);
+            return new Snippet.ImportSuccessAction(copy, true);
         });
 
     @Effect()

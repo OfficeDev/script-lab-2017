@@ -16,6 +16,7 @@ export const SnippetActionTypes = {
     IMPORT_SUCCESS: type('[Snippet] Import Successful'),
     RUN: type('[Snippet] Run'),
     CREATE: type('[Snippet] Create'),
+    UPDATE_INFO: type('[Snippet] Update Info'),
     DUPLICATE: type('[Snippet] Duplicate'),
     SAVE: type('[Snippet] Save'),
     SHARE: type('[Snippet] Share'),
@@ -47,10 +48,16 @@ export class ImportAction implements Action {
     constructor(public payload: string, public params: string = '') { }
 }
 
-export class ImportSuccess implements Action {
+export class ImportSuccessAction implements Action {
     type = SnippetActionTypes.IMPORT_SUCCESS;
 
     constructor(public payload: ISnippet, public params: boolean) { }
+}
+
+export class UpdateInfoAction implements Action {
+    type = SnippetActionTypes.UPDATE_INFO;
+
+    constructor(public payload: { name: string, description: string }) { }
 }
 
 export class RunAction implements Action {
@@ -132,7 +139,7 @@ export class LoadTemplatesSuccess implements Action {
 export type SnippetActions
     = ViewAction
     | ImportAction
-    | ImportSuccess
+    | ImportSuccessAction
     | RunAction
     | SaveAction
     | ShareAction

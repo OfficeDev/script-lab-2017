@@ -19,9 +19,9 @@ import { CONFIG } from '../../environment';
         <main [ngClass]="theme$|async">
             <header class="command__bar">
                 <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
-                <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
+                <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" title="Run"></command>
-                <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo = true"></command>
+                <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
@@ -132,7 +132,10 @@ export class AppComponent {
         let result = await this._effects.showAlert({
             title: 'Add-in Playground',
             message: message,
-            actions: ['Ok']
+            actions: [{
+                name: 'Ok',
+                icon: 'CheckMark'
+            }]
         });
     }
 }

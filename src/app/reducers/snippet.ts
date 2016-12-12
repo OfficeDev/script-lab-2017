@@ -34,6 +34,11 @@ export function reducer(state = initialState, action: any): SnippetState {
                 readonly: action.params
             });
 
+        case SnippetActionTypes.UPDATE_INFO:
+            return newState({
+                lastOpened: Object.assign({}, state.lastOpened, action.payload)
+            });
+
         case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:
             return newState({
                 snippets: [...action.payload]
