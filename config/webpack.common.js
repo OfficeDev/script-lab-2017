@@ -4,6 +4,7 @@ var package = require('../package.json');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var {CheckerPlugin} = require('awesome-typescript-loader');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
 
@@ -60,6 +61,7 @@ module.exports = {
     },
 
     plugins: [
+        new CheckerPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
         }),
@@ -80,8 +82,6 @@ module.exports = {
                 from: './web.config',
                 to: 'web.config',
             },
-        ]),
-        new CopyWebpackPlugin([
             {
                 from: './config/env.json',
                 to: 'env.json',

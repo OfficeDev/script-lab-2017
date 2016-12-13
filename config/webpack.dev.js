@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var path = require('path');
 
@@ -14,8 +15,8 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     tslint: {
-        emitErrors: false,
-        failOnHint: false,
+        emitErrors: true,
+        failOnHint: true,
         resourcePath: 'src'
     },
 
@@ -26,15 +27,33 @@ module.exports = webpackMerge(commonConfig, {
                 env: 'DEVELOPMENT',
                 build: commonConfig.meta
             })
-        })
+        }),
+        new BrowserSyncPlugin(
+            // BrowserSync options
+            {
+                // browse to http://localhost:3000/ during development
+                https: true,
+                host: 'localhost',
+                port: 3000,
+                // proxy the Webpack Dev Server endpoint
+                // (which should be serving on http://localhost:3100/)
+                // through BrowserSync
+                proxy: 'https://localhost:3100/'
+            },
+            // plugin options
+            {
+                // prevent BrowserSync from reloading the page
+                // and let Webpack Dev Server take care of this
+                reload: false
+            }
+        )
     ],
 
     devServer: {
         https: true,
         inline: true,
         compress: true,
-        open: true,
-        port: 3000,
+        port: 3100,
         historyApiFallback: true,
         stats: 'minimal',
         watchOptions: {
