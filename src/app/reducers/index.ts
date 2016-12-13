@@ -12,6 +12,7 @@ import { combineReducers } from '@ngrx/store';
 import * as snippets from './snippet';
 import * as monaco from './monaco';
 import * as ui from './ui';
+import * as github from './github';
 
 /**
  * As mentioned, we treat each reducer like a table in a database. This means
@@ -21,6 +22,7 @@ export interface State {
     snippet: snippets.SnippetState;
     monaco: monaco.MonacoState;
     ui: ui.UIState;
+    github: github.GitHubState;
 }
 
 /**
@@ -33,7 +35,8 @@ export interface State {
 const reducers = {
     snippet: snippets.reducer,
     monaco: monaco.reducer,
-    ui: ui.reducer
+    ui: ui.reducer,
+    github: github.reducer
 };
 
 export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
@@ -55,3 +58,8 @@ export const getMenu = createSelector(getUIState, ui.getMenuOpened);
 export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
 export const getErrors = createSelector(getUIState, ui.getErrors);
+
+const getGitHubState = (state: State) => state.github;
+export const getProfileLoading = createSelector(getGitHubState, github.getLoading);
+export const getProfile = createSelector(getGitHubState, github.getProfile);
+export const getLoggedIn = createSelector(getGitHubState, github.getLoggedIn);

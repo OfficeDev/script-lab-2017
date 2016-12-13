@@ -50,6 +50,7 @@ module.exports = webpackMerge(commonConfig, {
     ],
 
     devServer: {
+        watch: true,
         https: true,
         inline: true,
         compress: true,

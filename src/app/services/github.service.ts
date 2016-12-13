@@ -5,7 +5,7 @@ import { Request, ResponseTypes } from './request';
 import * as _ from 'lodash';
 
 @Injectable()
-export class Github {
+export class GitHubService {
     private _baseUrl: string = 'https://api.github.com';
     private _profileStorage: Storage<IProfile>;
     private _authenticator: Authenticator;

@@ -23,22 +23,16 @@ export function type<T>(label: T | ''): T {
 
 export function updateState<T>(state: T) {
     let obj = _.assign({}, state);
-    return function assign(property: any, value?: any): T {
+    return function assign(data: T): T {
         if (arguments!.length === 0) {
             return obj as T;
         }
-        else if (_.isObject(property)) {
-            console.log(property);
-            return _.assign({}, obj, property) as T;
-        }
-        else if (_.isString(property)) {
-            obj[property] = value;
-            console.log(property, value);
+        else if (_.isObject(data)) {
+            return _.assign({}, obj, data) as T;
         }
         return assign as any;
     };
 };
-
 
 export class Utilities {
     static storageSize(storage: any, key?: string) {

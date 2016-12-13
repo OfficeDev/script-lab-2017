@@ -3,7 +3,7 @@ import { Utilities, Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
-import { Request, ResponseTypes, Github } from '../services';
+import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
@@ -29,7 +29,7 @@ export class SnippetEffects {
     constructor(
         private actions$: Actions,
         private _request: Request,
-        private _github: Github
+        private _github: GitHubService
     ) {
     }
 

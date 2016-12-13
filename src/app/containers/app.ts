@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { Theme, Utilities as Utils } from '../helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { UI, Snippet } from '../actions';
+import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { CONFIG } from '../../environment';
 
@@ -26,7 +26,8 @@ import { CONFIG } from '../../environment';
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Contact" title="Profile"></command>
+                <command [hidden]="isEmpty || (readonly$|async) || (isLoggedIn$|async)" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
+                <command *ngIf="profile$|async" title="(profile$|async)?.user?.login"></command>
             </header>
             <router-outlet></router-outlet>
             <footer class="command__bar command__bar--condensed">
@@ -48,6 +49,8 @@ export class AppComponent {
     language$: Observable<string>;
     readonly$: Observable<boolean>;
     menuOpened$: Observable<boolean>;
+    profile$: Observable<IProfile>;
+    isLoggedIn$: Observable<boolean>;
 
     snippet: ISnippet;
     isEmpty: boolean;
@@ -69,6 +72,10 @@ export class AppComponent {
         this.language$ = this._store.select(fromRoot.getLanguage);
 
         this.errors$ = this._store.select(fromRoot.getErrors);
+
+        this.profile$ = this._store.select(fromRoot.getProfile);
+
+        this.isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
 
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
@@ -124,6 +131,10 @@ export class AppComponent {
 
     dismiss(action: string) {
         console.log(action);
+    }
+
+    login() {
+        this._store.dispatch(new GitHub.LoginAction());
     }
 
     async about() {

@@ -6,8 +6,8 @@ export interface SnippetState {
     lastOpened?: ISnippet;
     loading?: boolean;
     readonly?: boolean;
-    snippets: ISnippet[];
-    templates: ISnippet[];
+    snippets?: ISnippet[];
+    templates?: ISnippet[];
 };
 
 const initialState: SnippetState = {
