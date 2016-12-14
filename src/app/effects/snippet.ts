@@ -124,7 +124,6 @@ export class SnippetEffects {
             let copy: ISnippet = _.assign({}, this._defaults, orignial);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
-            this._store.add(copy.id, copy);
             return new Snippet.ImportSuccessAction(copy, true);
         });
 
