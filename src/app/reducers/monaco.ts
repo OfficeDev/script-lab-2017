@@ -25,6 +25,12 @@ export function reducer(state = initialState, action: any): MonacoState {
                 activeLanguage: action.language
             });
 
+        case MonacoActionTypes.RESET:
+            return newState({
+                activeTab: null,
+                activeLanguage: null
+            });
+
         case MonacoActionTypes.UPDATE_INTELLISENSE:
             return newState({
                 loading: true

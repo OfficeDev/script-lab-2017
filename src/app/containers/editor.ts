@@ -39,9 +39,23 @@ export class Editor extends Disposable implements AfterViewInit {
      * Initialize the component and subscribe to all the neccessary actions.
      */
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
+        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs', readOnly: true });
         this._monacoEditor.onKeyDown(evt => this._debouncedInput(evt));
+        this._createTabs();
+        this._subscribeToState();
+    }
 
+    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
+
+    updateIntellisense() {
+        if (this.snippet == null) {
+            return;
+        }
+
+        this._store.dispatch(new Monaco.UpdateIntellisenseAction(this.snippet.libraries.split('\n'), 'typescript'));
+    }
+
+    private _createTabs() {
         ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
             let name = title.toLowerCase();
 
@@ -53,7 +67,9 @@ export class Editor extends Disposable implements AfterViewInit {
 
             this.tabs.insert(name, tab);
         });
+    }
 
+    private _subscribeToState() {
         this._store.select(fromRoot.getMenu)
             .subscribe(menu => this._resize());
 
@@ -71,36 +87,36 @@ export class Editor extends Disposable implements AfterViewInit {
                 this.hide = data == null;
                 return !this.hide;
             })
-            .subscribe(snippet => this._changeSnippet(snippet));
+            .subscribe(snippet => {
+                this._store.dispatch(new Monaco.ResetAction());
+                this._changeSnippet(snippet);
+            });
 
         this._store.select(fromRoot.getActiveTab)
-            .filter(data => !(data == null))
-            .subscribe(tab => {
-                // If there's a current state, then save it
-                if (!(this.currentState == null)) {
-                    this.currentState.content = this._monacoEditor.getValue();
-                    this.currentState.model = this._monacoEditor.getModel();
-                    this.currentState.viewState = this._monacoEditor.saveViewState();
+            .subscribe(newTab => {
+                if (newTab == null) {
+                    // RESET Action
+                    this.currentState = null;
                 }
 
-                // Update the current state to the new tab
-                this.currentState = this.tabs.get(tab);
-                this._monacoEditor.setModel(this.currentState.model);
-                this._monacoEditor.restoreViewState(this.currentState.viewState);
-                this._monacoEditor.focus();
-                this._resize();
+                // If there's a current state, then save it
+                if (this.currentState) {
+                    let currentTab = this.tabs.get(this.currentState.name);
+                    currentTab.content = this._monacoEditor.getValue();
+                    currentTab.model = this._monacoEditor.getModel();
+                    currentTab.viewState = this._monacoEditor.saveViewState();
+                }
+
+                if (newTab) {
+                    // Update the current state to the new tab
+                    this.currentState = this.tabs.get(newTab);
+                    this._monacoEditor.setModel(this.currentState.model);
+                    this._monacoEditor.restoreViewState(this.currentState.viewState);
+                    this._monacoEditor.focus();
+                }
             });
     }
 
-    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
-
-    updateIntellisense() {
-        if (this.snippet == null) {
-            return;
-        }
-
-        this._store.dispatch(new Monaco.UpdateIntellisenseAction(this.snippet.libraries.split('\n'), 'typescript'));
-    }
     /**
      * Triggered when the snippet is changed and a new snippet is loaded
      */
@@ -130,7 +146,6 @@ export class Editor extends Disposable implements AfterViewInit {
         this._snippet = snippet;
         this.changeTab();
         this.updateIntellisense();
-        this._resize();
     }
 
     /**
@@ -173,9 +188,11 @@ export class Editor extends Disposable implements AfterViewInit {
     @HostListener('window:resize', ['$event'])
     private _resize() {
         if (this._monacoEditor) {
-            this._monacoEditor.layout();
-            this._monacoEditor.setScrollTop(0);
-            this._monacoEditor.setScrollLeft(0);
+            setTimeout(() => {
+                this._monacoEditor.layout();
+                this._monacoEditor.setScrollTop(0);
+                this._monacoEditor.setScrollLeft(0);
+            }, 0);
         }
     }
 }

@@ -15,6 +15,7 @@ export const MonacoActionTypes = {
     UPDATE_INTELLISENSE: type('[Monaco] Update Intellisense'),
     ADD_INTELLISENSE: type('[Monaco] Add Intellisense'),
     UPDATE_INTELLISENSE_SUCCESS: type('[Monaco] Update Intellisense Success'),
+    RESET: type('[Monaco] Reset Tab')
 };
 
 /**
@@ -28,6 +29,12 @@ export class ChangeTabAction implements Action {
     type = MonacoActionTypes.CHANGE_TAB;
 
     constructor(public payload: string, public language: string) { }
+}
+
+export class ResetAction implements Action {
+    type = MonacoActionTypes.RESET;
+
+    constructor() { }
 }
 
 export class UpdateIntellisenseAction implements Action {
@@ -54,6 +61,7 @@ export class UpdateIntellisenseSuccessAction implements Action {
  */
 export type MonacoActions
     = ChangeTabAction
+    | ResetAction
     | UpdateIntellisenseAction
     | AddIntellisenseAction
     | UpdateIntellisenseSuccessAction;
