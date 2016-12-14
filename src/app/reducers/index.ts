@@ -47,6 +47,7 @@ export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
 export const getSnippets = createSelector(getSnippetsState, snippets.getSnippets);
 export const getTemplates = createSelector(getSnippetsState, snippets.getTemplates);
 export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
+export const getRunning = createSelector(getSnippetsState, snippets.getRunning);
 
 const getMonacoState = (state: State) => state.monaco;
 export const getActiveTab = createSelector(getMonacoState, monaco.getActiveTab);

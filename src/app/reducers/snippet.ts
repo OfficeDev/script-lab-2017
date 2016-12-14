@@ -4,6 +4,7 @@ import { updateState } from '../helpers';
 
 export interface SnippetState {
     lastOpened?: ISnippet;
+    running?: boolean;
     loading?: boolean;
     readonly?: boolean;
     snippets?: ISnippet[];
@@ -13,6 +14,7 @@ export interface SnippetState {
 const initialState: SnippetState = {
     lastOpened: null,
     loading: false,
+    running: false,
     readonly: false,
     snippets: [],
     templates: []
@@ -78,7 +80,7 @@ export function reducer(state = initialState, action: any): SnippetState {
 
         case SnippetActionTypes.RUN:
             return newState({
-                loading: true
+                running: true
             });
 
 
@@ -115,3 +117,5 @@ export const getSnippets = (state: SnippetState) => state.snippets;
 export const getTemplates = (state: SnippetState) => state.templates;
 
 export const getLoading = (state: SnippetState) => state.loading;
+
+export const getRunning = (state: SnippetState) => state.running;

@@ -20,7 +20,7 @@ import { Config } from '../../environment';
             <header class="command__bar">
                 <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Play" title="Run"></command>
+                <command [hidden]="isEmpty || (readonly$|async)" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share">
@@ -56,6 +56,7 @@ export class AppComponent {
     profile$: Observable<IProfile>;
     isLoggedIn$: Observable<boolean>;
     profileLoading$: Observable<boolean>;
+    running$: Observable<boolean>;
 
     snippet: ISnippet;
     isEmpty: boolean;
@@ -80,6 +81,8 @@ export class AppComponent {
 
         this.profileLoading$ = this._store.select(fromRoot.getProfileLoading);
 
+        this.running$ = this._store.select(fromRoot.getRunning);
+
         this.isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
 
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
@@ -103,6 +106,13 @@ export class AppComponent {
             return;
         }
         this._store.dispatch(new Snippet.SaveAction(this.snippet));
+    }
+
+    run() {
+        if (this.snippet == null) {
+            return;
+        }
+        this._store.dispatch(new Snippet.RunAction(this.snippet));
     }
 
     delete() {

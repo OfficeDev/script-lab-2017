@@ -148,6 +148,15 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
         .map(() => new Snippet.LoadSnippetsSuccess(this._store.values()));
 
+    @Effect({ dispatch: false })
+    run$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.RUN)
+        .map(action => action.payload)
+        .do(snippet => {
+            let yaml = jsyaml.safeDump(snippet);
+            this._post('https://addin-playground-runner.azurewebsites.net', { snippet: yaml });
+        });
+
     @Effect()
     loadTemplates$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.LOAD_TEMPLATES)
@@ -263,5 +272,25 @@ export class SnippetEffects {
         });
 
         return snippet;
+    }
+
+    private _post(path: string, params: any) {
+        let form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', path);
+
+        for (let key in params) {
+            if (params.hasOwnProperty(key)) {
+                let hiddenField = document.createElement('input');
+                hiddenField.setAttribute('type', 'hidden');
+                hiddenField.setAttribute('name', key);
+                hiddenField.setAttribute('value', params[key]);
+
+                form.appendChild(hiddenField);
+            }
+        }
+
+        document.body.appendChild(form);
+        form.submit();
     }
 }
