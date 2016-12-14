@@ -22,10 +22,17 @@ command {
             height: 22px;
 
             .command__icon {
+                height: 22px;
                 padding: 5px $default-spacing/2;
                 margin: 0 3px;
                 font-size: 12px !important;
             }
+        }
+    }
+
+    &--light {
+        .command__icon {
+            height: auto;
         }
     }
 
@@ -40,6 +47,8 @@ command {
     }
 
     &__icon {
+        height: 40px;
+
         img + span,
         i + span {
             @include ellipsis();
@@ -78,6 +87,7 @@ command {
 
         .command {
             &__icon {
+                height: auto;
                 width: 100%;
 
                 span {
