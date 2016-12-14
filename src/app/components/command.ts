@@ -13,6 +13,9 @@ import { Component, Input } from '@angular/core';
             </svg>
             <span class="ms-font-m ms-u-slideLeftIn10" *ngIf="!(title == null)">{{title}}</span>
         </div>
+        <div class="command__dropdown">
+            <ng-content></ng-content>
+        </div>
     `
 })
 export class Command {

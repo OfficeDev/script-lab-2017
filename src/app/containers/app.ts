@@ -23,7 +23,11 @@ import { Config } from '../../environment';
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" title="Run"></command>
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share"></command>
+                <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share">
+                    <command [hidden]="!(isLoggedIn$|async)" icon="OpenFile" title="Public Gist"></command>
+                    <command [hidden]="!(isLoggedIn$|async)" icon="ProtectedDocument" title="Private Gist"></command>
+                    <command icon="Generate" title="Copy to clipboard"></command>
+                </command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>

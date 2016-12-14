@@ -4,6 +4,11 @@
 command {
     height: 100%;
     @include center-flex();
+    position: relative;
+
+    &:hover .command__dropdown {
+        display: block;
+    }
 }
 
 .command {
@@ -11,7 +16,6 @@ command {
         @include inline-flex();
         flex: 1 0 40px;
         width: 100%;
-        overflow: hidden;
         height: 40px;
 
         &--condensed {
@@ -59,6 +63,28 @@ command {
     &__async {
         width: 21px;
         height: 21px;
+    }
+
+    &__dropdown {
+        position: absolute;
+        top: 40px;
+        left: -36px;
+        z-index: 9999999;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        display: none;
+        box-shadow: 0px 1px 5px rgba(0,0,0,0.3);
+
+        .command {
+            &__icon {
+                width: 100%;
+
+                span {
+                    display: block !important;
+                }
+            }
+        }
     }
 }
 

@@ -29,6 +29,27 @@
             color: $accent-foreground-primary;
         }
 
+        &__dropdown {
+            background: $background-light;
+
+            .command__icon {
+                color: $foreground-light;
+
+                @include focus-states($accent-background-primary, $accent-foreground-primary);
+
+                &:hover {
+                    background: darken($accent-background-primary, 10%) ;
+                    color: $accent-foreground-primary ;
+                }
+
+                &:active,
+                &:focus {
+                    background: darken($accent-background-primary, 15%) ;
+                    color: $accent-foreground-primary ;
+                }
+            }
+        }
+
         &__text,
         &__icon {
             color: $accent-foreground-primary;
