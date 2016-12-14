@@ -64,3 +64,4 @@ const getGitHubState = (state: State) => state.github;
 export const getProfileLoading = createSelector(getGitHubState, github.getLoading);
 export const getProfile = createSelector(getGitHubState, github.getProfile);
 export const getLoggedIn = createSelector(getGitHubState, github.getLoggedIn);
+export const getSharing = createSelector(getGitHubState, github.getSharing);

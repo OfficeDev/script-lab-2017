@@ -80,6 +80,10 @@ export class SnippetEffects {
             }
 
             return observable
+                .catch(error => {
+                    Utilities.log(error);
+                    return null;
+                })
                 .filter(snippet => !(snippet == null))
                 .map(snippet => _.assign({}, this._defaults, snippet))
                 .map(snippet => {

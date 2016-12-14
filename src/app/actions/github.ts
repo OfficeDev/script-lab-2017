@@ -15,7 +15,10 @@ export const GitHubActionTypes = {
     IS_LOGGED_IN: type('[Github] Is Logged In'),
     LOGGED_IN: type('[GitHub] Logged In'),
     LOGGED_OUT: type('[GitHub] Logged Out'),
-    SHARE_GIST: type('[GitHub] Share Gist'),
+    SHARE_PUBLIC_GIST: type('[GitHub] Share Public Gist'),
+    SHARE_PRIVATE_GIST: type('[GitHub] Share Private Gist'),
+    SHARE_COPY: type('[GitHub] Share Copy'),
+    SHARE_SUCCESS: type('[GitHub] Share Success'),
     UDPATE_GIST: type('[GitHub] Update Gist')
 };
 
@@ -50,10 +53,28 @@ export class LoggedInAction implements Action {
     constructor(public payload: IBasicProfile) { }
 }
 
-export class ShareGistAction implements Action {
-    type = GitHubActionTypes.SHARE_GIST;
+export class ShareCopyGistAction implements Action {
+    type = GitHubActionTypes.SHARE_COPY;
 
     constructor(public payload: ISnippet) { }
+}
+
+export class SharePublicGistAction implements Action {
+    type = GitHubActionTypes.SHARE_PUBLIC_GIST;
+
+    constructor(public payload: ISnippet) { }
+}
+
+export class SharePrivateGistAction implements Action {
+    type = GitHubActionTypes.SHARE_PRIVATE_GIST;
+
+    constructor(public payload: ISnippet) { }
+}
+
+export class ShareSuccessAction implements Action {
+    type = GitHubActionTypes.SHARE_SUCCESS;
+
+    constructor(public payload: IGist) { }
 }
 
 export class UpdateGistAction implements Action {
@@ -71,5 +92,8 @@ export type GitHubActions
     | LoggedInAction
     | IsLoggedInAction
     | LogoutAction
-    | ShareGistAction
+    | ShareCopyGistAction
+    | SharePrivateGistAction
+    | SharePublicGistAction
+    | ShareSuccessAction
     | UpdateGistAction;

@@ -79,7 +79,6 @@
 
     &-list {
         flex: 1 1 100%;
-        @include vScroll();
 
         &__group-header {
             font-weight: bold;

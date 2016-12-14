@@ -6,12 +6,14 @@ export interface GitHubState {
     isLoggedIn?: boolean;
     loading?: boolean;
     profile?: IProfile;
+    sharing?: boolean;
 };
 
 const initialState: GitHubState = {
     isLoggedIn: false,
     loading: false,
-    profile: null
+    profile: null,
+    sharing: false
 };
 
 export function reducer(state = initialState, action: any): GitHubState {
@@ -37,6 +39,17 @@ export function reducer(state = initialState, action: any): GitHubState {
                 profile: null
             });
 
+        case GitHubActionTypes.SHARE_PRIVATE_GIST:
+        case GitHubActionTypes.SHARE_PUBLIC_GIST:
+            return newState({
+                sharing: true
+            });
+
+        case GitHubActionTypes.SHARE_SUCCESS:
+            return newState({
+                sharing: false
+            });
+
         default: return state;
     }
 }
@@ -55,3 +68,5 @@ export const getLoading = (state: GitHubState) => state.loading;
 export const getLoggedIn = (state: GitHubState) => state.isLoggedIn;
 
 export const getProfile = (state: GitHubState) => state.profile;
+
+export const getSharing = (state: GitHubState) => state.sharing;

@@ -23,10 +23,10 @@ import { Config } from '../../environment';
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share">
-                    <command [hidden]="!(isLoggedIn$|async)" icon="OpenFile" title="Public Gist"></command>
-                    <command [hidden]="!(isLoggedIn$|async)" icon="ProtectedDocument" title="Private Gist"></command>
-                    <command icon="Generate" title="Copy to clipboard"></command>
+                <command [hidden]="isEmpty || (readonly$|async)" icon="Share" [async]="sharing$|async" title="Share">
+                    <command [hidden]="!(isLoggedIn$|async)" icon="OpenFile" title="Public Gist" (click)="shareGist(true)"></command>
+                    <command [hidden]="!(isLoggedIn$|async)" icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
+                    <command id="CopyToClipboard" icon="Generate" title="Copy to clipboard" (click)="shareCopy()"></command>
                 </command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
@@ -56,6 +56,7 @@ export class AppComponent {
     profile$: Observable<IProfile>;
     isLoggedIn$: Observable<boolean>;
     profileLoading$: Observable<boolean>;
+    sharing$: Observable<boolean>;
     running$: Observable<boolean>;
 
     snippet: ISnippet;
@@ -84,6 +85,8 @@ export class AppComponent {
         this.running$ = this._store.select(fromRoot.getRunning);
 
         this.isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
+
+        this.sharing$ = this._store.select(fromRoot.getSharing);
 
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
@@ -154,5 +157,26 @@ export class AppComponent {
 
     login() {
         this._store.dispatch(new GitHub.LoginAction());
+    }
+
+    shareGist(isPublic: boolean) {
+        if (this.snippet == null) {
+            return;
+        }
+
+        if (isPublic) {
+            this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+        }
+        else {
+            this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+        }
+    }
+
+    shareCopy() {
+        if (this.snippet == null) {
+            return;
+        }
+
+        this._store.dispatch(new GitHub.ShareCopyGistAction(this.snippet));
     }
 }

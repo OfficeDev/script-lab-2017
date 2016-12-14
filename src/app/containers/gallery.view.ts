@@ -62,6 +62,7 @@ export class GalleryView extends Disposable {
 
     new() {
         this._store.dispatch(new Snippet.ImportAction('default'));
+        this._store.dispatch(new UI.CloseMenuAction());
     }
 
     import(item?: ITemplate) {
@@ -70,6 +71,7 @@ export class GalleryView extends Disposable {
         }
         else {
             this._store.dispatch(new Snippet.ImportAction(item.id || item.gist));
+            this._store.dispatch(new UI.CloseMenuAction());
         }
     }
 

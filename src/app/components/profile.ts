@@ -16,13 +16,13 @@ import * as _ from 'lodash';
             </div>
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
-                    <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
-                        <i class="ms-Icon ms-Icon--OutOfOffice"></i>
-                        <span class="ms-Button-label">Sign Out</span>
-                    </button>
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
                         <i class="ms-Icon ms-Icon--Cancel"></i>
                         <span class="ms-Button-label">Close</span>
+                    </button>
+                    <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
+                        <i class="ms-Icon ms-Icon--OutOfOffice"></i>
+                        <span class="ms-Button-label">Sign Out</span>
                     </button>
                 </div>
             </div>
