@@ -131,10 +131,6 @@ export class GitHubService {
     get profile(): IBasicProfile {
         if (this._profile == null) {
             this._profile = _.first(this._profileStorage.values());
-
-            if (this._profile == null) {
-                this.login();
-            }
         }
 
         return this._profile;

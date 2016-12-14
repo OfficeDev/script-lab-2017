@@ -30,5 +30,6 @@ export class GitHubEffects {
     isLoggedIn$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
+        .filter(profile => !(profile == null))
         .map(profile => new GitHub.LoggedInAction(profile));
 }

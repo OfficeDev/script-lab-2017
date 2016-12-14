@@ -62,7 +62,7 @@ command {
     }
 }
 
-@media (min-width: 0px) and (max-width: 800px) {
+@media (min-width: 0px) and (max-width: 900px) {
     .command {
         &__icon {
             span {
@@ -71,7 +71,17 @@ command {
         }
     }
 
-     &--condensed {
+    command.title {
+        .command {
+            &__icon {
+                span {
+                    display: block;
+                }
+            }
+        }
+    }
+
+     .command__bar--condensed {
         .command {
             &__icon {
                 span {

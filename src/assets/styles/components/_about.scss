@@ -1,0 +1,38 @@
+@import '../mixins';
+@import '../vars';
+
+.about {
+    @include flex();
+    align-items: center;
+    justify-content: center;
+
+    &__image {
+        width: 150px;
+        height: 150px;
+        border-radius: 100%;
+        margin-top: $default-spacing * 2;
+        @include background-fill(300px) {
+            @include background-image-circle(200px, '../images/playground-background.png');
+        }
+    }
+
+    &__details {
+        text-align: center;
+        margin-top: $default-spacing;
+        width: 100%;
+    }
+
+    &__primary-text {
+        margin-bottom: $default-spacing/2;
+    }
+
+    &__secondary-text {
+        margin-bottom: $default-spacing/2;
+        color: $foreground-light;
+    }
+
+    &__tertiary-text {
+        margin-bottom: $default-spacing * 2;
+        color: $foreground-lighter;
+    }
+}

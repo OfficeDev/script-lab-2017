@@ -27,24 +27,23 @@ import { Config } from '../../environment';
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
-                <command *ngIf="isLoggedIn$|async" [title]="(profile$|async)?.login" [async]="profileLoading|async" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
+                <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
             <router-outlet></router-outlet>
             <footer class="command__bar command__bar--condensed">
-                <command icon="Info" title="About" (click)="about()"></command>
+                <command icon="Info" title="About" (click)="showAbout=true"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
                 <command icon="StatusErrorFull" [title]="(errors$|async)?.length"></command>
                 <command class="language" [title]="language$|async"></command>
             </footer>
         </main>
-        <alert [show]="dialog$|async"></alert>
+        <about [(show)]="showAbout"></about>
         <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
-        <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="dismiss($event); showProfile=false"></profile>
+        <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
     `
 })
 
 export class AppComponent {
-    dialog$: Observable<IAlert>;
     theme$: Observable<string>;
     errors$: Observable<Error[]>;
     language$: Observable<string>;
@@ -62,8 +61,6 @@ export class AppComponent {
         private _router: Router,
         private _effects: UIEffects
     ) {
-        this.dialog$ = this._store.select(fromRoot.getDialog);
-
         this.readonly$ = this._store.select(fromRoot.getReadOnly);
 
         this.menuOpened$ = this._store.select(fromRoot.getMenu);
@@ -135,7 +132,7 @@ export class AppComponent {
         this._store.dispatch(new UI.ChangeThemeAction());
     }
 
-    dismiss(result: boolean) {
+    logout(result: boolean) {
         if (result) {
             this._store.dispatch(new GitHub.LogoutAction());
         }
@@ -143,22 +140,5 @@ export class AppComponent {
 
     login() {
         this._store.dispatch(new GitHub.LoginAction());
-    }
-
-    logout() {
-
-    }
-
-    async about() {
-        let message = `Version: ${Config.build.full_version}\nDate: ${new Date(Config.build.build)}\n\nUsage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
-
-        let result = await this._effects.showAlert({
-            title: 'Add-in Playground',
-            message: message,
-            actions: [{
-                name: 'Ok',
-                icon: 'CheckMark'
-            }]
-        });
     }
 }
