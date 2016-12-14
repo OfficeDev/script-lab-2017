@@ -12,7 +12,9 @@ import { Subscription } from 'rxjs/Subscription';
  */
 export const GitHubActionTypes = {
     LOGIN: type('[GitHub] Login'),
+    IS_LOGGED_IN: type('[Github] Is Logged In'),
     LOGGED_IN: type('[GitHub] Logged In'),
+    LOGGED_OUT: type('[GitHub] Logged Out'),
     SHARE_GIST: type('[GitHub] Share Gist'),
     UDPATE_GIST: type('[GitHub] Update Gist')
 };
@@ -30,10 +32,22 @@ export class LoginAction implements Action {
     constructor() { }
 }
 
+export class LogoutAction implements Action {
+    type = GitHubActionTypes.LOGGED_OUT;
+
+    constructor() { }
+}
+
+export class IsLoggedInAction implements Action {
+    type = GitHubActionTypes.IS_LOGGED_IN;
+
+    constructor() { }
+}
+
 export class LoggedInAction implements Action {
     type = GitHubActionTypes.LOGGED_IN;
 
-    constructor(public payload: IProfile) { }
+    constructor(public payload: IBasicProfile) { }
 }
 
 export class ShareGistAction implements Action {
@@ -55,5 +69,7 @@ export class UpdateGistAction implements Action {
 export type GitHubActions
     = LoginAction
     | LoggedInAction
+    | IsLoggedInAction
+    | LogoutAction
     | ShareGistAction
     | UpdateGistAction;

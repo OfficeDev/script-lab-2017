@@ -67,6 +67,7 @@ export class MonacoEffects {
                 return this._parse(libraries)
                     .filter(url => url && url.trim() !== '')
                     .mergeMap(url => this._get(url))
+                    .filter(file => !(file == null))
                     .map(file => {
                         let intellisense = this._current.get(file.url);
                         if (intellisense == null) {
@@ -90,7 +91,7 @@ export class MonacoEffects {
                 }
                 else if (/^dt~/.test(library)) {
                     let libName = library.split('dt~')[1];
-                    return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/${libName}.d.ts`;
+                    return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/index.d.ts`;
                 }
                 else if (/\.d\.ts$/i.test(library)) {
                     if (/^https?:/i.test(library)) {
@@ -116,7 +117,11 @@ export class MonacoEffects {
         else {
             return this._request.get<string>(url, null, ResponseTypes.TEXT)
                 .map(content => this._cache.insert(url, content))
-                .map(content => ({ content, url }));
+                .map(content => ({ content, url }))
+                .catch(error => {
+                    Utilities.log(`Couldn't load intellisense from ${url}`);
+                    return null;
+                });
         }
     }
 

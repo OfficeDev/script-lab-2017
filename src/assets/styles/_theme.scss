@@ -14,6 +14,12 @@
         }
     }
 
+    .profile {
+        &__primary-text {
+            color: $accent-background-primary
+        }
+    }
+
     .command {
         &__bar {
             background: $accent-background-primary;

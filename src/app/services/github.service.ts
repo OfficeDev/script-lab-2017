@@ -2,25 +2,26 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
+import { Config } from '../../environment';
 import * as _ from 'lodash';
 
 @Injectable()
 export class GitHubService {
     private _baseUrl: string = 'https://api.github.com';
-    private _profileStorage: Storage<IProfile>;
+    private _profileStorage: Storage<IBasicProfile>;
     private _authenticator: Authenticator;
     private _token: IToken;
     private _headers: any;
 
     constructor(private _request: Request) {
-        this._profileStorage = new Storage<IProfile>('Profile');
+        this._profileStorage = new Storage<IBasicProfile>('Profile');
         this._authenticator = new Authenticator();
         this._authenticator.endpoints.add('GitHub', {
-            clientId: '53c1eb0d00a1ef6bf9ce',
+            clientId: Config.constants.GITHUB_AUTH_CLIENT_ID,
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
-            tokenUrl: 'https://markdowneditorforwordauth.azurewebsites.net/api/prod?code=oua1tkve93gx11hsk14avpldisyksksyqzc60dz6q3ia3sdcxrms7ofdt0njgug9u6ntlr6n7b9',
-            scope: 'repo gist',
+            tokenUrl: Config.constants.GITHUB_TOKEN_SERVICE_URL,
+            scope: 'gist',
             state: true
         });
 
@@ -76,17 +77,11 @@ export class GitHubService {
         return this._request.put<IUploadCommit>(`${this._baseUrl}/repos/${org}/${repo}/contents/${file}`, body, ResponseTypes.JSON, this._headers);
     }
 
-    async login(): Promise<IProfile> {
+    async login(): Promise<IBasicProfile> {
         this._token = await this._authenticator.authenticate('GitHub');
         this._setDefaultHeaders(this._token);
-        this.profile = await this.me();
+        this.profile = await this.user().toPromise();
         return this.profile;
-    }
-
-    async me() {
-        let user = await this.user().toPromise();
-        let orgs = await this.orgs(user.login).toPromise();
-        return ({ orgs, user }) as IProfile;
     }
 
     logout() {
@@ -132,8 +127,8 @@ export class GitHubService {
         return this._request.delete(`${this._baseUrl}/gists/${id}`, ResponseTypes.JSON, this._headers);
     }
 
-    private _profile: IProfile;
-    get profile(): IProfile {
+    private _profile: IBasicProfile;
+    get profile(): IBasicProfile {
         if (this._profile == null) {
             this._profile = _.first(this._profileStorage.values());
 
@@ -145,10 +140,10 @@ export class GitHubService {
         return this._profile;
     }
 
-    set profile(value: IProfile) {
+    set profile(value: IBasicProfile) {
         if (!(value == null)) {
             this._profile = value;
-            this._profileStorage.add(this._profile.user.login, this.profile);
+            this._profileStorage.insert(this._profile.login, this.profile);
         }
     }
 

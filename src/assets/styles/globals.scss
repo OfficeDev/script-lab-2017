@@ -47,6 +47,9 @@ ul {
     @include inline-flex();
     height: 100vh;
     width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
 
     home, dialog, gallery, editor, hamburger {
         flex: 1 1 100%;

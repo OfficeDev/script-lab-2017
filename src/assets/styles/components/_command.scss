@@ -1,3 +1,11 @@
+@import '../mixins';
+@import '../vars';
+
+command {
+    height: 100%;
+    @include center-flex();
+}
+
 .command {
     &__bar {
         @include inline-flex();
@@ -10,7 +18,7 @@
             height: 22px;
 
             .command__icon {
-                padding: 5px 7.5px;
+                padding: 5px $default-spacing/2;
                 margin: 0 3px;
                 font-size: 12px !important;
             }
@@ -28,10 +36,11 @@
     }
 
     &__icon {
+        img + span,
         i + span {
             @include ellipsis();
             max-width: 200px;
-            margin-left: 7.5px;
+            margin-left: $default-spacing/2;
         }
     }
 
@@ -39,5 +48,36 @@
         flex: 1 1 auto;
         justify-content: flex-start;
         @include ellipsis();
+    }
+
+    &__image {
+        width: 21px;
+        height: 21px;
+        border-radius: 100%;
+    }
+
+    &__async {
+        width: 21px;
+        height: 21px;
+    }
+}
+
+@media (min-width: 0px) and (max-width: 800px) {
+    .command {
+        &__icon {
+            span {
+                display: none;
+            }
+        }
+    }
+
+     &--condensed {
+        .command {
+            &__icon {
+                span {
+                    display: block;
+                }
+            }
+        }
     }
 }

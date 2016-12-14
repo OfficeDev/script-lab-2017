@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { CONFIG } from '../../environment';
+import { Config } from '../../environment';
 
 @Component({
     selector: 'app',
@@ -26,8 +26,8 @@ import { CONFIG } from '../../environment';
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" title="Share"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
-                <command [hidden]="isEmpty || (readonly$|async) || (isLoggedIn$|async)" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
-                <command *ngIf="profile$|async" title="(profile$|async)?.user?.login"></command>
+                <command [hidden]="isLoggedIn$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
+                <command *ngIf="isLoggedIn$|async" [title]="(profile$|async)?.login" [async]="profileLoading|async" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
             <router-outlet></router-outlet>
             <footer class="command__bar command__bar--condensed">
@@ -39,6 +39,7 @@ import { CONFIG } from '../../environment';
         </main>
         <alert [show]="dialog$|async"></alert>
         <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
+        <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="dismiss($event); showProfile=false"></profile>
     `
 })
 
@@ -51,6 +52,7 @@ export class AppComponent {
     menuOpened$: Observable<boolean>;
     profile$: Observable<IProfile>;
     isLoggedIn$: Observable<boolean>;
+    profileLoading$: Observable<boolean>;
 
     snippet: ISnippet;
     isEmpty: boolean;
@@ -75,12 +77,16 @@ export class AppComponent {
 
         this.profile$ = this._store.select(fromRoot.getProfile);
 
+        this.profileLoading$ = this._store.select(fromRoot.getProfileLoading);
+
         this.isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
 
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
         });
+
+        this._store.dispatch(new GitHub.IsLoggedInAction());
     }
 
     showMenu() {
@@ -129,16 +135,22 @@ export class AppComponent {
         this._store.dispatch(new UI.ChangeThemeAction());
     }
 
-    dismiss(action: string) {
-        console.log(action);
+    dismiss(result: boolean) {
+        if (result) {
+            this._store.dispatch(new GitHub.LogoutAction());
+        }
     }
 
     login() {
         this._store.dispatch(new GitHub.LoginAction());
     }
 
+    logout() {
+
+    }
+
     async about() {
-        let message = `Version: ${CONFIG.build.full_version}\nDate: ${new Date(CONFIG.build.build)}\n\nUsage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
+        let message = `Version: ${Config.build.full_version}\nDate: ${new Date(Config.build.build)}\n\nUsage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
 
         let result = await this._effects.showAlert({
             title: 'Add-in Playground',

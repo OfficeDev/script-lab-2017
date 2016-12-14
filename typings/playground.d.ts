@@ -58,5 +58,9 @@ interface IGlobalConfig {
         build: number;
         author: string;
         full_version: string;
+    },
+    constants: {
+        GITHUB_TOKEN_SERVICE_URL: string
+        GITHUB_AUTH_CLIENT_ID: string
     }
 }

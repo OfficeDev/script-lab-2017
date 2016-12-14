@@ -1,6 +1,6 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { Collapse, Hamburger, Command, Alert, Dialog, SnippetInfo } from './app/components';
+import { Collapse, Hamburger, Command, Alert, Dialog, SnippetInfo, Profile } from './app/components';
 import { Editor, GalleryView, GalleryList } from './app/containers';
 
 export const COMPONENT_DECLARATIONS = [
@@ -10,6 +10,7 @@ export const COMPONENT_DECLARATIONS = [
     Hamburger,
     Collapse,
     Alert,
+    Profile,
     Dialog,
     SnippetInfo,
     Command

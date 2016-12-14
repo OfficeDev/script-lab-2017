@@ -94,7 +94,7 @@ export class Editor extends Disposable implements AfterViewInit {
 
     changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
 
-    upadateIntellisense() {
+    updateIntellisense() {
         if (this.snippet == null) {
             return;
         }
@@ -129,7 +129,7 @@ export class Editor extends Disposable implements AfterViewInit {
 
         this._snippet = snippet;
         this.changeTab();
-        this.upadateIntellisense();
+        this.updateIntellisense();
         this._resize();
     }
 

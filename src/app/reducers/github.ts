@@ -1,5 +1,5 @@
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
-import { CONFIG } from '../../environment';
+import { Config } from '../../environment';
 import { updateState } from '../helpers';
 
 export interface GitHubState {
@@ -28,6 +28,13 @@ export function reducer(state = initialState, action: any): GitHubState {
                 loading: false,
                 isLoggedIn: true,
                 profile: action.payload
+            });
+
+        case GitHubActionTypes.LOGGED_OUT:
+            return newState({
+                loading: false,
+                isLoggedIn: false,
+                profile: null
             });
 
         default: return state;

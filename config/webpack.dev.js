@@ -25,7 +25,11 @@ module.exports = webpackMerge(commonConfig, {
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 env: 'DEVELOPMENT',
-                build: commonConfig.meta
+                build: commonConfig.meta,
+                constants: {
+                    GITHUB_TOKEN_SERVICE_URL: "https://api-playground-auth.azurewebsites.net/api/GithubAuth?code=liyrs0cos14zs2clfjzsyk3xr25cm3stehopik66cit8kc5wmi6m0gy0g41g31a1l7ae0qpsnhfr",
+                    GITHUB_AUTH_CLIENT_ID: "6b2823cf0379dd5fc050"
+                }
             })
         }),
         new BrowserSyncPlugin(

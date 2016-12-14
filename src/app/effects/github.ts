@@ -18,6 +18,17 @@ export class GitHubEffects {
     @Effect()
     login$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGIN)
-        .mergeMap((action: GitHub.LoginAction) => this._github.login())
+        .mergeMap(() => this._github.login())
+        .map(profile => new GitHub.LoggedInAction(profile));
+
+    @Effect({ dispatch: false })
+    logout$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
+        .do(() => this._github.logout());
+
+    @Effect()
+    isLoggedIn$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
+        .map(() => this._github.profile)
         .map(profile => new GitHub.LoggedInAction(profile));
 }

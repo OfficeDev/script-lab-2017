@@ -1,6 +1,7 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
+import { Config } from '../../environment';
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
@@ -105,14 +106,20 @@ export class MonacoService extends Disposable {
                 let start = performance.now();
                 let require = (<any>window).require;
                 if (require) {
+                    let path = `node_modules/monaco-editor/min/vs`;
+
+                    if (Config.env === 'PRODUCTION') {
+                        (window as any).MonacoEnvironment = {
+                            getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
+                        };
+
+                        path = `https://unpkg.com/monaco-editor@0.7.0/min/vs`;
+                    }
+
                     const requireConfig = {
                         paths: {
-                            'vs': `https://unpkg.com/monaco-editor@0.7.0/min/vs`
+                            'vs': path
                         }
-                    };
-
-                    (window as any).MonacoEnvironment = {
-                        getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
                     };
 
                     console.log('Loading monaco');
