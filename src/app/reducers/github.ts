@@ -1,5 +1,4 @@
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
-import { Config } from '../../environment';
 import { updateState } from '../helpers';
 
 export interface GitHubState {

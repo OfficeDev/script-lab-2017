@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
 import { UIActions, UIActionTypes } from '../actions/ui';
-import { Config } from '../../environment';
 import { updateState } from '../helpers';
 
 export interface UIState {

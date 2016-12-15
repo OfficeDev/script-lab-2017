@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Utilities } from '@microsoft/office-js-helpers';
 import { Utilities as Utils } from '../helpers';
-import { Config } from '../../environment';
+import global from '../../environment';
 import * as _ from 'lodash';
 
 @Component({
@@ -32,6 +32,6 @@ import * as _ from 'lodash';
 export class About {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
-    config = Config.build;
+    config = global.build;
     cache = `Storage Usage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
 }

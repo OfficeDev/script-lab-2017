@@ -20,6 +20,23 @@ var meta = (function () {
     };
 })();
 
+var config = (function (env) {
+    return {
+        dev: {
+            client_id: '95435036e70d23b8549f',
+            token_url: 'https://addin-playground-runner.azurewebsites.net/auth/dev'
+        },
+        prod: {
+            client_id: '8d19e9bbcea2a1cee274',
+            token_url: 'https://addin-playground-runner.azurewebsites.net/auth/prod'
+        },
+        cdn: {
+            client_id: 'b05714a22e602446c43a',
+            token_url: 'https://addin-playground-runner.azurewebsites.net/auth/cdn'
+        }
+    };
+})();
+
 module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
@@ -55,6 +72,7 @@ module.exports = {
     },
 
     meta: meta,
+    auth: config,
 
     postcss: function () {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
