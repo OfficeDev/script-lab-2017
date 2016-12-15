@@ -192,7 +192,7 @@ export class Editor extends Disposable implements AfterViewInit {
                 this._monacoEditor.layout();
                 this._monacoEditor.setScrollTop(0);
                 this._monacoEditor.setScrollLeft(0);
-            }, 0);
+            }, 1);
         }
     }
 }
