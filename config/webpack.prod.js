@@ -37,11 +37,11 @@ module.exports = webpackMerge(commonConfig, {
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
-                ENV: 'PRODUCTION',
-                INFO: commonConfig.meta,
+                env: 'DEVELOPMENT',
+                build: commonConfig.meta,
                 constants: {
                     GITHUB_TOKEN_SERVICE_URL: "https://addin-playground-runner.azurewebsites.net/auth/prod",
-                    GITHUB_AUTH_CLIENT_ID: "cce40da3a21f60a352b8df3686b47cadd536cbe4"
+                    GITHUB_AUTH_CLIENT_ID: "b05714a22e602446c43a"
                 }
             })
         })
