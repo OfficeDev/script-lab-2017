@@ -33,6 +33,10 @@ module.exports = webpackMerge(commonConfig, {
                 from: 'node_modules/monaco-editor',
                 to: 'monaco-editor'
             },
+            {
+                from: 'src/extras',
+                to: ''
+            },
         ]),
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
