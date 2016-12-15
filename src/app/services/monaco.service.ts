@@ -12,7 +12,6 @@ const Regex = {
 
 @Injectable()
 export class MonacoService extends Disposable {
-    private _baseUrl: string;
     private _intellisenseFile = this._request.local<any[]>('libraries.json', ResponseTypes.JSON);
 
     private _defaults: monaco.editor.IEditorConstructionOptions = {
@@ -35,7 +34,6 @@ export class MonacoService extends Disposable {
 
     constructor(private _request: Request) {
         super();
-        this._baseUrl = '/node_modules';
         this._registerLanguageServices();
     }
 
