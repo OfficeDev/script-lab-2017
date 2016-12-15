@@ -113,7 +113,7 @@ export class MonacoService extends Disposable {
                             getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
                         };
 
-                        path = `https://unpkg.com/monaco-editor@0.7.0/min/vs`;
+                        path = `https://addin-playground.azureedge.net/monaco-editor/min/vs`;
                     }
 
                     const requireConfig = {

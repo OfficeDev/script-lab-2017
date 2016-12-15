@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var path = require('path');
@@ -20,21 +21,27 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        // new webpack.NoErrorsPlugin(),
-        // new webpack.optimize.DedupePlugin(),
-        // new webpack.optimize.UglifyJsPlugin({
-        //     mangle: {
-        //         keep_fnames: true
-        //     }
-        // }),
+        new webpack.NoErrorsPlugin(),
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            mangle: {
+                keep_fnames: true
+            }
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: 'node_modules/monaco-editor',
+                to: 'monaco-editor'
+            },
+        ]),
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 ENV: 'PRODUCTION',
                 INFO: commonConfig.meta,
                 constants: {
-                    "GITHUB_TOKEN_SERVICE_URL": "https://api-playground-auth.azurewebsites.net/api/GithubAuthProd?code=pp5eHDpaStza5JDyQXPzK4UcvYSEo4Q9A7fjUnwbxONYEluARYk/Jg==",
-                    "GITHUB_AUTH_CLIENT_ID": "7cc4f025e87f951919e4"
+                    GITHUB_TOKEN_SERVICE_URL: "https://addin-playground-runner.azurewebsites.net/auth/prod",
+                    GITHUB_AUTH_CLIENT_ID: "cce40da3a21f60a352b8df3686b47cadd536cbe4"
                 }
             })
         })

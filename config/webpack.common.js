@@ -68,10 +68,6 @@ module.exports = {
         new webpack.BannerPlugin(`v.${meta.name} ${meta.full_version} © ${meta.author}`),
         new CopyWebpackPlugin([
             {
-                from: 'src/acquire.html',
-                to: 'acquire.html'
-            },
-            {
                 from: './src/assets',
                 ignore: [
                     '*.scss'
@@ -81,10 +77,6 @@ module.exports = {
             {
                 from: './web.config',
                 to: 'web.config',
-            },
-            {
-                from: './config/env.json',
-                to: 'env.json',
             }
         ]),
         new HtmlWebpackPlugin({
