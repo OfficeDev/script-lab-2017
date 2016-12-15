@@ -17,7 +17,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { rootReducer } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
-import { Config } from './environment';
+import global from './environment';
 
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
@@ -43,7 +43,7 @@ import './assets/styles/globals.scss';
 export class AppModule {
     static async start() {
         try {
-            if (Config.env === 'PRODUCTION') {
+            if (global.env === 'PRODUCTION') {
                 enableProdMode();
             }
 

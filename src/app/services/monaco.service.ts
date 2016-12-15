@@ -1,7 +1,7 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
-import { Config } from '../../environment';
+import global from '../../environment';
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
@@ -106,13 +106,13 @@ export class MonacoService extends Disposable {
                 if (require) {
                     let path = `monaco-editor/min/vs`;
 
-                    if (Config.env === 'PRODUCTION') {
+                    if (global.env === 'PRODUCTION') {
                         console.log('Using Monaco from CDN');
                         (window as any).MonacoEnvironment = {
-                            getWorkerUrl: () => `${location.origin}assets/monaco-editor-worker-loader-proxy.js`
+                            getWorkerUrl: () => `https://addin-playground.azureedge.net/monaco-editor-worker-loader-proxy.js`
                         };
 
-                        path = `${location.origin}/monaco-editor/min/vs`;
+                        path = `https://addin-playground.azureedge.net/monaco-editor/min/vs`;
                     }
 
                     const requireConfig = {

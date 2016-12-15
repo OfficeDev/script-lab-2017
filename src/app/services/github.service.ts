@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
-import { Config } from '../../environment';
+import global from '../../environment';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -14,13 +14,15 @@ export class GitHubService {
     private _headers: any;
 
     constructor(private _request: Request) {
+        let {client_id, token_url} = global.auth;
+
         this._profileStorage = new Storage<IBasicProfile>('Profile');
         this._authenticator = new Authenticator();
         this._authenticator.endpoints.add('GitHub', {
-            clientId: Config.constants.GITHUB_AUTH_CLIENT_ID,
+            clientId: client_id,
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
-            tokenUrl: Config.constants.GITHUB_TOKEN_SERVICE_URL,
+            tokenUrl: token_url,
             scope: 'gist',
             state: true
         });

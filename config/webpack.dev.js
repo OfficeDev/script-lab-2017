@@ -26,10 +26,7 @@ module.exports = webpackMerge(commonConfig, {
             PLAYGROUND: JSON.stringify({
                 env: 'DEVELOPMENT',
                 build: commonConfig.meta,
-                constants: {
-                    GITHUB_TOKEN_SERVICE_URL: "https://addin-playground-runner.azurewebsites.net/auth/dev",
-                    GITHUB_AUTH_CLIENT_ID: "95435036e70d23b8549f"
-                }
+                config: commonConfig.auth
             })
         }),
         new BrowserSyncPlugin(
