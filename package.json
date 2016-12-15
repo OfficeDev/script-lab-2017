@@ -5,6 +5,9 @@
     "type": "git",
     "url": "git+https://github.com/Zlatkovsky/OfficeJsPlayground"
   },
+  "engines": {
+    "node": ">=6.3.0 <=6.9.1"
+  },
   "keywords": [
     "Office",
     "API",
