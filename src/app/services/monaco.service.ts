@@ -12,7 +12,6 @@ const Regex = {
 
 @Injectable()
 export class MonacoService extends Disposable {
-    private _baseUrl: string;
     private _intellisenseFile = this._request.local<any[]>('libraries.json', ResponseTypes.JSON);
 
     private _defaults: monaco.editor.IEditorConstructionOptions = {
@@ -35,7 +34,6 @@ export class MonacoService extends Disposable {
 
     constructor(private _request: Request) {
         super();
-        this._baseUrl = '/node_modules';
         this._registerLanguageServices();
     }
 
@@ -109,11 +107,12 @@ export class MonacoService extends Disposable {
                     let path = `node_modules/monaco-editor/min/vs`;
 
                     if (Config.env === 'PRODUCTION') {
+                        console.log('Using Monaco from CDN');
                         (window as any).MonacoEnvironment = {
-                            getWorkerUrl: () => 'assets/monaco-editor-worker-loader-proxy.js'
+                            getWorkerUrl: () => `${location.origin}assets/monaco-editor-worker-loader-proxy.js`
                         };
 
-                        path = `https://addin-playground.azureedge.net/monaco-editor/min/vs`;
+                        path = `${location.origin}/monaco-editor/min/vs`;
                     }
 
                     const requireConfig = {
