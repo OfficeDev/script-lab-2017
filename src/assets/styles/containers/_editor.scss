@@ -1,9 +1,10 @@
 @import '../mixins';
 @import '../vars';
 
-monaco-editor {
+editor {
     @include flex();
     flex: 1 1 100%;
+    position: relative;
 
     .tabs {
         overflow: hidden;
@@ -23,5 +24,9 @@ monaco-editor {
         background-size: contain;
         width: 100%;
         height: 100%;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
     }
 }
