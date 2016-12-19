@@ -109,10 +109,10 @@ export class MonacoService extends Disposable {
                     if (global.env === 'PRODUCTION') {
                         console.log('Using Monaco from CDN');
                         (window as any).MonacoEnvironment = {
-                            getWorkerUrl: () => `https://addin-playground.azureedge.net/monaco-editor-worker-loader-proxy.js`
+                            getWorkerUrl: () => 'https://addin-playground.azureedge.net/assets/monaco-editor-worker-loader-proxy.js'
                         };
 
-                        path = `https://addin-playground.azureedge.net/monaco-editor/min/vs`;
+                        path = 'https://addin-playground.azureedge.net/monaco-editor/min/vs';
                     }
 
                     const requireConfig = {
