@@ -60,3 +60,5 @@ node_modules/**
 packages/**
 typings/**
 .vscode/**
+dist/monaco-editor/**
+dist/favicon/**
