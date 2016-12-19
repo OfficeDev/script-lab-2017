@@ -1,5 +1,5 @@
 self.MonacoEnvironment = {
-    baseUrl: 'https://addin-playground.azureedge.net/monaco-editor/min/'
+    baseUrl: location.origin + '/monaco-editor/min/'
 };
 
-importScripts('https://addin-playground.azureedge.net/monaco-editor/min/vs/base/worker/workerMain.js');
+importScripts(location.origin + '/monaco-editor/min/vs/base/worker/workerMain.js');
