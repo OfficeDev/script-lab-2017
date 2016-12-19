@@ -15,7 +15,7 @@ import * as _ from 'lodash';
                 {{tab.view}}
             </li>
         </ul>
-        <section [hidden]="hide" id="editor" #editor class="viewport"></section>
+        <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
 })
@@ -113,6 +113,7 @@ export class Editor extends Disposable implements AfterViewInit {
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this.currentState.viewState);
                     this._monacoEditor.focus();
+                    this._resize();
                 }
             });
     }
