@@ -7,10 +7,18 @@
     main {
         &.Light {
             background-color: #FFFFFE;
+
+            .viewport__placeholder {
+                background-color: #FFFFFE;
+            }
         }
 
         &.Dark {
-            background-color:#1e1e1e
+            background-color:#1e1e1e;
+
+            .viewport__placeholder {
+                background-color: #1e1e1e;
+            }
         }
     }
 
