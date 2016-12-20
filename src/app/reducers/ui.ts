@@ -8,13 +8,15 @@ export interface UIState {
     language?: string;
     theme?: boolean;
     errors?: Error[];
+    showImport?: boolean;
 };
 
 const initialState: UIState = {
     theme: false,
     menuOpened: false,
     errors: [],
-    dialog: null
+    dialog: null,
+    showImport: false
 };
 
 export function reducer(state = initialState, action: any): UIState {
@@ -29,6 +31,11 @@ export function reducer(state = initialState, action: any): UIState {
         case UIActionTypes.CLOSE_MENU:
             return newState({
                 menuOpened: false
+            });
+
+        case UIActionTypes.TOGGLE_IMPORT:
+            return newState({
+                showImport: action.payload
             });
 
         case UIActionTypes.SHOW_ALERT:
@@ -75,3 +82,5 @@ export const getMenuOpened = (state: UIState) => state.menuOpened;
 export const getErrors = (state: UIState) => state.errors;
 
 export const getTheme = (state: UIState) => state.theme;
+
+export const getImportState = (state: UIState) => state.showImport;

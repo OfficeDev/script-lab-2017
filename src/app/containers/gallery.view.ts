@@ -67,7 +67,7 @@ export class GalleryView extends Disposable {
 
     import(item?: ITemplate) {
         if (item == null) {
-            // show the Import UI Here
+            this._store.dispatch(new UI.ToggleImportAction(true));
         }
         else {
             this._store.dispatch(new Snippet.ImportAction(item.id || item.gist));

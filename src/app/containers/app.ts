@@ -43,6 +43,7 @@ import { UIEffects } from '../effects/ui';
         <about [(show)]="showAbout"></about>
         <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
         <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
+        <import [hidden]="!(showImport$|async)"></import>
     `
 })
 
@@ -57,6 +58,7 @@ export class AppComponent {
     profileLoading$: Observable<boolean>;
     sharing$: Observable<boolean>;
     running$: Observable<boolean>;
+    showImport$: Observable<boolean>;
 
     snippet: ISnippet;
     isEmpty: boolean;
@@ -86,6 +88,8 @@ export class AppComponent {
         this.isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
 
         this.sharing$ = this._store.select(fromRoot.getSharing);
+
+        this.showImport$ = this._store.select(fromRoot.getImportState);
 
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;

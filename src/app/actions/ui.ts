@@ -14,6 +14,7 @@ export const UIActionTypes = {
     CLOSE_MENU: type('[UI] Close Menu'),
     SHOW_ALERT: type('[UI] Show Alert'),
     DISMISS_ALERT: type('[UI] Dismiss Alert'),
+    TOGGLE_IMPORT: type('[UI] Toggle Import'),
     CHANGE_THEME: type('[UI] Change Theme'),
     CHANGE_LANGUAGE: type('[UI] Change Language'),
     REPORT_ERROR: type('[UI] Report Error')
@@ -42,6 +43,12 @@ export class ShowAlertAction implements Action {
     type = UIActionTypes.SHOW_ALERT;
 
     constructor(public payload: IAlert) { }
+}
+
+export class ToggleImportAction implements Action {
+    type = UIActionTypes.TOGGLE_IMPORT;
+
+    constructor(public payload: boolean) { }
 }
 
 export class DismissAlertAction implements Action {
@@ -81,4 +88,5 @@ export type UIActions =
     | OpenMenuAction
     | CloseMenuAction
     | ShowAlertAction
+    | ToggleImportAction
     | DismissAlertAction;
