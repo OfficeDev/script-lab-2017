@@ -40,14 +40,20 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
         .filter(action => this._github.profile && action.payload)
         .mergeMap(({ payload, type }) => {
-            let {description } = payload;
-            let files: IGistFiles = {
-                'snippet.yaml': {
-                    content: jsyaml.safeDump(payload),
-                    language: 'yaml'
-                }
+            let {name, description} = payload;
+            let files: IGistFiles;
+
+            files[`${name}.yaml`] = {
+                content: jsyaml.safeDump(payload),
+                language: 'yaml'
             };
-            return this._github.createOrUpdateGist(description, files, null, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
+
+            return this._github.createOrUpdateGist(
+                `${description} -- Shared with Add-in Playground`,
+                files,
+                null,
+                type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
+            )
                 .catch(error => {
                     Utilities.log(error);
                     return null;
