@@ -1,4 +1,4 @@
-/*! v.Add-in Playground 1.0.0.1482354434467 © Microsoft */
+/*! v.Add-in Playground 1.0.0.1482359893458 © Microsoft */
 webpackJsonp([7],[function(e,t,r){"use strict";r(20),r(26),r(1),r(21),r(22),r(19),r(413),r(87),r(28),r(47),r(49)},function(e,t,r){(function(e){/**
 	 * @license Angular v2.3.0
 	 * (c) 2010-2016 Google, Inc. https://angular.io/
