@@ -41,15 +41,20 @@ export class GitHubEffects {
         .mergeMap(() => this._github.gists())
         .map(gists => {
             return gists
-                .map(gist => ({ id: gist.id, file: _.find(gist.files, file => /\.ya?ml$/gi.test(file.filename)) }))
-                .map(({ id, file }) => {
+                .map(gist => ({
+                    id: gist.id,
+                    description: gist.description,
+                    file: _.find(gist.files, file => /\.ya?ml$/gi.test(file.filename))
+                }))
+                .map(({ id, file, description }) => {
                     if (file == null) {
                         return null;
                     }
                     return <ISnippet>{
                         id: '',
                         name: file.filename.replace(/\.ya?ml$/gi, ''),
-                        gist: id
+                        gist: id,
+                        description: description
                     };
                 })
                 .filter(snippet => !(snippet == null));

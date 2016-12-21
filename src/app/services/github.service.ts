@@ -92,6 +92,9 @@ export class GitHubService {
     }
 
     gists(): Observable<IGist[]> {
+        if (this.profile == null) {
+            return Observable.of([]);
+        }
         let url = `${this._baseUrl}/users/${this.profile.login}/gists`;
         return this._request.get<IGist[]>(url, ResponseTypes.JSON, this._headers);
     }
