@@ -52,20 +52,21 @@ export class SnippetEffects {
                     break;
 
                 case 'GIST':
-                    observable = this._github.gist(data).map(gist => {
-                        let snippet = gist.files['snippet.yml'];
-                        if (snippet == null) {
-                            let output = this._upgrade(gist.files);
-                            output.description = '';
-                            output.author = '';
-                            output.source = '';
-                            output.gist = data;
-                            return output;
-                        }
-                        else {
-                            return jsyaml.safeLoad(snippet.content);
-                        }
-                    });
+                    observable = this._github.gist(data)
+                        .map(gist => {
+                            let snippet = _.find(gist.files, (value, key) => /\.ya?ml$/gi.test(key));
+                            if (snippet == null) {
+                                let output = this._upgrade(gist.files);
+                                output.description = '';
+                                output.author = '';
+                                output.source = '';
+                                output.gist = data;
+                                return output;
+                            }
+                            else {
+                                return jsyaml.safeLoad(snippet.content);
+                            }
+                        });
                     break;
 
                 case 'URL':
@@ -181,6 +182,10 @@ export class SnippetEffects {
             return null;
         }
 
+        if (/^https?/.test(data)) {
+            return 'URL';
+        }
+
         if (data === 'default') {
             return 'DEFAULT';
         }
@@ -191,10 +196,6 @@ export class SnippetEffects {
 
         if (data.length === 32) {
             return 'GIST';
-        }
-
-        if (/^https ? /.test(data)) {
-            return 'URL';
         }
 
         return 'YAML';

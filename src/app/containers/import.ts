@@ -71,25 +71,23 @@ export class Import implements OnInit {
         private _monaco: MonacoService,
         private _store: Store<fromRoot.State>
     ) {
+        (window as any).resize = this._resize.bind(this);
     }
 
     async ngOnInit() {
-        this._monacoEditor = await this._monaco.create(this._editor);
+        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
         this._initialize();
-
-        this._store
-            .select(fromRoot.getTheme)
-            .subscribe(theme => this._monaco.updateOptions(this._monacoEditor, { theme: theme ? 'vs' : 'vs-dark' }));
-
         this._store.select(fromRoot.getImportState).subscribe(() => this._initialize());
     }
 
     @HostListener('window:resize', ['$event'])
     private _resize() {
         if (this._monacoEditor) {
-            this._monacoEditor.layout();
-            this._monacoEditor.setScrollTop(0);
-            this._monacoEditor.setScrollLeft(0);
+            setTimeout(() => {
+                this._monacoEditor.layout();
+                this._monacoEditor.setScrollTop(0);
+                this._monacoEditor.setScrollLeft(0);
+            }, 10);
         }
     }
 
@@ -97,7 +95,7 @@ export class Import implements OnInit {
         this._model = monaco.editor.createModel(sample, 'yaml');
         this._monacoEditor.setModel(this._model);
         this._monacoEditor.restoreViewState(null);
-        this._monacoEditor.layout();
+        this._resize();
         this._monacoEditor.focus();
     }
 
