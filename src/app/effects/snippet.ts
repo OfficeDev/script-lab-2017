@@ -117,7 +117,7 @@ export class SnippetEffects {
                 this._store.add(snippet.id, snippet);
             }
 
-            return new Snippet.StoreUpdated();
+            return new Snippet.StoreUpdatedAction();
         });
 
     @Effect()
@@ -138,7 +138,7 @@ export class SnippetEffects {
         .map((action: Snippet.DeleteAction) => action.payload)
         .map(id => this._store.remove(id))
         .mergeMap(() => Observable.from([
-            new Snippet.StoreUpdated(),
+            new Snippet.StoreUpdatedAction(),
             new UI.OpenMenuAction()
         ]));
 
@@ -146,12 +146,12 @@ export class SnippetEffects {
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
         .map(action => this._store.clear())
-        .map(() => new Snippet.StoreUpdated());
+        .map(() => new Snippet.StoreUpdatedAction());
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
-        .map(() => new Snippet.LoadSnippetsSuccess(this._store.values()));
+        .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()));
 
     @Effect({ dispatch: false })
     run$: Observable<Action> = this.actions$
@@ -165,7 +165,7 @@ export class SnippetEffects {
     @Effect()
     loadTemplates$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.LOAD_TEMPLATES)
-        .map((action: Snippet.LoadTemplates) => action.payload)
+        .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
                 let snippetJsonUrl = `snippets/${Utilities.host.toLowerCase()}/templates.json`;
@@ -175,7 +175,7 @@ export class SnippetEffects {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
             }
         })
-        .map(data => new Snippet.LoadTemplatesSuccess(data));
+        .map(data => new Snippet.LoadTemplatesSuccessAction(data));
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {

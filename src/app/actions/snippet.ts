@@ -102,31 +102,31 @@ export class DeleteAllAction implements Action {
     constructor() { }
 }
 
-export class StoreUpdated implements Action {
+export class StoreUpdatedAction implements Action {
     readonly type = SnippetActionTypes.STORE_UPDATED;
 
     constructor() { }
 }
 
-export class LoadSnippets implements Action {
+export class LoadSnippetsAction implements Action {
     readonly type = SnippetActionTypes.LOAD_SNIPPETS;
 
     constructor() { }
 }
 
-export class LoadTemplates implements Action {
+export class LoadTemplatesAction implements Action {
     readonly type = SnippetActionTypes.LOAD_TEMPLATES;
 
     constructor(public payload: string = 'LOCAL') { }
 }
 
-export class LoadSnippetsSuccess implements Action {
+export class LoadSnippetsSuccessAction implements Action {
     readonly type = SnippetActionTypes.LOAD_SNIPPETS_SUCCESS;
 
     constructor(public payload: ISnippet[]) { }
 }
 
-export class LoadTemplatesSuccess implements Action {
+export class LoadTemplatesSuccessAction implements Action {
     readonly type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
 
     constructor(public payload: ITemplate[]) { }
@@ -145,9 +145,9 @@ export type SnippetActions
     | ShareAction
     | DeleteAction
     | DeleteAllAction
-    | StoreUpdated
-    | LoadSnippets
-    | LoadSnippetsSuccess
-    | LoadTemplates
-    | LoadTemplatesSuccess
+    | StoreUpdatedAction
+    | LoadSnippetsAction
+    | LoadSnippetsSuccessAction
+    | LoadTemplatesAction
+    | LoadTemplatesSuccessAction
     | CreateAction;

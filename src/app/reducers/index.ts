@@ -45,6 +45,7 @@ const getSnippetsState = (state: State) => state.snippet;
 export const getReadOnly = createSelector(getSnippetsState, snippets.getReadOnly);
 export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
 export const getSnippets = createSelector(getSnippetsState, snippets.getSnippets);
+export const getGists = createSelector(getSnippetsState, snippets.getGists);
 export const getTemplates = createSelector(getSnippetsState, snippets.getTemplates);
 export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
 export const getRunning = createSelector(getSnippetsState, snippets.getRunning);

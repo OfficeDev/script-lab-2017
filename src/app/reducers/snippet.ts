@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
+import { GitHubActions, GitHubActionTypes } from '../actions/github';
 import { updateState } from '../helpers';
 
 export interface SnippetState {
@@ -8,6 +9,7 @@ export interface SnippetState {
     loading?: boolean;
     readonly?: boolean;
     snippets?: ISnippet[];
+    gists?: ISnippet[];
     templates?: ISnippet[];
 };
 
@@ -17,10 +19,11 @@ const initialState: SnippetState = {
     running: false,
     readonly: false,
     snippets: [],
+    gists: [],
     templates: []
 };
 
-export function reducer(state = initialState, action: SnippetActions): SnippetState {
+export function reducer(state = initialState, action: SnippetActions | GitHubActions): SnippetState {
     let newState = updateState<SnippetState>(state);
 
     switch (action.type) {
@@ -44,6 +47,11 @@ export function reducer(state = initialState, action: SnippetActions): SnippetSt
         case SnippetActionTypes.LOAD_TEMPLATES_SUCCESS:
             return newState({
                 templates: [...action.payload]
+            });
+
+        case GitHubActionTypes.LOAD_GISTS_SUCCESS:
+            return newState({
+                gists: [...action.payload]
             });
 
         case SnippetActionTypes.CREATE:
@@ -108,6 +116,8 @@ export const getReadOnly = (state: SnippetState) => state.readonly;
 export const getCurrent = (state: SnippetState) => state.lastOpened;
 
 export const getSnippets = (state: SnippetState) => state.snippets;
+
+export const getGists = (state: SnippetState) => state.gists;
 
 export const getTemplates = (state: SnippetState) => state.templates;
 

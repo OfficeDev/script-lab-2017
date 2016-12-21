@@ -201,6 +201,7 @@ interface IGist {
 
 interface IGistFiles {
     [filename: string]: {
+        filename?: string,
         size?: number,
         raw_url?: string,
         type?: string,

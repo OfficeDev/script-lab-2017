@@ -39,8 +39,22 @@ export class GitHubEffects {
     loadGists$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOAD_GISTS)
         .mergeMap(() => this._github.gists())
-        .map(gists => gists.filter(gist=>gist.files))
-        .map(profile => new GitHub.LoadGistsSuccessAction(profile));
+        .map(gists => {
+            return gists
+                .map(gist => ({ id: gist.id, file: _.find(gist.files, file => /\.ya?ml$/gi.test(file.filename)) }))
+                .map(({ id, file }) => {
+                    if (file == null) {
+                        return null;
+                    }
+                    return <ISnippet>{
+                        id: '',
+                        name: file.filename.replace(/\.ya?ml$/gi, ''),
+                        gist: id
+                    };
+                })
+                .filter(snippet => !(snippet == null));
+        })
+        .map(snippets => new GitHub.LoadGistsSuccessAction(snippets));
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$
@@ -67,10 +81,7 @@ export class GitHubEffects {
                 });
 
         })
-        .map(gist => {
-            console.log(gist);
-            return new GitHub.ShareSuccessAction(gist);
-        });
+        .map(gist => new GitHub.ShareSuccessAction(gist));
 
     @Effect({ dispatch: false })
     shareCopy$: Observable<Action> = this.actions$
