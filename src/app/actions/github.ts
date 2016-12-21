@@ -10,16 +10,18 @@ import { Subscription } from 'rxjs/Subscription';
  * literal types and runs a simple check to guarantee all
  * action types in the application are unique.
  */
-export const GitHubActionTypes = {
-    LOGIN: type('[GitHub] Login'),
-    IS_LOGGED_IN: type('[Github] Is Logged In'),
-    LOGGED_IN: type('[GitHub] Logged In'),
-    LOGGED_OUT: type('[GitHub] Logged Out'),
-    SHARE_PUBLIC_GIST: type('[GitHub] Share Public Gist'),
-    SHARE_PRIVATE_GIST: type('[GitHub] Share Private Gist'),
-    SHARE_COPY: type('[GitHub] Share Copy'),
-    SHARE_SUCCESS: type('[GitHub] Share Success'),
-    UDPATE_GIST: type('[GitHub] Update Gist')
+export class GitHubActionTypes {
+    static readonly LOGIN = type('[GitHub] Login');
+    static readonly IS_LOGGED_IN = type('[Github] Is Logged In');
+    static readonly LOAD_GISTS = type('[Github] Load Gists');
+    static readonly LOAD_GISTS_SUCCESS = type('[Github] Load Gists Success');
+    static readonly LOGGED_IN = type('[GitHub] Logged In');
+    static readonly LOGGED_OUT = type('[GitHub] Logged Out');
+    static readonly SHARE_PUBLIC_GIST = type('[GitHub] Share Public Gist');
+    static readonly SHARE_PRIVATE_GIST = type('[GitHub] Share Private Gist');
+    static readonly SHARE_COPY = type('[GitHub] Share Copy');
+    static readonly SHARE_SUCCESS = type('[GitHub] Share Success');
+    static readonly UDPATE_GIST = type('[GitHub] Update Gist');
 };
 
 /**
@@ -30,55 +32,67 @@ export const GitHubActionTypes = {
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
 export class LoginAction implements Action {
-    type = GitHubActionTypes.LOGIN;
+    readonly type = GitHubActionTypes.LOGIN;
 
     constructor() { }
 }
 
 export class LogoutAction implements Action {
-    type = GitHubActionTypes.LOGGED_OUT;
+    readonly type = GitHubActionTypes.LOGGED_OUT;
 
     constructor() { }
 }
 
 export class IsLoggedInAction implements Action {
-    type = GitHubActionTypes.IS_LOGGED_IN;
+    readonly type = GitHubActionTypes.IS_LOGGED_IN;
 
     constructor() { }
 }
 
+export class LoadGistsAction implements Action {
+    readonly type = GitHubActionTypes.LOAD_GISTS;
+
+    constructor() { }
+}
+
+export class LoadGistsSuccessAction implements Action {
+    readonly type = GitHubActionTypes.LOAD_GISTS_SUCCESS;
+
+    constructor(public payload: ISnippet[]) { }
+}
+
 export class LoggedInAction implements Action {
-    type = GitHubActionTypes.LOGGED_IN;
+    readonly type = GitHubActionTypes.LOGGED_IN;
 
     constructor(public payload: IBasicProfile) { }
 }
 
 export class ShareCopyGistAction implements Action {
-    type = GitHubActionTypes.SHARE_COPY;
+    readonly type = GitHubActionTypes.SHARE_COPY;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class SharePublicGistAction implements Action {
-    type = GitHubActionTypes.SHARE_PUBLIC_GIST;
+    readonly type = GitHubActionTypes.SHARE_PUBLIC_GIST;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class SharePrivateGistAction implements Action {
-    type = GitHubActionTypes.SHARE_PRIVATE_GIST;
+    readonly type = GitHubActionTypes.SHARE_PRIVATE_GIST;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class ShareSuccessAction implements Action {
-    type = GitHubActionTypes.SHARE_SUCCESS;
+    readonly type = GitHubActionTypes.SHARE_SUCCESS;
 
     constructor(public payload: IGist) { }
 }
 
 export class UpdateGistAction implements Action {
-    type = GitHubActionTypes.UDPATE_GIST;
+    readonly type = GitHubActionTypes.UDPATE_GIST;
 
     constructor(public payload: ISnippet) { }
 }
@@ -90,6 +104,8 @@ export class UpdateGistAction implements Action {
 export type GitHubActions
     = LoginAction
     | LoggedInAction
+    | LoadGistsAction
+    | LoadGistsSuccessAction
     | IsLoggedInAction
     | LogoutAction
     | ShareCopyGistAction

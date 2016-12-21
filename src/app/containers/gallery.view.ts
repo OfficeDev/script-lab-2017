@@ -1,7 +1,7 @@
 import { Component, ApplicationRef } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Theme } from '../helpers';
-import { UI, Snippet } from '../actions';
+import { UI, Snippet, GitHub } from '../actions';
 import { Storage } from '@microsoft/office-js-helpers';
 import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
@@ -18,9 +18,15 @@ import * as _ from 'lodash';
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Templates</li>
                 </ul>
                 <div class="gallery__tabs-container">
-                    <gallery-list [hidden]="templatesView" title="Local" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."
-                        actionable="true" (action)="action($event)"></gallery-list>
-                    <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async" (select)="import($event)"></gallery-list>
+                    <collapse [hidden]="templatesView" title="Local" [actions]="['Info', 'Delete']" (events)="action($event)">
+                        <gallery-list title="Local" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
+                    </collapse>
+                    <collapse [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
+                        <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your Gists."></gallery-list>
+                    </collapse>
+                    <collapse [hidden]="!templatesView" title="Starter Samples" (action)="action.emit($event)">
+                        <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async" (select)="import($event, 'gist')"></gallery-list>
+                    </collapse>
                 </div>
             </section>
             <section class="gallery__section">
@@ -40,6 +46,7 @@ import * as _ from 'lodash';
 export class GalleryView extends Disposable {
     templatesView: boolean;
     snippets$: Observable<ISnippet[]>;
+    gists$: Observable<ISnippet[]>;
     templates$: Observable<ITemplate[]>;
 
     constructor(private _store: Store<fromRoot.State>) {
@@ -55,9 +62,11 @@ export class GalleryView extends Disposable {
             });
 
         this.templates$ = this._store.select(fromRoot.getTemplates);
+        this.gists$ = this._store.select(fromRoot.getGists);
 
-        this._store.dispatch(new Snippet.LoadSnippets());
-        this._store.dispatch(new Snippet.LoadTemplates());
+        this._store.dispatch(new Snippet.LoadSnippetsAction());
+        this._store.dispatch(new Snippet.LoadTemplatesAction());
+        this._store.dispatch(new GitHub.LoadGistsAction());
     }
 
     new() {
@@ -65,12 +74,13 @@ export class GalleryView extends Disposable {
         this._store.dispatch(new UI.CloseMenuAction());
     }
 
-    import(item?: ITemplate) {
+    import(item?: ITemplate, mode = 'id') {
+        console.log(item);
         if (item == null) {
-            // show the Import UI Here
+            this._store.dispatch(new UI.ToggleImportAction(true));
         }
         else {
-            this._store.dispatch(new Snippet.ImportAction(item.id || item.gist));
+            this._store.dispatch(new Snippet.ImportAction(mode === 'id' ? item.id : item.gist));
             this._store.dispatch(new UI.CloseMenuAction());
         }
     }
@@ -83,3 +93,4 @@ export class GalleryView extends Disposable {
         }
     }
 }
+

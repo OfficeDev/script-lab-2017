@@ -45,6 +45,7 @@ const getSnippetsState = (state: State) => state.snippet;
 export const getReadOnly = createSelector(getSnippetsState, snippets.getReadOnly);
 export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
 export const getSnippets = createSelector(getSnippetsState, snippets.getSnippets);
+export const getGists = createSelector(getSnippetsState, snippets.getGists);
 export const getTemplates = createSelector(getSnippetsState, snippets.getTemplates);
 export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
 export const getRunning = createSelector(getSnippetsState, snippets.getRunning);
@@ -59,6 +60,7 @@ export const getMenu = createSelector(getUIState, ui.getMenuOpened);
 export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
 export const getErrors = createSelector(getUIState, ui.getErrors);
+export const getImportState = createSelector(getUIState, ui.getImportState);
 
 const getGitHubState = (state: State) => state.github;
 export const getProfileLoading = createSelector(getGitHubState, github.getLoading);

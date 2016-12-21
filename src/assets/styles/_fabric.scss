@@ -12,21 +12,23 @@
     }
 }
 
-.ms-Dialog {
-    min-height: 250px !important;
-    min-width: 350px;
-    padding: 0;
-
-    &-panel {
+dialog.panel {
+    .ms-Dialog {
         width: 100% !important;
         height: 100% !important;
         max-width: none;
 
-        .ms-Dialog-content {
+        &-content {
             height: 100%;
             overflow: hidden;
         }
     }
+}
+
+.ms-Dialog {
+    min-height: 250px !important;
+    min-width: 350px;
+    padding: 0;
 
     .is-visible {
         @include flex();
@@ -73,6 +75,7 @@
         display: inline-flex;
         flex-direction: row;
         align-items: center;
+        justify-content: center;
 
         & > i {
             margin-right: $default-spacing/2;

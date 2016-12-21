@@ -52,20 +52,21 @@ export class SnippetEffects {
                     break;
 
                 case 'GIST':
-                    observable = this._github.gist(data).map(gist => {
-                        let snippet = gist.files['snippet.yml'];
-                        if (snippet == null) {
-                            let output = this._upgrade(gist.files);
-                            output.description = '';
-                            output.author = '';
-                            output.source = '';
-                            output.gist = data;
-                            return output;
-                        }
-                        else {
-                            return jsyaml.safeLoad(snippet.content);
-                        }
-                    });
+                    observable = this._github.gist(data)
+                        .map(gist => {
+                            let snippet = _.find(gist.files, (value, key) => /\.ya?ml$/gi.test(key));
+                            if (snippet == null) {
+                                let output = this._upgrade(gist.files);
+                                output.description = '';
+                                output.author = '';
+                                output.source = '';
+                                output.gist = data;
+                                return output;
+                            }
+                            else {
+                                return jsyaml.safeLoad(snippet.content);
+                            }
+                        });
                     break;
 
                 case 'URL':
@@ -116,7 +117,7 @@ export class SnippetEffects {
                 this._store.add(snippet.id, snippet);
             }
 
-            return new Snippet.StoreUpdated();
+            return new Snippet.StoreUpdatedAction();
         });
 
     @Effect()
@@ -137,20 +138,20 @@ export class SnippetEffects {
         .map((action: Snippet.DeleteAction) => action.payload)
         .map(id => this._store.remove(id))
         .mergeMap(() => Observable.from([
-            new Snippet.StoreUpdated(),
+            new Snippet.StoreUpdatedAction(),
             new UI.OpenMenuAction()
         ]));
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
-        .map((action: Snippet.DeleteAllAction) => this._store.clear())
-        .map(() => new Snippet.StoreUpdated());
+        .map(action => this._store.clear())
+        .map(() => new Snippet.StoreUpdatedAction());
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
-        .map(() => new Snippet.LoadSnippetsSuccess(this._store.values()));
+        .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()));
 
     @Effect({ dispatch: false })
     run$: Observable<Action> = this.actions$
@@ -164,7 +165,7 @@ export class SnippetEffects {
     @Effect()
     loadTemplates$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.LOAD_TEMPLATES)
-        .map((action: Snippet.LoadTemplates) => action.payload)
+        .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
                 let snippetJsonUrl = `snippets/${Utilities.host.toLowerCase()}/templates.json`;
@@ -174,11 +175,15 @@ export class SnippetEffects {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
             }
         })
-        .map(data => new Snippet.LoadTemplatesSuccess(data));
+        .map(data => new Snippet.LoadTemplatesSuccessAction(data));
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {
             return null;
+        }
+
+        if (/^https?/.test(data)) {
+            return 'URL';
         }
 
         if (data === 'default') {
@@ -191,10 +196,6 @@ export class SnippetEffects {
 
         if (data.length === 32) {
             return 'GIST';
-        }
-
-        if (/^https ? /.test(data)) {
-            return 'URL';
         }
 
         return 'YAML';

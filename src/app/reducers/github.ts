@@ -4,7 +4,7 @@ import { updateState } from '../helpers';
 export interface GitHubState {
     isLoggedIn?: boolean;
     loading?: boolean;
-    profile?: IProfile;
+    profile?: IBasicProfile;
     sharing?: boolean;
 };
 
@@ -15,7 +15,7 @@ const initialState: GitHubState = {
     sharing: false
 };
 
-export function reducer(state = initialState, action: any): GitHubState {
+export function reducer(state = initialState, action: GitHubActions): GitHubState {
     let newState = updateState<GitHubState>(state);
 
     switch (action.type) {
