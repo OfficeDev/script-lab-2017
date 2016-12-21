@@ -75,6 +75,7 @@ dialog.panel {
         display: inline-flex;
         flex-direction: row;
         align-items: center;
+        justify-content: center;
 
         & > i {
             margin-right: $default-spacing/2;

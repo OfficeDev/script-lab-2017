@@ -32,8 +32,15 @@ export class GitHubEffects {
     isLoggedIn$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
-        .filter(profile => !(profile == null))
+        .filter<IBasicProfile, IBasicProfile>(profile => !(profile == null))
         .map(profile => new GitHub.LoggedInAction(profile));
+
+    @Effect()
+    loadGists$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.LOAD_GISTS)
+        .mergeMap(() => this._github.gists())
+        .map(gists => gists.filter(gist=>gist.files))
+        .map(profile => new GitHub.LoadGistsSuccessAction(profile));
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$

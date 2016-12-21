@@ -144,7 +144,7 @@ export class SnippetEffects {
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
-        .map((action: Snippet.DeleteAllAction) => this._store.clear())
+        .map(action => this._store.clear())
         .map(() => new Snippet.StoreUpdated());
 
     @Effect()

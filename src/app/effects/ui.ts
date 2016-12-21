@@ -26,7 +26,17 @@ export class UIEffects {
         .do(action => this._resolve(action))
         .catch(error => this._reject(new PlaygroundError('An error occurred in Dialog', error)));
 
-    async showAlert(dialog: IAlert): Promise<string> {
+    alert(message: string, title: string = 'Alert', ...actions: string[]) {
+        let dialog = <IAlert>{
+            message,
+            title,
+            actions
+        };
+
+        return this._showAlert(dialog);
+    }
+
+    private async _showAlert(dialog: IAlert): Promise<string> {
         if (!(this._resolve == null)) {
             return Promise.reject(new PlaygroundError('A dialog is already open.'));
         }

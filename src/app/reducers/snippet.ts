@@ -20,7 +20,7 @@ const initialState: SnippetState = {
     templates: []
 };
 
-export function reducer(state = initialState, action: any): SnippetState {
+export function reducer(state = initialState, action: SnippetActions): SnippetState {
     let newState = updateState<SnippetState>(state);
 
     switch (action.type) {
@@ -34,11 +34,6 @@ export function reducer(state = initialState, action: any): SnippetState {
                 loading: false,
                 lastOpened: action.payload,
                 readonly: action.params
-            });
-
-        case SnippetActionTypes.UPDATE_INFO:
-            return newState({
-                lastOpened: Object.assign({}, state.lastOpened, action.payload)
             });
 
         case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:

@@ -10,23 +10,23 @@ import { type } from '../helpers';
  * literal types and runs a simple check to guarantee all
  * action types in the application are unique.
  */
-export const SnippetActionTypes = {
-    VIEW: type('[Snippet] View'),
-    IMPORT: type('[Snippet] Import'),
-    IMPORT_SUCCESS: type('[Snippet] Import Successful'),
-    RUN: type('[Snippet] Run'),
-    CREATE: type('[Snippet] Create'),
-    UPDATE_INFO: type('[Snippet] Update Info'),
-    DUPLICATE: type('[Snippet] Duplicate'),
-    SAVE: type('[Snippet] Save'),
-    SHARE: type('[Snippet] Share'),
-    DELETE: type('[Snippet] Delete'),
-    DELETE_ALL: type('[Snippet] Delete All'),
-    STORE_UPDATED: type('[Snippet] Storage Updated'),
-    LOAD_SNIPPETS: type('[Snippet] Load Snippets'),
-    LOAD_SNIPPETS_SUCCESS: type('[Snippet] Load Snippets Success'),
-    LOAD_TEMPLATES: type('[Snippet] Load Templates'),
-    LOAD_TEMPLATES_SUCCESS: type('[Snippet] Load Templates Success')
+export class SnippetActionTypes {
+    static readonly VIEW = type('[Snippet] View');
+    static readonly IMPORT = type('[Snippet] Import');
+    static readonly IMPORT_SUCCESS = type('[Snippet] Import Successful');
+    static readonly RUN = type('[Snippet] Run');
+    static readonly CREATE = type('[Snippet] Create');
+    static readonly UPDATE_INFO = type('[Snippet] Update Info');
+    static readonly DUPLICATE = type('[Snippet] Duplicate');
+    static readonly SAVE = type('[Snippet] Save');
+    static readonly SHARE = type('[Snippet] Share');
+    static readonly DELETE = type('[Snippet] Delete');
+    static readonly DELETE_ALL = type('[Snippet] Delete All');
+    static readonly STORE_UPDATED = type('[Snippet] Storage Updated');
+    static readonly LOAD_SNIPPETS = type('[Snippet] Load Snippets');
+    static readonly LOAD_SNIPPETS_SUCCESS = type('[Snippet] Load Snippets Success');
+    static readonly LOAD_TEMPLATES = type('[Snippet] Load Templates');
+    static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
 };
 
 /**
@@ -37,97 +37,97 @@ export const SnippetActionTypes = {
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
 export class ViewAction implements Action {
-    type = SnippetActionTypes.VIEW;
+    readonly type = SnippetActionTypes.VIEW;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class ImportAction implements Action {
-    type = SnippetActionTypes.IMPORT;
+    readonly type = SnippetActionTypes.IMPORT;
 
     constructor(public payload: string, public params: string = '') { }
 }
 
 export class ImportSuccessAction implements Action {
-    type = SnippetActionTypes.IMPORT_SUCCESS;
+    readonly type = SnippetActionTypes.IMPORT_SUCCESS;
 
     constructor(public payload: ISnippet, public params: boolean) { }
 }
 
 export class UpdateInfoAction implements Action {
-    type = SnippetActionTypes.UPDATE_INFO;
+    readonly type = SnippetActionTypes.UPDATE_INFO;
 
     constructor(public payload: { name: string, description: string }) { }
 }
 
 export class RunAction implements Action {
-    type = SnippetActionTypes.RUN;
+    readonly type = SnippetActionTypes.RUN;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class CreateAction implements Action {
-    type = SnippetActionTypes.CREATE;
+    readonly type = SnippetActionTypes.CREATE;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class DuplicateAction implements Action {
-    type = SnippetActionTypes.DUPLICATE;
+    readonly type = SnippetActionTypes.DUPLICATE;
 
     constructor(public payload: string) { }
 }
 
 export class SaveAction implements Action {
-    type = SnippetActionTypes.SAVE;
+    readonly type = SnippetActionTypes.SAVE;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class ShareAction implements Action {
-    type = SnippetActionTypes.SHARE;
+    readonly type = SnippetActionTypes.SHARE;
 
     constructor(public payload: ISnippet) { }
 }
 
 export class DeleteAction implements Action {
-    type = SnippetActionTypes.DELETE;
+    readonly type = SnippetActionTypes.DELETE;
 
     constructor(public payload: string) { }
 }
 
 export class DeleteAllAction implements Action {
-    type = SnippetActionTypes.DELETE_ALL;
+    readonly type = SnippetActionTypes.DELETE_ALL;
 
     constructor() { }
 }
 
 export class StoreUpdated implements Action {
-    type = SnippetActionTypes.STORE_UPDATED;
+    readonly type = SnippetActionTypes.STORE_UPDATED;
 
     constructor() { }
 }
 
 export class LoadSnippets implements Action {
-    type = SnippetActionTypes.LOAD_SNIPPETS;
+    readonly type = SnippetActionTypes.LOAD_SNIPPETS;
 
     constructor() { }
 }
 
 export class LoadTemplates implements Action {
-    type = SnippetActionTypes.LOAD_TEMPLATES;
+    readonly type = SnippetActionTypes.LOAD_TEMPLATES;
 
     constructor(public payload: string = 'LOCAL') { }
 }
 
 export class LoadSnippetsSuccess implements Action {
-    type = SnippetActionTypes.LOAD_SNIPPETS_SUCCESS;
+    readonly type = SnippetActionTypes.LOAD_SNIPPETS_SUCCESS;
 
     constructor(public payload: ISnippet[]) { }
 }
 
 export class LoadTemplatesSuccess implements Action {
-    type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
+    readonly type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
 
     constructor(public payload: ITemplate[]) { }
 }
@@ -147,4 +147,7 @@ export type SnippetActions
     | DeleteAllAction
     | StoreUpdated
     | LoadSnippets
-    | LoadTemplates;
+    | LoadSnippetsSuccess
+    | LoadTemplates
+    | LoadTemplatesSuccess
+    | CreateAction;

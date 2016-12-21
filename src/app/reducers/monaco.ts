@@ -15,7 +15,7 @@ const initialState = {
     loading: false
 };
 
-export function reducer(state = initialState, action: any): MonacoState {
+export function reducer(state = initialState, action: MonacoActions): MonacoState {
     let newState = updateState<MonacoState>(state);
 
     switch (action.type) {
