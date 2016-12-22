@@ -22,6 +22,14 @@ dialog.panel {
             height: 100%;
             overflow: hidden;
         }
+
+        &-inner {
+            padding: 0;
+        }
+
+        &-actions {
+            margin: 15px;
+        }
     }
 }
 

@@ -1,53 +1,47 @@
-import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { MonacoService } from '../services';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Monaco, Snippet } from '../actions';
 
-const sample =
-    `# Please paste the Snippet URL or JSON into the text area below, and then choose the "Import" button.
-
-# Here are the list of valid urls:
-- sampleGistId
-- https://gist.github.com/sampleGistId
-- https://addin-playground.azurewebsites.net/#/gist/sampleGistId
-- https://mywebsite.com/myfolder/mysnippet.yaml
-
-# Or you can also paste a snippet has been exported from the playground such as:
-
----
-id: ''
-gist: ''
-author: ''
-source: Web
-name: New Snippet
-description: |-
-    Sample snippet to demonstrate the use of the Add-in Playground for Web.
-
-script:
-  language: typescript
-  content: |-
-    document.querySelector('#run').addEventListener('click', function () {
-        getData().catch(OfficeHelpers.Utilities.log);
-    });
-
-    function getData() {
-        let url = 'https://jsonplaceholder.typicode.com/posts/1';
-        return fetch(url)
-            .then(res => res.json())
-            .then(data => console.log(data));
-    }
-`;
-
 @Component({
     selector: 'import',
     template: `
-        <dialog class="panel" title="Import" [show]="true">
-            <div class="ms-Dialog-content">
-                <div id="editor" #editor class="monaco-editor"></div>
-            </div>
-            <div class=" ms-Dialog-actions ">
+        <dialog class="panel" [show]="true">
+            <section class="gallery__section">
+                <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'url'}" (click)="view = 'url'">From url</li>
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'snippet'}" (click)="view = 'snippet'">From snippet</li>
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'gist'}" (click)="view = 'gist'">From my gists</li>
+                </ul>
+                <div class="gallery__tabs-container">
+                    <section class="tab__section">
+                        <h1 class="ms-font-xxl">From url</h1>
+                        <p class="ms-font-l">Paste the snippet's URL or ID into the text area below, and then choose the "Import" button.</p>
+                        <div class="ms-TextField">
+                            <label class="ms-Label">Url or gist id</label>
+                            <input class="ms-TextField-field" type="text" value="" placeholder="Enter your url or gist id here" >
+                        </div>
+
+                        <p class="ms-font-m">Here are examples:</p>
+                        <ol>
+                            <li>https://gist.github.com/sampleGistId</li>
+                            <li>https://addin-playground.azurewebsites.net/#/gist/sampleGistId</li>
+                            <li>https://mywebsite.com/myfolder/mysnippet.yaml</li>
+                            <li>Alternatively you can also input just a gist ID such as</li>
+                            <li>sampleGistId</li>
+                        </ol>
+                    </section>
+                    <section class="tab__section" [hidden]="view !== 'snippet'">
+                        <h1 class="ms-font-xxl">From snippet</h1>
+                        <p class="ms-font-l">Paste the snippet's URL into the text area below, and then choose the "Import" button.</p>
+                        <p class="ms-font-m">Here are the list of valid urls:</p>
+                    </section>
+                    <section class="tab__section" [hidden]="view !== 'gist'">
+                    </section>
+                </div>
+            </section>
+            <div class="ms-Dialog-actions ">
                 <div class="ms-Dialog-actionsRight ">
                     <button class="ms-Dialog-action ms-Button " (click)="import() ">
                         <span class="ms-Button-label">Import</span>
@@ -58,59 +52,25 @@ script:
                 </div>
             </div>
         </dialog>
-    `
-})
-export class Import implements OnInit {
-    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
-    private _model: monaco.editor.IModel;
-
-    @ViewChild('editor') private _editor: ElementRef;
-    show$: Observable<boolean>;
-
-    constructor(
-        private _monaco: MonacoService,
-        private _store: Store<fromRoot.State>
-    ) {
-        (window as any).resize = this._resize.bind(this);
-    }
-
-    async ngOnInit() {
-        //this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
-        // this._initialize();
-        // this._store.select(fromRoot.getImportState).subscribe(() => this._initialize());
-    }
-
-    @HostListener('window:resize', ['$event'])
-    private _resize() {
-        if (this._monacoEditor) {
-            setTimeout(() => {
-                this._monacoEditor.layout();
-                this._monacoEditor.setScrollTop(0);
-                this._monacoEditor.setScrollLeft(0);
-            }, 10);
+    `,
+    styles: [`
+        .tab__section {
+            padding: 15px;
         }
+    `]
+})
+export class Import {
+    constructor(private _store: Store<fromRoot.State>) {
     }
 
-    private _initialize() {
-        this._model = monaco.editor.createModel(sample, 'yaml');
-        this._monacoEditor.setModel(this._model);
-        this._monacoEditor.restoreViewState(null);
-        this._resize();
-        this._monacoEditor.focus();
-    }
+    show$ = this._store.select(fromRoot.getImportState);
 
     import() {
-        let inputValue = this._monacoEditor.getValue();
-        if (inputValue === sample) {
-            return;
-        }
-
-        this._store.dispatch(new Snippet.ImportAction(inputValue));
+        this._store.dispatch(new Snippet.ImportAction(null));
         this.cancel();
     }
 
     cancel() {
-        this._model.dispose();
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 }

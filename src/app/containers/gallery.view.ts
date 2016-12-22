@@ -9,7 +9,7 @@ import * as fromRoot from '../reducers';
 import * as _ from 'lodash';
 
 @Component({
-    selector: 'gallery-view',
+    selector: 'gallery',
     template: `
         <section class="gallery">
             <section class="gallery__section">
@@ -43,7 +43,7 @@ import * as _ from 'lodash';
         </section>
     `
 })
-export class GalleryView extends Disposable {
+export class Gallery extends Disposable {
     templatesView: boolean;
     snippets$: Observable<ISnippet[]>;
     gists$: Observable<ISnippet[]>;

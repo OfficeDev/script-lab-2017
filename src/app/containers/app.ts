@@ -13,7 +13,7 @@ import { UIEffects } from '../effects/ui';
     selector: 'app',
     template: `
         <hamburger [open]="menuOpened$" (dismiss)="hideMenu()">
-            <gallery-view></gallery-view>
+            <gallery></gallery>
         </hamburger>
         <main [ngClass]="theme$|async">
             <header class="command__bar">
