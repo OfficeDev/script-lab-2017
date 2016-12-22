@@ -4,14 +4,14 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
-  <Id>af8fa5ba-4010-4bcc-9e03-a91ddadf5555</Id>
+  <Id>bb8fa5ba-0000-0000-9e03-a91ddadf3333</Id>
   <Version>1.0.0.2</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Add-in Playground (staging)" />
+  <DisplayName DefaultValue="Add-in Playground (local)" />
   <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
-  <IconUrl DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-64.png" />
+  <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
@@ -24,7 +24,7 @@
     <Host Name="Project"/>
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://api-playground-staging.azurewebsites.net" />
+    <SourceLocation DefaultValue="https://localhost:3000" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides
@@ -136,21 +136,21 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Play_icon_16" DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-16.png" />
-        <bt:Image id="Play_icon_32" DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-32.png" />
-        <bt:Image id="Play_icon_80" DefaultValue="https://api-playground-staging.azurewebsites.net/assets/images/icon-80.png" />
+        <bt:Image id="Play_icon_16" DefaultValue="https://localhost:3000/assets/images/icon-16.png" />
+        <bt:Image id="Play_icon_32" DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
+        <bt:Image id="Play_icon_80" DefaultValue="https://localhost:3000/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://api-playground-staging.azurewebsites.net" />
+        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://localhost:3000" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Play.GroupLabel" DefaultValue="Add-ins (staging)" />
+        <bt:String id="Play.GroupLabel" DefaultValue="Add-ins (local)" />
         <bt:String id="Play.TaskpaneButton.Label" DefaultValue="Launch Playground" />
         <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Add-in Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Add-in Playground to create, test, and share your Office Add-in snippets." />
-        <bt:String id="Play.Description" DefaultValue="Create, test and share your Office Add-in snippets directly from Excel or Word." />
+        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Add-in Playground to create, test, and share your Add-in snippets." />
+        <bt:String id="Play.Description" DefaultValue="Create, test and share your Add-in snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

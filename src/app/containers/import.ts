@@ -75,9 +75,9 @@ export class Import implements OnInit {
     }
 
     async ngOnInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
-        this._initialize();
-        this._store.select(fromRoot.getImportState).subscribe(() => this._initialize());
+        //this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
+        // this._initialize();
+        // this._store.select(fromRoot.getImportState).subscribe(() => this._initialize());
     }
 
     @HostListener('window:resize', ['$event'])
