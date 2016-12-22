@@ -138,13 +138,13 @@
         <bt:Url id="Play_Taskpane_Url" DefaultValue="https://addin-playground.azurewebsites.net" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Play.GroupLabel" DefaultValue="Add-in Playground" />
+        <bt:String id="Play.GroupLabel" DefaultValue="[PROD] Add-in Playground" />
         <bt:String id="Play.TaskpaneButton.Label" DefaultValue="Edit" />
-        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Edit" />
+        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Add-in Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Add-in Playground to create, run, and share your Office Add-in snippets." />
-        <bt:String id="Play.Description" DefaultValue="Create, run and share your Office Add-in snippets directly from Excel or Word." />
+        <bt:String id="Play.Supertip.Desc" DefaultValue="Open the Add-in Playground in editor mode to create snippets." />
+        <bt:String id="Play.Description" DefaultValue="Create, run and share your Add-in snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
