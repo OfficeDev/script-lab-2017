@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<OfficeApp
-  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+<OfficeApp 
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
-  <Id>295fd99e-ae9d-4140-8f93-f1916e904c52</Id>
+  <Id>829952ec-fada-43fa-b2d8-61c1f13543e4</Id>
   <Version>1.0.0.2</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Add-in Playground (PROD)" />
-  <Description DefaultValue="Create, test and share your Office Add-in snippets from within an Office application." />
-  <IconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-64.png" />
+  <DisplayName DefaultValue="Add-in Playground" />
+  <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
+  <IconUrl DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-64.png" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
@@ -24,10 +24,10 @@
     <Host Name="Project"/>
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://addin-playground.azurewebsites.net" />
+    <SourceLocation DefaultValue="https://addin-playground.azureedge.net" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
-  <VersionOverrides
+  <VersionOverrides 
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Description resid="Play.Description" />
     <Hosts>
@@ -38,11 +38,10 @@
               <Group id="Play.Group">
                 <Label resid="Play.GroupLabel" />
                 <Icon>
-                    <bt:Image size="16" resid="Play_icon_16" />
-                    <bt:Image size="32" resid="Play_icon_32" />
-                    <bt:Image size="80" resid="Play_icon_80" />
+                  <bt:Image size="16" resid="Play_icon_16" />
+                  <bt:Image size="32" resid="Play_icon_32" />
+                  <bt:Image size="80" resid="Play_icon_80" />
                 </Icon>
-
                 <Control xsi:type="Button" id="Play.TaskpaneButton">
                   <Label resid="Play.TaskpaneButton.Label" />
                   <Supertip>
@@ -54,7 +53,6 @@
                     <bt:Image size="32" resid="Play_icon_32" />
                     <bt:Image size="80" resid="Play_icon_80" />
                   </Icon>
-
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
                     <SourceLocation resid="Play_Taskpane_Url" />
@@ -72,11 +70,10 @@
               <Group id="Play.Group">
                 <Label resid="Play.GroupLabel" />
                 <Icon>
-                    <bt:Image size="16" resid="Play_icon_16" />
-                    <bt:Image size="32" resid="Play_icon_32" />
-                    <bt:Image size="80" resid="Play_icon_80" />
+                  <bt:Image size="16" resid="Play_icon_16" />
+                  <bt:Image size="32" resid="Play_icon_32" />
+                  <bt:Image size="80" resid="Play_icon_80" />
                 </Icon>
-
                 <Control xsi:type="Button" id="Play.TaskpaneButton">
                   <Label resid="Play.TaskpaneButton.Label" />
                   <Supertip>
@@ -88,7 +85,6 @@
                     <bt:Image size="32" resid="Play_icon_32" />
                     <bt:Image size="80" resid="Play_icon_80" />
                   </Icon>
-
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
                     <SourceLocation resid="Play_Taskpane_Url" />
@@ -106,11 +102,10 @@
               <Group id="Play.Group">
                 <Label resid="Play.GroupLabel" />
                 <Icon>
-                    <bt:Image size="16" resid="Play_icon_16" />
-                    <bt:Image size="32" resid="Play_icon_32" />
-                    <bt:Image size="80" resid="Play_icon_80" />
+                  <bt:Image size="16" resid="Play_icon_16" />
+                  <bt:Image size="32" resid="Play_icon_32" />
+                  <bt:Image size="80" resid="Play_icon_80" />
                 </Icon>
-
                 <Control xsi:type="Button" id="Play.TaskpaneButton">
                   <Label resid="Play.TaskpaneButton.Label" />
                   <Supertip>
@@ -122,7 +117,6 @@
                     <bt:Image size="32" resid="Play_icon_32" />
                     <bt:Image size="80" resid="Play_icon_80" />
                   </Icon>
-
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>Play</TaskpaneId>
                     <SourceLocation resid="Play_Taskpane_Url" />
@@ -136,21 +130,21 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Play_icon_16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-16.png" />
-        <bt:Image id="Play_icon_32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
-        <bt:Image id="Play_icon_80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-80.png" />
+        <bt:Image id="Play_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
+        <bt:Image id="Play_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
+        <bt:Image id="Play_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://addin-playground.azurewebsites.net" />
+        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://addin-playground.azureedge.net" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Play.GroupLabel" DefaultValue="Add-in Playground" />
         <bt:String id="Play.TaskpaneButton.Label" DefaultValue="Edit" />
-        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Edit" />
+        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Add-in Playground" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Launch the Add-in Playground to create, test, and share your Office Add-in snippets." />
-        <bt:String id="Play.Description" DefaultValue="Create, test and share your Office Add-in snippets directly from Excel or Word." />
+        <bt:String id="Play.Supertip.Desc" DefaultValue="Open the Add-in Playground in editor mode to create snippets." />
+        <bt:String id="Play.Description" DefaultValue="Create, run and share your Add-in snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
