@@ -8,12 +8,14 @@ import { Action } from '@ngrx/store';
 import * as GitHub from '../actions/github';
 import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
+import { UIEffects } from './ui';
 
 @Injectable()
 export class GitHubEffects {
     constructor(
         private actions$: Actions,
-        private _github: GitHubService
+        private _github: GitHubService,
+        private _uiEffects: UIEffects
     ) {
     }
 
@@ -44,12 +46,13 @@ export class GitHubEffects {
                 .map(gist => ({
                     id: gist.id,
                     description: gist.description,
-                    file: _.find(gist.files, file => /\.ya?ml$/gi.test(file.filename))
+                    file: _.find(gist.files, (file, name) => /\.ya?ml$/gi.test(name))
                 }))
                 .map(({ id, file, description }) => {
                     if (file == null) {
                         return null;
                     }
+
                     return <ISnippet>{
                         id: '',
                         name: file.filename.replace(/\.ya?ml$/gi, ''),
@@ -86,6 +89,21 @@ export class GitHubEffects {
                     return null;
                 });
 
+        })
+        .mergeMap(async (gist: IGist) => {
+            let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+            let result = await this._uiEffects.alert(`The URL of the GitHub Gist is
+
+            ${temp}.
+
+You will be able to import your snippet by choosing the "Import" button in the Playground and providing the above URL.
+`, 'Your snippet is shared', 'View on GitHub', 'Ok');
+
+            if (result === 'View on GitHub') {
+                window.open(temp);
+            }
+
+            return gist;
         })
         .map(gist => new GitHub.ShareSuccessAction(gist));
 
