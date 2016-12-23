@@ -67,6 +67,10 @@ ul {
         height: 100vh;
     }
 
+    gallery {
+        height: calc(100vh - 40px);
+    }
+
     main {
         @include flex();
         height: 100vh;

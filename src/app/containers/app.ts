@@ -13,15 +13,14 @@ import { UIEffects } from '../effects/ui';
     selector: 'app',
     template: `
         <hamburger [open]="menuOpened$" (dismiss)="hideMenu()">
-            <gallery-view></gallery-view>
+            <gallery></gallery>
         </hamburger>
         <main [ngClass]="theme$|async">
             <header class="command__bar">
                 <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
-                <command [hidden]="isEmpty || !(readonly$|async)" icon="Add" title="Add to my snippets" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Save" title="Save" (click)="save()"></command>
+                <command [hidden]="isEmpty || !(readonly$|async)" icon="Save" title="Add to my snippets" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" [async]="sharing$|async" title="Share">
                     <command [hidden]="!(isLoggedIn$|async)" icon="OpenFile" title="Public Gist" (click)="shareGist(true)"></command>
                     <command [hidden]="!(isLoggedIn$|async)" icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
@@ -44,22 +43,11 @@ import { UIEffects } from '../effects/ui';
         <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
         <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
         <import [hidden]="!(showImport$|async)"></import>
+        <alert></alert>
     `
 })
 
 export class AppComponent {
-    theme$: Observable<string>;
-    errors$: Observable<Error[]>;
-    language$: Observable<string>;
-    readonly$: Observable<boolean>;
-    menuOpened$: Observable<boolean>;
-    profile$: Observable<IProfile>;
-    isLoggedIn$: Observable<boolean>;
-    profileLoading$: Observable<boolean>;
-    sharing$: Observable<boolean>;
-    running$: Observable<boolean>;
-    showImport$: Observable<boolean>;
-
     snippet: ISnippet;
     isEmpty: boolean;
 
@@ -68,29 +56,6 @@ export class AppComponent {
         private _router: Router,
         private _effects: UIEffects
     ) {
-        this.readonly$ = this._store.select(fromRoot.getReadOnly);
-
-        this.menuOpened$ = this._store.select(fromRoot.getMenu);
-
-        this.theme$ = this._store.select(fromRoot.getTheme)
-            .map(isLight => isLight ? 'Light' : 'Dark');
-
-        this.language$ = this._store.select(fromRoot.getLanguage);
-
-        this.errors$ = this._store.select(fromRoot.getErrors);
-
-        this.profile$ = this._store.select(fromRoot.getProfile);
-
-        this.profileLoading$ = this._store.select(fromRoot.getProfileLoading);
-
-        this.running$ = this._store.select(fromRoot.getRunning);
-
-        this.isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
-
-        this.sharing$ = this._store.select(fromRoot.getSharing);
-
-        this.showImport$ = this._store.select(fromRoot.getImportState);
-
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
@@ -98,6 +63,29 @@ export class AppComponent {
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
+
+    readonly$ = this._store.select(fromRoot.getReadOnly);
+
+    menuOpened$ = this._store.select(fromRoot.getMenu);
+
+    theme$ = this._store.select(fromRoot.getTheme)
+        .map(isLight => isLight ? 'Light' : 'Dark');
+
+    language$ = this._store.select(fromRoot.getLanguage);
+
+    errors$ = this._store.select(fromRoot.getErrors);
+
+    profile$ = this._store.select(fromRoot.getProfile);
+
+    profileLoading$ = this._store.select(fromRoot.getProfileLoading);
+
+    running$ = this._store.select(fromRoot.getRunning);
+
+    isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
+
+    sharing$ = this._store.select(fromRoot.getSharing);
+
+    showImport$ = this._store.select(fromRoot.getImportState);
 
     showMenu() {
         this._store.dispatch(new UI.OpenMenuAction());
@@ -107,13 +95,6 @@ export class AppComponent {
         this._store.dispatch(new UI.CloseMenuAction());
     }
 
-    save() {
-        if (this.snippet == null) {
-            return;
-        }
-        this._store.dispatch(new Snippet.SaveAction(this.snippet));
-    }
-
     run() {
         if (this.snippet == null) {
             return;
@@ -121,8 +102,13 @@ export class AppComponent {
         this._store.dispatch(new Snippet.RunAction(this.snippet));
     }
 
-    delete() {
+    async delete() {
         if (this.snippet == null) {
+            return;
+        }
+
+        let result = await this._effects.alert('Are you sure you want to delete this snippet?', `Delete ${this.snippet.name}`, `Yes, delete it`, 'No, keep it');
+        if (result === 'No, keep it') {
             return;
         }
 
@@ -133,6 +119,7 @@ export class AppComponent {
         if (this.snippet == null) {
             return;
         }
+
         this._store.dispatch(new Snippet.DuplicateAction(this.snippet.id));
     }
 

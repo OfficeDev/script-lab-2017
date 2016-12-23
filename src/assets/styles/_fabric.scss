@@ -22,12 +22,19 @@ dialog.panel {
             height: 100%;
             overflow: hidden;
         }
+
+        &-inner {
+            padding: 0;
+        }
+
+        &-actions {
+            margin: 15px;
+        }
     }
 }
 
 .ms-Dialog {
-    min-height: 250px !important;
-    min-width: 350px;
+    min-width: 320px;
     padding: 0;
 
     .is-visible {

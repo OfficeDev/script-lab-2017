@@ -32,5 +32,9 @@ export class About {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
     config = global.build;
-    cache = `Storage Usage:\n${Utils.storageSize(localStorage, Utilities.host + ' Snippets')}\n${Utils.storageSize(sessionStorage, 'IntellisenseCache')}`;
+    cache = `
+    Storage Usage:
+    ${Utils.storageSize(localStorage, Utilities.host + ' Snippets', 'Local Snippets')}
+    ${Utils.storageSize(sessionStorage, 'IntellisenseCache', 'Intellisense')}
+    `;
 }

@@ -6,10 +6,11 @@ import { Storage } from '@microsoft/office-js-helpers';
 import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
+import { UIEffects } from '../effects/ui';
 import * as _ from 'lodash';
 
 @Component({
-    selector: 'gallery-view',
+    selector: 'gallery',
     template: `
         <section class="gallery">
             <section class="gallery__section">
@@ -43,13 +44,16 @@ import * as _ from 'lodash';
         </section>
     `
 })
-export class GalleryView extends Disposable {
+export class Gallery extends Disposable {
     templatesView: boolean;
     snippets$: Observable<ISnippet[]>;
     gists$: Observable<ISnippet[]>;
     templates$: Observable<ITemplate[]>;
 
-    constructor(private _store: Store<fromRoot.State>) {
+    constructor(
+        private _store: Store<fromRoot.State>,
+        private _effects: UIEffects,
+    ) {
         super();
 
         this.snippets$ = this._store.select(fromRoot.getSnippets)
@@ -85,10 +89,24 @@ export class GalleryView extends Disposable {
         }
     }
 
-    action(action: any) {
+    async action(action: any) {
         if (action.title === 'Local') {
             switch (action.action) {
-                case 'Delete': return this._store.dispatch(new Snippet.DeleteAllAction());
+                case 'Info': {
+                    let result = await this._effects.alert(`Snippets are stored in your browser's "localStorage" and will disappear if you clear your browser cache.
+
+                    In-order to retain permanent copies of your snippets please export them as gists via the 'Share' menu.`, `Info`, `Got it`);
+                    return;
+                }
+
+                case 'Delete': {
+                    let result = await this._effects.alert('Are you sure you want to delete all your local snippets?', `Delete local snippets`, `Yes, delete them`, 'No, keep them');
+                    if (result === 'No, keep them') {
+                        return;
+                    }
+
+                    return this._store.dispatch(new Snippet.DeleteAllAction());
+                }
             }
         }
     }

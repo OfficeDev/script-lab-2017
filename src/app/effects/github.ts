@@ -67,7 +67,7 @@ export class GitHubEffects {
         .filter(action => this._github.profile && action.payload)
         .mergeMap(({ payload, type }) => {
             let {name, description} = payload;
-            let files: IGistFiles;
+            let files: IGistFiles = {};
 
             files[`${name}.yaml`] = {
                 content: jsyaml.safeDump(payload),
@@ -75,6 +75,7 @@ export class GitHubEffects {
             };
 
             return this._github.createOrUpdateGist(
+                //TODO -- this is recurrsive....
                 `${description} -- Shared with Add-in Playground`,
                 files,
                 null,

@@ -1,0 +1,33 @@
+@import '../mixins';
+@import '../vars';
+
+.import {
+    &-tab__section {
+        padding: 15px;
+    }
+
+    &__title {
+        margin-bottom: $default-spacing/2;
+    }
+
+    &__subtitle {
+        margin-bottom: 2*$default-spacing;
+    }
+
+    &__field {
+        margin-bottom: 2*$default-spacing;
+
+        .ms-Label {
+            text-transform: uppercase;
+        }
+
+        textarea {
+            min-height: 300px !important;
+        }
+    }
+
+    &__examples-list {
+        padding: $default-spacing;
+        opacity: 0.6;
+    }
+}
