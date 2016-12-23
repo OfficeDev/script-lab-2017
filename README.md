@@ -7,6 +7,6 @@ The basic flows should all work, but with some awkward moments.  Namely, you sho
 * Switch between snippets.
 * Editor IntelliSense.
 * Ability to share.
-* Ability to import from "clipboard-copied" YAML file (but **currently broken for any URL import** -- "new-style" gist or old; I'm assuming it's a super-simple fix, but it will need to wait on Bhargav (filed issue [#5](https://github.com/OfficeDev/addin-playground/issues/5)).
+* Ability to import from "clipboard-copied" YAML file or from GIST ID (both "new-style" gists and old).  **But note that it has to be JUST the ID, a full URL will NOT work** ([#5](https://github.com/OfficeDev/addin-playground/issues/5)).
 
 Any issues should be logged into the appropriate milestones at <https://github.com/OfficeDev/addin-playground/milestones>.  One bug (or group of related bugs) per issue.
