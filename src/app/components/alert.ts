@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI } from '../actions';
@@ -13,7 +13,7 @@ import { UI } from '../actions';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button *ngFor="let action of dialog?.actions" class="ms-Dialog-action ms-Button" (click)="dismiss(action)">
-                        <span class="ms-Button-label">{{action.name}}</span>
+                        <span class="ms-Button-label">{{action}}</span>
                     </button>
                 </div>
             </div>
@@ -21,10 +21,10 @@ import { UI } from '../actions';
     `
 })
 export class Alert {
-    @Input('show') dialog: IAlert;
+    dialog: IAlert;
 
     constructor(private _store: Store<fromRoot.State>) {
-
+        this._store.select(fromRoot.getDialog).subscribe(dialog => this.dialog = dialog);
     }
 
     dismiss(action: string) {

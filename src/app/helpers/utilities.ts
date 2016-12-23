@@ -35,14 +35,14 @@ export function updateState<T>(state: T) {
 };
 
 export class Utilities {
-    static storageSize(storage: any, key?: string) {
+    static storageSize(storage: any, key?: string, name?: string) {
         if (storage == null) {
             return;
         }
 
         if (key) {
             let len = ((storage[key].length + key.length) * 2);
-            return `${key.substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
+            return `${(name || key).substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
         }
 
         let total = Object.keys(storage).reduce((total, key) => {

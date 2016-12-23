@@ -12,19 +12,17 @@ import { UI, Monaco, Snippet } from '../actions';
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'url'}" (click)="view = 'url'">From url</li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'snippet'}" (click)="view = 'snippet'">From snippet</li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'gist'}" (click)="view = 'gist'">From my gists</li>
                 </ul>
                 <div class="gallery__tabs-container">
-                    <section class="tab__section">
-                        <h1 class="ms-font-xxl">From url</h1>
-                        <p class="ms-font-l">Paste the snippet's URL or ID into the text area below, and then choose the "Import" button.</p>
-                        <div class="ms-TextField">
+                    <section class="import-tab__section" [hidden]="view !== 'url'">
+                        <h1 class="ms-font-xxl import__title">From url</h1>
+                        <p class="ms-font-l import__subtitle">Paste the snippet's URL or ID into the text area below, and then choose the "Import" button.</p>
+                        <div class="ms-TextField import__field">
                             <label class="ms-Label">Url or gist id</label>
-                            <input class="ms-TextField-field" type="text" value="" placeholder="Enter your url or gist id here" >
+                            <input class="ms-TextField-field" type="text" [(ngModel)]="id" placeholder="Enter your url or gist id here" >
                         </div>
-
-                        <p class="ms-font-m">Here are examples:</p>
-                        <ol>
+                        <p class="ms-font-m import__examples">Here are examples:</p>
+                        <ol class="ms-font-m import__examples-list">
                             <li>https://gist.github.com/sampleGistId</li>
                             <li>https://addin-playground.azurewebsites.net/#/gist/sampleGistId</li>
                             <li>https://mywebsite.com/myfolder/mysnippet.yaml</li>
@@ -32,12 +30,13 @@ import { UI, Monaco, Snippet } from '../actions';
                             <li>sampleGistId</li>
                         </ol>
                     </section>
-                    <section class="tab__section" [hidden]="view !== 'snippet'">
-                        <h1 class="ms-font-xxl">From snippet</h1>
-                        <p class="ms-font-l">Paste the snippet's URL into the text area below, and then choose the "Import" button.</p>
-                        <p class="ms-font-m">Here are the list of valid urls:</p>
-                    </section>
-                    <section class="tab__section" [hidden]="view !== 'gist'">
+                    <section class="import-tab__section" [hidden]="view !== 'snippet'">
+                        <h1 class="ms-font-xxl import__title">From snippet</h1>
+                        <p class="ms-font-l import__subtitle">Paste the snippet's yaml into the text area below, and then choose the "Import" button.</p>
+                        <div class="ms-TextField ms-TextField--multiline import__field">
+                            <label class="ms-Label">Snippet Yaml</label>
+                            <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
+                        </div>
                     </section>
                 </div>
             </section>
@@ -52,21 +51,26 @@ import { UI, Monaco, Snippet } from '../actions';
                 </div>
             </div>
         </dialog>
-    `,
-    styles: [`
-        .tab__section {
-            padding: 15px;
-        }
-    `]
+    `
 })
 export class Import {
+    view = 'url';
+    id: string;
+    snippet: string;
+
     constructor(private _store: Store<fromRoot.State>) {
     }
 
     show$ = this._store.select(fromRoot.getImportState);
 
     import() {
-        this._store.dispatch(new Snippet.ImportAction(null));
+        let data = this.view === 'url' ? this.id : this.snippet;
+        if (data == null || data.trim() === '') {
+            return;
+        }
+
+        console.log(data);
+        this._store.dispatch(new Snippet.ImportAction(data));
         this.cancel();
     }
 

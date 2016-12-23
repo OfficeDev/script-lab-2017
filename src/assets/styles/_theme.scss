@@ -28,6 +28,12 @@
         }
     }
 
+    .import {
+        &__field .ms-Label {
+            color: $accent-background-primary;
+        }
+    }
+
     .command {
         &__bar {
             background: $accent-background-primary;
