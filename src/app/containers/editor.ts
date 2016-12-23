@@ -40,7 +40,7 @@ export class Editor extends Disposable implements AfterViewInit {
      */
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs', readOnly: true });
-        this._monacoEditor.onKeyDown(evt => this._debouncedInput(evt));
+        this._monacoEditor.onKeyUp(evt => this._debouncedInput(evt));
         this._createTabs();
         this._subscribeToState();
     }
@@ -110,6 +110,9 @@ export class Editor extends Disposable implements AfterViewInit {
                 if (newTab) {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
+                    if (this.currentState.name === 'script') {
+                        this.updateIntellisense();
+                    }
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this.currentState.viewState);
                     this._monacoEditor.focus();
@@ -146,7 +149,6 @@ export class Editor extends Disposable implements AfterViewInit {
 
         this._snippet = snippet;
         this.changeTab();
-        this.updateIntellisense();
     }
 
     /**

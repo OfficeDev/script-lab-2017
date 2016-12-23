@@ -37,6 +37,7 @@ export class MonacoEffects {
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
         .map((action: Monaco.AddIntellisenseAction) => ({ payload: action.payload, language: action.language }))
         .mergeMap(({ payload, language }) => this._parseAndUpdate(payload, language))
+        .filter(data => data !== null)
         .map(data => new Monaco.UpdateIntellisenseSuccessAction());
 
     @Effect()
@@ -69,6 +70,7 @@ export class MonacoEffects {
                     .mergeMap(url => this._get(url))
                     .filter(file => !(file == null))
                     .map(file => {
+                        console.log(file);
                         let intellisense = this._current.get(file.url);
                         if (intellisense == null) {
                             let disposable = source.addExtraLib(file.content, file.url);
