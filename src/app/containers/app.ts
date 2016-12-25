@@ -99,7 +99,16 @@ export class AppComponent {
         if (this.snippet == null) {
             return;
         }
-        this._store.dispatch(new Snippet.RunAction(this.snippet));
+
+        var returnUrl = window.location.href;
+        this._store.dispatch(new Snippet.RunAction({
+            snippet: this.snippet,
+            returnUrl: returnUrl,
+            refreshUrl: window.location.origin + '/refresh.html?' +
+                'id=' + this.snippet.id + '&' +
+                'source=' + Utilities.host + '&' +
+                'returnUrl=' + encodeURIComponent(returnUrl)
+        }));
     }
 
     async delete() {

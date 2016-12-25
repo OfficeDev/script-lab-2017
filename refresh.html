@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+	<title>Add-in Playground</title>
+	<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
+
+	<script>
+		var id = getParameterByName('id')
+		var storageKey = getParameterByName('source') + ' Snippets';
+		var snippet = JSON.parse(window.localStorage[storageKey])[id];
+		
+		$(document).ready(function() {
+			$('body').text(JSON.stringify(snippet));
+		});
+
+		var returnUrl = getParameterByName('returnUrl');
+
+		function getParameterByName (name) {
+			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+			var regexS = "[\\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(window.location.search);
+			if (results == null)
+				return "";
+			else
+				return decodeURIComponent(results[1]);
+		}
+	</script>
+</head>
+
+<body>
+</body>
+
+</html>

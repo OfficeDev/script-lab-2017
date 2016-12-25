@@ -23,6 +23,12 @@ interface ISnippet extends ITemplate {
     libraries?: string;
 }
 
+interface IRunnerPostData {
+    snippet: ISnippet;
+    returnUrl: string;
+    refreshUrl: string;
+}
+
 interface IMonacoEditorState {
     name?: string;
     view?: string;

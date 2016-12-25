@@ -157,9 +157,15 @@ export class SnippetEffects {
     run$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
-        .do(snippet => {
-            let yaml = jsyaml.safeDump(snippet);
-            this._post('https://addin-playground-runner.azurewebsites.net', { snippet: yaml });
+        .do((data: IRunnerPostData) => {
+            var url = 'https://addin-playground-runner.azurewebsites.net';
+            this._post(url, {
+                data: JSON.stringify({
+                    snippet: jsyaml.safeDump(data.snippet),
+                    returnUrl: data.returnUrl,
+                    refreshUrl: data.refreshUrl
+                })
+            });
         });
 
     @Effect()
