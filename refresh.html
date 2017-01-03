@@ -5,8 +5,10 @@
 	<base href="/">
 	<title>Add-in Playground</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
-	
-	<script>
+</head>
+
+<body>
+		<script>
 		var queryParams = queryParamsToJson(); 
 		var id = queryParams['id'];
 		var storageKey = queryParams['host'] + ' Snippets';
@@ -23,18 +25,7 @@
 		}
 
 		var runnerUrl = 'https://addin-playground-runner.azurewebsites.net/';
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", runnerUrl);
-		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		//xhr.send(JSON.stringify(postData));
-		console.log(JSON.stringify(postData));
-
-		xhr.onreadystatechange = function () {
-			console.log(xhr.responseText);
-			// if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-			// 	console.log(xhr.responseText);
-			// }
-		}
+		post(runnerUrl, postData);
 
 		function queryParamsToJson() {
 			var indexOfQuestionMark = window.location.href.indexOf('?');
@@ -59,10 +50,24 @@
 
 			return result;
 		}
-	</script>
-</head>
 
-<body>
+		function post(path, params) {
+			var form = document.createElement('form');
+			form.setAttribute('method', 'post');
+			form.setAttribute('action', path);
+			for (var key in params) {
+				if (params.hasOwnProperty(key)) {
+					var hiddenField = document.createElement('input');
+					hiddenField.setAttribute('type', 'hidden');
+					hiddenField.setAttribute('name', key);
+					hiddenField.setAttribute('value', params[key]);
+					form.appendChild(hiddenField);
+				}
+			}
+			document.body.appendChild(form);
+			form.submit();
+		}
+	</script>
 </body>
 
 </html>
