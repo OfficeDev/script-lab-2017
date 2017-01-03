@@ -9,4 +9,9 @@ The basic flows should all work, but with some awkward moments.  Namely, you sho
 * Ability to share.
 * Ability to import from "clipboard-copied" YAML file or from GIST ID (both "new-style" gists and old).
 
+Since the end-of-December release, we've also had the following imporvements:
+* Runner and snippet code are isolated, in a way that ensures that scripts and CSS do not overlap with that of the body
+* Runner now adopts the host header color
+* Runner shows a loading progress
+
 Any issues should be logged into the appropriate milestones at <https://github.com/OfficeDev/addin-playground/milestones>.  One bug (or group of related bugs) per issue.
