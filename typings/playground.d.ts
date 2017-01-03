@@ -23,6 +23,17 @@ interface ISnippet extends ITemplate {
     libraries?: string;
 }
 
+interface IRunnerPostData {
+    snippet: ISnippet | string; /* ISnippet when passed around, but string over the wire */
+    returnUrl: string;
+    refreshUrl: string;
+
+    // Any further fields will simply get passed in to the refresh page:
+    id: string;
+    host: string;
+    platform: string;
+}
+
 interface IMonacoEditorState {
     name?: string;
     view?: string;

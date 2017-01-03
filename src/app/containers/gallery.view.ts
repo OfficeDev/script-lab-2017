@@ -56,6 +56,9 @@ export class Gallery extends Disposable {
     ) {
         super();
 
+        // TODO: Until we have routing set up, open the menu automatically on reload 
+        this._store.dispatch(new UI.OpenMenuAction());
+
         this.snippets$ = this._store.select(fromRoot.getSnippets)
             .map(snippets => {
                 if (_.isEmpty(snippets)) {

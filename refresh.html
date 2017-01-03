@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+	<title>Add-in Playground</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
+</head>
+
+<body>
+		<script>
+		var queryParams = queryParamsToJson(); 
+		var id = queryParams['id'];
+		var storageKey = queryParams['host'] + ' Snippets';
+		var snippet = JSON.parse(window.localStorage[storageKey])[id];
+
+		var postData /*: a partial IRunnerPostData */ = {
+			snippet: jsyaml.safeDump(snippet),
+			refreshUrl: window.location.href
+		}
+
+		// For all other properties, simply re-send the parameters on the query string:
+		for (prop in queryParams) {
+			postData[prop] = encodeURIComponent(queryParams[prop]);
+		}
+
+		var runnerUrl = 'https://addin-playground-runner.azurewebsites.net/';
+		post(runnerUrl, postData);
+
+		function queryParamsToJson() {
+			var indexOfQuestionMark = window.location.href.indexOf('?');
+			if (indexOfQuestionMark < 0) {
+				return {};
+			}
+
+			var allParams = window.location.href.substr(indexOfQuestionMark + 1).trim();
+			if (allParams.length == 0) {
+				return {};
+			}
+
+			var keyValuePairStrings = allParams.split('&');
+			var result = {};
+			keyValuePairStrings.forEach(function(item) {
+				var split = item.split('=');
+				if (split.length != 2) {
+					throw new Error("Invalid key-value pair for " + item);
+				}
+				result[split[0]] = decodeURIComponent(split[1]);
+			});
+
+			return result;
+		}
+
+		function post(path, params) {
+			var form = document.createElement('form');
+			form.setAttribute('method', 'post');
+			form.setAttribute('action', path);
+			for (var key in params) {
+				if (params.hasOwnProperty(key)) {
+					var hiddenField = document.createElement('input');
+					hiddenField.setAttribute('type', 'hidden');
+					hiddenField.setAttribute('name', key);
+					hiddenField.setAttribute('value', params[key]);
+					form.appendChild(hiddenField);
+				}
+			}
+			document.body.appendChild(form);
+			form.submit();
+		}
+	</script>
+</body>
+
+</html>

@@ -99,6 +99,7 @@ export class AppComponent {
         if (this.snippet == null) {
             return;
         }
+
         this._store.dispatch(new Snippet.RunAction(this.snippet));
     }
 

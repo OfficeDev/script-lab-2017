@@ -157,9 +157,21 @@ export class SnippetEffects {
     run$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
-        .do(snippet => {
-            let yaml = jsyaml.safeDump(snippet);
-            this._post('https://addin-playground-runner.azurewebsites.net', { snippet: yaml });
+        .do((snippet: ISnippet) => {
+            var url = 'https://addin-playground-runner.azurewebsites.net/';
+
+            let postData: IRunnerPostData = {
+                snippet: jsyaml.safeDump(snippet),
+                returnUrl: window.location.href,
+                refreshUrl: window.location.origin + '/refresh.html',
+
+                // Any further fields will simply get passed in to the refresh page: 
+                id: snippet.id,                
+                host: Utilities.host,
+                platform: Utilities.platform
+            };
+            
+            this._post(url, { data: JSON.stringify(postData) });
         });
 
     @Effect()
