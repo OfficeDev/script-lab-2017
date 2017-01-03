@@ -100,15 +100,7 @@ export class AppComponent {
             return;
         }
 
-        var returnUrl = window.location.href;
-        this._store.dispatch(new Snippet.RunAction({
-            snippet: this.snippet,
-            returnUrl: returnUrl,
-            refreshUrl: window.location.origin + '/refresh.html?' +
-                'id=' + this.snippet.id + '&' +
-                'source=' + Utilities.host + '&' +
-                'returnUrl=' + encodeURIComponent(returnUrl)
-        }));
+        this._store.dispatch(new Snippet.RunAction(this.snippet));
     }
 
     async delete() {

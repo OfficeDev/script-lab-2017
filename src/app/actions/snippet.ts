@@ -63,7 +63,7 @@ export class UpdateInfoAction implements Action {
 export class RunAction implements Action {
     readonly type = SnippetActionTypes.RUN;
 
-    constructor(public payload: IRunnerPostData) { }
+    constructor(public payload: ISnippet) { }
 }
 
 export class CreateAction implements Action {

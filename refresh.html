@@ -4,28 +4,60 @@
 <head>
 	<base href="/">
 	<title>Add-in Playground</title>
-	<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
+	
 	<script>
-		var id = getParameterByName('id')
-		var storageKey = getParameterByName('source') + ' Snippets';
+		var queryParams = queryParamsToJson(); 
+		var id = queryParams['id'];
+		var storageKey = queryParams['host'] + ' Snippets';
 		var snippet = JSON.parse(window.localStorage[storageKey])[id];
-		
-		$(document).ready(function() {
-			$('body').text(JSON.stringify(snippet));
-		});
 
-		var returnUrl = getParameterByName('returnUrl');
+		var postData /*: a partial IRunnerPostData */ = {
+			snippet: jsyaml.safeDump(snippet),
+			refreshUrl: window.location.href
+		}
 
-		function getParameterByName (name) {
-			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-			var regexS = "[\\?&]" + name + "=([^&#]*)";
-			var regex = new RegExp(regexS);
-			var results = regex.exec(window.location.search);
-			if (results == null)
-				return "";
-			else
-				return decodeURIComponent(results[1]);
+		// For all other properties, simply re-send the parameters on the query string:
+		for (prop in queryParams) {
+			postData[prop] = encodeURIComponent(queryParams[prop]);
+		}
+
+		var runnerUrl = 'https://addin-playground-runner.azurewebsites.net/';
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", runnerUrl);
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		//xhr.send(JSON.stringify(postData));
+		console.log(JSON.stringify(postData));
+
+		xhr.onreadystatechange = function () {
+			console.log(xhr.responseText);
+			// if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+			// 	console.log(xhr.responseText);
+			// }
+		}
+
+		function queryParamsToJson() {
+			var indexOfQuestionMark = window.location.href.indexOf('?');
+			if (indexOfQuestionMark < 0) {
+				return {};
+			}
+
+			var allParams = window.location.href.substr(indexOfQuestionMark + 1).trim();
+			if (allParams.length == 0) {
+				return {};
+			}
+
+			var keyValuePairStrings = allParams.split('&');
+			var result = {};
+			keyValuePairStrings.forEach(function(item) {
+				var split = item.split('=');
+				if (split.length != 2) {
+					throw new Error("Invalid key-value pair for " + item);
+				}
+				result[split[0]] = decodeURIComponent(split[1]);
+			});
+
+			return result;
 		}
 	</script>
 </head>
