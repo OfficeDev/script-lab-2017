@@ -633,18 +633,19 @@
 			for (var id in snippets) {
 				hasChildren = true;
 
-				var snippet = snippets[id];
-				var $item = $(
-					'<article class="gallery-list__item gallery-list__item--template ms-font-m">'+
-						'<div class="name"></div>'+
-						'<div class="description"></div>'+
-					'</article>');
-				$item.children('.name').text(snippet.name);
-				$item.children('.description').text(snippet.description);
-				$item.children().click(function() {
-					navigateToRunner(snippet);
-				})
-				$item.appendTo($list);
+				(function(snippet) {
+					var $item = $(
+						'<article class="gallery-list__item gallery-list__item--template ms-font-m">'+
+							'<div class="name"></div>'+
+							'<div class="description"></div>'+
+						'</article>');
+					$item.children('.name').text(snippet.name);
+					$item.children('.description').text(snippet.description);
+					$item.children().click(function() {
+						navigateToRunner(snippet);
+					})
+					$item.appendTo($list);
+				})(snippets[id]);
 			}
 
 			if (!hasChildren) {
