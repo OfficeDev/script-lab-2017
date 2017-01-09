@@ -580,7 +580,7 @@
 									<collapse>
 										<div class="command__bar command--light">
 											<div class="command__title">
-												<span class="ms-font-m">RUN LOCAL SNIPPETS</span>
+												<span class="ms-font-m">LOCAL</span>
 											</div>
 										</div>
 										<section class="collapse__panel">
@@ -621,9 +621,10 @@
 
 		function initializeRunner() {
 			var host = OfficeHelpers.Utilities.host;
+			var platform = OfficeHelpers.Utilities.platform;
 			var storageKey = host + ' Snippets';
 
-			setCssRules(host);
+			setCssRules(host, platform);
 
 			var snippets = JSON.parse(window.localStorage[storageKey] || "{}");
 			var $list = $('#local-snippet-list');
@@ -656,12 +657,16 @@
 			$('#snippet-list').show();		
 		};
 
-		function setCssRules(host) {
+		function setCssRules(host, platform) {
 			var hostColor = getHostColors();
 			var rule = '.gallery-list__item:active, .gallery-list__item:hover {' + 
 				'background: ' + hostColor.primary + '; color: white; }' + '\n' +
 				'#header { background: ' + hostColor.primary + '; }' + '\n' +
 				'.command__icon:hover { background: ' + hostColor.darker + '; }' + '\n';
+			
+			if (platform === OfficeHelpers.PlatformType.PC) {
+				rule += '#header .command__icon:last-of-type { padding-right: 30px; }' + '\n';
+			}
 
 			$('<style>' + rule + '</style>').appendTo('head');
 
