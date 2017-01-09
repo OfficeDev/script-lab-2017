@@ -52,6 +52,7 @@ export class SnippetEffects {
                     break;
 
                 case 'GIST':
+                    data = data.replace(/https:\/\/gist.github.com\/.*?\//, '');
                     observable = this._github.gist(data)
                         .map(gist => {
                             let snippet = _.find(gist.files, (value, key) => /\.ya?ml$/gi.test(key));
@@ -165,12 +166,12 @@ export class SnippetEffects {
                 returnUrl: window.location.href,
                 refreshUrl: window.location.origin + '/refresh.html',
 
-                // Any further fields will simply get passed in to the refresh page: 
-                id: snippet.id,                
+                // Any further fields will simply get passed in to the refresh page:
+                id: snippet.id,
                 host: Utilities.host,
                 platform: Utilities.platform
             };
-            
+
             this._post(url, { data: JSON.stringify(postData) });
         });
 
@@ -192,6 +193,10 @@ export class SnippetEffects {
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {
             return null;
+        }
+
+        if (/^https:\/\/gist.github.com/.test(data)) {
+            return 'GIST';
         }
 
         if (/^https?/.test(data)) {
