@@ -34,7 +34,7 @@
     "@angular/platform-browser": "^2.3.0",
     "@angular/platform-browser-dynamic": "^2.3.0",
     "@angular/router": "^3.3.0",
-    "@microsoft/office-js-helpers": "^0.3.5",
+    "@microsoft/office-js-helpers": "0.4.1",
     "@ngrx/core": "^1.2.0",
     "@ngrx/effects": "^2.0.0",
     "@ngrx/store": "^2.2.1",

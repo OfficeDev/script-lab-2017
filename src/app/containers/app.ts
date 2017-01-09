@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { Utilities, HostTypes } from '@microsoft/office-js-helpers';
+import { Utilities, HostType } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Theme, Utilities as Utils } from '../helpers';
 import { Store } from '@ngrx/store';
