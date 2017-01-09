@@ -8,7 +8,7 @@
   <Version>1.0.0.2</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Add-in Playground" />
+  <DisplayName DefaultValue="[PROD] Add-in Playground" />
   <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-64.png" />
@@ -190,7 +190,7 @@
         <bt:Url id="PG_Run_Url" DefaultValue="https://addin-playground.azurewebsites.net/run.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="PG.GroupLabel" DefaultValue="Add-in Playground" />
+        <bt:String id="PG.GroupLabel" DefaultValue="[PROD] Add-in Playground" />
         <bt:String id="PG.EditButton.Label" DefaultValue="Edit" />
         <bt:String id="PG.EditButton.TipTitle" DefaultValue="Edit snippets in the Add-in Playground" />
         <bt:String id="PG.RunButton.Label" DefaultValue="Run" />

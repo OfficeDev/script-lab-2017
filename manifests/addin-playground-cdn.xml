@@ -29,33 +29,48 @@
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides 
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
-    <Description resid="Play.Description" />
+    <Description resid="PG.Description" />
     <Hosts>
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabHome">
-              <Group id="Play.Group">
-                <Label resid="Play.GroupLabel" />
+              <Group id="PG.Group">
+                <Label resid="PG.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="Play_icon_16" />
-                  <bt:Image size="32" resid="Play_icon_32" />
-                  <bt:Image size="80" resid="Play_icon_80" />
+                  <bt:Image size="16" resid="PG_icon_16" />
+                  <bt:Image size="32" resid="PG_icon_32" />
+                  <bt:Image size="80" resid="PG_icon_80" />
                 </Icon>
-                <Control xsi:type="Button" id="Play.TaskpaneButton">
-                  <Label resid="Play.TaskpaneButton.Label" />
+                <Control xsi:type="Button" id="PG.EditButton">
+                  <Label resid="PG.EditButton.Label" />
                   <Supertip>
-                    <Title resid="Play.TaskpaneButton.TipTitle" />
-                    <Description resid="Play.Supertip.Desc" />
+                    <Title resid="PG.EditButton.TipTitle" />
+                    <Description resid="PG.EditSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Play_icon_16" />
-                    <bt:Image size="32" resid="Play_icon_32" />
-                    <bt:Image size="80" resid="Play_icon_80" />
+                    <bt:Image size="16" resid="PG_edit_icon_16" />
+                    <bt:Image size="32" resid="PG_edit_icon_32" />
+                    <bt:Image size="80" resid="PG_edit_icon_80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_Url" />
+                    <SourceLocation resid="PG_Edit_Url" />
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunButton">
+                  <Label resid="PG.RunButton.Label" />
+                  <Supertip>
+                    <Title resid="PG.RunButton.TipTitle" />
+                    <Description resid="PG.RunSupertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG_run_icon_16" />
+                    <bt:Image size="32" resid="PG_run_icon_32" />
+                    <bt:Image size="80" resid="PG_run_icon_80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+
+                    <SourceLocation resid="PG_Run_Url" />
                   </Action>
                 </Control>
               </Group>
@@ -67,27 +82,42 @@
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabHome">
-              <Group id="Play.Group">
-                <Label resid="Play.GroupLabel" />
+              <Group id="PG.Group">
+                <Label resid="PG.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="Play_icon_16" />
-                  <bt:Image size="32" resid="Play_icon_32" />
-                  <bt:Image size="80" resid="Play_icon_80" />
+                  <bt:Image size="16" resid="PG_icon_16" />
+                  <bt:Image size="32" resid="PG_icon_32" />
+                  <bt:Image size="80" resid="PG_icon_80" />
                 </Icon>
-                <Control xsi:type="Button" id="Play.TaskpaneButton">
-                  <Label resid="Play.TaskpaneButton.Label" />
+                <Control xsi:type="Button" id="PG.EditButton">
+                  <Label resid="PG.EditButton.Label" />
                   <Supertip>
-                    <Title resid="Play.TaskpaneButton.TipTitle" />
-                    <Description resid="Play.Supertip.Desc" />
+                    <Title resid="PG.EditButton.TipTitle" />
+                    <Description resid="PG.EditSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Play_icon_16" />
-                    <bt:Image size="32" resid="Play_icon_32" />
-                    <bt:Image size="80" resid="Play_icon_80" />
+                    <bt:Image size="16" resid="PG_edit_icon_16" />
+                    <bt:Image size="32" resid="PG_edit_icon_32" />
+                    <bt:Image size="80" resid="PG_edit_icon_80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_Url" />
+                    <SourceLocation resid="PG_Edit_Url" />
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunButton">
+                  <Label resid="PG.RunButton.Label" />
+                  <Supertip>
+                    <Title resid="PG.RunButton.TipTitle" />
+                    <Description resid="PG.RunSupertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG_run_icon_16" />
+                    <bt:Image size="32" resid="PG_run_icon_32" />
+                    <bt:Image size="80" resid="PG_run_icon_80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+
+                    <SourceLocation resid="PG_Run_Url" />
                   </Action>
                 </Control>
               </Group>
@@ -99,27 +129,42 @@
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabHome">
-              <Group id="Play.Group">
-                <Label resid="Play.GroupLabel" />
+              <Group id="PG.Group">
+                <Label resid="PG.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="Play_icon_16" />
-                  <bt:Image size="32" resid="Play_icon_32" />
-                  <bt:Image size="80" resid="Play_icon_80" />
+                  <bt:Image size="16" resid="PG_icon_16" />
+                  <bt:Image size="32" resid="PG_icon_32" />
+                  <bt:Image size="80" resid="PG_icon_80" />
                 </Icon>
-                <Control xsi:type="Button" id="Play.TaskpaneButton">
-                  <Label resid="Play.TaskpaneButton.Label" />
+                <Control xsi:type="Button" id="PG.EditButton">
+                  <Label resid="PG.EditButton.Label" />
                   <Supertip>
-                    <Title resid="Play.TaskpaneButton.TipTitle" />
-                    <Description resid="Play.Supertip.Desc" />
+                    <Title resid="PG.EditButton.TipTitle" />
+                    <Description resid="PG.EditSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Play_icon_16" />
-                    <bt:Image size="32" resid="Play_icon_32" />
-                    <bt:Image size="80" resid="Play_icon_80" />
+                    <bt:Image size="16" resid="PG_edit_icon_16" />
+                    <bt:Image size="32" resid="PG_edit_icon_32" />
+                    <bt:Image size="80" resid="PG_edit_icon_80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Play</TaskpaneId>
-                    <SourceLocation resid="Play_Taskpane_Url" />
+                    <SourceLocation resid="PG_Edit_Url" />
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunButton">
+                  <Label resid="PG.RunButton.Label" />
+                  <Supertip>
+                    <Title resid="PG.RunButton.TipTitle" />
+                    <Description resid="PG.RunSupertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG_run_icon_16" />
+                    <bt:Image size="32" resid="PG_run_icon_32" />
+                    <bt:Image size="80" resid="PG_run_icon_80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+
+                    <SourceLocation resid="PG_Run_Url" />
                   </Action>
                 </Control>
               </Group>
@@ -130,21 +175,31 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Play_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
-        <bt:Image id="Play_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
-        <bt:Image id="Play_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
+        <bt:Image id="PG_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
+        <bt:Image id="PG_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
+        <bt:Image id="PG_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
+        <bt:Image id="PG_edit_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
+        <bt:Image id="PG_edit_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
+        <bt:Image id="PG_edit_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
+        <bt:Image id="PG_run_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
+        <bt:Image id="PG_run_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
+        <bt:Image id="PG_run_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Play_Taskpane_Url" DefaultValue="https://addin-playground.azureedge.net" />
+        <bt:Url id="PG_Edit_Url" DefaultValue="https://addin-playground.azureedge.net" />
+        <bt:Url id="PG_Run_Url" DefaultValue="https://addin-playground.azureedge.net/run.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="Play.GroupLabel" DefaultValue="Add-in Playground" />
-        <bt:String id="Play.TaskpaneButton.Label" DefaultValue="Edit" />
-        <bt:String id="Play.TaskpaneButton.TipTitle" DefaultValue="Add-in Playground" />
+        <bt:String id="PG.GroupLabel" DefaultValue="Add-in Playground" />
+        <bt:String id="PG.EditButton.Label" DefaultValue="Edit" />
+        <bt:String id="PG.EditButton.TipTitle" DefaultValue="Edit snippets in the Add-in Playground" />
+        <bt:String id="PG.RunButton.Label" DefaultValue="Run" />
+        <bt:String id="PG.RunButton.TipTitle" DefaultValue="Run a Playground snippet" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="Play.Supertip.Desc" DefaultValue="Open the Add-in Playground in editor mode to create snippets." />
-        <bt:String id="Play.Description" DefaultValue="Create, run and share your Add-in snippets directly from Excel or Word." />
+        <bt:String id="PG.EditSupertip.Desc" DefaultValue="Opens the Add-in Playground snippet editor." />
+        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens the Add-in Playground runner." />
+        <bt:String id="PG.Description" DefaultValue="Create, run and share your Add-in snippets directly from Excel or Word." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
