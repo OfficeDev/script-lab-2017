@@ -37,6 +37,10 @@ module.exports = webpackMerge(commonConfig, {
                 from: 'src/extras',
                 to: ''
             },
+            {
+                from: '*.html',
+                to: ''
+            }
         ]),
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({

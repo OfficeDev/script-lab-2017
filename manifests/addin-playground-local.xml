@@ -104,6 +104,21 @@
                     <SourceLocation resid="PG_Edit_Url" />
                   </Action>
                 </Control>
+                <Control xsi:type="Button" id="PG.RunButton">
+                  <Label resid="PG.RunButton.Label" />
+                  <Supertip>
+                    <Title resid="PG.RunButton.TipTitle" />
+                    <Description resid="PG.RunSupertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG_run_icon_16" />
+                    <bt:Image size="32" resid="PG_run_icon_32" />
+                    <bt:Image size="80" resid="PG_run_icon_80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG_Run_Url" />
+                  </Action>
+                </Control>
               </Group>
             </OfficeTab>
           </ExtensionPoint>
@@ -133,6 +148,21 @@
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Edit_Url" />
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.RunButton">
+                  <Label resid="PG.RunButton.Label" />
+                  <Supertip>
+                    <Title resid="PG.RunButton.TipTitle" />
+                    <Description resid="PG.RunSupertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG_run_icon_16" />
+                    <bt:Image size="32" resid="PG_run_icon_32" />
+                    <bt:Image size="80" resid="PG_run_icon_80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG_Run_Url" />
                   </Action>
                 </Control>
               </Group>

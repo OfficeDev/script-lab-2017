@@ -58,6 +58,8 @@ bin
 
 node_modules/**
 packages/**
-dist/**
 typings/**
 .vscode/**
+dist/monaco-editor/**
+dist/favicon/**
+monaco-editor
