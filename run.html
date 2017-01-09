@@ -79,7 +79,6 @@
 		}
 
 		.command__bar {
-			background: #0078d7;
 			display: -webkit-inline-flex;
 			display: -ms-inline-flexbox;
 			display: inline-flex;
@@ -189,7 +188,7 @@
 		}
 		
 		.app gallery {
-			height: 100vh;
+			height: calc(100vh - 40px);
 			-webkit-flex: 1 1 100%;
 			-ms-flex: 1 1 100%;
 			flex: 1 1 100%;
@@ -262,14 +261,14 @@
 		}
 
 		.command__bar.command--light {
-			color: white;
+			background: #dedede;
+			color: #666;
 		}
 		.command--light .command__icon {
 			opacity: .8;
 		}
 
-		.command--light .command__icon:hover {
-			background: #005ca4;
+		#header {
 			color: white;
 		}
 
@@ -565,6 +564,14 @@
 		</div>
 		<div id="snippet-list" class="hamburger" style="display:none">
 			<section class="hamburger-menu">
+				<div id="header" class="command__bar">
+					<div class="command__title">
+						<span class="ms-font-m">PLAYGROUND RUNNER</span>
+					</div>
+					<div class="command__icon" onclick="window.location.reload()">
+						<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
+					</div>
+				</div>
 				<div class="hamburger-menu__container">
 					<gallery>
 						<section class="gallery">
@@ -574,9 +581,6 @@
 										<div class="command__bar command--light">
 											<div class="command__title">
 												<span class="ms-font-m">RUN LOCAL SNIPPETS</span>
-											</div>
-											<div class="command__icon">
-												<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
 											</div>
 										</div>
 										<section class="collapse__panel">
@@ -655,7 +659,8 @@
 			var hostColor = getHostColors();
 			var rule = '.gallery-list__item:active, .gallery-list__item:hover {' + 
 				'background: ' + hostColor.primary + '; color: white; }' + '\n' +
-				'.command--light.command__bar { background: ' + hostColor.darker + '; }';
+				'#header { background: ' + hostColor.primary + '; }' + '\n' +
+				'.command__icon:hover { background: ' + hostColor.darker + '; }' + '\n';
 
 			$('<style>' + rule + '</style>').appendTo('head');
 
