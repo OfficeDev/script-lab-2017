@@ -17,10 +17,23 @@ dialog.panel {
         width: 100% !important;
         height: 100% !important;
         max-width: none;
+        min-width: 320px;
 
         &-content {
             height: 100%;
             overflow: hidden;
+        }
+
+        &-inner,
+        &-main {
+            height: 100%;
+            @include flex();
+            min-width: none !important;
+            max-width: none !important;
+        }
+
+        &-main {
+            max-height: 100vh;
         }
 
         &-inner {
@@ -33,29 +46,12 @@ dialog.panel {
     }
 }
 
+.ms-Overlay.is-visible {
+    z-index: 10;
+}
+
 .ms-Dialog {
-    min-width: 320px;
-    padding: 0;
-
-    .is-visible {
-        @include flex();
-    }
-
-    &-inner,
-    &-main {
-        height: 100%;
-        @include flex();
-        min-width: none !important;
-        max-width: none !important;
-    }
-
-    &-main {
-        max-height: 100vh;
-    }
-
-    &-inner {
-        padding: $default-spacing;
-    }
+    padding: 15px;
 
     &-content {
         height: 100%;
@@ -66,7 +62,8 @@ dialog.panel {
     &.ms-Dialog--lgHeader {
         .ms-Dialog-title {
             padding: $default-spacing;
-            margin: 0;
+            margin: -$default-spacing;
+            margin-bottom: $default-spacing;
         }
     }
 
@@ -78,25 +75,22 @@ dialog.panel {
     }
 
     &-action {
-        margin-right: $default-spacing;
+        margin-left: $default-spacing;
         display: inline-flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
+        margin-bottom: 5px;
 
-        & > i {
-            margin-right: $default-spacing/2;
-        }
-
-        &:last-child {
-            margin-right: 0;
+        &:first-child {
+            margin-left: 0;
         }
     }
 }
 
-@media (max-width: 350px) {
+@media (max-width: 400px) {
     .ms-Dialog {
-        width: 100%;
+        width: calc(100vw - 30px);
         min-width: none;
     }
 }

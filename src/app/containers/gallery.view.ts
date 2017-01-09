@@ -16,7 +16,7 @@ import * as _ from 'lodash';
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !templatesView}" (click)="templatesView = false">Snippets</li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Templates</li>
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Samples</li>
                 </ul>
                 <div class="gallery__tabs-container">
                     <collapse [hidden]="templatesView" title="Local" [actions]="['Info', 'Delete']" (events)="action($event)">
@@ -30,7 +30,7 @@ import * as _ from 'lodash';
                     </collapse>
                 </div>
             </section>
-            <section class="gallery__section">
+            <section class="gallery__section" [hidden]="templatesView">
                 <hr class="gallery__section--separator" />
                 <button class="gallery__action ms-Button ms-Button--compound" (click)="new()">
                     <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Generate"></i>New</h1>
@@ -56,7 +56,7 @@ export class Gallery extends Disposable {
     ) {
         super();
 
-        // TODO: Until we have routing set up, open the menu automatically on reload 
+        // TODO: Until we have routing set up, open the menu automatically on reload
         this._store.dispatch(new UI.OpenMenuAction());
 
         this.snippets$ = this._store.select(fromRoot.getSnippets)

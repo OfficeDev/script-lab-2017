@@ -61,3 +61,4 @@ packages/**
 typings/**
 .vscode/**
 dist/**
+.vs/**

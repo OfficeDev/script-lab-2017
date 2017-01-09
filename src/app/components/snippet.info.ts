@@ -20,11 +20,9 @@ import * as _ from 'lodash';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
-                        <i class="ms-Icon ms-Icon--Save"></i>
                         <span class="ms-Button-label">Save</span>
                     </button>
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
-                        <i class="ms-Icon ms-Icon--Cancel"></i>
                         <span class="ms-Button-label">Cancel</span>
                     </button>
                 </div>
