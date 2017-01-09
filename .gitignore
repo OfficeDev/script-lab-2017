@@ -62,3 +62,4 @@ typings/**
 .vscode/**
 dist/monaco-editor/**
 dist/favicon/**
+monaco-editor
