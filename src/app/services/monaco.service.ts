@@ -104,7 +104,7 @@ export class MonacoService extends Disposable {
                 let start = performance.now();
                 let require = (<any>window).require;
                 if (require) {
-                    let path = `monaco-editor/min/vs`;
+                    let path = `node_modules/monaco-editor/min/vs`;
 
                     if (global.env === 'PRODUCTION') {
                         console.log('Using Monaco from CDN');
