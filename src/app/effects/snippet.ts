@@ -181,8 +181,8 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `snippets/${Utilities.host.toLowerCase()}/templates.json`;
-                return this._request.local<ITemplate[]>(snippetJsonUrl, ResponseTypes.JSON);
+                let snippetJsonUrl = `https://raw.githubusercontent.com/WrathOfZombies/samples/deployment/playlists/${Utilities.host.toLowerCase()}.yaml`;
+                return this._request.local<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
