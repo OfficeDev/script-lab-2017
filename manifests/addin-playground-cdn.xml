@@ -178,12 +178,12 @@
         <bt:Image id="PG_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
         <bt:Image id="PG_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
         <bt:Image id="PG_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
-        <bt:Image id="PG_edit_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
-        <bt:Image id="PG_edit_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
-        <bt:Image id="PG_edit_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
-        <bt:Image id="PG_run_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
-        <bt:Image id="PG_run_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
-        <bt:Image id="PG_run_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
+        <bt:Image id="PG_edit_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-16.png" />
+        <bt:Image id="PG_edit_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-32.png" />
+        <bt:Image id="PG_edit_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-80.png" />
+        <bt:Image id="PG_run_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-16.png" />
+        <bt:Image id="PG_run_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-32.png" />
+        <bt:Image id="PG_run_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG_Edit_Url" DefaultValue="https://addin-playground.azureedge.net" />
