@@ -34,5 +34,6 @@
     &__tertiary-text {
         margin-bottom: $default-spacing * 2;
         color: $foreground-lighter;
+        white-space: pre-line;
     }
 }

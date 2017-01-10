@@ -33,6 +33,8 @@ export class About {
     @Output() showChange = new EventEmitter<boolean>();
     config = global.build;
     cache = `
+    Last Updated: ${new Date()}
+
     Storage Usage:
     ${Utils.storageSize(localStorage, Utilities.host + ' Snippets', 'Local Snippets')}
     ${Utils.storageSize(sessionStorage, 'IntellisenseCache', 'Intellisense')}
