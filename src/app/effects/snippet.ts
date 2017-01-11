@@ -25,6 +25,7 @@ export class SnippetEffects {
         template: { content: '', language: 'html' },
         libraries: ''
     };
+    private samplesRepoRawUrl = 'https://raw.githubusercontent.com/WrathOfZombies/samples/deployment';
 
     constructor(
         private actions$: Actions,
@@ -44,7 +45,13 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    observable = this._request.local<string>(`snippets/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
+                    observable = this._request.local<string>(
+                        `${this.samplesRepoRawUrl}/${Utilities.host.toLowerCase()}/default.yaml`,
+                        ResponseTypes.YAML
+                    )._catch(() => {
+                        // TODO: log the error
+                        return jsyaml.safeDump(this._defaults);
+                    });
                     break;
 
                 case 'CUID':
@@ -181,9 +188,12 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `https://raw.githubusercontent.com/WrathOfZombies/samples/deployment/playlists/${Utilities.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = `${this.samplesRepoRawUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML)
-                    ._catch(() => []);
+                    ._catch(() => {
+                        // TODO: log the error
+                        return []
+                    });
             }
             else {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
