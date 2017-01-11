@@ -68,7 +68,7 @@ export class AppComponent {
     settings$ = this._store
         .select(fromRoot.getSettings)
         .debounceTime(200)
-        .subscribe(changes => this._settings.insert('last_session', changes));
+        .subscribe(changes => this._settings.insert(Utilities.host.toLowerCase(), changes));
 
     readonly$ = this._store.select(fromRoot.getReadOnly);
 

@@ -78,7 +78,7 @@ export class AppModule {
     static get initialState() {
         console.log('Loading previous settings');
         let settings = new Storage('playground_settings');
-        return settings.get('last_session');
+        return settings.get(Utilities.host.toLowerCase());
     }
 }
 
