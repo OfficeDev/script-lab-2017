@@ -42,7 +42,7 @@ const reducers = {
 export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
 
 const getSnippetsState = (state: State) => state.snippet;
-export const getReadOnly = createSelector(getSnippetsState, snippets.getReadOnly);
+export const getExternal = createSelector(getSnippetsState, snippets.getExternal);
 export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
 export const getSnippets = createSelector(getSnippetsState, snippets.getSnippets);
 export const getGists = createSelector(getSnippetsState, snippets.getGists);

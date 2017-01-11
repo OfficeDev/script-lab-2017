@@ -89,17 +89,17 @@ export class SnippetEffects {
                 .filter(snippet => !(snippet == null))
                 .map(snippet => _.assign({}, this._defaults, snippet))
                 .mergeMap(snippet => {
-                    let readonly = importType !== 'CUID';
+                    let external = importType !== 'CUID';
                     if (snippet.id === '') {
                         snippet.id = cuid();
                     }
 
-                    if (readonly && this._exists(snippet.name)) {
+                    if (external && this._exists(snippet.name)) {
                         snippet.name = this._generateName(snippet.name, suffix);
                     }
 
                     return Observable.from([
-                        new Snippet.ImportSuccessAction(snippet, readonly),
+                        new Snippet.ImportSuccessAction(snippet, external),
                         new UI.CloseMenuAction(),
                     ]) as Observable<Action>;
                 });

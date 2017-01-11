@@ -7,7 +7,7 @@ export interface SnippetState {
     lastOpened?: ISnippet;
     running?: boolean;
     loading?: boolean;
-    readonly?: boolean;
+    external?: boolean;
     snippets?: ISnippet[];
     gists?: ISnippet[];
     templates?: ISnippet[];
@@ -17,7 +17,7 @@ const initialState: SnippetState = {
     lastOpened: null,
     loading: false,
     running: false,
-    readonly: false,
+    external: false,
     snippets: [],
     gists: [],
     templates: []
@@ -40,7 +40,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             return newState({
                 loading: false,
                 lastOpened: action.payload,
-                readonly: action.params
+                external: action.external
             });
 
         case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:
@@ -60,7 +60,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.CREATE:
             return newState({
-                readonly: false,
+                external: false,
                 lastOpened: action.payload
             });
 
@@ -115,7 +115,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
  * focused so they can be combined and composed to fit each particular
  * use-case.
  */
-export const getReadOnly = (state: SnippetState) => state.readonly;
+export const getExternal = (state: SnippetState) => state.external;
 
 export const getCurrent = (state: SnippetState) => state.lastOpened;
 

@@ -18,16 +18,14 @@ import { UIEffects } from '../effects/ui';
         <main [ngClass]="theme$|async">
             <header class="command__bar">
                 <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
-                <command [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
-                <command [hidden]="isEmpty || !(readonly$|async)" icon="Save" title="Add to my snippets" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Share" [async]="sharing$|async" title="Share">
+                <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
+                <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
+                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="Share">
                     <command icon="OpenFile" title="Public Gist" (click)="shareGist(true)"></command>
                     <command icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
                     <command id="CopyToClipboard" icon="Generate" title="Copy to clipboard" (click)="shareCopy()"></command>
                 </command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
-                <command [hidden]="isEmpty || (readonly$|async)" icon="Delete" title="Delete" (click)="delete()"></command>
+                <command [hidden]="isEmpty" icon="Delete" title="Delete" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
                 <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
@@ -69,8 +67,6 @@ export class AppComponent {
         .select(fromRoot.getSettings)
         .debounceTime(200)
         .subscribe(changes => this._settings.insert(Utilities.host.toLowerCase(), changes));
-
-    readonly$ = this._store.select(fromRoot.getReadOnly);
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 

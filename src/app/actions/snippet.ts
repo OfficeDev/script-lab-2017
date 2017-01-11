@@ -51,7 +51,7 @@ export class ImportAction implements Action {
 export class ImportSuccessAction implements Action {
     readonly type = SnippetActionTypes.IMPORT_SUCCESS;
 
-    constructor(public payload: ISnippet, public params: boolean) { }
+    constructor(public payload: ISnippet, public external: boolean) { }
 }
 
 export class UpdateInfoAction implements Action {
