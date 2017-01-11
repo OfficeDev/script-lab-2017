@@ -77,9 +77,12 @@ export class GitHubEffects {
                 language: 'yaml'
             };
 
+            description = (description && description.trim() !== '') ? description + ' - ' : '';
+            description.replace('Shared with Add-in Playground', '');
+            description += 'Shared with Add-in Playground';
+
             return this._github.createOrUpdateGist(
-                //TODO -- this is recurrsive....
-                `${description} -- Shared with Add-in Playground`,
+                `${description}`,
                 files,
                 null,
                 type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
