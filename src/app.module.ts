@@ -4,7 +4,7 @@ import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
+import { Authenticator, Utilities, Storage } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
@@ -29,7 +29,7 @@ import './assets/styles/globals.scss';
         HttpModule,
         FormsModule,
         APP_ROUTES,
-        StoreModule.provideStore(rootReducer),
+        StoreModule.provideStore(rootReducer, AppModule.initialState),
         StoreDevtoolsModule.instrumentOnlyWithExtension(),
         EffectsModule.run(SnippetEffects),
         EffectsModule.run(MonacoEffects),
@@ -73,6 +73,12 @@ export class AppModule {
                 return resolve(isAddin);
             }
         });
+    }
+
+    static get initialState() {
+        console.log('Loading previous settings');
+        let settings = new Storage('playground_settings');
+        return settings.get('last_session');
     }
 }
 

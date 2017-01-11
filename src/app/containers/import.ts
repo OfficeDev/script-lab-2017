@@ -69,7 +69,6 @@ export class Import {
             return;
         }
 
-        console.log(data);
         this._store.dispatch(new Snippet.ImportAction(data));
         this.cancel();
     }

@@ -15,6 +15,10 @@ const initialState = {
     loading: false
 };
 
+export function defaultState(overrides?: MonacoState) {
+    return { ...initialState, ...overrides } as MonacoState;
+}
+
 export function reducer(state = initialState, action: MonacoActions): MonacoState {
     let newState = updateState<MonacoState>(state);
 

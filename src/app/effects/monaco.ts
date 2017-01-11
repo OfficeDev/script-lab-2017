@@ -70,7 +70,6 @@ export class MonacoEffects {
                     .mergeMap(url => this._get(url))
                     .filter(file => !(file == null))
                     .map(file => {
-                        console.log(file);
                         let intellisense = this._current.get(file.url);
                         if (intellisense == null) {
                             let disposable = source.addExtraLib(file.content, file.url);

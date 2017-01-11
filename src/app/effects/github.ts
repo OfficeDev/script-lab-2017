@@ -97,10 +97,10 @@ export class GitHubEffects {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
             let result = await this._uiEffects.alert(`The URL of the GitHub Gist is
 
-            ${temp}.
+            ${temp}
 
 You will be able to import your snippet by choosing the "Import" button in the Playground and providing the above URL.
-`, 'Your snippet is shared', 'View on GitHub', 'Ok');
+`, 'Your snippet is shared', 'View on GitHub', 'OK');
 
             if (result === 'View on GitHub') {
                 window.open(temp);
@@ -115,11 +115,13 @@ You will be able to import your snippet by choosing the "Import" button in the P
         .ofType(GitHub.GitHubActionTypes.SHARE_COPY)
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
-        .do(snippet => {
+        .do((snippet: ISnippet) => {
             let copied = new clipboard('#CopyToClipboard', {
-                text: trigger => jsyaml.safeDump(snippet)
+                text: trigger => {
+                    this._uiEffects.alert(`${snippet.name}`, 'Your snippet is copied', 'OK');
+                    return jsyaml.safeDump(snippet);
+                }
             });
-
             // do cleanup here?
         });
 }

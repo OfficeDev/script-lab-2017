@@ -15,6 +15,10 @@ const initialState: GitHubState = {
     sharing: false
 };
 
+export function defaultState(overrides?: GitHubState) {
+    return { ...initialState, ...overrides } as GitHubState;
+}
+
 export function reducer(state = initialState, action: GitHubActions): GitHubState {
     let newState = updateState<GitHubState>(state);
 

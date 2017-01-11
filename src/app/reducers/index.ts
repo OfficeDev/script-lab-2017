@@ -67,3 +67,18 @@ export const getProfileLoading = createSelector(getGitHubState, github.getLoadin
 export const getProfile = createSelector(getGitHubState, github.getProfile);
 export const getLoggedIn = createSelector(getGitHubState, github.getLoggedIn);
 export const getSharing = createSelector(getGitHubState, github.getSharing);
+
+const getSettingsStates = (state: State) => (<State>{
+    snippet: snippets.defaultState({
+        lastOpened: getCurrent(state),
+    }),
+    github: github.defaultState({
+        profile: getProfile(state),
+    }),
+    monaco: monaco.defaultState(),
+    ui: ui.defaultState({
+        theme: getTheme(state)
+    }),
+});
+
+export const getSettings = createSelector(state => state, getSettingsStates);

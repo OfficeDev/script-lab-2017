@@ -72,6 +72,7 @@ dialog.panel {
         font-weight: 400;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         white-space: pre-line;
+        word-break: break-all;
     }
 
     &-action {

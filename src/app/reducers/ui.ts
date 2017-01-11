@@ -19,6 +19,10 @@ const initialState: UIState = {
     showImport: false
 };
 
+export function defaultState(overrides?: UIState) {
+    return { ...initialState, ...overrides } as UIState;
+}
+
 export function reducer(state = initialState, action: any): UIState {
     let newState = updateState<UIState>(state);
 

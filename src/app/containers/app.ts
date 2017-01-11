@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { Utilities, HostType } from '@microsoft/office-js-helpers';
+import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Theme, Utilities as Utils } from '../helpers';
 import { Store } from '@ngrx/store';
@@ -63,6 +63,12 @@ export class AppComponent {
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
+
+    private _settings = new Storage('playground_settings');
+    settings$ = this._store
+        .select(fromRoot.getSettings)
+        .debounceTime(200)
+        .subscribe(changes => this._settings.insert('last_session', changes));
 
     readonly$ = this._store.select(fromRoot.getReadOnly);
 

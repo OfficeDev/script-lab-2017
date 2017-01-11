@@ -23,6 +23,10 @@ const initialState: SnippetState = {
     templates: []
 };
 
+export function defaultState(overrides?: SnippetState) {
+    return { ...initialState, ...overrides } as SnippetState;
+}
+
 export function reducer(state = initialState, action: SnippetActions | GitHubActions): SnippetState {
     let newState = updateState<SnippetState>(state);
 
