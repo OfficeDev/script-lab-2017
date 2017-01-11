@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { Utilities, HostType } from '@microsoft/office-js-helpers';
+import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
 import { Theme, Utilities as Utils } from '../helpers';
 import { Store } from '@ngrx/store';
@@ -22,8 +22,8 @@ import { UIEffects } from '../effects/ui';
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
                 <command [hidden]="isEmpty || !(readonly$|async)" icon="Save" title="Add to my snippets" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Share" [async]="sharing$|async" title="Share">
-                    <command [hidden]="!(isLoggedIn$|async)" icon="OpenFile" title="Public Gist" (click)="shareGist(true)"></command>
-                    <command [hidden]="!(isLoggedIn$|async)" icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
+                    <command icon="OpenFile" title="Public Gist" (click)="shareGist(true)"></command>
+                    <command icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
                     <command id="CopyToClipboard" icon="Generate" title="Copy to clipboard" (click)="shareCopy()"></command>
                 </command>
                 <command [hidden]="isEmpty || (readonly$|async)" icon="Copy" title="Duplicate" (click)="duplicate()"></command>
@@ -63,6 +63,12 @@ export class AppComponent {
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
+
+    private _settings = new Storage('playground_settings');
+    settings$ = this._store
+        .select(fromRoot.getSettings)
+        .debounceTime(200)
+        .subscribe(changes => this._settings.insert(Utilities.host.toLowerCase(), changes));
 
     readonly$ = this._store.select(fromRoot.getReadOnly);
 
@@ -155,12 +161,19 @@ export class AppComponent {
             return;
         }
 
-        if (isPublic) {
-            this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
-        }
-        else {
-            this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
-        }
+        this.isLoggedIn$
+            .subscribe(isLoggedIn => {
+                if (!isLoggedIn) {
+                    this._store.dispatch(new GitHub.LoginAction());
+                }
+
+                if (isPublic) {
+                    this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                }
+                else {
+                    this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                }
+            });
     }
 
     shareCopy() {

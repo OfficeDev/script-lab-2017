@@ -20,7 +20,7 @@ import * as _ from 'lodash';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="showChange.emit(false)">
-                        <span class="ms-Button-label">Ok</span>
+                        <span class="ms-Button-label">OK</span>
                     </button>
                 </div>
             </div>

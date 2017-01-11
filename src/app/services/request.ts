@@ -24,55 +24,37 @@ export class Request {
     }
 
     local<T>(path, responseType: ResponseTypes): Observable<T> {
-        let xhr = this._http.get(`assets/${path}`)
-            .retryWhen(error => error.delay(500))
-            .timeout(2000, new PlaygroundError(`Request failed: ${path}`));
-
+        let xhr = this._http.get(`assets/${path}`);
         return this._response(xhr, responseType);
     }
 
     get<T>(url: string, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.get(url, options)
-            .retryWhen(error => error.delay(500))
-            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
-
+        let xhr = this._http.get(url, options);
         return this._response(xhr, responseType);
     }
 
     post<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.post(url, body, options)
-            .retryWhen(error => error.delay(500))
-            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
-
+        let xhr = this._http.post(url, body, options);
         return this._response(xhr, responseType);
     }
 
     put<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.put(url, body, options)
-            .retryWhen(error => error.delay(500))
-            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
-
+        let xhr = this._http.put(url, body, options);
         return this._response(xhr, responseType);
     }
 
     patch<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.patch(url, body, options)
-            .retryWhen(error => error.delay(500))
-            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
-
+        let xhr = this._http.patch(url, body, options);
         return this._response(xhr, responseType);
     }
 
     delete<T>(url: string, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
-        let xhr = this._http.delete(url, options)
-            .retryWhen(error => error.delay(500))
-            .timeout(2000, new PlaygroundError(`Request failed: ${url}`));
-
+        let xhr = this._http.delete(url, options);
         return this._response(xhr, responseType);
     }
 

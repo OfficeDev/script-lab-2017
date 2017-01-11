@@ -20,6 +20,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class Collapse {
     @Input() title: string;
+    @Input() collapsed: boolean;
     @Input() actions: string[];
     @Output() events: EventEmitter<any> = new EventEmitter<any>();
 

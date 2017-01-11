@@ -22,7 +22,7 @@ import * as _ from 'lodash';
                     <collapse [hidden]="templatesView" title="Local" [actions]="['Info', 'Delete']" (events)="action($event)">
                         <gallery-list title="Local" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
                     </collapse>
-                    <collapse [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
+                    <collapse [collapsed]="true" [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
                         <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your Gists."></gallery-list>
                     </collapse>
                     <collapse [hidden]="!templatesView" title="Starter Samples" (action)="action.emit($event)">
