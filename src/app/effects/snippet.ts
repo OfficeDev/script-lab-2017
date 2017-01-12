@@ -82,14 +82,13 @@ export class SnippetEffects {
             }
 
             return observable
-                .catch(error => {
-                    Utilities.log(error);
-                    return null;
-                })
                 .filter(snippet => !(snippet == null))
                 .map(snippet => _.assign({}, this._defaults, snippet))
                 .mergeMap(snippet => {
                     let external = importType !== 'CUID';
+                    if (external) {
+                        snippet.id = '';
+                    }
                     if (snippet.id === '') {
                         snippet.id = cuid();
                     }
@@ -103,7 +102,8 @@ export class SnippetEffects {
                         new UI.CloseMenuAction(),
                     ]) as Observable<Action>;
                 });
-        });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to import new snippet', exception)));
 
     @Effect()
     save$: Observable<Action> = this.actions$
@@ -122,7 +122,8 @@ export class SnippetEffects {
             }
 
             return new Snippet.StoreUpdatedAction();
-        });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to save current snippet', exception)));
 
     @Effect()
     duplicate$: Observable<Action> = this.actions$
@@ -134,7 +135,8 @@ export class SnippetEffects {
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy, true);
-        });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed depulicate current snippet', exception)));
 
     @Effect()
     delete$: Observable<Action> = this.actions$
@@ -144,24 +146,27 @@ export class SnippetEffects {
         .mergeMap(() => Observable.from([
             new Snippet.StoreUpdatedAction(),
             new UI.OpenMenuAction()
-        ]));
+        ]))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed delete current snippet', exception)));
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
         .map(action => this._store.clear())
-        .map(() => new Snippet.StoreUpdatedAction());
+        .map(() => new Snippet.StoreUpdatedAction())
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed delete all local snippets', exception)));
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
-        .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()));
+        .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed load the local snippets', exception)));
 
     @Effect({ dispatch: false })
     run$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
-        .do((snippet: ISnippet) => {
+        .map((snippet: ISnippet) => {
             var url = 'https://addin-playground-runner.azurewebsites.net/';
 
             let postData: IRunnerPostData = {
@@ -176,7 +181,8 @@ export class SnippetEffects {
             };
 
             this._post(url, { data: JSON.stringify(postData) });
-        });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to run the snippet', exception)));
 
     @Effect()
     loadTemplates$: Observable<Action> = this.actions$
@@ -185,14 +191,14 @@ export class SnippetEffects {
         .mergeMap(source => {
             if (source === 'LOCAL') {
                 let snippetJsonUrl = `https://raw.githubusercontent.com/WrathOfZombies/samples/deployment/playlists/${Utilities.host.toLowerCase()}.yaml`;
-                return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML)
-                    ._catch(() => []);
+                return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
             }
         })
-        .map(data => new Snippet.LoadTemplatesSuccessAction(data));
+        .map(data => new Snippet.LoadTemplatesSuccessAction(data))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load default samples', exception)));
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {

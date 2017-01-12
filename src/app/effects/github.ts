@@ -5,7 +5,7 @@ import { Request, ResponseTypes, GitHubService } from '../services';
 import * as _ from 'lodash';
 import * as jsyaml from 'js-yaml';
 import { Action } from '@ngrx/store';
-import * as GitHub from '../actions/github';
+import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
@@ -23,19 +23,22 @@ export class GitHubEffects {
     login$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGIN)
         .mergeMap(() => this._github.login())
-        .map(profile => new GitHub.LoggedInAction(profile));
+        .map(profile => new GitHub.LoggedInAction(profile))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to login to GitHub', exception)));
 
     @Effect({ dispatch: false })
     logout$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
-        .do(() => this._github.logout());
+        .map(() => this._github.logout())
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to logout out of GitHub', exception)));
 
     @Effect()
     isLoggedIn$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
         .filter<IBasicProfile, IBasicProfile>(profile => !(profile == null))
-        .map(profile => new GitHub.LoggedInAction(profile));
+        .map(profile => new GitHub.LoggedInAction(profile))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed get GitHub profile', exception)));
 
     @Effect()
     loadGists$: Observable<Action> = this.actions$
@@ -62,7 +65,8 @@ export class GitHubEffects {
                 })
                 .filter(snippet => !(snippet == null));
         })
-        .map(snippets => new GitHub.LoadGistsSuccessAction(snippets));
+        .map(snippets => new GitHub.LoadGistsSuccessAction(snippets))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed get GitHub gists', exception)));
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$
@@ -86,12 +90,7 @@ export class GitHubEffects {
                 files,
                 null,
                 type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
-            )
-                .catch(error => {
-                    Utilities.log(error);
-                    return null;
-                });
-
+            );
         })
         .mergeMap(async (gist: IGist) => {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
@@ -108,20 +107,21 @@ You will be able to import your snippet by choosing the "Import" button in the P
 
             return gist;
         })
-        .map(gist => new GitHub.ShareSuccessAction(gist));
+        .map(gist => new GitHub.ShareSuccessAction(gist))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed share GitHub gist', exception)));
 
     @Effect({ dispatch: false })
     shareCopy$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.SHARE_COPY)
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
-        .do((snippet: ISnippet) => {
+        .map((snippet: ISnippet) => {
             let copied = new clipboard('#CopyToClipboard', {
                 text: trigger => {
                     this._uiEffects.alert(`${snippet.name}`, 'Your snippet is copied', 'OK');
                     return jsyaml.safeDump(snippet);
                 }
             });
-            // do cleanup here?
-        });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to copy gist to clipboard', exception)));
 }

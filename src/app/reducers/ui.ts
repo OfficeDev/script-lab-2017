@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { UIActions, UIActionTypes } from '../actions/ui';
-import { updateState } from '../helpers';
+import { updateState, PlaygroundError } from '../helpers';
+import { Utilities } from '@microsoft/office-js-helpers';
+import global from '../../environment';
 
 export interface UIState {
     menuOpened?: boolean;
@@ -23,7 +25,7 @@ export function defaultState(overrides?: UIState) {
     return { ...initialState, ...overrides } as UIState;
 }
 
-export function reducer(state = initialState, action: any): UIState {
+export function reducer(state = initialState, action: UIActions): UIState {
     let newState = updateState<UIState>(state);
 
     switch (action.type) {
@@ -57,10 +59,15 @@ export function reducer(state = initialState, action: any): UIState {
                 theme: !state.theme
             });
 
-        case UIActionTypes.REPORT_ERROR:
+        case UIActionTypes.REPORT_ERROR: {
+            let error = new PlaygroundError(action.message, action.exception);
+            if (global.env === 'DEVELOPMENT') {
+                Utilities.log(error);
+            }
             return newState({
-                errors: [...state.errors, action.payload]
+                errors: [...state.errors, error]
             });
+        }
 
         case UIActionTypes.CHANGE_LANGUAGE:
             return newState({

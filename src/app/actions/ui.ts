@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { type, PlaygroundError } from '../helpers';
+import { type } from '../helpers';
 
 /**
  * For each action type in an action group, make a simple
@@ -72,7 +72,7 @@ export class ChangeLanguageAction implements Action {
 export class ReportErrorAction implements Action {
     readonly type = UIActionTypes.REPORT_ERROR;
 
-    constructor(public payload: PlaygroundError) { }
+    constructor(public message: string, public exception?: any) { }
 }
 
 
