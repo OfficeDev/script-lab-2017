@@ -118,7 +118,7 @@ You will be able to import your snippet by choosing the "Import" button in the P
         .map((snippet: ISnippet) => {
             let copied = new clipboard('#CopyToClipboard', {
                 text: trigger => {
-                    this._uiEffects.alert(`${snippet.name}`, 'Your snippet is copied', 'OK');
+                    this._uiEffects.alert(`Your snippet has been copied.`, null, 'OK');
                     return jsyaml.safeDump(snippet);
                 }
             });
