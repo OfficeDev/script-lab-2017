@@ -23,7 +23,7 @@ import * as _ from 'lodash';
                         <gallery-list title="Local" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
                     </collapse>
                     <collapse [collapsed]="true" [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
-                        <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your Gists."></gallery-list>
+                        <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your gists."></gallery-list>
                     </collapse>
                     <collapse [hidden]="!templatesView" title="Starter Samples" (action)="action.emit($event)">
                         <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async" (select)="import($event, 'gist')"></gallery-list>
@@ -38,7 +38,7 @@ import * as _ from 'lodash';
                 </button>
                 <button class="gallery__action button-primary ms-Button ms-Button--compound" (click)="import()">
                     <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageCheckedOut"></i>Import</h1>
-                    <span class="ms-Button-description">Create from GIST or YAML.</span>
+                    <span class="ms-Button-description">Create from GitHub GIST or YAML.</span>
                 </button>
             </section>
         </section>

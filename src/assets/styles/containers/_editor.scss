@@ -5,6 +5,7 @@ editor {
     @include flex();
     flex: 1 1 100%;
     position: relative;
+    overflow: hidden;
 
     .tabs {
         overflow: hidden;
@@ -32,4 +33,5 @@ editor {
 
 .monaco-editor {
     width: 100% !important;
+    padding-top: 10px;
 }
