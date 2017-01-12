@@ -4,7 +4,7 @@ import { Utilities, Dictionary, Storage, StorageType } from '@microsoft/office-j
 import { Request, ResponseTypes, MonacoService } from '../services';
 import * as _ from 'lodash';
 import { Action } from '@ngrx/store';
-import * as Monaco from '../actions/monaco';
+import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 
 
@@ -28,7 +28,7 @@ export class MonacoEffects {
         private actions$: Actions,
         private _request: Request
     ) {
-        this._cache = new Storage<string>('IntellisenseCache', StorageType.SessionStorage);
+        this._cache = new Storage<string>('playground_intellisense', StorageType.SessionStorage);
         this._current = new Dictionary<IDisposableFile>();
     }
 
@@ -38,7 +38,8 @@ export class MonacoEffects {
         .map((action: Monaco.AddIntellisenseAction) => ({ payload: action.payload, language: action.language }))
         .mergeMap(({ payload, language }) => this._parseAndUpdate(payload, language))
         .filter(data => data !== null)
-        .map(data => new Monaco.UpdateIntellisenseSuccessAction());
+        .map(data => new Monaco.UpdateIntellisenseSuccessAction())
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to update intellisense', exception)));
 
     @Effect()
     clearUnusedIntellisense$: Observable<Action> = this.actions$
@@ -47,7 +48,6 @@ export class MonacoEffects {
         .map(({payload, language}) => {
             this._current.values().forEach(file => {
                 if (!file.retain) {
-                    console.info(file);
                     file.disposable.dispose();
                     this._current.remove(file.url);
                 }
@@ -57,7 +57,8 @@ export class MonacoEffects {
             });
 
             return new Monaco.AddIntellisenseAction(payload, language);
-        });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear intellisense', exception)));
 
     private _parseAndUpdate(libraries: string[], language: string) {
         return Observable
@@ -102,27 +103,18 @@ export class MonacoEffects {
                         return `https://unpkg.com/${library}`;
                     }
                 }
-            })
-            .catch(error => {
-                Utilities.log(error);
-                return '';
             });
     }
 
     private _get(url: string): Observable<IIntellisenseFile> {
         if (this._cache.contains(url)) {
             let content = this._cache.get(url);
-            console.info(`Loading from cache: ${url}`);
             return Observable.of({ url, content });
         }
         else {
             return this._request.get<string>(url, null, ResponseTypes.TEXT)
                 .map(content => this._cache.insert(url, content))
-                .map(content => ({ content, url }))
-                .catch(error => {
-                    Utilities.log(`Couldn't load intellisense from ${url}`);
-                    return null;
-                });
+                .map(content => ({ content, url }));
         }
     }
 

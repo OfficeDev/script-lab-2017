@@ -261,7 +261,7 @@
 	<app class="app">
 		<div class="ms-progress-component">
 			<main class="ms-progress-component__main ms-fontColor-white">
-				<img class="ms-progress-component__logo" src="assets/icon-large.png">
+				<img class="ms-progress-component__logo" src="assets/images/icon-large.png">
 				<h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
 				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Refreshing snippet</p>
 			</main>
@@ -285,12 +285,12 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
 
 	<script>
-		(function() {
-			var queryParams = queryParamsToJson(); 
+		(function () {
+			var queryParams = queryParamsToJson();
 			var id = queryParams['id'];
-			var storageKey = queryParams['host'] + ' Snippets';
+			var storageKey = 'playground_' + queryParams['host'].toLowerCase() + '_snippets';
 			var snippet = JSON.parse(window.localStorage[storageKey] || "{}")[id];
-			
+
 			if (!snippet) {
 				document.getElementById('subtitle').innerHtml = 'Could not find the snippet. Please re-load the add-in.';
 				return;
@@ -326,7 +326,7 @@
 
 			var keyValuePairStrings = allParams.split('&');
 			var result = {};
-			keyValuePairStrings.forEach(function(item) {
+			keyValuePairStrings.forEach(function (item) {
 				var split = item.split('=');
 				if (split.length != 2) {
 					throw new Error("Invalid key-value pair for " + item);

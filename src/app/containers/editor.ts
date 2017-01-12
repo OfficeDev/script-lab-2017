@@ -39,7 +39,7 @@ export class Editor extends Disposable implements AfterViewInit {
      * Initialize the component and subscribe to all the neccessary actions.
      */
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs', readOnly: true });
+        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
         this._monacoEditor.onKeyUp(evt => this._debouncedInput(evt));
         this._createTabs();
         this._subscribeToState();
@@ -75,12 +75,6 @@ export class Editor extends Disposable implements AfterViewInit {
 
         this._store.select(fromRoot.getTheme)
             .subscribe(theme => this._monaco.updateOptions(this._monacoEditor, { theme: theme ? 'vs' : 'vs-dark' }));
-
-        this._store.select(fromRoot.getReadOnly)
-            .subscribe(readonly => {
-                this._readonly = readonly;
-                this._monaco.updateOptions(this._monacoEditor, { readOnly: readonly });
-            });
 
         this._store.select(fromRoot.getCurrent)
             .filter(data => {

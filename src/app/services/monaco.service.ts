@@ -121,11 +121,9 @@ export class MonacoService extends Disposable {
                         }
                     };
 
-                    console.log('Loading monaco');
                     require.config(requireConfig);
                     require(['vs/editor/editor.main'], () => {
                         let end = performance.now();
-                        console.log(`Monaco loaded in ${(end - start) / 1000}s`);
                         resolve(monaco);
                     });
                 }

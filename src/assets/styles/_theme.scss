@@ -122,12 +122,6 @@
         background: $background-lightest;
     }
 
-    .ms-progress-component {
-        &__title {
-            color: $accent-foreground-primary;
-        }
-    }
-
     .ms-Pivot-link.is-selected:before {
         background-color: $accent-foreground-primary;
     }

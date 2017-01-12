@@ -33,10 +33,11 @@ export class About {
     @Output() showChange = new EventEmitter<boolean>();
     config = global.build;
     cache = `
-    Last Updated: ${new Date()}
+    Last Updated:
+    ${new Date(global.build.build)}
 
     Storage Usage:
-    ${Utils.storageSize(localStorage, Utilities.host + ' Snippets', 'Local Snippets')}
-    ${Utils.storageSize(sessionStorage, 'IntellisenseCache', 'Intellisense')}
+    ${Utils.storageSize(localStorage, `playground_${Utilities.host.toLowerCase()}_snippets`, 'Local Snippets')}
+    ${Utils.storageSize(sessionStorage, 'playground_intellisense', 'Intellisense')}
     `;
 }

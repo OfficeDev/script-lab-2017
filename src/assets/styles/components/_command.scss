@@ -9,6 +9,24 @@ command {
     &:hover .command__dropdown {
         display: block;
     }
+
+    &.title {
+        .command {
+            &__icon {
+                i {
+                    display: none;
+                }
+
+                span {
+                    display: block;
+                    min-width: 80px;
+                    max-width: 200px;
+                    width: auto;
+                    margin-left: 0;
+                }
+            }
+        }
+    }
 }
 
 .command {
@@ -63,7 +81,6 @@ command {
         img + span,
         i + span {
             @include ellipsis();
-            max-width: 200px;
             margin-left: $default-spacing/2;
         }
     }
@@ -104,6 +121,22 @@ command {
     }
 }
 
+@media (min-width: 0px) and (max-width: 450px) {
+    command.title {
+        .command {
+            &__icon {
+                i {
+                    display: block;
+                }
+
+                span {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
 @media (min-width: 0px) and (max-width: 900px) {
     .command {
         &__icon {
@@ -113,17 +146,7 @@ command {
         }
     }
 
-    command.title {
-        .command {
-            &__icon {
-                span {
-                    display: block;
-                }
-            }
-        }
-    }
-
-     .command__bar--condensed {
+    .command__bar--condensed {
         .command {
             &__icon {
                 span {

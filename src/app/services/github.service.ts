@@ -16,7 +16,7 @@ export class GitHubService {
     constructor(private _request: Request) {
         let {client_id, token_url} = global.auth;
 
-        this._profileStorage = new Storage<IBasicProfile>('Profile');
+        this._profileStorage = new Storage<IBasicProfile>('playground_profile');
         this._authenticator = new Authenticator();
         this._authenticator.endpoints.add('GitHub', {
             clientId: client_id,

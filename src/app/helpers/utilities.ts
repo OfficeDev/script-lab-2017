@@ -40,13 +40,18 @@ export class Utilities {
             return;
         }
 
+        let store = storage[key];
+        if (store == null) {
+            return;
+        }
+
         if (key) {
-            let len = ((storage[key].length + key.length) * 2);
+            let len = ((store.length + key.length) * 2);
             return `${(name || key).substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
         }
 
         let total = Object.keys(storage).reduce((total, key) => {
-            let len = ((storage[key].length + key.length) * 2);
+            let len = ((store.length + key.length) * 2);
             console.log(`${key.substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`);
             return total + len;
         }, 0);
