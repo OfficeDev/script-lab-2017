@@ -12,7 +12,7 @@ import cuid = require('cuid');
 
 @Injectable()
 export class SnippetEffects {
-    private _store = new Storage<ISnippet>(`${Utilities.host} Snippets`);
+    private _store = new Storage<ISnippet>(`playground_${Utilities.host.toLowerCase()}_snippets`);
     private _defaults = <ISnippet>{
         id: '',
         gist: '',
@@ -40,7 +40,6 @@ export class SnippetEffects {
         .mergeMap(({ data, suffix }) => {
             let observable: Observable<ISnippet>;
             let importType = this._determineImportType(data);
-            console.info(`Importing ${importType} Snippet`);
 
             switch (importType) {
                 case 'DEFAULT':
@@ -65,7 +64,7 @@ export class SnippetEffects {
                                 return output;
                             }
                             else {
-                                return jsyaml.safeLoad(snippet.content);
+                                return jsyaml.load(snippet.content);
                             }
                         });
                     break;
@@ -75,7 +74,7 @@ export class SnippetEffects {
                     break;
 
                 case 'YAML':
-                    observable = Observable.of(jsyaml.safeLoad(data));
+                    observable = Observable.of(jsyaml.load(data));
                     break;
 
                 default: return;
@@ -100,10 +99,14 @@ export class SnippetEffects {
                     return Observable.from([
                         new Snippet.ImportSuccessAction(snippet, external),
                         new UI.CloseMenuAction(),
-                    ]) as Observable<Action>;
+                    ]);
                 });
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to import new snippet', exception)));
+        .catch(exception => Observable.from([
+            new UI.ReportErrorAction('Failed to import  snippet', exception),
+            new UI.CloseMenuAction(),
+            new UI.ShowAlertAction({ message: 'We were unable to import the snippet. Please check the GIST ID or URL for correctness.', title: 'Import failed', actions: ['OK'] })
+        ]));
 
     @Effect()
     save$: Observable<Action> = this.actions$
@@ -113,11 +116,9 @@ export class SnippetEffects {
             this._validate(snippet);
 
             if (this._store.contains(snippet.id)) {
-                console.info(`Saving ${snippet.id}:${snippet.name}`);
                 this._store.insert(snippet.id, snippet);
             }
             else {
-                console.info(`Creating ${snippet.id}:${snippet.name}`);
                 this._store.add(snippet.id, snippet);
             }
 

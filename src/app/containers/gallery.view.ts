@@ -33,12 +33,12 @@ import * as _ from 'lodash';
             <section class="gallery__section" [hidden]="templatesView">
                 <hr class="gallery__section--separator" />
                 <button class="gallery__action ms-Button ms-Button--compound" (click)="new()">
-                    <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Generate"></i>New</h1>
+                    <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageAdd"></i>New</h1>
                     <span class="ms-Button-description">Create a new snippet.</span>
                 </button>
                 <button class="gallery__action button-primary ms-Button ms-Button--compound" (click)="import()">
-                    <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--Download"></i>Import</h1>
-                    <span class="ms-Button-description">Create from GIST or JSON.</span>
+                    <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageCheckedOut"></i>Import</h1>
+                    <span class="ms-Button-description">Create from GIST or YAML.</span>
                 </button>
             </section>
         </section>
@@ -79,7 +79,6 @@ export class Gallery extends Disposable {
     }
 
     import(item?: ITemplate, mode = 'id') {
-        console.log(item);
         if (item == null) {
             this._store.dispatch(new UI.ToggleImportAction(true));
         }

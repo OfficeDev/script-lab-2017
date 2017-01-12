@@ -1,4 +1,4 @@
-import { Storage, HostType, Utilities } from '@microsoft/office-js-helpers';
+import { HostType, Utilities } from '@microsoft/office-js-helpers';
 
 export class Theme {
     static applyTheme(): Promise<boolean> {

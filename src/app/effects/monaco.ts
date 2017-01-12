@@ -28,7 +28,7 @@ export class MonacoEffects {
         private actions$: Actions,
         private _request: Request
     ) {
-        this._cache = new Storage<string>('IntellisenseCache', StorageType.SessionStorage);
+        this._cache = new Storage<string>('playground_intellisense', StorageType.SessionStorage);
         this._current = new Dictionary<IDisposableFile>();
     }
 
@@ -48,7 +48,6 @@ export class MonacoEffects {
         .map(({payload, language}) => {
             this._current.values().forEach(file => {
                 if (!file.retain) {
-                    console.info(file);
                     file.disposable.dispose();
                     this._current.remove(file.url);
                 }
@@ -110,7 +109,6 @@ export class MonacoEffects {
     private _get(url: string): Observable<IIntellisenseFile> {
         if (this._cache.contains(url)) {
             let content = this._cache.get(url);
-            console.info(`Loading from cache: ${url}`);
             return Observable.of({ url, content });
         }
         else {

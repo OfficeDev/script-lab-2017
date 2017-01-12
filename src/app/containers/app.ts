@@ -21,9 +21,9 @@ import { UIEffects } from '../effects/ui';
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="Share">
-                    <command icon="OpenFile" title="Public Gist" (click)="shareGist(true)"></command>
+                    <command icon="PageCheckedin" title="Public Gist" (click)="shareGist(true)"></command>
                     <command icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
-                    <command id="CopyToClipboard" icon="Generate" title="Copy to clipboard" (click)="shareCopy()"></command>
+                    <command id="CopyToClipboard" icon="Copy" title="Copy to clipboard" (click)="shareCopy()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Delete" title="Delete" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
