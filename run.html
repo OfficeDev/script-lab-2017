@@ -34,7 +34,7 @@
 			margin: 0;
 			padding: 0;
 		}
-		
+
 		html,
 		body {
 			width: 100%;
@@ -44,7 +44,7 @@
 			overflow: hidden;
 			color: #333;
 		}
-		
+
 		.app {
 			display: -webkit-inline-flex;
 			display: -ms-inline-flexbox;
@@ -88,7 +88,7 @@
 			width: 100%;
 			height: 40px;
 		}
-		
+
 		.ms-progress-component {
 			height: 100%;
 			width: 100%;
@@ -103,7 +103,7 @@
 			-ms-flex-wrap: nowrap;
 			flex-wrap: nowrap;
 		}
-		
+
 		.app main {
 			display: -webkit-flex;
 			display: -ms-flexbox;
@@ -117,7 +117,7 @@
 			height: 100vh;
 			width: 100%;
 		}
-		
+
 		.ms-progress-component__main {
 			height: 100%;
 			-webkit-flex: 1 1 0;
@@ -186,7 +186,7 @@
 			overflow: auto;
 			overflow-x: hidden;
 		}
-		
+
 		.app gallery {
 			height: calc(100vh - 40px);
 			-webkit-flex: 1 1 100%;
@@ -563,54 +563,53 @@
 			</footer>
 		</div>
 		<div id="snippet-list" class="hamburger" style="display:none">
-			<section class="hamburger-menu">
-				<div id="header" class="command__bar">
-					<div class="command__title">
-						<span class="ms-font-m">RUNNER</span>
-					</div>
-					<div class="command__icon" onclick="window.location.reload()">
-						<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
-					</div>
-				</div>
-				<div class="hamburger-menu__container">
-					<gallery>
-						<section class="gallery">
-							<section class="gallery__section">
-								<div class="gallery__tabs-container">
-									<collapse>
-										<div class="command__bar command--light">
-											<div class="command__title">
-												<span class="ms-font-m">LOCAL</span>
-											</div>
-										</div>
-										<section class="collapse__panel">
-											<gallery-list>
-												<section class="gallery-list">
-													<section class="gallery-list__group">
-														<section id="local-snippet-list" class="gallery-list__group">
-														</section>
-													</section>
-												</section>
-												<p id="no-local-snippets" class="gallery-list__message ms-font-m" style="display: none">
-													You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
-												</p>
-											</gallery-list>
+<section class="hamburger-menu">
+	<div id="header" class="command__bar">
+		<div class="command__title">
+			<span class="ms-font-m">RUNNER</span>
+		</div>
+		<div class="command__icon" onclick="window.location.reload()">
+<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
+</div>
+</div>
+<div class="hamburger-menu__container">
+	<gallery>
+		<section class="gallery">
+			<section class="gallery__section">
+				<div class="gallery__tabs-container">
+					<collapse>
+						<div class="command__bar command--light">
+							<div class="command__title">
+								<span class="ms-font-m">LOCAL</span>
+							</div>
+						</div>
+						<section class="collapse__panel">
+							<gallery-list>
+								<section class="gallery-list">
+									<section class="gallery-list__group">
+										<section id="local-snippet-list" class="gallery-list__group">
 										</section>
-									</collapse>
-								</div>
-							</section>
-						</section>
-					</gallery>
-				</div>
-			</section>
-		</hamburger>
-	</app>
+									</section>
+								</section>
+								<p id="no-local-snippets" class="gallery-list__message ms-font-m" style="display: none"> You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
+</p>
+</gallery-list>
+</section>
+</collapse>
+</div>
+</section>
+</section>
+</gallery>
+</div>
+</section>
+</hamburger>
+</app>
 
-	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
-	<script src="https://unpkg.com/@microsoft/office-js-helpers@0.4.1/dist/office.helpers.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
+<script src="https://unpkg.com/@microsoft/office-js-helpers@0.4.1/dist/office.helpers.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
 
-	<script>
+<script>
 		var isAddin = location.href.indexOf('mode=web') === -1;
 		if (isAddin) {
 			Office.initialize = initializeRunner;
@@ -622,7 +621,7 @@
 		function initializeRunner() {
 			var host = OfficeHelpers.Utilities.host;
 			var platform = OfficeHelpers.Utilities.platform;
-			var storageKey = host + ' Snippets';
+			var storageKey = 'playground_' + queryParams['host'].toLowerCase() + '_snippets';
 
 			setCssRules(host, platform);
 
@@ -634,15 +633,15 @@
 			for (var id in snippets) {
 				hasChildren = true;
 
-				(function(snippet) {
+				(function (snippet) {
 					var $item = $(
-						'<article class="gallery-list__item gallery-list__item--template ms-font-m">'+
-							'<div class="name"></div>'+
-							'<div class="description"></div>'+
+						'<article class="gallery-list__item gallery-list__item--template ms-font-m">' +
+						'<div class="name"></div>' +
+						'<div class="description"></div>' +
 						'</article>');
 					$item.children('.name').text(snippet.name);
 					$item.children('.description').text(snippet.description);
-					$item.children().click(function() {
+					$item.children().click(function () {
 						navigateToRunner(snippet);
 					})
 					$item.appendTo($list);
@@ -654,16 +653,16 @@
 			}
 
 			$('#progress').hide();
-			$('#snippet-list').show();		
+			$('#snippet-list').show();
 		};
 
 		function setCssRules(host, platform) {
 			var hostColor = getHostColors();
-			var rule = '.gallery-list__item:active, .gallery-list__item:hover {' + 
+			var rule = '.gallery-list__item:active, .gallery-list__item:hover {' +
 				'background: ' + hostColor.primary + '; color: white; }' + '\n' +
 				'#header { background: ' + hostColor.primary + '; }' + '\n' +
 				'.command__icon:hover { background: ' + hostColor.darker + '; }' + '\n';
-			
+
 			if (platform === OfficeHelpers.PlatformType.PC) {
 				rule += '#header .command__icon:last-of-type { padding-right: 30px; }' + '\n';
 			}
@@ -678,7 +677,7 @@
 					'ONENOTE': { primary: 'rgba(128, 57, 123, 1)', darker: '#5d2959' },
 					'WEB': { primary: 'rgba(0, 120, 215, 1)', darker: '#005ca4' }
 				};
-            	return officeHostColors[host] || officeHostColors['WEB'];
+				return officeHostColors[host] || officeHostColors['WEB'];
 			}
 		}
 
@@ -686,13 +685,13 @@
 			var postDataInner /*: a partial IRunnerPostData */ = {
 				snippet: jsyaml.safeDump(snippet),
 				returnUrl: window.location.href,
-                refreshUrl: window.location.origin + '/refresh.html',
+				refreshUrl: window.location.origin + '/refresh.html',
 
-                // Any further fields will simply get passed in to the refresh page: 
-                id: snippet.id,                
-                host: OfficeHelpers.Utilities.host,
-                platform: OfficeHelpers.Utilities.platform
-            };
+				// Any further fields will simply get passed in to the refresh page:
+				id: snippet.id,
+				host: OfficeHelpers.Utilities.host,
+				platform: OfficeHelpers.Utilities.platform
+			};
 
 			var postData = { data: JSON.stringify(postDataInner) };
 			var runnerUrl = 'https://addin-playground-runner.azurewebsites.net/';
