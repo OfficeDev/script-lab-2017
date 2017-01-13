@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Utilities, Storage } from '@microsoft/office-js-helpers';
+import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError } from '../helpers';
@@ -44,13 +44,7 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    observable = this._request.get<string>(
-                        `${this.samplesRepoUrl}/samples/${Utilities.host.toLowerCase()}/default.yaml`,
-                        ResponseTypes.YAML
-                    )._catch(() => {
-                        // TODO https://github.com/OfficeDev/addin-playground/issues/45: Add error logging code in place of current TODOs 
-                        return jsyaml.safeDump(this._defaults);
-                    });
+                    observable = this.getDefaultSnippet();
                     break;
 
                 case 'CUID':
@@ -336,5 +330,27 @@ export class SnippetEffects {
 
         document.body.appendChild(form);
         form.submit();
+    }
+
+    private getDefaultSnippet() {
+        if (Utilities.host === HostType.WEB) {
+            return this._request.local<string>(`snippets/web.yaml`, ResponseTypes.YAML);
+        }
+
+        let apiSetsToNamespaces = {
+            'ExcelApi': 'Excel',
+            'WordApi': 'Word',
+            'OneNoteApi': 'OneNote'
+        };
+
+        for (let apiSet in apiSetsToNamespaces) {
+            if (Office.context.requirements.isSetSupported(apiSet)) {
+                return this._request.local<string>(`snippets/host-specific.yaml`, ResponseTypes.YAML)._do((snippet) => {
+                    return snippet.replace(/{{{HostNamespace}}}/, apiSetsToNamespaces[apiSet]);
+                });
+            }
+        }
+
+        return this._request.local<string>(`snippets/office-2013.yaml`, ResponseTypes.YAML);
     }
 }
