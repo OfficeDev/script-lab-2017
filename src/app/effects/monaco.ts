@@ -39,7 +39,7 @@ export class MonacoEffects {
         .mergeMap(({ payload, language }) => this._parseAndUpdate(payload, language))
         .filter(data => data !== null)
         .map(data => new Monaco.UpdateIntellisenseSuccessAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to update intellisense', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to update IntelliSense', exception)));
 
     @Effect()
     clearUnusedIntellisense$: Observable<Action> = this.actions$
@@ -58,7 +58,7 @@ export class MonacoEffects {
 
             return new Monaco.AddIntellisenseAction(payload, language);
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear intellisense', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear IntelliSense', exception)));
 
     private _parseAndUpdate(libraries: string[], language: string) {
         return Observable

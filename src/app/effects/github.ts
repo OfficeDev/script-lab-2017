@@ -30,7 +30,7 @@ export class GitHubEffects {
     logout$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
         .map(() => this._github.logout())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to logout out of GitHub', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to log out of GitHub', exception)));
 
     @Effect()
     isLoggedIn$: Observable<Action> = this.actions$
@@ -38,7 +38,7 @@ export class GitHubEffects {
         .map(() => this._github.profile)
         .filter<IBasicProfile, IBasicProfile>(profile => !(profile == null))
         .map(profile => new GitHub.LoggedInAction(profile))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed get GitHub profile', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to get GitHub profile', exception)));
 
     @Effect()
     loadGists$: Observable<Action> = this.actions$
@@ -66,7 +66,7 @@ export class GitHubEffects {
                 .filter(snippet => !(snippet == null));
         })
         .map(snippets => new GitHub.LoadGistsSuccessAction(snippets))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed get GitHub gists', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to retrieve GitHub gists', exception)));
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$
@@ -108,7 +108,7 @@ You will be able to import your snippet by choosing the "Import" button in the P
             return gist;
         })
         .map(gist => new GitHub.ShareSuccessAction(gist))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed share GitHub gist', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to share a GitHub gist', exception)));
 
     @Effect({ dispatch: false })
     shareCopy$: Observable<Action> = this.actions$
@@ -123,5 +123,5 @@ You will be able to import your snippet by choosing the "Import" button in the P
                 }
             });
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to copy gist to clipboard', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to copy the snippet to clipboard', exception)));
 }

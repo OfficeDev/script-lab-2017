@@ -25,7 +25,7 @@ export class SnippetEffects {
         template: { content: '', language: 'html' },
         libraries: ''
     };
-    private samplesRepoRawUrl = 'https://raw.githubusercontent.com/WrathOfZombies/samples/deployment';
+    private samplesRepoUrl = 'https://raw.githubusercontent.com/WrathOfZombies/samples/deployment';
 
     constructor(
         private actions$: Actions,
@@ -44,11 +44,11 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    observable = this._request.local<string>(
-                        `${this.samplesRepoRawUrl}/${Utilities.host.toLowerCase()}/default.yaml`,
+                    observable = this._request.get<string>(
+                        `${this.samplesRepoUrl}/samples/${Utilities.host.toLowerCase()}/default.yaml`,
                         ResponseTypes.YAML
                     )._catch(() => {
-                        // TODO: log the error
+                        // TODO https://github.com/OfficeDev/addin-playground/issues/45: Add error logging code in place of current TODOs 
                         return jsyaml.safeDump(this._defaults);
                     });
                     break;
@@ -131,7 +131,7 @@ export class SnippetEffects {
 
             return new Snippet.StoreUpdatedAction();
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to save current snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to save the current snippet', exception)));
 
     @Effect()
     duplicate$: Observable<Action> = this.actions$
@@ -144,7 +144,7 @@ export class SnippetEffects {
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy, true);
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed depulicate current snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to duplicate the current snippet', exception)));
 
     @Effect()
     delete$: Observable<Action> = this.actions$
@@ -155,20 +155,20 @@ export class SnippetEffects {
             new Snippet.StoreUpdatedAction(),
             new UI.OpenMenuAction()
         ]))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed delete current snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to delete current snippet', exception)));
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
         .map(action => this._store.clear())
         .map(() => new Snippet.StoreUpdatedAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed delete all local snippets', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to delete all local snippets', exception)));
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
         .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed load the local snippets', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load the local snippets', exception)));
 
     @Effect({ dispatch: false })
     run$: Observable<Action> = this.actions$
@@ -198,11 +198,11 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this.samplesRepoRawUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = `${this.samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML)
                     ._catch(() => {
-                        // TODO: log the error
-                        return []
+                        // TODO https://github.com/OfficeDev/addin-playground/issues/45: Add error logging code in place of current TODOs
+                        return [];
                     });
             }
             else {
@@ -210,7 +210,7 @@ export class SnippetEffects {
             }
         })
         .map(data => new Snippet.LoadTemplatesSuccessAction(data))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load default samples', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load the default samples', exception)));
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {

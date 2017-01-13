@@ -26,7 +26,7 @@ export class UIEffects {
         .do(action => this._resolve(action))
         .catch(exception => {
             this._reject(new PlaygroundError('An error occurred in Dialog', exception));
-            return Observable.of(new UI.ReportErrorAction('Failed to clear intellisense', exception));
+            return Observable.of(new UI.ReportErrorAction('Failed to clear IntelliSense', exception));
         });
 
     alert(message: string, title: string = 'Alert', ...actions: string[]) {
