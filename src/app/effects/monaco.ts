@@ -7,7 +7,6 @@ import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 
-
 export interface IIntellisenseFile {
     url: string;
     content: string;
@@ -16,7 +15,7 @@ export interface IIntellisenseFile {
 export interface IDisposableFile {
     url: string;
     disposable: monaco.IDisposable;
-    retain?: boolean;
+    keep?: boolean;
 }
 
 @Injectable()
@@ -34,76 +33,69 @@ export class MonacoEffects {
 
     @Effect()
     updateIntellisense$: Observable<Action> = this.actions$
-        .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
-        .map((action: Monaco.AddIntellisenseAction) => ({ payload: action.payload, language: action.language }))
-        .mergeMap(({ payload, language }) => this._parseAndUpdate(payload, language))
-        .filter(data => data !== null)
-        .map(data => new Monaco.UpdateIntellisenseSuccessAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to update IntelliSense', exception)));
-
-    @Effect()
-    clearUnusedIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
         .map((action: Monaco.UpdateIntellisenseAction) => ({ payload: action.payload, language: action.language }))
-        .map(({payload, language}) => {
-            this._current.values().forEach(file => {
-                if (!file.retain) {
-                    file.disposable.dispose();
-                    this._current.remove(file.url);
-                }
-                else {
-                    file.retain = false;
-                }
-            });
+        .map(({ payload, language }) => {
+            let filesToAdd = this._parse(payload)
+                .filter(url => url && url.trim() !== '')
+                .map(file => {
+                    let currentFile = this._current.get(file);
+                    return currentFile == null ? file : currentFile.keep = true;
+                })
+                .filter(file => file !== true && !(file == null));
 
-            return new Monaco.AddIntellisenseAction(payload, language);
+            this._current.values()
+                .filter(file => !file.keep)
+                .map(unusedFile => {
+                    unusedFile.disposable.dispose();
+                    this._current.remove(unusedFile.url);
+                });
+
+            return { files: filesToAdd as string[], language };
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear IntelliSense', exception)));
+        .mergeMap(({files, language}) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction(file, language)))
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to update intelliSense', exception)));
 
-    private _parseAndUpdate(libraries: string[], language: string) {
+    @Effect()
+    addIntellisense$: Observable<Action> = this.actions$
+        .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
+        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload, action.language))
+        .map(data => new Monaco.UpdateIntellisenseSuccessAction())
+        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear intelliSense', exception)));
+
+
+    private _addIntellisense(url: string, language: string) {
+        let source = this._determineSource(language);
         return Observable
             .fromPromise(MonacoService.current)
-            .mergeMap((monaco, index) => {
-                let source = this._determineSource(language);
-
-                return this._parse(libraries)
-                    .filter(url => url && url.trim() !== '')
-                    .mergeMap(url => this._get(url))
-                    .filter(file => !(file == null))
-                    .map(file => {
-                        let intellisense = this._current.get(file.url);
-                        if (intellisense == null) {
-                            let disposable = source.addExtraLib(file.content, file.url);
-                            intellisense = this._current.add(file.url, { url: file.url, disposable, retain: true });
-                        }
-                        else {
-                            intellisense.retain = true;
-                        }
-
-                        return file.url;
-                    });
-            });
+            .mergeMap((monaco, index) => this._get(url))
+            .map(file => {
+                console.info(`adding ${file.url}`);
+                let disposable = source.addExtraLib(file.content, file.url);
+                let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
+                return intellisense;
+            })
+            .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load intellisense file', exception)));
     }
 
     private _parse(libraries: string[]) {
-        return Observable.from(libraries)
-            .map(library => {
-                if (/^@types/.test(library)) {
-                    return `https://unpkg.com/${library}/index.d.ts`;
+        return libraries.map(library => {
+            if (/^@types/.test(library)) {
+                return `https://unpkg.com/${library}/index.d.ts`;
+            }
+            else if (/^dt~/.test(library)) {
+                let libName = library.split('dt~')[1];
+                return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/index.d.ts`;
+            }
+            else if (/\.d\.ts$/i.test(library)) {
+                if (/^https?:/i.test(library)) {
+                    return library;
                 }
-                else if (/^dt~/.test(library)) {
-                    let libName = library.split('dt~')[1];
-                    return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/index.d.ts`;
+                else {
+                    return `https://unpkg.com/${library}`;
                 }
-                else if (/\.d\.ts$/i.test(library)) {
-                    if (/^https?:/i.test(library)) {
-                        return library;
-                    }
-                    else {
-                        return `https://unpkg.com/${library}`;
-                    }
-                }
-            });
+            }
+        });
     }
 
     private _get(url: string): Observable<IIntellisenseFile> {

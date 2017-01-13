@@ -46,7 +46,7 @@ export class UpdateIntellisenseAction implements Action {
 export class AddIntellisenseAction implements Action {
     readonly type = MonacoActionTypes.ADD_INTELLISENSE;
 
-    constructor(public payload: string[], public language: string) { }
+    constructor(public payload: string, public language: string) { }
 }
 
 export class UpdateIntellisenseSuccessAction implements Action {
