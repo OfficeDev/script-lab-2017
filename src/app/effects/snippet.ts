@@ -445,15 +445,7 @@ export class SnippetEffects {
         web: {
             code: PlaygroundHelpers.Utilities.stripSpaces(`
                 function run() {
-                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
-                        function (asyncResult) {
-                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                                console.log(asyncResult.error.message);
-                            } else {
-                                console.log('Selected data is ' + asyncResult.value);
-                            }
-                        }
-                    );
+                    console.log("Your code goes here");
                 }
             `),
 

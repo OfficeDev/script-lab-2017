@@ -289,11 +289,33 @@
 			var queryParams = queryParamsToJson();
 			var id = queryParams['id'];
 			var storageKey = 'playground_' + queryParams['host'].toLowerCase() + '_snippets';
-			var snippet = JSON.parse(window.localStorage[storageKey] || "{}")[id];
 
-			if (!snippet) {
-				document.getElementById('subtitle').innerHtml = 'Could not find the snippet. Please re-load the add-in.';
-				return;
+			try {
+				var snippets = JSON.parse(window.localStorage[storageKey]);
+				var snippet = snippet[id];
+				if (!snippet) {
+					throw new Error();
+				}
+			}
+			catch (e) {
+				try {
+					var settingsKey = 'playground_settings';
+					var hostSettings = JSON.parse(window.localStorage[settingsKey])
+						[queryParams['host'].toLowerCase()]
+					if (hostSettings && hostSettings.snippet.lastOpened.id == id) {
+						snippet = hostSettings.snippet.lastOpened;
+					}
+				} catch (e) { }
+
+				if (!snippet) {
+					var subtitle = document.getElementById('subtitle');
+					subtitle.innerHTML = 'Could not find the snippet. Returning...';
+					subtitle.style.color = 'red';
+					setTimeout(function() {
+						window.location.href = queryParams['returnUrl'];
+					}, 2500);
+					return;
+				}
 			}
 
 			var postDataInner /*: a partial IRunnerPostData */ = {

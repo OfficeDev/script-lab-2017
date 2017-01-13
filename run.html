@@ -628,6 +628,9 @@
 
 <script>
 	var isAddin = location.href.indexOf('mode=web') === -1;
+	var getCurrentSnippets;
+	var getCurrentSettings;
+
 	if (isAddin) {
 		Office.initialize = initializeRunner;
 	}
@@ -638,24 +641,33 @@
 	function initializeRunner() {
 		var host = OfficeHelpers.Utilities.host.toLowerCase();
 		var platform = OfficeHelpers.Utilities.platform;
-		var storageKey = 'playground_' + host + '_snippets';
-		var settingsKey = 'playground_settings';
-
 		setCssRules(host, platform);
 
-		var snippets = JSON.parse(window.localStorage[storageKey] || "{}");
-		var settings = JSON.parse(window.localStorage[settingsKey]);
+		getCurrentSnippets = function() {
+			var storageKey = 'playground_' + host + '_snippets';
+			try {
+				return JSON.parse(window.localStorage[storageKey]);
+			} catch (e) {
+				return {};
+			}
+		}
 
-		var contextSettings = settings[host];
+		getCurrentSettings = function() {
+			var settingsKey = 'playground_settings';
+			var settings = JSON.parse(window.localStorage[settingsKey]);
+
+			return settings[host];
+		}
 
 		var $last = $('#last-snippet');
 		var $lastGroup = $('#last-snippet-group');
-
-		if (contextSettings == null || contextSettings.snippet.lastOpened == null) {
+		var currentSettings = getCurrentSettings();
+		if (currentSettings == null || currentSettings.snippet.lastOpened == null) {
 			$last.hide();
 		}
 		else {
-			var snippet = contextSettings.snippet.lastOpened;
+			var snippet = currentSettings.snippet.lastOpened;
+			var snippetId = snippet.id;
 			var $item = $(
 				'<article class="gallery-list__item gallery-list__item--template ms-font-m">' +
 				'<div class="name"></div>' +
@@ -664,33 +676,34 @@
 			$item.children('.name').text(snippet.name);
 			$item.children('.description').text(snippet.description);
 			$item.children().click(function () {
-				navigateToRunner(snippet);
+				if (getCurrentSettings().snippet.lastOpened.id == snippetId) {
+					navigateToRunnerWithSnippet(snippet);
+				} else {
+					navigateToRunnerWithId(snippetId);
+				}
 			})
 			$item.appendTo($lastGroup);
 		}
 
-
-
 		var $list = $('#local-snippet-list');
+		var currentSnippets = getCurrentSnippets();
 
 		var hasChildren = false;
-
-		for (var id in snippets) {
+		for (var id in currentSnippets) {
 			hasChildren = true;
-
-			(function (snippet) {
+			(function (id, name, description) {
 				var $item = $(
 					'<article class="gallery-list__item gallery-list__item--template ms-font-m">' +
 					'<div class="name"></div>' +
 					'<div class="description"></div>' +
 					'</article>');
-				$item.children('.name').text(snippet.name);
-				$item.children('.description').text(snippet.description);
+				$item.children('.name').text(name);
+				$item.children('.description').text(description);
 				$item.children().click(function () {
-					navigateToRunner(snippet);
+					navigateToRunnerWithId(id);
 				})
 				$item.appendTo($list);
-			})(snippets[id]);
+			})(id, currentSnippets[id].name, currentSnippets[id].description);
 		}
 
 		if (!hasChildren) {
@@ -709,7 +722,7 @@
 			'.command__icon:hover { background: ' + hostColor.darker + '; }' + '\n';
 
 		if (platform === OfficeHelpers.PlatformType.PC) {
-			rule += '#header .command__icon:last-of-type { padding-right: 30px; }' + '\n';
+			rule += '#header .command__icon:last-of-type { margin-right: 30px; }' + '\n';
 		}
 
 		$('<style>' + rule + '</style>').appendTo('head');
@@ -726,7 +739,16 @@
 		}
 	}
 
-	function navigateToRunner(snippet) {
+	function navigateToRunnerWithId(id) {
+		navigateToRunnerWithSnippet(getCurrentSnippets()[id]);
+	}
+
+	function navigateToRunnerWithSnippet(snippet) {
+		if (!snippet) {
+			window.location.reload(true);
+			return;
+		}
+
 		var postDataInner /*: a partial IRunnerPostData */ = {
 			snippet: jsyaml.safeDump(snippet),
 			returnUrl: window.location.href,
