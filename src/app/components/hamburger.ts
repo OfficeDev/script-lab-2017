@@ -7,7 +7,6 @@ import { Observable } from 'rxjs/Observable';
     <section class="hamburger-menu ms-u-slideRightIn10" [class.hamburger-menu--shown]="open|async">
         <header class="command__bar">
             <command [hidden]="!(open|async)" icon="GlobalNavButton" (click)="dismiss.emit()"></command>
-            <command class="title" title="EDITOR"></command>
         </header>
         <div class="hamburger-menu__container">
             <ng-content></ng-content>
