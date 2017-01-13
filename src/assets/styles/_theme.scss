@@ -174,15 +174,7 @@
         }
     }
 
-    .import__header {
-        background-color: $accent-background-primary;
-    }
-
-        .import__main a {
-            color: $accent-background-primary
-        }
-
-   .gallery {
+    .gallery {
         &__action {
             h1.ms-Button-label {
                 color: $accent-background-primary;

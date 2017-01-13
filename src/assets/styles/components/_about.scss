@@ -11,8 +11,8 @@
         height: 150px;
         border-radius: 100%;
         margin-top: $default-spacing * 2;
-        @include background-fill(300px) {
-            @include background-image-circle(200px, '../images/playground-background.png');
+        @include background-fill() {
+            @include background-image-circle(150px, '../images/icon-large.png');
         }
     }
 
