@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError } from '../helpers';
+import * as PlaygroundHelpers from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { Snippet, UI } from '../actions';
@@ -44,7 +44,7 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    observable = this.getDefaultSnippet();
+                    observable = Observable.of(jsyaml.load(this.getDefaultSnippet()));
                     break;
 
                 case 'CUID':
@@ -240,11 +240,11 @@ export class SnippetEffects {
 
     private _validate(snippet: ISnippet) {
         if (_.isEmpty(snippet)) {
-            throw new PlaygroundError('Snippet cannot be empty');
+            throw new PlaygroundHelpers.PlaygroundError('Snippet cannot be empty');
         }
 
         if (_.isEmpty(snippet.name)) {
-            throw new PlaygroundError('Snippet name cannot be empty');
+            throw new  PlaygroundHelpers.PlaygroundError('Snippet name cannot be empty');
         }
     }
 
@@ -332,9 +332,10 @@ export class SnippetEffects {
         form.submit();
     }
 
-    private getDefaultSnippet() {
+    private getDefaultSnippet(): string {
         if (Utilities.host === HostType.WEB) {
-            return this._request.local<string>(`snippets/web.yaml`, ResponseTypes.YAML);
+            return compile(this.defaultSnippetIngredients.web.code,
+                this.defaultSnippetIngredients.web.libraries);
         }
 
         let apiSetsToNamespaces = {
@@ -345,12 +346,133 @@ export class SnippetEffects {
 
         for (let apiSet in apiSetsToNamespaces) {
             if (Office.context.requirements.isSetSupported(apiSet)) {
-                return this._request.local<string>(`snippets/host-specific.yaml`, ResponseTypes.YAML)._do((snippet) => {
-                    return snippet.replace(/{{{HostNamespace}}}/, apiSetsToNamespaces[apiSet]);
-                });
+                let namespace = apiSetsToNamespaces[apiSet];
+                return compile(
+                    this.defaultSnippetIngredients.office.getHostSpecificCode(namespace),
+                    this.defaultSnippetIngredients.office.libraries);
             }
         }
 
-        return this._request.local<string>(`snippets/office-2013.yaml`, ResponseTypes.YAML);
+        return compile(
+            this.defaultSnippetIngredients.office.commonApiCode,
+            this.defaultSnippetIngredients.office.libraries);
+
+        
+        // Helper function
+
+        function compile(code: string, libraries: string) {
+            return PlaygroundHelpers.Utilities.stripSpaces(`
+                author: Microsoft
+                name: Blank snippet
+                description: Create a new snippet from a blank template.
+                script:
+                  content: |-
+                    $('#run').click(run);
+
+                    {{{CODE_INDENT_4}}}
+                  language: typescript
+                style:
+                  content: /* Your style goes here */
+                  language: css
+                template:
+                  content: |-
+                    <button id="run" class="ms-Button">
+                        <span class="ms-Button-label">Run</span>
+                    </button>
+                  language: html
+                libraries: |-
+                  {{{LIBRARIES_INDENT_2}}}
+            `)
+                .replace('{{{CODE_INDENT_4}}}',
+                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
+                .replace('{{{LIBRARIES_INDENT_2}}}',
+                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
+        }
     }
+
+    private defaultSnippetIngredients = {
+        office: {
+            getHostSpecificCode: function(namespace: string) {
+                return PlaygroundHelpers.Utilities.stripSpaces(`
+                    async function run() {
+                        try {
+                            await {{{NAMESPACE}}}.run(async (context) => {
+                                console.log("Your code goes here");
+                                await context.sync();
+                            });
+                        }
+                        catch (error) {
+                            OfficeHelpers.Utilities.log(error);
+                        }
+                    }
+                `).replace('{{{NAMESPACE}}}', namespace);
+            },
+        
+            commonApiCode: PlaygroundHelpers.Utilities.stripSpaces(`
+                function run() {
+                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                        function (asyncResult) {
+                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                console.log(asyncResult.error.message);
+                            } else {
+                                console.log('Selected data is ' + asyncResult.value);
+                            }
+                        }
+                    );
+                }
+            `),
+
+            libraries: PlaygroundHelpers.Utilities.stripSpaces(`
+                // Office.js
+                https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
+
+                // NPM libraries
+                jquery
+                office-ui-fabric-js/dist/js/fabric.min.js
+                office-ui-fabric-js/dist/css/fabric.min.css
+                office-ui-fabric-js/dist/css/fabric.components.min.css
+                @microsoft/office-js-helpers/dist/office.helpers.min.js
+                core-js/client/core.min.js
+
+                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
+                dt~office-js
+                dt~jquery
+                dt~core-js
+                @microsoft/office-js-helpers/dist/office.helpers.d.ts
+            `)
+        },
+
+        web: {
+            code: PlaygroundHelpers.Utilities.stripSpaces(`
+                function run() {
+                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                        function (asyncResult) {
+                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                console.log(asyncResult.error.message);
+                            } else {
+                                console.log('Selected data is ' + asyncResult.value);
+                            }
+                        }
+                    );
+                }
+            `),
+
+            libraries: PlaygroundHelpers.Utilities.stripSpaces(`
+                // NPM libraries
+                jquery
+                office-ui-fabric-js/dist/js/fabric.min.js
+                office-ui-fabric-js/dist/css/fabric.min.css
+                office-ui-fabric-js/dist/css/fabric.components.min.css
+                @microsoft/office-js-helpers/dist/office.helpers.min.js
+                core-js/client/core.min.js
+
+                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
+                dt~office-js
+                dt~jquery
+                dt~core-js
+                @microsoft/office-js-helpers/dist/office.helpers.d.ts
+            `)
+        }
+    };
+    
 }
