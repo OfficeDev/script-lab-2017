@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<OfficeApp 
-  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>829952ec-fada-43fa-b2d8-61c1f13543e4</Id>
   <Version>1.0.0.2</Version>
@@ -27,7 +27,7 @@
     <SourceLocation DefaultValue="https://addin-playground.azureedge.net" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
-  <VersionOverrides 
+  <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Description resid="PG.Description" />
     <Hosts>
@@ -38,9 +38,9 @@
               <Group id="PG.Group">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="PG_icon_16" />
-                  <bt:Image size="32" resid="PG_icon_32" />
-                  <bt:Image size="80" resid="PG_icon_80" />
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
                 </Icon>
                 <Control xsi:type="Button" id="PG.EditButton">
                   <Label resid="PG.EditButton.Label" />
@@ -49,12 +49,13 @@
                     <Description resid="PG.EditSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG_edit_icon_16" />
-                    <bt:Image size="32" resid="PG_edit_icon_32" />
-                    <bt:Image size="80" resid="PG_edit_icon_80" />
+                    <bt:Image size="16" resid="PG.Icon.Edit.16" />
+                    <bt:Image size="32" resid="PG.Icon.Edit.32" />
+                    <bt:Image size="80" resid="PG.Icon.Edit.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Edit_Url" />
+                    <Title resid="PG.EditButton.Title" />
                   </Action>
                 </Control>
                 <Control xsi:type="Button" id="PG.RunButton">
@@ -64,13 +65,13 @@
                     <Description resid="PG.RunSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG_run_icon_16" />
-                    <bt:Image size="32" resid="PG_run_icon_32" />
-                    <bt:Image size="80" resid="PG_run_icon_80" />
+                    <bt:Image size="16" resid="PG.Icon.Run.16" />
+                    <bt:Image size="32" resid="PG.Icon.Run.32" />
+                    <bt:Image size="80" resid="PG.Icon.Run.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-
                     <SourceLocation resid="PG_Run_Url" />
+                    <Title resid="PG.RunButton.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -85,9 +86,9 @@
               <Group id="PG.Group">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="PG_icon_16" />
-                  <bt:Image size="32" resid="PG_icon_32" />
-                  <bt:Image size="80" resid="PG_icon_80" />
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
                 </Icon>
                 <Control xsi:type="Button" id="PG.EditButton">
                   <Label resid="PG.EditButton.Label" />
@@ -96,12 +97,13 @@
                     <Description resid="PG.EditSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG_edit_icon_16" />
-                    <bt:Image size="32" resid="PG_edit_icon_32" />
-                    <bt:Image size="80" resid="PG_edit_icon_80" />
+                    <bt:Image size="16" resid="PG.Icon.Edit.16" />
+                    <bt:Image size="32" resid="PG.Icon.Edit.32" />
+                    <bt:Image size="80" resid="PG.Icon.Edit.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Edit_Url" />
+                    <Title resid="PG.RunButton.Title" />
                   </Action>
                 </Control>
                 <Control xsi:type="Button" id="PG.RunButton">
@@ -111,13 +113,13 @@
                     <Description resid="PG.RunSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG_run_icon_16" />
-                    <bt:Image size="32" resid="PG_run_icon_32" />
-                    <bt:Image size="80" resid="PG_run_icon_80" />
+                    <bt:Image size="16" resid="PG.Icon.Run.16" />
+                    <bt:Image size="32" resid="PG.Icon.Run.32" />
+                    <bt:Image size="80" resid="PG.Icon.Run.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-
                     <SourceLocation resid="PG_Run_Url" />
+                    <Title resid="PG.RunButton.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -132,9 +134,9 @@
               <Group id="PG.Group">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
-                  <bt:Image size="16" resid="PG_icon_16" />
-                  <bt:Image size="32" resid="PG_icon_32" />
-                  <bt:Image size="80" resid="PG_icon_80" />
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
                 </Icon>
                 <Control xsi:type="Button" id="PG.EditButton">
                   <Label resid="PG.EditButton.Label" />
@@ -143,12 +145,13 @@
                     <Description resid="PG.EditSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG_edit_icon_16" />
-                    <bt:Image size="32" resid="PG_edit_icon_32" />
-                    <bt:Image size="80" resid="PG_edit_icon_80" />
+                    <bt:Image size="16" resid="PG.Icon.Edit.16" />
+                    <bt:Image size="32" resid="PG.Icon.Edit.32" />
+                    <bt:Image size="80" resid="PG.Icon.Edit.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Edit_Url" />
+                    <Title resid="PG.EditButton.Title" />
                   </Action>
                 </Control>
                 <Control xsi:type="Button" id="PG.RunButton">
@@ -158,13 +161,13 @@
                     <Description resid="PG.RunSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG_run_icon_16" />
-                    <bt:Image size="32" resid="PG_run_icon_32" />
-                    <bt:Image size="80" resid="PG_run_icon_80" />
+                    <bt:Image size="16" resid="PG.Icon.Run.16" />
+                    <bt:Image size="32" resid="PG.Icon.Run.32" />
+                    <bt:Image size="80" resid="PG.Icon.Run.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-
                     <SourceLocation resid="PG_Run_Url" />
+                    <Title resid="PG.RunButton.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -175,15 +178,15 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="PG_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
-        <bt:Image id="PG_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
-        <bt:Image id="PG_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
-        <bt:Image id="PG_edit_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-16.png" />
-        <bt:Image id="PG_edit_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-32.png" />
-        <bt:Image id="PG_edit_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-80.png" />
-        <bt:Image id="PG_run_icon_16" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-16.png" />
-        <bt:Image id="PG_run_icon_32" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-32.png" />
-        <bt:Image id="PG_run_icon_80" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-80.png" />
+        <bt:Image id="PG.Icon.16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
+        <bt:Image id="PG.Icon.32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
+        <bt:Image id="PG.Icon.80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
+        <bt:Image id="PG.Icon.Edit.16" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-16.png" />
+        <bt:Image id="PG.Icon.Edit.32" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-32.png" />
+        <bt:Image id="PG.Icon.Edit.80" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-80.png" />
+        <bt:Image id="PG.Icon.Run.16" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-16.png" />
+        <bt:Image id="PG.Icon.Run.32" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-32.png" />
+        <bt:Image id="PG.Icon.Run.80" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG_Edit_Url" DefaultValue="https://addin-playground.azureedge.net" />
@@ -192,8 +195,10 @@
       <bt:ShortStrings>
         <bt:String id="PG.GroupLabel" DefaultValue="Add-in Playground" />
         <bt:String id="PG.EditButton.Label" DefaultValue="Edit" />
+        <bt:String id="PG.EditButton.Title" DefaultValue="Editor" />
         <bt:String id="PG.EditButton.TipTitle" DefaultValue="Edit snippets in the Add-in Playground" />
         <bt:String id="PG.RunButton.Label" DefaultValue="Run" />
+        <bt:String id="PG.RunButton.Title" DefaultValue="Runner" />
         <bt:String id="PG.RunButton.TipTitle" DefaultValue="Run a Playground snippet" />
       </bt:ShortStrings>
       <bt:LongStrings>
