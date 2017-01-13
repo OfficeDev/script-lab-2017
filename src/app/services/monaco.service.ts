@@ -1,6 +1,7 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
+import { AI } from '../helpers';
 import global from '../../environment';
 
 const Regex = {
@@ -125,6 +126,7 @@ export class MonacoService extends Disposable {
                     require(['vs/editor/editor.main'], () => {
                         let end = performance.now();
                         resolve(monaco);
+                        AI.trackEvent('Monaco Loaded', { 'Monaco Load Duration': ((end - start) / 1000).toFixed(2) });
                     });
                 }
             }

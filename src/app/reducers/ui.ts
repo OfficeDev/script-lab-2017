@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { UIActions, UIActionTypes } from '../actions/ui';
-import { updateState, PlaygroundError } from '../helpers';
+import { updateState, PlaygroundError, AI } from '../helpers';
 import { Utilities } from '@microsoft/office-js-helpers';
 import global from '../../environment';
 
@@ -27,6 +27,8 @@ export function defaultState(overrides?: UIState) {
 
 export function reducer(state = initialState, action: UIActions): UIState {
     let newState = updateState<UIState>(state);
+    let type = action.type.toUpperCase();
+    AI.trackEvent(action.type, { type: JSON.stringify(action) });
 
     switch (action.type) {
         case UIActionTypes.OPEN_MENU:

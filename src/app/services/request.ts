@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { PlaygroundError } from '../helpers';
 import * as _ from 'lodash';
 import * as jsyaml from 'js-yaml';
 
@@ -15,13 +14,6 @@ export enum ResponseTypes {
 @Injectable()
 export class Request {
     constructor(private _http: Http) { }
-
-    url(url: string, params: Object) {
-        _.forEach(params, (value, key) => {
-            url = url.replace(new RegExp(`{${key}}`, 'g'), value);
-        });
-        return url;
-    }
 
     local<T>(path, responseType: ResponseTypes): Observable<T> {
         let xhr = this._http.get(`assets/${path}`);

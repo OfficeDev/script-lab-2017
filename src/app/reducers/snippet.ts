@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
-import { updateState } from '../helpers';
+import { updateState, AI } from '../helpers';
 
 export interface SnippetState {
     lastOpened?: ISnippet;
@@ -29,6 +29,8 @@ export function defaultState(overrides?: SnippetState) {
 
 export function reducer(state = initialState, action: SnippetActions | GitHubActions): SnippetState {
     let newState = updateState<SnippetState>(state);
+    let type = action.type.toUpperCase();
+    AI.trackEvent(action.type, { type: JSON.stringify(action) });
 
     switch (action.type) {
         case SnippetActionTypes.IMPORT:

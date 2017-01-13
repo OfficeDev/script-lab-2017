@@ -4,6 +4,7 @@ let { env, build, config } = PLAYGROUND;
 let auth: {
     token_url: string;
     client_id: string;
+    instrumentation_key: string;
 } = config['cdn'];
 
 if (env === 'DEVELOPMENT') {

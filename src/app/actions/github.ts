@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { type, PlaygroundError } from '../helpers';
+import { type } from '../helpers';
 import { Subscription } from 'rxjs/Subscription';
 
 /**

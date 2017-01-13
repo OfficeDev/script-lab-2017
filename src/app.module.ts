@@ -8,7 +8,7 @@ import { Authenticator, Utilities, Storage } from '@microsoft/office-js-helpers'
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
-import { EXCEPTION_PROVIDER, Theme } from './app/helpers';
+import { EXCEPTION_PROVIDER, Theme, AI } from './app/helpers';
 import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
 import { AppComponent } from './app/containers';
 
@@ -55,10 +55,12 @@ export class AppModule {
             await Theme.applyTheme();
 
             if (!Authenticator.isAuthDialog()) {
+                AI.trackEvent(`Playground ready`, { host: Utilities.host.toLowerCase() });
                 platformBrowserDynamic().bootstrapModule(AppModule);
             }
         }
         catch (e) {
+            AI.trackException(e);
             Utilities.log(e);
         }
     }

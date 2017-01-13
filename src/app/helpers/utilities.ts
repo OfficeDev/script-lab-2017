@@ -1,4 +1,5 @@
 import { Dictionary } from '@microsoft/office-js-helpers';
+import { AI } from './ai.helper';
 
 let typeCache = new Dictionary<boolean>();
 
@@ -47,6 +48,7 @@ export class Utilities {
 
         if (key) {
             let len = ((store.length + key.length) * 2);
+            AI.trackMetric(key, len / 1024);
             return `${(name || key).substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
         }
 
@@ -60,9 +62,9 @@ export class Utilities {
     }
 
     static stripSpaces(text: string) {
-        let lines: string[] = (text || "").split('\n').map(function(item) {
-			return item.replace(new RegExp("\t", 'g'), "    ");
-		});
+        let lines: string[] = (text || '').split('\n').map(function (item) {
+            return item.replace(new RegExp('\t', 'g'), '    ');
+        });
 
         let isZeroLengthLine: boolean = true;
         let arrayPosition: number = 0;
@@ -75,7 +77,7 @@ export class Utilities {
             } else {
                 isZeroLengthLine = false;
             }
-        } while (isZeroLengthLine || (arrayPosition === lines.length))
+        } while (isZeroLengthLine || (arrayPosition === lines.length));
 
         arrayPosition = lines.length - 1;
         isZeroLengthLine = true;
@@ -89,10 +91,10 @@ export class Utilities {
             } else {
                 isZeroLengthLine = false;
             }
-        } while (isZeroLengthLine)
+        } while (isZeroLengthLine);
 
         // Get smallest indent for align left.
-        var shortestIndentSize: number = 1024;
+        let shortestIndentSize: number = 1024;
         for (let line of lines) {
             let currentLine: string = line;
             if (currentLine.trim() !== '') {
@@ -111,7 +113,7 @@ export class Utilities {
         }
 
         // Convert the array back into a string and return it.
-        var finalSetOfLines: string = '';
+        let finalSetOfLines: string = '';
         for (let i: number = 0; i < lines.length; i++) {
             if (i < lines.length - 1) {
                 finalSetOfLines += lines[i] + '\n';
@@ -120,7 +122,7 @@ export class Utilities {
                 finalSetOfLines += lines[i];
             }
         }
-        
+
         return finalSetOfLines;
     }
 
@@ -133,13 +135,13 @@ export class Utilities {
     }
 
     private static indentAllHelper(text: string, numSpaces: number, excludeFirstLine: boolean) {
-        var lines: string[] = (text || "").split('\n');
-        var indentString = "";
-        for (var i = 0; i < numSpaces; i++) {
-            indentString += " ";
+        let lines: string[] = (text || '').split('\n');
+        let indentString = '';
+        for (let i = 0; i < numSpaces; i++) {
+            indentString += ' ';
         }
 
-        var result = (excludeFirstLine) ? (lines.shift() + '\n') : '';
+        let result = (excludeFirstLine) ? (lines.shift() + '\n') : '';
         result += lines.map((line) => indentString + line).join('\n');
         return result;
     }

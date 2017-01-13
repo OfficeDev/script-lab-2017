@@ -193,11 +193,7 @@ export class SnippetEffects {
         .mergeMap(source => {
             if (source === 'LOCAL') {
                 let snippetJsonUrl = `${this.samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
-                return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML)
-                    ._catch(() => {
-                        // TODO https://github.com/OfficeDev/addin-playground/issues/45: Add error logging code in place of current TODOs
-                        return [];
-                    });
+                return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
@@ -357,7 +353,7 @@ export class SnippetEffects {
             this.defaultSnippetIngredients.office.commonApiCode,
             this.defaultSnippetIngredients.office.libraries);
 
-        
+
         // Helper function
 
         function compile(code: string, libraries: string) {
@@ -407,7 +403,7 @@ export class SnippetEffects {
                     }
                 `).replace('{{{NAMESPACE}}}', namespace);
             },
-        
+
             commonApiCode: PlaygroundHelpers.Utilities.stripSpaces(`
                 function run() {
                     Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
@@ -466,5 +462,5 @@ export class SnippetEffects {
             `)
         }
     };
-    
+
 }

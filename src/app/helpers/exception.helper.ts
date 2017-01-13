@@ -1,5 +1,6 @@
 import { ErrorHandler } from '@angular/core';
 import { Utilities } from '@microsoft/office-js-helpers';
+import { AI } from './ai.helper';
 
 /**
  * A class for signifying that an error is a "handleable" error that comes from the playground,
@@ -26,6 +27,11 @@ export class PlaygroundError extends Error {
             if (error.stack) {
                 let last_part = error.stack.match(/[^\s]+$/);
                 this.stack = `${this.name} at ${last_part}`;
+                AI.trackException(this, last_part.toString(), {
+                    'innerError': JSON.stringify(error),
+                    'message': message,
+                    'host': Utilities.host.toLowerCase()
+                });
             }
         }
     }
@@ -35,8 +41,7 @@ export class PlaygroundError extends Error {
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any, stackTrace?: any, reason?: string) {
         Utilities.log(exception);
-        // appInsights.trackException(exception, 'Global Exception Handler', { 'global': 'true' });
-        // UxUtil.showErrorNotification('An unexpected error occurred.', [], exception);
+        AI.trackException(exception);
     }
 }
 

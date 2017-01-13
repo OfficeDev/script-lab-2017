@@ -1,5 +1,5 @@
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
-import { updateState } from '../helpers';
+import { updateState, AI } from '../helpers';
 
 export interface GitHubState {
     isLoggedIn?: boolean;
@@ -21,6 +21,8 @@ export function defaultState(overrides?: GitHubState) {
 
 export function reducer(state = initialState, action: GitHubActions): GitHubState {
     let newState = updateState<GitHubState>(state);
+    let type = action.type.toUpperCase();
+    AI.trackEvent(action.type, { type: JSON.stringify(action) });
 
     switch (action.type) {
         case GitHubActionTypes.LOGIN:
@@ -28,12 +30,15 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
                 loading: true
             });
 
-        case GitHubActionTypes.LOGGED_IN:
+        case GitHubActionTypes.LOGGED_IN: {
+            AI.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
+
             return newState({
                 loading: false,
                 isLoggedIn: true,
                 profile: action.payload
             });
+        }
 
         case GitHubActionTypes.LOGGED_OUT:
             return newState({

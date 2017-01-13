@@ -24,14 +24,17 @@ var config = (function (env) {
     return {
         dev: {
             client_id: '95435036e70d23b8549f',
+            instrumentation_key: '8cc167c3-cd53-49f5-8b5c-bf8bccdb8995',
             token_url: 'https://addin-playground-runner.azurewebsites.net/auth/dev'
         },
         prod: {
             client_id: '8d19e9bbcea2a1cee274',
+            instrumentation_key: '8cc167c3-cd53-49f5-8b5c-bf8bccdb8995',
             token_url: 'https://addin-playground-runner.azurewebsites.net/auth/prod'
         },
         cdn: {
             client_id: 'b05714a22e602446c43a',
+            instrumentation_key: '8cc167c3-cd53-49f5-8b5c-bf8bccdb8995',
             token_url: 'https://addin-playground-runner.azurewebsites.net/auth/cdn'
         }
     };

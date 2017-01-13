@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { MonacoActions, MonacoActionTypes } from '../actions/monaco';
-import { updateState } from '../helpers';
+import { updateState, AI } from '../helpers';
 
 export interface MonacoState {
     activeTab?: string;
@@ -21,6 +21,8 @@ export function defaultState(overrides?: MonacoState) {
 
 export function reducer(state = initialState, action: MonacoActions): MonacoState {
     let newState = updateState<MonacoState>(state);
+    let type = action.type.toUpperCase();
+    AI.trackEvent(action.type, { type: JSON.stringify(action) });
 
     switch (action.type) {
         case MonacoActionTypes.CHANGE_TAB:
