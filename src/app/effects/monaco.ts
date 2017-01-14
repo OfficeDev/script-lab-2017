@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Utilities, Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { AI } from '../helpers';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import * as _ from 'lodash';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
+import * as sha256 from 'crypto-js/sha256';
 
 export interface IIntellisenseFile {
     url: string;
@@ -70,7 +72,7 @@ export class MonacoEffects {
             .fromPromise(MonacoService.current)
             .mergeMap((monaco, index) => this._get(url))
             .map(file => {
-                console.info(`adding ${file.url}`);
+                AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha256(file.url) });
                 let disposable = source.addExtraLib(file.content, file.url);
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;

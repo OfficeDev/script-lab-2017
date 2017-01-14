@@ -9,6 +9,7 @@ import { Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 import cuid = require('cuid');
+import global from '../../environment';
 
 @Injectable()
 export class SnippetEffects {
@@ -41,13 +42,16 @@ export class SnippetEffects {
         .mergeMap(({ data, suffix }) => {
             let observable: Observable<ISnippet>;
             let importType = this._determineImportType(data);
+            let info = '';
 
             switch (importType) {
                 case 'DEFAULT':
+                    info = Utilities.host.toLowerCase();
                     observable = Observable.of(jsyaml.load(this.getDefaultSnippet()));
                     break;
 
                 case 'CUID':
+                    info = data;
                     observable = Observable.of(this._store.get(data));
                     break;
 
@@ -56,6 +60,9 @@ export class SnippetEffects {
                     observable = this._github.gist(data)
                         .map(gist => {
                             let snippet = _.find(gist.files, (value, key) => /\.ya?ml$/gi.test(key));
+                            if (gist.public) {
+                                info = gist.id;
+                            }
                             if (snippet == null) {
                                 let output = this._upgrade(gist.files);
                                 output.description = '';
@@ -75,11 +82,15 @@ export class SnippetEffects {
                     break;
 
                 case 'YAML':
-                    observable = Observable.of(jsyaml.load(data));
+                    let snippet = jsyaml.load(data);
+                    info = snippet.id;
+                    observable = Observable.of(snippet);
                     break;
 
                 default: return;
             }
+
+            PlaygroundHelpers.AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
 
             return observable
                 .filter(snippet => !(snippet == null))
@@ -192,7 +203,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this.samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = `${this.samplesRepoUrl} /playlists/${Utilities.host.toLowerCase()}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
@@ -240,13 +251,13 @@ export class SnippetEffects {
         }
 
         if (_.isEmpty(snippet.name)) {
-            throw new  PlaygroundHelpers.PlaygroundError('Snippet name cannot be empty');
+            throw new PlaygroundHelpers.PlaygroundError('Snippet name cannot be empty');
         }
     }
 
     private _generateName(name: string, suffix: string = ''): string {
         let newName = _.isEmpty(name.trim()) ? 'New Snippet' : name.trim();
-        let regex = new RegExp(`^${name}`);
+        let regex = new RegExp(`^ ${name} `);
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = _.reduce(options, (max, item) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
@@ -256,7 +267,7 @@ export class SnippetEffects {
             return max;
         }, 0);
 
-        return `${newName}${(suffix ? ' - ' + suffix : '')}${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')}`;
+        return `${newName} ${(suffix ? ' - ' + suffix : '')} ${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')} `;
     }
 
     private _upgrade(files: IGistFiles) {
@@ -305,6 +316,7 @@ export class SnippetEffects {
             }
         });
 
+        PlaygroundHelpers.AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(global.build.build) });
         return snippet;
     }
 
@@ -358,108 +370,110 @@ export class SnippetEffects {
 
         function compile(code: string, libraries: string) {
             return PlaygroundHelpers.Utilities.stripSpaces(`
-                author: Microsoft
-                name: Blank snippet
-                description: Create a new snippet from a blank template.
-                script:
-                  content: |-
-                    $('#run').click(run);
+                                author: Microsoft
+                                name: Blank snippet
+                                description: Create a new snippet from a blank template.
+                                    script:
+                                content: |-
+                                    $('#run').click(run);
 
-                    {{{CODE_INDENT_4}}}
-                  language: typescript
-                style:
-                  content: /* Your style goes here */
-                  language: css
-                template:
-                  content: |-
-                    <button id="run" class="ms-Button">
-                        <span class="ms-Button-label">Run</span>
-                    </button>
-                  language: html
-                libraries: |-
-                  {{{LIBRARIES_INDENT_2}}}
-            `)
+                                { { { CODE_INDENT_4 } } }
+                                language: typescript
+                                style:
+                                content: /* Your style goes here */
+                                language: css
+                                template:
+                                content: |-
+                                    <button id="run" class="ms-Button" >
+                                        <span class="ms-Button-label" > Run < /span>
+                                            < /button>
+                                language: html
+                                libraries: |-
+                                    {{{ LIBRARIES_INDENT_2 } }
+                            }
+                            `)
                 .replace('{{{CODE_INDENT_4}}}',
-                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
+                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
                 .replace('{{{LIBRARIES_INDENT_2}}}',
-                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
+                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
         }
     }
 
     private defaultSnippetIngredients = {
         office: {
-            getHostSpecificCode: function(namespace: string) {
+            getHostSpecificCode: function (namespace: string) {
                 return PlaygroundHelpers.Utilities.stripSpaces(`
-                    async function run() {
-                        try {
-                            await {{{NAMESPACE}}}.run(async (context) => {
-                                console.log("Your code goes here");
-                                await context.sync();
-                            });
-                        }
+                            async function run() {
+                                try {
+                                    await {{{ NAMESPACE } }
+                                }.run(async (context) => {
+                                    console.log("Your code goes here");
+                                    await context.sync();
+                                });
+                            }
                         catch (error) {
-                            OfficeHelpers.Utilities.log(error);
+                                OfficeHelpers.Utilities.log(error);
+                            }
                         }
-                    }
                 `).replace('{{{NAMESPACE}}}', namespace);
             },
 
             commonApiCode: PlaygroundHelpers.Utilities.stripSpaces(`
                 function run() {
-                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
-                        function (asyncResult) {
-                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                                console.log(asyncResult.error.message);
-                            } else {
-                                console.log('Selected data is ' + asyncResult.value);
-                            }
+                            Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                                function (asyncResult) {
+                                    if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                        console.log(asyncResult.error.message);
+                                    } else {
+                                        console.log('Selected data is ' + asyncResult.value);
+                                    }
+                                }
+                            );
                         }
-                    );
-                }
-            `),
+                            `),
 
             libraries: PlaygroundHelpers.Utilities.stripSpaces(`
                 // Office.js
                 https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
 
-                // NPM libraries
-                jquery
-                office-ui-fabric-js/dist/js/fabric.min.js
-                office-ui-fabric-js/dist/css/fabric.min.css
-                office-ui-fabric-js/dist/css/fabric.components.min.css
-                @microsoft/office-js-helpers/dist/office.helpers.min.js
-                core-js/client/core.min.js
+                        // NPM libraries
+                        jquery
+                office- ui - fabric - js / dist / js / fabric.min.js
+                office- ui - fabric - js / dist / css / fabric.min.css
+                office- ui - fabric - js / dist / css / fabric.components.min.css
+                @microsoft/office-js-helpers/dist / office.helpers.min.js
+                    core - js / client / core.min.js
 
-                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
-                dt~office-js
-                dt~jquery
-                dt~core-js
-                @microsoft/office-js-helpers/dist/office.helpers.d.ts
-            `)
+                    // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
+                    dt~office - js
+                    dt~jquery
+                    dt~core - js
+                    @microsoft/office-js-helpers/dist / office.helpers.d.ts
+                        `)
         },
 
         web: {
             code: PlaygroundHelpers.Utilities.stripSpaces(`
-                function run() {
-                    console.log("Your code goes here");
-                }
-            `),
+                    function run() {
+                        console.log("Your code goes here");
+                    }
+                    `),
 
             libraries: PlaygroundHelpers.Utilities.stripSpaces(`
-                // NPM libraries
-                jquery
-                office-ui-fabric-js/dist/js/fabric.min.js
-                office-ui-fabric-js/dist/css/fabric.min.css
-                office-ui-fabric-js/dist/css/fabric.components.min.css
-                @microsoft/office-js-helpers/dist/office.helpers.min.js
-                core-js/client/core.min.js
+                    // NPM libraries
+                    jquery
+                    office - ui - fabric - js / dist / js / fabric.min.js
+                    office - ui - fabric - js / dist / css / fabric.min.css
+                    office - ui - fabric - js / dist / css / fabric.components.min.css
+                    @microsoft/office-js-helpers/dist / office.helpers.min.js
+                    core - js / client / core.min.js
 
-                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
-                dt~office-js
-                dt~jquery
-                dt~core-js
-                @microsoft/office-js-helpers/dist/office.helpers.d.ts
-            `)
+                    // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
+                    dt~office - js
+                    dt~jquery
+                    dt~core - js
+                    @microsoft/office-js-helpers/dist / office.helpers.d.ts
+                        `)
         }
     };
 

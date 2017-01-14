@@ -1,6 +1,7 @@
 import { ErrorHandler } from '@angular/core';
 import { Utilities } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
+import global from '../../environment';
 
 /**
  * A class for signifying that an error is a "handleable" error that comes from the playground,
@@ -30,7 +31,8 @@ export class PlaygroundError extends Error {
                 AI.trackException(this, last_part.toString(), {
                     'innerError': JSON.stringify(error),
                     'message': message,
-                    'host': Utilities.host.toLowerCase()
+                    'host': Utilities.host.toLowerCase(),
+                    'build': JSON.stringify(global.build)
                 });
             }
         }
@@ -41,7 +43,7 @@ export class PlaygroundError extends Error {
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any, stackTrace?: any, reason?: string) {
         Utilities.log(exception);
-        AI.trackException(exception);
+        AI.trackException(exception, 'Global Handler', { critial: 'true' });
     }
 }
 

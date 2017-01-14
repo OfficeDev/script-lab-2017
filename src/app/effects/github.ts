@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { AI } from '../helpers';
 import { Utilities, Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import * as _ from 'lodash';
@@ -116,6 +117,7 @@ You will be able to import your snippet by choosing the "Import" button in the P
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((snippet: ISnippet) => {
+            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: snippet.id });
             let copied = new clipboard('#CopyToClipboard', {
                 text: trigger => {
                     this._uiEffects.alert(`Your snippet has been copied.`, null, 'OK');

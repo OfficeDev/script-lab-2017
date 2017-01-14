@@ -29,8 +29,6 @@ export function defaultState(overrides?: SnippetState) {
 
 export function reducer(state = initialState, action: SnippetActions | GitHubActions): SnippetState {
     let newState = updateState<SnippetState>(state);
-    let type = action.type.toUpperCase();
-    AI.trackEvent(action.type, { type: JSON.stringify(action) });
 
     switch (action.type) {
         case SnippetActionTypes.IMPORT:
@@ -61,6 +59,9 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             });
 
         case SnippetActionTypes.CREATE:
+            let type = action.type;
+            AI.trackEvent(action.type, { type, id: action.payload.id });
+
             return newState({
                 external: false,
                 lastOpened: action.payload
@@ -72,6 +73,9 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             });
 
         case SnippetActionTypes.DELETE: {
+            let type = action.type;
+            AI.trackEvent(action.type, { type, id: action.payload });
+
             let clear = false;
             if (state.lastOpened && state.lastOpened.id === action.payload) {
                 clear = true;
@@ -82,22 +86,29 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             });
         }
 
-        case SnippetActionTypes.DELETE_ALL:
+        case SnippetActionTypes.DELETE_ALL: {
+            let type = action.type;
+            AI.trackEvent(action.type, { type });
             return newState({
                 lastOpened: null
             });
+        }
 
-        case SnippetActionTypes.RUN:
+        case SnippetActionTypes.RUN: {
+            let type = action.type;
+            AI.trackEvent(action.type, { type, id: action.payload.id });
             return newState({
                 running: true
             });
+        }
 
-
-        case SnippetActionTypes.VIEW:
+        case SnippetActionTypes.VIEW: {
+            let type = action.type;
+            AI.trackEvent(action.type, { type, id: action.payload.id });
             return newState({
                 loading: true
             });
-
+        }
 
         case SnippetActionTypes.STORE_UPDATED:
             return newState({

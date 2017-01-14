@@ -56,10 +56,14 @@ export function reducer(state = initialState, action: UIActions): UIState {
                 dialog: null
             });
 
-        case UIActionTypes.CHANGE_THEME:
+        case UIActionTypes.CHANGE_THEME: {
+            let type = action.type.toUpperCase();
+            AI.trackEvent(action.type, action as any);
+
             return newState({
                 theme: !state.theme
             });
+        }
 
         case UIActionTypes.REPORT_ERROR: {
             let error = new PlaygroundError(action.message, action.exception);
@@ -71,10 +75,14 @@ export function reducer(state = initialState, action: UIActions): UIState {
             });
         }
 
-        case UIActionTypes.CHANGE_LANGUAGE:
+        case UIActionTypes.CHANGE_LANGUAGE: {
+            let type = action.type.toUpperCase();
+            AI.trackEvent(action.type, action as any);
+
             return newState({
                 language: action.payload
             });
+        }
 
         default: return state;
     }

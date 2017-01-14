@@ -30,7 +30,7 @@ import * as _ from 'lodash';
                     </collapse>
                 </div>
             </section>
-            <section class="gallery__section" [hidden]="templatesView">
+            <section class="gallery__section">
                 <hr class="gallery__section--separator" />
                 <button class="gallery__action ms-Button ms-Button--compound" (click)="new()">
                     <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageAdd"></i>New</h1>
