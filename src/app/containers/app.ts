@@ -35,6 +35,7 @@ import { UIEffects } from '../effects/ui';
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
                 <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
                 <command class="language" [title]="language$|async"></command>
+                <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
             </footer>
         </main>
         <about [(show)]="showAbout"></about>
@@ -187,5 +188,9 @@ export class AppComponent {
                 let data = errors.map(error => error.message).join('\n\n');
                 this._effects.alert(data, 'Errors', 'Dismiss');
             });
+    }
+
+    feedback() {
+        window.open('https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u');
     }
 }
