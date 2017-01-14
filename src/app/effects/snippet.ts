@@ -365,116 +365,113 @@ export class SnippetEffects {
             this.defaultSnippetIngredients.office.commonApiCode,
             this.defaultSnippetIngredients.office.libraries);
 
-
+        
         // Helper function
 
         function compile(code: string, libraries: string) {
             return PlaygroundHelpers.Utilities.stripSpaces(`
-                                author: Microsoft
-                                name: Blank snippet
-                                description: Create a new snippet from a blank template.
-                                    script:
-                                content: |-
-                                    $('#run').click(run);
+                author: Microsoft
+                name: Blank snippet
+                description: Create a new snippet from a blank template.
+                script:
+                  content: |-
+                    $('#run').click(run);
 
-                                { { { CODE_INDENT_4 } } }
-                                language: typescript
-                                style:
-                                content: /* Your style goes here */
-                                language: css
-                                template:
-                                content: |-
-                                    <button id="run" class="ms-Button" >
-                                        <span class="ms-Button-label" > Run < /span>
-                                            < /button>
-                                language: html
-                                libraries: |-
-                                    {{{ LIBRARIES_INDENT_2 } }
-                            }
-                            `)
+                    {{{CODE_INDENT_4}}}
+                  language: typescript
+                style:
+                  content: /* Your style goes here */
+                  language: css
+                template:
+                  content: |-
+                    <button id="run" class="ms-Button">
+                        <span class="ms-Button-label">Run</span>
+                    </button>
+                  language: html
+                libraries: |-
+                  {{{LIBRARIES_INDENT_2}}}
+            `)
                 .replace('{{{CODE_INDENT_4}}}',
-                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
+                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
                 .replace('{{{LIBRARIES_INDENT_2}}}',
-                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
+                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
         }
     }
 
     private defaultSnippetIngredients = {
         office: {
-            getHostSpecificCode: function (namespace: string) {
+            getHostSpecificCode: function(namespace: string) {
                 return PlaygroundHelpers.Utilities.stripSpaces(`
-                            async function run() {
-                                try {
-                                    await {{{ NAMESPACE } }
-                                }.run(async (context) => {
-                                    console.log("Your code goes here");
-                                    await context.sync();
-                                });
-                            }
-                        catch (error) {
-                                OfficeHelpers.Utilities.log(error);
-                            }
+                    async function run() {
+                        try {
+                            await {{{NAMESPACE}}}.run(async (context) => {
+                                console.log("Your code goes here");
+                                await context.sync();
+                            });
                         }
+                        catch (error) {
+                            OfficeHelpers.Utilities.log(error);
+                        }
+                    }
                 `).replace('{{{NAMESPACE}}}', namespace);
             },
-
+        
             commonApiCode: PlaygroundHelpers.Utilities.stripSpaces(`
                 function run() {
-                            Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
-                                function (asyncResult) {
-                                    if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                                        console.log(asyncResult.error.message);
-                                    } else {
-                                        console.log('Selected data is ' + asyncResult.value);
-                                    }
-                                }
-                            );
+                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+                        function (asyncResult) {
+                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+                                console.log(asyncResult.error.message);
+                            } else {
+                                console.log('Selected data is ' + asyncResult.value);
+                            }
                         }
-                            `),
+                    );
+                }
+            `),
 
             libraries: PlaygroundHelpers.Utilities.stripSpaces(`
                 // Office.js
                 https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
 
-                        // NPM libraries
-                        jquery
-                office- ui - fabric - js / dist / js / fabric.min.js
-                office- ui - fabric - js / dist / css / fabric.min.css
-                office- ui - fabric - js / dist / css / fabric.components.min.css
-                @microsoft/office-js-helpers/dist / office.helpers.min.js
-                    core - js / client / core.min.js
+                // NPM libraries
+                jquery
+                office-ui-fabric-js/dist/js/fabric.min.js
+                office-ui-fabric-js/dist/css/fabric.min.css
+                office-ui-fabric-js/dist/css/fabric.components.min.css
+                @microsoft/office-js-helpers/dist/office.helpers.min.js
+                core-js/client/core.min.js
 
-                    // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
-                    dt~office - js
-                    dt~jquery
-                    dt~core - js
-                    @microsoft/office-js-helpers/dist / office.helpers.d.ts
-                        `)
+                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
+                dt~office-js
+                dt~jquery
+                dt~core-js
+                @microsoft/office-js-helpers/dist/office.helpers.d.ts
+            `)
         },
 
         web: {
             code: PlaygroundHelpers.Utilities.stripSpaces(`
-                    function run() {
-                        console.log("Your code goes here");
-                    }
-                    `),
+                function run() {
+                    console.log("Your code goes here");
+                }
+            `),
 
             libraries: PlaygroundHelpers.Utilities.stripSpaces(`
-                    // NPM libraries
-                    jquery
-                    office - ui - fabric - js / dist / js / fabric.min.js
-                    office - ui - fabric - js / dist / css / fabric.min.css
-                    office - ui - fabric - js / dist / css / fabric.components.min.css
-                    @microsoft/office-js-helpers/dist / office.helpers.min.js
-                    core - js / client / core.min.js
+                // NPM libraries
+                jquery
+                office-ui-fabric-js/dist/js/fabric.min.js
+                office-ui-fabric-js/dist/css/fabric.min.css
+                office-ui-fabric-js/dist/css/fabric.components.min.css
+                @microsoft/office-js-helpers/dist/office.helpers.min.js
+                core-js/client/core.min.js
 
-                    // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
-                    dt~office - js
-                    dt~jquery
-                    dt~core - js
-                    @microsoft/office-js-helpers/dist / office.helpers.d.ts
-                        `)
+                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
+                dt~office-js
+                dt~jquery
+                dt~core-js
+                @microsoft/office-js-helpers/dist/office.helpers.d.ts
+            `)
         }
     };
-
 }
