@@ -32,10 +32,10 @@ import { UIEffects } from '../effects/ui';
             <router-outlet></router-outlet>
             <footer class="command__bar command__bar--condensed">
                 <command icon="Info" title="About" (click)="showAbout=true"></command>
+                <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
                 <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
                 <command class="language" [title]="language$|async"></command>
-                <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
             </footer>
         </main>
         <about [(show)]="showAbout"></about>
