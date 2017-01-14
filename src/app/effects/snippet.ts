@@ -265,7 +265,7 @@ export class SnippetEffects {
                 max = ~~match[1] + 1;
             }
             return max;
-        }, 0);
+        }, 1);
 
         return `${newName} ${(suffix ? ' - ' + suffix : '')} ${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')} `;
     }
