@@ -203,7 +203,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this.samplesRepoUrl} /playlists/${Utilities.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = `${this.samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
@@ -365,7 +365,7 @@ export class SnippetEffects {
             this.defaultSnippetIngredients.office.commonApiCode,
             this.defaultSnippetIngredients.office.libraries);
 
-        
+
         // Helper function
 
         function compile(code: string, libraries: string) {
@@ -415,7 +415,7 @@ export class SnippetEffects {
                     }
                 `).replace('{{{NAMESPACE}}}', namespace);
             },
-        
+
             commonApiCode: PlaygroundHelpers.Utilities.stripSpaces(`
                 function run() {
                     Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
