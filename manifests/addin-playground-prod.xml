@@ -195,10 +195,10 @@
       <bt:ShortStrings>
         <bt:String id="PG.GroupLabel" DefaultValue="[PROD] Add-in Playground" />
         <bt:String id="PG.EditButton.Label" DefaultValue="Edit" />
-        <bt:String id="PG.EditButton.Title" DefaultValue="Editor" />
+        <bt:String id="PG.EditButton.Title" DefaultValue="[PROD] Editor" />
         <bt:String id="PG.EditButton.TipTitle" DefaultValue="Edit snippets in the Add-in Playground" />
         <bt:String id="PG.RunButton.Label" DefaultValue="Run" />
-        <bt:String id="PG.RunButton.Title" DefaultValue="Runner" />
+        <bt:String id="PG.RunButton.Title" DefaultValue="[PROD] Runner" />
         <bt:String id="PG.RunButton.TipTitle" DefaultValue="Run a Playground snippet" />
       </bt:ShortStrings>
       <bt:LongStrings>
