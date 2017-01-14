@@ -76,6 +76,8 @@
 		.hamburger-menu {
 			background: #f4f4f4;
 			width: 100%;
+			-webkit-flex: 0 0 40px;
+			-ms-flex: 0 0 40px;
 			flex: 0 0 40px;
 		}
 
@@ -553,74 +555,73 @@
 							<label>	●</label>
 							<label>	●</label>
 							<label>	●</label>
-							<label>	●</label>
 						</div>
 					</div>
 				</div>
 			</footer>
 		</div>
 		<div id="snippet-list" class="hamburger" style="display:none">
-			<section class="hamburger-menu">
-				<div id="header" class="command__bar">
-					<div class="command__icon" onclick="window.location.reload()">
-						<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
-					</div>
-				</div>
-			</section>
-			<div class="hamburger-menu__container">
-				<gallery>
-					<section class="gallery">
-						<section class="gallery__section">
-							<div class="gallery__tabs-container">
-								<collapse id="last-snippet">
-									<div class="command__bar command--light">
-										<div class="command__title">
-											<span class="ms-font-m">LAST EDITED</span>
-										</div>
-									</div>
-									<section class="collapse__panel">
-										<gallery-list>
-											<section class="gallery-list">
-												<section class="gallery-list__group">
-													<section id="last-snippet-group" class="gallery-list__group">
-													</section>
-												</section>
-											</section>
-										</gallery-list>
-									</section>
-								</collapse>
-								<collapse>
-									<div class="command__bar command--light">
-										<div class="command__title">
-											<span class="ms-font-m">LOCAL</span>
-										</div>
-									</div>
-									<section class="collapse__panel">
-										<gallery-list>
-											<section class="gallery-list">
-												<section class="gallery-list__group">
-													<section id="local-snippet-list" class="gallery-list__group">
-													</section>
-												</section>
-											</section>
-											<p id="no-local-snippets" class="gallery-list__message ms-font-m" style="display: none"> You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
-											</p>
-										</gallery-list>
-									</section>
-								</collapse>
+<section class="hamburger-menu">
+	<div id="header" class="command__bar">
+		<div class="command__icon" onclick="window.location.reload()">
+<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
+</div>
+</div>
+</section>
+<div class="hamburger-menu__container">
+	<gallery>
+		<section class="gallery">
+			<section class="gallery__section">
+				<div class="gallery__tabs-container">
+					<collapse id="last-snippet">
+						<div class="command__bar command--light">
+							<div class="command__title">
+								<span class="ms-font-m">LAST EDITED</span>
 							</div>
+						</div>
+						<section class="collapse__panel">
+							<gallery-list>
+								<section class="gallery-list">
+									<section class="gallery-list__group">
+										<section id="last-snippet-group" class="gallery-list__group">
+										</section>
+									</section>
+								</section>
+							</gallery-list>
 						</section>
-					</section>
-				</gallery>
-			</div>
-		</div>
-	</app>
+					</collapse>
+					<collapse>
+						<div class="command__bar command--light">
+							<div class="command__title">
+								<span class="ms-font-m">LOCAL</span>
+							</div>
+						</div>
+						<section class="collapse__panel">
+							<gallery-list>
+								<section class="gallery-list">
+									<section class="gallery-list__group">
+										<section id="local-snippet-list" class="gallery-list__group">
+										</section>
+									</section>
+								</section>
+								<p id="no-local-snippets" class="gallery-list__message ms-font-m" style="display: none"> You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
+</p>
+</gallery-list>
+</section>
+</collapse>
+</div>
+</section>
+</section>
+</gallery>
+</div>
+</div>
+</app>
 
-	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
-	<script src="https://unpkg.com/@microsoft/office-js-helpers@0.4.1/dist/office.helpers.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
+<script src="https://unpkg.com/@microsoft/office-js-helpers@0.4.1/dist/office.helpers.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
 
-	<script>
+<script>
 		var isAddin = location.href.indexOf('mode=web') === -1;
 		var getCurrentSnippets;
 		var getCurrentSettings;
@@ -637,7 +638,7 @@
 			var platform = OfficeHelpers.Utilities.platform;
 			setCssRules(host, platform);
 
-			getCurrentSnippets = function() {
+			getCurrentSnippets = function () {
 				var storageKey = 'playground_' + host + '_snippets';
 				try {
 					return JSON.parse(window.localStorage[storageKey]);
@@ -646,7 +647,7 @@
 				}
 			}
 
-			getCurrentSettings = function() {
+			getCurrentSettings = function () {
 				var settingsKey = 'playground_settings';
 				var settings = JSON.parse(window.localStorage[settingsKey]);
 
