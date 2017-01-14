@@ -76,6 +76,8 @@
 		.hamburger-menu {
 			background: #f4f4f4;
 			width: 100%;
+			-webkit-flex: 0 0 40px;
+			-ms-flex: 0 0 40px;
 			flex: 0 0 40px;
 		}
 
@@ -103,6 +105,12 @@
 			-webkit-flex-wrap: nowrap;
 			-ms-flex-wrap: nowrap;
 			flex-wrap: nowrap;
+		}
+
+		#last-snippet {
+			-webkit-flex: 0 0 auto;
+			-ms-flex: 0 0 auto;
+			flex: 0 0 auto;
 		}
 
 		.app main {
@@ -648,15 +656,20 @@
 
 			getCurrentSettings = function() {
 				var settingsKey = 'playground_settings';
-				var settings = JSON.parse(window.localStorage[settingsKey]);
-
-				return settings[host];
+				try {
+					return JSON.parse(window.localStorage[settingsKey])[host];
+				} catch (e) {
+					return {}
+				}
 			}
 
 			var $last = $('#last-snippet');
 			var $lastGroup = $('#last-snippet-group');
 			var currentSettings = getCurrentSettings();
-			if (currentSettings == null || currentSettings.snippet.lastOpened == null) {
+			console.log(currentSettings);
+			if (currentSettings == null || currentSettings.snippet == null ||
+				currentSettings.snippet.lastOpened == null)
+			{
 				$last.hide();
 			}
 			else {
