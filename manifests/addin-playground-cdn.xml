@@ -10,11 +10,12 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Add-in Playground" />
   <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
-  <IconUrl DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-64.png" />
+  <IconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-64.png" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
+    <AppDomain>https://addin-playground.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
@@ -178,15 +179,15 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="PG.Icon.16" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-16.png" />
-        <bt:Image id="PG.Icon.32" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-32.png" />
-        <bt:Image id="PG.Icon.80" DefaultValue="https://addin-playground.azureedge.net/assets/images/icon-80.png" />
-        <bt:Image id="PG.Icon.Edit.16" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-16.png" />
-        <bt:Image id="PG.Icon.Edit.32" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-32.png" />
-        <bt:Image id="PG.Icon.Edit.80" DefaultValue="https://addin-playground.azureedge.net/assets/images/edit-80.png" />
-        <bt:Image id="PG.Icon.Run.16" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-16.png" />
-        <bt:Image id="PG.Icon.Run.32" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-32.png" />
-        <bt:Image id="PG.Icon.Run.80" DefaultValue="https://addin-playground.azureedge.net/assets/images/run-80.png" />
+        <bt:Image id="PG.Icon.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-16.png" />
+        <bt:Image id="PG.Icon.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
+        <bt:Image id="PG.Icon.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-80.png" />
+        <bt:Image id="PG.Icon.Edit.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/edit-16.png" />
+        <bt:Image id="PG.Icon.Edit.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/edit-32.png" />
+        <bt:Image id="PG.Icon.Edit.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/edit-80.png" />
+        <bt:Image id="PG.Icon.Run.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-16.png" />
+        <bt:Image id="PG.Icon.Run.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-32.png" />
+        <bt:Image id="PG.Icon.Run.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG_Edit_Url" DefaultValue="https://addin-playground.azureedge.net" />
