@@ -1,6 +1,6 @@
 import { Component, ApplicationRef } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Theme } from '../helpers';
+import { Theme, AI } from '../helpers';
 import { UI, Snippet, GitHub } from '../actions';
 import { Storage } from '@microsoft/office-js-helpers';
 import { Disposable } from '../services';
@@ -83,6 +83,7 @@ export class Gallery extends Disposable {
             this._store.dispatch(new UI.ToggleImportAction(true));
         }
         else {
+            AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { info: mode === 'id' ? item.id : item.gist });
             this._store.dispatch(new Snippet.ImportAction(mode === 'id' ? item.id : item.gist));
             this._store.dispatch(new UI.CloseMenuAction());
         }
