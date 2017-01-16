@@ -402,16 +402,12 @@ export class SnippetEffects {
         office: {
             getHostSpecificCode: function(namespace: string) {
                 return PlaygroundHelpers.Utilities.stripSpaces(`
-                    async function run() {
-                        try {
-                            await {{{NAMESPACE}}}.run(async (context) => {
-                                console.log("Your code goes here");
-                                await context.sync();
-                            });
-                        }
-                        catch (error) {
-                            OfficeHelpers.Utilities.log(error);
-                        }
+                    function run() {
+                        {{{NAMESPACE}}}.run(async (context) => {
+                            console.log("Your code goes here");
+                            await context.sync();
+
+                        }).catch(OfficeHelpers.Utilities.log);
                     }
                 `).replace('{{{NAMESPACE}}}', namespace);
             },
