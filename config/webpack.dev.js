@@ -26,7 +26,7 @@ module.exports = webpackMerge(commonConfig, {
             PLAYGROUND: JSON.stringify({
                 env: 'DEVELOPMENT',
                 build: commonConfig.meta,
-                config: commonConfig.auth
+                auth: commonConfig.auth
             })
         }),
         new BrowserSyncPlugin(

@@ -47,7 +47,7 @@ module.exports = webpackMerge(commonConfig, {
             PLAYGROUND: JSON.stringify({
                 env: 'PRODUCTION',
                 build: commonConfig.meta,
-                config: commonConfig.auth
+                auth: commonConfig.auth
             })
         })
     ]

@@ -14,9 +14,8 @@ var meta = (function () {
     return {
         name: 'Add-in Playground',
         version: package.version,
-        build: timestamp,
-        author: 'Microsoft',
-        full_version: `${package.version}.${timestamp}`
+        timestamp: timestamp,
+        author: 'Microsoft'
     };
 })();
 
@@ -86,7 +85,7 @@ module.exports = {
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
         }),
-        new webpack.BannerPlugin(`v.${meta.name} ${meta.full_version} © ${meta.author}`),
+        new webpack.BannerPlugin(`v.${meta.name} ${meta.version} © ${meta.author}`),
         new CopyWebpackPlugin([
             {
                 from: './src/assets',

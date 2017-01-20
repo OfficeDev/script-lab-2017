@@ -1,18 +1,14 @@
-declare let PLAYGROUND: any;
+declare let PLAYGROUND: IGlobalConfig;
 
-let { env, build, config } = PLAYGROUND;
-let auth: {
-    token_url: string;
-    client_id: string;
-    instrumentation_key: string;
-} = config['cdn'];
+let { env, build, auth } = PLAYGROUND as IGlobalConfig;
 
+let config = auth['cdn'];
 if (env === 'DEVELOPMENT') {
-    auth = config['dev'];
+    config = auth['dev'];
 }
 else {
     if (/azurewebsites.net/.test(location.origin)) {
-        auth = config['prod'];
+        config = auth['prod'];
     }
 }
 
@@ -30,10 +26,8 @@ console.log(banner);
 console.log(build);
 console.groupEnd();
 
-const global = {
+export const Environment = {
     env,
     build,
-    auth
+    config
 };
-
-export default global;

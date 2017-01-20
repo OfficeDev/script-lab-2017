@@ -1,7 +1,7 @@
 import { ErrorHandler } from '@angular/core';
 import { Utilities } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
-import global from '../../environment';
+import { Environment } from '../../environment';
 
 /**
  * A class for signifying that an error is a "handleable" error that comes from the playground,
@@ -32,7 +32,7 @@ export class PlaygroundError extends Error {
                     'innerError': JSON.stringify(error),
                     'message': message,
                     'host': Utilities.host.toLowerCase(),
-                    'build': JSON.stringify(global.build)
+                    'build': JSON.stringify(Environment.build)
                 });
             }
         }

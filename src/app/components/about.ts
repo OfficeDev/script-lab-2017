@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Utilities } from '@microsoft/office-js-helpers';
 import { Utilities as Utils } from '../helpers';
-import global from '../../environment';
+import { Environment } from '../../environment';
 import * as _ from 'lodash';
 
 @Component({
@@ -31,10 +31,10 @@ import * as _ from 'lodash';
 export class About {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
-    config = global.build;
+
     cache = `
     Last Updated:
-    ${new Date(global.build.build)}
+    ${new Date(Environment.build.timestamp)}
 
     Storage Usage:
     ${Utils.storageSize(localStorage, `playground_${Utilities.host.toLowerCase()}_snippets`, 'Local Snippets')}

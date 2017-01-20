@@ -9,7 +9,7 @@ import { Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 import cuid = require('cuid');
-import global from '../../environment';
+import { Environment } from '../../environment';
 
 @Injectable()
 export class SnippetEffects {
@@ -317,7 +317,7 @@ export class SnippetEffects {
             }
         });
 
-        PlaygroundHelpers.AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(global.build.build) });
+        PlaygroundHelpers.AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(Environment.build) });
         return snippet;
     }
 

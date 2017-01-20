@@ -66,12 +66,14 @@ interface IGlobalConfig {
     build: {
         name: string;
         version: string;
-        build: number;
+        timestamp: number;
         author: string;
-        full_version: string;
     },
     auth: {
-        token_url: string,
-        client_id: string
+        [env: string]: {
+            token_url: string,
+            instrumentation_key: string,
+            client_id: string
+        }
     }
 }

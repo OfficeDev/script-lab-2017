@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { UIActions, UIActionTypes } from '../actions/ui';
 import { updateState, PlaygroundError, AI } from '../helpers';
 import { Utilities } from '@microsoft/office-js-helpers';
-import global from '../../environment';
+import { Environment } from '../../environment';
 
 export interface UIState {
     menuOpened?: boolean;
@@ -67,7 +67,7 @@ export function reducer(state = initialState, action: UIActions): UIState {
 
         case UIActionTypes.REPORT_ERROR: {
             let error = new PlaygroundError(action.message, action.exception);
-            if (global.env === 'DEVELOPMENT') {
+            if (Environment.env === 'DEVELOPMENT') {
                 Utilities.log(error);
             }
             return newState({
