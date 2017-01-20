@@ -10,6 +10,8 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 import cuid = require('cuid');
 import { Environment } from '../../environment';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../reducers';
 
 @Injectable()
 export class SnippetEffects {
@@ -31,9 +33,11 @@ export class SnippetEffects {
     constructor(
         private actions$: Actions,
         private _request: Request,
-        private _github: GitHubService
+        private _github: GitHubService,
+        reduxStore: Store<fromRoot.State>,
     ) {
         this._defaults.author = this._github.profile ? this._github.profile.login : '';
+        this._store.notify = (event) => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
     }
 
     @Effect()
