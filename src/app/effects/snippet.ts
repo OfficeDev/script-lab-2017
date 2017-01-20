@@ -91,7 +91,7 @@ export class SnippetEffects {
                 default: return;
             }
 
-            PlaygroundHelpers.AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
+            PlaygroundHelpers.AI.current.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
 
             return observable
                 .filter(snippet => !(snippet == null))
@@ -317,7 +317,7 @@ export class SnippetEffects {
             }
         });
 
-        PlaygroundHelpers.AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(Environment.build) });
+        PlaygroundHelpers.AI.current.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(Environment.build) });
         return snippet;
     }
 

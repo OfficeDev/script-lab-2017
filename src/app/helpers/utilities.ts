@@ -48,7 +48,7 @@ export class Utilities {
 
         if (key) {
             let len = ((store.length + key.length) * 2);
-            AI.trackMetric(key, len / 1024);
+            AI.current.trackMetric(key, len / 1024);
             return `${(name || key).substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
         }
 

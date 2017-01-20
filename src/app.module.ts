@@ -55,13 +55,12 @@ export class AppModule {
             await Theme.applyTheme();
 
             if (!Authenticator.isAuthDialog()) {
-                AI.trackEvent(`Playground ready`, { host: Utilities.host.toLowerCase() });
+                AI.current.trackEvent(`Playground ready`, { host: Utilities.host.toLowerCase() });
                 platformBrowserDynamic().bootstrapModule(AppModule);
             }
         }
         catch (e) {
             AI.trackException(e);
-            Utilities.log(e);
         }
     }
 

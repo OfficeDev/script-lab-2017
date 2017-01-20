@@ -1,5 +1,6 @@
 import { AppInsights } from 'applicationinsights-js';
 import { Environment } from '../../environment';
+import { Utilities } from '@microsoft/office-js-helpers';
 
 AppInsights.downloadAndSetup({
     instrumentationKey: Environment.config.instrumentation_key,
@@ -17,6 +18,17 @@ class ApplicationInsights {
 
     toggleTelemetry(force?: boolean) {
         this.current.config.disableTelemetry = force || !this._disable;
+    }
+
+    trackException(error, location) {
+        if (Environment.env === 'DEVELOPMENT') {
+            Utilities.log(error);
+        }
+        this.current.trackException(error.innerError || error, location, {
+            message: error.message,
+            host: Utilities.host.toLowerCase(),
+            build: JSON.stringify(Environment.build)
+        });
     }
 };
 

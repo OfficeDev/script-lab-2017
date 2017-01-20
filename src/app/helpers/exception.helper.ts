@@ -28,12 +28,7 @@ export class PlaygroundError extends Error {
             if (error.stack) {
                 let last_part = error.stack.match(/[^\s]+$/);
                 this.stack = `${this.name} at ${last_part}`;
-                AI.trackException(this, last_part.toString(), {
-                    'innerError': JSON.stringify(error),
-                    'message': message,
-                    'host': Utilities.host.toLowerCase(),
-                    'build': JSON.stringify(Environment.build)
-                });
+                AI.trackException(this, last_part);
             }
         }
     }
@@ -42,8 +37,7 @@ export class PlaygroundError extends Error {
 
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any, stackTrace?: any, reason?: string) {
-        Utilities.log(exception);
-        AI.trackException(exception, 'Global Handler', { critial: 'true' });
+        AI.trackException(exception, 'Global Handler');
     }
 }
 

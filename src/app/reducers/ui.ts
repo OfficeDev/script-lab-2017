@@ -28,7 +28,7 @@ export function defaultState(overrides?: UIState) {
 export function reducer(state = initialState, action: UIActions): UIState {
     let newState = updateState<UIState>(state);
     let type = action.type.toUpperCase();
-    AI.trackEvent(action.type, { type: JSON.stringify(action) });
+    AI.current.trackEvent(action.type);
 
     switch (action.type) {
         case UIActionTypes.OPEN_MENU:
@@ -58,7 +58,7 @@ export function reducer(state = initialState, action: UIActions): UIState {
 
         case UIActionTypes.CHANGE_THEME: {
             let type = action.type.toUpperCase();
-            AI.trackEvent(action.type, action as any);
+            AI.current.trackEvent(action.type, { theme: (!state.theme) ? 'Light' : 'Dark' });
 
             return newState({
                 theme: !state.theme
@@ -77,7 +77,7 @@ export function reducer(state = initialState, action: UIActions): UIState {
 
         case UIActionTypes.CHANGE_LANGUAGE: {
             let type = action.type.toUpperCase();
-            AI.trackEvent(action.type, action as any);
+            AI.current.trackEvent(action.type, { language: action.payload });
 
             return newState({
                 language: action.payload

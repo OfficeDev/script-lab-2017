@@ -21,18 +21,18 @@ export function defaultState(overrides?: GitHubState) {
 
 export function reducer(state = initialState, action: GitHubActions): GitHubState {
     let newState = updateState<GitHubState>(state);
-    let type = action.type.toUpperCase();
+    let type = action.type;
 
     switch (action.type) {
         case GitHubActionTypes.LOGIN: {
-            AI.trackEvent(type);
+            AI.current.trackEvent(type);
             return newState({
                 loading: true
             });
         }
 
         case GitHubActionTypes.LOGGED_IN: {
-            AI.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
+            AI.current.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
 
             return newState({
                 loading: false,
@@ -42,7 +42,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_OUT: {
-            AI.trackEvent(type);
+            AI.current.trackEvent(type);
 
             return newState({
                 loading: false,
@@ -53,14 +53,14 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
 
         case GitHubActionTypes.SHARE_PRIVATE_GIST:
         case GitHubActionTypes.SHARE_PUBLIC_GIST: {
-            AI.trackEvent(type);
+            AI.current.trackEvent(type);
             return newState({
                 sharing: true
             });
         }
 
         case GitHubActionTypes.SHARE_SUCCESS: {
-            AI.trackEvent(type, action.payload.public ? action.payload as any : null);
+            AI.current.trackEvent(type, action.payload.public ? action.payload as any : null);
             return newState({
                 sharing: false
             });

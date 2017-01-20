@@ -83,7 +83,7 @@ export class Gallery extends Disposable {
             this._store.dispatch(new UI.ToggleImportAction(true));
         }
         else {
-            AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { info: mode === 'id' ? item.id : item.gist });
+            AI.current.trackEvent(Snippet.SnippetActionTypes.IMPORT, { info: mode === 'id' ? item.id : item.gist });
             this._store.dispatch(new Snippet.ImportAction(mode === 'id' ? item.id : item.gist));
             this._store.dispatch(new UI.CloseMenuAction());
         }
