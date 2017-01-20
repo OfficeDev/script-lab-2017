@@ -260,7 +260,7 @@ export class SnippetEffects {
         let newName = _.isEmpty(name.trim()) ? 'Blank Snippet' : name.trim();
         let regex = new RegExp(`^${name}`);
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
-        let maxSuffixNumber = _.reduce(options, (max, item) => {
+        let maxSuffixNumber = _.reduce(options, (max, item: any) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
             if (max <= ~~match[1]) {
                 max = ~~match[1] + 1;

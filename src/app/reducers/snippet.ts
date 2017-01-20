@@ -45,17 +45,17 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:
             return newState({
-                snippets: [...action.payload]
+                snippets: action.payload
             });
 
         case SnippetActionTypes.LOAD_TEMPLATES_SUCCESS:
             return newState({
-                templates: [...action.payload]
+                templates: action.payload
             });
 
         case GitHubActionTypes.LOAD_GISTS_SUCCESS:
             return newState({
-                gists: [...action.payload]
+                gists: action.payload
             });
 
         case SnippetActionTypes.CREATE:
