@@ -60,7 +60,7 @@ export class AppModule {
             }
         }
         catch (e) {
-            AI.trackException(e);
+            AI.trackException(e, 'Playground Initialization');
         }
     }
 
