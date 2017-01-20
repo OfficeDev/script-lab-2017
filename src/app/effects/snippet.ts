@@ -33,6 +33,7 @@ export class SnippetEffects {
         private _request: Request,
         private _github: GitHubService
     ) {
+        this._defaults.author = this._github.profile ? this._github.profile.login : '';
     }
 
     @Effect()
@@ -180,7 +181,7 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let url = 'https://addin-playground-runner.azurewebsites.net/';
+            let url = 'https://addin-playground-runner-staging.azurewebsites.net/';
 
             let postData: IRunnerPostData = {
                 snippet: jsyaml.safeDump(snippet),
@@ -256,8 +257,8 @@ export class SnippetEffects {
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = _.isEmpty(name.trim()) ? 'New Snippet' : name.trim();
-        let regex = new RegExp(`^ ${name} `);
+        let newName = _.isEmpty(name.trim()) ? 'Blank Snippet' : name.trim();
+        let regex = new RegExp(`^${name}`);
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = _.reduce(options, (max, item) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
@@ -267,7 +268,7 @@ export class SnippetEffects {
             return max;
         }, 1);
 
-        return `${newName} ${(suffix ? ' - ' + suffix : '')} ${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')} `;
+        return `${newName}${(suffix ? ' - ' + suffix : '')}${(maxSuffixNumber ? ' - ' + maxSuffixNumber : '')}`;
     }
 
     private _upgrade(files: IGistFiles) {
@@ -392,15 +393,15 @@ export class SnippetEffects {
                   {{{LIBRARIES_INDENT_2}}}
             `)
                 .replace('{{{CODE_INDENT_4}}}',
-                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
+                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
                 .replace('{{{LIBRARIES_INDENT_2}}}',
-                    PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
+                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
         }
     }
 
     private defaultSnippetIngredients = {
         office: {
-            getHostSpecificCode: function(namespace: string) {
+            getHostSpecificCode: function (namespace: string) {
                 return PlaygroundHelpers.Utilities.stripSpaces(`
                     function run() {
                         {{{NAMESPACE}}}.run(async (context) => {
