@@ -202,6 +202,15 @@
                 @include focus-states($accent-background-primary, $accent-foreground-primary);
             }
 
+            &__item--selected {
+                background: darken($accent-background-primary, 10%);
+                color: $accent-foreground-primary;
+
+                i {
+                    @include focus-states(darken($accent-background-primary, 15%), $accent-foreground-primary);
+                }
+            }
+
             &__item:active, &__item:hover {
                 background: $accent-background-primary;
 

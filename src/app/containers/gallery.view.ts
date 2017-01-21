@@ -20,7 +20,7 @@ import * as _ from 'lodash';
                 </ul>
                 <div class="gallery__tabs-container">
                     <collapse [hidden]="templatesView" title="Local" [actions]="['Info', 'Delete']" (events)="action($event)">
-                        <gallery-list title="Local" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
+                        <gallery-list title="Local" [current]="current$|async" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
                     </collapse>
                     <collapse [collapsed]="true" [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
                         <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your gists."></gallery-list>
@@ -46,9 +46,6 @@ import * as _ from 'lodash';
 })
 export class Gallery extends Disposable {
     templatesView: boolean;
-    snippets$: Observable<ISnippet[]>;
-    gists$: Observable<ISnippet[]>;
-    templates$: Observable<ITemplate[]>;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -56,22 +53,22 @@ export class Gallery extends Disposable {
     ) {
         super();
 
-        this.snippets$ = this._store.select(fromRoot.getSnippets)
-            .map(snippets => {
-                if (_.isEmpty(snippets)) {
-                    this._store.dispatch(new UI.OpenMenuAction());
-                    this.templatesView = true;
-                }
-                return snippets;
-            });
-
-        this.templates$ = this._store.select(fromRoot.getTemplates);
-        this.gists$ = this._store.select(fromRoot.getGists);
-
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
         this._store.dispatch(new GitHub.LoadGistsAction());
     }
+
+    current$ = this._store.select(fromRoot.getCurrent);
+    templates$ = this._store.select(fromRoot.getTemplates);
+    gists$ = this._store.select(fromRoot.getGists);
+    snippets$ = this._store.select(fromRoot.getSnippets)
+        .map(snippets => {
+            if (_.isEmpty(snippets)) {
+                this._store.dispatch(new UI.OpenMenuAction());
+                this.templatesView = true;
+            }
+            return snippets;
+        });
 
     new() {
         this._store.dispatch(new Snippet.ImportAction('default'));
