@@ -43,26 +43,26 @@
                   <bt:Image size="32" resid="PG.Icon.32" />
                   <bt:Image size="80" resid="PG.Icon.80" />
                 </Icon>
-                <Control xsi:type="Button" id="PG.EditButton">
-                  <Label resid="PG.EditButton.Label" />
+                <Control xsi:type="Button" id="PG.CodeCommand">
+                  <Label resid="PG.CodeCommand.Label" />
                   <Supertip>
-                    <Title resid="PG.EditButton.TipTitle" />
-                    <Description resid="PG.EditSupertip.Desc" />
+                    <Title resid="PG.CodeCommand.TipTitle" />
+                    <Description resid="PG.CodeSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Edit.16" />
-                    <bt:Image size="32" resid="PG.Icon.Edit.32" />
-                    <bt:Image size="80" resid="PG.Icon.Edit.80" />
+                    <bt:Image size="16" resid="PG.Icon.Code.16" />
+                    <bt:Image size="32" resid="PG.Icon.Code.32" />
+                    <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="PG_Edit_Url" />
-                    <Title resid="PG.EditButton.Title" />
+                    <SourceLocation resid="PG_Code_Url" />
+                    <Title resid="PG.CodeCommand.Title" />
                   </Action>
                 </Control>
-                <Control xsi:type="Button" id="PG.RunButton">
-                  <Label resid="PG.RunButton.Label" />
+                <Control xsi:type="Button" id="PG.RunCommand">
+                  <Label resid="PG.RunCommand.Label" />
                   <Supertip>
-                    <Title resid="PG.RunButton.TipTitle" />
+                    <Title resid="PG.RunCommand.TipTitle" />
                     <Description resid="PG.RunSupertip.Desc" />
                   </Supertip>
                   <Icon>
@@ -72,7 +72,7 @@
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Run_Url" />
-                    <Title resid="PG.RunButton.Title" />
+                    <Title resid="PG.RunCommand.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -91,26 +91,26 @@
                   <bt:Image size="32" resid="PG.Icon.32" />
                   <bt:Image size="80" resid="PG.Icon.80" />
                 </Icon>
-                <Control xsi:type="Button" id="PG.EditButton">
-                  <Label resid="PG.EditButton.Label" />
+                <Control xsi:type="Button" id="PG.CodeCommand">
+                  <Label resid="PG.CodeCommand.Label" />
                   <Supertip>
-                    <Title resid="PG.EditButton.TipTitle" />
-                    <Description resid="PG.EditSupertip.Desc" />
+                    <Title resid="PG.CodeCommand.TipTitle" />
+                    <Description resid="PG.CodeSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Edit.16" />
-                    <bt:Image size="32" resid="PG.Icon.Edit.32" />
-                    <bt:Image size="80" resid="PG.Icon.Edit.80" />
+                    <bt:Image size="16" resid="PG.Icon.Code.16" />
+                    <bt:Image size="32" resid="PG.Icon.Code.32" />
+                    <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="PG_Edit_Url" />
-                    <Title resid="PG.RunButton.Title" />
+                    <SourceLocation resid="PG_Code_Url" />
+                    <Title resid="PG.CodeCommand.Title" />
                   </Action>
                 </Control>
-                <Control xsi:type="Button" id="PG.RunButton">
-                  <Label resid="PG.RunButton.Label" />
+                <Control xsi:type="Button" id="PG.RunCommand">
+                  <Label resid="PG.RunCommand.Label" />
                   <Supertip>
-                    <Title resid="PG.RunButton.TipTitle" />
+                    <Title resid="PG.RunCommand.TipTitle" />
                     <Description resid="PG.RunSupertip.Desc" />
                   </Supertip>
                   <Icon>
@@ -120,7 +120,7 @@
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Run_Url" />
-                    <Title resid="PG.RunButton.Title" />
+                    <Title resid="PG.RunCommand.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -139,26 +139,26 @@
                   <bt:Image size="32" resid="PG.Icon.32" />
                   <bt:Image size="80" resid="PG.Icon.80" />
                 </Icon>
-                <Control xsi:type="Button" id="PG.EditButton">
-                  <Label resid="PG.EditButton.Label" />
+                <Control xsi:type="Button" id="PG.CodeCommand">
+                  <Label resid="PG.CodeCommand.Label" />
                   <Supertip>
-                    <Title resid="PG.EditButton.TipTitle" />
-                    <Description resid="PG.EditSupertip.Desc" />
+                    <Title resid="PG.CodeCommand.TipTitle" />
+                    <Description resid="PG.CodeSupertip.Desc" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Edit.16" />
-                    <bt:Image size="32" resid="PG.Icon.Edit.32" />
-                    <bt:Image size="80" resid="PG.Icon.Edit.80" />
+                    <bt:Image size="16" resid="PG.Icon.Code.16" />
+                    <bt:Image size="32" resid="PG.Icon.Code.32" />
+                    <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="PG_Edit_Url" />
-                    <Title resid="PG.EditButton.Title" />
+                    <SourceLocation resid="PG_Code_Url" />
+                    <Title resid="PG.CodeCommand.Title" />
                   </Action>
                 </Control>
-                <Control xsi:type="Button" id="PG.RunButton">
-                  <Label resid="PG.RunButton.Label" />
+                <Control xsi:type="Button" id="PG.RunCommand">
+                  <Label resid="PG.RunCommand.Label" />
                   <Supertip>
-                    <Title resid="PG.RunButton.TipTitle" />
+                    <Title resid="PG.RunCommand.TipTitle" />
                     <Description resid="PG.RunSupertip.Desc" />
                   </Supertip>
                   <Icon>
@@ -168,7 +168,7 @@
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Run_Url" />
-                    <Title resid="PG.RunButton.Title" />
+                    <Title resid="PG.RunCommand.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -182,30 +182,30 @@
         <bt:Image id="PG.Icon.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-16.png" />
         <bt:Image id="PG.Icon.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
         <bt:Image id="PG.Icon.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-80.png" />
-        <bt:Image id="PG.Icon.Edit.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/edit-16.png" />
-        <bt:Image id="PG.Icon.Edit.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/edit-32.png" />
-        <bt:Image id="PG.Icon.Edit.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/edit-80.png" />
+        <bt:Image id="PG.Icon.Code.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/code-16.png" />
+        <bt:Image id="PG.Icon.Code.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/code-32.png" />
+        <bt:Image id="PG.Icon.Code.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/code-80.png" />
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="PG_Edit_Url" DefaultValue="https://addin-playground.azureedge.net" />
+        <bt:Url id="PG_Code_Url" DefaultValue="https://addin-playground.azureedge.net" />
         <bt:Url id="PG_Run_Url" DefaultValue="https://addin-playground.azureedge.net/run.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="PG.GroupLabel" DefaultValue="Add-in Playground" />
-        <bt:String id="PG.EditButton.Label" DefaultValue="Edit" />
-        <bt:String id="PG.EditButton.Title" DefaultValue="Editor" />
-        <bt:String id="PG.EditButton.TipTitle" DefaultValue="Edit snippets in the Add-in Playground" />
-        <bt:String id="PG.RunButton.Label" DefaultValue="Run" />
-        <bt:String id="PG.RunButton.Title" DefaultValue="Runner" />
-        <bt:String id="PG.RunButton.TipTitle" DefaultValue="Run a Playground snippet" />
+        <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
+        <bt:String id="PG.CodeCommand.Title" DefaultValue="Code" />
+        <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Code snippets in the Add-in Playground" />
+        <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
+        <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
+        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run a Playground snippet" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="PG.EditSupertip.Desc" DefaultValue="Opens the Add-in Playground snippet editor." />
-        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens the Add-in Playground runner." />
-        <bt:String id="PG.Description" DefaultValue="Create, run and share your Add-in snippets directly from Excel or Word." />
+        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Add-in Playground to code snippets." />
+        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens the Add-in Playground to run snippets." />
+        <bt:String id="PG.Description" DefaultValue="Code, run and share your Add-in snippets directly from Office." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

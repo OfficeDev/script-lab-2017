@@ -1,6 +1,6 @@
 {
   "name": "addin-playground",
-  "description": "Create, run and share your snippets using Office JavaScript API, from Word, Excel or PowerPoint.",
+  "description": "Code, run and share your Add-in snippets directly from Office.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Zlatkovsky/OfficeJsPlayground"
