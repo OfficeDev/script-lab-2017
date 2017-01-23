@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Utilities, Storage } from '@microsoft/office-js-helpers';
+import { Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post } from '../helpers';
@@ -16,6 +16,8 @@ import * as fromRoot from '../reducers';
 @Injectable()
 export class SnippetEffects {
     private _store = new Storage<ISnippet>(`playground_${Utilities.host.toLowerCase()}_snippets`);
+    private _cache = new Storage<string>(`playground_cache`, StorageType.SessionStorage);
+
     private _defaults = <ISnippet>{
         id: '',
         gist: '',
@@ -58,7 +60,14 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = Utilities.host.toLowerCase();
-                    observable = this._request.get<string>(`${this._samplesRepoUrl}/samples/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
+                    if (this._cache.contains('template')) {
+                        observable = Observable.of(this._cache.get('template'));
+                    }
+                    else {
+                        observable = this._request
+                            .get<string>(`${this._samplesRepoUrl}/samples/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
+                            .map(snippet => this._cache.insert('template', snippet));
+                    }
                     break;
 
                 case 'CUID':
