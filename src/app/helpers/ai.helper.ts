@@ -30,6 +30,13 @@ class ApplicationInsights {
             build: JSON.stringify(Environment.build)
         });
     }
+
+    trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
+        if (Environment.env === 'DEVELOPMENT') {
+            console.info(name);
+        }
+        this.current.trackEvent(name, properties, measurement);
+    }
 };
 
 export const AI = new ApplicationInsights();

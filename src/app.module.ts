@@ -55,7 +55,7 @@ export class AppModule {
             await Theme.applyTheme();
 
             if (!Authenticator.isAuthDialog()) {
-                AI.current.trackEvent(`Playground ready`, { host: Utilities.host.toLowerCase() });
+                AI.trackEvent(`Playground ready`, { host: Utilities.host.toLowerCase() });
                 platformBrowserDynamic().bootstrapModule(AppModule);
             }
         }

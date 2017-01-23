@@ -60,7 +60,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.CREATE:
             let type = action.type;
-            AI.current.trackEvent(action.type, { id: action.payload.id });
+            AI.trackEvent(action.type, { id: action.payload.id });
 
             return newState({
                 external: false,
@@ -74,7 +74,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.DELETE: {
             let type = action.type;
-            AI.current.trackEvent(action.type, { id: action.payload });
+            AI.trackEvent(action.type, { id: action.payload });
 
             let clear = false;
             if (state.lastOpened && state.lastOpened.id === action.payload) {
@@ -88,7 +88,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.DELETE_ALL: {
             let type = action.type;
-            AI.current.trackEvent(action.type);
+            AI.trackEvent(action.type);
             return newState({
                 lastOpened: null
             });
@@ -96,7 +96,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.RUN: {
             let type = action.type;
-            AI.current.trackEvent(action.type, { id: action.payload.id });
+            AI.trackEvent(action.type, { id: action.payload.id });
             return newState({
                 running: true
             });
@@ -104,7 +104,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.VIEW: {
             let type = action.type;
-            AI.current.trackEvent(action.type, { id: action.payload.id });
+            AI.trackEvent(action.type, { id: action.payload.id });
             return newState({
                 loading: true
             });

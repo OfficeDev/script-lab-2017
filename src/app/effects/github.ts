@@ -117,7 +117,7 @@ You will be able to import your snippet by choosing the "Import" button in the P
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((snippet: ISnippet) => {
-            AI.current.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: snippet.id });
+            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: snippet.id });
             let copied = new clipboard('#CopyToClipboard', {
                 text: trigger => {
                     this._uiEffects.alert(`Your snippet has been copied.`, null, 'OK');

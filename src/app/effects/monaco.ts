@@ -72,7 +72,7 @@ export class MonacoEffects {
             .fromPromise(MonacoService.current)
             .mergeMap((monaco, index) => this._get(url))
             .map(file => {
-                AI.current.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha256(file.url) });
+                AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha256(file.url) });
                 let disposable = source.addExtraLib(file.content, file.url);
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;

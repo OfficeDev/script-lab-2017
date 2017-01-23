@@ -126,7 +126,7 @@ export class MonacoService extends Disposable {
                     require(['vs/editor/editor.main'], () => {
                         let end = performance.now();
                         resolve(monaco);
-                        AI.current.trackEvent('Monaco Loaded', {}, { 'Monaco Load Duration': ((end - start) / 1000) });
+                        AI.trackEvent('Monaco Loaded', {}, { 'Monaco Load Duration': ((end - start) / 1000) });
                     });
                 }
             }

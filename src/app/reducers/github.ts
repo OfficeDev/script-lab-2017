@@ -25,7 +25,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
 
     switch (action.type) {
         case GitHubActionTypes.LOGIN: {
-            AI.current.trackEvent(type);
+            AI.trackEvent(type);
             return newState({
                 loading: true
             });
@@ -42,7 +42,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_OUT: {
-            AI.current.trackEvent(type);
+            AI.trackEvent(type);
 
             return newState({
                 loading: false,
@@ -53,14 +53,14 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
 
         case GitHubActionTypes.SHARE_PRIVATE_GIST:
         case GitHubActionTypes.SHARE_PUBLIC_GIST: {
-            AI.current.trackEvent(type);
+            AI.trackEvent(type);
             return newState({
                 sharing: true
             });
         }
 
         case GitHubActionTypes.SHARE_SUCCESS: {
-            AI.current.trackEvent(type, action.payload.public ? action.payload as any : null);
+            AI.trackEvent(type, action.payload.public ? action.payload as any : null);
             return newState({
                 sharing: false
             });
