@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Action } from '@ngrx/store';
 import { UI } from '../actions';
 import { PlaygroundError } from '../helpers';
 import { Store } from '@ngrx/store';

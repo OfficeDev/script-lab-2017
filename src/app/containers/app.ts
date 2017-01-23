@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
-import * as _ from 'lodash';
-import { Theme } from '../helpers';
+import { Utilities, Storage } from '@microsoft/office-js-helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
@@ -54,7 +50,6 @@ export class AppComponent {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _router: Router,
         private _effects: UIEffects
     ) {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {

@@ -1,4 +1,3 @@
-import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Collapse, Hamburger, Command, Alert, About, Dialog, SnippetInfo, Profile } from './app/components';
 import { Editor, Gallery, GalleryList, Import } from './app/containers';

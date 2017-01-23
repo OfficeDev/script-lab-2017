@@ -1,8 +1,6 @@
-import { Component, ApplicationRef } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Theme, AI } from '../helpers';
+import { Component } from '@angular/core';
+import { AI } from '../helpers';
 import { UI, Snippet, GitHub } from '../actions';
-import { Storage } from '@microsoft/office-js-helpers';
 import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
@@ -90,7 +88,7 @@ export class Gallery extends Disposable {
         if (action.title === 'Local') {
             switch (action.action) {
                 case 'Info': {
-                    let result = await this._effects.alert(`Snippets are stored in your browser's "localStorage" and will disappear if you clear your browser cache.
+                    await this._effects.alert(`Snippets are stored in your browser's "localStorage" and will disappear if you clear your browser cache.
 
                     In-order to retain permanent copies of your snippets please export them as gists via the 'Share' menu.`, `Info`, `Got it`);
                     return;

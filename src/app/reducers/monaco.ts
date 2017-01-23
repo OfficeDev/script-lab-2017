@@ -1,5 +1,3 @@
-import { createSelector } from 'reselect';
-import { Dictionary } from '@microsoft/office-js-helpers';
 import { MonacoActions, MonacoActionTypes } from '../actions/monaco';
 import { updateState } from '../helpers';
 

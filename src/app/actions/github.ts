@@ -1,6 +1,5 @@
 import { Action } from '@ngrx/store';
 import { type } from '../helpers';
-import { Subscription } from 'rxjs/Subscription';
 
 /**
  * For each action type in an action group, make a simple

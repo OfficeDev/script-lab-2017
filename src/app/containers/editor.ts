@@ -1,5 +1,4 @@
-import { Component, Input, HostListener, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
@@ -40,7 +39,7 @@ export class Editor extends Disposable implements AfterViewInit {
      */
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
-        this._monacoEditor.onKeyUp(evt => this._debouncedInput(evt));
+        this._monacoEditor.onKeyUp(() => this._debouncedInput());
         this._createTabs();
         this._subscribeToState();
     }
@@ -71,7 +70,7 @@ export class Editor extends Disposable implements AfterViewInit {
 
     private _subscribeToState() {
         this._store.select(fromRoot.getMenu)
-            .subscribe(menu => this._resize());
+            .subscribe(() => this._resize());
 
         this._store.select(fromRoot.getTheme)
             .subscribe(theme => this._monaco.updateOptions(this._monacoEditor, { theme: theme ? 'vs' : 'vs-dark' }));
@@ -149,7 +148,7 @@ export class Editor extends Disposable implements AfterViewInit {
      * Update the active content property every 300ms.
      * The same update happens even on tab switch.
      */
-    private _debouncedInput = _.debounce((event: monaco.IKeyboardEvent) => {
+    private _debouncedInput = _.debounce(() => {
         if (!this._readonly) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));

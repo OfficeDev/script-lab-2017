@@ -22,6 +22,9 @@ export class Command {
         if (this._icon) {
             return `ms-Icon--${this._icon}`;
         }
+        else {
+            return '';
+        }
     }
 
     set icon(value) {

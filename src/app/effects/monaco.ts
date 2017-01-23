@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Utilities, Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { AI } from '../helpers';
 import { Request, ResponseTypes, MonacoService } from '../services';
-import * as _ from 'lodash';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
@@ -62,7 +61,7 @@ export class MonacoEffects {
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
         .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload, action.language))
-        .map(data => new Monaco.UpdateIntellisenseSuccessAction())
+        .map(() => new Monaco.UpdateIntellisenseSuccessAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear intelliSense', exception)));
 
 
@@ -70,7 +69,7 @@ export class MonacoEffects {
         let source = this._determineSource(language);
         return Observable
             .fromPromise(MonacoService.current)
-            .mergeMap((monaco, index) => this._get(url))
+            .mergeMap(() => this._get(url))
             .map(file => {
                 AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha256(file.url) });
                 let disposable = source.addExtraLib(file.content, file.url);
@@ -96,6 +95,9 @@ export class MonacoEffects {
                 else {
                     return `https://unpkg.com/${library}`;
                 }
+            }
+            else {
+                return null;
             }
         });
     }

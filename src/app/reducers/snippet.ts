@@ -1,4 +1,3 @@
-import { createSelector } from 'reselect';
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
 import { updateState, AI } from '../helpers';
@@ -55,7 +54,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             });
 
         case SnippetActionTypes.CREATE:
-            let type = action.type;
             AI.trackEvent(action.type, { id: action.payload.id });
 
             return newState({
@@ -69,7 +67,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             });
 
         case SnippetActionTypes.DELETE: {
-            let type = action.type;
             AI.trackEvent(action.type, { id: action.payload });
 
             let clear = false;
@@ -83,7 +80,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
         }
 
         case SnippetActionTypes.DELETE_ALL: {
-            let type = action.type;
             AI.trackEvent(action.type);
             return newState({
                 lastOpened: null
@@ -91,7 +87,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
         }
 
         case SnippetActionTypes.RUN: {
-            let type = action.type;
             AI.trackEvent(action.type, { id: action.payload.id });
             return newState({
                 running: true
@@ -99,7 +94,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
         }
 
         case SnippetActionTypes.VIEW: {
-            let type = action.type;
             AI.trackEvent(action.type, { id: action.payload.id });
             return newState({
                 loading: true

@@ -1,7 +1,6 @@
-import { createSelector } from 'reselect';
 import { UIActions, UIActionTypes } from '../actions/ui';
 import { updateState, PlaygroundError, AI } from '../helpers';
-import { Utilities, HostType, PlatformType } from '@microsoft/office-js-helpers';
+import { Utilities } from '@microsoft/office-js-helpers';
 import { Environment } from '../../environment';
 
 export interface UIState {

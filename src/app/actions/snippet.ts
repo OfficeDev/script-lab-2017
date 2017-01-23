@@ -1,4 +1,3 @@
-import { Utilities } from '@microsoft/office-js-helpers';
 import { Action } from '@ngrx/store';
 import { type } from '../helpers';
 

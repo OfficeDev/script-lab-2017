@@ -1,10 +1,9 @@
-import { NgModule, Component, enableProdMode } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { NgModule, enableProdMode } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator, Utilities, Storage } from '@microsoft/office-js-helpers';
+import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
@@ -68,7 +67,7 @@ export class AppModule {
         return new Promise<boolean>(resolve => {
             let isAddin = location.href.indexOf('mode=web') === -1;
             if (isAddin) {
-                Office.initialize = reason => resolve(true);
+                Office.initialize = () => resolve(true);
             }
             else {
                 return resolve(isAddin);

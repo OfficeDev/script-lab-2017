@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { UI, Monaco, Snippet } from '../actions';
+import { UI, Snippet } from '../actions';
 
 @Component({
     selector: 'import',

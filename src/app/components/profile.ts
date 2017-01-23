@@ -1,6 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'profile',

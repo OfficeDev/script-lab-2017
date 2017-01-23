@@ -26,19 +26,19 @@ export class Request {
         return this._response(xhr, responseType);
     }
 
-    post<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
+    post<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
         let xhr = this._http.post(url, body, options);
         return this._response(xhr, responseType);
     }
 
-    put<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
+    put<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
         let xhr = this._http.put(url, body, options);
         return this._response(xhr, responseType);
     }
 
-    patch<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object, raw?: boolean): Observable<T> {
+    patch<T>(url: string, body: any, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
         let xhr = this._http.patch(url, body, options);
         return this._response(xhr, responseType);

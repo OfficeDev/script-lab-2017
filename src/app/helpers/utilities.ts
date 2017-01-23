@@ -37,12 +37,12 @@ export function updateState<T>(state: T) {
 
 export function storageSize(storage: any, key?: string, name?: string) {
     if (storage == null) {
-        return;
+        return '';
     }
 
     let store = storage[key];
     if (store == null) {
-        return;
+        return '';
     }
 
     if (key) {

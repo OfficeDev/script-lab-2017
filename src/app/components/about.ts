@@ -1,9 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { Utilities } from '@microsoft/office-js-helpers';
 import { storageSize } from '../helpers';
 import { Environment } from '../../environment';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'about',

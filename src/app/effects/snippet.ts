@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
+import { Utilities, Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post } from '../helpers';
@@ -38,7 +38,7 @@ export class SnippetEffects {
         reduxStore: Store<fromRoot.State>,
     ) {
         this._defaults.author = this._github.profile ? this._github.profile.login : '';
-        this._store.notify = (event) => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
+        this._store.notify = () => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
     }
 
     @Effect({ dispatch: false })
@@ -98,7 +98,7 @@ export class SnippetEffects {
                     observable = Observable.of(snippet);
                     break;
 
-                default: return;
+                default: return null;
             }
 
             AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
@@ -176,7 +176,7 @@ export class SnippetEffects {
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
-        .map(action => this._store.clear())
+        .map(() => this._store.clear())
         .map(() => new Snippet.StoreUpdatedAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to delete all local snippets', exception)));
 
