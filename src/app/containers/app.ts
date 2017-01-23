@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
 import * as _ from 'lodash';
-import { Theme, Utilities as Utils } from '../helpers';
+import { Theme } from '../helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';

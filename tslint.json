@@ -18,7 +18,6 @@
             "spaces"
         ],
         "label-position": true,
-        "label-undefined": true,
         "no-arg": true,
         "no-var-keyword": true,
         "no-console": [
@@ -31,14 +30,11 @@
         ],
         "no-construct": true,
         "no-debugger": true,
-        "no-duplicate-key": true,
         "no-duplicate-variable": true,
         "no-empty": false,
         "no-eval": true,
         "no-trailing-whitespace": true,
         "no-unused-expression": true,
-        "no-unused-variable": false,
-        "no-unreachable": true,
         "no-use-before-declare": true,
         "one-line": [
             true,

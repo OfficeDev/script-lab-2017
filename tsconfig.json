@@ -11,6 +11,10 @@
     "noEmitOnError": true,
     "rootDir": "src",
     "outDir": "dist",
+    "allowUnusedLabels": false,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "lib": [
       "dom",
       "es2015"
