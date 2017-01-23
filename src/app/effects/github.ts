@@ -9,6 +9,7 @@ import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
+import find = require('lodash/find');
 
 @Injectable()
 export class GitHubEffects {
@@ -52,7 +53,7 @@ export class GitHubEffects {
                 .map(gist => ({
                     id: gist.id,
                     description: gist.description,
-                file: _.find(gist.files, (file, name) => file ? /\.ya?ml$/gi.test(name) : false)
+                    file: find(gist.files, (file, name) => file ? /\.ya?ml$/gi.test(name) : false)
                 }))
                 .map(({ id, file, description }) => {
                     if (file == null) {

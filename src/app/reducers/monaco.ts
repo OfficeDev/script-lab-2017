@@ -1,5 +1,4 @@
 import { MonacoActions, MonacoActionTypes } from '../actions/monaco';
-import { updateState } from '../helpers';
 
 export interface MonacoState {
     activeTab?: string;
@@ -10,34 +9,38 @@ export interface MonacoState {
 export const initialState = {
     activeTab: null,
     activeLanguage: null,
-    loading: false
+    loading: false,
+    intellisenseLoadCount: 0
 };
 
 export function reducer(state = initialState, action: MonacoActions): MonacoState {
-    let newState = updateState<MonacoState>(state);
 
     switch (action.type) {
         case MonacoActionTypes.CHANGE_TAB:
-            return newState({
+            return {
+                ...state,
                 activeTab: action.payload,
                 activeLanguage: action.language
-            });
+            };
 
         case MonacoActionTypes.RESET:
-            return newState({
+            return {
+                ...state,
                 activeTab: null,
                 activeLanguage: null
-            });
+            };
 
         case MonacoActionTypes.UPDATE_INTELLISENSE:
-            return newState({
+            return {
+                ...state,
                 loading: true
-            });
+            };
 
         case MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS:
-            return newState({
+            return {
+                ...state,
                 loading: false
-            });
+            };
 
         default: return state;
     }

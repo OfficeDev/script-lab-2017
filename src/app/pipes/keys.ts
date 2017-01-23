@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import map = require('lodash/map');
 
 @Pipe({ name: 'keys' })
 export class KeysPipe implements PipeTransform {
@@ -7,7 +8,7 @@ export class KeysPipe implements PipeTransform {
             return [];
         }
 
-        return _.map(values, (value, key) => {
+        return map(values, (value, key) => {
             return { key, value };
         });
     }

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import * as _ from 'lodash';
+import groupBy = require('lodash/groupBy');
+import isEmpty = require('lodash/isEmpty');
 
 @Component({
     selector: 'gallery-list',
@@ -30,8 +31,8 @@ export class GalleryList {
 
     ngOnChanges(changes) {
         if (changes['items']) {
-            this.groupedItems = _.groupBy(changes['items'].currentValue, 'group');
-            this.empty = _.isEmpty(this.groupedItems);
+            this.groupedItems = groupBy(changes['items'].currentValue, 'group');
+            this.empty = isEmpty(this.groupedItems);
         }
     }
 };

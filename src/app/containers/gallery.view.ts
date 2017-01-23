@@ -5,7 +5,7 @@ import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UIEffects } from '../effects/ui';
-import * as _ from 'lodash';
+import isEmpty = require('lodash/isEmpty');
 
 @Component({
     selector: 'gallery',
@@ -61,7 +61,7 @@ export class Gallery extends Disposable {
     gists$ = this._store.select(fromRoot.getGists);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (_.isEmpty(snippets)) {
+            if (isEmpty(snippets)) {
                 this._store.dispatch(new UI.OpenMenuAction());
                 this.templatesView = true;
             }

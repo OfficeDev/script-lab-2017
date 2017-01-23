@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
 import { Environment } from '../../environment';
-import * as _ from 'lodash';
+import first = require('lodash/first');
 
 @Injectable()
 export class GitHubService {
@@ -135,7 +135,7 @@ export class GitHubService {
     private _profile: IBasicProfile;
     get profile(): IBasicProfile {
         if (this._profile == null) {
-            this._profile = _.first(this._profileStorage.values());
+            this._profile = first(this._profileStorage.values());
         }
 
         return this._profile;

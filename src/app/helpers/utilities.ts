@@ -22,19 +22,6 @@ export function type<T>(label: T | ''): T {
     return <T>label;
 }
 
-export function updateState<T>(state: T) {
-    let obj = _.assign({}, state);
-    return function assign(data: T): T {
-        if (arguments!.length === 0) {
-            return obj as T;
-        }
-        else if (_.isObject(data)) {
-            return _.assign({}, obj, data) as T;
-        }
-        return assign as any;
-    };
-};
-
 export function storageSize(storage: any, key?: string, name?: string) {
     if (storage == null) {
         return '';

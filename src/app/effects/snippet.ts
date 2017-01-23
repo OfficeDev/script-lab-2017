@@ -12,6 +12,11 @@ import cuid = require('cuid');
 import { Environment } from '../../environment';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
+import isEmpty = require('lodash/isEmpty');
+import find = require('lodash/find');
+import assign = require('lodash/assign');
+import reduce = require('lodash/reduce');
+import forIn = require('lodash/forIn');
 
 @Injectable()
 export class SnippetEffects {
@@ -79,7 +84,7 @@ export class SnippetEffects {
                     data = data.replace(/https:\/\/gist.github.com\/.*?\//, '');
                     observable = this._github.gist(data)
                         .map(gist => {
-                            let snippet = _.find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
+                            let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
                             if (gist.public) {
                                 info = gist.id;
                             }
@@ -114,7 +119,7 @@ export class SnippetEffects {
 
             return observable
                 .filter(snippet => !(snippet == null))
-                .map(snippet => _.assign({}, this._defaults, snippet))
+                .map(snippet => assign({}, this._defaults, snippet))
                 .mergeMap(snippet => {
                     let external = importType !== 'CUID';
                     if (external) {
@@ -129,7 +134,7 @@ export class SnippetEffects {
                     }
 
                     return Observable.from([
-                        new Snippet.ImportSuccessAction(snippet, external),
+                        new Snippet.ImportSuccessAction(snippet),
                         new UI.CloseMenuAction(),
                     ]);
                 });
@@ -164,10 +169,10 @@ export class SnippetEffects {
         .map((action: Snippet.DuplicateAction) => action.payload)
         .map(id => {
             let orignial = this._store.get(id);
-            let copy: ISnippet = _.assign({}, this._defaults, orignial);
+            let copy: ISnippet = assign({}, this._defaults, orignial);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
-            return new Snippet.ImportSuccessAction(copy, true);
+            return new Snippet.ImportSuccessAction(copy);
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to duplicate the current snippet', exception)));
 
@@ -264,20 +269,20 @@ export class SnippetEffects {
     }
 
     private _validate(snippet: ISnippet) {
-        if (_.isEmpty(snippet)) {
+        if (isEmpty(snippet)) {
             throw new PlaygroundError('Snippet cannot be empty');
         }
 
-        if (_.isEmpty(snippet.name)) {
+        if (isEmpty(snippet.name)) {
             throw new PlaygroundError('Snippet name cannot be empty');
         }
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = _.isEmpty(name.trim()) ? 'Blank Snippet' : name.trim();
+        let newName = isEmpty(name.trim()) ? 'Blank Snippet' : name.trim();
         let regex = new RegExp(`^${name}`);
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
-        let maxSuffixNumber = _.reduce(options, (max, item: any) => {
+        let maxSuffixNumber = reduce(options, (max, item: any) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
             if (max <= ~~match[1]) {
                 max = ~~match[1] + 1;
@@ -305,7 +310,7 @@ export class SnippetEffects {
             libraries: ''
         };
 
-        _.forIn(files, (file, name) => {
+        forIn(files, (file, name) => {
             switch (name) {
                 case 'libraries.txt':
                     snippet.libraries = file.content;

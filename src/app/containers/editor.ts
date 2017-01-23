@@ -4,7 +4,7 @@ import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService, Disposable } from '../services';
-import * as _ from 'lodash';
+import debounce = require('lodash/debounce');
 
 @Component({
     selector: 'editor',
@@ -148,7 +148,7 @@ export class Editor extends Disposable implements AfterViewInit {
      * Update the active content property every 300ms.
      * The same update happens even on tab switch.
      */
-    private _debouncedInput = _.debounce(() => {
+    private _debouncedInput = debounce(() => {
         if (!this._readonly) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));

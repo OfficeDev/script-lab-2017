@@ -40,7 +40,6 @@ const reducers = {
 export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
 
 const getSnippetsState = (state: State) => state.snippet;
-export const getExternal = createSelector(getSnippetsState, snippet.getExternal);
 export const getCurrent = createSelector(getSnippetsState, snippet.getCurrent);
 export const getSnippets = createSelector(getSnippetsState, snippet.getSnippets);
 export const getGists = createSelector(getSnippetsState, snippet.getGists);

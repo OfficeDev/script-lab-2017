@@ -1,12 +1,11 @@
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
-import { updateState, AI } from '../helpers';
+import { AI } from '../helpers';
 
 export interface SnippetState {
     lastOpened?: ISnippet;
     running?: boolean;
     loading?: boolean;
-    external?: boolean;
     snippets?: ISnippet[];
     gists?: ISnippet[];
     templates?: ISnippet[];
@@ -16,55 +15,42 @@ export const initialState: SnippetState = {
     lastOpened: null,
     loading: false,
     running: false,
-    external: false,
     snippets: [],
     gists: [],
     templates: []
 };
 
 export function reducer(state = initialState, action: SnippetActions | GitHubActions): SnippetState {
-    let newState = updateState<SnippetState>(state);
-
     switch (action.type) {
         case SnippetActionTypes.IMPORT:
-            return newState({
-                loading: true
-            });
+            return { ...state, loading: false };
 
         case SnippetActionTypes.IMPORT_SUCCESS:
-            return newState({
+            return {
+                ...state,
                 loading: false,
                 lastOpened: action.payload,
-                external: action.external
-            });
+            };
 
         case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:
-            return newState({
-                snippets: action.payload
-            });
+            return { ...state, snippets: action.payload };
 
         case SnippetActionTypes.LOAD_TEMPLATES_SUCCESS:
-            return newState({
-                templates: action.payload
-            });
+            return { ...state, templates: action.payload };
 
         case GitHubActionTypes.LOAD_GISTS_SUCCESS:
-            return newState({
-                gists: action.payload
-            });
+            return { ...state, gists: action.payload };
 
         case SnippetActionTypes.CREATE:
             AI.trackEvent(action.type, { id: action.payload.id });
-
-            return newState({
+            return {
+                ...state,
                 external: false,
                 lastOpened: action.payload
-            });
+            };
 
         case SnippetActionTypes.SAVE:
-            return newState({
-                lastOpened: action.payload
-            });
+            return { ...state, lastOpened: action.payload };
 
         case SnippetActionTypes.DELETE: {
             AI.trackEvent(action.type, { id: action.payload });
@@ -74,37 +60,26 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
                 clear = true;
             }
 
-            return newState({
-                lastOpened: clear ? null : state.lastOpened
-            });
+            return { ...state, lastOpened: clear ? null : state.lastOpened };
         }
 
         case SnippetActionTypes.DELETE_ALL: {
             AI.trackEvent(action.type);
-            return newState({
-                lastOpened: null
-            });
+            return { ...state, lastOpened: null };
         }
 
         case SnippetActionTypes.RUN: {
             AI.trackEvent(action.type, { id: action.payload.id });
-            return newState({
-                running: true
-            });
+            return { ...state, running: false };
         }
 
         case SnippetActionTypes.VIEW: {
             AI.trackEvent(action.type, { id: action.payload.id });
-            return newState({
-                loading: true
-            });
+            return { ...state, loading: false };
         }
 
         case SnippetActionTypes.STORE_UPDATED:
-            return newState({
-                loading: false
-            });
-
+            return { ...state, loading: false };
 
         default: return state;
     }
@@ -118,8 +93,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
  * focused so they can be combined and composed to fit each particular
  * use-case.
  */
-export const getExternal = (state: SnippetState) => state.external;
-
 export const getCurrent = (state: SnippetState) => state.lastOpened;
 
 export const getSnippets = (state: SnippetState) => state.snippets;

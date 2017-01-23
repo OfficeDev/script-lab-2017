@@ -3,6 +3,7 @@ import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
 import { AI } from '../helpers';
 import { Environment } from '../../environment';
+import isEmpty = require('lodash/isEmpty');
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
@@ -45,7 +46,7 @@ export class MonacoService extends Disposable {
         if (this._typings == null) {
             this._typings = this._intellisenseFile.toPromise().then(
                 item => item
-                    .filter(({typings}) => !_.isEmpty(typings))
+                    .filter(({typings}) => !isEmpty(typings))
                     .map(({typings, documentation}) => <monaco.languages.CompletionItem>{
                         label: typings,
                         documentation: documentation,
@@ -63,7 +64,7 @@ export class MonacoService extends Disposable {
         if (this._libraries == null) {
             this._libraries = this._intellisenseFile.toPromise().then(
                 item => item
-                    .filter(({label}) => !_.isEmpty(label))
+                    .filter(({label}) => !isEmpty(label))
                     .map(({label, documentation}) => <monaco.languages.CompletionItem>{
                         label: label,
                         documentation: documentation,
@@ -77,7 +78,7 @@ export class MonacoService extends Disposable {
     }
 
     async create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
-        let options = _.extend({}, this._defaults, overrides);
+        let options = { ...this._defaults, ...overrides };
         let monaco = await MonacoService.current;
         return monaco.editor.create(element.nativeElement, options);
     }
@@ -87,7 +88,7 @@ export class MonacoService extends Disposable {
             return;
         }
 
-        let options = _.extend({}, this._defaults, overrides);
+        let options = { ...this._defaults, ...overrides };
         editor.updateOptions(options);
     }
 

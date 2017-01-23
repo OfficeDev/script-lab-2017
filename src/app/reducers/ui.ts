@@ -1,5 +1,5 @@
 import { UIActions, UIActionTypes } from '../actions/ui';
-import { updateState, PlaygroundError, AI } from '../helpers';
+import { PlaygroundError, AI } from '../helpers';
 import { Utilities } from '@microsoft/office-js-helpers';
 import { Environment } from '../../environment';
 
@@ -25,41 +25,27 @@ export const initialState: UIState = {
 };
 
 export function reducer(state = initialState, action: UIActions): UIState {
-    let newState = updateState<UIState>(state);
     AI.trackEvent(action.type);
 
     switch (action.type) {
         case UIActionTypes.OPEN_MENU:
-            return newState({
-                menuOpened: true
-            });
+            return { ...state, menuOpened: true };
 
         case UIActionTypes.CLOSE_MENU:
-            return newState({
-                menuOpened: false
-            });
+            return { ...state, menuOpened: false };
 
         case UIActionTypes.TOGGLE_IMPORT:
-            return newState({
-                showImport: action.payload
-            });
+            return { ...state, showImport: action.payload };
 
         case UIActionTypes.SHOW_ALERT:
-            return newState({
-                dialog: action.payload
-            });
+            return { ...state, dialog: action.payload };
 
         case UIActionTypes.DISMISS_ALERT:
-            return newState({
-                dialog: null
-            });
+            return { ...state, dialog: null };
 
         case UIActionTypes.CHANGE_THEME: {
             AI.trackEvent(action.type, { theme: (!state.theme) ? 'Light' : 'Dark' });
-
-            return newState({
-                theme: !state.theme
-            });
+            return { ...state, theme: !state.theme };
         }
 
         case UIActionTypes.REPORT_ERROR: {
@@ -67,17 +53,12 @@ export function reducer(state = initialState, action: UIActions): UIState {
             if (Environment.env === 'DEVELOPMENT') {
                 Utilities.log(error);
             }
-            return newState({
-                errors: [...state.errors, error]
-            });
+            return { ...state, errors: [...state.errors, error] };
         }
 
         case UIActionTypes.CHANGE_LANGUAGE: {
             AI.trackEvent(action.type, { language: action.payload });
-
-            return newState({
-                language: action.payload
-            });
+            return { ...state, language: action.payload };
         }
 
         default: return state;

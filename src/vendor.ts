@@ -6,9 +6,3 @@ import '@angular/common';
 import '@angular/forms';
 import '@angular/http';
 import '@angular/router';
-
-// Externals
-import 'rxjs/Rx';
-import '@microsoft/office-js-helpers';
-import 'lodash';
-import 'js-yaml';

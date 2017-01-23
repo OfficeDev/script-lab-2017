@@ -1,5 +1,5 @@
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
-import { updateState, AI } from '../helpers';
+import { AI } from '../helpers';
 
 export interface GitHubState {
     isLoggedIn?: boolean;
@@ -16,62 +16,50 @@ export const initialState: GitHubState = {
 };
 
 export function reducer(state = initialState, action: GitHubActions): GitHubState {
-    let newState = updateState<GitHubState>(state);
-    let type = action.type;
-
     switch (action.type) {
         case GitHubActionTypes.LOGIN: {
-            AI.trackEvent(type);
-            return newState({
-                loading: true
-            });
+            AI.trackEvent(action.type);
+            return { ...state, loading: true };
         }
 
         case GitHubActionTypes.LOGIN_FAILED: {
-            return newState({
-                loading: false
-            });
+            return { ...state, loading: false };
         }
 
         case GitHubActionTypes.LOGGED_IN: {
             AI.current.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
-
-            return newState({
+            return {
+                ...state,
                 loading: false,
                 isLoggedIn: true,
                 profile: action.payload
-            });
+            };
         }
 
         case GitHubActionTypes.LOGGED_OUT: {
-            AI.trackEvent(type);
+            AI.trackEvent(action.type);
 
-            return newState({
+            return {
+                ...state,
                 loading: false,
                 isLoggedIn: false,
                 profile: null
-            });
+            };
         }
 
         case GitHubActionTypes.SHARE_PRIVATE_GIST:
         case GitHubActionTypes.SHARE_PUBLIC_GIST: {
-            AI.trackEvent(type);
-            return newState({
-                sharing: true
-            });
+            AI.trackEvent(action.type);
+            return { ...state, sharing: true };
         }
 
         case GitHubActionTypes.SHARE_SUCCESS: {
-            AI.trackEvent(type, action.payload.public ? action.payload as any : null);
-            return newState({
-                sharing: false
-            });
+            AI.trackEvent(action.type, action.payload.public ? action.payload as any : null);
+            return { ...state, sharing: false };
         }
 
         case GitHubActionTypes.SHARE_FAILED: {
-            return newState({
-                sharing: false
-            });
+            return { ...state, sharing: false };
         }
 
         default: return state;

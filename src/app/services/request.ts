@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import * as _ from 'lodash';
 import * as jsyaml from 'js-yaml';
 
 export enum ResponseTypes {
@@ -51,7 +50,7 @@ export class Request {
     }
 
     private _generateHeaders(additionalHeaders: Object): RequestOptions {
-        let headersObj = _.extend({}, additionalHeaders);
+        let headersObj = { ...additionalHeaders };
         let headers = new Headers(headersObj);
         return new RequestOptions({ headers });
     }

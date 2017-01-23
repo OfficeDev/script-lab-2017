@@ -1,4 +1,5 @@
 import { Subscription } from 'rxjs/Rx';
+import each = require('lodash/each');
 
 export class Disposable {
     private _subscriptions: Subscription[] = [];
@@ -15,7 +16,7 @@ export class Disposable {
     }
 
     ngOnDestroy() {
-        _.each(this._subscriptions, subscription => {
+        each(this._subscriptions, subscription => {
             if (!subscription.closed) {
                 subscription.unsubscribe();
             }
