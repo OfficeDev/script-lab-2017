@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { UIActions, UIActionTypes } from '../actions/ui';
 import { updateState, PlaygroundError, AI } from '../helpers';
-import { Utilities } from '@microsoft/office-js-helpers';
+import { Utilities, HostType, PlatformType } from '@microsoft/office-js-helpers';
 import { Environment } from '../../environment';
 
 export interface UIState {
@@ -11,19 +11,19 @@ export interface UIState {
     theme?: boolean;
     errors?: Error[];
     showImport?: boolean;
+    host?: string;
+    platform?: string
 };
 
-const initialState: UIState = {
+export const initialState: UIState = {
     theme: false,
     menuOpened: false,
     errors: [],
     dialog: null,
-    showImport: false
+    showImport: false,
+    host: Utilities.host,
+    platform: Utilities.platform
 };
-
-export function defaultState(overrides?: UIState) {
-    return { ...initialState, ...overrides } as UIState;
-}
 
 export function reducer(state = initialState, action: UIActions): UIState {
     let newState = updateState<UIState>(state);
@@ -105,3 +105,7 @@ export const getErrors = (state: UIState) => state.errors;
 export const getTheme = (state: UIState) => state.theme;
 
 export const getImportState = (state: UIState) => state.showImport;
+
+export const getHost = (state: UIState) => state.host;
+
+export const getPlatform = (state: UIState) => state.platform;

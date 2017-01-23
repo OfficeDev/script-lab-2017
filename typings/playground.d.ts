@@ -77,3 +77,12 @@ interface IGlobalConfig {
         }
     }
 }
+
+interface ISettings {
+    lastOpened: ISnippet,
+    profile: IProfile,
+    theme: boolean,
+    language: string,
+    host: string,
+    platform: string
+}

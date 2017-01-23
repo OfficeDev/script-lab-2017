@@ -9,15 +9,11 @@ export interface MonacoState {
     loading?: boolean;
 }
 
-const initialState = {
+export const initialState = {
     activeTab: null,
     activeLanguage: null,
     loading: false
 };
-
-export function defaultState(overrides?: MonacoState) {
-    return { ...initialState, ...overrides } as MonacoState;
-}
 
 export function reducer(state = initialState, action: MonacoActions): MonacoState {
     let newState = updateState<MonacoState>(state);

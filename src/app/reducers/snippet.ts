@@ -13,7 +13,7 @@ export interface SnippetState {
     templates?: ISnippet[];
 };
 
-const initialState: SnippetState = {
+export const initialState: SnippetState = {
     lastOpened: null,
     loading: false,
     running: false,
@@ -22,10 +22,6 @@ const initialState: SnippetState = {
     gists: [],
     templates: []
 };
-
-export function defaultState(overrides?: SnippetState) {
-    return { ...initialState, ...overrides } as SnippetState;
-}
 
 export function reducer(state = initialState, action: SnippetActions | GitHubActions): SnippetState {
     let newState = updateState<SnippetState>(state);

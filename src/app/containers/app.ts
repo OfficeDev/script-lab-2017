@@ -47,6 +47,8 @@ import { UIEffects } from '../effects/ui';
 })
 
 export class AppComponent {
+    static settings = new Storage('playground_settings');
+
     snippet: ISnippet;
     isEmpty: boolean;
 
@@ -63,11 +65,10 @@ export class AppComponent {
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
 
-    private _settings = new Storage('playground_settings');
     settings$ = this._store
         .select(fromRoot.getSettings)
         .debounceTime(200)
-        .subscribe(changes => this._settings.insert(Utilities.host.toLowerCase(), changes));
+        .subscribe(changes => AppComponent.settings.insert(Utilities.host.toLowerCase(), changes));
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 

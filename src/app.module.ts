@@ -15,7 +15,7 @@ import { AppComponent } from './app/containers';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
-import { rootReducer } from './app/reducers';
+import { rootReducer, createDefaultState } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import { Environment } from './environment';
 
@@ -77,8 +77,8 @@ export class AppModule {
     }
 
     static get initialState() {
-        let settings = new Storage('playground_settings');
-        return settings.get(Utilities.host.toLowerCase());
+        let settings = AppComponent.settings.get(Utilities.host.toLowerCase()) as ISettings;
+        return createDefaultState(settings);
     }
 }
 

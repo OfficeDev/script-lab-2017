@@ -8,16 +8,12 @@ export interface GitHubState {
     sharing?: boolean;
 };
 
-const initialState: GitHubState = {
+export const initialState: GitHubState = {
     isLoggedIn: false,
     loading: false,
     profile: null,
     sharing: false
 };
-
-export function defaultState(overrides?: GitHubState) {
-    return { ...initialState, ...overrides } as GitHubState;
-}
 
 export function reducer(state = initialState, action: GitHubActions): GitHubState {
     let newState = updateState<GitHubState>(state);

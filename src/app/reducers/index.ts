@@ -9,7 +9,7 @@ import { combineReducers } from '@ngrx/store';
  * the state of the reducer plus any selector functions. The `* as`
  * notation packages up all of the exports into a single object.
  */
-import * as snippets from './snippet';
+import * as snippet from './snippet';
 import * as monaco from './monaco';
 import * as ui from './ui';
 import * as github from './github';
@@ -19,7 +19,7 @@ import * as github from './github';
  * our top level state interface is just a map of keys to inner state types.
  */
 export interface State {
-    snippet: snippets.SnippetState;
+    snippet: snippet.SnippetState;
     monaco: monaco.MonacoState;
     ui: ui.UIState;
     github: github.GitHubState;
@@ -33,7 +33,7 @@ export interface State {
  * the result from right to left.
  */
 const reducers = {
-    snippet: snippets.reducer,
+    snippet: snippet.reducer,
     monaco: monaco.reducer,
     ui: ui.reducer,
     github: github.reducer
@@ -42,13 +42,13 @@ const reducers = {
 export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
 
 const getSnippetsState = (state: State) => state.snippet;
-export const getExternal = createSelector(getSnippetsState, snippets.getExternal);
-export const getCurrent = createSelector(getSnippetsState, snippets.getCurrent);
-export const getSnippets = createSelector(getSnippetsState, snippets.getSnippets);
-export const getGists = createSelector(getSnippetsState, snippets.getGists);
-export const getTemplates = createSelector(getSnippetsState, snippets.getTemplates);
-export const getLoading = createSelector(getSnippetsState, snippets.getLoading);
-export const getRunning = createSelector(getSnippetsState, snippets.getRunning);
+export const getExternal = createSelector(getSnippetsState, snippet.getExternal);
+export const getCurrent = createSelector(getSnippetsState, snippet.getCurrent);
+export const getSnippets = createSelector(getSnippetsState, snippet.getSnippets);
+export const getGists = createSelector(getSnippetsState, snippet.getGists);
+export const getTemplates = createSelector(getSnippetsState, snippet.getTemplates);
+export const getLoading = createSelector(getSnippetsState, snippet.getLoading);
+export const getRunning = createSelector(getSnippetsState, snippet.getRunning);
 
 const getMonacoState = (state: State) => state.monaco;
 export const getActiveTab = createSelector(getMonacoState, monaco.getActiveTab);
@@ -61,6 +61,8 @@ export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
 export const getErrors = createSelector(getUIState, ui.getErrors);
 export const getImportState = createSelector(getUIState, ui.getImportState);
+export const getHost = createSelector(getUIState, ui.getHost);
+export const getPlatform = createSelector(getUIState, ui.getPlatform);
 
 const getGitHubState = (state: State) => state.github;
 export const getProfileLoading = createSelector(getGitHubState, github.getLoading);
@@ -68,17 +70,22 @@ export const getProfile = createSelector(getGitHubState, github.getProfile);
 export const getLoggedIn = createSelector(getGitHubState, github.getLoggedIn);
 export const getSharing = createSelector(getGitHubState, github.getSharing);
 
-const getSettingsStates = (state: State) => (<State>{
-    snippet: snippets.defaultState({
-        lastOpened: getCurrent(state),
-    }),
-    github: github.defaultState({
-        profile: getProfile(state),
-    }),
-    monaco: monaco.defaultState(),
-    ui: ui.defaultState({
-        theme: getTheme(state)
-    }),
-});
+const getSettingsState = (state: State) => ({
+    lastOpened: getCurrent(state),
+    profile: getProfile(state),
+    theme: getTheme(state),
+    language: getLanguage(state),
+    host: getHost(state),
+    platform: getPlatform(state)
+}) as ISettings;
 
-export const getSettings = createSelector(state => state, getSettingsStates);
+export const getSettings = createSelector(state => state, getSettingsState);
+export const createDefaultState = (settings: ISettings) => {
+    let {profile, lastOpened, theme, language, host, platform} = settings;
+    return <State>{
+        github: { ...github.initialState, profile },
+        monaco: { ...monaco.initialState },
+        ui: { ...ui.initialState, host, platform, theme, language },
+        snippet: { ...snippet.initialState, lastOpened }
+    };
+};
