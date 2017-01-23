@@ -79,6 +79,7 @@ export class GitHubEffects {
         .mergeMap(({ payload, type }) => {
             let {name, description} = payload;
             let files: IGistFiles = {};
+            payload.author = this._github.profile.login;
 
             files[`${name}.yaml`] = {
                 content: jsyaml.safeDump(payload),
@@ -123,6 +124,9 @@ You will be able to import your snippet by choosing the "Import" button in the P
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((snippet: ISnippet) => {
+            if (this._github.profile) {
+                snippet.author = this._github.profile.login;
+            }
             AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: snippet.id });
             let copied = new clipboard('#CopyToClipboard', {
                 text: trigger => {

@@ -35,114 +35,47 @@ export function updateState<T>(state: T) {
     };
 };
 
-export class Utilities {
-    static storageSize(storage: any, key?: string, name?: string) {
-        if (storage == null) {
-            return;
-        }
-
-        let store = storage[key];
-        if (store == null) {
-            return;
-        }
-
-        if (key) {
-            let len = ((store.length + key.length) * 2);
-            AI.current.trackMetric(key, len / 1024);
-            return `${(name || key).substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
-        }
-
-        let total = Object.keys(storage).reduce((total, key) => {
-            let len = ((store.length + key.length) * 2);
-            console.log(`${key.substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`);
-            return total + len;
-        }, 0);
-
-        return `Total = ${(total / 1024).toFixed(2)} KB`;
+export function storageSize(storage: any, key?: string, name?: string) {
+    if (storage == null) {
+        return;
     }
 
-    static stripSpaces(text: string) {
-        let lines: string[] = (text || '').split('\n').map(function (item) {
-            return item.replace(new RegExp('\t', 'g'), '    ');
-        });
-
-        let isZeroLengthLine: boolean = true;
-        let arrayPosition: number = 0;
-
-        // Remove zero length lines from the beginning of the snippet.
-        do {
-            let currentLine: string = lines[arrayPosition];
-            if (currentLine.trim() === '') {
-                lines.splice(arrayPosition, 1);
-            } else {
-                isZeroLengthLine = false;
-            }
-        } while (isZeroLengthLine || (arrayPosition === lines.length));
-
-        arrayPosition = lines.length - 1;
-        isZeroLengthLine = true;
-
-        // Remove zero length lines from the end of the snippet.
-        do {
-            let currentLine: string = lines[arrayPosition];
-            if (currentLine.trim() === '') {
-                lines.splice(arrayPosition, 1);
-                arrayPosition--;
-            } else {
-                isZeroLengthLine = false;
-            }
-        } while (isZeroLengthLine);
-
-        // Get smallest indent for align left.
-        let shortestIndentSize: number = 1024;
-        for (let line of lines) {
-            let currentLine: string = line;
-            if (currentLine.trim() !== '') {
-                let spaces: number = line.search(/\S/);
-                if (spaces < shortestIndentSize) {
-                    shortestIndentSize = spaces;
-                }
-            }
-        }
-
-        // Align left
-        for (let i: number = 0; i < lines.length; i++) {
-            if (lines[i].length >= shortestIndentSize) {
-                lines[i] = lines[i].substring(shortestIndentSize);
-            }
-        }
-
-        // Convert the array back into a string and return it.
-        let finalSetOfLines: string = '';
-        for (let i: number = 0; i < lines.length; i++) {
-            if (i < lines.length - 1) {
-                finalSetOfLines += lines[i] + '\n';
-            }
-            else {
-                finalSetOfLines += lines[i];
-            }
-        }
-
-        return finalSetOfLines;
+    let store = storage[key];
+    if (store == null) {
+        return;
     }
 
-    static indentAllExceptFirstLine(text: string, numSpaces: number) {
-        return Utilities.indentAllHelper(text, numSpaces, true /*excludeFirstLine*/);
+    if (key) {
+        let len = ((store.length + key.length) * 2);
+        AI.current.trackMetric(key, len / 1024);
+        return `${(name || key).substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`;
     }
 
-    static indentAll(text: string, numSpaces: number) {
-        return Utilities.indentAllHelper(text, numSpaces, false /*excludeFirstLine*/);
-    }
+    let total = Object.keys(storage).reduce((total, key) => {
+        let len = ((store.length + key.length) * 2);
+        console.log(`${key.substr(0, 50)}  = ${(len / 1024).toFixed(2)} kB`);
+        return total + len;
+    }, 0);
 
-    private static indentAllHelper(text: string, numSpaces: number, excludeFirstLine: boolean) {
-        let lines: string[] = (text || '').split('\n');
-        let indentString = '';
-        for (let i = 0; i < numSpaces; i++) {
-            indentString += ' ';
+    return `Total = ${(total / 1024).toFixed(2)} KB`;
+}
+
+export function post(path: string, params: any) {
+    let form = document.createElement('form');
+    form.setAttribute('method', 'post');
+    form.setAttribute('action', path);
+
+    for (let key in params) {
+        if (params.hasOwnProperty(key)) {
+            let hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden');
+            hiddenField.setAttribute('name', key);
+            hiddenField.setAttribute('value', params[key]);
+
+            form.appendChild(hiddenField);
         }
-
-        let result = (excludeFirstLine) ? (lines.shift() + '\n') : '';
-        result += lines.map((line) => indentString + line).join('\n');
-        return result;
     }
+
+    document.body.appendChild(form);
+    form.submit();
 }

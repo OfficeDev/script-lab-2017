@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Utilities, HostType, Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import * as PlaygroundHelpers from '../helpers';
+import { PlaygroundError, AI, post } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
-import { Snippet, UI } from '../actions';
+import { GitHub, Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as _ from 'lodash';
 import cuid = require('cuid');
@@ -28,7 +28,8 @@ export class SnippetEffects {
         template: { content: '', language: 'html' },
         libraries: ''
     };
-    private samplesRepoUrl = 'https://raw.githubusercontent.com/WrathOfZombies/samples/deployment';
+
+    private _samplesRepoUrl = 'https://raw.githubusercontent.com/WrathOfZombies/samples/deployment';
 
     constructor(
         private actions$: Actions,
@@ -39,6 +40,11 @@ export class SnippetEffects {
         this._defaults.author = this._github.profile ? this._github.profile.login : '';
         this._store.notify = (event) => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
     }
+
+    @Effect({ dispatch: false })
+    loggedIn$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.LOGGED_IN)
+        .do(() => this._defaults.author = this._github.profile ? this._github.profile.login : '');
 
     @Effect()
     import$: Observable<Action> = this.actions$
@@ -52,7 +58,7 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = Utilities.host.toLowerCase();
-                    observable = Observable.of(jsyaml.load(this.getDefaultSnippet()));
+                    observable = this._request.get<string>(`${this._samplesRepoUrl}/samples/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML);
                     break;
 
                 case 'CUID':
@@ -95,7 +101,7 @@ export class SnippetEffects {
                 default: return;
             }
 
-            PlaygroundHelpers.AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
+            AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
 
             return observable
                 .filter(snippet => !(snippet == null))
@@ -191,14 +197,12 @@ export class SnippetEffects {
                 snippet: jsyaml.safeDump(snippet),
                 returnUrl: window.location.href,
                 refreshUrl: window.location.origin + '/refresh.html',
-
-                // Any further fields will simply get passed in to the refresh page:
                 id: snippet.id,
                 host: Utilities.host,
                 platform: Utilities.platform
             };
 
-            this._post(url, { data: JSON.stringify(postData) });
+            post(url, { data: JSON.stringify(postData) });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to run the snippet', exception)));
 
@@ -208,7 +212,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this.samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = `${this._samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
@@ -252,11 +256,11 @@ export class SnippetEffects {
 
     private _validate(snippet: ISnippet) {
         if (_.isEmpty(snippet)) {
-            throw new PlaygroundHelpers.PlaygroundError('Snippet cannot be empty');
+            throw new PlaygroundError('Snippet cannot be empty');
         }
 
         if (_.isEmpty(snippet.name)) {
-            throw new PlaygroundHelpers.PlaygroundError('Snippet name cannot be empty');
+            throw new PlaygroundError('Snippet name cannot be empty');
         }
     }
 
@@ -321,158 +325,7 @@ export class SnippetEffects {
             }
         });
 
-        PlaygroundHelpers.AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(Environment.build) });
+        AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(Environment.build) });
         return snippet;
     }
-
-    private _post(path: string, params: any) {
-        let form = document.createElement('form');
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', path);
-
-        for (let key in params) {
-            if (params.hasOwnProperty(key)) {
-                let hiddenField = document.createElement('input');
-                hiddenField.setAttribute('type', 'hidden');
-                hiddenField.setAttribute('name', key);
-                hiddenField.setAttribute('value', params[key]);
-
-                form.appendChild(hiddenField);
-            }
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-
-    private getDefaultSnippet(): string {
-        if (Utilities.host === HostType.WEB) {
-            return compile(this.defaultSnippetIngredients.web.code,
-                this.defaultSnippetIngredients.web.libraries);
-        }
-
-        let apiSetsToNamespaces = {
-            'ExcelApi': 'Excel',
-            'WordApi': 'Word',
-            'OneNoteApi': 'OneNote'
-        };
-
-        for (let apiSet in apiSetsToNamespaces) {
-            if (Office.context.requirements.isSetSupported(apiSet)) {
-                let namespace = apiSetsToNamespaces[apiSet];
-                return compile(
-                    this.defaultSnippetIngredients.office.getHostSpecificCode(namespace),
-                    this.defaultSnippetIngredients.office.libraries);
-            }
-        }
-
-        return compile(
-            this.defaultSnippetIngredients.office.commonApiCode,
-            this.defaultSnippetIngredients.office.libraries);
-
-
-        // Helper function
-
-        function compile(code: string, libraries: string) {
-            return PlaygroundHelpers.Utilities.stripSpaces(`
-                author: Microsoft
-                name: Blank snippet
-                description: Create a new snippet from a blank template.
-                script:
-                  content: |-
-                    $('#run').click(run);
-
-                    {{{CODE_INDENT_4}}}
-                  language: typescript
-                style:
-                  content: /* Your style goes here */
-                  language: css
-                template:
-                  content: |-
-                    <button id="run" class="ms-Button">
-                        <span class="ms-Button-label">Run</span>
-                    </button>
-                  language: html
-                libraries: |-
-                  {{{LIBRARIES_INDENT_2}}}
-            `)
-                .replace('{{{CODE_INDENT_4}}}',
-                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(code, 4))
-                .replace('{{{LIBRARIES_INDENT_2}}}',
-                PlaygroundHelpers.Utilities.indentAllExceptFirstLine(libraries, 2));
-        }
-    }
-
-    private defaultSnippetIngredients = {
-        office: {
-            getHostSpecificCode: function (namespace: string) {
-                return PlaygroundHelpers.Utilities.stripSpaces(`
-                    function run() {
-                        {{{NAMESPACE}}}.run(async (context) => {
-                            console.log("Your code goes here");
-                            await context.sync();
-
-                        }).catch(OfficeHelpers.Utilities.log);
-                    }
-                `).replace('{{{NAMESPACE}}}', namespace);
-            },
-
-            commonApiCode: PlaygroundHelpers.Utilities.stripSpaces(`
-                function run() {
-                    Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
-                        function (asyncResult) {
-                            if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-                                console.log(asyncResult.error.message);
-                            } else {
-                                console.log('Selected data is ' + asyncResult.value);
-                            }
-                        }
-                    );
-                }
-            `),
-
-            libraries: PlaygroundHelpers.Utilities.stripSpaces(`
-                // Office.js
-                https://appsforoffice.microsoft.com/lib/1/hosted/Office.js
-
-                // NPM libraries
-                jquery
-                office-ui-fabric-js/dist/js/fabric.min.js
-                office-ui-fabric-js/dist/css/fabric.min.css
-                office-ui-fabric-js/dist/css/fabric.components.min.css
-                @microsoft/office-js-helpers/dist/office.helpers.min.js
-                core-js/client/core.min.js
-
-                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
-                dt~office-js
-                dt~jquery
-                dt~core-js
-                @microsoft/office-js-helpers/dist/office.helpers.d.ts
-            `)
-        },
-
-        web: {
-            code: PlaygroundHelpers.Utilities.stripSpaces(`
-                function run() {
-                    console.log("Your code goes here");
-                }
-            `),
-
-            libraries: PlaygroundHelpers.Utilities.stripSpaces(`
-                // NPM libraries
-                jquery
-                office-ui-fabric-js/dist/js/fabric.min.js
-                office-ui-fabric-js/dist/css/fabric.min.css
-                office-ui-fabric-js/dist/css/fabric.components.min.css
-                @microsoft/office-js-helpers/dist/office.helpers.min.js
-                core-js/client/core.min.js
-
-                // IntelliSense: Use dt~library_name for DefinitelyTyped or URLs to d.ts files
-                dt~office-js
-                dt~jquery
-                dt~core-js
-                @microsoft/office-js-helpers/dist/office.helpers.d.ts
-            `)
-        }
-    };
 }
