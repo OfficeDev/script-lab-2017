@@ -52,7 +52,7 @@ export class GitHubEffects {
                 .map(gist => ({
                     id: gist.id,
                     description: gist.description,
-                    file: _.find(gist.files, (file, name) => /\.ya?ml$/gi.test(name))
+                file: _.find(gist.files, (file, name) => file ? /\.ya?ml$/gi.test(name) : false)
                 }))
                 .map(({ id, file, description }) => {
                     if (file == null) {

@@ -70,7 +70,7 @@ export class SnippetEffects {
                     data = data.replace(/https:\/\/gist.github.com\/.*?\//, '');
                     observable = this._github.gist(data)
                         .map(gist => {
-                            let snippet = _.find(gist.files, (value, key) => /\.ya?ml$/gi.test(key));
+                            let snippet = _.find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
                             if (gist.public) {
                                 info = gist.id;
                             }
