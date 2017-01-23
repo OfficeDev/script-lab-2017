@@ -7,7 +7,6 @@ import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
-import * as _ from 'lodash';
 import cuid = require('cuid');
 import { Environment } from '../../environment';
 import { Store } from '@ngrx/store';

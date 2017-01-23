@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { AI } from '../helpers';
 import { GitHubService } from '../services';
-import * as _ from 'lodash';
 import * as jsyaml from 'js-yaml';
 import { Action } from '@ngrx/store';
 import { UI, GitHub } from '../actions';
