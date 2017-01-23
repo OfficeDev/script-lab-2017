@@ -9,6 +9,7 @@
 
     &__main {
         height: 100%;
+        width: calc(100% - 30px) !important;
         flex: 1 1 0px;
         padding: $default-spacing;
         @include center-flex();
