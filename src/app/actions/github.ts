@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs/Subscription';
  */
 export class GitHubActionTypes {
     static readonly LOGIN = type('[GitHub] Login');
+    static readonly LOGIN_FAILED = type('[GitHub] Login Failed');
     static readonly IS_LOGGED_IN = type('[Github] Is Logged In');
     static readonly LOAD_GISTS = type('[Github] Load Gists');
     static readonly LOAD_GISTS_SUCCESS = type('[Github] Load Gists Success');
@@ -21,6 +22,7 @@ export class GitHubActionTypes {
     static readonly SHARE_PRIVATE_GIST = type('[GitHub] Share Private Gist');
     static readonly SHARE_COPY = type('[GitHub] Share Copy');
     static readonly SHARE_SUCCESS = type('[GitHub] Share Success');
+    static readonly SHARE_FAILED = type('[GitHub] Share Failed');
     static readonly UDPATE_GIST = type('[GitHub] Update Gist');
 };
 
@@ -33,6 +35,12 @@ export class GitHubActionTypes {
  */
 export class LoginAction implements Action {
     readonly type = GitHubActionTypes.LOGIN;
+
+    constructor() { }
+}
+
+export class LoginFailedAction implements Action {
+    readonly type = GitHubActionTypes.LOGIN_FAILED;
 
     constructor() { }
 }
@@ -91,6 +99,12 @@ export class ShareSuccessAction implements Action {
     constructor(public payload: IGist) { }
 }
 
+export class ShareFailedAction implements Action {
+    readonly type = GitHubActionTypes.SHARE_FAILED;
+
+    constructor(public payload: IGist) { }
+}
+
 export class UpdateGistAction implements Action {
     readonly type = GitHubActionTypes.UDPATE_GIST;
 
@@ -103,6 +117,7 @@ export class UpdateGistAction implements Action {
  */
 export type GitHubActions
     = LoginAction
+    | LoginFailedAction
     | LoggedInAction
     | LoadGistsAction
     | LoadGistsSuccessAction
@@ -112,4 +127,5 @@ export type GitHubActions
     | SharePrivateGistAction
     | SharePublicGistAction
     | ShareSuccessAction
+    | ShareFailedAction
     | UpdateGistAction;

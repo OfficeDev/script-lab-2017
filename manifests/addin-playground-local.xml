@@ -15,7 +15,7 @@
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>http://localhost:8080</AppDomain>
-    <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
+    <AppDomain>https://addin-playground-runner-staging.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />

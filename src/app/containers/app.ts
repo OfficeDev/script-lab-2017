@@ -67,7 +67,7 @@ export class AppComponent {
 
     settings$ = this._store
         .select(fromRoot.getSettings)
-        .debounceTime(200)
+        .debounceTime(250)
         .subscribe(changes => AppComponent.settings.insert(Utilities.host.toLowerCase(), changes));
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

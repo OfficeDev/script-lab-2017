@@ -25,7 +25,10 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.LOGIN)
         .mergeMap(() => this._github.login())
         .map(profile => new GitHub.LoggedInAction(profile))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to login to GitHub', exception)));
+        .catch(exception => Observable.from([
+            new UI.ReportErrorAction('Failed to login to GitHub', exception),
+            new GitHub.LoginFailedAction()
+        ]));
 
     @Effect({ dispatch: false })
     logout$: Observable<Action> = this.actions$
@@ -109,7 +112,10 @@ You will be able to import your snippet by choosing the "Import" button in the P
             return gist;
         })
         .map(gist => new GitHub.ShareSuccessAction(gist))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to share a GitHub gist', exception)));
+        .catch(exception => Observable.from([
+            new UI.ReportErrorAction('Failed to share a GitHub gist', exception),
+            new GitHub.ShareFailedAction()
+        ]));
 
     @Effect({ dispatch: false })
     shareCopy$: Observable<Action> = this.actions$

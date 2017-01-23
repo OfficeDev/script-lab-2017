@@ -27,6 +27,12 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
             });
         }
 
+        case GitHubActionTypes.LOGIN_FAILED: {
+            return newState({
+                loading: false
+            });
+        }
+
         case GitHubActionTypes.LOGGED_IN: {
             AI.current.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
 
@@ -57,6 +63,12 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
 
         case GitHubActionTypes.SHARE_SUCCESS: {
             AI.trackEvent(type, action.payload.public ? action.payload as any : null);
+            return newState({
+                sharing: false
+            });
+        }
+
+        case GitHubActionTypes.SHARE_FAILED: {
             return newState({
                 sharing: false
             });
