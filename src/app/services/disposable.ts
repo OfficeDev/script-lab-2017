@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs/Subscription';
-import each = require('lodash/each');
+import * as each from 'lodash/each';
 
 export class Disposable {
     private _subscriptions: Subscription[] = [];

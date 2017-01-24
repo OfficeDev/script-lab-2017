@@ -8,7 +8,7 @@ import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
-import find = require('lodash/find');
+import * as find from 'lodash/find';
 
 @Injectable()
 export class GitHubEffects {

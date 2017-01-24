@@ -11,11 +11,11 @@ import cuid = require('cuid');
 import { Environment } from '../../environment';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import isEmpty = require('lodash/isEmpty');
-import find = require('lodash/find');
-import assign = require('lodash/assign');
-import reduce = require('lodash/reduce');
-import forIn = require('lodash/forIn');
+import * as isEmpty from 'lodash/isEmpty';
+import * as find from 'lodash/find';
+import * as assign from 'lodash/assign';
+import * as reduce from 'lodash/reduce';
+import * as forIn from 'lodash/forIn';
 
 @Injectable()
 export class SnippetEffects {

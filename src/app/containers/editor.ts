@@ -4,7 +4,7 @@ import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService, Disposable } from '../services';
-import debounce = require('lodash/debounce');
+import * as debounce from 'lodash/debounce';
 
 @Component({
     selector: 'editor',

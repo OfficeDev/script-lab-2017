@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import groupBy = require('lodash/groupBy');
-import isEmpty = require('lodash/isEmpty');
+import * as groupBy from 'lodash/groupBy';
+import * as isEmpty from 'lodash/isEmpty';
 
 @Component({
     selector: 'gallery-list',

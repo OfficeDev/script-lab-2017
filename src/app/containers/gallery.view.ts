@@ -5,7 +5,7 @@ import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UIEffects } from '../effects/ui';
-import isEmpty = require('lodash/isEmpty');
+import * as isEmpty from 'lodash/isEmpty';
 
 @Component({
     selector: 'gallery',
