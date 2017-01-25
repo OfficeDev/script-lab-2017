@@ -25,6 +25,7 @@ export class MonacoService extends Disposable {
         formatOnType: true,
         fontSize: 14,
         wrappingColumn: 0,
+        folding: true,
         theme: 'vs',
         wrappingIndent: 'indent',
         scrollbar: {

@@ -39,7 +39,7 @@ export class GitHubEffects {
     isLoggedIn$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
-        .filter<IBasicProfile, IBasicProfile>(profile => !(profile == null))
+        .filter(profile => !(profile == null))
         .map(profile => new GitHub.LoggedInAction(profile))
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to get GitHub profile', exception)));
 
