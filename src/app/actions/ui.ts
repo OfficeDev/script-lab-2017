@@ -13,6 +13,7 @@ export class UIActionTypes {
     static readonly OPEN_MENU = type('[UI] Open Menu');
     static readonly CLOSE_MENU = type('[UI] Close Menu');
     static readonly SHOW_ALERT = type('[UI] Show Alert');
+    static readonly SWITCH_ENV = type('[UI] Switch Env');
     static readonly DISMISS_ALERT = type('[UI] Dismiss Alert');
     static readonly TOGGLE_IMPORT = type('[UI] Toggle Import');
     static readonly CHANGE_THEME = type('[UI] Change Theme');
@@ -72,10 +73,14 @@ export class ChangeLanguageAction implements Action {
 export class ReportErrorAction implements Action {
     readonly type = UIActionTypes.REPORT_ERROR;
 
-    constructor(public message: string, public exception?: any) { }
+    constructor(public payload: string, public exception?: any) { }
 }
 
+export class SwitchEnvAction implements Action {
+    readonly type = UIActionTypes.SWITCH_ENV;
 
+    constructor(public payload: string) { }
+}
 
 /**
  * Export a type alias of all actions in this action group
@@ -89,4 +94,5 @@ export type UIActions =
     | CloseMenuAction
     | ShowAlertAction
     | ToggleImportAction
-    | DismissAlertAction;
+    | DismissAlertAction
+    | SwitchEnvAction;

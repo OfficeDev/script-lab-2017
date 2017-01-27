@@ -43,7 +43,7 @@ import { UIEffects } from '../effects/ui';
 })
 
 export class AppComponent {
-    static settings = new Storage('playground_settings');
+    static settings = new Storage<ISettings>('playground_settings');
 
     snippet: ISnippet;
     isEmpty: boolean;

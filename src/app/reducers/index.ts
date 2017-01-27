@@ -71,18 +71,16 @@ const getSettingsState = (state: State) => ({
     lastOpened: getCurrent(state),
     profile: getProfile(state),
     theme: getTheme(state),
-    language: getLanguage(state),
-    host: getHost(state),
-    platform: getPlatform(state)
+    language: getLanguage(state)
 }) as ISettings;
 
 export const getSettings = createSelector(state => state, getSettingsState);
 export const createDefaultState = (settings: ISettings) => {
-    let {profile, lastOpened, theme, language, host, platform} = settings;
+    let {profile, lastOpened, theme, language, env} = settings;
     return <State>{
         github: { ...github.initialState, profile },
         monaco: { ...monaco.initialState },
-        ui: { ...ui.initialState, host, platform, theme, language },
+        ui: { ...ui.initialState, theme, language, env },
         snippet: { ...snippet.initialState, lastOpened }
     };
 };
