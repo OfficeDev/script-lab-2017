@@ -75,6 +75,9 @@ const getSettingsState = (state: State) => ({
 
 export const getSettings = createSelector(state => state, getSettingsState);
 export const createDefaultState = (settings: ISettings) => {
+    if (settings == null) {
+        return null;
+    }
     let {profile, lastOpened, theme, language, env} = settings;
     return <State>{
         github: { ...github.initialState, profile },
