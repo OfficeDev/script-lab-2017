@@ -79,7 +79,7 @@ export class AppModule {
                     Environment.platform = null;
                     resolve(Environment.host);
                 });
-            }, 0);
+            }, 3000);
         });
     }
 
