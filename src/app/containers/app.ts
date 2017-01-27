@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { Utilities, Storage } from '@microsoft/office-js-helpers';
+import { Storage } from '@microsoft/office-js-helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
+import { Environment } from '../../environment';
 
 @Component({
     selector: 'app',
@@ -63,7 +64,7 @@ export class AppComponent {
     settings$ = this._store
         .select(fromRoot.getSettings)
         .debounceTime(250)
-        .subscribe(changes => AppComponent.settings.insert(Utilities.host.toLowerCase(), changes));
+        .subscribe(changes => AppComponent.settings.insert(Environment.host, changes));
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 

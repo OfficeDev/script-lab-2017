@@ -84,6 +84,4 @@ export const getTheme = (state: UIState) => state.theme;
 
 export const getImportState = (state: UIState) => state.showImport;
 
-export const getHost = (state: UIState) => state.host;
-
-export const getPlatform = (state: UIState) => state.platform;
+export const getEnv = (state: UIState) => state.env;

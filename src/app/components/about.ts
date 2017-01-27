@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Utilities } from '@microsoft/office-js-helpers';
 import { storageSize } from '../helpers';
 import { Environment } from '../../environment';
 
@@ -35,7 +34,7 @@ export class About {
     ${new Date(Environment.build.timestamp)}
 
     Storage Usage:
-    ${storageSize(localStorage, `playground_${Utilities.host.toLowerCase()}_snippets`, 'Local Snippets')}
+    ${storageSize(localStorage, `playground_${Environment.host}_snippets`, 'Local Snippets')}
     ${storageSize(sessionStorage, 'playground_intellisense', 'Intellisense')}
     `;
 }

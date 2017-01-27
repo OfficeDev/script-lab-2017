@@ -126,3 +126,41 @@ ul {
         }
     }
 }
+
+#hosts {
+    display: none;
+    text-align: center;
+
+    & .buttons {
+        padding: 15px;
+
+        .ms-Button-label {
+            color: $foreground-white;
+        }
+
+        button[data-host="excel"] {
+            background-color: $excel;
+        }
+
+        button[data-host="word"] {
+            background-color: $word;
+        }
+
+        button[data-host="powerpoint"] {
+            background-color: $powerpoint;
+        }
+
+        button[data-host="onenote"] {
+            background-color: $onenote;
+        }
+    }
+
+    a.hostButton {
+        margin-bottom: 40px;
+        text-decoration: underline;
+        font-size: 13pt;
+        color: $web;
+        cursor: pointer;
+        display: block;
+    }
+}

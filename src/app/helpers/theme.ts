@@ -1,9 +1,9 @@
-import { HostType, Utilities } from '@microsoft/office-js-helpers';
+import { HostType } from '@microsoft/office-js-helpers';
 
 export class Theme {
-    static applyTheme(): Promise<boolean> {
+    static applyTheme(host: string): Promise<boolean> {
         return new Promise(resolve => {
-            switch (Utilities.host) {
+            switch (host.toUpperCase()) {
                 case HostType.EXCEL:
                     (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/excel.scss'], () => {
                         return resolve(true);

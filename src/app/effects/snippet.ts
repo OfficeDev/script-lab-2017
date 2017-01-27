@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post } from '../helpers';
@@ -19,13 +19,13 @@ import * as forIn from 'lodash/forIn';
 
 @Injectable()
 export class SnippetEffects {
-    private _store = new Storage<ISnippet>(`playground_${Utilities.host.toLowerCase()}_snippets`);
+    private _store = new Storage<ISnippet>(`playground_${Environment.host}_snippets`);
     private _cache = new Storage<string>(`playground_cache`, StorageType.SessionStorage);
 
     private _defaults = <ISnippet>{
         id: '',
         gist: '',
-        source: Utilities.host,
+        source: Environment.host,
         author: '',
         name: 'New Snippet',
         description: '',
@@ -63,13 +63,13 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    info = Utilities.host.toLowerCase();
+                    info = Environment.host;
                     if (this._cache.contains('template')) {
                         observable = Observable.of(this._cache.get('template'));
                     }
                     else {
                         observable = this._request
-                            .get<string>(`${this._samplesRepoUrl}/samples/${Utilities.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
+                            .get<string>(`${this._samplesRepoUrl}/samples/${Environment.host}/default.yaml`, ResponseTypes.YAML)
                             .map(snippet => this._cache.insert('template', snippet));
                     }
                     break;
@@ -211,8 +211,8 @@ export class SnippetEffects {
                 returnUrl: window.location.href,
                 refreshUrl: window.location.origin + '/refresh.html',
                 id: snippet.id,
-                host: Utilities.host,
-                platform: Utilities.platform
+                host: Environment.host,
+                platform: Environment.platform
             };
 
             post(url, { data: JSON.stringify(postData) });
@@ -225,7 +225,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this._samplesRepoUrl}/playlists/${Utilities.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = `${this._samplesRepoUrl}/playlists/${Environment.host}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {

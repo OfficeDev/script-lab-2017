@@ -58,8 +58,7 @@ export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
 export const getErrors = createSelector(getUIState, ui.getErrors);
 export const getImportState = createSelector(getUIState, ui.getImportState);
-export const getHost = createSelector(getUIState, ui.getHost);
-export const getPlatform = createSelector(getUIState, ui.getPlatform);
+export const getEnv = createSelector(getUIState, ui.getEnv);
 
 const getGitHubState = (state: State) => state.github;
 export const getProfileLoading = createSelector(getGitHubState, github.getLoading);

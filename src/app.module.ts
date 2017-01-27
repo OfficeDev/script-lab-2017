@@ -1,3 +1,5 @@
+import * as $ from 'jquery';
+
 import { NgModule, enableProdMode } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
@@ -50,10 +52,10 @@ export class AppModule {
                 AppModule.initialize()
             ]);
 
-            await Theme.applyTheme();
+            await Theme.applyTheme(Environment.host);
 
             if (!Authenticator.isAuthDialog()) {
-                AI.trackEvent(`Playground ready`, { host: Utilities.host.toLowerCase() });
+                AI.trackEvent(`Playground ready`, { host: Environment.host });
                 platformBrowserDynamic().bootstrapModule(AppModule);
             }
         }
@@ -64,13 +66,20 @@ export class AppModule {
 
     static initialize() {
         return new Promise<boolean>(resolve => {
-            let isAddin = location.href.indexOf('mode=web') === -1;
-            if (isAddin) {
-                Office.initialize = () => resolve(true);
-            }
-            else {
-                return resolve(isAddin);
-            }
+            Office.initialize = () => {
+                Environment.host = Utilities.host.toLowerCase();
+                Environment.platform = Utilities.platform;
+                resolve(Environment.host);
+            };
+
+            setTimeout(() => {
+                $('#hosts').show();
+                $('.hostButton').click(function () {
+                    Environment.host = $(this).data('host');
+                    Environment.platform = null;
+                    resolve(Environment.host);
+                });
+            }, 0);
         });
     }
 

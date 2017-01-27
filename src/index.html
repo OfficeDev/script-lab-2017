@@ -13,7 +13,7 @@
 	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.debug.js"></script>
 </head>
 
-<body>
+<body class="ms-font-m">
 	<app class="app">
 		<div class="ms-progress-component">
 			<main class="ms-progress-component__main ms-fontColor-white">
@@ -25,15 +25,33 @@
 				<div class="ms-progress">
 					<div class="cs-loader">
 						<div class="cs-loader-inner">
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
+							<label>●</label>
+							<label>●</label>
+							<label>●</label>
+							<label>●</label>
+							<label>●</label>
 						</div>
 					</div>
 				</div>
 			</footer>
+			<div id="hosts" class="ms-u-slideUpIn20">
+				<p>We weren't able to determine your host. <br/> Please choose the type of playground you want to open.</p>
+				<div class="buttons">
+					<button class="hostButton ms-Button" data-host="excel">
+						<span class="ms-Button-label">Excel</span>
+					</button>
+					<button class="hostButton ms-Button" data-host="word">
+						<span class="ms-Button-label">Word</span>
+					</button>
+					<button class="hostButton ms-Button" data-host="powerpoint">
+						<span class="ms-Button-label">PowerPoint</span>
+					</button>
+					<button class="hostButton ms-Button" data-host="onenote">
+						<span class="ms-Button-label">OneNote</span>
+					</button>
+				</div>
+				<a href="#/web" class="hostButton" data-host="web">Take me to the web version.</a>
+			</div>
 		</div>
 	</app>
 	<script src="node_modules/monaco-editor/min/vs/loader.js"></script>
