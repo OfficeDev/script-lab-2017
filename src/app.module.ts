@@ -8,7 +8,7 @@ import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, Theme, AI } from './app/helpers';
-import { APP_ROUTES, COMPONENT_DECLARATIONS } from './app.routes';
+import { COMPONENT_DECLARATIONS } from './components';
 import { AppComponent } from './app/containers';
 
 import { StoreModule } from '@ngrx/store';
@@ -27,7 +27,6 @@ import './assets/styles/globals.scss';
         BrowserModule,
         HttpModule,
         FormsModule,
-        APP_ROUTES,
         StoreModule.provideStore(rootReducer, AppModule.initialState),
         StoreDevtoolsModule.instrumentOnlyWithExtension(),
         EffectsModule.run(SnippetEffects),

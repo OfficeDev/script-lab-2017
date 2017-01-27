@@ -25,7 +25,7 @@ import { UIEffects } from '../effects/ui';
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
                 <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
-            <router-outlet></router-outlet>
+            <editor></editor>
             <footer class="command__bar command__bar--condensed">
                 <command icon="Info" title="About" (click)="showAbout=true"></command>
                 <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
