@@ -76,6 +76,7 @@ export class AppModule {
             Office.initialize = () => {
                 Environment.host = Utilities.host.toLowerCase();
                 Environment.platform = Utilities.platform;
+                AppModule._cache.insert('host', Environment.host);
                 resolve(Environment.host);
             };
 
