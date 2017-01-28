@@ -5,7 +5,7 @@ import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator, Utilities } from '@microsoft/office-js-helpers';
+import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
@@ -41,6 +41,8 @@ import './assets/styles/globals.scss';
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
 export class AppModule {
+    static _cache = new Storage<string>(`playground_cache`, StorageType.SessionStorage);
+
     static async start() {
         try {
             if (Environment.env === 'PRODUCTION') {
@@ -66,6 +68,11 @@ export class AppModule {
 
     static initialize() {
         return new Promise<boolean>(resolve => {
+            if (AppModule._cache.contains('host')) {
+                Environment.host = AppModule._cache.get('host') || 'web';
+                resolve(Environment.host);
+            }
+
             Office.initialize = () => {
                 Environment.host = Utilities.host.toLowerCase();
                 Environment.platform = Utilities.platform;
@@ -74,9 +81,11 @@ export class AppModule {
 
             setTimeout(() => {
                 $('#hosts').show();
+                $('.ms-progress-component__footer').hide();
                 $('.hostButton').click(function () {
                     Environment.host = $(this).data('host');
                     Environment.platform = null;
+                    AppModule._cache.insert('host', Environment.host);
                     resolve(Environment.host);
                 });
             }, 3000);
