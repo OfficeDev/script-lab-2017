@@ -58,8 +58,7 @@ export const getDialog = createSelector(getUIState, ui.getDialog);
 export const getTheme = createSelector(getUIState, ui.getTheme);
 export const getErrors = createSelector(getUIState, ui.getErrors);
 export const getImportState = createSelector(getUIState, ui.getImportState);
-export const getHost = createSelector(getUIState, ui.getHost);
-export const getPlatform = createSelector(getUIState, ui.getPlatform);
+export const getEnv = createSelector(getUIState, ui.getEnv);
 
 const getGitHubState = (state: State) => state.github;
 export const getProfileLoading = createSelector(getGitHubState, github.getLoading);
@@ -71,18 +70,19 @@ const getSettingsState = (state: State) => ({
     lastOpened: getCurrent(state),
     profile: getProfile(state),
     theme: getTheme(state),
-    language: getLanguage(state),
-    host: getHost(state),
-    platform: getPlatform(state)
+    language: getLanguage(state)
 }) as ISettings;
 
 export const getSettings = createSelector(state => state, getSettingsState);
 export const createDefaultState = (settings: ISettings) => {
-    let {profile, lastOpened, theme, language, host, platform} = settings;
+    if (settings == null) {
+        return null;
+    }
+    let {profile, lastOpened, theme, language, env} = settings;
     return <State>{
         github: { ...github.initialState, profile },
         monaco: { ...monaco.initialState },
-        ui: { ...ui.initialState, host, platform, theme, language },
+        ui: { ...ui.initialState, theme, language, env },
         snippet: { ...snippet.initialState, lastOpened }
     };
 };

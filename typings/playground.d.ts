@@ -75,7 +75,9 @@ interface IGlobalConfig {
             instrumentation_key: string,
             client_id: string
         }
-    }
+    },
+    host?: string,
+    platform?: string
 }
 
 interface ISettings {
@@ -83,6 +85,5 @@ interface ISettings {
     profile: IProfile,
     theme: boolean,
     language: string,
-    host: string,
-    platform: string
+    env: string
 }

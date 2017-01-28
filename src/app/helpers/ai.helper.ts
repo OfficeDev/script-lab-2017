@@ -14,6 +14,7 @@ class ApplicationInsights {
         this._disable = this._disable || Environment.env !== 'PRODUCTION';
         this.current.config.enableDebug = Environment.env === 'DEVELOPMENT';
         this.current.config.verboseLogging = Environment.env === 'DEVELOPMENT';
+        this.current._onerror = (message) => console.log(message);
     }
 
     toggleTelemetry(force?: boolean) {
@@ -26,7 +27,7 @@ class ApplicationInsights {
         }
         this.current.trackException(error.innerError || error, location, {
             message: error.message,
-            host: Utilities.host.toLowerCase(),
+            host: Environment.host,
             build: JSON.stringify(Environment.build)
         });
     }

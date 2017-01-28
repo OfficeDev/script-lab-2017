@@ -10,8 +10,7 @@ export interface UIState {
     theme?: boolean;
     errors?: Error[];
     showImport?: boolean;
-    host?: string;
-    platform?: string
+    env?: string;
 };
 
 export const initialState: UIState = {
@@ -20,8 +19,7 @@ export const initialState: UIState = {
     errors: [],
     dialog: null,
     showImport: false,
-    host: Utilities.host,
-    platform: Utilities.platform
+    env: 'PROD'
 };
 
 export function reducer(state = initialState, action: UIActions): UIState {
@@ -43,13 +41,16 @@ export function reducer(state = initialState, action: UIActions): UIState {
         case UIActionTypes.DISMISS_ALERT:
             return { ...state, dialog: null };
 
+        case UIActionTypes.SWITCH_ENV:
+            return { ...state, env: action.payload || 'PROD' };
+
         case UIActionTypes.CHANGE_THEME: {
             AI.trackEvent(action.type, { theme: (!state.theme) ? 'Light' : 'Dark' });
             return { ...state, theme: !state.theme };
         }
 
         case UIActionTypes.REPORT_ERROR: {
-            let error = new PlaygroundError(action.message, action.exception);
+            let error = new PlaygroundError(action.payload, action.exception);
             if (Environment.env === 'DEVELOPMENT') {
                 Utilities.log(error);
             }
@@ -83,6 +84,4 @@ export const getTheme = (state: UIState) => state.theme;
 
 export const getImportState = (state: UIState) => state.showImport;
 
-export const getHost = (state: UIState) => state.host;
-
-export const getPlatform = (state: UIState) => state.platform;
+export const getEnv = (state: UIState) => state.env;

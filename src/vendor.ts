@@ -3,7 +3,6 @@ import '@angular/platform-browser-dynamic';
 import '@angular/core';
 import '@angular/common';
 import '@angular/http';
-import '@angular/router';
 
 // External libraries
 import '@microsoft/office-js-helpers';

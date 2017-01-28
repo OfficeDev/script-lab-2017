@@ -29,5 +29,7 @@ console.groupEnd();
 export const Environment = {
     env,
     build,
-    config
+    config,
+    host: null,
+    platform: null
 };

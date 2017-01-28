@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { Utilities, Storage } from '@microsoft/office-js-helpers';
+import { Storage } from '@microsoft/office-js-helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
+import { Environment } from '../../environment';
 
 @Component({
     selector: 'app',
@@ -25,7 +26,7 @@ import { UIEffects } from '../effects/ui';
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
                 <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
-            <router-outlet></router-outlet>
+            <editor></editor>
             <footer class="command__bar command__bar--condensed">
                 <command icon="Info" title="About" (click)="showAbout=true"></command>
                 <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
@@ -43,7 +44,7 @@ import { UIEffects } from '../effects/ui';
 })
 
 export class AppComponent {
-    static settings = new Storage('playground_settings');
+    static settings = new Storage<ISettings>('playground_settings');
 
     snippet: ISnippet;
     isEmpty: boolean;
@@ -63,7 +64,7 @@ export class AppComponent {
     settings$ = this._store
         .select(fromRoot.getSettings)
         .debounceTime(250)
-        .subscribe(changes => AppComponent.settings.insert(Utilities.host.toLowerCase(), changes));
+        .subscribe(changes => AppComponent.settings.insert(Environment.host, changes));
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
