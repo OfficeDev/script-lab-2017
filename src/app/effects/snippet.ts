@@ -150,6 +150,7 @@ export class SnippetEffects {
         .map((action: Snippet.SaveAction) => action.payload)
         .map(snippet => {
             this._validate(snippet);
+            snippet.lastModified = new Date().getTime();
 
             if (this._store.contains(snippet.id)) {
                 this._store.insert(snippet.id, snippet);

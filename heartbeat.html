@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+	<title>Test</title>
+</head>
+
+<body>
+	<script>
+		(function() {
+			var params = queryParamsToJson();
+			
+			var host = params['host'];
+			if (!host) {
+				messageParent({ error: 'Invalid runner state, missing "host" parameter. Please close and try again.' });
+				return;
+			}
+
+			var baselineSnippet;
+			setBaselineAndSendBackMessage();
+
+			setInterval(function() {
+				var currentSnippet = getLastOpenedSnippet();
+				if (!currentSnippet.id) {
+					sendMissingLastOpenedMessage();
+					return;
+				}
+
+				if (currentSnippet.id != baselineSnippet.id ||
+					currentSnippet.lastModified != baselineSnippet.lastModified
+				) {
+					sendReloadMessage(currentSnippet);
+				}
+			}, 500);
+
+			window.addEventListener("message", receiveMessage, false);
+
+			function receiveMessage(event)
+			{
+				var origin = event.origin || event.originalEvent.origin;
+				if (origin !== "https://localhost:3000") {
+					return;
+				}
+
+				if (!event || !event.data || !event.data.type) {
+					return;
+				}
+
+				switch (event.data.type) {
+					case 'reload':
+						setBaselineAndSendBackMessage();
+						break;
+
+					default:	 
+						showError("Unhandled run command received.");
+						console.log(event.data);
+						break;
+				}
+			}		
+
+			function setBaselineAndSendBackMessage() {
+				baselineSnippet = getLastOpenedSnippet();
+				if (baselineSnippet.id) {
+					messageParent({ type: 'snippet', message: baselineSnippet });
+				} else {
+					sendMissingLastOpenedMessage();
+				}
+			}	
+
+			// Returns either the last-opened snippet info, or an empty object
+			function getLastOpenedSnippet() {
+				var initialSettings = getCurrentSettings();
+				if (initialSettings == null ||
+					initialSettings.lastOpened == null ||
+					initialSettings.lastOpened.id == null)
+				{
+					return {};
+				}
+				
+				return initialSettings.lastOpened;
+			}
+
+			function sendReloadMessage(snippet) {
+				messageParent({
+					type: 'needs-reload',
+					message: snippet.name
+				});
+			}
+
+			function sendMissingLastOpenedMessage() {
+				sendError('Please create or open a snippet in the editor.');
+			}
+
+			function sendError(message) {
+				messageParent({
+					type: 'error', 
+					message: message
+				});
+			}
+
+			function messageParent(message) {
+				window.top.postMessage(message, '*');
+				// FIXME origin (*)
+			}
+
+			function getCurrentSettings () {
+				var settingsKey = 'playground_settings';
+				try {
+					return JSON.parse(window.localStorage[settingsKey])[host];
+				} catch (e) {
+					return {}
+				}
+			}
+
+			function queryParamsToJson() {
+				var indexOfQuestionMark = window.location.href.indexOf('?');
+				if (indexOfQuestionMark < 0) {
+					return {};
+				}
+
+				var allParams = window.location.href.substr(indexOfQuestionMark + 1).trim();
+				if (allParams.length == 0) {
+					return {};
+				}
+
+				var keyValuePairStrings = allParams.split('&');
+				var result = {};
+				keyValuePairStrings.forEach(function (item) {
+					var split = item.split('=');
+					if (split.length != 2) {
+						throw new Error("Invalid key-value pair for " + item);
+					}
+					result[split[0]] = decodeURIComponent(split[1]);
+				});
+
+				return result;
+			}
+		})();
+	</script>
+</body>
+
+</html>

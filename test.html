@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+	<title>Test</title>
+
+	<!--Basic page html body -->
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			color: #333;
+		}
+	</style>
+
+	<!--Progress style-->
+	<style>
+		.ms-progress-component {
+			height: 100%;
+			width: 100%;
+			background-color: #fff;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+		}
+
+		.app main {
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+			height: 100vh;
+			width: 100%;
+		}
+
+		.ms-progress-component__logo {
+			height: 100px;
+			margin-bottom: 15px;
+		}
+
+		.ms-progress-component__footer {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+			margin-bottom: 75px;
+		}
+
+		.ms-font-m, .ms-font-xxl {
+			font-family: Segoe UI WestEuropean,Segoe UI,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.ms-font-xxl {
+			font-size: 28px;
+			font-weight: 100;
+		}
+
+		.ms-font-m {
+			font-size: 14px;
+			font-weight: 400;
+		}
+
+		/* loader by https://codepen.io/magnus16/pen/BKoRNw */
+		#cs-loader {
+			width: 100%;
+			height: calc(100% - 40px);
+			position: fixed;
+			z-index: 1001;
+    		background: white;
+		}
+
+		.cs-loader-inner {
+			width: calc(100% - 200px);
+			height: 100%;
+			-webkit-transform: translateY(50%);
+			transform: translateY(50%);
+			color: #f96618;
+			padding: 0 100px;
+			text-align: center;
+		}
+
+		.cs-loader-inner label {
+			font-size: 20px;
+			opacity: 0;
+			display: inline-block;
+		}
+
+		@keyframes lol {
+			0% {
+				opacity: 0;
+				-webkit-transform: translateX(-300px);
+						transform: translateX(-300px);
+			}
+
+			33% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+						transform: translateX(0);
+			}
+
+			66% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+						transform: translateX(0);
+			}
+
+			100% {
+				opacity: 0;
+				-webkit-transform: translateX(300px);
+						transform: translateX(300px);
+			}
+		}
+
+		@-webkit-keyframes lol {
+			0% {
+				opacity: 0;
+				-webkit-transform: translateX(-300px);
+			}
+
+			33% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+			}
+
+			66% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+			}
+
+			100% {
+				opacity: 0;
+				-webkit-transform: translateX(300px);
+			}
+		}
+
+		.cs-loader-inner label:nth-child(6) {
+			-webkit-animation: lol 3s infinite ease-in-out;
+					animation: lol 3s infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(5) {
+			-webkit-animation: lol 3s 100ms infinite ease-in-out;
+					animation: lol 3s 100ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(4) {
+			-webkit-animation: lol 3s 200ms infinite ease-in-out;
+					animation: lol 3s 200ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(3) {
+			-webkit-animation: lol 3s 300ms infinite ease-in-out;
+					animation: lol 3s 300ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(2) {
+			-webkit-animation: lol 3s 400ms infinite ease-in-out;
+					animation: lol 3s 400ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(1) {
+			-webkit-animation: lol 3s 500ms infinite ease-in-out;
+					animation: lol 3s 500ms infinite ease-in-out;
+		}
+	</style>
+
+	<!--Page-specific-->
+	<style>
+		.fullscreen {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+			height: 100vh;
+			width: 100vw;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		.fullscreen.hidden {
+			display: none;
+		}
+
+		.fullpage__main {
+			height: 100%;
+			-webkit-flex: 1 1 0;
+			-ms-flex: 1 1 0;
+			flex: 1 1 0;
+			padding: 15px;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+		}
+
+		.fullpage__title {
+			text-align: center;
+			padding: 0 15px;
+			color: #666;
+		}
+
+		.fullpage__sub-title {
+			text-align: center;
+			padding: 15px;
+			color: #999;
+		}
+
+		#needs-reload {
+			cursor: pointer;
+		}
+
+		#heartbeat {
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+	<app id="progress" class="fullscreen">
+		<div class="ms-progress-component">
+			<main class="fullpage__main">
+				<img class="ms-progress-component__logo" src="assets/images/icon-large.png">
+				<h1 class="fullpage__title ms-font-xxl">Add-in Playground</h1>
+				<p class="fullpage__sub-title ms-font-m">Loading</p>
+			</main>
+			<footer class="ms-progress-component__footer">
+				<div class="ms-progress">
+					<div class="cs-loader">
+						<div class="cs-loader-inner">
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</app>
+
+	<div id="error" class="fullscreen hidden fullpage__main">
+		<h1 class="fullpage__title ms-font-xxl">Error</h1>
+		<p class="fullpage__sub-title ms-font-m"></p>
+	</div>
+
+	<div id="needs-reload" class="fullscreen hidden fullpage__main" onclick="dispatchReloadCall()">
+		<h1 class="fullpage__title ms-font-xxl">Reload required</h1>
+		<p class="fullpage__sub-title ms-font-m"></p>
+	</div>
+
+	<div id="snippet-frame-wrapper" class="fullscreen hidden">
+	</div>
+
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.7.0/js-yaml.min.js"></script>
+
+	<script>
+		window.addEventListener("message", receiveMessage, false);
+
+		function receiveMessage(event)
+		{
+			var origin = event.origin || event.originalEvent.origin;
+			if (origin !== "https://localhost:3000") {
+				return;
+			}
+
+			if (!event || !event.data || !event.data.type) {
+				return;
+			}
+
+			switch (event.data.type) {
+				case 'snippet':
+					loadStoredSnippet(event.data.message);
+					break;
+
+				case 'needs-reload':
+					$('.fullscreen').addClass('hidden');
+					$('#needs-reload').removeClass('hidden');
+					$('#needs-reload .fullpage__sub-title').text(
+						'Tap anywhere to load "' + event.data.message + '"');
+					break;
+
+				case 'error':
+					showError(event.data.message);
+					break;
+
+				default: 
+					showError("Unhandled runner event");
+					console.log(event.data);
+					break;
+			}
+		}
+
+		function loadStoredSnippet(snippet) {
+			$('.fullscreen').addClass('hidden');
+			$('#progress').removeClass('hidden');
+			$('#progress .fullpage__sub-title').text('Loading "' + snippet.name + '"');
+
+			setTimeout(function() {
+				$('.fullscreen').addClass('hidden');
+				$('#snippet-frame-wrapper').removeClass('hidden');
+				$('#snippet-frame-wrapper').text(jsyaml.safeDump(snippet));	
+			}, 1000);
+		}
+
+		function dispatchReloadCall() {
+			$('.fullscreen').addClass('hidden');
+			$('#progress').removeClass('hidden');
+			
+			var iframe = document.getElementById('heartbeat').contentWindow;
+			iframe.postMessage({ type: 'reload' }, 'https://localhost:3000/');
+		}
+
+		function showError(message) {
+			$('.fullscreen').addClass('hidden');
+			$('#error').removeClass('hidden');
+			$('#error').children('p').text(message);
+		}
+	</script>
+
+	<!--FIXME-->
+	<iframe id="heartbeat" src="https://localhost:3000/heartbeat.html?host=web"></iframe>
+</body>
+
+</html>

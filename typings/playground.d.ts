@@ -21,6 +21,7 @@ interface ISnippet extends ITemplate {
         language: string;
     };
     libraries?: string;
+    lastModified?: number;
 }
 
 interface IRunnerPostData {
