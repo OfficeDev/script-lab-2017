@@ -665,13 +665,12 @@
 			var $last = $('#last-snippet');
 			var $lastGroup = $('#last-snippet-group');
 			var currentSettings = getCurrentSettings();
-			if (currentSettings == null || currentSettings.snippet == null ||
-				currentSettings.snippet.lastOpened == null)
+			if (currentSettings == null || currentSettings.lastOpened == null)
 			{
 				$last.hide();
 			}
 			else {
-				var snippet = currentSettings.snippet.lastOpened;
+				var snippet = currentSettings.lastOpened;
 				var snippetId = snippet.id;
 				var $item = $(
 					'<article class="gallery-list__item gallery-list__item--template ms-font-m">' +
@@ -681,7 +680,7 @@
 				$item.children('.name').text(snippet.name);
 				$item.children('.description').text(snippet.description);
 				$item.children().click(function () {
-					if (getCurrentSettings().snippet.lastOpened.id == snippetId) {
+					if (getCurrentSettings().lastOpened.id == snippetId) {
 						navigateToRunnerWithSnippet(snippet);
 					} else {
 						navigateToRunnerWithId(snippetId);
@@ -766,7 +765,7 @@
 			};
 
 			var postData = { data: JSON.stringify(postDataInner) };
-			var runnerUrl = 'https://addin-playground-runner.azurewebsites.net/';
+			var runnerUrl = 'http://localhost:8080/';
 
 			post(runnerUrl, postData);
 

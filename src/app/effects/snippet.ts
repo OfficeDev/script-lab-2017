@@ -205,7 +205,7 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let url = 'https://addin-playground-runner-staging.azurewebsites.net/';
+            let url = 'http://localhost:8080/';
 
             let postData: IRunnerPostData = {
                 snippet: jsyaml.safeDump(snippet),

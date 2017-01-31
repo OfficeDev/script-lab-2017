@@ -34,17 +34,19 @@
 				}
 			}, 500);
 
-			window.addEventListener("message", receiveMessage, false);
+			window.addEventListener('message', receiveMessage, false);
 
 			function receiveMessage(event)
 			{
 				var origin = event.origin || event.originalEvent.origin;
-				if (origin !== "https://localhost:3000") {
-					return;
+				// FIXME
+				if (origin !== 'http://localhost:8080') {
+					console.log('Unexpected origin location ', origin);
+					showError('Invalid runner command received.');
 				}
 
 				if (!event || !event.data || !event.data.type) {
-					return;
+					showError('Invalid runner command received.');
 				}
 
 				switch (event.data.type) {
@@ -53,16 +55,22 @@
 						break;
 
 					default:	 
-						showError("Unhandled run command received.");
+						showError('Unhandled run command received.');
 						console.log(event.data);
 						break;
 				}
-			}		
+			}
 
 			function setBaselineAndSendBackMessage() {
 				baselineSnippet = getLastOpenedSnippet();
 				if (baselineSnippet.id) {
-					messageParent({ type: 'snippet', message: baselineSnippet });
+					messageParent({
+						type: 'snippet',
+						message: {
+							snippet: baselineSnippet,
+							refreshUrl: window.location.origin + '/refresh.html'
+						}
+					});
 				} else {
 					sendMissingLastOpenedMessage();
 				}
@@ -71,14 +79,12 @@
 			// Returns either the last-opened snippet info, or an empty object
 			function getLastOpenedSnippet() {
 				var initialSettings = getCurrentSettings();
-				if (initialSettings == null ||
+				var settingsAreMissing = 
+					initialSettings == null ||
 					initialSettings.lastOpened == null ||
-					initialSettings.lastOpened.id == null)
-				{
-					return {};
-				}
+					initialSettings.lastOpened.id == null;
 				
-				return initialSettings.lastOpened;
+				return settingsAreMissing ? {} : initialSettings.lastOpened;
 			}
 
 			function sendReloadMessage(snippet) {
@@ -129,7 +135,7 @@
 				keyValuePairStrings.forEach(function (item) {
 					var split = item.split('=');
 					if (split.length != 2) {
-						throw new Error("Invalid key-value pair for " + item);
+						throw new Error('Invalid key-value pair for ' + item);
 					}
 					result[split[0]] = decodeURIComponent(split[1]);
 				});

@@ -33,13 +33,13 @@ module.exports = webpackMerge(commonConfig, {
             // BrowserSync options
             {
                 // browse to http://localhost:3000/ during development
-                https: true,
+                https: false,
                 host: 'localhost',
                 port: 3000,
                 // proxy the Webpack Dev Server endpoint
                 // (which should be serving on http://localhost:3100/)
                 // through BrowserSync
-                proxy: 'https://localhost:3100/'
+                proxy: 'http://localhost:3100/'
             },
             // plugin options
             {
@@ -52,7 +52,7 @@ module.exports = webpackMerge(commonConfig, {
 
     devServer: {
         watch: true,
-        https: true,
+        https: false,
         inline: true,
         compress: true,
         port: 3100,
