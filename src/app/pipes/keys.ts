@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as map from 'lodash/map';
+import map = require('lodash/map');
 
 @Pipe({ name: 'keys' })
 export class KeysPipe implements PipeTransform {

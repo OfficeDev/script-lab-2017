@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
 import { Environment } from '../../environment';
-import * as first from 'lodash/first';
+import first = require('lodash/first');
 
 @Injectable()
 export class GitHubService {
