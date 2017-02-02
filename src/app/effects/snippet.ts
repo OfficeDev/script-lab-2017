@@ -27,7 +27,7 @@ export class SnippetEffects {
         gist: '',
         source: Environment.host,
         author: '',
-        name: 'New Snippet', // UI unknown
+        name: Strings.defaultSnippetTitle,
         description: '',
         script: { content: '', language: 'typescript' },
         style: { content: '', language: 'css' },
@@ -279,7 +279,7 @@ export class SnippetEffects {
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = isEmpty(name.trim()) ? 'Blank Snippet' : name.trim();
+        let newName = isEmpty(name.trim()) ? Strings.newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = reduce(options, (max, item: any) => {

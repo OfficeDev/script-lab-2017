@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI } from '../helpers';
+import { AI, Strings } from '../helpers';
 import { GitHubService } from '../services';
 import * as jsyaml from 'js-yaml';
 import { Action } from '@ngrx/store';
@@ -25,7 +25,7 @@ export class GitHubEffects {
         .mergeMap(() => this._github.login())
         .map(profile => new GitHub.LoggedInAction(profile))
         .catch(exception => Observable.from([
-            new UI.ReportErrorAction('Failed to login to GitHub', exception),
+            new UI.ReportErrorAction(Strings.githubLoginFailed, exception),
             new GitHub.LoginFailedAction()
         ]));
 
@@ -33,7 +33,7 @@ export class GitHubEffects {
     logout$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
         .map(() => this._github.logout())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to log out of GitHub', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.githubLogoutFailed, exception)));
 
     @Effect()
     isLoggedIn$: Observable<Action> = this.actions$
@@ -41,7 +41,7 @@ export class GitHubEffects {
         .map(() => this._github.profile)
         .filter(profile => !(profile == null))
         .map(profile => new GitHub.LoggedInAction(profile))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to get GitHub profile', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.profileCheckFailed, exception)));
 
     @Effect()
     loadGists$: Observable<Action> = this.actions$
@@ -69,7 +69,7 @@ export class GitHubEffects {
                 .filter(snippet => !(snippet == null));
         })
         .map(snippets => new GitHub.LoadGistsSuccessAction(snippets))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to retrieve GitHub gists', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.gistRetrieveFailed, exception)));
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$
@@ -86,8 +86,8 @@ export class GitHubEffects {
             };
 
             description = (description && description.trim() !== '') ? description + ' - ' : '';
-            description.replace('Shared with Add-in Playground', '');
-            description += 'Shared with Add-in Playground';
+            description.replace(Strings.gistDescriptionAppendage, ''); // shouldn't be necessary
+            description += Strings.gistDescriptionAppendage;
 
             return this._github.createOrUpdateGist(
                 `${description}`,

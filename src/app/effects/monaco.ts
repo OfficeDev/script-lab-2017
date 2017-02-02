@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
-import { AI } from '../helpers';
+import { AI, Strings } from '../helpers';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
@@ -55,14 +55,14 @@ export class MonacoEffects {
             return { files: filesToAdd as string[], language };
         })
         .mergeMap(({files, language}) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction(file, language)))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to update intelliSense', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseUpdateError, exception)));
 
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
         .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload, action.language))
         .map(() => new Monaco.UpdateIntellisenseSuccessAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to clear intelliSense', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseClearError, exception)));
 
 
     private _addIntellisense(url: string, language: string) {
@@ -76,7 +76,7 @@ export class MonacoEffects {
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;
             })
-            .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load intellisense file', exception)));
+            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseLoadError, exception)));
     }
 
     private _parse(libraries: string[]) {
