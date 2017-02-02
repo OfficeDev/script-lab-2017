@@ -98,14 +98,14 @@ export class GitHubEffects {
         })
         .mergeMap(async (gist: IGist) => {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-            let result = await this._uiEffects.alert(`The URL of the GitHub Gist is
+            let result = await this._uiEffects.alert(`${Strings.gistSharedDialogStart}
 
             ${temp}
 
-You will be able to import your snippet by choosing the "Import" button in the Playground and providing the above URL.
-`, 'Your snippet is shared', 'View on GitHub', 'OK');
+${Strings.gistSharedDialogEnd}
+`, Strings.gistSharedDialogTitle, Strings.gistSharedDialogViewButton, Strings.okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
-            if (result === 'View on GitHub') {
+            if (result === Strings.gistSharedDialogViewButton) {
                 window.open(temp);
             }
 
@@ -113,7 +113,7 @@ You will be able to import your snippet by choosing the "Import" button in the P
         })
         .map(gist => new GitHub.ShareSuccessAction(gist))
         .catch(exception => Observable.from([
-            new UI.ReportErrorAction('Failed to share a GitHub gist', exception),
+            new UI.ReportErrorAction(Strings.gistShareFailed, exception),
             new GitHub.ShareFailedAction()
         ]));
 
@@ -129,10 +129,10 @@ You will be able to import your snippet by choosing the "Import" button in the P
             AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: snippet.id });
             new clipboard('#CopyToClipboard', {
                 text: () => {
-                    this._uiEffects.alert(`Your snippet has been copied.`, null, 'OK');
+                    this._uiEffects.alert(Strings.snippetCopiedConfirmation, null, Strings.okButtonLabel);
                     return jsyaml.safeDump(snippet);
                 }
             });
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to copy the snippet to clipboard', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
 }
