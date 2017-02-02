@@ -13,6 +13,7 @@ export class Strings {
     static snippetRunError = 'Failed to run the snippet';
     static snippetLoadDefaultsError = 'Failed to load the default samples';
 
-    static snippetVerificationEmpty = 'Snippet cannot be empty';
+    static snippetValidationEmpty = `Your snippet can't be empty`;
+    static snippetValidationNoTitle = 'Your snippet needs a title';
 
 }

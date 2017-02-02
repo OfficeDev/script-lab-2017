@@ -270,11 +270,11 @@ export class SnippetEffects {
 
     private _validate(snippet: ISnippet) {
         if (isEmpty(snippet)) {
-            throw new PlaygroundError(Strings.snippetVerificationEmpty);
+            throw new PlaygroundError(Strings.snippetValidationEmpty);
         }
 
         if (isEmpty(snippet.name)) {
-            throw new PlaygroundError('Snippet name cannot be empty');
+            throw new PlaygroundError(Strings.snippetValidationNoTitle);
         }
     }
 
