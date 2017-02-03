@@ -205,7 +205,6 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let url = 'http://localhost:8080/';
             let returnUrl = window.location.href;
             if (Environment.host === 'web' && returnUrl.indexOf('mode=web') < 0) {
                 returnUrl += '?mode=web';
@@ -220,7 +219,19 @@ export class SnippetEffects {
                 platform: Environment.platform
             };
 
-            post(url, { data: JSON.stringify(postData) });
+            post(determineRunnerUrl(), { data: JSON.stringify(postData) });
+
+            function determineRunnerUrl() {
+                if (window.location.host === 'localhost:3000') {
+                    return 'http://localhost:8080';
+                }
+
+                if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
+                    return 'https://addin-playground-runner-staging.azurewebsites.net';
+                }
+                
+                return 'https://addin-playground-runner.azurewebsites.net';
+            }
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to run the snippet', exception)));
 

@@ -9,6 +9,8 @@
 <body>
 	<script>
 		(function() {
+			var runnerUrl = determineRunnerUrl();
+
 			var params = queryParamsToJson();
 			
 			var host = params['host'];
@@ -43,8 +45,7 @@
 			function receiveMessage(event)
 			{
 				var origin = event.origin || event.originalEvent.origin;
-				// FIXME
-				if (origin !== 'http://localhost:8080') {
+				if (origin !== runnerUrl) {
 					console.log('Unexpected origin location ', origin);
 					showError('Invalid runner command received.');
 				}
@@ -145,6 +146,18 @@
 				});
 
 				return result;
+			}
+
+			function determineRunnerUrl() {
+				if (window.location.host === 'localhost:3000') {
+					return 'http://localhost:8080';
+				}
+
+				if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
+					return 'https://addin-playground-runner-staging.azurewebsites.net';
+				}
+				
+				return 'https://addin-playground-runner.azurewebsites.net';
 			}
 		})();
 	</script>
