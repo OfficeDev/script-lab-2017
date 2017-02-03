@@ -148,6 +148,30 @@
                   </Action>
                 </Control>
               </Group>
+              <Group id="PG.GalleryGroup">
+                <Label resid="PG.GalleryGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.GalleryCommand">
+                  <Label resid="PG.GalleryCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.GalleryCommand.TipTitle" />
+                    <Description resid="PG.GalleryCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Gallery.16" />
+                    <bt:Image size="32" resid="PG.Icon.Gallery.32" />
+                    <bt:Image size="80" resid="PG.Icon.Gallery.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG_Gallery_Url" />
+                    <Title resid="PG.GalleryCommand.Title" />
+                  </Action>
+                </Control>
+              </Group>
               <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
@@ -194,6 +218,30 @@
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG_Run_Url" />
                     <Title resid="PG.RunCommand.Title" />
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.GalleryGroup">
+                <Label resid="PG.GalleryGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.GalleryCommand">
+                  <Label resid="PG.GalleryCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.GalleryCommand.TipTitle" />
+                    <Description resid="PG.GalleryCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Gallery.16" />
+                    <bt:Image size="32" resid="PG.Icon.Gallery.32" />
+                    <bt:Image size="80" resid="PG.Icon.Gallery.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG_Gallery_Url" />
+                    <Title resid="PG.GalleryCommand.Title" />
                   </Action>
                 </Control>
               </Group>
