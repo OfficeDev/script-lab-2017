@@ -50,8 +50,8 @@ export class AppModule {
             }
 
             await Promise.all([
-                MonacoService.initialize(),
-                AppModule.initialize()
+                MonacoService.initialize().then(() => console.log('Monaco service initialized')),
+                AppModule.initialize().then(() => console.log('AppModule initialized'))
             ]);
 
             await Theme.applyTheme(Environment.host);
@@ -68,24 +68,15 @@ export class AppModule {
 
     static initialize() {
         return new Promise<boolean>(resolve => {
-            if (AppModule._cache.contains('host')) {
-                Environment.host = AppModule._cache.get('host') || 'web';
-                resolve(Environment.host);
-            }
             if (window.location.href.toLowerCase().indexOf('?mode=web') > 0) {
+                console.log(`URL contains "?mode=web", initializing App module to that`);
                 Environment.host = 'web';
                 AppModule._cache.insert('host', Environment.host);
                 resolve(Environment.host);
+                return;
             }
 
-            Office.initialize = () => {
-                Environment.host = Utilities.host.toLowerCase();
-                Environment.platform = Utilities.platform;
-                AppModule._cache.insert('host', Environment.host);
-                resolve(Environment.host);
-            };
-
-            setTimeout(() => {
+            let hostButtonsTimeout = setTimeout(() => {
                 $('#hosts').show();
                 $('.ms-progress-component__footer').hide();
                 $('.hostButton').click(function () {
@@ -95,6 +86,16 @@ export class AppModule {
                     resolve(Environment.host);
                 });
             }, 3000);
+
+            Office.initialize = () => {
+                clearTimeout(hostButtonsTimeout);
+                Environment.host = Utilities.host.toLowerCase();
+                Environment.platform = Utilities.platform;
+                console.log(`Office.initialize called, host is ${Environment.host}, platform ${Environment.platform}`);
+                AppModule._cache.insert('host', Environment.host);
+                resolve(Environment.host);
+                return;
+            };
         });
     }
 
