@@ -27,12 +27,16 @@
 					return;
 				}
 
-				if (currentSnippet.id != baselineSnippet.id ||
-					currentSnippet.lastModified != baselineSnippet.lastModified
-				) {
-					sendReloadMessage(currentSnippet);
+				if (currentSnippet.id != baselineSnippet.id) {
+					setBaselineAndSendBackMessage();
+					return;
 				}
-			}, 500);
+
+				if (currentSnippet.lastModified != baselineSnippet.lastModified) {
+					sendReloadMessage(currentSnippet);
+					return;
+				}
+			}, 200);
 
 			window.addEventListener('message', receiveMessage, false);
 
