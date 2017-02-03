@@ -5,7 +5,7 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>f31aee67-5a75-4093-a07d-1110cf970194</Id>
-  <Version>1.0.0.2</Version>
+  <Version>1.0.0.3</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="[DEV HTTP] Add-in Playground" />
@@ -224,7 +224,7 @@
         <bt:Url id="PG_Gallery_Url" DefaultValue="http://localhost:3000/gallery.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="PG.TabLabel" DefaultValue="Add-in Playground" />
+        <bt:String id="PG.TabLabel" DefaultValue="[DEV HTTP] Add-in Playground" />
         <bt:String id="PG.GroupLabel" DefaultValue="Play" />
         <bt:String id="PG.GalleryGroupLabel" DefaultValue="Browse" />
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />

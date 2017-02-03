@@ -4,17 +4,17 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
-  <Id>57480e94-02cf-44de-a4b4-e90a8f80c8ed</Id>
-  <Version>1.0.0.2</Version>
+  <Id>629ed84c-2c4a-4e4b-bc87-353bcf7a34d5</Id>
+  <Version>1.0.0.3</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="[PROD] Add-in Playground" />
+  <DisplayName DefaultValue="[EDGE] Add-in Playground" />
   <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
-  <IconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-64.png" />
+  <IconUrl DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/icon-64.png" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
-    <AppDomain>https://addin-playground-runner.azurewebsites.net</AppDomain>
+    <AppDomain>https://addin-playground-runner-staging.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
@@ -24,7 +24,7 @@
     <Host Name="Project"/>
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://addin-playground.azurewebsites.net" />
+    <SourceLocation DefaultValue="https://addin-playground-staging.azurewebsites.net" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides
@@ -75,6 +75,31 @@
                   </Action>
                 </Control>
               </Group>
+              <Group id="PG.GalleryGroup">
+                <Label resid="PG.GalleryGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.GalleryCommand">
+                  <Label resid="PG.GalleryCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.GalleryCommand.TipTitle" />
+                    <Description resid="PG.GalleryCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Gallery.16" />
+                    <bt:Image size="32" resid="PG.Icon.Gallery.32" />
+                    <bt:Image size="80" resid="PG.Icon.Gallery.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="PG_Gallery_Url" />
+                    <Title resid="PG.GalleryCommand.Title" />
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
@@ -123,6 +148,7 @@
                   </Action>
                 </Control>
               </Group>
+              <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
@@ -171,6 +197,7 @@
                   </Action>
                 </Control>
               </Group>
+              <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
@@ -178,32 +205,42 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="PG.Icon.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-16.png" />
-        <bt:Image id="PG.Icon.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-32.png" />
-        <bt:Image id="PG.Icon.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/icon-80.png" />
-        <bt:Image id="PG.Icon.Code.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/code-16.png" />
-        <bt:Image id="PG.Icon.Code.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/code-32.png" />
-        <bt:Image id="PG.Icon.Code.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/code-80.png" />
-        <bt:Image id="PG.Icon.Run.16" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-16.png" />
-        <bt:Image id="PG.Icon.Run.32" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-32.png" />
-        <bt:Image id="PG.Icon.Run.80" DefaultValue="https://addin-playground.azurewebsites.net/assets/images/run-80.png" />
+        <bt:Image id="PG.Icon.16" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/icon-16.png" />
+        <bt:Image id="PG.Icon.32" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/icon-32.png" />
+        <bt:Image id="PG.Icon.80" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/icon-80.png" />
+        <bt:Image id="PG.Icon.Code.16" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/code-16.png" />
+        <bt:Image id="PG.Icon.Code.32" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/code-32.png" />
+        <bt:Image id="PG.Icon.Code.80" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/code-80.png" />
+        <bt:Image id="PG.Icon.Run.16" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/run-16.png" />
+        <bt:Image id="PG.Icon.Run.32" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/run-32.png" />
+        <bt:Image id="PG.Icon.Run.80" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/run-80.png" />
+        <bt:Image id="PG.Icon.Gallery.16" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/run-16.png" />
+        <bt:Image id="PG.Icon.Gallery.32" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/run-32.png" />
+        <bt:Image id="PG.Icon.Gallery.80" DefaultValue="https://addin-playground-staging.azurewebsites.net/assets/images/run-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="PG_Code_Url" DefaultValue="https://addin-playground.azurewebsites.net" />
-        <bt:Url id="PG_Run_Url" DefaultValue="https://addin-playground.azurewebsites.net/run.html" />
+        <bt:Url id="PG_Code_Url" DefaultValue="https://addin-playground-staging.azurewebsites.net" />
+        <bt:Url id="PG_Run_Url" DefaultValue="http://localhost:8080" />
+        <bt:Url id="PG_Gallery_Url" DefaultValue="https://addin-playground-staging.azurewebsites.net/gallery.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="PG.GroupLabel" DefaultValue="[PROD] Add-in Playground" />
+        <bt:String id="PG.TabLabel" DefaultValue="[EDGE] Add-in Playground" />
+        <bt:String id="PG.GroupLabel" DefaultValue="Play" />
+        <bt:String id="PG.GalleryGroupLabel" DefaultValue="Browse" />
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
-        <bt:String id="PG.CodeCommand.Title" DefaultValue="[PROD] Code" />
+        <bt:String id="PG.CodeCommand.Title" DefaultValue="[EDGE] Code" />
         <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Code snippets in the Add-in Playground" />
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
-        <bt:String id="PG.RunCommand.Title" DefaultValue="[PROD] Run" />
-        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run a Playground snippet" />
+        <bt:String id="PG.RunCommand.Title" DefaultValue="[EDGE] Run" />
+        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="View the currently-editing snippet in a live preview" />
+        <bt:String id="PG.GalleryCommand.Label" DefaultValue="My Snippets" />
+        <bt:String id="PG.GalleryCommand.Title" DefaultValue="[EDGE] My Snippets" />
+        <bt:String id="PG.GalleryCommand.TipTitle" DefaultValue="Run a snippet from your snippet collection" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Add-in Playground to code snippets." />
-        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens the Add-in Playground to run snippets." />
+        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Add-in Playground code editor." />
+        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a taskpane that runs the currently-edited snippet." />
+        <bt:String id="PG.GalleryCommand.Desc" DefaultValue="Opens a gallery view of snippets authored by you." />
         <bt:String id="PG.Description" DefaultValue="Code, run and share your Add-in snippets directly from Office." />
       </bt:LongStrings>
     </Resources>
