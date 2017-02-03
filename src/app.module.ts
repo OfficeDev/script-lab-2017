@@ -72,6 +72,11 @@ export class AppModule {
                 Environment.host = AppModule._cache.get('host') || 'web';
                 resolve(Environment.host);
             }
+            if (window.location.href.toLowerCase().indexOf('?mode=web') > 0) {
+                Environment.host = 'web';
+                AppModule._cache.insert('host', Environment.host);
+                resolve(Environment.host);
+            }
 
             Office.initialize = () => {
                 Environment.host = Utilities.host.toLowerCase();

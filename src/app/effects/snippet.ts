@@ -206,10 +206,14 @@ export class SnippetEffects {
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
             let url = 'http://localhost:8080/';
+            let returnUrl = window.location.href;
+            if (Environment.host === 'web' && returnUrl.indexOf('mode=web') < 0) {
+                returnUrl += '?mode=web';
+            }
 
             let postData: IRunnerPostData = {
                 snippet: jsyaml.safeDump(snippet),
-                returnUrl: window.location.href,
+                returnUrl: returnUrl,
                 refreshUrl: window.location.origin + '/refresh.html',
                 id: snippet.id,
                 host: Environment.host,
