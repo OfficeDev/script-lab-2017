@@ -34,7 +34,7 @@
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
+            <CustomTab id="TabPlayground">
               <Group id="PG.Group">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -75,14 +75,14 @@
                   </Action>
                 </Control>
               </Group>
-            </OfficeTab>
+            </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
       <Host xsi:type="Document">
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
+            <CustomTab id="TabPlayground">
               <Group id="PG.Group">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -123,14 +123,14 @@
                   </Action>
                 </Control>
               </Group>
-            </OfficeTab>
+            </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
       <Host xsi:type="Presentation">
         <DesktopFormFactor>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
+            <CustomTab id="TabPlayground">
               <Group id="PG.Group">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -171,7 +171,7 @@
                   </Action>
                 </Control>
               </Group>
-            </OfficeTab>
+            </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
