@@ -640,32 +640,43 @@
 
 			var $list = $('#local-snippet-list');
 			var currentSnippets = getCurrentSnippets();
+			var lastOpened = getCurrentSettings().lastOpened;
 
 			var hasChildren = false;
 			for (var id in currentSnippets) {
 				hasChildren = true;
-				(function (id, name, description) {
-					var $item = $(
-						'<article class="gallery-list__item gallery-list__item--template ms-font-m">' +
-						'<div class="name"></div>' +
-						'<div class="description"></div>' +
-						'</article>');
-					$item.children('.name').text(name);
-					$item.children('.description').text(description);
-					$item.children().click(function () {
-						navigateToRunnerWithId(id);
-					})
-					$item.appendTo($list);
-				})(id, currentSnippets[id].name, currentSnippets[id].description);
+				if (lastOpened && lastOpened.id === id) {
+					lastOpened = null; // No need to include it later.
+				}
+				addSnippetToGallery(currentSnippets[id]);
 			}
 
+			if (lastOpened && lastOpened.id) {
+				hasChildren = true;
+				addSnippetToGallery(lastOpened);
+			}
+			
 			if (!hasChildren) {
 				$('#no-local-snippets').show();
 			}
 
 			$('#progress').hide();
 			$('#snippet-list').show();
-		};
+
+			function addSnippetToGallery(snippet) {
+				var $item = $(
+					'<article class="gallery-list__item gallery-list__item--template ms-font-m">' +
+					'<div class="name"></div>' +
+					'<div class="description"></div>' +
+					'</article>');
+				$item.children('.name').text(snippet.name);
+				$item.children('.description').text(snippet.description);
+				$item.children().click(function () {
+					navigateToRunnerWithId(snippet.id);
+				})
+				$item.appendTo($list);
+			}
+		}
 
 		function setCssRules(host, platform) {
 			var hostColor = getHostColors();
