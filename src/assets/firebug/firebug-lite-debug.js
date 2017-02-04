@@ -19,6 +19,15 @@
  *  More information: http://sizzlejs.com/
  */
 
+/*!
+ * NOTE: This file contains a number of small modifications, relative
+ * to the original file found on http://getfirebug.com/firebuglite
+ * The modifications were necessary to make it work in the
+ * Add-in Playground scenario. They are marked with
+ * "[BEGIN PLAYGROUND MODIFICATION]" and "[BEGIN PLAYGROUND MODIFICATION]"
+ */
+
+
 /** @namespace describe lib */
 
 // FIXME: xxxpedro if we use "var FBL = {}" the FBL won't appear in the DOM Panel in IE 
@@ -10456,6 +10465,33 @@ append(ChromeBase,
         
         },1000);
         /**/
+
+
+        // [BEGIN PLAYGROUND MODIFICATION]
+
+        // Small tweak to FireBug Lite, to have it scroll to the bottom-most line.
+        // Taken from https://github.com/firebug/firebug-lite/issues/19
+        // create an observer instance
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    var a = mutation.addedNodes;
+                    if (a.length) {
+                        a[a.length - 1].scrollIntoView();
+                    }
+                }
+            });
+        });
+
+        // configuration of the observer:
+        var config = {
+            childList: true
+        };
+
+        // pass in the target node, as well as the observer options
+        observer.observe(fbConsole, config);
+
+        // [END PLAYGROUND MODIFICATION]
     },
     
     shutdown: function()
@@ -18927,6 +18963,19 @@ var XMLHttpRequestWrapper = function(activeXObject)
             FBL.setClass(row, "error");
         
         var item = FBL.$$(".spyStatus", row)[0];
+
+        
+        // [BEGIN PLAYGROUND MODIFICATION]
+
+        // Adding the next few lines to avoid a JS runtime error,
+        // without which the Playground does not work:
+        if (item == null) {
+            return;
+        }
+        
+        // [END PLAYGROUND MODIFICATION]
+
+
         item.innerHTML = status;
         
         if (time)
@@ -30902,6 +30951,16 @@ this.logRow = function(message, className)
         this.writeMessage(message, className);
     else
     {
+        // [BEGIN PLAYGROUND MODIFICATION]
+
+        // Adding the next few lines to avoid a JS runtime error,
+        // without which the Playground does not work:
+        if (typeof this.messageQueue == 'undefined') {
+            this.messageQueue = [];
+        }
+        
+        // [END PLAYGROUND MODIFICATION]
+
         this.messageQueue.push([message, className]);
     }
     
