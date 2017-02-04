@@ -198,8 +198,10 @@
       </Host>
       <Host xsi:type="Document">
         <DesktopFormFactor>
+          <FunctionFile resid="PG.FunctionFile" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
+              <Label resid="PG.TabLabel"/>
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -264,15 +266,107 @@
                   </Action>
                 </Control>
               </Group>
-              <Label resid="PG.TabLabel"/>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle" />
+                    <Description resid="PG.TutorialCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16" />
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32" />
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.UsingCommand">
+                  <Label resid="PG.UsingCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.UsingCommand.TipTitle" />
+                    <Description resid="PG.UsingCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Using.16" />
+                    <bt:Image size="32" resid="PG.Icon.Using.32" />
+                    <bt:Image size="80" resid="PG.Icon.Using.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchUsingHelp</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.FeedbackCommand">
+                  <Label resid="PG.FeedbackCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.FeedbackCommand.TipTitle" />
+                    <Description resid="PG.FeedbackCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Feedback.16" />
+                    <bt:Image size="32" resid="PG.Icon.Feedback.32" />
+                    <bt:Image size="80" resid="PG.Icon.Feedback.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchFeedback</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle" />
+                    <Description resid="PG.ApiDocsCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16" />
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32" />
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle" />
+                    <Description resid="PG.AskCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16" />
+                    <bt:Image size="32" resid="PG.Icon.Ask.32" />
+                    <bt:Image size="80" resid="PG.Icon.Ask.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
       <Host xsi:type="Presentation">
         <DesktopFormFactor>
+          <FunctionFile resid="PG.FunctionFile" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
+              <Label resid="PG.TabLabel"/>
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -337,7 +431,97 @@
                   </Action>
                 </Control>
               </Group>
-              <Label resid="PG.TabLabel"/>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle" />
+                    <Description resid="PG.TutorialCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16" />
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32" />
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.UsingCommand">
+                  <Label resid="PG.UsingCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.UsingCommand.TipTitle" />
+                    <Description resid="PG.UsingCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Using.16" />
+                    <bt:Image size="32" resid="PG.Icon.Using.32" />
+                    <bt:Image size="80" resid="PG.Icon.Using.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchUsingHelp</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.FeedbackCommand">
+                  <Label resid="PG.FeedbackCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.FeedbackCommand.TipTitle" />
+                    <Description resid="PG.FeedbackCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Feedback.16" />
+                    <bt:Image size="32" resid="PG.Icon.Feedback.32" />
+                    <bt:Image size="80" resid="PG.Icon.Feedback.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchFeedback</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle" />
+                    <Description resid="PG.ApiDocsCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16" />
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32" />
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle" />
+                    <Description resid="PG.AskCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16" />
+                    <bt:Image size="32" resid="PG.Icon.Ask.32" />
+                    <bt:Image size="80" resid="PG.Icon.Ask.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
