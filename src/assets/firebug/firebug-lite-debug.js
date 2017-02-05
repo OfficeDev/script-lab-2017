@@ -31233,8 +31233,12 @@ FirebugChrome.Skin.CSS =
         window.editorUrl + '/assets/firebug/') +
     '\n' +
     [
-        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab {',
-        '   display: none !important;',
+        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2 {',
+        '    display: none !important;',
+        '}',
+        '',
+        '#fbPanelBox1, #fbFitHeight {',
+        '    width: 100% !important',
         '}'
     ].join("\n");
 
