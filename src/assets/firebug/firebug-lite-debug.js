@@ -246,6 +246,16 @@ var onDocumentLoad = function onDocumentLoad()
     {
         FBL.FirebugChrome.create();
     }
+
+
+    // [BEGIN PLAYGROUND MODIFICATION]
+
+    // Because Firebug requires a script tag at initialization
+    // (i.e., won't work with a jQuery `getScript`), easiest way
+    // to check if it's initailized is just to have it set a flag.
+    window.firebugLiteIsLoaded = true;
+
+    // [END PLAYGROUND MODIFICATION]
 };
 
 // ************************************************************************************************
