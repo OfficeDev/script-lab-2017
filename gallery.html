@@ -623,7 +623,7 @@
 			getCurrentSnippets = function () {
 				var storageKey = 'playground_' + host + '_snippets';
 				try {
-					return JSON.parse(window.localStorage[storageKey]);
+					return JSON.parse(window.localStorage[storageKey]) || {};
 				} catch (e) {
 					return {};
 				}
@@ -704,6 +704,11 @@
 		}
 
 		function navigateToRunnerWithId(id) {
+			var lastOpened = getCurrentSettings().lastOpened;
+			if (lastOpened.id === id) {
+				return navigateToRunnerWithSnippet(lastOpened);
+			}
+			
 			navigateToRunnerWithSnippet(getCurrentSnippets()[id]);
 		}
 
