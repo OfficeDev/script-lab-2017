@@ -19,7 +19,7 @@ Any issues should be logged into the appropriate milestones at <https://github.c
 * Import someone else's snippet
   * From YAML
   * From Gist (incl. old-style)
-  * From Non-GitHub URL
+  * From Non-GitHub URL (doesn't work yet, see issue #146)
 * Run snippet, in both in-editor runner, side-by-side runner, and gallery, testing that:
   * Snippet renders correctly
   * Console log renders correctly (and scrolls correctly, if many lines)
