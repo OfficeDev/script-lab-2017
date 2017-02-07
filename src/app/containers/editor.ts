@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService, Disposable } from '../services';
 import * as debounce from 'lodash/debounce';
+import {Strings} from '../helpers';
 
 @Component({
     selector: 'editor',
@@ -44,7 +45,7 @@ export class Editor extends Disposable implements AfterViewInit {
         this._subscribeToState();
     }
 
-    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
+    changeTab = (name: string = Strings.scriptTabTag) => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
 
     updateIntellisense() {
         if (this.snippet == null) {
@@ -55,7 +56,7 @@ export class Editor extends Disposable implements AfterViewInit {
     }
 
     private _createTabs() {
-        ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
+        [Strings.scriptTab, Strings.htmlTab, Strings.cssTab, Strings.librariesTab].forEach(title => {
             let name = title.toLowerCase();
 
             let tab = <IMonacoEditorState>{
@@ -103,7 +104,7 @@ export class Editor extends Disposable implements AfterViewInit {
                 if (newTab) {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
-                    if (this.currentState.name === 'script') {
+                    if (this.currentState.name === Strings.scriptTabTag) {
                         this.updateIntellisense();
                     }
                     this._monacoEditor.setModel(this.currentState.model);
@@ -164,7 +165,7 @@ export class Editor extends Disposable implements AfterViewInit {
             return null;
         }
 
-        ['script', 'template', 'style', 'libraries'].forEach(name => {
+        [Strings.scriptTabTag, Strings.htmlTabTag, 'style', 'libraries'].forEach(name => {
             let {content, language} = this.tabs.get(name);
             if (name === 'libraries') {
                 this._snippet.libraries = content;

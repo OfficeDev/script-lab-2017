@@ -1,6 +1,10 @@
 export class Strings {
    
     static playgroundName = 'API Explorer';
+
+    static run = 'Run';
+    static share = 'Share';
+    static delete = 'Delete';
     
     static okButtonLabel = 'OK';
     static logoutButtonLabel = 'Sign out';
@@ -65,6 +69,32 @@ export class Strings {
         //snippet.info.ts
         static nameLabel = 'Name';
         static descriptionLabel = 'Description';
+
+    // Containers strings
+        //app.ts
+        
+        static shareMenuPublic = 'Public gist';
+        static shareMenuPrivate = 'Private gist';
+        static shareMenuClipboard = 'Copy to clipboard';
+        
+        static loginGithub = 'Sign in to GitHub';
+
+        static lightTheme = 'Light';
+        static darkTheme = 'Dark';
+
+        static deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
+    
+    // Editor strings
+
+        static scriptTab = 'Script';
+        static htmlTab = 'Template';
+        static cssTab = 'Style';
+        static librariesTab = 'Libraries';
+        static scriptTabTag = Strings.scriptTab.toLowerCase();
+        static htmlTabTag = 'template';
+        static cssTabTag = Strings.cssTab.toLowerCase();
+        static librariesTabTag = Strings.librariesTab.toLowerCase();
+        
 
 
 

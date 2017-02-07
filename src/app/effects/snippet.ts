@@ -27,7 +27,7 @@ export class SnippetEffects {
         gist: '',
         source: Environment.host,
         author: '',
-        name: Strings.defaultSnippetTitle,
+        name: Strings.defaultSnippetTitle, // UI unknown
         description: '',
         script: { content: '', language: 'typescript' },
         style: { content: '', language: 'css' },
@@ -65,13 +65,13 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = Environment.host;
-                    if (this._cache.contains('template')) {
-                        observable = Observable.of(this._cache.get('template'));
+                    if (this._cache.contains(Strings.htmlTab)) {
+                        observable = Observable.of(this._cache.get(Strings.htmlTab));
                     }
                     else {
                         observable = this._request
                             .get<string>(`${this._samplesRepoUrl}/samples/${Environment.host}/default.yaml`, ResponseTypes.YAML)
-                            .map(snippet => this._cache.insert('template', snippet));
+                            .map(snippet => this._cache.insert(Strings.htmlTab, snippet));
                     }
                     break;
 

@@ -5,6 +5,7 @@ import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { Environment } from '../../environment';
+import {Strings} from '../helpers';
 
 @Component({
     selector: 'app',
@@ -16,14 +17,14 @@ import { Environment } from '../../environment';
             <header class="command__bar">
                 <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="Run" (click)="run()"></command>
-                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="Share">
-                    <command icon="PageCheckedin" title="Public Gist" (click)="shareGist(true)"></command>
-                    <command icon="ProtectedDocument" title="Private Gist" (click)="shareGist(false)"></command>
-                    <command id="CopyToClipboard" icon="Copy" title="Copy to clipboard" (click)="shareCopy()"></command>
+                <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
+                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
+                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
+                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
+                    <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Delete" title="Delete" (click)="delete()"></command>
-                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="Sign in to GitHub" (click)="login()"></command>
+                <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
+                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
                 <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
             <editor></editor>
@@ -69,7 +70,7 @@ export class AppComponent {
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
     theme$ = this._store.select(fromRoot.getTheme)
-        .map(isLight => isLight ? 'Light' : 'Dark');
+        .map(isLight => isLight ? Strings.lightTheme : Strings.darkTheme);
 
     language$ = this._store.select(fromRoot.getLanguage);
 
@@ -108,8 +109,8 @@ export class AppComponent {
             return;
         }
 
-        let result = await this._effects.alert('Are you sure you want to delete this snippet?', `Delete ${this.snippet.name}`, `Yes, delete it`, 'No, keep it');
-        if (result === 'No, keep it') {
+        let result = await this._effects.alert(Strings.deleteSnippetConfirm, `${Strings.delete} ${this.snippet.name}`, Strings.delete, Strings.cancelButtonLabel);
+        if (result === Strings.cancelButtonLabel) {
             return;
         }
 
