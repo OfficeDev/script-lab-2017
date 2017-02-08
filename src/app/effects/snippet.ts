@@ -223,13 +223,13 @@ export class SnippetEffects {
 
             function determineRunnerUrl() {
                 if (window.location.host === 'localhost:3000') {
-                    return 'http://localhost:8080';
+                    return 'https://localhost:8080';
                 }
 
                 if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
                     return 'https://addin-playground-runner-staging.azurewebsites.net';
                 }
-                
+
                 return 'https://addin-playground-runner.azurewebsites.net';
             }
         })
