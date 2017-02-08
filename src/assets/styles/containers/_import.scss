@@ -5,37 +5,76 @@ import {
     dialog.panel  .ms-Dialog-inner {
         margin: 0 -15px;
     }
+
+    .gallery__tabs .ms-Icon {
+        display: none;
+    }
 }
 
-@media (min-width: 0px) and (max-width: 800px) {
+.import {
+    &__examples-list {
+        padding: $default-spacing;
+        opacity: 0.6;
+    }
+
+    &-tab__section {
+        padding: 15px;
+    }
+
+    &__title {
+        margin-bottom: $default-spacing/2;
+    }
+
+    &__subtitle {
+        margin-bottom: 2*$default-spacing;
+    }
+
+    &__field {
+        margin-bottom: 2*$default-spacing;
+
+        .ms-Label {
+            text-transform: uppercase;
+        }
+
+        textarea {
+            min-height: 300px !important;
+        }
+    }
+}
+
+@media (min-width: 721px) {
+    import {
+        .gallery__section:first-child {
+            flex-direction: row;
+        }
+
+        .gallery-list__group-header,
+        .gallery-list__message {
+            padding: $default-spacing/2 0px;
+        }
+
+        .gallery__tabs {
+            flex: 0 0 200px;
+            flex-direction: column;
+            height: 100vh !important;
+
+            .ms-Icon {
+                display: initial;
+                margin-right: 10px;
+                font-size: 15pt;
+            }
+        }
+
+        .ms-Pivot.ms-Pivot--tabs .ms-Pivot-link {
+            padding: 15px 30px;
+            text-align: left;
+            display: flex;
+        }
+    }
+
     .import {
-        &-tab__section {
-            padding: 15px;
-        }
-
         &__title {
-            margin-bottom: $default-spacing/2;
-        }
-
-        &__subtitle {
-            margin-bottom: 2*$default-spacing;
-        }
-
-        &__field {
-            margin-bottom: 2*$default-spacing;
-
-            .ms-Label {
-                text-transform: uppercase;
-            }
-
-            textarea {
-                min-height: 300px !important;
-            }
-        }
-
-        &__examples-list {
-            padding: $default-spacing;
-            opacity: 0.6;
+            margin-bottom: 20px;
         }
     }
 }

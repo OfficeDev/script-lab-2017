@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { AI } from '../helpers';
-import { UI, Snippet, GitHub } from '../actions';
+import { UI, Snippet } from '../actions';
 import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
@@ -12,21 +11,9 @@ import isEmpty = require('lodash/isEmpty');
     template: `
         <section class="gallery">
             <section class="gallery__section">
-                <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !templatesView}" (click)="templatesView = false">Snippets</li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Samples</li>
-                </ul>
-                <div class="gallery__tabs-container">
-                    <collapse [hidden]="templatesView" title="Local" [actions]="['Info', 'Delete']" (events)="action($event)">
-                        <gallery-list title="Local" [current]="current$|async" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
-                    </collapse>
-                    <collapse [collapsed]="true" [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
-                        <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your gists."></gallery-list>
-                    </collapse>
-                    <collapse [hidden]="!templatesView" title="Starter Samples" (action)="action.emit($event)">
-                        <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async" (select)="import($event, 'gist')"></gallery-list>
-                    </collapse>
-                </div>
+                <collapse title="My snippets" [actions]="['Info', 'Delete']" (events)="action($event)">
+                    <gallery-list title="Local" [current]="current$|async" [items]="snippets$|async" (select)="import($event)" fallback="You have no snippets. To get started, create a new snippet or use the import option to load a snippet from various sources."></gallery-list>
+                </collapse>
             </section>
             <section class="gallery__section">
                 <hr class="gallery__section--separator" />
@@ -36,34 +23,26 @@ import isEmpty = require('lodash/isEmpty');
                 </button>
                 <button class="gallery__action button-primary ms-Button ms-Button--compound" (click)="import()">
                     <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageCheckedOut"></i>Import</h1>
-                    <span class="ms-Button-description">Create from GitHub GIST or YAML.</span>
+                    <span class="ms-Button-description">Create from GitHub Gist or YAML.</span>
                 </button>
             </section>
         </section>
     `
 })
 export class Gallery extends Disposable {
-    templatesView: boolean;
-
     constructor(
         private _store: Store<fromRoot.State>,
         private _effects: UIEffects,
     ) {
         super();
-
         this._store.dispatch(new Snippet.LoadSnippetsAction());
-        this._store.dispatch(new Snippet.LoadTemplatesAction());
-        this._store.dispatch(new GitHub.LoadGistsAction());
     }
 
     current$ = this._store.select(fromRoot.getCurrent);
-    templates$ = this._store.select(fromRoot.getTemplates);
-    gists$ = this._store.select(fromRoot.getGists);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
             if (isEmpty(snippets)) {
                 this._store.dispatch(new UI.OpenMenuAction());
-                this.templatesView = true;
             }
             return snippets;
         });
@@ -73,15 +52,8 @@ export class Gallery extends Disposable {
         this._store.dispatch(new UI.CloseMenuAction());
     }
 
-    import(item?: ITemplate, mode = 'id') {
-        if (item == null) {
-            this._store.dispatch(new UI.ToggleImportAction(true));
-        }
-        else {
-            AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { info: mode === 'id' ? item.id : item.gist });
-            this._store.dispatch(new Snippet.ImportAction(mode === 'id' ? item.id : item.gist));
-            this._store.dispatch(new UI.CloseMenuAction());
-        }
+    import() {
+        this._store.dispatch(new UI.ToggleImportAction(true));
     }
 
     async action(action: any) {

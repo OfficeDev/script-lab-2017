@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 @Component({
     selector: 'collapse',
     template: `
-        <div class="command__bar command--light" (click)="collapsed = !collapsed">
+        <div class="command__bar command--light" (click)="collapsed = !collapsed" *ngIf="title !== 'undefined'">
             <div class="command__title">
                 <span class="ms-font-m">{{ title }}</span>
             </div>

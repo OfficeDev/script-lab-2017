@@ -12,6 +12,10 @@
     }
 }
 
+dialog {
+    background: transparent;
+}
+
 dialog.panel {
     .ms-Dialog {
         width: 100% !important;
@@ -63,6 +67,7 @@ dialog.panel {
         width: 100vw;
         justify-content: center;
         align-items: center;
+        background: transparent;
     }
 
     &-content {

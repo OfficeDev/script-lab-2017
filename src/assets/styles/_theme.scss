@@ -35,6 +35,20 @@
         }
     }
 
+    import {
+         .ms-Pivot-link.is-selected:before {
+            display: none !important;
+        }
+
+        .ms-Pivot.ms-Pivot--tabs {
+            background: $accent-background-primary;
+        }
+
+        .ms-Pivot.ms-Pivot--tabs .ms-Pivot-link {
+            background: $accent-background-primary;
+        }
+    }
+
     .import {
         &__field .ms-Label {
             color: $accent-background-primary;
