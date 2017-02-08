@@ -4,6 +4,13 @@
 @mixin theme($accent-background-primary) {
     $accent-foreground-primary: lighten($accent-background-primary, 60%);
 
+    profile,
+    about {
+        .ms-Dialog {
+            border-top: solid 10px $accent-background-primary;
+        }
+    }
+
     main {
         &.Light {
             background-color: #FFFFFE;

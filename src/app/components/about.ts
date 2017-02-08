@@ -10,7 +10,7 @@ import { Environment } from '../../environment';
                 <div class="about__image"></div>
                 <div class="about__details">
                     <div class="about__primary-text ms-font-xxl">{{config?.name}}</div>
-                    <div class="about__secondary-text ms-font-l">Version: {{config?.full_version}}</div>
+                    <div class="about__secondary-text ms-font-l">Version: {{config?.version}}</div>
                     <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
                 </div>
             </div>
@@ -28,6 +28,7 @@ import { Environment } from '../../environment';
 export class About {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
+    config = Environment.build;
 
     cache = `
     Last Updated:
