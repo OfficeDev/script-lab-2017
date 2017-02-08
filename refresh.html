@@ -301,8 +301,8 @@
 					var settingsKey = 'playground_settings';
 					var hostSettings = JSON.parse(window.localStorage[settingsKey])
 						[queryParams['host'].toLowerCase()]
-					if (hostSettings && hostSettings.snippet.lastOpened.id == id) {
-						snippet = hostSettings.snippet.lastOpened;
+					if (hostSettings && hostSettings.lastOpened.id == id) {
+						snippet = hostSettings.lastOpened;
 					}
 				} catch (e) { }
 
@@ -329,9 +329,8 @@
 			}
 
 			var postData = { data: JSON.stringify(postDataInner) };
-			var runnerUrl = 'https://addin-playground-runner-staging.azurewebsites.net/';
-
-			post(runnerUrl, postData);
+			
+			post(determineRunnerUrl(), postData);
 		})();
 
 		function queryParamsToJson() {
@@ -373,6 +372,18 @@
 			}
 			document.body.appendChild(form);
 			form.submit();
+		}
+
+		function determineRunnerUrl() {
+			if (window.location.host === 'localhost:3000') {
+				return 'http://localhost:8080';
+			}
+
+			if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
+				return 'https://addin-playground-runner-staging.azurewebsites.net';
+			}
+			
+			return 'https://addin-playground-runner.azurewebsites.net';
 		}
 	</script>
 </body>

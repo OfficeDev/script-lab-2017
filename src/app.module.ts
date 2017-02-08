@@ -50,8 +50,8 @@ export class AppModule {
             }
 
             await Promise.all([
-                MonacoService.initialize(),
-                AppModule.initialize()
+                MonacoService.initialize().then(() => console.log('Monaco service initialized')),
+                AppModule.initialize().then(() => console.log('AppModule initialized'))
             ]);
 
             await Theme.applyTheme(Environment.host);
@@ -62,34 +62,55 @@ export class AppModule {
             }
         }
         catch (e) {
+            $('.ms-progress-component__sub-title').text('Error initializing the Playground, see the console for more details');
+            $('.ms-progress-component__footer').hide();
+            console.log(e);
             AI.trackException(e, 'Playground Initialization');
         }
     }
 
     static initialize() {
         return new Promise<boolean>(resolve => {
-            if (AppModule._cache.contains('host')) {
-                Environment.host = AppModule._cache.get('host') || 'web';
-                resolve(Environment.host);
-            }
-
-            Office.initialize = () => {
-                Environment.host = Utilities.host.toLowerCase();
-                Environment.platform = Utilities.platform;
-                AppModule._cache.insert('host', Environment.host);
-                resolve(Environment.host);
-            };
-
-            setTimeout(() => {
+            let hostButtonsTimeout = setTimeout(() => {
                 $('#hosts').show();
                 $('.ms-progress-component__footer').hide();
                 $('.hostButton').click(function () {
                     Environment.host = $(this).data('host');
                     Environment.platform = null;
+                    AppModule._cache.insert('isInRegularWebBrowser', Environment.host);
                     AppModule._cache.insert('host', Environment.host);
+                    console.log(`Host-button click, selecting ${Environment.host}`);
                     resolve(Environment.host);
                 });
             }, 3000);
+
+            if (window.location.href.toLowerCase().indexOf('?mode=web') > 0) {
+                clearTimeout(hostButtonsTimeout);
+                console.log(`URL contains "?mode=web", initializing App module to that`);
+                Environment.host = 'web';
+                AppModule._cache.insert('host', Environment.host);
+                AppModule._cache.insert('isInRegularWebBrowser', Environment.host);
+                resolve(Environment.host);
+                return;
+            }
+
+            if (AppModule._cache.contains('isInRegularWebBrowser') && AppModule._cache.contains('host')) {
+                clearTimeout(hostButtonsTimeout);
+                Environment.host = AppModule._cache.get('host');
+                console.log(`Is in regular web-browser mode, and host has already been selected to ${Environment.host} earlier`);
+                resolve(Environment.host);
+                return;
+            }
+
+            Office.initialize = () => {
+                clearTimeout(hostButtonsTimeout);
+                Environment.host = Utilities.host.toLowerCase();
+                Environment.platform = Utilities.platform;
+                console.log(`Office.initialize called, host is ${Environment.host}, platform ${Environment.platform}`);
+                AppModule._cache.insert('host', Environment.host);
+                resolve(Environment.host);
+                return;
+            };
         });
     }
 

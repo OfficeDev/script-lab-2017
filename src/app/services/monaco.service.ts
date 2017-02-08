@@ -3,7 +3,7 @@ import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
 import { AI } from '../helpers';
 import { Environment } from '../../environment';
-import * as isEmpty from 'lodash/isEmpty';
+import isEmpty = require('lodash/isEmpty');
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,

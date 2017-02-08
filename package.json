@@ -23,9 +23,10 @@
     "start": "webpack-dev-server --config config/webpack.dev.js --progress",
     "stats": "webpack --config config/webpack.prod.js --colors --progress --profile --json > stats.json",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --colors --progress --bail",
-    "deploy:prod": "git push && git push azure deployment:master",
-    "deploy:insider": "git push && git push insider deployment:master",
-    "deploy:edge": "git push && git push staging deployment:master"
+    "commit": "git add . && git commit -m \"Rebuilding dist\"",
+    "deploy:prod": "npm run build && git push && git push azure deployment:master",
+    "deploy:insider": "npm run build && git push && git push insider deployment:master",
+    "deploy:edge": "npm run build && npm run commit && git push && git push staging deployment:master"
   },
   "license": "MIT",
   "dependencies": {

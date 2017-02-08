@@ -11,11 +11,11 @@ import cuid = require('cuid');
 import { Environment } from '../../environment';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import * as isEmpty from 'lodash/isEmpty';
-import * as find from 'lodash/find';
-import * as assign from 'lodash/assign';
-import * as reduce from 'lodash/reduce';
-import * as forIn from 'lodash/forIn';
+import isEmpty = require('lodash/isEmpty');
+import find = require('lodash/find');
+import assign = require('lodash/assign');
+import reduce = require('lodash/reduce');
+import forIn = require('lodash/forIn');
 
 @Injectable()
 export class SnippetEffects {
@@ -150,6 +150,7 @@ export class SnippetEffects {
         .map((action: Snippet.SaveAction) => action.payload)
         .map(snippet => {
             this._validate(snippet);
+            snippet.lastModified = new Date().getTime();
 
             if (this._store.contains(snippet.id)) {
                 this._store.insert(snippet.id, snippet);
@@ -204,18 +205,33 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let url = 'https://addin-playground-runner-staging.azurewebsites.net/';
+            let returnUrl = window.location.href;
+            if (Environment.host === 'web' && returnUrl.indexOf('mode=web') < 0) {
+                returnUrl += '?mode=web';
+            }
 
             let postData: IRunnerPostData = {
                 snippet: jsyaml.safeDump(snippet),
-                returnUrl: window.location.href,
+                returnUrl: returnUrl,
                 refreshUrl: window.location.origin + '/refresh.html',
                 id: snippet.id,
                 host: Environment.host,
                 platform: Environment.platform
             };
 
-            post(url, { data: JSON.stringify(postData) });
+            post(determineRunnerUrl(), { data: JSON.stringify(postData) });
+
+            function determineRunnerUrl() {
+                if (window.location.host === 'localhost:3000') {
+                    return 'http://localhost:8080';
+                }
+
+                if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
+                    return 'https://addin-playground-runner-staging.azurewebsites.net';
+                }
+                
+                return 'https://addin-playground-runner.azurewebsites.net';
+            }
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to run the snippet', exception)));
 

@@ -27,7 +27,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_IN: {
-            AI.current.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
+            AI.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
             return {
                 ...state,
                 loading: false,
