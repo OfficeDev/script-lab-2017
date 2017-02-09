@@ -40,7 +40,7 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
         .filter(profile => !(profile == null))
-        .map(profile => new GitHub.LoggedInAction(profile))
+        .mergeMap(profile => Observable.from([new GitHub.LoggedInAction(profile), new GitHub.LoadGistsAction()]))
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to get GitHub profile', exception)));
 
     @Effect()
@@ -111,7 +111,10 @@ You will be able to import your snippet by choosing the "Import" button in the P
 
             return gist;
         })
-        .map(gist => new GitHub.ShareSuccessAction(gist))
+        .mergeMap(gist => Observable.from([
+            new GitHub.LoadGistsAction(),
+            new GitHub.ShareSuccessAction(gist)
+        ]))
         .catch(exception => Observable.from([
             new UI.ReportErrorAction('Failed to share a GitHub gist', exception),
             new GitHub.ShareFailedAction()

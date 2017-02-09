@@ -12,16 +12,13 @@
     }
 }
 
-dialog {
-    background: transparent;
-}
-
 dialog.panel {
     .ms-Dialog {
         width: 100% !important;
         height: 100% !important;
         max-width: none;
         min-width: 320px;
+        padding: 0;
 
         &-content {
             height: 100%;
@@ -56,7 +53,7 @@ dialog.panel {
 
 .ms-Dialog {
     padding: 15px;
-    position: initial;
+    position: relative;
     transform: none;
     left: 0;
     top: 0;
@@ -65,6 +62,9 @@ dialog.panel {
         display: flex;
         height: 100vh;
         width: 100vw;
+        position: absolute;
+        top: 0;
+        left: 0;
         justify-content: center;
         align-items: center;
         background: transparent;

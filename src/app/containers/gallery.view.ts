@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UI, Snippet } from '../actions';
 import { Disposable } from '../services';
+import { AI } from '../helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UIEffects } from '../effects/ui';
@@ -38,26 +39,27 @@ export class Gallery extends Disposable {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
     }
 
-    current$ = this._store.select(fromRoot.getCurrent);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
             if (isEmpty(snippets)) {
-                this._store.dispatch(new UI.OpenMenuAction());
+                this._store.dispatch(new UI.ToggleImportAction(true));
             }
             return snippets;
         });
 
-    new() {
-        this._store.dispatch(new Snippet.ImportAction('default'));
-        this._store.dispatch(new UI.CloseMenuAction());
-    }
-
-    import() {
-        this._store.dispatch(new UI.ToggleImportAction(true));
+    import(item?: ITemplate) {
+        if (item == null) {
+            this._store.dispatch(new UI.ToggleImportAction(true));
+        }
+        else {
+            AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { info: item.id });
+            this._store.dispatch(new Snippet.ImportAction(item.id));
+            // this._store.dispatch(new UI.CloseMenuAction());
+        }
     }
 
     async action(action: any) {
-        if (action.title === 'Local') {
+        if (action.title === 'My snippets') {
             switch (action.action) {
                 case 'Info': {
                     await this._effects.alert(`Snippets are stored in your browser's "localStorage" and will disappear if you clear your browser cache.

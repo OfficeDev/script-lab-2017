@@ -10,8 +10,6 @@ import { type } from '../helpers';
  * action types in the application are unique.
  */
 export class UIActionTypes {
-    static readonly OPEN_MENU = type('[UI] Open Menu');
-    static readonly CLOSE_MENU = type('[UI] Close Menu');
     static readonly SHOW_ALERT = type('[UI] Show Alert');
     static readonly SWITCH_ENV = type('[UI] Switch Env');
     static readonly DISMISS_ALERT = type('[UI] Dismiss Alert');
@@ -28,18 +26,6 @@ export class UIActionTypes {
  *
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
-export class OpenMenuAction implements Action {
-    readonly type = UIActionTypes.OPEN_MENU;
-
-    constructor() { }
-}
-
-export class CloseMenuAction implements Action {
-    readonly type = UIActionTypes.CLOSE_MENU;
-
-    constructor() { }
-}
-
 export class ShowAlertAction implements Action {
     readonly type = UIActionTypes.SHOW_ALERT;
 
@@ -90,8 +76,6 @@ export type UIActions =
     ChangeThemeAction
     | ChangeLanguageAction
     | ReportErrorAction
-    | OpenMenuAction
-    | CloseMenuAction
     | ShowAlertAction
     | ToggleImportAction
     | DismissAlertAction

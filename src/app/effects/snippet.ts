@@ -134,13 +134,11 @@ export class SnippetEffects {
 
                     return Observable.from([
                         new Snippet.ImportSuccessAction(snippet),
-                        new UI.CloseMenuAction(),
                     ]);
                 });
         })
         .catch(exception => Observable.from([
             new UI.ReportErrorAction('Failed to import  snippet', exception),
-            new UI.CloseMenuAction(),
             new UI.ShowAlertAction({ message: 'We were unable to import the snippet. Please check the GIST ID or URL for correctness.', title: 'Import failed', actions: ['OK'] })
         ]));
 
@@ -183,7 +181,7 @@ export class SnippetEffects {
         .map(id => this._store.remove(id))
         .mergeMap(() => Observable.from([
             new Snippet.StoreUpdatedAction(),
-            new UI.OpenMenuAction()
+            new UI.ToggleImportAction(true)
         ]))
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to delete current snippet', exception)));
 

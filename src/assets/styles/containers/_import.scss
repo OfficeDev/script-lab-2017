@@ -2,8 +2,7 @@
 @import '../vars';
 
 import {
-    dialog.panel  .ms-Dialog-inner {
-        margin: 0 -15px;
+    .ms-Dialog-actionsRight {
     }
 
     .gallery__tabs .ms-Icon {
@@ -59,7 +58,7 @@ import {
             height: 100vh !important;
 
             .ms-Icon {
-                display: initial;
+                display: inline-block;
                 margin-right: 10px;
                 font-size: 15pt;
             }
