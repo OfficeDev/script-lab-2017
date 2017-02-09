@@ -26,7 +26,8 @@
     "commit": "git add . && git commit -m \"Rebuilding dist\"",
     "deploy:prod": "npm run build && git push && git push azure deployment:master",
     "deploy:insider": "npm run build && git push && git push insider deployment:master",
-    "deploy:edge": "npm run build && npm run commit && git push && git push staging deployment:master"
+    "deploy:edge": "npm run build && npm run commit && git push && git push staging deployment:master",
+    "deploy:dev": "npm run build && npm run commit && git push && git push dev deployment:master"
   },
   "license": "MIT",
   "dependencies": {
