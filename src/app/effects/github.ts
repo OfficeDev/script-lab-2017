@@ -36,11 +36,16 @@ export class GitHubEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to log out of GitHub', exception)));
 
     @Effect()
+    loggedIn$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.LOGGED_IN)
+        .map(() => new GitHub.LoadGistsAction());
+
+    @Effect()
     isLoggedIn$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
         .filter(profile => !(profile == null))
-        .mergeMap(profile => Observable.from([new GitHub.LoggedInAction(profile), new GitHub.LoadGistsAction()]))
+        .mergeMap(profile => Observable.from([new GitHub.LoggedInAction(profile)]))
         .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to get GitHub profile', exception)));
 
     @Effect()

@@ -17,7 +17,7 @@ import isEmpty = require('lodash/isEmpty');
                 </collapse>
             </section>
         </section>
-        <p class="gallery-list__message ms-font-m" [hidden]="!empty">{{fallback||'No items were found. Please try again later.'}}</p>
+        <div class="gallery-list__message ms-font-m" [hidden]="!empty"><ng-content></ng-content></div>
     `
 })
 export class GalleryList {

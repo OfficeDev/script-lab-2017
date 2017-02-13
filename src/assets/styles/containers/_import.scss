@@ -2,10 +2,16 @@
 @import '../vars';
 
 import {
-    .ms-Dialog-actionsRight {
+    .gallery__tabs .ms-Icon {
+        display: none;
     }
 
-    .gallery__tabs .ms-Icon {
+    .gallery__tab--icon .ms-Icon {
+        display: inline-block;
+        padding: 0 4px;
+    }
+
+    .gallery__tab--icon span {
         display: none;
     }
 }
@@ -25,6 +31,7 @@ import {
     }
 
     &__subtitle {
+        margin-top: $default-spacing;
         margin-bottom: 2*$default-spacing;
     }
 
@@ -41,7 +48,7 @@ import {
     }
 }
 
-@media (min-width: 721px) {
+@media (min-width: 550px) {
     import {
         .gallery__section:first-child {
             flex-direction: row;
@@ -61,6 +68,11 @@ import {
                 display: inline-block;
                 margin-right: 10px;
                 font-size: 15pt;
+                padding: 0;
+            }
+
+            .gallery__tab--icon span {
+                display: block;
             }
         }
 
