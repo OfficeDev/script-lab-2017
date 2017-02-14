@@ -4,6 +4,13 @@
 @mixin theme($accent-background-primary) {
     $accent-foreground-primary: lighten($accent-background-primary, 60%);
 
+    profile,
+    about {
+        .ms-Dialog {
+            border-top: solid 10px $accent-background-primary;
+        }
+    }
+
     main {
         &.Light {
             background-color: #FFFFFE;
@@ -25,6 +32,20 @@
     .profile {
         &__primary-text {
             color: $accent-background-primary
+        }
+    }
+
+    import {
+         .ms-Pivot-link.is-selected:before {
+            display: none !important;
+        }
+
+        .ms-Pivot.ms-Pivot--tabs {
+            background: $accent-background-primary;
+        }
+
+        .ms-Pivot.ms-Pivot--tabs .ms-Pivot-link {
+            background: $accent-background-primary;
         }
     }
 

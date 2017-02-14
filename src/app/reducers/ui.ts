@@ -25,13 +25,7 @@ export const initialState: UIState = {
 export function reducer(state = initialState, action: UIActions): UIState {
     AI.trackEvent(action.type);
 
-    switch (action.type) {
-        case UIActionTypes.OPEN_MENU:
-            return { ...state, menuOpened: true };
-
-        case UIActionTypes.CLOSE_MENU:
-            return { ...state, menuOpened: false };
-
+switch (action.type) {
         case UIActionTypes.TOGGLE_IMPORT:
             return { ...state, showImport: action.payload };
 

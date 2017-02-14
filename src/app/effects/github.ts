@@ -8,7 +8,7 @@ import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
-import * as find from 'lodash/find';
+import find = require('lodash/find');
 
 @Injectable()
 export class GitHubEffects {
@@ -36,12 +36,19 @@ export class GitHubEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.githubLogoutFailed, exception)));
 
     @Effect()
+    loggedIn$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.LOGGED_IN)
+        .map(() => new GitHub.LoadGistsAction());
+
+    @Effect()
     isLoggedIn$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
         .filter(profile => !(profile == null))
-        .map(profile => new GitHub.LoggedInAction(profile))
+
+        .mergeMap(profile => Observable.from([new GitHub.LoggedInAction(profile)]))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.profileCheckFailed, exception)));
+
 
     @Effect()
     loadGists$: Observable<Action> = this.actions$
@@ -111,7 +118,10 @@ ${Strings.gistSharedDialogEnd}
 
             return gist;
         })
-        .map(gist => new GitHub.ShareSuccessAction(gist))
+        .mergeMap(gist => Observable.from([
+            new GitHub.LoadGistsAction(),
+            new GitHub.ShareSuccessAction(gist)
+        ]))
         .catch(exception => Observable.from([
             new UI.ReportErrorAction(Strings.gistShareFailed, exception),
             new GitHub.ShareFailedAction()

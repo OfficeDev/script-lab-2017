@@ -10,12 +10,9 @@ import {Strings} from '../helpers';
 @Component({
     selector: 'app',
     template: `
-        <hamburger [open]="menuOpened$" (dismiss)="hideMenu()">
-            <gallery></gallery>
-        </hamburger>
         <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command [hidden]="menuOpened$|async" icon="GlobalNavButton" (click)="showMenu()"></command>
+                <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
@@ -88,14 +85,6 @@ export class AppComponent {
 
     showImport$ = this._store.select(fromRoot.getImportState);
 
-    showMenu() {
-        this._store.dispatch(new UI.OpenMenuAction());
-    }
-
-    hideMenu() {
-        this._store.dispatch(new UI.CloseMenuAction());
-    }
-
     run() {
         if (this.snippet == null) {
             return;
@@ -149,6 +138,10 @@ export class AppComponent {
 
     login() {
         this._store.dispatch(new GitHub.LoginAction());
+    }
+
+    showMenu() {
+        this._store.dispatch(new UI.ToggleImportAction(true));
     }
 
     shareGist(isPublic: boolean) {
