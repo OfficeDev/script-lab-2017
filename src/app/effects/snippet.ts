@@ -65,13 +65,13 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = Environment.host;
-                    if (this._cache.contains(Strings.htmlTab)) {
-                        observable = Observable.of(this._cache.get(Strings.htmlTab));
+                    if (this._cache.contains('Template')) {
+                        observable = Observable.of(this._cache.get('Template'));
                     }
                     else {
                         observable = this._request
                             .get<string>(`${this._samplesRepoUrl}/samples/${Environment.host}/default.yaml`, ResponseTypes.YAML)
-                            .map(snippet => this._cache.insert(Strings.htmlTab, snippet));
+                            .map(snippet => this._cache.insert('Template', snippet));
                     }
                     break;
 

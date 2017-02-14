@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AI } from '../helpers';
+import { AI, Strings } from '../helpers';
 import { UI, Snippet, GitHub } from '../actions';
 import { Disposable } from '../services';
 import { Store } from '@ngrx/store';
@@ -13,15 +13,15 @@ import * as isEmpty from 'lodash/isEmpty';
         <section class="gallery">
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !templatesView}" (click)="templatesView = false">Snippets</li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">Samples</li>
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': !templatesView}" (click)="templatesView = false">${Strings.snippetsTab}</li>
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': templatesView}" (click)="templatesView = true">${Strings.samplesTab}</li>
                 </ul>
                 <div class="gallery__tabs-container">
                     <collapse [hidden]="templatesView" title="Local" [actions]="['Info', 'Delete']" (events)="action($event)">
-                        <gallery-list title="Local" [current]="current$|async" [items]="snippets$|async" (select)="import($event)" fallback="You have no local snippets. To get started, import one from a shared link or create a gallery snippet. You can also choose one from the Templates."></gallery-list>
+                        <gallery-list title="Local" [current]="current$|async" [items]="snippets$|async" (select)="import($event)" fallback="${Strings.noSnippetsMessage}"></gallery-list>
                     </collapse>
                     <collapse [collapsed]="true" [hidden]="templatesView" title="Gists" (action)="action.emit($event)">
-                        <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="You have no gists exported. To get started, create a new snippet and share it to your gists."></gallery-list>
+                        <gallery-list title="Local" [items]="gists$|async" (select)="import($event, 'gist')" fallback="${Strings.noGistsMessage}"></gallery-list>
                     </collapse>
                     <collapse [hidden]="!templatesView" title="Starter Samples" (action)="action.emit($event)">
                         <gallery-list [hidden]="!templatesView" title="Microsoft" [items]="templates$|async" (select)="import($event, 'gist')"></gallery-list>
@@ -32,11 +32,11 @@ import * as isEmpty from 'lodash/isEmpty';
                 <hr class="gallery__section--separator" />
                 <button class="gallery__action ms-Button ms-Button--compound" (click)="new()">
                     <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageAdd"></i>New</h1>
-                    <span class="ms-Button-description">Create a new snippet.</span>
+                    <span class="ms-Button-description">${Strings.newSnippetDescription}</span>
                 </button>
                 <button class="gallery__action button-primary ms-Button ms-Button--compound" (click)="import()">
                     <h1 class="ms-Button-label"><i class="ms-Icon ms-Icon--PageCheckedOut"></i>Import</h1>
-                    <span class="ms-Button-description">Create from GitHub GIST or YAML.</span>
+                    <span class="ms-Button-description">${Strings.importDescription}</span>
                 </button>
             </section>
         </section>
@@ -88,15 +88,13 @@ export class Gallery extends Disposable {
         if (action.title === 'Local') {
             switch (action.action) {
                 case 'Info': {
-                    await this._effects.alert(`Snippets are stored in your browser's "localStorage" and will disappear if you clear your browser cache.
-
-                    In-order to retain permanent copies of your snippets please export them as gists via the 'Share' menu.`, `Info`, `Got it`);
+                    await this._effects.alert(Strings.localStorageWarning, Strings.moreInfoButtonLabel, Strings.okButtonLabel);
                     return;
                 }
 
                 case 'Delete': {
-                    let result = await this._effects.alert('Are you sure you want to delete all your local snippets?', `Delete local snippets`, `Yes, delete them`, 'No, keep them');
-                    if (result === 'No, keep them') {
+                    let result = await this._effects.alert(Strings.deleteLocalSnippets, Strings.deleteLocalSnippetsTitle, Strings.delete, Strings.cancelButtonLabel);
+                    if (result === Strings.cancelButtonLabel) {
                         return;
                     }
 

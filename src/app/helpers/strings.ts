@@ -10,6 +10,8 @@ export class Strings {
     static logoutButtonLabel = 'Sign out';
     static cancelButtonLabel = 'Cancel';
     static saveButtonLabel = 'Save';
+    static moreInfoButtonLabel = 'More info';
+    static importButtonLabel = 'Import';
 
     // effects strings
         //snippet.ts strings:
@@ -84,7 +86,7 @@ export class Strings {
 
         static deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
     
-    // Editor strings
+    // Editor strings, none are used since there's some kind of literal string dependency - that should be fixed
 
         static scriptTab = 'Script';
         static htmlTab = 'Template';
@@ -95,7 +97,36 @@ export class Strings {
         static cssTabTag = Strings.cssTab.toLowerCase();
         static librariesTabTag = Strings.librariesTab.toLowerCase();
         
+    // Gallery.view strings
 
+        static snippetsTab = 'Snippets';
+        static samplesTab = 'Samples';
 
+        static noSnippetsMessage = 'You have no local snippets. You can create a new one, pick one of the samples, or import one from somewhere else.';
+        static noGistsMessage = `You haven't uploaded snippet to a gist yet. After you create or modify a snippet, you can choose Share to upload it.`;
+
+        static newSnippetDescription = 'Create a new snippet';
+        static importDescription = 'Create a snippet from YAML or a GitHub gist';
+
+        static localStorageWarning = `Snippets are erased if you clear your browser cache.
+
+                    To save permanent copies of your snippets, export them as gists from the Share menu.`
+        static deleteLocalSnippets = 'Are you sure you want to delete all your local snippets?'
+        static deleteLocalSnippetsTitle = `Delete local snippets`;
+
+    // import.ts strings
+
+        static importUrlTab = 'From URL';
+        static importYamlTab = 'Paste code';
+        static importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`
+        static importUrlTextBoxLabel = 'URL or gist ID';
+        static importUrlTextBoxPlaceholder = 'Enter the URL or GitHub gist ID here';
+        static urlExamplesTitle = 'Examples:';
+        static urlExample1 = `https://gist.github.com/sampleGistId`;
+        static urlExample2 = `https://addin-playground.azurewebsites.net/#/gist/sampleGistId`;
+        static urlExample3 = `https://mywebsite.com/myfolder/mysnippet.yaml`;
+        static urlExample4 = 'Or you can enter just the gist ID';
+        static importYamlDescription = `Paste the snippet's YAML code, then choose Import.`;
+        static importYamlTextBoxLabel = 'YAML';
 
 }
