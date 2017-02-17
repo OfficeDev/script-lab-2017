@@ -1,5 +1,4 @@
 import * as ts from 'typescript';
-import { ISnippet } from './interfaces';
 import { Utilities } from './utilities';
 import { RunnerError } from './runner-error';
 
