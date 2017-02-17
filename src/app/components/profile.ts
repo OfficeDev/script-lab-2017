@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {Strings} from '../helpers';
 
 @Component({
     selector: 'profile',
@@ -15,10 +16,10 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
-                        <span class="ms-Button-label">Close</span>
+                        <span class="ms-Button-label">${Strings.cancelButtonLabel}</span>
                     </button>
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
-                        <span class="ms-Button-label">Sign Out</span>
+                        <span class="ms-Button-label">${Strings.logoutButtonLabel}</span>
                     </button>
                 </div>
             </div>
@@ -26,6 +27,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     `
 })
 
+// the buttons should be switched
 export class Profile {
     @Input() profile: IBasicProfile;
     @Input() show: boolean;

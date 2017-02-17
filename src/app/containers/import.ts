@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
+
 import { UI, Snippet, GitHub } from '../actions';
 import isEmpty = require('lodash/isEmpty');
+import { Strings } from '../helpers';
+
 
 @Component({
     selector: 'import',
@@ -10,6 +13,7 @@ import isEmpty = require('lodash/isEmpty');
         <dialog class="panel" [show]="true">
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
+
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon" (click)="cancel()">
                         <i class="ms-Icon ms-Icon--Cancel"></i><span>Close</span>
                     </li>
@@ -85,10 +89,12 @@ import isEmpty = require('lodash/isEmpty');
                                     <span class="ms-Button-label">Import</span>
                                 </button>
                             </div>
+
                         </div>
                     </section>
                 </div>
             </section>
+
         </dialog>
     `
 })

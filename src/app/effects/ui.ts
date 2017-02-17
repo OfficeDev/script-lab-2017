@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { UI } from '../actions';
-import { PlaygroundError } from '../helpers';
+import { PlaygroundError, Strings} from '../helpers';
 import { Store } from '@ngrx/store';
 import { Effect, Actions } from '@ngrx/effects';
 import * as fromRoot from '../reducers';
@@ -25,7 +25,7 @@ export class UIEffects {
         .do(action => this._resolve(action))
         .catch(exception => {
             if (this._reject) {
-                this._reject(new PlaygroundError('An error occurred in Dialog', exception));
+                this._reject(new PlaygroundError(Strings.dialogError, exception));
             }
             return Observable.of(new UI.ReportErrorAction('Error', exception));
         });
@@ -42,7 +42,7 @@ export class UIEffects {
 
     private async _showAlert(dialog: IAlert): Promise<string> {
         if (!(this._resolve == null)) {
-            return Promise.reject(new PlaygroundError('A dialog is already open.'));
+            return Promise.reject(new PlaygroundError(Strings.dialogOpenError));
         }
 
         try {

@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { storageSize } from '../helpers';
+import { storageSize, Strings} from '../helpers';
 import { Environment } from '../../environment';
 
 @Component({
@@ -17,7 +17,7 @@ import { Environment } from '../../environment';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="showChange.emit(false)">
-                        <span class="ms-Button-label">OK</span>
+                        <span class="ms-Button-label">${Strings.okButtonLabel}</span>
                     </button>
                 </div>
             </div>
@@ -31,11 +31,11 @@ export class About {
     config = Environment.build;
 
     cache = `
-    Last Updated:
+    ${Strings.aboutUpdated}
     ${new Date(Environment.build.timestamp)}
 
-    Storage Usage:
-    ${storageSize(localStorage, `playground_${Environment.host}_snippets`, 'Local Snippets')}
-    ${storageSize(sessionStorage, 'playground_intellisense', 'Intellisense')}
+    ${Strings.aboutStorage}
+    ${storageSize(localStorage, `playground_${Environment.host}_snippets`, Strings.aboutSnippets)}
+    ${storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)}
     `;
 }

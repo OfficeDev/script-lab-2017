@@ -55,7 +55,7 @@ export class Editor extends Disposable implements AfterViewInit {
     }
 
     private _createTabs() {
-        ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
+        ['Script','Template', 'Style', 'Libraries'].forEach(title => {
             let name = title.toLowerCase();
 
             let tab = <IMonacoEditorState>{
