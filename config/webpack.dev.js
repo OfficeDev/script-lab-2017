@@ -17,7 +17,7 @@ module.exports = webpackMerge(commonConfig, {
     tslint: {
         emitErrors: true,
         failOnHint: true,
-        resourcePath: path.resolve('src')
+        resourcePath: path.resolve('src/editor')
     },
 
     plugins: [
