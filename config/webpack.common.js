@@ -77,7 +77,24 @@ module.exports = {
             },
         ]),
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            template: 'src/index.html',
+            chunks: ['polyfills', 'vendor', 'app']
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/functions.html',
+            chunks: [],
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/gallery.html',
+            chunks: [],
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/heartbeat.html',
+            chunks: [],
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/refresh.html',
+            chunks: [],
         })
     ]
 };
