@@ -1,43 +1,14 @@
 var webpack = require('webpack');
 var path = require('path');
-var package = require('../package.json');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var {CheckerPlugin} = require('awesome-typescript-loader');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
+var {build, config, whilelistPlugins} = require('./env.config');
 
-var meta = (function () {
-    var timestamp = new Date().getTime();
-
-    return {
-        name: 'Add-in Playground',
-        version: package.version,
-        timestamp: timestamp,
-        author: 'Microsoft'
-    };
-})();
-
-var config = (function (env) {
-    return {
-        dev: {
-            client_id: '95435036e70d23b8549f',
-            instrumentation_key: '8cc167c3-cd53-49f5-8b5c-bf8bccdb8995',
-            token_url: 'https://addin-playground-runner.azurewebsites.net/auth/dev'
-        },
-        prod: {
-            client_id: '8d19e9bbcea2a1cee274',
-            instrumentation_key: '8e23f709-f4ee-4b7d-9a47-2d57224885ce',
-            token_url: 'https://addin-playground-runner.azurewebsites.net/auth/prod'
-        },
-        cdn: {
-            client_id: 'b05714a22e602446c43a',
-            instrumentation_key: '8e23f709-f4ee-4b7d-9a47-2d57224885ce',
-            token_url: 'https://addin-playground-runner.azurewebsites.net/auth/cdn'
-        }
-    };
-})();
+var buildInfo = build();
 
 module.exports = {
     entry: {
@@ -73,31 +44,37 @@ module.exports = {
         ]
     },
 
-    meta: meta,
-    auth: config,
-
     postcss: function () {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
+
+    build: buildInfo,
+    config: config(),
 
     plugins: [
         new CheckerPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
         }),
-        new webpack.BannerPlugin(`v.${meta.name} ${meta.version} © ${meta.author}`),
+        new webpack.BannerPlugin(`v.${buildInfo.name} ${buildInfo.version} © ${buildInfo.author}`),
         new CopyWebpackPlugin([
             {
                 from: './src/assets',
-                ignore: [
-                    '*.scss'
-                ],
-                to: 'assets',
+                ignore: ['*.scss'],
+                to: 'assets'
             },
             {
-                from: './web.config',
-                to: 'web.config',
-            }
+                from: './src/extras',
+                to: ''
+            },
+            {
+                from: 'node_modules/monaco-editor/min',
+                to: 'libs/monaco-editor'
+            },
+            {
+                from: 'node_modules/office-ui-fabric-js/dist',
+                to: 'libs/office-ui-fabric-js'
+            },
         ]),
         new HtmlWebpackPlugin({
             template: 'src/index.html'

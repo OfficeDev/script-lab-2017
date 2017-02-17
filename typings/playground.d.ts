@@ -62,19 +62,21 @@ interface IEvent<T> {
     data: T
 }
 
-interface IGlobalConfig {
-    env: 'DEVELOPMENT' | 'PRODUCTION';
+interface IEnvironment {
+    devMode: boolean;
     build: {
         name: string;
         version: string;
         timestamp: number;
         author: string;
     },
-    auth: {
+    config: {
         [env: string]: {
-            token_url: string,
-            instrumentation_key: string,
-            client_id: string
+            name: string,
+            clientId: string
+            instrumentationKey: string,
+            tokenUrl: string,
+            runnerUrl: string
         }
     },
     host?: string,
