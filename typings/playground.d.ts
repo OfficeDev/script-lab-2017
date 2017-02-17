@@ -91,7 +91,7 @@ interface ISettings {
     env: string
 }
 
-export interface IOuterTemplateData {
+interface IOuterTemplateData {
     snippetName: string;
     snippetAuthor: string;
     iframeContent: string;

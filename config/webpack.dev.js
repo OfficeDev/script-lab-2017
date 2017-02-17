@@ -9,7 +9,7 @@ module.exports = webpackMerge(commonConfig, {
     devtool: 'inline-source-map',
 
     output: {
-        path: path.resolve('dist'),
+        path: path.resolve('dist/runner'),
         filename: '[name].[hash].js',
         chunkFilename: '[name].[hash].chunk.js'
     },
@@ -54,6 +54,6 @@ module.exports = webpackMerge(commonConfig, {
             aggregateTimeout: 300,
             poll: 1000
         },
-        outputPath: path.resolve('dist')
+        outputPath: path.resolve('dist/runner')
     }
 });

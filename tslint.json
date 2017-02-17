@@ -34,7 +34,7 @@
         "no-empty": false,
         "no-eval": true,
         "no-trailing-whitespace": true,
-        "no-unused-expression": false,
+        "no-unused-expression": true,
         "no-use-before-declare": true,
         "one-line": [
             true,

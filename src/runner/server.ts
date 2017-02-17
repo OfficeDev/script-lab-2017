@@ -22,7 +22,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/', async (req: express.Request, res: express.Response) => {
-    req;
     fs.readFile(path.resolve(`${__dirname}/assets/editor-runner.html`), 'UTF8', (err, data) => {
         if (err != null) {
             return handleError(err, res);
@@ -61,7 +60,6 @@ app.post('/auth/:env', async (req: express.Request, res: express.Response) => {
                 state
             }
         }, (error, httpResponse, body) => {
-            httpResponse;
             if (error) {
                 return handleError(new RunnerError('Error retrieving GitHub access token', error), res);
             }
@@ -126,8 +124,8 @@ app.post('/', async (request: express.Request, response: express.Response) => {
     };
 });
 
-app.listen(process.env.PORT || 3001, () => {
-    console.log(`Add-in Playground Runner listening on port ${process.env.PORT || 3001}`);
+app.listen(process.env.PORT || 3200, () => {
+    console.log(`Add-in Playground Runner listening on port ${process.env.PORT || 3200}`);
 });
 
 // Helpers

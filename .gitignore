@@ -50,6 +50,7 @@ $RECYCLE.BIN/
 
 # Ignore the following folders
 .vs
+.vscode
 .idea
 *.log
 obj
@@ -59,6 +60,4 @@ bin
 node_modules/**
 packages/**
 typings/**
-.vscode/**
 dist/**
-.vs/**

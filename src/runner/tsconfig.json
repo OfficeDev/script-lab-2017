@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "../../dist/runner",
+    "noImplicitReturns": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ]
+  }
+}
