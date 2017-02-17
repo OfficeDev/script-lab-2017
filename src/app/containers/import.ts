@@ -1,11 +1,8 @@
 import { Component } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-
 import { UI, Snippet, GitHub } from '../actions';
 import isEmpty = require('lodash/isEmpty');
-import { Strings } from '../helpers';
-
 
 @Component({
     selector: 'import',
