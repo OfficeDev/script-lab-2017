@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post } from '../helpers';
+import { PlaygroundError, AI, post, Strings } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
@@ -27,7 +27,7 @@ export class SnippetEffects {
         gist: '',
         source: Environment.host,
         author: '',
-        name: 'New Snippet',
+        name: Strings.defaultSnippetTitle, // UI unknown
         description: '',
         script: { content: '', language: 'typescript' },
         style: { content: '', language: 'css' },
@@ -44,7 +44,8 @@ export class SnippetEffects {
         reduxStore: Store<fromRoot.State>,
     ) {
         this._defaults.author = this._github.profile ? this._github.profile.login : '';
-        this._store.notify = () => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
+        console.log(reduxStore);
+        // this._store.notify = () => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
     }
 
     @Effect({ dispatch: false })
@@ -64,13 +65,13 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = Environment.host;
-                    if (this._cache.contains('template')) {
-                        observable = Observable.of(this._cache.get('template'));
+                    if (this._cache.contains('Template')) {
+                        observable = Observable.of(this._cache.get('Template'));
                     }
                     else {
                         observable = this._request
                             .get<string>(`${this._samplesRepoUrl}/samples/${Environment.host}/default.yaml`, ResponseTypes.YAML)
-                            .map(snippet => this._cache.insert('template', snippet));
+                            .map(snippet => this._cache.insert('Template', snippet));
                     }
                     break;
 
@@ -138,8 +139,10 @@ export class SnippetEffects {
                 });
         })
         .catch(exception => Observable.from([
-            new UI.ReportErrorAction('Failed to import  snippet', exception),
-            new UI.ShowAlertAction({ message: 'We were unable to import the snippet. Please check the GIST ID or URL for correctness.', title: 'Import failed', actions: ['OK'] })
+
+            new UI.ReportErrorAction(Strings.snippetImportError, exception),
+            new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
+
         ]));
 
     @Effect()
@@ -159,7 +162,7 @@ export class SnippetEffects {
 
             return new Snippet.StoreUpdatedAction();
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to save the current snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetSaveError, exception)));
 
     @Effect()
     duplicate$: Observable<Action> = this.actions$
@@ -172,7 +175,7 @@ export class SnippetEffects {
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy);
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to duplicate the current snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDupeError , exception)));
 
     @Effect()
     delete$: Observable<Action> = this.actions$
@@ -183,20 +186,20 @@ export class SnippetEffects {
             new Snippet.StoreUpdatedAction(),
             new UI.ToggleImportAction(true)
         ]))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to delete current snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDeleteError, exception)));
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
         .map(() => this._store.clear())
         .map(() => new Snippet.StoreUpdatedAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to delete all local snippets', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDeleteAllError, exception)));
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
         .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load the local snippets', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })
     run$: Observable<Action> = this.actions$
@@ -231,7 +234,7 @@ export class SnippetEffects {
                 return 'https://addin-playground-runner.azurewebsites.net';
             }
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to run the snippet', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 
     @Effect()
     loadTemplates$: Observable<Action> = this.actions$
@@ -247,7 +250,7 @@ export class SnippetEffects {
             }
         })
         .map(data => new Snippet.LoadTemplatesSuccessAction(data))
-        .catch(exception => Observable.of(new UI.ReportErrorAction('Failed to load the default samples', exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadDefaultsError, exception)));
 
     private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
         if (data == null) {
@@ -283,16 +286,16 @@ export class SnippetEffects {
 
     private _validate(snippet: ISnippet) {
         if (isEmpty(snippet)) {
-            throw new PlaygroundError('Snippet cannot be empty');
+            throw new PlaygroundError(Strings.snippetValidationEmpty);
         }
 
         if (isEmpty(snippet.name)) {
-            throw new PlaygroundError('Snippet name cannot be empty');
+            throw new PlaygroundError(Strings.snippetValidationNoTitle);
         }
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = isEmpty(name.trim()) ? 'Blank Snippet' : name.trim();
+        let newName = isEmpty(name.trim()) ? Strings.newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
         let options = this._store.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = reduce(options, (max, item: any) => {
