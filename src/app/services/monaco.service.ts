@@ -2,7 +2,6 @@ import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
 import { AI } from '../helpers';
-import { Environment } from '../../environment';
 import isEmpty = require('lodash/isEmpty');
 
 const Regex = {
@@ -107,16 +106,7 @@ export class MonacoService extends Disposable {
                 let start = performance.now();
                 let require = (<any>window).require;
                 if (require) {
-                    let path = `node_modules/monaco-editor/min/vs`;
-
-                    if (Environment.env === 'PRODUCTION') {
-                        console.log('Using Monaco from CDN');
-                        (window as any).MonacoEnvironment = {
-                            getWorkerUrl: () => `${location.origin}/assets/monaco-editor-worker-loader-proxy.js`
-                        };
-
-                        path = `${location.origin}/monaco-editor/min/vs`;
-                    }
+                    let path = `${location.origin}/libs/monaco-editor/vs`;
 
                     const requireConfig = {
                         paths: {

@@ -45,7 +45,7 @@ switch (action.type) {
 
         case UIActionTypes.REPORT_ERROR: {
             let error = new PlaygroundError(action.payload, action.exception);
-            if (Environment.env === 'DEVELOPMENT') {
+            if (Environment.devMode) {
                 Utilities.log(error);
             }
             return { ...state, errors: [...state.errors, error] };

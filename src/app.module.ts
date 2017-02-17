@@ -45,7 +45,7 @@ export class AppModule {
 
     static async start() {
         try {
-            if (Environment.env === 'PRODUCTION') {
+            if (!Environment.devMode) {
                 enableProdMode();
             }
 

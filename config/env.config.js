@@ -1,7 +1,7 @@
 let {name, version, author} = require('../package.json');
 let _ = require('lodash');
 
-export const build = () => {
+const build = () => {
     let timestamp = new Date().getTime();
 
     return {
@@ -12,7 +12,7 @@ export const build = () => {
     };
 }
 
-export const config = () => {
+const config = () => {
     return {
         local: {
             name: 'LOCAL',
@@ -44,3 +44,6 @@ export const config = () => {
         }
     };
 }
+
+exports.build = build;
+exports.config = config;

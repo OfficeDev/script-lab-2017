@@ -72,27 +72,36 @@ module.exports = {
                 to: 'libs/monaco-editor'
             },
             {
-                from: 'node_modules/office-ui-fabric-js/dist',
-                to: 'libs/office-ui-fabric-js'
+                from: 'node_modules/office-ui-fabric-js/dist/css',
+                to: 'libs/office-ui-fabric-js/css'
+            },
+            {
+                from: 'node_modules/office-ui-fabric-js/dist/js',
+                to: 'libs/office-ui-fabric-js/js'
             },
         ]),
         new HtmlWebpackPlugin({
+            filename: 'index.html',
             template: 'src/index.html',
             chunks: ['polyfills', 'vendor', 'app']
         }),
         new HtmlWebpackPlugin({
+            filename: 'functions.html',
             template: 'src/functions.html',
             chunks: [],
         }),
         new HtmlWebpackPlugin({
+            filename: 'gallery.html',
             template: 'src/gallery.html',
             chunks: [],
         }),
         new HtmlWebpackPlugin({
+            filename: 'heartbeat.html',
             template: 'src/heartbeat.html',
             chunks: [],
         }),
         new HtmlWebpackPlugin({
+            filename: 'refresh.html',
             template: 'src/refresh.html',
             chunks: [],
         })
