@@ -90,3 +90,15 @@ interface ISettings {
     language: string,
     env: string
 }
+
+export interface IOuterTemplateData {
+    snippetName: string;
+    snippetAuthor: string;
+    iframeContent: string;
+    hostLowercase: string;
+    returnUrl: string;
+    refreshUrl: string;
+    OfficeJsRefIfAny: string;
+    isOfficeSnippet: boolean;
+    addPaddingRight: boolean;
+}

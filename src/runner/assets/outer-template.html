@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en" style="height: 100%">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{snippetName}}</title>
+	<meta name="author" content="{{snippetAuthor}}">
+
+	<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			color: #333;
+		}
+
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			display: -ms-flex;
+			display: -webkit-flex;
+			display: flex;
+			flex-direction: column;
+			-ms-flex-direction: column;
+			-webkit-flex-direction: column;
+		}
+
+		#header {
+			display: block;
+			flex: 0 0 40px;
+			-ms-flex: 0 0 40px;
+			-webkit-flex: 0 0 40px;
+			height: 40px;
+			width: 100%;
+			padding: 0;
+			border: 0;
+			overflow: hidden;
+			box-sizing: border-box;
+		}
+
+		#snippet-title {
+			flex-grow: 1;
+			-ms-flex-grow: 1;
+			-webkit-flex-grow: 1;
+			width: 0px;
+		}
+
+			#snippet-title span {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				cursor: default;
+			}
+
+		.command__bar {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+			-webkit-flex: 0 0 40px;
+			-ms-flex: 0 0 40px;
+			flex: 0 0 40px;
+			width: 100%;
+			height: 40px;
+		}
+
+		.command__bar.padding-right {
+            box-sizing: border-box;
+			padding-right: 20px;
+        }
+
+		.command__icon {
+			height: auto !important;
+		}
+
+		.command__icon span, .command__icon i {
+			color: white;
+		}
+
+		.command__icon, .command__title {
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+			padding: 12px;
+			position: relative;
+		}
+
+		.clickable {
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+		.command__icon i+span, .command__icon img+span, .command__title {
+			width: auto;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		.command__icon i+span, .command__icon img+span {
+			max-width: auto;
+			max-width: 200px;
+			margin-left: 7.5px;
+		}
+
+		#snippet-container {
+			width: 100%;
+			border: 0;
+			box-sizing: border-box;
+			overflow: hidden;
+			flex: 1 1 300px;
+			-webkit-flex: 1 1 300px;
+			-ms-flex: 1 1 300px;
+
+			/* hidden on initial load */
+			display: none;
+		}
+
+		#iframe-code-content {
+			display: none;
+		}
+
+		iframe#FirebugUI {
+			z-index: 1000 !important; /* so that doesn't conflict with loader */
+			position: static !important;
+			box-sizing: border-box;
+		}
+
+		#progress {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			display: flex;
+			z-index: 1001;
+		}
+
+		.fullpage__main {
+			height: 100%;
+			padding: 15px;
+			box-sizing: border-box;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+		}
+
+		.ms-progress-component__title {
+			text-align: center;
+			padding: 0 15px;
+			color: #666;
+		}
+
+		.ms-progress-component__sub-title {
+			text-align: center;
+			padding: 15px;
+			color: #999;
+		}
+
+
+		/*Themed versions*/
+        .excel-theme .clickable:hover {
+            background-color: #164b2e;
+        }
+        .excel-theme .command__bar {
+			background-color: rgba(33, 115, 70, 1);
+		}
+        .word-theme .clickable:hover {
+            background-color: #204072;
+        }
+        .word-theme .command__bar {
+			background-color: rgba(43, 87, 154, 1);
+		}
+        .powerpoint-theme .clickable:hover {
+            background-color: #8e3720;
+        }
+        .powerpoint-theme .command__bar {
+			background-color: rgba(183, 71, 42, 1);
+		}
+        .onenote-theme .clickable:hover {
+            background-color: #5d2959;
+        }
+        .onenote-theme .command__bar {
+			background-color: rgba(128, 57, 123, 1);
+		}
+        .web-theme .clickable:hover {
+            background-color: #005ca4;
+        }
+        .web-theme .command__bar {
+			background-color: rgba(0, 120, 215, 1);
+		}
+	</style>
+
+	<!--Progress style-->
+	<style>
+		.ms-progress-component {
+			height: 100%;
+			width: 100%;
+			background-color: #fff;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+		}
+
+		.app main {
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+			height: 100vh;
+			width: 100%;
+		}
+
+		.ms-progress-component__logo {
+			height: 100px;
+			margin-bottom: 15px;
+		}
+
+		.ms-progress-component__footer {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+			margin-bottom: 75px;
+		}
+
+		/* loader by https://codepen.io/magnus16/pen/BKoRNw */
+		#cs-loader {
+			width: 100%;
+			height: calc(100% - 40px);
+			position: fixed;
+			z-index: 1001;
+    		background: white;
+		}
+
+		.cs-loader-inner {
+			width: calc(100% - 200px);
+			height: 100%;
+			-webkit-transform: translateY(50%);
+			transform: translateY(50%);
+			color: #f96618;
+			padding: 0 100px;
+			text-align: center;
+		}
+
+		.cs-loader-inner label {
+			font-size: 20px;
+			opacity: 0;
+			display: inline-block;
+		}
+
+		@keyframes lol {
+			0% {
+				opacity: 0;
+				-webkit-transform: translateX(-300px);
+						transform: translateX(-300px);
+			}
+
+			33% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+						transform: translateX(0);
+			}
+
+			66% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+						transform: translateX(0);
+			}
+
+			100% {
+				opacity: 0;
+				-webkit-transform: translateX(300px);
+						transform: translateX(300px);
+			}
+		}
+
+		@-webkit-keyframes lol {
+			0% {
+				opacity: 0;
+				-webkit-transform: translateX(-300px);
+			}
+
+			33% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+			}
+
+			66% {
+				opacity: 1;
+				-webkit-transform: translateX(0);
+			}
+
+			100% {
+				opacity: 0;
+				-webkit-transform: translateX(300px);
+			}
+		}
+
+		.cs-loader-inner label:nth-child(6) {
+			-webkit-animation: lol 3s infinite ease-in-out;
+					animation: lol 3s infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(5) {
+			-webkit-animation: lol 3s 100ms infinite ease-in-out;
+					animation: lol 3s 100ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(4) {
+			-webkit-animation: lol 3s 200ms infinite ease-in-out;
+					animation: lol 3s 200ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(3) {
+			-webkit-animation: lol 3s 300ms infinite ease-in-out;
+					animation: lol 3s 300ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(2) {
+			-webkit-animation: lol 3s 400ms infinite ease-in-out;
+					animation: lol 3s 400ms infinite ease-in-out;
+		}
+
+		.cs-loader-inner label:nth-child(1) {
+			-webkit-animation: lol 3s 500ms infinite ease-in-out;
+					animation: lol 3s 500ms infinite ease-in-out;
+		}
+	</style>
+</head>
+
+<body class="{{hostLowercase}}-theme">
+	<div id="header">
+		{{#if addPaddingRight}}
+		<div class="command__bar padding-right">
+		{{else}}
+		<div class="command__bar">
+		{{/if}}
+			<a class="command__icon clickable" href="{{returnUrl}}">
+				<i class="ms-Icon ms-Icon--Back"></i>
+				<span class="ms-font-m">Back</span>
+			</a>
+
+			<div id="snippet-title" class="command__icon">
+				<span class="ms-font-m">{{snippetName}}</span>
+			</div>
+
+			<a class="command__icon clickable" href="{{refreshUrl}}">
+				<i class="ms-Icon ms-Icon--Refresh"></i>
+				<span class="ms-font-m">Reload</span>
+			</a>
+		</div>
+	</div>
+
+	<pre id="iframe-code-content">
+{{iframeContent}}
+	</pre>
+
+	<app id="progress">
+		<div class="ms-progress-component">
+			<main class="fullpage__main">
+				<img class="ms-progress-component__logo" src="https://addin-playground.azureedge.net/assets/icon-large.png">
+				<h1 class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
+				<p class="ms-progress-component__sub-title ms-font-m">Loading "{{snippetName}}"</p>
+			</main>
+			<footer class="ms-progress-component__footer">
+				<div class="ms-progress">
+					<div class="cs-loader">
+						<div class="cs-loader-inner">
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</app>
+
+	<iframe id="snippet-container">
+	</iframe>
+
+
+{{#if isOfficeSnippet}}
+	<script src="{{{OfficeJsRefIfAny}}}"></script>
+
+{{/if}}
+	<script>
+		(function() {
+			window.editorUrl = determineEditorUrl();
+
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = window.editorUrl + '/assets/firebug/firebug-lite-debug.js#startOpened';
+			document.getElementsByTagName('head')[0].appendChild(script);
+
+			waitForFirebugLoaded(function() { onFirebugLoaded(); });
+			
+			function waitForFirebugLoaded(callback) {
+				if (window.firebugLiteIsLoaded) {
+					callback();
+				} else {
+					setTimeout(function() { waitForFirebugLoaded(callback); }, 100);
+				}
+			}
+
+			function onFirebugLoaded() {
+				var iframe = document.getElementById('snippet-container');
+				var iframeWindow = iframe.contentWindow;
+
+				window.playgroundInitialize = function() {
+					iframeWindow.console = window.console;
+	{{#if isOfficeSnippet}}
+
+					iframeWindow['Office'] = window['Office'] || { };
+	{{/if}}
+				}
+
+				window.playgroundLoaded = function() {
+					Firebug.chrome.open();
+
+	{{#if isOfficeSnippet}}
+					['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(
+						function(namespace) {
+							iframeWindow[namespace] = window[namespace];
+						}
+					);
+	{{/if}}
+					iframe.style.display = 'block';
+
+					document.getElementById('progress').style.display = 'none';
+				}
+
+				var content = document.getElementById('iframe-code-content').textContent;
+
+				iframeWindow.document.open();
+
+				iframeWindow.onerror = function () {
+					console.error(arguments);
+				};
+
+				iframeWindow.document.write(content);
+				iframeWindow.document.close();
+			};
+
+			function determineEditorUrl() {
+				if (window.location.host === 'localhost:8080') {
+					return 'http://localhost:3000';
+				}
+				if (window.location.host === 'addin-playground-runner-staging.azurewebsites.net') {
+					return 'https://addin-playground-staging.azurewebsites.net';
+				}
+				
+				return 'https://addin-playground.azureedge.net';			
+			}
+		})();
+	</script>
+</body>
+
+</html>
