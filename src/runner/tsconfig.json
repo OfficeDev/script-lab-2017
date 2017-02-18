@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "outDir": "../../dist/runner",
     "noImplicitReturns": true,
     "lib": [
