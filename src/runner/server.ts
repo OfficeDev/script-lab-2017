@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/', async (req: express.Request, res: express.Response) => {
+    req;
     fs.readFile(path.resolve(`${__dirname}/assets/editor-runner.html`), 'UTF8', (err, data) => {
         if (err != null) {
             return handleError(err, res);
@@ -60,6 +61,7 @@ app.post('/auth/:env', async (req: express.Request, res: express.Response) => {
                 state
             }
         }, (error, httpResponse, body) => {
+            httpResponse;
             if (error) {
                 return handleError(new RunnerError('Error retrieving GitHub access token', error), res);
             }

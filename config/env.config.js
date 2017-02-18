@@ -18,8 +18,8 @@ const config = () => {
             name: 'LOCAL',
             clientId: '95435036e70d23b8549f',
             instrumentationKey: null,
-            tokenUrl: 'https://localhost:3200/auth',
-            runnerUrl: 'https://localhost:3200',
+            tokenUrl: 'http://localhost:3200/auth',
+            runnerUrl: 'http://localhost:3200',
         },
         edge: {
             name: 'EDGE',

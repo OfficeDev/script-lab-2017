@@ -5,7 +5,7 @@ export const config = {
     dev: {
         client_id: '95435036e70d23b8549f',
         client_secret: '',
-        redirect_uri: 'https://localhost:3000'
+        redirect_uri: 'http://localhost:3000'
     },
     prod: {
         client_id: '8d19e9bbcea2a1cee274',

@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as express from 'express';
 import * as handlebars from 'handlebars';
-import * as appInsights from 'applicationinsights';
 import { CompiledSnippet } from './snippet.generator';
 import { Utilities } from './Utilities';
 
@@ -34,9 +32,9 @@ export class TemplateGenerator {
 export class SnippetTemplateGenerator {
     static createOuterTemplateContext(
         frameContent: string,
-        data: ISnippet,
+        data: any,
         compiledSnippet: CompiledSnippet
-    ): IOuterTemplateData {
+    ) {
         return {
             snippetName: compiledSnippet.name,
             snippetAuthor: compiledSnippet.author,
@@ -46,14 +44,14 @@ export class SnippetTemplateGenerator {
             refreshUrl: generateRefreshUrl(),
             OfficeJsRefIfAny: compiledSnippet.officeJsRefIfAny,
             isOfficeSnippet: compiledSnippet.isOfficeSnippet,
-            addPaddingRight: data.platform === "PC"
-        }
+            addPaddingRight: data.platform === 'PC'
+        };
 
         function generateRefreshUrl(): string {
             const propsToSkipOver = {
                 snippet: true,
                 refreshUrl: true
-            }
+            };
 
             let params = [];
 

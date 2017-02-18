@@ -224,7 +224,7 @@ export class SnippetEffects {
 
             function determineRunnerUrl() {
                 if (window.location.host === 'localhost:3000') {
-                    return 'https://localhost:8080';
+                    return 'http://localhost:3200';
                 }
 
                 if (window.location.host === 'addin-playground-staging.azurewebsites.net') {

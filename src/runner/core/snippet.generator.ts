@@ -3,7 +3,7 @@ import { Utilities } from './utilities';
 import { RunnerError } from './runner-error';
 
 export class SnippetGenerator {
-    static async compile(snippet: ISnippet): Promise<CompiledSnippet> {
+    static async compile(snippet): Promise<CompiledSnippet> {
         if (snippet == null) {
             throw new Error('Snippet was null');
         }
@@ -141,7 +141,7 @@ export class CompiledSnippet {
     id: string;
     author: string;
 
-    constructor(public snippet: ISnippet) {
+    constructor(public snippet) {
         this.scriptReferences = [];
         this.linkReferences = [];
         this.typings = [];

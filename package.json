@@ -21,11 +21,12 @@
   "version": "1.0.0",
   "scripts": {
     "clean": "rimraf dist && rimraf runner",
-    "copy-runner": "cpx \"src/runner/**/!(*.ts)\" dist/runner",
-    "tsc-runner": "tsc -p src/runner/tsconfig.json",
-    "start-runner": "npm run clean && npm run tsc-runner && npm run copy-runner && nodemon dist/runner/server.js",
+    "copy-runner": "cpx \"src/runner/**/!(*.ts)\" dist/runner --watch",
+    "tsc-runner": "tsc -p src/runner/tsconfig.json --watch",
+    "compile-runner": "npm run clean && concurrently \"npm run tsc-runner\" \"npm run copy-runner\"",
     "start-editor": "webpack-dev-server --config config/webpack.dev.js --progress",
-    "start": "concurrently \"npm run start-editor\" \"npm run start-runner\"",
+    "start": "concurrently \"npm run start-editor\" \"npm run compile-runner\"",
+    "server": "nodemon dist/runner/server.js",
     "build": "npm run clean && webpack --config config/webpack.prod.js --colors --progress --bail"
   },
   "license": "MIT",
