@@ -1,0 +1,45 @@
+@import 'vars';
+@import 'mixins';
+@import 'fabric';
+@import 'components';
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+*[hidden] {
+    display: none !important;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    color: $foreground-primary;
+}
+
+body {
+    position: relative;
+    min-width: 320px;
+    min-height: 430px;
+}
+
+main {
+    height: 100%;
+}
+
+footer {
+    width: 100%;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    padding: 0;
+}
