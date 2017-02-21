@@ -1,7 +1,7 @@
 declare let PLAYGROUND: IEnvironment;
 
 let { devMode, build, config } = PLAYGROUND as IEnvironment;
-let environment;
+let environment: IEnvironmentConfig;
 
 if (devMode) {
     environment = config['local'];

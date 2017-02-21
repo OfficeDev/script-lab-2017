@@ -12,9 +12,9 @@ var buildInfo = build();
 
 module.exports = {
     entry: {
-        'polyfills': './src/editor/polyfills.ts',
-        'vendor': './src/editor/vendor.ts',
-        'app': './src/editor/app.module.ts',
+        'polyfills': './src/polyfills.ts',
+        'vendor': './src/vendor.ts',
+        'app': './src/app.module.ts',
     },
 
     resolve: {
@@ -59,12 +59,12 @@ module.exports = {
         new webpack.BannerPlugin(`v.${buildInfo.name} ${buildInfo.version} © ${buildInfo.author}`),
         new CopyWebpackPlugin([
             {
-                from: './src/editor/assets',
+                from: './src/assets',
                 ignore: ['*.scss'],
                 to: 'assets'
             },
             {
-                from: './src/editor/extras',
+                from: './src/extras',
                 to: ''
             },
             {
@@ -82,27 +82,27 @@ module.exports = {
         ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './src/editor/index.html',
+            template: './src/index.html',
             chunks: ['polyfills', 'vendor', 'app']
         }),
         new HtmlWebpackPlugin({
             filename: 'functions.html',
-            template: './src/editor/functions.html',
+            template: './src/functions.html',
             chunks: [],
         }),
         new HtmlWebpackPlugin({
             filename: 'gallery.html',
-            template: './src/editor/gallery.html',
+            template: './src/gallery.html',
             chunks: [],
         }),
         new HtmlWebpackPlugin({
             filename: 'heartbeat.html',
-            template: './src/editor/heartbeat.html',
+            template: './src/heartbeat.html',
             chunks: [],
         }),
         new HtmlWebpackPlugin({
             filename: 'refresh.html',
-            template: './src/editor/refresh.html',
+            template: './src/refresh.html',
             chunks: [],
         })
     ]

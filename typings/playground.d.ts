@@ -71,16 +71,20 @@ interface IEnvironment {
         author: string;
     },
     config: {
-        [env: string]: {
-            name: string,
-            clientId: string
-            instrumentationKey: string,
-            tokenUrl: string,
-            runnerUrl: string
-        }
+        [env: string]: IEnvironmentConfig
     },
     host?: string,
     platform?: string
+}
+
+interface IEnvironmentConfig {
+    name: string,
+    clientId: string
+    instrumentationKey: string,
+    tokenUrl: string,
+    runnerUrl: string,
+    feedbackUrl: string,
+    samplesUrl: string
 }
 
 interface ISettings {

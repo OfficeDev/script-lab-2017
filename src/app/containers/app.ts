@@ -182,6 +182,6 @@ export class AppComponent {
     }
 
     feedback() {
-        window.open('https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u');
+        window.open(Environment.config.feedbackUrl);
     }
 }

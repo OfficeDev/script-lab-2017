@@ -9,7 +9,7 @@ module.exports = webpackMerge(commonConfig, {
     devtool: 'inline-source-map',
 
     output: {
-        path: path.resolve('dist/runner'),
+        path: path.resolve('dist'),
         filename: '[name].[hash].js',
         chunkFilename: '[name].[hash].chunk.js'
     },
@@ -17,7 +17,7 @@ module.exports = webpackMerge(commonConfig, {
     tslint: {
         emitErrors: true,
         failOnHint: true,
-        resourcePath: path.resolve('src/editor')
+        resourcePath: path.resolve('src')
     },
 
     plugins: [
@@ -54,6 +54,6 @@ module.exports = webpackMerge(commonConfig, {
             aggregateTimeout: 300,
             poll: 1000
         },
-        outputPath: path.resolve('dist/runner')
+        outputPath: path.resolve('dist')
     }
 });
