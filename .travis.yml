@@ -1,0 +1,25 @@
+language: node_js
+
+cache:
+  directories:
+  - node_modules
+
+node_js:
+- 6.9.4
+
+install:
+- npm install
+
+script:
+- npm run build
+
+deploy:
+- provider: azure_web_apps
+  username: bhkrish
+  password:
+    secure: GIpJrqQ6YHx0KDXsTIUW19FuyEZBm2BthbOEz86OvRm70FXnjnN/hjt0BNn3YEGHgMFvqmssfbG1WD8FJyMUs5IybUT3Zcukly2EiILTeFxkCzu63FPlXLsmysiBSgHtawzTPLD5YEM6CLPlCDt17QYPvPIwyOIQPdPILI5n2nfx0dR71slbSMzxdgEynTBzccz4jG5QjCEX+fs1aH3h26coKwbNN/izQ22UbA62cHNAq9LQ/q/FF3jxYUUMNSUDTvdrcU3FCmoDIJ2DntNBLmlgcal5u6teUJGuXNTAJJf3O/7Yh03E2yfAqHCuAmp0YScaTi1Vwp86fQcXWDmCv2cdPpQsz6AAY9l2dxDn/Qm0mCBzDUpgbr4QbbVF9+f3hIhVGwsxQcgOei53BLFvAojj8Yei1jqmnjXUf0Z2rIarIXwy5fX/EUl4veRW8lI6z6Fgd/eaULzhl0n8Wy9A7yTPf3lT353SyE2kg7ko3nkhbRkt/xb12MxShnzh7df/XANYndC7Vot0jnPGIkwgg6EOhEmFDRB3mtb4NLQUtdzfIx3Ysb4UCb24WaM8ny7Cyvcj1gyzUxJ4BEf0puwUrgfhl/gGOsNktttOEid02voHJ3zkYN5Y3QjiESpo9RweAylBt6V2h2FLiuxuCGES3ricDfW0OLwOv6nP2YwLihg=
+  site: bornholm
+  slot: bornholm-edge
+  skip_cleanup: true
+  on:
+    branch: build
