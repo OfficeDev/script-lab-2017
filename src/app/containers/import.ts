@@ -29,8 +29,8 @@ import isEmpty = require('lodash/isEmpty');
                 </ul>
                 <div class="gallery__tabs-container">
                     <section class="import-tab__section" [hidden]="view !== 'snippets'">
-                        <h1 class="ms-font-xl import__title">Snippets</h1>
-                        <p class="ms-font-m import__subtitle">Choose from the snippets that you have created.</p>
+                        <h1 class="ms-font-xxl import__title">Snippets</h1>
+                        <p class="ms-font-l import__subtitle">Choose from the snippets that you have created.</p>
                         <collapse title="My local snippets">
                             <gallery-list [current]="current$|async" [items]="snippets$|async" (select)="import($event)">
                                 You have no snippets. To get started, create a new snippet or use the import option to load a snippet from various sources.
@@ -39,7 +39,8 @@ import isEmpty = require('lodash/isEmpty');
                         <collapse title="My shared gists">
                             <gallery-list [items]="gists$|async" (select)="import($event, 'gist')">
                                 <div [hidden]="(isLoggedIn$|async)">
-                                    <button class="ms-Dialog-action ms-Button" (click)="login() ">
+                                    <p class="ms-font-m import__subtitle">Please sign in to GitHub so that we can get your playground gists.</p>
+                                    <button class="ms-Button" (click)="login() ">
                                         <span class="ms-Button-label">Sign in to GitHub</span>
                                     </button>
                                 </div>
@@ -50,16 +51,16 @@ import isEmpty = require('lodash/isEmpty');
                         </collapse>
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'samples'">
-                        <h1 class="ms-font-xl import__title">Samples</h1>
-                        <p class="ms-font-m import__subtitle">Choose from one of the predefined samples below to get started.</p>
+                        <h1 class="ms-font-xxl import__title">Samples</h1>
+                        <p class="ms-font-l import__subtitle">Choose from one of the predefined samples below to get started.</p>
                         <gallery-list title="Microsoft" [items]="templates$|async" (select)="import($event, 'gist')">
                             There are currently no samples available for this host. Be sure to check back later.
                         </gallery-list>
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'import'">
-                        <h1 class="ms-font-xl import__title">Import</h1>
+                        <h1 class="ms-font-xxl import__title">Import</h1>
                         <collapse title="Import using a snippet url">
-                            <p class="ms-font-m import__subtitle">Paste the snippet's URL or ID into the text area below, and then choose the "Import" button.</p>
+                            <p class="ms-font-l import__subtitle">Paste the snippet's URL or ID into the text area below, and then choose the "Import" button.</p>
                             <div class="ms-TextField import__field">
                                 <label class="ms-Label">Url or gist id</label>
                                 <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="Enter your url or gist id here" >
@@ -74,7 +75,7 @@ import isEmpty = require('lodash/isEmpty');
                             </ol>
                         </collapse>
                         <collapse title="Import using a snippet yaml" collapsed="false">
-                            <p class="ms-font-m import__subtitle">Paste the snippet's yaml into the text area below, and then choose the "Import" button.</p>
+                            <p class="ms-font-l import__subtitle">Paste the snippet's yaml into the text area below, and then choose the "Import" button.</p>
                             <div class="ms-TextField ms-TextField--multiline import__field">
                                 <label class="ms-Label">Snippet Yaml</label>
                                 <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>

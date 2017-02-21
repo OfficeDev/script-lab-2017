@@ -3,7 +3,7 @@ import { Environment } from '../../environment';
 import { Utilities } from '@microsoft/office-js-helpers';
 
 AppInsights.downloadAndSetup({
-    instrumentationKey: Environment.config.instrumentation_key,
+    instrumentationKey: Environment.config.instrumentationKey,
     autoTrackPageVisitTime: true
 });
 
