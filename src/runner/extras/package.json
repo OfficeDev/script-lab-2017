@@ -11,7 +11,8 @@
   "keywords": [
     "Office",
     "API",
-    "Playground"
+    "Playground",
+    "Runner"
   ],
   "author": "Microsoft",
   "bugs": {
@@ -28,8 +29,6 @@
     "body-parser": "^1.16.1",
     "handlebars": "^4.0.6",
     "express": "^4.14.1",
-    "js-beautify": "^1.6.9",
-    "uuid": "^3.0.1",
     "applicationinsights": "^0.18.0"
   }
 }
