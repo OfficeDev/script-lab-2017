@@ -1,15 +1,21 @@
 language: node_js
+
 cache:
   directories:
   - node_modules
+
 node_js:
 - 6.9.4
+
 install:
 - npm install
+
 script:
 - npm run build-dev
+
 before_deploy:
 - rimraf node_modules
+
 deploy:
 - provider: azure_web_apps
   verbose: true
@@ -18,7 +24,3 @@ deploy:
   skip_cleanup: true
   on:
     branch: build
-env:
-  global:
-  - secure: DYFfuq/rn7iZUi7Wh8LpUJX7MmahxABDwx3yH1U3aQBrIR/uWsMbVkZequ8ER1Q6qEQEyJQ2g2PsNHql8RmQw0NiRlfHAtlpKvFrsBexH6AbROHi6ygIarbsE8lpCxg80csJ8vqYm712QvOZDtCZ2m73j7HPzt46r7i6o4DJXPdj41mhJ28i0VMHnFoafjuSqEId5aPuA36tlPDJ5LWXBdaARcEXZqHqr3M6BkSUPu2A95oAqFtuh8USpFix/hxDmQ1DQUKIhfXXNLXsRIYFS6ZcNGUbdgNcydzTubBYiffabYbvK0NQ4dP4r/2ig87AGlzR/PhBicXmUCxHo9/UxcwZoTqYHn82O1WsT2d+Xu9tw9ujkU9EBkIwTJpF4u6/g69uwW1u4FUu0RHjTYpn8m+3sQzQUxK3RurjcO0RtbRrNFzBXItegDLqDL31yTRsPdxi6mqDMhT9kVSNRAND4DznkR+P6uMLF3jSWIhplTj3HaZ3iLrVmoa3tbjLTzt8CgbMa9TGHjRX2CN06A5LvDkrAwlKP8EgdDuxFSQJ+GU6r/N1nuhjvojOlXkdE3+0PagOLxRzGjzG6X1zz0yk1VNrc/DpkEgqqyD2gr+gy5QfvAwyKCK0q0E15w2RqysbBBdfjyrJxyLQJjNK6gNGjIt9PvX8UJpQDFPQPLZQmaU=
-  - secure: 5ucovcRq2vFEgL/h41S7jDof/6iHLPKStX+BRoRd7FTB0JcmXV+YFg/1xFPjStQnC1WP/9q2IbD6l6JtGdvJPVtBAgfKyD8iaKE7CfQ1izlZqpiplQty5ZsOrKE3YnbtjMZH0ZETunA+0zIlmt3cOU1gYtggFUjd8yUnhO5LI5076n7waCfzZqXa8CVQWoChd4yjYKn1bDXDcjQgoqr1BzZHW+4t7xUJfKCQKlqLQhP91aQn6od2ycewHG9GGBUo1jC0NmHOTDs1twM2wr6annbYlwzjqun/BFE1WorYo0g/GvtHtes90RC5mZ5J0Af18nmCXfyGKNTQeRHoADLf1bthouJInrI2xX6dEDLhrW/ljIqkzl9XqSSSw+C7t1Tt3mP2tnaAJbeI5l7NVqI5n0riizXlMK9C/MDWb47Lnfe5puP14BmelbhXO0/FGuTCaRkHZpv5/pQ4gmgnBsaz5qnA2c1nGjTqXRBGDs6CUA8doEjJ+v7RA0FhcubORc84yAm4ijCDrCiMeBH4v2NCUFTmiSd29JqWmX/QqwmdEYnuB0rqCzTMxrmKDBU7YxuCCJgD1n3x6aeykOhEXoVsFEdiXpQ177i2Eucp5yT628mAClOj+It4ftXCPkORnXhopfUUxVRt1qbQzjQ6Ct93+FPsbrN8xZGkMQaJUw7wzUs=
