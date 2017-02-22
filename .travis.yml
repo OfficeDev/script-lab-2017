@@ -17,10 +17,4 @@ before_deploy:
 - rimraf node_modules
 
 deploy:
-- provider: azure_web_apps
-  verbose: true
-  site: bornholm
-  slot: bornholm-edge
-  skip_cleanup: true
-  on:
-    branch: build
+- node config/deploy.js
