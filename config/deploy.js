@@ -72,8 +72,7 @@ try {
         .checkout('HEAD')
         .add(['.', '-A', '-f'])
         .reset(['--', 'node_modules/**'])
-        .commit(TRAVIS_COMMIT_MESSAGE)
-        .then(() => log('Pushing to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net'))
+        .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
         .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
             if (err) {
                 return exit('Deployment failed. Please fix the build and try again.', true);
