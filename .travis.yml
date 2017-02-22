@@ -11,10 +11,5 @@ install:
 - npm install
 
 script:
-- npm run build-dev
-
-before_deploy:
-- rimraf node_modules
-
-deploy:
-- node config/deploy.js
+- npm run build
+- node run deploy

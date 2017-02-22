@@ -45,8 +45,9 @@ console.log(chalk.bold.green('Deploying to ' + url));
 
 try {
     git.checkout('HEAD')
-        .add(['.', '-a', '-f'])
-        .commit('Skip Cleanup Commit')
+        .add(['-u', '-f'])
+        .reset(['--', 'node_modules/**'])
+        .commit('Deployment commit')
         .push(['-f', '-q', url, 'HEAD:refs/heads/master'])
         .then(
         () => exit('Successfully deployed to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net'),
