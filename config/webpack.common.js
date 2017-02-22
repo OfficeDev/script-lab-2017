@@ -8,8 +8,6 @@ var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
 var {build, config, whilelistPlugins} = require('./env.config');
 
-var buildInfo = build();
-
 module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
@@ -48,15 +46,15 @@ module.exports = {
         return [autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }), perfectionist];
     },
 
-    build: buildInfo,
-    config: config(),
+    build: build,
+    config: config,
 
     plugins: [
         new CheckerPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'app'].reverse()
         }),
-        new webpack.BannerPlugin(`v.${buildInfo.name} ${buildInfo.version} © ${buildInfo.author}`),
+        new webpack.BannerPlugin(`v.${build.name} ${build.version} © ${build.author}`),
         new CopyWebpackPlugin([
             {
                 from: './src/assets',
