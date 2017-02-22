@@ -68,7 +68,7 @@ try {
     git.addConfig('user.name', 'Travis CI')
         .addConfig('user.email', AZURE_WA_USERNAME + 'microsoft.com')
         .checkout('HEAD')
-        .add(['.', '-a', '-f'])
+        .add(['.', '-A', '-f'])
         .reset(['--', 'node_modules/**'])
         .status()
         .commit('Deployment commit')
