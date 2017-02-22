@@ -62,23 +62,33 @@ let url = 'https://'
     + slot + '.scm.azurewebsites.net:443/'
     + AZURE_WA_SITE + '.git';
 
-console.log(chalk.bold.green('Deploying to ' + AZURE_WA_SITE + '-' + slot));
+log('Deploying to ' + AZURE_WA_SITE + '-' + slot);
 
 try {
     git.addConfig('user.name', 'Travis CI')
         .addConfig('user.email', AZURE_WA_USERNAME + 'microsoft.com')
         .checkout('HEAD')
-        .add(['-u', '-f'])
+        .add(['.', '-a', '-f'])
         .reset(['--', 'node_modules/**'])
+        .status()
         .commit('Deployment commit')
-        .push(['-f', '-q', url, 'HEAD:refs/heads/master'])
-        .then(
-        () => exit('Successfully deployed to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net'),
-        (error) => exit(error, true)
-        );
+        .then(() => log('Pushing to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net'))
+        .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
+            if (err) {
+                return exit(err, true);
+            }
+        })
+        .then(() => {
+            console.log(chalk.bold.green('Successfully deployed to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net'))
+            process.exit(0);
+        });
 }
 catch (error) {
     exit(error, true);
+}
+
+function log(message) {
+    console.log(chalk.bold.cyan(message));
 }
 
 function exit(reason, abort) {
