@@ -18,10 +18,19 @@ if (!slot) {
     exit('Invalid branch name. Skipping deploy', true);
 }
 
+switch (slot) {
+    case 'master':
+    case 'dev':
+    case 'edge':
+    case 'build':
+        slot = 'edge';
+        break;
+}
+
 /* Check if there is a configuration defined inside of config/env.config.js. */
 let buildConfig = config[slot];
 if (buildConfig == null || slot === 'local') {
-    exit('No deploy configuration found for ' + slot + '. Skipping deploy');
+    exit('No deployment configuration found for ' + slot + '. Skipping deploy');
 }
 
 /* If 'production' then apply the pull request only constraint. */
