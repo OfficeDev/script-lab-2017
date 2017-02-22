@@ -5,10 +5,10 @@ let _ = require('lodash');
 let { build, config } = require('./env.config');
 let git = require('simple-git')();
 
-let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_TEST_RESULT, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSOWRD } = process.env;
+let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSOWRD } = process.env;
 
 /* Check if the code is running inside of travis.ci. If not abort immediately. */
-if (!TRAVIS || TRAVIS_TEST_RESULT) {
+if (!TRAVIS) {
     exit('Not running inside of Travis. Skipping deploy', true);
 }
 
