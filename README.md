@@ -1,5 +1,5 @@
 # Welcome to the Playground!
-[![Build Status](https://travis-ci.org/OfficeDev/addin-playground.svg?branch=build)](https://travis-ci.org/OfficeDev/addin-playground)
+[![Build Status](https://travis-ci.com/OfficeDev/addin-playground.svg?token=zKp5xy2SuSortMzv5Pqc&branch=build)](https://travis-ci.com/OfficeDev/addin-playground)
 
 ## Noteworthy changes:
 
