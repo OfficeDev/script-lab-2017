@@ -5,7 +5,9 @@ let _ = require('lodash');
 let { build, config } = require('./env.config');
 let git = require('simple-git')();
 
-let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+let {USER, TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_COMMIT_MESSAGE, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+
+log('Processing commit: ' + TRAVIS_COMMIT_MESSAGE + ' by ' + USER);
 
 /* Check if the code is running inside of travis.ci. If not abort immediately. */
 if (!TRAVIS) {
@@ -65,13 +67,11 @@ let url = 'https://'
 log('Deploying to ' + AZURE_WA_SITE + '-' + slot);
 
 try {
-    git.addConfig('user.name', 'Travis CI')
-        .addConfig('user.email', AZURE_WA_USERNAME + 'microsoft.com')
+    git.addConfig('user.name', USER || 'Travis CI')
         .checkout('HEAD')
         .add(['.', '-A', '-f'])
         .reset(['--', 'node_modules/**'])
-        .status()
-        .commit('Deployment commit')
+        .commit(TRAVIS_COMMIT_MESSAGE)
         .then(() => log('Pushing to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net'))
         .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
             if (err) {
