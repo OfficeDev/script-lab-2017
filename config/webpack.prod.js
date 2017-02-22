@@ -1,6 +1,5 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var path = require('path');
@@ -17,7 +16,7 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     htmlLoader: {
-        minimize: false // workaround for ng2
+        minimize: false
     },
 
     plugins: [
@@ -28,26 +27,12 @@ module.exports = webpackMerge(commonConfig, {
                 keep_fnames: true
             }
         }),
-        new CopyWebpackPlugin([
-            {
-                from: 'node_modules/monaco-editor',
-                to: 'monaco-editor'
-            },
-            {
-                from: 'src/extras',
-                to: ''
-            },
-            {
-                from: '*.html',
-                to: ''
-            }
-        ]),
         new ExtractTextPlugin('[name].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
-                env: 'PRODUCTION',
-                build: commonConfig.meta,
-                auth: commonConfig.auth
+                devMode: false,
+                build: commonConfig.build,
+                config: commonConfig.config
             })
         })
     ]

@@ -62,23 +62,29 @@ interface IEvent<T> {
     data: T
 }
 
-interface IGlobalConfig {
-    env: 'DEVELOPMENT' | 'PRODUCTION';
+interface IEnvironment {
+    devMode: boolean;
     build: {
         name: string;
         version: string;
         timestamp: number;
         author: string;
     },
-    auth: {
-        [env: string]: {
-            token_url: string,
-            instrumentation_key: string,
-            client_id: string
-        }
+    config: {
+        [env: string]: IEnvironmentConfig
     },
     host?: string,
     platform?: string
+}
+
+interface IEnvironmentConfig {
+    name: string,
+    clientId: string
+    instrumentationKey: string,
+    tokenUrl: string,
+    runnerUrl: string,
+    feedbackUrl: string,
+    samplesUrl: string
 }
 
 interface ISettings {
@@ -87,4 +93,16 @@ interface ISettings {
     theme: boolean,
     language: string,
     env: string
+}
+
+interface IOuterTemplateData {
+    snippetName: string;
+    snippetAuthor: string;
+    iframeContent: string;
+    hostLowercase: string;
+    returnUrl: string;
+    refreshUrl: string;
+    OfficeJsRefIfAny: string;
+    isOfficeSnippet: boolean;
+    addPaddingRight: boolean;
 }

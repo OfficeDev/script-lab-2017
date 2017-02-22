@@ -35,7 +35,7 @@ export class SnippetEffects {
         libraries: ''
     };
 
-    private _samplesRepoUrl = 'https://raw.githubusercontent.com/WrathOfZombies/samples/deployment';
+    private _samplesRepoUrl = Environment.config.samplesUrl;
 
     constructor(
         private actions$: Actions,
@@ -175,7 +175,7 @@ export class SnippetEffects {
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy);
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDupeError , exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDupeError, exception)));
 
     @Effect()
     delete$: Observable<Action> = this.actions$
@@ -220,19 +220,7 @@ export class SnippetEffects {
                 platform: Environment.platform
             };
 
-            post(determineRunnerUrl(), { data: JSON.stringify(postData) });
-
-            function determineRunnerUrl() {
-                if (window.location.host === 'localhost:3000') {
-                    return 'https://localhost:8080';
-                }
-
-                if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
-                    return 'https://addin-playground-runner-staging.azurewebsites.net';
-                }
-
-                return 'https://addin-playground-runner.azurewebsites.net';
-            }
+            post(Environment.config.runnerUrl, { data: JSON.stringify(postData) });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 

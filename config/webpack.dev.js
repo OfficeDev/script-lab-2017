@@ -17,42 +17,50 @@ module.exports = webpackMerge(commonConfig, {
     tslint: {
         emitErrors: true,
         failOnHint: true,
-        resourcePath: 'src'
+        resourcePath: path.resolve('src')
     },
 
     plugins: [
         new ExtractTextPlugin('[name].[hash].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
-                env: 'DEVELOPMENT',
-                build: commonConfig.meta,
-                auth: commonConfig.auth
+                devMode: true,
+                build: commonConfig.build,
+                config: commonConfig.config
             })
         }),
         new BrowserSyncPlugin(
-            // BrowserSync options
             {
-                // browse to http://localhost:3000/ during development
-                https: true,
+                https: false,
                 host: 'localhost',
                 port: 3000,
-                // proxy the Webpack Dev Server endpoint
-                // (which should be serving on http://localhost:3100/)
-                // through BrowserSync
-                proxy: 'https://localhost:3100/'
+                proxy: 'http://localhost:3100/'
             },
-            // plugin options
             {
-                // prevent BrowserSync from reloading the page
-                // and let Webpack Dev Server take care of this
                 reload: false
             }
         )
     ],
 
     devServer: {
+        stats: {
+            colors: true,
+            hash: false,
+            version: false,
+            timings: false,
+            assets: false,
+            chunks: false,
+            modules: false,
+            reasons: false,
+            children: false,
+            source: false,
+            errors: true,
+            errorDetails: false,
+            warnings: false,
+            publicPath: false
+        },
         watch: true,
-        https: true,
+        https: false,
         inline: true,
         compress: true,
         port: 3100,

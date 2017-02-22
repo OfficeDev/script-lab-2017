@@ -14,15 +14,15 @@ export class GitHubService {
     private _headers: any;
 
     constructor(private _request: Request) {
-        let {client_id, token_url} = Environment.config;
+        let {clientId, tokenUrl} = Environment.config;
 
         this._profileStorage = new Storage<IBasicProfile>('playground_profile');
         this._authenticator = new Authenticator();
         this._authenticator.endpoints.add('GitHub', {
-            clientId: client_id,
+            clientId: clientId,
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
-            tokenUrl: token_url,
+            tokenUrl: tokenUrl,
             scope: 'gist',
             state: true
         });

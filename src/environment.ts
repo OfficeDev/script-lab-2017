@@ -1,14 +1,21 @@
-declare let PLAYGROUND: IGlobalConfig;
+declare let PLAYGROUND: IEnvironment;
 
-let { env, build, auth } = PLAYGROUND as IGlobalConfig;
+let { devMode, build, config } = PLAYGROUND as IEnvironment;
+let environment: IEnvironmentConfig;
 
-let config = auth['cdn'];
-if (env === 'DEVELOPMENT') {
-    config = auth['dev'];
+if (devMode) {
+    environment = config['local'];
 }
 else {
-    if (/azurewebsites.net/.test(location.origin)) {
-        config = auth['prod'];
+    let {origin} = location;
+    if (/insiders/.test(origin)) {
+        environment = config['insiders'];
+    }
+    else if (/edge/.test(origin)) {
+        environment = config['edge'];
+    }
+    else {
+        environment = config['production'];
     }
 }
 
@@ -27,9 +34,9 @@ console.log(build);
 console.groupEnd();
 
 export const Environment = {
-    env,
+    devMode,
     build,
-    config,
+    config: environment,
     host: null,
     platform: null
 };

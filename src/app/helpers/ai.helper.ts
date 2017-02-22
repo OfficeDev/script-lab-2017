@@ -3,7 +3,7 @@ import { Environment } from '../../environment';
 import { Utilities } from '@microsoft/office-js-helpers';
 
 AppInsights.downloadAndSetup({
-    instrumentationKey: Environment.config.instrumentation_key,
+    instrumentationKey: Environment.config.instrumentationKey,
     autoTrackPageVisitTime: true
 });
 
@@ -16,14 +16,12 @@ class ApplicationInsights {
 
     constructor(private _disable?: boolean) {
         try {
-            this._disable = this._disable || Environment.env !== 'PRODUCTION';
-
-            this.current.config.enableDebug = Environment.env === 'DEVELOPMENT';
-            this.current.config.verboseLogging = Environment.env === 'DEVELOPMENT';
+            this._disable = this._disable || Environment.devMode;
+            this.current.config.enableDebug = this.current.config.verboseLogging = !Environment.devMode;
             this.current._onerror = (message) => console.log(message);
         }
         catch (e) {
-            console.error('Could not initialize AppInsights');
+            console.error('Could not initialize AppInsights.');
         }
     }
 
@@ -32,7 +30,7 @@ class ApplicationInsights {
             this.current.config.disableTelemetry = force || !this._disable;
         }
         catch (e) {
-             console.error(force, 'Could not toggle telemetry');
+            console.error(force, 'Could not toggle telemetry.');
         }
     }
 
@@ -45,7 +43,7 @@ class ApplicationInsights {
      */
     trackException(error, location) {
         try {
-            if (Environment.env === 'DEVELOPMENT') {
+            if (Environment.devMode) {
                 Utilities.log(error);
             }
             this.current.trackException(error.innerError || error, location, {
@@ -55,7 +53,7 @@ class ApplicationInsights {
             });
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including exception info below');
+            console.error('Could not log with AppInsights, including exception info below.');
             console.log(error, location);
         }
     }
@@ -68,13 +66,13 @@ class ApplicationInsights {
     */
     trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
         try {
-            if (Environment.env === 'DEVELOPMENT') {
+            if (Environment.devMode) {
                 console.info(name);
             }
             this.current.trackEvent(name, properties, measurement);
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including tracking info below');
+            console.error('Could not log with AppInsights, including tracking info below.');
             console.log(name, properties, measurement);
         }
     }
@@ -98,7 +96,7 @@ class ApplicationInsights {
             this.current.trackMetric(name, average, sampleCount, min, max, properties)
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including metric info below');
+            console.error('Could not log with AppInsights, including metric info below.');
             console.log(name, average, sampleCount, min, max, properties);
         }
     }
@@ -115,7 +113,7 @@ class ApplicationInsights {
             this.current.setAuthenticatedUserContext(authenticatedUserId, accountId);
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including authenticated user context info below');
+            console.error('Could not log with AppInsights, including authenticated user context info below.');
             console.log(authenticatedUserId, accountId);
         }
     }
