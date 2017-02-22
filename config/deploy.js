@@ -6,11 +6,22 @@ let { build, config } = require('./env.config');
 let git = require('simple-git')();
 
 let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
-console.log(chalk.bold.cyan(AZURE_WA_USERNAME, '@', AZURE_WA_PASSWORD));
 
 /* Check if the code is running inside of travis.ci. If not abort immediately. */
 if (!TRAVIS) {
     exit('Not running inside of Travis. Skipping deploy', true);
+}
+
+if (!_.isString(AZURE_WA_USERNAME)) {
+    exit('"AZURE_WA_USERNAME" is a required global variable', true);
+}
+
+if (!_.isString(AZURE_WA_PASSWORD)) {
+    exit('"AZURE_WA_PASSWORD" is a required global variable', true);
+}
+
+if (!_.isString(AZURE_WA_SITE)) {
+    exit('"AZURE_WA_SITE" is a required global variable', true);
 }
 
 /* Check if the branch name is valid. */
@@ -51,8 +62,7 @@ let url = 'https://'
     + slot + '.scm.azurewebsites.net:443/'
     + AZURE_WA_SITE + '.git';
 
-console.log(chalk.bold.green('Deploying to ' + url));
-//console.log(chalk.bold.green('Deploying to ' + AZURE_WA_SITE + '-' + slot));
+console.log(chalk.bold.green('Deploying to ' + AZURE_WA_SITE + '-' + slot));
 
 try {
     git.addConfig('user.name', 'Travis CI')
