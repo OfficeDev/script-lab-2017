@@ -5,7 +5,8 @@ let _ = require('lodash');
 let { build, config } = require('./env.config');
 let git = require('simple-git')();
 
-let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSOWRD } = process.env;
+let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+console.log(chalk.bold.cyan(AZURE_WA_USERNAME, '@', AZURE_WA_PASSWORD));
 
 /* Check if the code is running inside of travis.ci. If not abort immediately. */
 if (!TRAVIS) {
@@ -45,15 +46,18 @@ if (slot === 'production') {
 
 let url = 'https://'
     + AZURE_WA_USERNAME + ':'
-    + AZURE_WA_PASSOWRD + '@'
+    + AZURE_WA_PASSWORD + '@'
     + AZURE_WA_SITE + '-'
     + slot + '.scm.azurewebsites.net:443/'
     + AZURE_WA_SITE + '.git';
 
 console.log(chalk.bold.green('Deploying to ' + url));
+//console.log(chalk.bold.green('Deploying to ' + AZURE_WA_SITE + '-' + slot));
 
 try {
-    git.checkout('HEAD')
+    git.addConfig('user.name', 'Travis CI')
+        .addConfig('user.email', AZURE_WA_USERNAME + 'microsoft.com')
+        .checkout('HEAD')
         .add(['-u', '-f'])
         .reset(['--', 'node_modules/**'])
         .commit('Deployment commit')
