@@ -65,7 +65,7 @@ let url = 'https://'
 log('Deploying to ' + AZURE_WA_SITE + '-' + slot);
 
 try {
-    git.outputHandler((command, stdout) => stdout.pipe(process.stdout))
+    git.outputHandler((command, stdout) => null)
         .addConfig('user.name', 'Travis CI')
         .addConfig('user.email', 'travis.ci@microsoft.com')
         .checkout('HEAD')
