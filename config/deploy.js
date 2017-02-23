@@ -74,7 +74,7 @@ try {
         .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
         .push(['-f', url, 'HEAD:refs/heads/master'], (err) => {
             if (err) {
-                return exit(error, true);
+                return exit('An error occurred. Please fix the build and try again.', true);
             }
         })
         .then(() => {
