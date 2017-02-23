@@ -3,7 +3,8 @@
         "no-reference": true,
         "only-arrow-functions": [
             true,
-            "allow-declarations"
+            "allow-declarations",
+            "allow-named-functions"
         ],
         "no-namespace": [
             true,
@@ -22,11 +23,8 @@
         "no-var-keyword": true,
         "no-console": [
             true,
-            "debug",
-            "info",
             "time",
-            "timeEnd",
-            "trace"
+            "timeEnd"
         ],
         "no-construct": true,
         "no-debugger": true,

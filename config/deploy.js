@@ -7,7 +7,6 @@ let git = require('simple-git')();
 
 let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_COMMIT_MESSAGE, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
 
-log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' by Travis');
 
 /* Check if the code is running inside of travis.ci. If not abort immediately. */
 if (!TRAVIS) {
@@ -24,6 +23,13 @@ if (!_.isString(AZURE_WA_PASSWORD)) {
 
 if (!_.isString(AZURE_WA_SITE)) {
     exit('"AZURE_WA_SITE" is a required global variable', true);
+}
+
+if (TRAVIS_PULL_REQUEST !== 'false') {
+    exit('Skipping deployment on pull request.');
+}
+else {
+    log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' by Travis');
 }
 
 /* Check if the branch name is valid. */
@@ -46,13 +52,7 @@ if (buildConfig == null || slot === 'local') {
 
 /* If 'production' then apply the pull request only constraint. */
 if (slot === 'production') {
-    log('Production Deployment - Pull Request Status: ' + TRAVIS_PULL_REQUEST);
-    if (TRAVIS_PULL_REQUEST === 'false') {
-        exit('Deployments to "production" can only be done via pull requests.');
-    }
-    else {
-        slot = 'staging';
-    }
+    slot = 'staging';
 }
 
 let url = 'https://'
