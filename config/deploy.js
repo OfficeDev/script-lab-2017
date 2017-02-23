@@ -72,9 +72,9 @@ try {
         .add(['.', '-A', '-f'])
         .reset(['--', 'node_modules/**'])
         .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
-        .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
+        .push(['-f', url, 'HEAD:refs/heads/master'], (err) => {
             if (err) {
-                return exit('An error occurred. Please fix the build and try again.', true);
+                return exit(error, true);
             }
         })
         .then(() => {
