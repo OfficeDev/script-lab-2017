@@ -47,7 +47,7 @@ if (buildConfig == null || slot === 'local') {
 /* If 'production' then apply the pull request only constraint. */
 if (slot === 'production') {
     log('Production Deployment - Pull Request Status: ' + TRAVIS_PULL_REQUEST);
-    if (TRAVIS_PULL_REQUEST == false) {
+    if (TRAVIS_PULL_REQUEST === 'false') {
         exit('Deployments to "production" can only be done via pull requests.');
     }
     else {
