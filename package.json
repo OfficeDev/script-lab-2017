@@ -23,7 +23,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "webpack-dev-server --config config/webpack.dev.js --progress",
-    "build": "rimraf dist && webpack --config config/webpack.prod.js --colors --progress --bail",
+    "build": "rimraf dist && webpack --config config/webpack.prod.js --bail",
     "deploy": "node config/deploy.js"
   },
   "license": "MIT",
