@@ -93,7 +93,7 @@ class ApplicationInsights {
         }
     ) {
         try {
-            this.current.trackMetric(name, average, sampleCount, min, max, properties)
+            this.current.trackMetric(name, average, sampleCount, min, max, properties);
         }
         catch (e) {
             console.error('Could not log with AppInsights, including metric info below.');

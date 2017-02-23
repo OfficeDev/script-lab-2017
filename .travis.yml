@@ -8,10 +8,9 @@ node_js:
 - 6.9.4
 
 install:
-- echo "Install dependencies..."
 - npm install
 
 script:
-- echo "Building distributable..."
+- npm run lint
 - npm run build
 - npm run deploy
