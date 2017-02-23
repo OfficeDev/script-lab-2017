@@ -1,6 +1,6 @@
 # Welcome to the Playground!
 [![Build Status](https://travis-ci.com/OfficeDev/addin-playground.svg?token=zKp5xy2SuSortMzv5Pqc&branch=insiders)](https://travis-ci.com/OfficeDev/addin-playground)
-[![INSDIDERS](https://img.shields.io/badge/INSIDERS-bornholm--insiders-orange.svg)](https://bornholm-insiders.azurewebsites.net)
+[![INSDIDERS](https://img.shields.io/badge/INSIDERS-bornholm--insiders-yellowgreen.svg)](https://bornholm-insiders.azurewebsites.net)
 
 ## Noteworthy changes:
 
