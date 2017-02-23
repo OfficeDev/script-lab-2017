@@ -69,12 +69,11 @@ try {
         .addConfig('user.name', 'Travis CI')
         .addConfig('user.email', 'travis.ci@microsoft.com')
         .checkout('HEAD')
-        .add(['.', '-A', '-f'])
+        .add(['.', '-A', '-f', '&>', '/dev/null'])
         .reset(['--', 'node_modules/**'])
         .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
-        .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
+        .push(['-f', url, 'HEAD:refs/heads/master', '&>', '/dev/null'], (err) => {
             if (err) {
-                console.log(chalk.bold.magenta(err));
                 return exit('An error occurred. Please fix the build and try again.', true);
             }
         })
