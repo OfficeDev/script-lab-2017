@@ -34,9 +34,6 @@ if (!slot) {
 
 switch (slot) {
     case 'master':
-    case 'dev':
-    case 'edge':
-    case 'build':
         slot = 'edge';
         break;
 }
@@ -44,12 +41,13 @@ switch (slot) {
 /* Check if there is a configuration defined inside of config/env.config.js. */
 let buildConfig = config[slot];
 if (buildConfig == null || slot === 'local') {
-    exit('No deployment configuration found for ' + slot + '. Skipping deploy');
+    exit('No deployment configuration found for ' + slot + '. Skipping deployment.');
 }
 
 /* If 'production' then apply the pull request only constraint. */
 if (slot === 'production') {
-    if (!TRAVIS_PULL_REQUEST) {
+    log('Production Deployment - Pull Request Status: ' + TRAVIS_PULL_REQUEST);
+    if (TRAVIS_PULL_REQUEST == false) {
         exit('Deployments to "production" can only be done via pull requests.');
     }
     else {
@@ -67,15 +65,16 @@ let url = 'https://'
 log('Deploying to ' + AZURE_WA_SITE + '-' + slot);
 
 try {
-    git.addConfig('user.name', 'Travis CI')
+    git.silent(true)
+        .addConfig('user.name', 'Travis CI')
         .addConfig('user.email', 'travis.ci@microsoft.com')
         .checkout('HEAD')
         .add(['.', '-A', '-f'])
         .reset(['--', 'node_modules/**'])
         .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
-        .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
+        .push(['-f', url, 'HEAD:refs/heads/master'], (err) => {
             if (err) {
-                return exit('Deployment failed. Please fix the build and try again.', true);
+                return exit('An error occurred. Please fix the build and try again.', true);
             }
         })
         .then(() => {
@@ -92,10 +91,6 @@ function log(message) {
 }
 
 function exit(reason, abort) {
-    if (_.isString(reason)) {
-        reason += '. Skipping deployment.'
-    }
-
     if (reason) {
         abort ? console.log(chalk.bold.red(reason)) : console.log(chalk.bold.yellow(reason));
     }
