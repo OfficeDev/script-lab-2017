@@ -1,6 +1,6 @@
 # Welcome to the Playground!
 [![Build Status](https://travis-ci.com/OfficeDev/addin-playground.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/addin-playground)
-[![EDGE](https://img.shields.io/badge/EDGE-bornholm--edge-blue.svg)](https://bornholm-edge.azurewebsites.net)
+[![PRODUCTION](https://img.shields.io/badge/PRODUCTION-bornholm-green.svg)](https://bornholm.azurewebsites.net)
 
 ## Noteworthy changes:
 
