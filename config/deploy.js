@@ -65,14 +65,14 @@ let url = 'https://'
 log('Deploying to ' + AZURE_WA_SITE + '-' + slot);
 
 try {
-    git.outputHandler((command, stdout) => null)
+    git.silent(true)
         .addConfig('user.name', 'Travis CI')
         .addConfig('user.email', 'travis.ci@microsoft.com')
         .checkout('HEAD')
-        .add(['.', '-A', '-f', '&>', '/dev/null'])
+        .add(['.', '-A', '-f'])
         .reset(['--', 'node_modules/**'])
         .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
-        .push(['-f', url, 'HEAD:refs/heads/master', '&>', '/dev/null'], (err) => {
+        .push(['-f', '-q', url, 'HEAD:refs/heads/master'], (err) => {
             if (err) {
                 return exit('An error occurred. Please fix the build and try again.', true);
             }
