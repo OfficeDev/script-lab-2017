@@ -109,15 +109,15 @@ export class Strings {
 
     static readonly localStorageWarning = `Snippets are erased if you clear your browser cache.
 
-                    To save permanent copies of your snippets, export them as gists from the Share menu.`
-    static readonly deleteLocalSnippets = 'Are you sure you want to delete all your local snippets?'
+                    To save permanent copies of your snippets, export them as gists from the Share menu.`;
+    static readonly deleteLocalSnippets = 'Are you sure you want to delete all your local snippets?';
     static readonly deleteLocalSnippetsTitle = `Delete local snippets`;
 
     // import.ts strings
 
     static readonly importUrlTab = 'From URL';
     static readonly importYamlTab = 'Paste code';
-    static readonly importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`
+    static readonly importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`;
     static readonly importUrlTextBoxLabel = 'URL or gist ID';
     static readonly importUrlTextBoxPlaceholder = 'Enter the URL or GitHub gist ID here';
     static readonly urlExamplesTitle = 'Examples:';

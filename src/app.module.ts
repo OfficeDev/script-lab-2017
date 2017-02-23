@@ -74,7 +74,7 @@ export class AppModule {
             let hostButtonsTimeout = setTimeout(() => {
                 $('#hosts').show();
                 $('.ms-progress-component__footer').hide();
-                $('.hostButton').click(function () {
+                $('.hostButton').click(function hostButtonClick() {
                     Environment.host = $(this).data('host');
                     Environment.platform = null;
                     AppModule._cache.insert('isInRegularWebBrowser', Environment.host);
