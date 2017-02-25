@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings } from '../helpers';
+import { PlaygroundError, AI, post, Strings, settings } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
@@ -20,7 +20,6 @@ import forIn = require('lodash/forIn');
 @Injectable()
 export class SnippetEffects {
     private _store = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
-    private _cache = new Storage<string>(`playground_cache`, StorageType.SessionStorage);
 
     private _defaults = <ISnippet>{
         id: '',
@@ -65,13 +64,13 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = environment.current.host;
-                    if (this._cache.contains('Template')) {
-                        observable = Observable.of(this._cache.get('Template'));
+                    if (settings.cache.contains('default_template')) {
+                        observable = Observable.of(settings.cache.get('default_template'));
                     }
                     else {
                         observable = this._request
                             .get<string>(`${this._samplesRepoUrl}/samples/${environment.current.host}/default.yaml`, ResponseTypes.YAML)
-                            .map(snippet => this._cache.insert('Template', snippet));
+                            .map(snippet => settings.cache.insert('default_template', snippet));
                     }
                     break;
 
@@ -211,16 +210,16 @@ export class SnippetEffects {
                 returnUrl += '?mode=web';
             }
 
-            let postData: IRunnerPostData = {
-                snippet: jsyaml.safeDump(snippet),
+            let data = JSON.stringify({
+                snippet: snippet,
                 returnUrl: returnUrl,
                 refreshUrl: window.location.origin + '/refresh.html',
                 id: snippet.id,
                 host: environment.current.host,
                 platform: environment.current.platform
-            };
+            });
 
-            post(environment.current.config.runnerUrl, { data: JSON.stringify(postData) });
+            post(environment.current.config.runnerUrl, { data });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 
