@@ -63,16 +63,14 @@ interface IEvent<T> {
 }
 
 interface IEnvironment {
-    devMode: boolean;
-    build: {
+    devMode?: boolean;
+    build?: {
         name: string;
         version: string;
         timestamp: number;
         author: string;
     },
-    config: {
-        [env: string]: IEnvironmentConfig
-    },
+    config?: IEnvironmentConfig
     host?: string,
     platform?: string
 }
