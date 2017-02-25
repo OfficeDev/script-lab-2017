@@ -2,73 +2,14 @@
 <html>
 
 <head>
-	<base href="/">
-	<title>Gallery</title>
-
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-	<script src="https://unpkg.com/@microsoft/office-js-helpers@0.4.1/dist/office.helpers.min.js"></script>
-
-	<script>
-		Office.initialize = function() { }
-
-		function launchTutorial(event) {
-			// TODO: remap to tutorial, once have it
-			window.open('https://github.com/OfficeDev/addin-playground');
-			event.completed();
-		}
-
-		function launchUsingHelp(event) {
-			// TODO: remap to help topic, once have it
-			window.open('https://github.com/OfficeDev/addin-playground');
-			event.completed();
-		}
-
-		function launchFeedback(event) {
-			window.open('https://github.com/OfficeDev/addin-playground/issues');
-			event.completed();
-		}
-
-		function launchApiDocs(event) {
-			if (Office.context.requirements.isSetSupported('ExcelApi')) {
-				return launch('https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview');
-			}
-
-			if (Office.context.requirements.isSetSupported('WordApi')) {
-				return launch('https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview');
-			}
-
-			if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-				return launch('https://dev.office.com/docs/add-ins/onenote/onenote-add-ins-programming-overview');
-			}
-
-			
-			var host = OfficeHelpers.Utilities.host.toLowerCase();
-			
-			if (host === 'powerpoint') {
-				return launch('https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins');
-			}
-
-			if (host === 'project') {
-				return launch('https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument');
-			}
-			
-
-			// For older versions:
-			return launch('https://dev.office.com/reference/add-ins/javascript-api-for-office');
-
-
-			function launch(url) {
-				window.open(url);
-				event.completed();
-			}
-		}
-
-		function launchAsk(event) {
-			window.open('http://stackoverflow.com/questions/tagged/office-js');
-			event.completed();
-		}
-	</script>
+	<title>AppCommand Functions</title>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body>
+	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 </body>
+
 </html>
