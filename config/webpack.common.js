@@ -13,6 +13,10 @@ module.exports = {
         'polyfills': './src/polyfills.ts',
         'vendor': './src/vendor.ts',
         'app': './src/app.module.ts',
+        'functions': './src/functions.ts',
+        'gallery': './src/gallery.ts',
+        'heartbeat': './src/heartbeat.ts',
+        'refresh': './src/refresh.ts'
     },
 
     resolve: {
@@ -86,22 +90,22 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'functions.html',
             template: './src/functions.html',
-            chunks: [],
+            chunks: ['polyfills', 'vendor', 'functions'],
         }),
         new HtmlWebpackPlugin({
             filename: 'gallery.html',
             template: './src/gallery.html',
-            chunks: [],
+            chunks: ['polyfills', 'vendor', 'gallery'],
         }),
         new HtmlWebpackPlugin({
             filename: 'heartbeat.html',
             template: './src/heartbeat.html',
-            chunks: [],
+            chunks: ['polyfills', 'vendor', 'heartbeat'],
         }),
         new HtmlWebpackPlugin({
             filename: 'refresh.html',
             template: './src/refresh.html',
-            chunks: [],
+            chunks: ['polyfills', 'vendor', 'refresh'],
         })
     ]
 };
