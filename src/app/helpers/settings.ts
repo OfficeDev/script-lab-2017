@@ -9,7 +9,8 @@ class Settings {
     }
 
     set current(value: ISettings) {
-        this._settings.insert(Utilities.host, value);
+        let updatedSettings = { ...this.current, value };
+        this._settings.insert(Utilities.host, updatedSettings);
     }
 }
 

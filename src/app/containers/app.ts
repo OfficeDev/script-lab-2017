@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { Storage } from '@microsoft/office-js-helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { Environment } from '../../environment';
-import {Strings} from '../helpers';
+import { environment } from '../../environment';
+import { Strings, settings } from '../helpers';
 
 @Component({
     selector: 'app',
@@ -42,8 +41,6 @@ import {Strings} from '../helpers';
 })
 
 export class AppComponent {
-    static settings = new Storage<ISettings>('playground_settings');
-
     snippet: ISnippet;
     isEmpty: boolean;
 
@@ -62,7 +59,7 @@ export class AppComponent {
     settings$ = this._store
         .select(fromRoot.getSettings)
         .debounceTime(250)
-        .subscribe(changes => AppComponent.settings.insert(Environment.host, changes));
+        .subscribe(changes => { settings.current = changes; });
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
@@ -182,6 +179,6 @@ export class AppComponent {
     }
 
     feedback() {
-        window.open(Environment.config.feedbackUrl);
+        window.open(environment.current.config.feedbackUrl);
     }
 }

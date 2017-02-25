@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { storageSize, Strings} from '../helpers';
-import { Environment } from '../../environment';
+import { environment } from '../../environment';
 
 @Component({
     selector: 'about',
@@ -28,14 +28,14 @@ import { Environment } from '../../environment';
 export class About {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
-    config = Environment.build;
+    config = environment.current.build;
 
     cache = `
     ${Strings.aboutUpdated}
-    ${new Date(Environment.build.timestamp)}
+    ${new Date(environment.current.build.timestamp)}
 
     ${Strings.aboutStorage}
-    ${storageSize(localStorage, `playground_${Environment.host}_snippets`, Strings.aboutSnippets)}
+    ${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings.aboutSnippets)}
     ${storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)}
     `;
 }

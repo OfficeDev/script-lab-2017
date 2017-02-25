@@ -1,7 +1,7 @@
 import { UIActions, UIActionTypes } from '../actions/ui';
 import { PlaygroundError, AI } from '../helpers';
 import { Utilities } from '@microsoft/office-js-helpers';
-import { Environment } from '../../environment';
+import { environment } from '../../environment';
 
 export interface UIState {
     menuOpened?: boolean;
@@ -45,7 +45,7 @@ switch (action.type) {
 
         case UIActionTypes.REPORT_ERROR: {
             let error = new PlaygroundError(action.payload, action.exception);
-            if (Environment.devMode) {
+            if (environment.current.devMode) {
                 Utilities.log(error);
             }
             return { ...state, errors: [...state.errors, error] };

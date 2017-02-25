@@ -23,7 +23,6 @@ import { environment } from './environment';
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
 
-
 @NgModule({
     imports: [
         BrowserModule,

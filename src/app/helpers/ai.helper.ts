@@ -1,9 +1,9 @@
 import { AppInsights } from 'applicationinsights-js';
-import { Environment } from '../../environment';
+import { environment } from '../../environment';
 import { Utilities } from '@microsoft/office-js-helpers';
 
 AppInsights.downloadAndSetup({
-    instrumentationKey: Environment.config.instrumentationKey,
+    instrumentationKey: environment.current.config.instrumentationKey,
     autoTrackPageVisitTime: true
 });
 
@@ -16,8 +16,8 @@ class ApplicationInsights {
 
     constructor(private _disable?: boolean) {
         try {
-            this._disable = this._disable || Environment.devMode;
-            this.current.config.enableDebug = this.current.config.verboseLogging = !Environment.devMode;
+            this._disable = this._disable || environment.current.devMode;
+            this.current.config.enableDebug = this.current.config.verboseLogging = !environment.current.devMode;
             this.current._onerror = (message) => console.log(message);
         }
         catch (e) {
@@ -43,13 +43,13 @@ class ApplicationInsights {
      */
     trackException(error, location) {
         try {
-            if (Environment.devMode) {
+            if (environment.current.devMode) {
                 Utilities.log(error);
             }
             this.current.trackException(error.innerError || error, location, {
                 message: error.message,
-                host: Environment.host,
-                build: JSON.stringify(Environment.build)
+                host: environment.current.host,
+                build: JSON.stringify(environment.current.build)
             });
         }
         catch (e) {
@@ -66,7 +66,7 @@ class ApplicationInsights {
     */
     trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
         try {
-            if (Environment.devMode) {
+            if (environment.current.devMode) {
                 console.info(name);
             }
             this.current.trackEvent(name, properties, measurement);

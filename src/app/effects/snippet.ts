@@ -8,7 +8,7 @@ import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import cuid = require('cuid');
-import { Environment } from '../../environment';
+import { environment } from '../../environment';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import isEmpty = require('lodash/isEmpty');
@@ -19,13 +19,13 @@ import forIn = require('lodash/forIn');
 
 @Injectable()
 export class SnippetEffects {
-    private _store = new Storage<ISnippet>(`playground_${Environment.host}_snippets`);
+    private _store = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
     private _cache = new Storage<string>(`playground_cache`, StorageType.SessionStorage);
 
     private _defaults = <ISnippet>{
         id: '',
         gist: '',
-        source: Environment.host,
+        source: environment.current.host,
         author: '',
         name: Strings.defaultSnippetTitle, // UI unknown
         description: '',
@@ -35,7 +35,7 @@ export class SnippetEffects {
         libraries: ''
     };
 
-    private _samplesRepoUrl = Environment.config.samplesUrl;
+    private _samplesRepoUrl = environment.current.config.samplesUrl;
 
     constructor(
         private actions$: Actions,
@@ -64,13 +64,13 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    info = Environment.host;
+                    info = environment.current.host;
                     if (this._cache.contains('Template')) {
                         observable = Observable.of(this._cache.get('Template'));
                     }
                     else {
                         observable = this._request
-                            .get<string>(`${this._samplesRepoUrl}/samples/${Environment.host}/default.yaml`, ResponseTypes.YAML)
+                            .get<string>(`${this._samplesRepoUrl}/samples/${environment.current.host}/default.yaml`, ResponseTypes.YAML)
                             .map(snippet => this._cache.insert('Template', snippet));
                     }
                     break;
@@ -207,7 +207,7 @@ export class SnippetEffects {
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
             let returnUrl = window.location.href;
-            if (Environment.host === 'web' && returnUrl.indexOf('mode=web') < 0) {
+            if (environment.current.host === 'WEB') {
                 returnUrl += '?mode=web';
             }
 
@@ -216,11 +216,11 @@ export class SnippetEffects {
                 returnUrl: returnUrl,
                 refreshUrl: window.location.origin + '/refresh.html',
                 id: snippet.id,
-                host: Environment.host,
-                platform: Environment.platform
+                host: environment.current.host,
+                platform: environment.current.platform
             };
 
-            post(Environment.config.runnerUrl, { data: JSON.stringify(postData) });
+            post(environment.current.config.runnerUrl, { data: JSON.stringify(postData) });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 
@@ -230,7 +230,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this._samplesRepoUrl}/playlists/${Environment.host}.yaml`;
+                let snippetJsonUrl = `${this._samplesRepoUrl}/playlists/${environment.current.host}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
@@ -343,7 +343,7 @@ export class SnippetEffects {
             }
         });
 
-        AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(Environment.build) });
+        AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview', upgradeTo: JSON.stringify(environment.current.build) });
         return snippet;
     }
 }
