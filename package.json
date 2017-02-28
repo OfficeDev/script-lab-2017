@@ -24,7 +24,6 @@
   "scripts": {
     "start": "webpack-dev-server --config config/webpack.dev.js --progress",
     "lint": "tslint --project tsconfig.json",
-    "build": "rimraf dist && node config/webpack.prod.js",
     "deploy": "node config/deploy.js"
   },
   "license": "MIT",
