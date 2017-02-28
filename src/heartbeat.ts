@@ -60,7 +60,7 @@ class Messenger {
         if (this.current == null || snippet == null) {
             return false;
         }
-        else if (snippet.id == null || snippet.id.trim() == '') {
+        else if (snippet.id == null || snippet.id.trim() === '') {
             return false;
         }
         else if (snippet.id !== this.current.id) {
