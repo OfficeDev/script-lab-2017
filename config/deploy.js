@@ -4,7 +4,7 @@ let chalk = require('chalk');
 let _ = require('lodash');
 let { build, config } = require('./env.config');
 let git = require('simple-git')();
-let config = require('./webpack.prod');
+let webpackConfig = require('./webpack.prod');
 let webpack = require('webpack');
 let rimraf = require('rimraf');
 
@@ -60,7 +60,7 @@ if (slot === 'production') {
 rimraf('dist');
 
 const start = Date.now();
-webpack(config, function (err, stats) {
+webpack(webpackConfig, function (err, stats) {
     stats.chunks = false;
     stats.hash = true;
     stats.version = true;
@@ -78,8 +78,8 @@ webpack(config, function (err, stats) {
     }
 
     const end = Date.now();
-    log('\n\nGenerated build #' + config.build.timestamp + ' in ' + (end - start) / 1000 + ' seconds');
-    log(config.build.name + ' - v' + config.build.version + '\n\n', 'magenta');
+    log('\n\nGenerated build #' + webpackConfig.build.timestamp + ' in ' + (end - start) / 1000 + ' seconds');
+    log(webpackConfig.build.name + ' - v' + webpackConfig.build.version + '\n\n', 'magenta');
 
     let url = 'https://'
         + AZURE_WA_USERNAME + ':'
