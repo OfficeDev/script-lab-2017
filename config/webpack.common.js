@@ -10,13 +10,13 @@ var {build, config, whilelistPlugins} = require('./env.config');
 
 module.exports = {
     entry: {
-        'polyfills': './editor/polyfills.ts',
-        'vendor': './editor/vendor.ts',
-        'app': './editor/app.module.ts',
-        'functions': './editor/functions.ts',
-        'gallery': './editor/gallery.ts',
-        'heartbeat': './editor/heartbeat.ts',
-        'refresh': './editor/refresh.ts'
+        'polyfills': './client/polyfills.ts',
+        'vendor': './client/vendor.ts',
+        'app': './client/app.module.ts',
+        'functions': './client/functions.ts',
+        'gallery': './client/gallery.ts',
+        'heartbeat': './client/heartbeat.ts',
+        'refresh': './client/refresh.ts'
     },
 
     resolve: {
@@ -61,17 +61,17 @@ module.exports = {
         new webpack.BannerPlugin(`v.${build.name} ${build.version} © ${build.author}`),
         new CopyWebpackPlugin([
             {
-                from: './editor/assets',
+                from: './client/assets',
                 ignore: ['*.scss'],
                 to: 'assets'
             },
             {
-                from: './editor/extras',
+                from: './client/extras',
                 to: ''
             },
             {
-                from: 'node_modules/monaco-editor/min',
-                to: 'libs/monaco-editor'
+                from: 'node_modules/monaco-client/min',
+                to: 'libs/monaco-client'
             },
             {
                 from: 'node_modules/office-ui-fabric-js/dist/css',
@@ -84,27 +84,27 @@ module.exports = {
         ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './editor/index.html',
+            template: './client/index.html',
             chunks: ['polyfills', 'vendor', 'app']
         }),
         new HtmlWebpackPlugin({
             filename: 'functions.html',
-            template: './editor/functions.html',
+            template: './client/functions.html',
             chunks: ['polyfills', 'vendor', 'functions'],
         }),
         new HtmlWebpackPlugin({
             filename: 'gallery.html',
-            template: './editor/gallery.html',
+            template: './client/gallery.html',
             chunks: ['polyfills', 'vendor', 'gallery'],
         }),
         new HtmlWebpackPlugin({
             filename: 'heartbeat.html',
-            template: './editor/heartbeat.html',
+            template: './client/heartbeat.html',
             chunks: ['polyfills', 'vendor', 'heartbeat'],
         }),
         new HtmlWebpackPlugin({
             filename: 'refresh.html',
-            template: './editor/refresh.html',
+            template: './client/refresh.html',
             chunks: ['polyfills', 'vendor', 'refresh'],
         })
     ]

@@ -20,8 +20,8 @@
     ],
     "pretty": true,
     "rootDirs": [
-      "editor",
-      "runner"
+      "client",
+      "server"
     ]
   }
 }
