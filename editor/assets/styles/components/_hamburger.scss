@@ -1,0 +1,58 @@
+﻿@import '../mixins';
+@import '../vars';
+
+.hamburger-menu {
+    width: 350px;
+    transform: translate3d(-100%, 0, 0);
+    transition: transform 0.4s cubic-bezier(0,1.13,.4,1);
+    @include flex();
+    flex: 0 0 100%;
+    display: none;
+
+    &__header {
+        @include inline-flex();
+        align-items: center
+    }
+
+    .command--light .command__title {
+        text-transform: uppercase;
+    }
+
+    &__close {
+        padding: 12.5px $default-spacing;
+        margin-right: 7.5px;
+    }
+
+    &__title {
+        flex: 1 1 auto;
+    }
+
+    &__container {
+        flex: 1 1 100%;
+        width: 100%;
+        overflow: auto;
+        overflow-x: hidden;
+    }
+
+    &--shown {
+        transform: translate3d(0, 0, 0);
+        display: flex;
+    }
+}
+
+@media (min-width: 0px) and (max-width: 800px) {
+    .hamburger-menu {
+        position: absolute;
+        height: 100vh;
+        z-index: 9;
+        top: 0;
+        left: 0;
+        box-shadow: 0px 1px 7px 1px rgba(0, 0, 0, 0.4);
+    }
+}
+
+@media (min-width: 0px) and (max-width: 400px) {
+    .hamburger-menu {
+        width: 100%;
+    }
+}

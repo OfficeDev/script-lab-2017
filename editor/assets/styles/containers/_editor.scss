@@ -1,0 +1,35 @@
+@import '../mixins';
+@import '../vars';
+
+editor {
+    @include flex();
+    flex: 1 1 100%;
+    position: relative;
+    overflow: hidden;
+
+    .tabs {
+        overflow: hidden;
+        flex: 0 0 40px;
+    }
+}
+
+.viewport {
+    @include flex();
+    flex: 1 1 100%;
+    width: 100% !important;
+    height: 100% !important;
+
+    &__placeholder {
+        background: transparent center center no-repeat;
+        background-size: contain;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+.monaco-editor {
+    width: 100% !important;
+}
