@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as https from 'https';
 import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -128,13 +129,6 @@ function Server() {
         };
     });
 
-    app.listen(process.env.PORT || 8080, () => {
-        console.log(`Add-in Playground Runner listening on port ${process.env.PORT || 8080}`);
-    });
-
-
-    // Helpers
-
     async function handleError(error: Error, response: express.Response, returnUrl?: string) {
         appInsights.client.trackException(error);
 
@@ -147,6 +141,12 @@ function Server() {
         let body = await TemplateGenerator.generate('error.html', context);
         return response.contentType('text/html').status(200).send(body);
     }
+
+    return app;
 }
 
-Server();
+let server = Server();
+https.createServer({
+    key: fs.readFileSync(path.resolve('../../node_modules/browser-sync/lib/server/certs/server.key')),
+    cert: fs.readFileSync(path.resolve('../../node_modules/browser-sync/lib/server/certs/server.crt'))
+}, server).listen(3200);

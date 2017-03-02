@@ -12,8 +12,7 @@
     "Office",
     "Add-in",
     "API",
-    "Playground",
-    "Editor"
+    "Playground"
   ],
   "author": "Microsoft",
   "bugs": {
@@ -22,11 +21,11 @@
   "homepage": "https://github.com/officedev/addin-playground#readme",
   "version": "1.0.0",
   "scripts": {
-    "runner-compile": "tsc -p tsconfig.json",
-    "runner-copy": "cpx \"runner/**/!(*.ts)\" \"dist/runner\"",
-    "runner": "nodemon ./dist/runner/server.js --watch dist/runner -e js",
-    "editor": "webpack-dev-server --config config/webpack.dev.js --progress",
-    "start": "concurrently --raw --kill-others \"npm run editor\" \"npm run runner\" \"npm run runner-compile --watch\" \"npm run runner-copy --watch\"",
+    "compile": "tsc -p tsconfig.json --watch",
+    "copy": "cpx \"server/**/!(*.ts)\" \"dist/server\" --watch",
+    "server": "nodemon dist/server/server.js",
+    "client": "webpack-dev-server --config config/webpack.dev.js --progress",
+    "start": "rimraf dist && parallelshell \"npm run client\" \"npm run server-compile\" \"npm run server-copy\"",
     "lint": "tslint --project tsconfig.json",
     "deploy": "node config/deploy.js"
   },
@@ -71,7 +70,7 @@
     "applicationinsights": "0.18.0"
   },
   "devDependencies": {
-    "concurrently": "^3.3.0",
+    "parallelshell": "^2.0.0",
     "angular2-template-loader": "0.6.2",
     "autoprefixer": "6.7.4",
     "awesome-typescript-loader": "3.0.4",
