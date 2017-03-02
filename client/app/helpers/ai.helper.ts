@@ -2,23 +2,24 @@ import { AppInsights } from 'applicationinsights-js';
 import { environment } from '../../environment';
 import { Utilities } from '@microsoft/office-js-helpers';
 
-AppInsights.downloadAndSetup({
-    instrumentationKey: environment.current.config.instrumentationKey,
-    autoTrackPageVisitTime: true
-});
-
 class ApplicationInsights {
-    private current = AppInsights;
+    private _current = AppInsights;
+    private _disable = false;
 
     // Sometimes AppInsights will encounter a failure on first use
     // (https://github.com/Microsoft/ApplicationInsights-JS/issues/347)
     // To avoid the issue, wrap any use of "this.current" in a try/catch
 
-    constructor(private _disable?: boolean) {
+    initialize(instrumentationKey, disable?: boolean) {
+        AppInsights.downloadAndSetup({
+            instrumentationKey: instrumentationKey,
+            autoTrackPageVisitTime: true
+        });
+
         try {
-            this._disable = this._disable || environment.current.devMode;
-            this.current.config.enableDebug = this.current.config.verboseLogging = !environment.current.devMode;
-            this.current._onerror = (message) => console.log(message);
+            this._disable = disable || environment.current.devMode;
+            this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
+            this._current._onerror = (message) => console.log(message);
         }
         catch (e) {
             console.error('Could not initialize AppInsights.');
@@ -27,7 +28,7 @@ class ApplicationInsights {
 
     toggleTelemetry(force?: boolean) {
         try {
-            this.current.config.disableTelemetry = force || !this._disable;
+            this._current.config.disableTelemetry = force || !this._disable;
         }
         catch (e) {
             console.error(force, 'Could not toggle telemetry.');
@@ -43,10 +44,11 @@ class ApplicationInsights {
      */
     trackException(error, location) {
         try {
+            console.log(environment.current.devMode);
             if (environment.current.devMode) {
                 Utilities.log(error);
             }
-            this.current.trackException(error.innerError || error, location, {
+            this._current.trackException(error.innerError || error, location, {
                 message: error.message,
                 host: environment.current.host,
                 build: JSON.stringify(environment.current.build)
@@ -69,7 +71,7 @@ class ApplicationInsights {
             if (environment.current.devMode) {
                 console.info(name);
             }
-            this.current.trackEvent(name, properties, measurement);
+            this._current.trackEvent(name, properties, measurement);
         }
         catch (e) {
             console.error('Could not log with AppInsights, including tracking info below.');
@@ -93,7 +95,7 @@ class ApplicationInsights {
         }
     ) {
         try {
-            this.current.trackMetric(name, average, sampleCount, min, max, properties);
+            this._current.trackMetric(name, average, sampleCount, min, max, properties);
         }
         catch (e) {
             console.error('Could not log with AppInsights, including metric info below.');
@@ -110,7 +112,7 @@ class ApplicationInsights {
     */
     setAuthenticatedUserContext(authenticatedUserId: string, accountId?: string) {
         try {
-            this.current.setAuthenticatedUserContext(authenticatedUserId, accountId);
+            this._current.setAuthenticatedUserContext(authenticatedUserId, accountId);
         }
         catch (e) {
             console.error('Could not log with AppInsights, including authenticated user context info below.');

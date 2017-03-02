@@ -139,19 +139,19 @@ ul {
             color: $foreground-white;
         }
 
-        button[data-host="excel"] {
+        button[data-host="EXCEL"] {
             background-color: $excel;
         }
 
-        button[data-host="word"] {
+        button[data-host="WORD"] {
             background-color: $word;
         }
 
-        button[data-host="powerpoint"] {
+        button[data-host="POWERPOINT"] {
             background-color: $powerpoint;
         }
 
-        button[data-host="onenote"] {
+        button[data-host="ONENOTE"] {
             background-color: $onenote;
         }
     }

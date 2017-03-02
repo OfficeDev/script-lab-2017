@@ -15,7 +15,6 @@ import * as appInsights from 'applicationinsights';
 
 function Server() {
     appInsights.setup(config.instrumentation_key).start();
-
     let app = express();
 
     app.use(bodyParser.json());
@@ -23,6 +22,7 @@ function Server() {
     app.use(cors());
 
     app.get('/', async (request: express.Request, response: express.Response) => {
+        console.log(request);
         return new Promise(() => {
             fs.readFile(path.resolve(`${__dirname}/assets/editor-runner.html`), 'UTF8', (err, data) => {
                 if (err != null) {
@@ -147,4 +147,6 @@ let server = Server();
 https.createServer({
     key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
     cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
-}, server).listen(3200);
+}, server).listen(process.env.PORT || 3200, () => {
+    console.log(`Playground server running on ${process.env.PORT || 3200}`)
+});

@@ -51,6 +51,7 @@ export class AppModule {
                 MonacoService.initialize()
             ]);
 
+            AI.initialize(environment.current.config.instrumentationKey);
             await Theme.applyTheme(environment.current.host);
 
             if (!Authenticator.isAuthDialog()) {

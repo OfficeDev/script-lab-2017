@@ -15,8 +15,8 @@
             "outFiles": [
                 "${workspaceRoot}/dist/server/**/*.js"
             ],
-            "localRoot": "${workspaceRoot}/server",
-            "remoteRoot": "${workspaceRoot}/dist/server"
+            "localRoot": "${workspaceRoot}/server"
+            // "remoteRoot": "${workspaceRoot}/dist/server"
         }
     ]
 }

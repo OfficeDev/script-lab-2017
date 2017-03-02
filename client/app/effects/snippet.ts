@@ -68,8 +68,9 @@ export class SnippetEffects {
                         observable = Observable.of(settings.cache.get('default_template'));
                     }
                     else {
+                        console.log(`${this._samplesRepoUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`);
                         observable = this._request
-                            .get<string>(`${this._samplesRepoUrl}/samples/${environment.current.host}/default.yaml`, ResponseTypes.YAML)
+                            .get<string>(`${this._samplesRepoUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
                             .map(snippet => settings.cache.insert('default_template', snippet));
                     }
                     break;

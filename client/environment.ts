@@ -1,5 +1,6 @@
+import * as $ from 'jquery';
 import { Utilities } from '@microsoft/office-js-helpers';
-import { settings } from './app/helpers';
+import { settings } from './app/helpers/settings';
 
 let { devMode, build, config } = PLAYGROUND;
 
@@ -27,16 +28,14 @@ class Environment {
     private _current: IEnvironment;
     get current(): IEnvironment {
         if (this._current == null) {
+            this.current = {
+                devMode,
+                build,
+                config: this._config
+            };
             let environment = settings.cache.get('environment') as IEnvironment;
             if (environment) {
                 this.current = { host: environment.host, platform: environment.platform };
-            }
-            else {
-                this.current = {
-                    devMode,
-                    build,
-                    config: this._config
-                };
             }
         }
 
