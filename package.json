@@ -23,9 +23,9 @@
   "scripts": {
     "compile": "tsc -p tsconfig.json --watch",
     "copy": "cpx \"server/**/!(*.ts)\" \"dist/server\" --watch",
-    "server": "nodemon dist/server/server.js",
+    "server": "nodemon --debug=5858 dist/server/server.js",
     "client": "webpack-dev-server --config config/webpack.dev.js --progress",
-    "start": "rimraf dist && parallelshell \"npm run client\" \"npm run server-compile\" \"npm run server-copy\"",
+    "start": "rimraf dist && parallelshell \"npm run client\" \"npm run compile\" \"npm run copy\"",
     "lint": "tslint --project tsconfig.json",
     "deploy": "node config/deploy.js"
   },

@@ -31,10 +31,10 @@ module.exports = webpackMerge(commonConfig, {
         }),
         new BrowserSyncPlugin(
             {
-                https: false,
+                https: true,
                 host: 'localhost',
                 port: 3000,
-                proxy: 'http://localhost:3100/'
+                proxy: 'https://localhost:3100/'
             },
             {
                 reload: false
@@ -60,7 +60,7 @@ module.exports = webpackMerge(commonConfig, {
             publicPath: false
         },
         watch: true,
-        https: false,
+        https: true,
         inline: true,
         compress: true,
         port: 3100,

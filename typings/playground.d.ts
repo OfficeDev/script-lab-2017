@@ -85,6 +85,8 @@ interface IEnvironmentConfig {
     samplesUrl: string
 }
 
+declare var PLAYGROUND: IEnvironment;
+
 interface ISettings {
     lastOpened: ISnippet,
     profile: IProfile,

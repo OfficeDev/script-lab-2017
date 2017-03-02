@@ -1,6 +1,5 @@
 import { Utilities } from '@microsoft/office-js-helpers';
 import { settings } from './app/helpers';
-declare let PLAYGROUND;
 
 let { devMode, build, config } = PLAYGROUND;
 

@@ -23,7 +23,6 @@ function Server() {
     app.use(cors());
 
     app.get('/', async (request: express.Request, response: express.Response) => {
-        request;
         return new Promise(() => {
             fs.readFile(path.resolve(`${__dirname}/assets/editor-runner.html`), 'UTF8', (err, data) => {
                 if (err != null) {
@@ -64,7 +63,6 @@ function Server() {
                     state
                 }
             }, (error, httpResponse, body) => {
-                httpResponse;
                 if (error) {
                     return handleError(new RunnerError('Error retrieving GitHub access token', error), response);
                 }
@@ -147,6 +145,6 @@ function Server() {
 
 let server = Server();
 https.createServer({
-    key: fs.readFileSync(path.resolve('../../node_modules/browser-sync/lib/server/certs/server.key')),
-    cert: fs.readFileSync(path.resolve('../../node_modules/browser-sync/lib/server/certs/server.crt'))
+    key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+    cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
 }, server).listen(3200);

@@ -70,8 +70,8 @@ module.exports = {
                 to: ''
             },
             {
-                from: 'node_modules/monaco-client/min',
-                to: 'libs/monaco-client'
+                from: 'node_modules/monaco-editor/min',
+                to: 'libs/monaco-editor'
             },
             {
                 from: 'node_modules/office-ui-fabric-js/dist/css',
