@@ -10,13 +10,13 @@ var {build, config, whilelistPlugins} = require('./env.config');
 
 module.exports = {
     entry: {
-        'polyfills': './src/polyfills.ts',
-        'vendor': './src/vendor.ts',
-        'app': './src/app.module.ts',
-        'functions': './src/functions.ts',
-        'gallery': './src/gallery.ts',
-        'heartbeat': './src/heartbeat.ts',
-        'refresh': './src/refresh.ts'
+        'polyfills': './editor/polyfills.ts',
+        'vendor': './editor/vendor.ts',
+        'app': './editor/app.module.ts',
+        'functions': './editor/functions.ts',
+        'gallery': './editor/gallery.ts',
+        'heartbeat': './editor/heartbeat.ts',
+        'refresh': './editor/refresh.ts'
     },
 
     resolve: {
@@ -61,12 +61,12 @@ module.exports = {
         new webpack.BannerPlugin(`v.${build.name} ${build.version} © ${build.author}`),
         new CopyWebpackPlugin([
             {
-                from: './src/assets',
+                from: './editor/assets',
                 ignore: ['*.scss'],
                 to: 'assets'
             },
             {
-                from: './src/extras',
+                from: './editor/extras',
                 to: ''
             },
             {
@@ -84,27 +84,27 @@ module.exports = {
         ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './src/index.html',
+            template: './editor/index.html',
             chunks: ['polyfills', 'vendor', 'app']
         }),
         new HtmlWebpackPlugin({
             filename: 'functions.html',
-            template: './src/functions.html',
+            template: './editor/functions.html',
             chunks: ['polyfills', 'vendor', 'functions'],
         }),
         new HtmlWebpackPlugin({
             filename: 'gallery.html',
-            template: './src/gallery.html',
+            template: './editor/gallery.html',
             chunks: ['polyfills', 'vendor', 'gallery'],
         }),
         new HtmlWebpackPlugin({
             filename: 'heartbeat.html',
-            template: './src/heartbeat.html',
+            template: './editor/heartbeat.html',
             chunks: ['polyfills', 'vendor', 'heartbeat'],
         }),
         new HtmlWebpackPlugin({
             filename: 'refresh.html',
-            template: './src/refresh.html',
+            template: './editor/refresh.html',
             chunks: ['polyfills', 'vendor', 'refresh'],
         })
     ]
