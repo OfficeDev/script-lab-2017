@@ -22,8 +22,11 @@
   "homepage": "https://github.com/officedev/addin-playground#readme",
   "version": "1.0.0",
   "scripts": {
-    "start": "webpack-dev-server --config config/webpack.dev.js --progress",
-    "build": "tsc -p tsconfig.json",
+    "runner-compile": "tsc -p tsconfig.json",
+    "runner-copy": "cpx \"runner/**/!(*.ts)\" \"dist/runner\"",
+    "runner": "nodemon ./dist/runner/server.js --watch dist/runner -e js",
+    "editor": "webpack-dev-server --config config/webpack.dev.js --progress",
+    "start": "concurrently --raw --kill-others \"npm run editor\" \"npm run runner\" \"npm run runner-compile --watch\" \"npm run runner-copy --watch\"",
     "lint": "tslint --project tsconfig.json",
     "deploy": "node config/deploy.js"
   },
@@ -68,6 +71,7 @@
     "applicationinsights": "0.18.0"
   },
   "devDependencies": {
+    "concurrently": "^3.3.0",
     "angular2-template-loader": "0.6.2",
     "autoprefixer": "6.7.4",
     "awesome-typescript-loader": "3.0.4",
