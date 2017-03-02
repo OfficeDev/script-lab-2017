@@ -18,9 +18,10 @@
       "dom",
       "es2015"
     ],
-    "include": [
-      "editor/**/*",
-      "runner/**/*"
+    "pretty": true,
+    "rootDirs": [
+      "editor",
+      "runner"
     ]
   }
 }

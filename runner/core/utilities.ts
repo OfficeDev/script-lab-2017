@@ -12,9 +12,9 @@ export class Utilities {
     }
 
     static stripSpaces(text: string) {
-        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map(function(item) {
-			return item.replace(new RegExp("\t", 'g'), "    ");
-		});
+        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map(function (item) {
+            return item.replace(new RegExp("\t", 'g'), "    ");
+        });
 
         let isZeroLengthLine: boolean = true;
         let arrayPosition: number = 0;
@@ -72,7 +72,7 @@ export class Utilities {
                 finalSetOfLines += lines[i];
             }
         }
-        
+
         return finalSetOfLines;
     }
 
@@ -90,7 +90,7 @@ export class Utilities {
         entry = entry.trim().toLowerCase();
         return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
     }
-    
+
     static normalizeUrl(url: string): string {
         url = url.trim();
         if (Utilities.isUrl(url)) {

@@ -1,17 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as express from 'express';
 import * as handlebars from 'handlebars';
-import * as appInsights from 'applicationinsights';
 import { CompiledSnippet } from './snippet.generator';
-import { IRunnerPostData, IOuterTemplateData } from './interfaces';
 import { Utilities } from './Utilities';
 
 export class TemplateGenerator {
     static initCodeHelpers() {
         handlebars.registerHelper('indentAll', (text, indent) => Utilities.indentAll(text, indent));
     }
-    
+
     static generate(templateRelativeUrl: string, context: any): Promise<string> {
         return new Promise((resolve, reject) => {
             let templateUrl = path.resolve(`${__dirname}/../assets/${templateRelativeUrl}`);

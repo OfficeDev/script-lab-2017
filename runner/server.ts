@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as http from 'http';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as jsyaml from 'js-yaml';
-import * as jsbeautify from 'js-beautify';
 import * as cors from 'cors';
 import * as Request from 'request';
 import { TemplateGenerator, SnippetTemplateGenerator } from './core/template.generator';
@@ -12,7 +10,6 @@ import { Utilities } from './core/utilities';
 import { SnippetGenerator } from './core/snippet.generator';
 import { RunnerError } from './core/runner-error';
 import { config } from './core/tokens';
-import { IRunnerPostData, IOuterTemplateData } from './core/interfaces';
 import * as appInsights from 'applicationinsights';
 
 function Server() {
@@ -25,7 +22,8 @@ function Server() {
     app.use(cors());
 
     app.get('/', async (request: express.Request, response: express.Response) => {
-        return new Promise((resolve, reject) => {
+        request;
+        return new Promise(() => {
             fs.readFile(path.resolve(`${__dirname}/assets/editor-runner.html`), 'UTF8', (err, data) => {
                 if (err != null) {
                     return handleError(err, response);
@@ -52,7 +50,7 @@ function Server() {
 
             let {client_id, client_secret, redirect_uri } = source;
 
-            let result = Request.post({
+            return Request.post({
                 url: 'https://github.com/login/oauth/access_token',
                 headers: {
                     'Accept': 'application/json'
@@ -65,6 +63,7 @@ function Server() {
                     state
                 }
             }, (error, httpResponse, body) => {
+                httpResponse;
                 if (error) {
                     return handleError(new RunnerError('Error retrieving GitHub access token', error), response);
                 }
@@ -104,7 +103,7 @@ function Server() {
             // If there are additional fields on data, like returnUrl, wrap it in the outer gallery-run template
             if (data.returnUrl) {
                 let wrapperContext = SnippetTemplateGenerator
-                    .createOuterTemplateContext(html, data, compiledSnippet);            
+                    .createOuterTemplateContext(html, data, compiledSnippet);
                 html = await TemplateGenerator.generate('outer-template.html', wrapperContext);
             }
 
@@ -139,12 +138,12 @@ function Server() {
     async function handleError(error: Error, response: express.Response, returnUrl?: string) {
         appInsights.client.trackException(error);
 
-        let context: {message: string, details: string, returnUrl: string} = {
+        let context: { message: string, details: string, returnUrl: string } = {
             message: error.message,
             details: error instanceof RunnerError ? error.details : jsyaml.safeDump(error),
             returnUrl: returnUrl
         }
-        
+
         let body = await TemplateGenerator.generate('error.html', context);
         return response.contentType('text/html').status(200).send(body);
     }
