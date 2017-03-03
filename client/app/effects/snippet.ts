@@ -33,8 +33,6 @@ export class SnippetEffects {
         libraries: ''
     };
 
-    private _samplesRepoUrl = environment.current.config.samplesUrl;
-
     constructor(
         private actions$: Actions,
         private _request: Request,
@@ -42,8 +40,6 @@ export class SnippetEffects {
         reduxStore: Store<fromRoot.State>,
     ) {
         this._defaults.author = this._github.profile ? this._github.profile.login : '';
-        console.log(reduxStore);
-        // this._store.notify = () => reduxStore.dispatch(new Snippet.LoadSnippetsAction());
     }
 
     @Effect({ dispatch: false })
@@ -67,9 +63,9 @@ export class SnippetEffects {
                         observable = Observable.of(settings.cache.get('default_template'));
                     }
                     else {
-                        console.log(`${this._samplesRepoUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`);
+                        console.log(`${environment.current.config.samplesUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`);
                         observable = this._request
-                            .get<string>(`${this._samplesRepoUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
+                            .get<string>(`${environment.current.config.samplesUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
                             .map(snippet => settings.cache.insert('default_template', snippet));
                     }
                     break;
@@ -138,10 +134,8 @@ export class SnippetEffects {
                 });
         })
         .catch(exception => Observable.from([
-
             new UI.ReportErrorAction(Strings.snippetImportError, exception),
             new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
-
         ]));
 
     @Effect()
@@ -205,16 +199,9 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let returnUrl = window.location.href;
-            if (environment.current.host === 'WEB') {
-                returnUrl += '?mode=web';
-            }
-
             let data = JSON.stringify({
                 snippet: snippet,
-                returnUrl: returnUrl,
-                refreshUrl: window.location.origin + '/refresh.html',
-                id: snippet.id,
+                origin: environment.current.config.editorUrl,
                 host: environment.current.host,
                 platform: environment.current.platform
             });
@@ -229,7 +216,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${this._samplesRepoUrl}/playlists/${environment.current.host}.yaml`;
+                let snippetJsonUrl = `${environment.current.config.samplesUrl}/playlists/${environment.current.host}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {

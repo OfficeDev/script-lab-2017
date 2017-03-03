@@ -79,6 +79,7 @@ interface IEnvironmentConfig {
     name: string,
     clientId: string
     instrumentationKey: string,
+    editorUrl: string,
     tokenUrl: string,
     runnerUrl: string,
     feedbackUrl: string,
