@@ -1,15 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as handlebars from 'handlebars';
+import { PlatformType } from '@microsoft/office-js-helpers';
 import { CompiledSnippet } from './snippet.generator';
 import { Utilities } from './Utilities';
 
-export class TemplateGenerator {
-    static initCodeHelpers() {
+class TemplateGenerator {
+    constructor() {
         handlebars.registerHelper('indentAll', (text, indent) => Utilities.indentAll(text, indent));
     }
 
-    static generate(templateRelativeUrl: string, context: any): Promise<string> {
+    generate(templateRelativeUrl: string, context: any): Promise<string> {
         return new Promise((resolve, reject) => {
             let templateUrl = path.resolve(`${__dirname}/../assets/${templateRelativeUrl}`);
             fs.readFile(templateUrl, 'UTF8', (err, data) => {
@@ -29,39 +30,24 @@ export class TemplateGenerator {
     }
 }
 
+export const templateGenerator = new TemplateGenerator();
+
 export class SnippetTemplateGenerator {
     static createOuterTemplateContext(
         frameContent: string,
-        data: IRunnerPostData,
+        { host, origin, platform }: IRunnerState,
         compiledSnippet: CompiledSnippet
     ): IOuterTemplateData {
         return {
             snippetName: compiledSnippet.name,
             snippetAuthor: compiledSnippet.author,
             iframeContent: frameContent,
-            hostLowercase: data.host.toLowerCase(),
-            returnUrl: data.returnUrl,
-            refreshUrl: generateRefreshUrl(),
+            hostLowercase: host.toLowerCase(),
+            returnUrl: `${origin}\index.html`,
+            refreshUrl: `${origin}\refresh.html`, /* TODO: Include all the refresh parameters */
             OfficeJsRefIfAny: compiledSnippet.officeJsRefIfAny,
             isOfficeSnippet: compiledSnippet.isOfficeSnippet,
-            addPaddingRight: data.platform === "PC"
-        }
-
-        function generateRefreshUrl(): string {
-            const propsToSkipOver = {
-                snippet: true,
-                refreshUrl: true
-            }
-
-            let params = [];
-
-            for (let property in data) {
-                if (!propsToSkipOver[property] && data[property] != null) {
-                    params.push(property + '=' + encodeURIComponent(data[property]));
-                }
-            }
-
-            return data.refreshUrl + '?' + params.join('&');
+            addPaddingRight: platform === PlatformType.PC
         }
     }
 }

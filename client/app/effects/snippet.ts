@@ -199,14 +199,14 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let data = JSON.stringify({
+            let data: IRunnerState = {
                 snippet: snippet,
                 origin: environment.current.config.editorUrl,
                 host: environment.current.host,
                 platform: environment.current.platform
-            });
+            };
 
-            post(environment.current.config.runnerUrl, { data });
+            post(environment.current.config.runnerUrl, { ...data });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 

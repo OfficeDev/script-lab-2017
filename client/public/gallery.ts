@@ -57,7 +57,7 @@ export class Gallery {
             return window.location.reload(true);
         }
 
-        let data = JSON.stringify({
+        let data = {
             snippet: snippet,
             returnUrl: window.location.href,
             refreshUrl: window.location.origin + '/refresh.html',
@@ -66,9 +66,9 @@ export class Gallery {
             id: snippet.id,
             host: OfficeHelpers.Utilities.host,
             platform: OfficeHelpers.Utilities.platform
-        });
+        };
 
-        return post(environment.current.config.runnerUrl, { data });
+        return post(environment.current.config.runnerUrl, { ...data });
     }
 }
 

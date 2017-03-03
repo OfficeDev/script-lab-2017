@@ -24,13 +24,9 @@ interface ISnippet extends ITemplate {
     lastModified?: number;
 }
 
-interface IRunnerPostData {
-    snippet: ISnippet | string; /* ISnippet when passed around, but string over the wire */
-    returnUrl: string;
-    refreshUrl: string;
-
-    // Any further fields will simply get passed in to the refresh page:
-    id: string;
+interface IRunnerState {
+    snippet: ISnippet;
+    origin: string;
     host: string;
     platform: string;
 }

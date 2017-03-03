@@ -58,7 +58,6 @@ export function post(path: string, params: any) {
             hiddenField.setAttribute('type', 'hidden');
             hiddenField.setAttribute('name', key);
             hiddenField.setAttribute('value', params[key]);
-
             form.appendChild(hiddenField);
         }
     }

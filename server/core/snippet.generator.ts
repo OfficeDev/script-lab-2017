@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
 import { Utilities } from './utilities';
-import { RunnerError } from './runner-error';
+import { BadRequestError } from './errors';
 
-export class SnippetGenerator {
-    static async compile(snippet: ISnippet): Promise<CompiledSnippet> {
+class SnippetGenerator {
+    async compile(snippet: ISnippet): Promise<CompiledSnippet> {
         if (snippet == null) {
             throw new Error('Snippet was null');
         }
@@ -12,10 +12,10 @@ export class SnippetGenerator {
         compiledSnippet.style = snippet.style.content;
         compiledSnippet.template = snippet.template.content;
 
-        let [{scriptReferences, linkReferences, officeJsRefIfAny}, script] =
+        let [{ scriptReferences, linkReferences, officeJsRefIfAny }, script] =
             await Promise.all([
-                SnippetGenerator.processLibraries(snippet.libraries.split('\n')),
-                SnippetGenerator.compileScript(snippet.script)
+                this.processLibraries(snippet.libraries.split('\n')),
+                this.compileScript(snippet.script)
             ]);
 
         compiledSnippet.script = script;
@@ -26,7 +26,7 @@ export class SnippetGenerator {
         return compiledSnippet;
     }
 
-    static async processLibraries(libraries: string[]) {
+    async processLibraries(libraries: string[]) {
         let linkReferences = [];
         let scriptReferences = [];
         let officeJsRefIfAny: string;
@@ -46,11 +46,11 @@ export class SnippetGenerator {
             }
 
             entry = entry.trim();
-            if (entry == '') {
+            if (entry === '') {
                 return;
             }
 
-            var isDefinitivelyNonJsOrCssReference =
+            let isDefinitivelyNonJsOrCssReference =
                 /^\/\/.*|^\/\*.*|.*\*\/$.*/im.test(entry) ||
                 /^@types/.test(entry) ||
                 /^dt~/.test(entry) ||
@@ -97,7 +97,7 @@ export class SnippetGenerator {
         }
     }
 
-    static async compileScript({ language, content }: { language: string, content: string }) {
+    async compileScript({ language, content }: { language: string, content: string }) {
         switch (language.toLowerCase()) {
             case 'typescript':
                 let result = ts.transpileModule(content, {
@@ -111,7 +111,7 @@ export class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new RunnerError('Errors during TypeScript compilation',
+                    throw new BadRequestError('Errors during TypeScript compilation',
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);
                             let afterError = content.substr(item.start + 1);
@@ -128,6 +128,8 @@ export class SnippetGenerator {
         }
     }
 }
+
+export const snippetGenerator = new SnippetGenerator();
 
 export class CompiledSnippet {
     script: string;
