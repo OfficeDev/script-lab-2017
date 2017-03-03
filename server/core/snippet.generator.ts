@@ -76,7 +76,7 @@ export class SnippetGenerator {
             if (/\.ts$|\.js$/i.test(resolvedLibrary)) {
                 if (/(?:office|office.debug).js$/.test(resolvedLibrary)) {
                     if (officeJsRefIfAny) {
-                        throw new Error("Unexpected error! More than one Office.js reference defined!");
+                        throw new Error('Unexpected error! More than one Office.js reference defined!');
                     }
 
                     officeJsRefIfAny = resolvedLibrary;

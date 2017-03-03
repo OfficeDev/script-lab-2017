@@ -216,7 +216,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${environment.current.config.samplesUrl}/playlists/${environment.current.host}.yaml`;
+                let snippetJsonUrl = `${environment.current.config.samplesUrl}/playlists/${environment.current.host.toLowerCase()}.yaml`;
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {

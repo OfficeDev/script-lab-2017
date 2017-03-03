@@ -46,8 +46,8 @@ export class MonacoService extends Disposable {
         if (this._typings == null) {
             this._typings = this._intellisenseFile.toPromise().then(
                 item => item
-                    .filter(({typings}) => !isEmpty(typings))
-                    .map(({typings, documentation}) => <monaco.languages.CompletionItem>{
+                    .filter(({ typings }) => !isEmpty(typings))
+                    .map(({ typings, documentation }) => <monaco.languages.CompletionItem>{
                         label: typings,
                         documentation: documentation,
                         kind: monaco.languages.CompletionItemKind.Module,
@@ -64,8 +64,8 @@ export class MonacoService extends Disposable {
         if (this._libraries == null) {
             this._libraries = this._intellisenseFile.toPromise().then(
                 item => item
-                    .filter(({label}) => !isEmpty(label))
-                    .map(({label, documentation}) => <monaco.languages.CompletionItem>{
+                    .filter(({ label }) => !isEmpty(label))
+                    .map(({ label, documentation }) => <monaco.languages.CompletionItem>{
                         label: label,
                         documentation: documentation,
                         kind: monaco.languages.CompletionItemKind.Property,
