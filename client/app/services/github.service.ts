@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
+import { Authenticator, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
 import { environment } from '../helpers';
-import first = require('lodash/first');
 
 @Injectable()
 export class GitHubService {
     private _baseUrl: string = 'https://api.github.com';
-    private _profileStorage: Storage<IBasicProfile>;
     private _authenticator: Authenticator;
     private _token: IToken;
     private _headers: any;
@@ -16,7 +14,6 @@ export class GitHubService {
     constructor(private _request: Request) {
         let { clientId, tokenUrl } = environment.current.config;
 
-        this._profileStorage = new Storage<IBasicProfile>('playground_profile');
         this._authenticator = new Authenticator();
         this._authenticator.endpoints.add('GitHub', {
             clientId: clientId,
@@ -30,6 +27,8 @@ export class GitHubService {
         this._token = this._authenticator.tokens.get('GitHub');
         this._setDefaultHeaders(this._token);
     }
+
+    profile: IBasicProfile;
 
     user(): Observable<IBasicProfile> {
         return this._request.get<IBasicProfile>(`${this._baseUrl}/user`, ResponseTypes.JSON, this._headers);
@@ -88,7 +87,6 @@ export class GitHubService {
 
     logout() {
         this._authenticator.tokens.clear();
-        this._profileStorage.clear();
     }
 
     gists(): Observable<IGist[]> {
@@ -130,22 +128,6 @@ export class GitHubService {
 
     deleteGist(id: string): Observable<{}> {
         return this._request.delete(`${this._baseUrl}/gists/${id}`, ResponseTypes.JSON, this._headers);
-    }
-
-    private _profile: IBasicProfile;
-    get profile(): IBasicProfile {
-        if (this._profile == null) {
-            this._profile = first(this._profileStorage.values());
-        }
-
-        return this._profile;
-    }
-
-    set profile(value: IBasicProfile) {
-        if (!(value == null)) {
-            this._profile = value;
-            this._profileStorage.insert(this._profile.login, this.profile);
-        }
     }
 
     private _setDefaultHeaders(token?: IToken) {

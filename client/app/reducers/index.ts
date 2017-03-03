@@ -79,6 +79,7 @@ export const createDefaultState = (settings: ISettings) => {
         return null;
     }
     let {profile, lastOpened, theme, language, env} = settings;
+
     return <State>{
         github: { ...github.initialState, profile },
         monaco: { ...monaco.initialState },

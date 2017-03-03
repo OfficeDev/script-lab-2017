@@ -261,7 +261,7 @@
 	<app class="app">
 		<div class="ms-progress-component">
 			<main class="ms-progress-component__main ms-fontColor-white">
-				<img class="ms-progress-component__logo" src="assets/images/icon-large.png">
+				<img class="ms-progress-component__logo" src="../assets/images/icon-large.png">
 				<h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
 				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Refreshing snippet</p>
 			</main>
@@ -329,7 +329,7 @@
 			}
 
 			var postData = { data: JSON.stringify(postDataInner) };
-			
+
 			post(determineRunnerUrl(), postData);
 		})();
 
@@ -382,7 +382,7 @@
 			if (window.location.host === 'addin-playground-staging.azurewebsites.net') {
 				return 'https://addin-playground-runner-staging.azurewebsites.net';
 			}
-			
+
 			return 'https://addin-playground-runner.azurewebsites.net';
 		}
 	</script>

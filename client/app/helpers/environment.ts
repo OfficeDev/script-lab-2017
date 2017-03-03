@@ -28,7 +28,7 @@ class Environment {
     private _current: IEnvironment;
     get current(): IEnvironment {
         if (this._current == null) {
-            this.current = {
+            this._current = {
                 devMode,
                 build,
                 config: this._config
@@ -48,6 +48,10 @@ class Environment {
     }
 
     async initialize() {
+        if (this.current && this.current.host) {
+            return this.current;
+        }
+
         let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
             if (window.location.href.toLowerCase().indexOf('?mode=web') > 0) {
                 return resolve({ host: 'WEB', platform: null });

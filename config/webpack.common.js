@@ -56,7 +56,7 @@ module.exports = {
     plugins: [
         new CheckerPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
-            name: ['polyfills', 'vendor', 'app'].reverse()
+            name: ['polyfills', 'vendor', 'main'].reverse()
         }),
         new webpack.BannerPlugin(`v.${build.name} ${build.version} © ${build.author}`),
         new CopyWebpackPlugin([
@@ -86,7 +86,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './client/views/index.html',
-            chunks: ['polyfills', 'vendor', 'app']
+            chunks: ['polyfills', 'vendor', 'main']
         }),
         new HtmlWebpackPlugin({
             filename: 'functions.html',
