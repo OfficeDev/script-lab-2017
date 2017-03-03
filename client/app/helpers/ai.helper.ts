@@ -1,5 +1,5 @@
 import { AppInsights } from 'applicationinsights-js';
-import { environment } from '../../environment';
+import { environment } from './environment';
 import { Utilities } from '@microsoft/office-js-helpers';
 
 class ApplicationInsights {

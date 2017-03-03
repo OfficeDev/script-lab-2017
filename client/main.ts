@@ -9,7 +9,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
-import { EXCEPTION_PROVIDER, Theme, AI, settings } from './app/helpers';
+import { EXCEPTION_PROVIDER, Theme, AI, settings, environment } from './app/helpers';
 import { COMPONENT_DECLARATIONS } from './components';
 import { AppComponent } from './app/containers';
 
@@ -18,7 +18,6 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { rootReducer, createDefaultState } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
-import { environment } from './environment';
 
 import './assets/styles/spinner.scss';
 import './assets/styles/globals.scss';
@@ -47,7 +46,7 @@ export class AppModule {
             }
 
             await Promise.all([
-                environment.determineHost(),
+                environment.initialize(),
                 MonacoService.initialize()
             ]);
 

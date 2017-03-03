@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import { Utilities } from '@microsoft/office-js-helpers';
-import { settings } from './app/helpers/settings';
+import { settings } from './settings';
 
 let { devMode, build, config } = PLAYGROUND;
 
@@ -12,7 +12,7 @@ class Environment {
             this._config = config['local'];
         }
         else {
-            let {origin} = location;
+            let { origin } = location;
             if (/insiders/.test(origin)) {
                 this._config = config['insiders'];
             }
@@ -47,8 +47,8 @@ class Environment {
         this._current = settings.cache.insert('environment', updatedEnv);
     }
 
-    async determineHost() {
-        let {host, platform} = await new Promise<{ host: string, platform: string }>(resolve => {
+    async initialize() {
+        let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
             if (window.location.href.toLowerCase().indexOf('?mode=web') > 0) {
                 return resolve({ host: 'WEB', platform: null });
             }
@@ -63,7 +63,7 @@ class Environment {
 
                 Office.initialize = () => {
                     clearTimeout(hostButtonsTimeout);
-                    let {host, platform} = Utilities;
+                    let { host, platform } = Utilities;
                     return resolve({ host, platform });
                 };
             }

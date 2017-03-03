@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Authenticator, Storage, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
-import { environment } from '../../environment';
+import { environment } from '../helpers';
 import first = require('lodash/first');
 
 @Injectable()
@@ -14,7 +14,7 @@ export class GitHubService {
     private _headers: any;
 
     constructor(private _request: Request) {
-        let {clientId, tokenUrl} = environment.current.config;
+        let { clientId, tokenUrl } = environment.current.config;
 
         this._profileStorage = new Storage<IBasicProfile>('playground_profile');
         this._authenticator = new Authenticator();

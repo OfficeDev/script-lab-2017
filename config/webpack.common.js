@@ -12,11 +12,11 @@ module.exports = {
     entry: {
         'polyfills': './client/polyfills.ts',
         'vendor': './client/vendor.ts',
-        'app': './client/app.module.ts',
-        'functions': './client/functions.ts',
-        'gallery': './client/gallery.ts',
-        'heartbeat': './client/heartbeat.ts',
-        'refresh': './client/refresh.ts'
+        'main': './client/main.ts',
+        'functions': './client/public/functions.ts',
+        'gallery': './client/public/gallery.ts',
+        'heartbeat': './client/public/heartbeat.ts',
+        'refresh': './client/public/refresh.ts'
     },
 
     resolve: {
@@ -66,8 +66,9 @@ module.exports = {
                 to: 'assets'
             },
             {
-                from: './client/extras',
-                to: ''
+                from: './client/public',
+                to: '',
+                ignore: ['*.ts']
             },
             {
                 from: 'node_modules/monaco-editor/min',
@@ -84,27 +85,27 @@ module.exports = {
         ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './client/index.html',
+            template: './client/views/index.html',
             chunks: ['polyfills', 'vendor', 'app']
         }),
         new HtmlWebpackPlugin({
             filename: 'functions.html',
-            template: './client/functions.html',
+            template: './client/views/functions.html',
             chunks: ['polyfills', 'vendor', 'functions'],
         }),
         new HtmlWebpackPlugin({
             filename: 'gallery.html',
-            template: './client/gallery.html',
+            template: './client/views/gallery.html',
             chunks: ['polyfills', 'vendor', 'gallery'],
         }),
         new HtmlWebpackPlugin({
             filename: 'heartbeat.html',
-            template: './client/heartbeat.html',
+            template: './client/views/heartbeat.html',
             chunks: ['polyfills', 'vendor', 'heartbeat'],
         }),
         new HtmlWebpackPlugin({
             filename: 'refresh.html',
-            template: './client/refresh.html',
+            template: './client/views/refresh.html',
             chunks: ['polyfills', 'vendor', 'refresh'],
         })
     ]

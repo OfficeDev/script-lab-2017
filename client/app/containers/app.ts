@@ -3,8 +3,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment } from '../../environment';
-import { Strings, settings } from '../helpers';
+import { Strings, settings, environment } from '../helpers';
 
 @Component({
     selector: 'app',

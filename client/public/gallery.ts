@@ -1,5 +1,4 @@
-import { environment } from './environment';
-import { settings, Theme, post } from './app/helpers';
+import { settings, environment, Theme, post } from '../app/helpers';
 import { Storage } from '@microsoft/office-js-helpers';
 
 export class Gallery {
@@ -20,7 +19,7 @@ export class Gallery {
     }
 
     static async start() {
-        await environment.determineHost();
+        await environment.initialize();
         await Theme.applyTheme(environment.current.host);
     }
 
@@ -38,7 +37,7 @@ export class Gallery {
         }
     }
 
-    insertSnippet({id, name, description}: ISnippet) {
+    insertSnippet({ id, name, description }: ISnippet) {
         let template = this._template
             .replace('{{name}}', name)
             .replace('{{description}}', description);

@@ -1,7 +1,6 @@
 import { UIActions, UIActionTypes } from '../actions/ui';
-import { PlaygroundError, AI } from '../helpers';
+import { PlaygroundError, AI, environment } from '../helpers';
 import { Utilities } from '@microsoft/office-js-helpers';
-import { environment } from '../../environment';
 
 export interface UIState {
     menuOpened?: boolean;
@@ -25,7 +24,7 @@ export const initialState: UIState = {
 export function reducer(state = initialState, action: UIActions): UIState {
     AI.trackEvent(action.type);
 
-switch (action.type) {
+    switch (action.type) {
         case UIActionTypes.TOGGLE_IMPORT:
             return { ...state, showImport: action.payload };
 

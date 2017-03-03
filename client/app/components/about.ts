@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { storageSize, Strings} from '../helpers';
-import { environment } from '../../environment';
+import { environment, storageSize, Strings } from '../helpers';
 
 @Component({
     selector: 'about',
