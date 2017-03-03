@@ -20,7 +20,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get('/', (req: express.Request, res: express.Response) => res.sendfile(path.resolve('assets/editor-runner.html')));
+app.get('/', (req: express.Request, res: express.Response) => {
+    res.sendfile(path.resolve(__dirname, 'assets/editor-runner.html'));
+});
 
 app.post('/auth/:env', async (request: express.Request, response: express.Response) => {
     if (request.body == null || request.body.code == null || request.body.code.trim() === '') {

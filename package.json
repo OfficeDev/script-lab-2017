@@ -23,9 +23,8 @@
   "scripts": {
     "compile": "tsc -p tsconfig.json --watch",
     "copy": "cpx \"server/**/!(*.ts)\" \"dist/server\" --watch",
-    "server": "nodemon --debug=5858 dist/server/server.js",
     "client": "webpack-dev-server --config config/webpack.dev.js --progress",
-    "start": "rimraf dist && parallelshell \"npm run client\" \"npm run compile\" \"npm run copy\"",
+    "start": "rimraf dist && concurrently --kill-others --raw \"npm run client\" \"npm run compile\" \"npm run copy\"",
     "lint": "tslint --project tsconfig.json",
     "deploy": "node config/deploy.js"
   },
@@ -70,7 +69,8 @@
     "applicationinsights": "0.18.0"
   },
   "devDependencies": {
-    "parallelshell": "^2.0.0",
+    "cpx": "^1.5.0",
+    "concurrently": "^3.4.0",
     "angular2-template-loader": "0.6.2",
     "autoprefixer": "6.7.4",
     "awesome-typescript-loader": "3.0.4",
