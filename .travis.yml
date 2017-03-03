@@ -13,3 +13,7 @@ install:
 script:
 - npm run lint
 - npm run deploy
+
+notifications:
+
+webhooks: https://outlook.office.com/webhook/cd954b0a-08e5-4935-933b-a1cda4e6d5e9@72f988bf-86f1-41af-91ab-2d7cd011db47/TravisCI/1a35350e4d7042269805b967289a9b4d/5bf9ad7e-4cad-45e8-9812-e553da1c05c6
