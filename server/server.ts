@@ -64,7 +64,8 @@ app.post('/auth/:env/:id', wrap(async (req: express.Request, res: express.Respon
 }));
 
 app.post('/', wrap(async (req: express.Request, res: express.Response) => {
-    let { snippet } = req.body as IRunnerState;
+    let data = JSON.parse(req.body.data) as IRunnerState;
+    let { snippet } = data;
     if (snippet == null) {
         throw new BadRequestError('Received invalid snippet data.', snippet);
     }
@@ -76,7 +77,7 @@ app.post('/', wrap(async (req: express.Request, res: express.Response) => {
     let html = await templateGenerator.generate('inner-template.html', compiledSnippet);
 
     // If there are additional fields on data, like returnUrl, wrap it in the outer gallery-run template
-    let wrapperContext = SnippetTemplateGenerator.createOuterTemplateContext(html, req.body as IRunnerState, compiledSnippet);
+    let wrapperContext = SnippetTemplateGenerator.createOuterTemplateContext(html, data, compiledSnippet);
     html = await templateGenerator.generate('outer-template.html', wrapperContext);
     html = Utilities.replaceAllTabsWithSpaces(html);
 
@@ -103,7 +104,7 @@ app.use((err, req, res, next) => {
     }
     else if (err) {
         res.status(500);
-        return res.send(err);
+        return res.send(err.message);
     }
 });
 

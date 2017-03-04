@@ -8,13 +8,11 @@ export class Utilities {
     }
 
     static isNullOrWhitespace(text: string) {
-        return text == null || text.trim().length == 0;
+        return text == null || text.trim().length === 0;
     }
 
     static stripSpaces(text: string) {
-        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map(function (item) {
-            return item.replace(new RegExp("\t", 'g'), "    ");
-        });
+        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map((item) => item.replace(new RegExp('	', 'g'), '    '));
 
         let isZeroLengthLine: boolean = true;
         let arrayPosition: number = 0;
@@ -27,7 +25,7 @@ export class Utilities {
             } else {
                 isZeroLengthLine = false;
             }
-        } while (isZeroLengthLine || (arrayPosition === lines.length))
+        } while (isZeroLengthLine || (arrayPosition === lines.length));
 
         arrayPosition = lines.length - 1;
         isZeroLengthLine = true;
@@ -41,10 +39,10 @@ export class Utilities {
             } else {
                 isZeroLengthLine = false;
             }
-        } while (isZeroLengthLine)
+        } while (isZeroLengthLine);
 
         // Get smallest indent for align left.
-        var shortestIndentSize: number = 1024;
+        let shortestIndentSize: number = 1024;
         for (let line of lines) {
             let currentLine: string = line;
             if (currentLine.trim() !== '') {
@@ -63,7 +61,7 @@ export class Utilities {
         }
 
         // Convert the array back into a string and return it.
-        var finalSetOfLines: string = '';
+        let finalSetOfLines: string = '';
         for (let i: number = 0; i < lines.length; i++) {
             if (i < lines.length - 1) {
                 finalSetOfLines += lines[i] + '\n';
@@ -77,10 +75,10 @@ export class Utilities {
     }
 
     static indentAll(text: string, indentSize: number) {
-        var lines: string[] = Utilities.stringOrEmpty(text).split('\n');
-        var indentString = "";
-        for (var i = 0; i < indentSize; i++) {
-            indentString += "    ";
+        let lines: string[] = Utilities.stringOrEmpty(text).split('\n');
+        let indentString = '';
+        for (let i = 0; i < indentSize; i++) {
+            indentString += '    ';
         }
 
         return lines.map((line) => indentString + line).join('\n');
@@ -88,16 +86,16 @@ export class Utilities {
 
     static isUrl(entry: string): boolean {
         entry = entry.trim().toLowerCase();
-        return entry.startsWith("http://") || entry.startsWith("https://") || entry.startsWith("//");
+        return entry.startsWith('http://') || entry.startsWith('https://') || entry.startsWith('//');
     }
 
     static normalizeUrl(url: string): string {
         url = url.trim();
         if (Utilities.isUrl(url)) {
             // strip out https: or http:
-            return url.substr(url.indexOf("//"));
+            return url.substr(url.indexOf('//'));
         } else {
-            throw new Error("Could not normalize URL " + url);
+            throw new Error('Could not normalize URL ' + url);
         }
     }
 
