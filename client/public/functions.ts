@@ -1,7 +1,6 @@
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
-Office.initialize = () => {
-};
+Office.initialize = () => { };
 
 const urls = {
     tutorial: 'https://github.com/OfficeDev/addin-playground',

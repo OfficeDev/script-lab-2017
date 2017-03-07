@@ -41,20 +41,13 @@ app.post('/auth/:env/:id', wrap(async (req: express.Request, res: express.Respon
     let { client_id, client_secret, redirect_uri } = source;
 
     let start = Date.now();
-
     let token = await new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
             headers: {
                 'Accept': 'application/json'
             },
-            json: {
-                client_id,
-                client_secret,
-                redirect_uri,
-                code,
-                state
-            }
+            json: { client_id, client_secret, redirect_uri, code, state }
         }, (error, httpResponse, body) => error ? reject(new UnauthorizedError('Failed to authenticate user.', error)) : resolve(body));
     });
 

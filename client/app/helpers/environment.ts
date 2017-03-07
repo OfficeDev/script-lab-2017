@@ -47,7 +47,11 @@ class Environment {
         this._current = settings.cache.insert('environment', updatedEnv);
     }
 
-    async initialize() {
+    async initialize(currHost?: string, currPlatform?: string) {
+        if (currHost && currPlatform) {
+            return Promise.resolve({ currHost, currPlatform });
+        }
+
         if (this.current && this.current.host) {
             return this.current;
         }
