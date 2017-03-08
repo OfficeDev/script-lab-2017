@@ -1,25 +1,39 @@
 import * as ts from 'typescript';
-import { Utilities } from './utilities';
 import { BadRequestError } from './errors';
 
 class SnippetGenerator {
-    async compile(snippet: ISnippet): Promise<CompiledSnippet> {
+    async compile(snippet: ISnippet): Promise<ICompiledSnippet> {
+        // TODO: Compilation time log here
+
         if (snippet == null) {
-            throw new Error('Snippet was null');
+            throw new BadRequestError('Snippet is null');
         }
 
-        let compiledSnippet = new CompiledSnippet(snippet);
-        compiledSnippet.style = snippet.style.content;
-        compiledSnippet.template = snippet.template.content;
+        let compiledSnippet: ICompiledSnippet = {
+            id: snippet.id,
+            gist: snippet.gist,
+            author: snippet.author,
+            source: snippet.source,
+            name: snippet.name,
+            description: snippet.description,
+            host: snippet.host,
+            host_version: snippet.host_version,
+            platform: snippet.platform,
+            origin: snippet.origin,
+            created_at: snippet.created_at,
+            modified_at: snippet.modified_at,
+            style: snippet.style.content,
+            template: snippet.template.content,
+        };
 
-        let [{ scriptReferences, linkReferences, officeJsRefIfAny }, script] =
+        let [{ scriptReferences, linkReferences, officeJS }, script] =
             await Promise.all([
                 this.processLibraries(snippet.libraries.split('\n')),
                 this.compileScript(snippet.script)
             ]);
 
         compiledSnippet.script = script;
-        compiledSnippet.officeJsRefIfAny = officeJsRefIfAny;
+        compiledSnippet.officeJS = officeJS;
         compiledSnippet.scriptReferences = scriptReferences;
         compiledSnippet.linkReferences = linkReferences;
 
@@ -29,77 +43,58 @@ class SnippetGenerator {
     async processLibraries(libraries: string[]) {
         let linkReferences = [];
         let scriptReferences = [];
-        let officeJsRefIfAny: string;
+        let officeJS: string = null;
 
-        if (libraries != null) {
-            for (let library of libraries) {
-                processLibraryEntry(library.trim().toLowerCase());
-            }
-        }
+        libraries.forEach(processLibrary);
 
-        return { linkReferences, scriptReferences, officeJsRefIfAny };
+        return { linkReferences, scriptReferences, officeJS };
 
-
-        function processLibraryEntry(entry: string) {
-            if (entry == null) {
-                return;
+        function processLibrary(text: string) {
+            if (text == null || text.trim() === '') {
+                return null;
             }
 
-            entry = entry.trim();
-            if (entry === '') {
-                return;
+            text = text.trim();
+
+            let isNotScriptOrStyle =
+                /^\/\/.*|^\/\*.*|.*\*\/$.*/im.test(text) ||
+                /^@types/.test(text) ||
+                /^dt~/.test(text) ||
+                /\.d\.ts$/i.test(text);
+
+            if (isNotScriptOrStyle) {
+                return null;
             }
 
-            let isDefinitivelyNonJsOrCssReference =
-                /^\/\/.*|^\/\*.*|.*\*\/$.*/im.test(entry) ||
-                /^@types/.test(entry) ||
-                /^dt~/.test(entry) ||
-                /\.d\.ts$/i.test(entry);
+            let resolvedUrlPath = (/^https?:\/\/|^ftp? :\/\//i.test(text)) ? text : `//unpkg.com/${text}`;
 
-            if (isDefinitivelyNonJsOrCssReference) {
-                return;
+            if (/\.css$/i.test(resolvedUrlPath)) {
+                return linkReferences.push(resolvedUrlPath);
             }
 
-
-            // From here on out, assume that we do have something worth adding:
-
-            let resolvedLibrary =
-                (/^https?:\/\/|^ftp? :\/\//i.test(entry)) ?
-                    entry :
-                    `//unpkg.com/${entry}`;
-
-            if (/\.css$/i.test(resolvedLibrary)) {
-                linkReferences.push(resolvedLibrary);
-                return;
-            }
-
-            if (/\.ts$|\.js$/i.test(resolvedLibrary)) {
-                if (/(?:office|office.debug).js$/.test(resolvedLibrary)) {
-                    if (officeJsRefIfAny) {
-                        throw new Error('Unexpected error! More than one Office.js reference defined!');
-                    }
-
-                    officeJsRefIfAny = resolvedLibrary;
-
-                    // Don't add Office.js to the rest of the script references --
-                    //   it is special because of how it needs to be *outside* of the iframe,
-                    //   whereas the rest of the script references need to be inside the iframe.
-                    return;
+            if (/\.ts$|\.js$/i.test(resolvedUrlPath)) {
+                /*
+                * Don't add Office.js to the rest of the script references --
+                * it is special because of how it needs to be *outside* of the iframe,
+                * whereas the rest of the script references need to be inside the iframe.
+                */
+                if (/(?:office|office.debug).js$/.test(resolvedUrlPath)) {
+                    officeJS = resolvedUrlPath;
+                    return null;
                 }
 
-                scriptReferences.push(resolvedLibrary);
-                return;
+                return scriptReferences.push(resolvedUrlPath);
             }
 
-            // If still here, assume it's JS and hope for the best:
-            scriptReferences.push(resolvedLibrary);
-
+            return null;
         }
     }
 
     async compileScript({ language, content }: { language: string, content: string }) {
         switch (language.toLowerCase()) {
             case 'typescript':
+                // TODO: Compilation time log here
+
                 let result = ts.transpileModule(content, {
                     reportDiagnostics: true,
                     compilerOptions: {
@@ -124,39 +119,11 @@ class SnippetGenerator {
                 }
 
                 return result.outputText;
+
+            case 'javascript':
             default: return content;
         }
     }
 }
 
 export const snippetGenerator = new SnippetGenerator();
-
-export class CompiledSnippet {
-    script: string;
-    style: string;
-    template: string;
-    scriptReferences: string[];
-    linkReferences: string[];
-    officeJsRefIfAny: string;
-    typings: string[];
-    name: string;
-    id: string;
-    author: string;
-
-    constructor(public snippet: ISnippet) {
-        this.scriptReferences = [];
-        this.linkReferences = [];
-        this.typings = [];
-        this.id = snippet.id;
-        this.name = snippet.name;
-        this.author = snippet.author;
-    }
-
-    get normalizedOfficeJsRefIfAny(): string {
-        return `https:${Utilities.normalizeUrl(this.officeJsRefIfAny)}`;
-    }
-
-    get isOfficeSnippet(): boolean {
-        return !Utilities.isNullOrWhitespace(this.officeJsRefIfAny);
-    }
-}

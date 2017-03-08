@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+    <title>{{snippet.name}}</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="{{snippet.author}}" />
+
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css">
+
+    {{#if snippet.officeJS}}
+        <script src="{{snippet.officeJS}}"></script>
+    {{/if}}
+</head>
+
+<body class="{{snippet.host}}">
+    <div id="header">
+        <div class="command__bar">
+            <a class="command__icon clickable" href="{{snippet.origin}}">
+                <i class="ms-Icon ms-Icon--Back"></i>
+                <span class="ms-font-m">Back</span>
+            </a>
+
+            <div id="snippet-title" class="command__icon">
+                <span class="ms-font-m">{{snippet.name}}</span>
+            </div>
+
+            <a class="command__icon clickable" href="{{snippet.origin}}">
+                <i class="ms-Icon ms-Icon--Refresh"></i>
+                <span class="ms-font-m">Reload</span>
+            </a>
+        </div>
+    </div>
+
+    <pre id="iframe-content" style="display:none">{{{iframe}}}</pre>
+    <iframe id="snippet-container" src="about:blank"></iframe>
+
+    <script src="{{snippet.origin}}/runner.15650e937e32910f14ad.js"></script>
+    <script type="text/javascript">
+        window.initializeRunner('{{snippet.host}}', '{{snippet.platform}}', '{{snippet.officeJS}}');
+    </script>
+</body>
+
+</html>

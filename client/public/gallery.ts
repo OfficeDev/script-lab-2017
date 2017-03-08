@@ -68,7 +68,7 @@ export class Gallery {
             platform: OfficeHelpers.Utilities.platform
         });
 
-        return post(environment.current.config.runnerUrl, JSON.stringify({ data }));
+        return post(environment.current.config.runnerUrl + '/compile', JSON.stringify({ data }));
     }
 }
 

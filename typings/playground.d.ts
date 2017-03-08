@@ -5,6 +5,12 @@ interface ITemplate {
     source?: string;
     name?: string;
     description?: string;
+    host: string;
+    host_version: string;
+    platform: string;
+    origin: string;
+    created_at: number;
+    modified_at: number;
 }
 
 interface ISnippet extends ITemplate {
@@ -21,7 +27,16 @@ interface ISnippet extends ITemplate {
         language: string;
     };
     libraries?: string;
-    lastModified?: number;
+}
+
+interface ICompiledSnippet extends ITemplate {
+    script?: string;
+    style?: string;
+    template?: string;
+    scriptReferences?: string[];
+    linkReferences?: string[];
+    officeJS?: string;
+    typings?: string[];
 }
 
 interface IRunnerState {
@@ -90,16 +105,4 @@ interface ISettings {
     theme: boolean,
     language: string,
     env: string
-}
-
-interface IOuterTemplateData {
-    snippetName: string;
-    snippetAuthor: string;
-    iframeContent: string;
-    hostLowercase: string;
-    returnUrl: string;
-    refreshUrl: string;
-    OfficeJsRefIfAny: string;
-    isOfficeSnippet: boolean;
-    addPaddingRight: boolean;
 }
