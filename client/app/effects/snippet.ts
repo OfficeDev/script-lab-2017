@@ -19,7 +19,12 @@ export class SnippetEffects {
     private _defaults = <ISnippet>{
         id: '',
         gist: '',
-        source: environment.current.host,
+        host: environment.current.host,
+        host_version: '2016',
+        platform: environment.current.platform,
+        created_at: Date.now(),
+        modified_at: Date.now(),
+        origin: environment.current.config.editorUrl,
         author: '',
         name: Strings.defaultSnippetTitle, // UI unknown
         description: '',
@@ -83,7 +88,6 @@ export class SnippetEffects {
                                 let output = this._upgrade(gist.files);
                                 output.description = '';
                                 output.author = '';
-                                output.source = '';
                                 output.gist = data;
                                 return output;
                             }
@@ -195,10 +199,6 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            snippet.origin = environment.current.config.editorUrl;
-            snippet.host = environment.current.host;
-            snippet.platform = environment.current.platform;
-
             let data = JSON.stringify({
                 snippet: snippet
             });
@@ -281,28 +281,7 @@ export class SnippetEffects {
     }
 
     private _upgrade(files: IGistFiles) {
-        let snippet: ISnippet = {
-            script: {
-                content: '',
-                language: 'typescript'
-            },
-            style: {
-                content: '',
-                language: 'css'
-            },
-            template: {
-                content: '',
-                language: 'html'
-            },
-            libraries: '',
-            created_at: Date.now(),
-            modified_at: Date.now(),
-            host: environment.current.host,
-            host_version: '2016',
-            platform: environment.current.platform,
-            origin: environment.current.config.editorUrl
-        };
-
+        let snippet = { ...this._defaults } as ISnippet;
         forIn(files, (file, name) => {
             switch (name) {
                 case 'libraries.txt':

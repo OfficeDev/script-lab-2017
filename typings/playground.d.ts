@@ -2,7 +2,6 @@ interface ITemplate {
     id?: string;
     gist?: string;
     author?: string;
-    source?: string;
     name?: string;
     description?: string;
     host: string;
