@@ -3,7 +3,6 @@ import { Utilities } from '@microsoft/office-js-helpers';
 import { settings } from './settings';
 
 let { devMode, build, config } = PLAYGROUND;
-console.log(PLAYGROUND);
 
 class Environment {
     private _config: IEnvironmentConfig;
@@ -68,7 +67,7 @@ class Environment {
                     $('.hostButton').click(function hostButtonClick() {
                         resolve({ host: $(this).data('host'), platform: null });
                     });
-                }, 3000);
+                }, 2000);
 
                 Office.initialize = () => {
                     clearTimeout(hostButtonsTimeout);

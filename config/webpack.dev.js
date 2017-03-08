@@ -11,13 +11,13 @@ module.exports = webpackMerge(commonConfig, {
 
     output: {
         path: path.resolve('./dist/client'),
-        filename: '[name].[hash].js',
-        chunkFilename: '[name].[hash].chunk.js'
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js'
     },
 
     plugins: [
         new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
-        new ExtractTextPlugin('[name].[hash].css'),
+        new ExtractTextPlugin('[name].bundle.css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 devMode: true,

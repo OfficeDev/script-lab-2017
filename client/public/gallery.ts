@@ -1,4 +1,4 @@
-import { settings, environment, Theme, post } from '../app/helpers';
+import { settings, environment, applyTheme, post } from '../app/helpers';
 import { Storage } from '@microsoft/office-js-helpers';
 
 export class Gallery {
@@ -20,7 +20,7 @@ export class Gallery {
 
     static async start() {
         await environment.initialize();
-        await Theme.applyTheme(environment.current.host);
+        await applyTheme(environment.current.host);
     }
 
     render() {

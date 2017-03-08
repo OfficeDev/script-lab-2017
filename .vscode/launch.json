@@ -18,7 +18,7 @@
                 "${workspaceRoot}/dist/server/**/*.js"
             ],
             "sourceMaps": true,
-            "restart": true,
+            "restart": false,
             "port": 5858,
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",

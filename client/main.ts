@@ -9,7 +9,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
-import { EXCEPTION_PROVIDER, Theme, AI, settings, environment } from './app/helpers';
+import { EXCEPTION_PROVIDER, applyTheme, AI, settings, environment } from './app/helpers';
 import { COMPONENT_DECLARATIONS } from './components';
 import { AppComponent } from './app/containers';
 
@@ -51,7 +51,7 @@ export class AppModule {
             ]);
 
             AI.initialize(environment.current.config.instrumentationKey);
-            await Theme.applyTheme(environment.current.host);
+            await applyTheme(environment.current.host);
 
             if (!Authenticator.isAuthDialog()) {
                 AI.trackEvent(`Playground ready`, { host: environment.current.host });
