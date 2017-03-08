@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
-
 import { UI, Snippet } from '../actions';
 import { Strings } from '../helpers';
-
 import { Disposable } from '../services';
 import { AI } from '../helpers';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UIEffects } from '../effects/ui';
-import isEmpty = require('lodash/isEmpty');
+import { isEmpty } from 'lodash';
 
 @Component({
     selector: 'gallery',

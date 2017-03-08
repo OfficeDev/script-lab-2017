@@ -7,14 +7,10 @@ import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
-import cuid = require('cuid');
+import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import isEmpty = require('lodash/isEmpty');
-import find = require('lodash/find');
-import assign = require('lodash/assign');
-import reduce = require('lodash/reduce');
-import forIn = require('lodash/forIn');
+import { isEmpty, find, assign, reduce, forIn } from 'lodash';
 
 @Injectable()
 export class SnippetEffects {
