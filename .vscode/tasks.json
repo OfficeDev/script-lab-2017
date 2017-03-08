@@ -7,12 +7,12 @@
     "suppressTaskName": true,
     "tasks": [
         {
-            "taskName": "server",
+            "taskName": "start",
             "showOutput": "always",
             "isBuildCommand": true,
             "args": [
                 "run",
-                "server"
+                "start"
             ]
         }
     ]

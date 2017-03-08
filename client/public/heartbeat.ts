@@ -31,7 +31,7 @@ import { settings, environment, Messenger, MessageType } from '../app/helpers';
             if (!isEquals(currentSnippet)) {
                 return initialize();
             }
-            else if (currentSnippet.lastModified !== current.lastModified) {
+            else if (currentSnippet.modified_at !== current.modified_at) {
                 return messenger.send(MessageType.RELOAD, currentSnippet.id);
             }
         }

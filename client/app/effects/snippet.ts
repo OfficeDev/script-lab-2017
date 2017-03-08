@@ -94,7 +94,7 @@ export class SnippetEffects {
                     break;
 
                 case 'URL':
-                    observable = this._request.get<string>(data, ResponseTypes.YAML);
+                    observable = this._request.get<ISnippet>(data, ResponseTypes.YAML);
                     break;
 
                 case 'YAML':
@@ -140,7 +140,7 @@ export class SnippetEffects {
         .map((action: Snippet.SaveAction) => action.payload)
         .map(snippet => {
             this._validate(snippet);
-            snippet.lastModified = new Date().getTime();
+            snippet.modified_at = new Date().getTime();
 
             if (this._store.contains(snippet.id)) {
                 this._store.insert(snippet.id, snippet);
@@ -195,14 +195,15 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
+            snippet.origin = environment.current.config.editorUrl;
+            snippet.host = environment.current.host;
+            snippet.platform = environment.current.platform;
+
             let data = JSON.stringify({
-                snippet: snippet,
-                origin: environment.current.config.editorUrl,
-                host: environment.current.host,
-                platform: environment.current.platform
+                snippet: snippet
             });
 
-            post(environment.current.config.runnerUrl, { data });
+            post(environment.current.config.runnerUrl + '/compile', { data });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 
@@ -293,7 +294,13 @@ export class SnippetEffects {
                 content: '',
                 language: 'html'
             },
-            libraries: ''
+            libraries: '',
+            created_at: Date.now(),
+            modified_at: Date.now(),
+            host: environment.current.host,
+            host_version: '2016',
+            platform: environment.current.platform,
+            origin: environment.current.config.editorUrl
         };
 
         forIn(files, (file, name) => {

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+    <title>Run: {{name}}</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="{{author}}" />
+
+    <!-- CSS Libraries -->
+    {{#if linkReferences.length}}
+    {{#each linkReferences}}
+    <link rel="stylesheet" href="{{this}}" />
+    {{/each}}
+    {{/if}}
+
+    <!-- Style -->
+    <style type="text/css">
+        {{{indent style 2}}}
+    </style>
+</head>
+
+<body>
+    <!-- Template -->
+    {{{indent template 1}}}
+
+    <!-- JS Libraries -->
+    {{#if scriptReferences.length}}
+    {{#each scriptReferences}}
+    <script src="{{this}}"></script>
+    {{/each}}
+    {{/if}}
+
+    <!-- Script -->
+    <script type="text/javascript">
+        window.parent.runnerReady();
+
+        {{#if isOfficeSnippet}}
+        Office.initialize = function() {
+            {{{indent script 3}}}
+        };
+        {{else}}
+        {{{indent script 2}}}
+        {{/if}}
+    </script>
+</body>
+
+</html>
