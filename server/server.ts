@@ -112,5 +112,5 @@ https.createServer({
     key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
     cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
 }, app).listen(process.env.PORT || 3200, () => {
-    console.log(`Playground server running on ${process.env.PORT || 3200}`)
+    console.log(`Playground server running on ${process.env.PORT || 3200}`);
 });
