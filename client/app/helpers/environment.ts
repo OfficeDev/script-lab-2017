@@ -48,7 +48,7 @@ class Environment {
     }
 
     async initialize(currHost?: string, currPlatform?: string) {
-        if (currHost && currPlatform) {
+        if (currHost) {
             return Promise.resolve({ currHost, currPlatform });
         }
 

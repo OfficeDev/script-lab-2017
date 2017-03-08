@@ -12,7 +12,8 @@ module.exports = webpackMerge(commonConfig, {
     output: {
         path: path.resolve('./dist/client'),
         filename: '[name].bundle.js',
-        chunkFilename: '[name].chunk.js'
+        chunkFilename: '[name].chunk.js',
+        publicPath: 'https://localhost:3000'
     },
 
     plugins: [
@@ -51,7 +52,7 @@ module.exports = webpackMerge(commonConfig, {
         compress: true,
         port: 3100,
         historyApiFallback: true,
-        stats: 'minimal',
+        noInfo: true,
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000

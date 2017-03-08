@@ -17,7 +17,8 @@ module.exports = {
         functions: './public/functions.ts',
         gallery: './public/gallery.ts',
         heartbeat: './public/heartbeat.ts',
-        refresh: './public/refresh.ts'
+        refresh: './public/refresh.ts',
+        runner: './public/runner.ts'
     },
 
     resolve: {
@@ -74,8 +75,8 @@ module.exports = {
             }
         }),
         new webpack.optimize.CommonsChunkPlugin({
-            name: ['polyfills', 'vendor', 'main'].reverse(),
-            minChunks: 2
+            name: ['vendor', 'polyfills'],
+            minChunks: Infinity
         }),
         new CopyWebpackPlugin([
             {
