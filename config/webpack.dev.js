@@ -1,6 +1,5 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
@@ -16,22 +15,15 @@ module.exports = webpackMerge(commonConfig, {
         chunkFilename: '[name].[hash].chunk.js'
     },
 
-    performance: {
-        hints: "warning"
-    },
-
     plugins: [
-        new webpack.BannerPlugin({ banner: `v.${build.name} ${build.version} © ${build.author}` }),
+        new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
         new ExtractTextPlugin('[name].[hash].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 devMode: true,
-                build: commonConfig.build,
-                config: commonConfig.config
+                build: build,
+                config: config
             })
-        }),
-        new BundleAnalyzerPlugin({
-            analyzerMode: 'static'
         }),
         new BrowserSyncPlugin(
             {
@@ -52,7 +44,7 @@ module.exports = webpackMerge(commonConfig, {
         https: true,
         inline: true,
         overlay: {
-            warnings: true,
+            warnings: false,
             errors: true
         },
         watchContentBase: true,

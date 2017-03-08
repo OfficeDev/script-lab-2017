@@ -47,47 +47,9 @@ module.exports = {
                 test: /\.scss$/,
                 use: ExtractTextPlugin.extract({
                     fallback: "style-loader",
-                    use: [
-                        'css-loader',
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                plugins: () => [
-                                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
-                                    perfectionist
-                                ]
-                            }
-                        },
-                        'sass-loader'
-                    ]
+                    use: ['css-loader', 'postcss-loader', 'sass-loader']
                 }),
                 exclude: /theme/
-            },
-            {
-                test: /\.scss$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            query: {
-                                name: 'assets/[name].[ext]'
-                            }
-                        },
-                        'css-loader',
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                plugins: () => [
-                                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
-                                    perfectionist
-                                ]
-                            }
-                        },
-                        'sass-loader'
-                    ]
-                }),
-                include: /themes/
             },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
@@ -103,6 +65,14 @@ module.exports = {
 
     plugins: [
         new CheckerPlugin(),
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                postcss: [
+                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
+                    perfectionist
+                ]
+            }
+        }),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['polyfills', 'vendor', 'main'].reverse(),
             minChunks: 2

@@ -3,6 +3,7 @@ import { Utilities } from '@microsoft/office-js-helpers';
 import { settings } from './settings';
 
 let { devMode, build, config } = PLAYGROUND;
+console.log(PLAYGROUND);
 
 class Environment {
     private _config: IEnvironmentConfig;
