@@ -5,8 +5,9 @@ import { AI } from '../helpers';
 import { isEmpty } from 'lodash';
 
 const Regex = {
-    STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,
-    STARTS_WITH_COMMENT: /^\/\/.*|^\/\*.*|.*\*\/$.*/im,
+    STARTS_WITH_TYPINGS: /^.types\/.+|^dt~.+/i,
+    STARTS_WITH_COMMENT: /^#.*|^\/\/.*|^\/\*.*|.*\*\/$.*/im,
+    ENDS_WITH_CSS: /.*\.css$/i,
     ENDS_WITH_DTS: /.*\.d\.ts$/i,
     GLOBAL: /.*/i
 };
@@ -136,6 +137,7 @@ export class MonacoService extends Disposable {
             tokenizer: {
                 root: [
                     [Regex.STARTS_WITH_COMMENT, 'comment'],
+                    [Regex.ENDS_WITH_CSS, 'variable'],
                     [Regex.STARTS_WITH_TYPINGS, 'string'],
                     [Regex.ENDS_WITH_DTS, 'string'],
                     [Regex.GLOBAL, 'keyword']
