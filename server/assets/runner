@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="{{snippet.author}}" />
 
+    <link rel="stylesheet" href="{{snippet.origin}}/runner.bundle.css" />
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css">
 
     {{#if snippet.officeJS}}
@@ -35,12 +36,37 @@
         </div>
     </div>
 
-    <pre id="iframe-content" style="display:none">{{{iframe}}}</pre>
+    <app id="progress">
+		<div class="ms-progress-component">
+			<main class="fullpage__main">
+				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/icon-large.png">
+				<h1 class="ms-progress-component__title ms-font-xxl">{{snippet.name}}</h1>
+				<p class="ms-progress-component__sub-title ms-font-m">Compiling...</p>
+			</main>
+			<footer class="ms-progress-component__footer">
+				<div class="ms-progress">
+					<div class="cs-loader">
+						<div class="cs-loader-inner">
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</app>
+
+    <pre id="iframe-code-content" style="display:none">{{iframe}}</pre>
     <iframe id="snippet-container" src="about:blank"></iframe>
 
-    <script src="{{snippet.origin}}/runner.15650e937e32910f14ad.js"></script>
+    <script src="{{snippet.origin}}/polyfills.bundle.js"></script>
+    <script src="{{snippet.origin}}/vendor.bundle.js"></script>
+    <script src="{{snippet.origin}}/runner.bundle.js"></script>
     <script type="text/javascript">
-        window.initializeRunner('{{snippet.host}}', '{{snippet.platform}}', '{{snippet.officeJS}}');
+        window.initializeRunner('{{snippet.origin}}', '{{snippet.host}}', '{{snippet.platform}}', '{{snippet.officeJS}}');
     </script>
 </body>
 

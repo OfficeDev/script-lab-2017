@@ -35,10 +35,9 @@
     {{/if}}
 
     <!-- Script -->
+    <!-- {{officeJS}} -->
     <script type="text/javascript">
-        window.parent.runnerReady();
-
-        {{#if isOfficeSnippet}}
+        {{#if officeJS}}
         Office.initialize = function() {
             {{{indent script 3}}}
         };
