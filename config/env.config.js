@@ -55,6 +55,5 @@ const config = {
     }
 };
 
-
 exports.build = build;
 exports.config = config;

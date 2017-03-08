@@ -21,7 +21,7 @@
     "homepage": "https://github.com/officedev/addin-playground#readme",
     "version": "1.0.0",
     "scripts": {
-        "compile": "tsc -p tsconfig.json --watch",
+        "compile": "tsc -p tsconfig.server.json --watch",
         "copy": "cpx \"server/**/!(*.ts)\" \"dist/server\" --watch",
         "client": "webpack-dev-server --config config/webpack.dev.js --progress",
         "start": "rimraf dist && concurrently --kill-others --raw \"npm run client\" \"npm run compile\" \"npm run copy\"",
@@ -91,6 +91,7 @@
         "rimraf": "2.6.1",
         "sass-loader": "6.0.3",
         "style-loader": "0.13.2",
+        "webpack-bundle-analyzer": "^2.3.0",
         "webpack-dev-server": "2.4.1",
         "webpack-merge": "4.0.0",
         "webpack": "2.2.1",
