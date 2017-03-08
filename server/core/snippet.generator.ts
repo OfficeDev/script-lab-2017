@@ -13,7 +13,6 @@ class SnippetGenerator {
             id: snippet.id,
             gist: snippet.gist,
             author: snippet.author,
-            source: snippet.source,
             name: snippet.name,
             description: snippet.description,
             host: snippet.host,
