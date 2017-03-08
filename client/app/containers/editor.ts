@@ -4,7 +4,7 @@ import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService, Disposable } from '../services';
-import debounce = require('lodash/debounce');
+import { debounce } from 'lodash';
 
 @Component({
     selector: 'editor',
@@ -165,7 +165,7 @@ export class Editor extends Disposable implements AfterViewInit {
         }
 
         ['script', 'template', 'style', 'libraries'].forEach(name => {
-            let {content, language} = this.tabs.get(name);
+            let { content, language } = this.tabs.get(name);
             if (name === 'libraries') {
                 this._snippet.libraries = content;
             }

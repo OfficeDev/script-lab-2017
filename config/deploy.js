@@ -6,17 +6,12 @@ let { build, config } = require('./env.config');
 let git = require('simple-git')();
 let webpackConfig = require('./webpack.prod');
 let webpack = require('webpack');
-let {TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_COMMIT_MESSAGE, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+let { TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_COMMIT_MESSAGE, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
 process.env.NODE_ENV = process.env.ENV = 'production';
 
 precheck();
 
-if (TRAVIS_PULL_REQUEST !== 'false') {
-    generateBuild()
-        .then(exit)
-        .catch((err) => exit(err, true));
-}
-else {
+if (TRAVIS_PULL_REQUEST === 'false') {
     /* Check if the branch name is valid. */
     let slot = _.isString(TRAVIS_BRANCH) && _.kebabCase(TRAVIS_BRANCH);
     if (!slot) {
@@ -32,7 +27,7 @@ else {
     /* Check if there is a configuration defined inside of config/env.config.js. */
     let buildConfig = config[slot];
     if (buildConfig == null || slot === 'local') {
-        exit('No deployment configuration found for ' + slot + '. Skipping deployment.');
+        exit('No deployment configuration found for ' + slot + '. Skipping deploy.');
     }
 
     /* If 'production' then apply the pull request only constraint. */
@@ -40,37 +35,9 @@ else {
         slot = 'staging';
     }
 
-    generateBuild()
-        .then(deployBuild)
+    deployBuild
         .then(exit)
         .catch((err) => exit(err, true));
-}
-
-function generateBuild() {
-    return new Promise((resolve, reject) => {
-        log('Building commit: ' + TRAVIS_COMMIT_MESSAGE);
-        const start = Date.now();
-        webpack(webpackConfig, (err, stats) => {
-            stats.chunks = false;
-            stats.hash = true;
-            stats.version = true;
-            stats.modules = true;
-
-            if (err) {
-                return reject(err);
-            }
-
-            if (stats.hasErrors()) {
-                let json = stats.toJson();
-                return reject(err);
-            }
-
-            const end = Date.now();
-            log('\n\nGenerated build for commit: ' + TRAVIS_COMMIT_MESSAGE + ' in ' + (end - start) / 1000 + ' seconds.');
-            log(webpackConfig.build.name + ' - v' + webpackConfig.build.version + '.\n\n', 'magenta');
-            return resolve();
-        })
-    });
 }
 
 function deployBuild() {
@@ -90,12 +57,11 @@ function deployBuild() {
                 .addConfig('user.name', 'Travis CI')
                 .addConfig('user.email', 'travis.ci@microsoft.com')
                 .checkout('HEAD')
-                .add(['.', '-A', '-f'], (err) => {
+                .add(['dist/client', '-A', '-f'], (err) => {
                     if (err) {
                         return reject(err);
                     }
                 })
-                .reset(['--', 'node_modules/**'])
                 .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
                 .push(['-f', '-q', url, 'HEAD:master'], (err) => {
                     if (err) {
@@ -132,7 +98,7 @@ function precheck(skip) {
 
     /* Check if the code is running inside of travis.ci. If not abort immediately. */
     if (!TRAVIS) {
-        exit('Not running inside of Travis. Skipping build.', true);
+        exit('Not running inside of Travis. Skipping deploy.', true);
     }
 
     /* Check if the username is configured. If not abort immediately. */

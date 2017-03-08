@@ -10,8 +10,13 @@ node_js:
 install:
 - npm install
 
-script:
+before_script:
 - npm run lint
+
+script:
+- npm run build
+
+after_success:
 - npm run deploy
 
 notifications:

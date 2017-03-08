@@ -4,29 +4,25 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var path = require('path');
+var { build, config } = require('./env.config');
 
 module.exports = webpackMerge(commonConfig, {
     devtool: 'inline-source-map',
 
     output: {
-        path: path.resolve('dist/client'),
+        path: path.resolve('./dist/client'),
         filename: '[name].[hash].js',
         chunkFilename: '[name].[hash].chunk.js'
     },
 
-    tslint: {
-        emitErrors: true,
-        failOnHint: true,
-        resourcePath: path.resolve('client')
-    },
-
     plugins: [
+        new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
         new ExtractTextPlugin('[name].[hash].css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 devMode: true,
-                build: commonConfig.build,
-                config: commonConfig.config
+                build: build,
+                config: config
             })
         }),
         new BrowserSyncPlugin(
@@ -43,25 +39,15 @@ module.exports = webpackMerge(commonConfig, {
     ],
 
     devServer: {
-        stats: {
-            colors: true,
-            hash: false,
-            version: false,
-            timings: false,
-            assets: false,
-            chunks: false,
-            modules: false,
-            reasons: false,
-            children: false,
-            source: false,
-            errors: true,
-            errorDetails: false,
-            warnings: false,
-            publicPath: false
-        },
-        watch: true,
+        contentBase: path.resolve('./dist/client'),
+        compress: true,
         https: true,
         inline: true,
+        overlay: {
+            warnings: false,
+            errors: true
+        },
+        watchContentBase: true,
         compress: true,
         port: 3100,
         historyApiFallback: true,
@@ -69,7 +55,6 @@ module.exports = webpackMerge(commonConfig, {
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
-        },
-        outputPath: path.resolve('dist/client')
+        }
     }
 });

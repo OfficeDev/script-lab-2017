@@ -2,7 +2,7 @@ import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { Disposable } from './disposable';
 import { AI } from '../helpers';
-import isEmpty = require('lodash/isEmpty');
+import { isEmpty } from 'lodash';
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types~.+|^dt~.+/i,

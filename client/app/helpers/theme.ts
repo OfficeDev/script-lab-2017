@@ -5,33 +5,43 @@ export class Theme {
         return new Promise(resolve => {
             switch (host.toUpperCase()) {
                 case HostType.EXCEL:
-                    (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/excel.scss'], () => {
-                        return resolve(true);
+                    (require as any).ensure([], (require) => {
+                        require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/excel.scss'], () => {
+                            resolve(true);
+                        });
                     });
                     break;
 
                 case HostType.WORD:
-                    (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/word.scss'], () => {
-                        return resolve(true);
+                    (require as any).ensure([], (require) => {
+                        require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/word.scss'], () => {
+                            resolve(true);
+                        });
                     });
                     break;
 
                 case HostType.POWERPOINT:
-                    (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/powerpoint.scss'], () => {
-                        return resolve(true);
+                    (require as any).ensure([], (require) => {
+                        require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/powerpoint.scss'], () => {
+                            resolve(true);
+                        });
                     });
                     break;
 
                 case HostType.ONENOTE:
-                    (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/onenote.scss'], () => {
-                        return resolve(true);
+                    (require as any).ensure([], (require) => {
+                        require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/onenote.scss'], () => {
+                            resolve(true);
+                        });
                     });
                     break;
 
                 case HostType.WEB:
                 default:
-                    (require as any)(['style!raw!postcss!sass!../../assets/styles/themes/web.scss'], () => {
-                        return resolve(true);
+                    (require as any).ensure([], (require) => {
+                        require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/web.scss'], () => {
+                            resolve(true);
+                        });
                     });
                     break;
             }

@@ -48,6 +48,6 @@ export class SnippetTemplateGenerator {
             OfficeJsRefIfAny: compiledSnippet.officeJsRefIfAny,
             isOfficeSnippet: compiledSnippet.isOfficeSnippet,
             addPaddingRight: platform === PlatformType.PC
-        }
+        };
     }
 }

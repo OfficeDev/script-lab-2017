@@ -8,7 +8,7 @@ import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
-import find = require('lodash/find');
+import { find } from 'lodash';
 
 @Injectable()
 export class GitHubEffects {
@@ -83,7 +83,7 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
         .filter(action => this._github.profile && action.payload)
         .mergeMap(({ payload, type }) => {
-            let {name, description} = payload;
+            let { name, description } = payload;
             let files: IGistFiles = {};
             payload.author = this._github.profile.login;
 
