@@ -50,7 +50,7 @@ if (TRAVIS_PULL_REQUEST === 'false') {
         + slot + '.scm.azurewebsites.net:443/'
         + AZURE_WA_SITE + '-runner.git';
 
-    log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' to ' + AZURE_WA_SITE + '-' + slot + '...');
+    log('Deploying commit: "' + TRAVIS_COMMIT_MESSAGE + '" to ' + AZURE_WA_SITE + '-' + slot + '...');
 
     deployBuild(editorUrl, 'dist/client')
         .then(() => deployBuild(runnerUrl, 'dist/server'))
