@@ -77,7 +77,7 @@ function deployBuild(url, path) {
                     }
 
                     const end = Date.now();
-                    log('Successfully deployed in' + (end - start) / 1000 + ' seconds.', 'green');
+                    log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
                     return resolve();
                 });
         }
