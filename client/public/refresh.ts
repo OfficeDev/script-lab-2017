@@ -61,7 +61,6 @@
 
 //         default:
 //             showError("Unhandled runner event");
-//             console.log(event.data);
 //             break;
 //     }
 // }

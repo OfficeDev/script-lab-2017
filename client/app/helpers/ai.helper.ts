@@ -19,7 +19,6 @@ class ApplicationInsights {
         try {
             this._disable = disable || environment.current.devMode;
             this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
-            this._current._onerror = (message) => console.log(message);
         }
         catch (e) {
             console.error('Could not initialize AppInsights.');
@@ -44,7 +43,6 @@ class ApplicationInsights {
      */
     trackException(error, location) {
         try {
-            console.log(environment.current.devMode);
             if (environment.current.devMode) {
                 Utilities.log(error);
             }
@@ -55,8 +53,7 @@ class ApplicationInsights {
             });
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including exception info below.');
-            console.log(error, location);
+            console.error(error, location);
         }
     }
 
@@ -69,13 +66,12 @@ class ApplicationInsights {
     trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
         try {
             if (environment.current.devMode) {
-                console.info(name);
+                console.info(name, properties, measurement);
             }
             this._current.trackEvent(name, properties, measurement);
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including tracking info below.');
-            console.log(name, properties, measurement);
+
         }
     }
 
@@ -95,11 +91,13 @@ class ApplicationInsights {
         }
     ) {
         try {
+            if (environment.current.devMode) {
+                console.info(name, average, sampleCount, min, max, properties);
+            }
             this._current.trackMetric(name, average, sampleCount, min, max, properties);
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including metric info below.');
-            console.log(name, average, sampleCount, min, max, properties);
+
         }
     }
 
@@ -112,11 +110,13 @@ class ApplicationInsights {
     */
     setAuthenticatedUserContext(authenticatedUserId: string, accountId?: string) {
         try {
+            if (environment.current.devMode) {
+                console.info(authenticatedUserId, accountId);
+            }
             this._current.setAuthenticatedUserContext(authenticatedUserId, accountId);
         }
         catch (e) {
-            console.error('Could not log with AppInsights, including authenticated user context info below.');
-            console.log(authenticatedUserId, accountId);
+
         }
     }
 }

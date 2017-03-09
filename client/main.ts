@@ -45,12 +45,13 @@ export class AppModule {
                 enableProdMode();
             }
 
+            AI.initialize(environment.current.config.instrumentationKey);
+
             await Promise.all([
                 environment.initialize(),
                 MonacoService.initialize()
             ]);
 
-            AI.initialize(environment.current.config.instrumentationKey);
             await applyTheme(environment.current.host);
 
             if (!Authenticator.isAuthDialog()) {
