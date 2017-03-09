@@ -74,7 +74,7 @@ function deployBuild(url, path) {
                 .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing ' + path + '... Please wait...'))
                 .push(['-f', '-q', url, 'HEAD:master'], (err) => {
                     if (err) {
-                        return reject('Failed to push ' + path + ' to deployment.');
+                        return reject(err);
                     }
 
                     log('Successfully deployed to in' + (end - start) / 1000 + ' seconds.', 'green');
