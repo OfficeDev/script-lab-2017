@@ -20,6 +20,7 @@ if (TRAVIS_PULL_REQUEST === 'false') {
 
     switch (slot) {
         case 'master':
+        case 'dev':
             slot = 'edge';
             break;
     }
@@ -35,20 +36,29 @@ if (TRAVIS_PULL_REQUEST === 'false') {
         slot = 'staging';
     }
 
-    deployBuild
-        .then(exit)
-        .catch((err) => exit(err, true));
-}
-
-function deployBuild() {
-    return new Promise((resolve, reject) => {
-        let url = 'https://'
+    let editorUrl = 'https://'
             + AZURE_WA_USERNAME + ':'
             + AZURE_WA_PASSWORD + '@'
             + AZURE_WA_SITE + '-'
             + slot + '.scm.azurewebsites.net:443/'
             + AZURE_WA_SITE + '.git';
 
+    let runnerUrl = 'https://'
+        + AZURE_WA_USERNAME + ':'
+        + AZURE_WA_PASSWORD + '@'
+        + AZURE_WA_SITE + '-runner-'
+        + slot + '.scm.azurewebsites.net:443/'
+        + AZURE_WA_SITE + '.git';
+
+
+    deployBuild(editorUrl, 'dist/client')
+        .then(()=>deployBuild(runnerUrl, 'dist/server'))
+        .then(exit)
+        .catch((err) => exit(err, true));
+}
+
+function deployBuild(url, path) {
+    return new Promise((resolve, reject) => {
         log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' to ' + AZURE_WA_SITE + '-' + slot + '...');
 
         const start = Date.now();
@@ -57,18 +67,18 @@ function deployBuild() {
                 .addConfig('user.name', 'Travis CI')
                 .addConfig('user.email', 'travis.ci@microsoft.com')
                 .checkout('HEAD')
-                .add(['dist/client', '-A', '-f'], (err) => {
+                .add([path, '-A', '-f'], (err) => {
                     if (err) {
                         return reject(err);
                     }
                 })
-                .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing deployment... Please wait...'))
+                .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing ' + path + '... Please wait...'))
                 .push(['-f', '-q', url, 'HEAD:master'], (err) => {
                     if (err) {
-                        return reject('Failed to push deployment.');
+                        return reject('Failed to push ' + path + ' to deployment.');
                     }
 
-                    log('Successfully deployed to https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net in' + (end - start) / 1000 + ' seconds.', 'green');
+                    log('Successfully deployed to in' + (end - start) / 1000 + ' seconds.', 'green');
                     const end = Date.now();
                     return resolve();
                 });
