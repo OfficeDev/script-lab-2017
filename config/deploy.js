@@ -68,17 +68,17 @@ function deployBuild(url, path) {
                 .checkout('HEAD')
                 .add([path, '-A', '-f'], (err) => {
                     if (err) {
-                        return reject(err);
+                        return reject(err.replace(url, ''));
                     }
                 })
                 .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing ' + path + '... Please wait...'))
                 .push(['-f', '-q', url, 'HEAD:master'], (err) => {
                     if (err) {
-                        return reject(err);
+                        return reject(err.replace(url, ''));
                     }
 
-                    log('Successfully deployed to in' + (end - start) / 1000 + ' seconds.', 'green');
                     const end = Date.now();
+                    log('Successfully deployed in' + (end - start) / 1000 + ' seconds.', 'green');
                     return resolve();
                 });
         }

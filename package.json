@@ -26,8 +26,7 @@
         "client": "webpack-dev-server --config config/webpack.dev.js --progress",
         "start": "rimraf dist && concurrently --kill-others --raw \"npm run client\" \"npm run compile\" \"npm run copy\"",
         "lint": "tslint --project tsconfig.json",
-        "build": "rimraf dist && tsc -p tsconfig.server.json && rimraf dist/client && webpack --config config/webpack.prod.js",
-        "deploy": "node config/deploy.js"
+        "build": "rimraf dist && tsc -p tsconfig.server.json && rimraf dist/client && webpack --config config/webpack.prod.js"
     },
     "license": "MIT",
     "dependencies": {
