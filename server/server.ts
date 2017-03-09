@@ -102,3 +102,8 @@ if (process.env.port == null) {
     }, app)
         .listen(3200, () => console.log('Playground server running on 3200'));
 }
+else {
+    app.listen(process.env.PORT, () => {
+        console.log(`Add-in Playground Runner listening on port ${process.env.PORT}`);
+    });
+}
