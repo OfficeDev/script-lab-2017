@@ -35,6 +35,14 @@ export function applyTheme(host: string): Promise<boolean> {
                 });
                 break;
 
+            case HostType.PROJECT:
+                (require as any).ensure([], (require) => {
+                    require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/project.scss'], () => {
+                        resolve(true);
+                    });
+                });
+                break;
+
             case HostType.WEB:
             default:
                 (require as any).ensure([], (require) => {

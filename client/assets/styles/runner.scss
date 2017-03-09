@@ -119,3 +119,7 @@ body.WORD {
 body.WEB {
 	@include theme-min($web);
 }
+
+body.PROJECT {
+	@include theme-min($project);
+}
