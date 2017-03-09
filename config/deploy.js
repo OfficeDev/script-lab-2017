@@ -50,7 +50,6 @@ if (TRAVIS_PULL_REQUEST === 'false') {
         + slot + '.scm.azurewebsites.net:443/'
         + AZURE_WA_SITE + '.git';
 
-
     deployBuild(editorUrl, 'dist/client')
         .then(()=>deployBuild(runnerUrl, 'dist/server'))
         .then(exit)

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as handlebars from 'handlebars';
-import { Utilities } from './Utilities';
+import { Utilities } from './utilities';
 
 handlebars.registerHelper('indent', (text, indent) => Utilities.indentAll(text, indent));
 
