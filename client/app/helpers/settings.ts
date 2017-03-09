@@ -1,16 +1,21 @@
-import { Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Storage, StorageType } from '@microsoft/office-js-helpers';
+import { environment } from './environment';
 
 class Settings {
     private _settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
-    cache = new Storage<any>('playground_cache', StorageType.SessionStorage);
 
     get current() {
-        return this._settings.get(Utilities.host);
+        if (environment.current && environment.current.host) {
+            return this._settings.get(environment.current.host);
+        }
+        return null;
     }
 
     set current(value: ISettings) {
-        let updatedSettings = { ...this.current, ...value };
-        this._settings.insert(Utilities.host, updatedSettings);
+        if (environment.current && environment.current.host) {
+            let updatedSettings = { ...this.current, ...value };
+            this._settings.insert(environment.current.host, updatedSettings);
+        }
     }
 }
 

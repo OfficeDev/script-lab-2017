@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, settings, environment } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
@@ -60,14 +60,14 @@ export class SnippetEffects {
             switch (importType) {
                 case 'DEFAULT':
                     info = environment.current.host;
-                    if (settings.cache.contains('default_template')) {
-                        observable = Observable.of(settings.cache.get('default_template'));
+                    if (environment.cache.contains('default_template')) {
+                        observable = Observable.of(environment.cache.get('default_template'));
                     }
                     else {
                         console.log(`${environment.current.config.samplesUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`);
                         observable = this._request
                             .get<string>(`${environment.current.config.samplesUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
-                            .map(snippet => settings.cache.insert('default_template', snippet));
+                            .map(snippet => environment.cache.insert('default_template', snippet));
                     }
                     break;
 

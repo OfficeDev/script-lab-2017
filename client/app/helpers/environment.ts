@@ -1,11 +1,10 @@
 import * as $ from 'jquery';
-import { Utilities } from '@microsoft/office-js-helpers';
-import { settings } from './settings';
-
+import { Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 let { devMode, build, config } = PLAYGROUND;
 
 class Environment {
     private _config: IEnvironmentConfig;
+    cache = new Storage<any>('playground_cache', StorageType.SessionStorage);
 
     constructor() {
         if (devMode) {
@@ -33,7 +32,7 @@ class Environment {
                 build,
                 config: this._config
             };
-            let environment = settings.cache.get('environment') as IEnvironment;
+            let environment = this.cache.get('environment') as IEnvironment;
             if (environment) {
                 this.current = { host: environment.host, platform: environment.platform };
             }
@@ -44,11 +43,12 @@ class Environment {
 
     set current(value: IEnvironment) {
         let updatedEnv = { ...this._current, ...value };
-        this._current = settings.cache.insert('environment', updatedEnv);
+        this._current = this.cache.insert('environment', updatedEnv);
     }
 
     async initialize(currHost?: string, currPlatform?: string) {
         if (currHost) {
+            this.current = { host: currHost, platform: currPlatform };
             return Promise.resolve({ currHost, currPlatform });
         }
 

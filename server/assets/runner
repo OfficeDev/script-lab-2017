@@ -18,28 +18,24 @@
 </head>
 
 <body class="{{snippet.host}}">
-    <div id="header">
-        <div class="command__bar">
-            <a class="command__icon clickable" href="{{snippet.origin}}">
+    <header id="header" class="command__bar">
+        <command>
+            <a class="command__icon ms-u-slideLeftIn10" href="{{snippet.origin}}">
                 <i class="ms-Icon ms-Icon--Back"></i>
-                <span class="ms-font-m">Back</span>
             </a>
-
-            <div id="snippet-title" class="command__icon">
-                <span class="ms-font-m">{{snippet.name}}</span>
-            </div>
-
-            <a class="command__icon clickable" href="{{snippet.origin}}">
+        </command>
+        <command>
+            <a class="command__icon command__center ms-u-slideLeftIn10" href="{{snippet.origin}}/refresh.html">
                 <i class="ms-Icon ms-Icon--Refresh"></i>
-                <span class="ms-font-m">Reload</span>
+                <span class="ms-font-m ms-u-slideLeftIn10">{{snippet.name}}</span>
             </a>
-        </div>
-    </div>
+        </command>
+    </header>
 
     <app id="progress">
 		<div class="ms-progress-component">
-			<main class="fullpage__main">
-				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/icon-large.png">
+			<main class="ms-progress-component__main">
+				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
 				<h1 class="ms-progress-component__title ms-font-xxl">{{snippet.name}}</h1>
 				<p class="ms-progress-component__sub-title ms-font-m">Compiling...</p>
 			</main>

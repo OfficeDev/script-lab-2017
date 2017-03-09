@@ -1,5 +1,6 @@
 import * as $ from 'jquery';
 import '../assets/styles/runner.scss';
+declare var Firebug: any;
 
 function loadFirebug(origin) {
     return new Promise<boolean>((resolve, reject) => {
@@ -33,7 +34,6 @@ const initializeRunner = async (origin: string, host: string, platform: string, 
     contentWindow.document.close();
     content.remove();
 
-    (window as any).Firebug.chrome.open();
     if (officeJS) {
         contentWindow['Office'] = officeJS ? window['Office'] : {};
         ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(namespace => contentWindow[namespace] = window[namespace]);
@@ -42,6 +42,7 @@ const initializeRunner = async (origin: string, host: string, platform: string, 
     iframe.show();
     progress.hide();
     header.show();
+    Firebug.chrome.open();
 };
 
 (window as any).initializeRunner = initializeRunner;
