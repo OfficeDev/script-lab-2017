@@ -62,8 +62,7 @@ function deployBuild(url, path) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
         try {
-            git.silent(true)
-                .addConfig('user.name', 'Travis CI')
+            git.addConfig('user.name', 'Travis CI')
                 .addConfig('user.email', 'travis.ci@microsoft.com')
                 .checkout('HEAD')
                 .add([path, '-A', '-f'], (err) => {
