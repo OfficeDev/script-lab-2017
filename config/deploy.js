@@ -48,7 +48,7 @@ if (TRAVIS_PULL_REQUEST === 'false') {
         + AZURE_WA_PASSWORD + '@'
         + AZURE_WA_SITE + '-runner-'
         + slot + '.scm.azurewebsites.net:443/'
-        + AZURE_WA_SITE + '.git';
+        + AZURE_WA_SITE + '-runner.git';
 
     log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' to ' + AZURE_WA_SITE + '-' + slot + '...');
 
