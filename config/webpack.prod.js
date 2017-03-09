@@ -16,7 +16,7 @@ module.exports = webpackMerge(commonConfig, {
 
     output: {
         path: './dist/client',
-        filename: '[name].js',
+        filename: '[name].bundle.js',
         chunkFilename: '[id].chunk.js'
     },
 
@@ -87,7 +87,7 @@ module.exports = webpackMerge(commonConfig, {
             }
         }),
         // new BundleAnalyzerPlugin(),
-        new ExtractTextPlugin('[name].css'),
+        new ExtractTextPlugin('[name].bundle.css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 devMode: false,
