@@ -37,11 +37,11 @@ if (TRAVIS_PULL_REQUEST === 'false') {
     }
 
     let editorUrl = 'https://'
-            + AZURE_WA_USERNAME + ':'
-            + AZURE_WA_PASSWORD + '@'
-            + AZURE_WA_SITE + '-'
-            + slot + '.scm.azurewebsites.net:443/'
-            + AZURE_WA_SITE + '.git';
+        + AZURE_WA_USERNAME + ':'
+        + AZURE_WA_PASSWORD + '@'
+        + AZURE_WA_SITE + '-'
+        + slot + '.scm.azurewebsites.net:443/'
+        + AZURE_WA_SITE + '.git';
 
     let runnerUrl = 'https://'
         + AZURE_WA_USERNAME + ':'
@@ -50,16 +50,16 @@ if (TRAVIS_PULL_REQUEST === 'false') {
         + slot + '.scm.azurewebsites.net:443/'
         + AZURE_WA_SITE + '.git';
 
+    log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' to ' + AZURE_WA_SITE + '-' + slot + '...');
+
     deployBuild(editorUrl, 'dist/client')
-        .then(()=>deployBuild(runnerUrl, 'dist/server'))
+        .then(() => deployBuild(runnerUrl, 'dist/server'))
         .then(exit)
         .catch((err) => exit(err, true));
 }
 
 function deployBuild(url, path) {
     return new Promise((resolve, reject) => {
-        log('Deploying commit: ' + TRAVIS_COMMIT_MESSAGE + ' to ' + AZURE_WA_SITE + '-' + slot + '...');
-
         const start = Date.now();
         try {
             git.silent(true)
