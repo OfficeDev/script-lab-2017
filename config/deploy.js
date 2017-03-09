@@ -71,7 +71,7 @@ function deployBuild(url, path) {
                     }
                 })
                 .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing ' + path + '... Please wait...'))
-                .push(['-f', '-q', url, 'HEAD:master'], (err) => {
+                .push(['-f', '-u', url, 'HEAD:refs/heads/master'], (err) => {
                     if (err) {
                         return reject(err.replace(url, ''));
                     }
