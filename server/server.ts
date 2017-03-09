@@ -95,8 +95,10 @@ app.use((err, req, res, next) => {
     }
 });
 
-https.createServer({
-    key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-    cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
-}, app)
-    .listen(process.env.PORT || 3200, () => console.log(`Playground server running on ${process.env.PORT || 3200}`));
+if (process.env.port == null) {
+    https.createServer({
+        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+    }, app)
+        .listen(3200, () => console.log('Playground server running on 3200'));
+}
