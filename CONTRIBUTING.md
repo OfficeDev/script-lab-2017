@@ -23,10 +23,10 @@ There are several ways in which you can contribute to the project:
 
 1. Clone the repo
 2. Open the root of the repository with VS Code.  (**File --> Open Folder...**)
-![alt text](images/vs-code-open-folder.jpg)
+![alt text](.github/images/vs-code-open-folder.jpg)
 
 3. Open the terminal from within VS Code (**View --> Integrated Terminal**)
-![alt text](images/vs-code-terminal.jpg)
+![alt text](.github/images/vs-code-terminal.jpg)
 
 4. In the terminal, type in "npm install" and wait for all of the packages to be downloaded (this may take a few minutes).  The command prompt will return the control back to you once it's done.
 
@@ -46,7 +46,7 @@ There are several ways in which you can contribute to the project:
 
 6.	Trust the certificates for both <https://localhost:3000> and <https://localhost:3100>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
 
-![](images/trust-ssl-internet-explorer.gif).
+![](.github/images/trust-ssl-internet-explorer.gif).
 
 7.  Start the runner (server) by pressing `F5` within VS Code.  If you get an error that `nodemon` is not installed, be sure that you've installed it globally `npm install nodemon -g`, and that Node is part of your path.
 
