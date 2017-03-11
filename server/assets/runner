@@ -19,11 +19,13 @@
 
 <body class="{{snippet.host}}">
     <header id="header" class="command__bar">
+        {{#if includeBackButton}}
         <command>
             <a class="command__icon ms-u-slideLeftIn10" href="{{snippet.origin}}">
                 <i class="ms-Icon ms-Icon--Back"></i>
             </a>
         </command>
+        {{/if}}
         <command>
             <a class="command__icon command__center ms-u-slideLeftIn10" href="{{snippet.origin}}/refresh.html">
                 <i class="ms-Icon ms-Icon--Refresh"></i>
@@ -55,7 +57,7 @@
 		</div>
 	</app>
 
-    <pre id="iframe-code-content" style="display:none">{{iframe}}</pre>
+    <pre id="iframe-code-content" style="display:none">{{iframeContent}}</pre>
     <iframe id="snippet-container" src="about:blank"></iframe>
 
     <script src="{{snippet.origin}}/polyfills.bundle.js"></script>

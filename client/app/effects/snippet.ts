@@ -202,7 +202,7 @@ export class SnippetEffects {
                 snippet: snippet
             });
 
-            post(environment.current.config.runnerUrl + '/compile', { data });
+            post(environment.current.config.runnerUrl + '/compile/page', { data });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
 

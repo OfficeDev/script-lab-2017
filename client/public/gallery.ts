@@ -59,16 +59,10 @@ export class Gallery {
 
         let data = JSON.stringify({
             snippet: snippet,
-            returnUrl: window.location.href,
-            refreshUrl: window.location.origin + '/refresh.html',
-
-            // Any further fields will simply get passed in to the refresh page:
-            id: snippet.id,
-            host: OfficeHelpers.Utilities.host,
-            platform: OfficeHelpers.Utilities.platform
+            showBackButton: true
         });
 
-        return post(environment.current.config.runnerUrl + '/compile', JSON.stringify({ data }));
+        return post(environment.current.config.runnerUrl + '/compile/page', JSON.stringify({ data }));
     }
 }
 

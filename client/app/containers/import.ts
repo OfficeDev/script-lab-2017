@@ -18,7 +18,7 @@ import { isEmpty } from 'lodash';
                         <i class="ms-Icon ms-Icon--Add"></i><span>New snippet</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'snippets'}" (click)="view = 'snippets'">
-                        <i class="ms-Icon ms-Icon--DocumentSet"></i><span>Snippets</span>
+                        <i class="ms-Icon ms-Icon--DocumentSet"></i><span>My snippets</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'samples'}" (click)="view = 'samples'">
                         <i class="ms-Icon ms-Icon--Dictionary"></i><span>Samples</span>

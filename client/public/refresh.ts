@@ -4,9 +4,10 @@
 // window.addEventListener("message", receiveMessage, false);
 
 // (async () => {
+//     await environment.initialize();    
 //     if (Utilities.platform) {
 //         $('body').addClass(Utilities.platform);
-//     }
+//     }   
 
 //     await loadFirebug();
 //     $('body').append(`<iframe id="heartbeat" src="${environment.current.config.runnerUrl}/heartbeat.html"></iframe>`);
@@ -61,6 +62,7 @@
 
 //         default:
 //             showError("Unhandled runner event");
+//             console.log(event.data);
 //             break;
 //     }
 // }

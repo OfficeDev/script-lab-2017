@@ -17,7 +17,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 /**
- * HTTP POST: /run
+ * HTTP GET: /
+ * Redirect to a non-error page (there is nothing to do on the root page of the runner,
+ * nor do we know the environment in order to redirect to the editor)
+ */
+app.get('/', handler(async (req: express.Request, res: express.Response) => {
+    res.writeHead(302, {
+        'Location': 'https://dev.office.com'
+    });
+    res.send();
+}));
+
+/**
+ * HTTP GET: /run
  * Returns the standalone runner page
  */
 app.get('/run', handler(async (req: express.Request, res: express.Response) => {
@@ -58,27 +70,24 @@ app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Res
 }));
 
 /**
- * HTTP POST: /compile
- * Returns the compiled html template
+ * HTTP POST: /compile/snippet
+ * Returns the compiled snippet only (no outer runner chrome)
  */
-app.post('/compile', handler(async (req: express.Request, res: express.Response) => {
-    const data = JSON.parse(req.body.data) as IRunnerState;
-    const { snippet } = data;
-    if (snippet == null) {
-        throw new BadRequestError('Received invalid snippet data.', snippet);
-    }
+app.post('/compile/snippet', handler(async (req: express.Request, res: express.Response) => {
+    return res.contentType('text/html').status(200).send(await compileCommon({
+        data: JSON.parse(req.body.data)
+    }));
+}));
 
-    let [compiledSnippet, snippetHtml, runnerHtml] =
-        await Promise.all([
-            snippetGenerator.compile(snippet),
-            loadTemplate<ICompiledSnippet>('snippet'),
-            loadTemplate<{ iframe: string, snippet: ICompiledSnippet }>('runner'),
-        ]);
-
-    let compiledHtml = snippetHtml(compiledSnippet);
-    let html = runnerHtml({ iframe: compiledHtml, snippet: compiledSnippet });
-    html = Utilities.replaceAllTabsWithSpaces(html);
-    return res.contentType('text/html').status(200).send(html);
+/**
+ * HTTP POST: /compile/page
+ * Returns the entire page (with runner chrome) of the compiled snippet
+ */
+app.post('/compile/page', handler(async (req: express.Request, res: express.Response) => {
+    return res.contentType('text/html').status(200).send(await compileCommon({
+        data: JSON.parse(req.body.data),
+        wrapWithRunnerChrome: true
+    }));
 }));
 
 /**
@@ -106,4 +115,33 @@ else {
     app.listen(process.env.PORT, () => {
         console.log(`Add-in Playground Runner listening on port ${process.env.PORT}`);
     });
+}
+
+async function compileCommon(params: {
+    data: IRunnerState
+    wrapWithRunnerChrome?: boolean
+}): Promise<string> {
+    const snippet = params.data.snippet;
+    if (snippet == null) {
+        throw new BadRequestError('Received invalid snippet data.', snippet);
+    }
+
+    const [compiledSnippet, snippetHtml, runnerHtml] =
+        await Promise.all([
+            snippetGenerator.compile(snippet),
+            loadTemplate<ICompiledSnippet>('snippet'),
+            params.wrapWithRunnerChrome ? loadTemplate<IRunnerContext>('runner') : null,
+        ]);
+
+    let html = snippetHtml(compiledSnippet);
+
+    if (params.wrapWithRunnerChrome) {
+        html = runnerHtml({
+            iframeContent: html,
+            snippet: compiledSnippet,
+            includeBackButton: params.wrapWithRunnerChrome != null
+        });
+    }
+
+    return Utilities.replaceAllTabsWithSpaces(html);
 }

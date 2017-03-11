@@ -38,6 +38,12 @@ interface ICompiledSnippet extends ITemplate {
     typings?: string[];
 }
 
+interface IRunnerContext {
+    iframeContent: string,
+    snippet: ICompiledSnippet,
+    includeBackButton: boolean
+}
+
 interface IRunnerState {
     snippet: ISnippet;
     origin: string;
