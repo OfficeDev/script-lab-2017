@@ -4,10 +4,10 @@
 // window.addEventListener("message", receiveMessage, false);
 
 // (async () => {
-//     await environment.initialize();    
+//     await environment.initialize();
 //     if (Utilities.platform) {
 //         $('body').addClass(Utilities.platform);
-//     }   
+//     }
 
 //     await loadFirebug();
 //     $('body').append(`<iframe id="heartbeat" src="${environment.current.config.runnerUrl}/heartbeat.html"></iframe>`);
