@@ -5,7 +5,9 @@ interface ITemplate {
     name?: string;
     description?: string;
     host: string;
-    host_version: string;
+    api_set: {
+        [index: string]: number
+    },
     platform: string;
     origin: string;
     created_at: number;

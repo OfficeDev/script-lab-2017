@@ -4,6 +4,10 @@ import { environment } from './environment';
 class Settings {
     private _settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
 
+    get notify() {
+        return this._settings.notify;
+    }
+
     get current() {
         if (environment.current && environment.current.host) {
             return this._settings.get(environment.current.host);
