@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@microsoft/office-js-helpers';
+import { Storage, HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, Strings, environment } from '../helpers';
@@ -20,7 +20,7 @@ export class SnippetEffects {
         id: '',
         gist: '',
         host: environment.current.host,
-        host_version: '2016',
+        api_set: {},
         platform: environment.current.platform,
         created_at: Date.now(),
         modified_at: Date.now(),
@@ -113,23 +113,50 @@ export class SnippetEffects {
 
             return observable
                 .filter(snippet => !(snippet == null))
-                .map(snippet => assign({}, this._defaults, snippet))
-                .mergeMap(snippet => {
-                    let external = importType !== 'CUID';
-                    if (external) {
+                .map(snippet => {
+                    if (snippet.host && snippet.host !== environment.current.host) {
+                        throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
+                    }
+
+                    if (snippet.api_set == null || environment.current.host === HostType.WEB) {
+                        return snippet;
+                    }
+
+                    let unsupportedApiSet: { api: string, version: number } = null;
+                    find(snippet.api_set, (version, api) => {
+                        if (Office.context.requirements.isSetSupported(api, version)) {
+                            return false;
+                        }
+                        else {
+                            unsupportedApiSet = { api, version };
+                            return true;
+                        }
+                    });
+
+                    if (unsupportedApiSet) {
+                        throw new PlaygroundError(`${snippet.host} does not support the required API Set ${unsupportedApiSet.api} @ ${unsupportedApiSet.version}.`);
+                    }
+
+                    return snippet;
+                })
+                .map(snippet => assign({}, this._defaults, snippet, <ISnippet>{
+                    host: environment.current.host,
+                    platform: environment.current.platform,
+                    modified_at: Date.now(),
+                    origin: environment.current.config.editorUrl,
+                }))
+                .map(snippet => {
+                    let local = importType === 'CUID';
+                    if (!local) {
                         snippet.id = '';
                     }
                     if (snippet.id === '') {
                         snippet.id = cuid();
                     }
-
-                    if (external && this._exists(snippet.name)) {
+                    if (this._exists(snippet.name)) {
                         snippet.name = this._generateName(snippet.name, suffix);
                     }
-
-                    return Observable.from([
-                        new Snippet.ImportSuccessAction(snippet),
-                    ]);
+                    return new Snippet.ImportSuccessAction(snippet);
                 });
         })
         .catch(exception => Observable.from([
@@ -267,8 +294,8 @@ export class SnippetEffects {
     private _generateName(name: string, suffix: string = ''): string {
         let newName = isEmpty(name.trim()) ? Strings.newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
-        let options = this._store.values().filter(item => regex.test(item.name.trim()));
-        let maxSuffixNumber = reduce(options, (max, item: any) => {
+        let collisions = this._store.values().filter(item => regex.test(item.name.trim()));
+        let maxSuffixNumber = reduce(collisions, (max, item: any) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
             if (max <= ~~match[1]) {
                 max = ~~match[1] + 1;
