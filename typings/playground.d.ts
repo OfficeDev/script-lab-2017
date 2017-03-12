@@ -40,17 +40,19 @@ interface ICompiledSnippet extends ITemplate {
     typings?: string[];
 }
 
-interface IRunnerContext {
-    iframeContent: string,
-    snippet: ICompiledSnippet,
-    includeBackButton: boolean
+interface IRunnerHandlebarsContext {
+    iframeContent: string;
+    snippet: ICompiledSnippet;
+    includeBackButton: boolean;
+    refreshUrl: string;
+    returnUrl: string;
 }
 
 interface IRunnerState {
     snippet: ISnippet;
-    origin: string;
-    host: string;
-    platform: string;
+
+    /** URL to return to (editor, or gallery view). More than just origin domain */
+    returnUrl: string;
 }
 
 interface IMonacoEditorState {

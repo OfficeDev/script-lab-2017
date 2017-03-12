@@ -11,11 +11,9 @@
     <meta name="author" content="{{author}}" />
 
     <!-- CSS Libraries -->
-    {{#if linkReferences.length}}
     {{#each linkReferences}}
     <link rel="stylesheet" href="{{this}}" />
     {{/each}}
-    {{/if}}
 
     <!-- Style -->
     <style type="text/css">
@@ -28,11 +26,9 @@
     {{{indent template 1}}}
 
     <!-- JS Libraries -->
-    {{#if scriptReferences.length}}
     {{#each scriptReferences}}
     <script src="{{this}}"></script>
     {{/each}}
-    {{/if}}
 
     <!-- Script -->
     <!-- {{officeJS}} -->

@@ -225,8 +225,9 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            let data = JSON.stringify({
-                snippet: snippet
+            const data = JSON.stringify({
+                snippet: snippet,
+                returnUrl: window.location.href
             });
 
             post(environment.current.config.runnerUrl + '/compile/page', { data });

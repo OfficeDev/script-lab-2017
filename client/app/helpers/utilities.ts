@@ -65,3 +65,27 @@ export function post(path: string, params: any) {
     document.body.appendChild(form);
     form.submit();
 }
+
+export function queryParamsToJson(href: string): { [key: string]: string } {
+    const indexOfQuestionMark = href.indexOf('?');
+    if (indexOfQuestionMark < 0) {
+        return {};
+    }
+
+    const allParams = href.substr(indexOfQuestionMark + 1).trim();
+    if (allParams.length === 0) {
+        return {};
+    }
+
+    const keyValuePairStrings = allParams.split('&');
+    const result = {};
+    keyValuePairStrings.forEach(item => {
+        const split = item.split('=');
+        if (split.length !== 2) {
+            throw new Error('Invalid key-value pair for ' + item);
+        }
+        result[split[0]] = decodeURIComponent(split[1]);
+    });
+
+    return result;
+}

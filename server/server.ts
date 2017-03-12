@@ -73,21 +73,20 @@ app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Res
  * HTTP POST: /compile/snippet
  * Returns the compiled snippet only (no outer runner chrome)
  */
-app.post('/compile/snippet', handler(async (req: express.Request, res: express.Response) => {
-    return res.contentType('text/html').status(200).send(await compileCommon({
-        data: JSON.parse(req.body.data)
-    }));
+app.post('/compile/snippet', handler(async (request: express.Request, response: express.Response) => {
+    return response.contentType('text/html').status(200).send(
+        await compileCommon(request)
+    );
 }));
 
 /**
  * HTTP POST: /compile/page
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
-app.post('/compile/page', handler(async (req: express.Request, res: express.Response) => {
-    return res.contentType('text/html').status(200).send(await compileCommon({
-        data: JSON.parse(req.body.data),
-        wrapWithRunnerChrome: true
-    }));
+app.post('/compile/page', handler(async (request: express.Request, response: express.Response) => {
+    return response.contentType('text/html').status(200).send(
+        await compileCommon(request, true /*wrapWithRunnerChrome*/)
+    );
 }));
 
 /**
@@ -117,11 +116,13 @@ else {
     });
 }
 
-async function compileCommon(params: {
-    data: IRunnerState
-    wrapWithRunnerChrome?: boolean
-}): Promise<string> {
-    const snippet = params.data.snippet;
+async function compileCommon(request: express.Request, wrapWithRunnerChrome?: boolean): Promise<string> {
+    const data: IRunnerState = JSON.parse(request.body.data);
+
+    const { snippet, returnUrl } = data;
+    // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
+    // and so that refresh page could know where to return to if the snippet weren't found.
+
     if (snippet == null) {
         throw new BadRequestError('Received invalid snippet data.', snippet);
     }
@@ -130,16 +131,38 @@ async function compileCommon(params: {
         await Promise.all([
             snippetGenerator.compile(snippet),
             loadTemplate<ICompiledSnippet>('snippet'),
-            params.wrapWithRunnerChrome ? loadTemplate<IRunnerContext>('runner') : null,
+            wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
         ]);
 
     let html = snippetHtml(compiledSnippet);
 
-    if (params.wrapWithRunnerChrome) {
+    if (wrapWithRunnerChrome) {
+        // Parameters needed for refresh:
+        // * id, to find the snippet.
+        // * host, to know which host container to find the snippet in.
+        const refreshParams = {
+            host: snippet.host /* to know which host flavor to search for the snippet in */,
+            id: snippet.id /* to find the snippet */,
+            runnerUrl: request.protocol + '://' + request.get('host') /* for refreshing the snippet */,
+            returnUrl: returnUrl
+        };
+
         html = runnerHtml({
             iframeContent: html,
             snippet: compiledSnippet,
-            includeBackButton: params.wrapWithRunnerChrome != null
+            includeBackButton: wrapWithRunnerChrome != null,
+            refreshUrl:
+                `${snippet.origin}/refresh.html?${
+                    (() => {
+                        const result = [];
+                        for (const key in refreshParams) {
+                            if (refreshParams.hasOwnProperty(key)) {
+                                result.push(`${key}=${encodeURIComponent(refreshParams[key])}`);
+                            }
+                        }
+                        return result.join('&');
+                    })()}`,
+            returnUrl: returnUrl
         });
     }
 

@@ -5,6 +5,10 @@
     <base href="/">
     <title>Refresh</title>
 
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
@@ -18,23 +22,22 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico" />
     <link rel="manifest" href="favicon/manifest.json">
 
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.min.css" />
+    <link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.components.min.css" />
 </head>
 
-<body>
+<body class="ms-font-m">
     <app class="app">
         <div class="ms-progress-component">
-            <main class="ms-progress-component__main ms-fontColor-white">
-                <img class="ms-progress-component__logo" src="../assets/images/icon-large.png">
+            <main class="ms-progress-component__main">
+                <img class="ms-progress-component__logo" src="../assets/images/icon-large.png" />
                 <h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
                 <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Refreshing snippet...</p>
             </main>
-            <footer class="ms-progress-component__footer ms-fontColor-white">
+            <footer id="progress" class="ms-progress-component__footer">
                 <div class="ms-progress">
                     <div class="cs-loader">
                         <div class="cs-loader-inner">
