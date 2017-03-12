@@ -153,7 +153,12 @@ export class SnippetEffects {
                     if (snippet.id === '') {
                         snippet.id = cuid();
                     }
-                    if (this._exists(snippet.name)) {
+
+                    // Note: this method is used both for true "import", and also
+                    // just opening of existing snippets.
+                    // If the action here involves true importing rather than re-opening,
+                    // and if the name is already taken by a local snippet, generate a new name:
+                    if (!local && this._exists(snippet.name)) {
                         snippet.name = this._generateName(snippet.name, suffix);
                     }
                     return new Snippet.ImportSuccessAction(snippet);
