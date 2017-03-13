@@ -57,14 +57,17 @@
 		</div>
 	</app>
 
-    <pre id="iframe-code-content" style="display:none">{{iframeContent}}</pre>
+    <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
     <iframe id="snippet-container" src="about:blank"></iframe>
 
     <script src="{{snippet.origin}}/polyfills.bundle.js"></script>
     <script src="{{snippet.origin}}/vendor.bundle.js"></script>
     <script src="{{snippet.origin}}/runner.bundle.js"></script>
     <script type="text/javascript">
-        window.initializeRunner('{{snippet.origin}}', '{{snippet.host}}', '{{snippet.platform}}', '{{snippet.officeJS}}');
+        window.initializeRunner({
+            origin: '{{{snippet.origin}}}',
+            officeJS: '{{{snippet.officeJS}}}'
+        });
     </script>
 </body>
 

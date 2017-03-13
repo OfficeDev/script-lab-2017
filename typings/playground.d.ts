@@ -41,7 +41,7 @@ interface ICompiledSnippet extends ITemplate {
 }
 
 interface IRunnerHandlebarsContext {
-    iframeContent: string;
+    snippetContent: string;
     snippet: ICompiledSnippet;
     includeBackButton: boolean;
     refreshUrl: string;

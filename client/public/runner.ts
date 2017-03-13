@@ -16,39 +16,57 @@ function loadFirebug(origin) {
     });
 }
 
-const initializeRunner = async (origin: string, host: string, platform: string, officeJS: string) => {
-    try {
-        const firebug = await loadFirebug(origin);
+interface IInitializeRunnerParams {
+    origin: string;
+    officeJS: string;
+}
 
-        let iframe = $('#snippet-container');
-        let content = $('#iframe-code-content');
-        let progress = $('#progress');
-        let header = $('#header');
+async function initializeRunner(params: IInitializeRunnerParams) {
+    const { origin, officeJS } = params;
 
-        let { contentWindow } = iframe[0] as HTMLIFrameElement;
+    const firebug = await loadFirebug(origin);
+
+    const $iframe = $('#snippet-container');
+    const iframe = $iframe[0] as HTMLIFrameElement;
+    let { contentWindow } = iframe;
+    let $snippetContent = $('#snippet-code-content');
+    let $progress = $('#progress');
+    let $header = $('#header');
+
+
+    // Set up the functions that the snippet iframe will call
+
+    (window as any).beginInitializingSnippet = function () {
         (contentWindow as any).console = window.console;
-        contentWindow.onerror = (...args) => console.error(args);
-
-        contentWindow.document.open();
-        contentWindow.document.write(content.text());
-        contentWindow.document.close();
-        content.remove();
-
         if (officeJS) {
-            contentWindow['Office'] = officeJS ? window['Office'] : {};
-            ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(namespace => contentWindow[namespace] = window[namespace]);
+            contentWindow['Office'] = window['Office'] || {};
+        }
+    };
+
+    (window as any).finishInitializingSnippet = function () {
+        if (officeJS) {
+            ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(
+                namespace => contentWindow[namespace] = window[namespace]);
         }
 
-        iframe.show();
-        progress.hide();
-        header.show();
+        $iframe.show();
+        $progress.hide();
+        $header.show();
         if (firebug.chrome) {
             firebug.chrome.open();
         }
-    }
-    catch (e) {
+    };
 
-    }
-};
+
+    // And finally, write to the iframe:
+
+    contentWindow.onerror = (...args) => console.error(args);
+
+    contentWindow.document.open();
+    contentWindow.document.write($snippetContent.text());
+    contentWindow.document.close();
+
+    $snippetContent.remove();
+}
 
 (window as any).initializeRunner = initializeRunner;

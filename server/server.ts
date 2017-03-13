@@ -148,7 +148,7 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
         };
 
         html = runnerHtml({
-            iframeContent: html,
+            snippetContent: html,
             snippet: compiledSnippet,
             includeBackButton: wrapWithRunnerChrome != null,
             refreshUrl:
