@@ -63,7 +63,7 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        TRAVIS ? new BundleAnalyzerPlugin() : undefined,
+        TRAVIS ? undefined : new BundleAnalyzerPlugin(),
         new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.UglifyJsPlugin({
