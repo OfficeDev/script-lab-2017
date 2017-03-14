@@ -35,7 +35,7 @@ app.get('/', handler(async (req: express.Request, res: express.Response) => {
  * Returns the standalone runner page
  */
 app.get('/run', handler(async (req: express.Request, res: express.Response) => {
-    return res.sendfile(path.resolve(__dirname, 'assets/editor-runner.html'));
+    return res.sendfile(path.resolve(__dirname, 'templates/editor-runner.html'));
 }));
 
 /**

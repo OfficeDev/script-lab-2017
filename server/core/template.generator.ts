@@ -7,7 +7,7 @@ handlebars.registerHelper('indent', (text, indent) => Utilities.indentAll(text, 
 
 export function loadTemplate<T>(templateName: string) {
     return new Promise<(context: T) => string>((resolve, reject) => {
-        let templateUrl = path.resolve(`${__dirname}/../assets/${templateName}`);
+        let templateUrl = path.resolve(`${__dirname}/../templates/${templateName}`);
         fs.readFile(templateUrl, 'UTF8', (err, file) => {
             if (err) {
                 return reject(err);

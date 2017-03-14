@@ -113,8 +113,7 @@ class SnippetGenerator {
                         let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
                         let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
                         return `Line #${lineNumber}:  ${item.messageText}` + '\n\n' + lineText;
-                    }).join('\n\n\n')
-                    );
+                    }).join('\n\n\n'));
                 }
 
                 return result.outputText;
