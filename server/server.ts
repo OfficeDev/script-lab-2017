@@ -7,7 +7,7 @@ import * as serverStatic from 'serve-static';
 import * as cors from 'cors';
 import * as Request from 'request';
 import { Utilities } from './core/utilities';
-import { BadRequestError, UnauthorizedError, ServerError } from './core/errors';
+import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
 
@@ -94,27 +94,21 @@ app.post('/compile/page', handler(async (req: express.Request, res: express.Resp
   * Generic exception handler
  */
 app.use((err, req, res, next) => {
-    if (err instanceof ServerError) {
-        res.status(err.code);
-        return res.send(err.message);
-    }
-    else if (err) {
-        res.status(500);
-        return res.send(err.message);
+    if (err) {
+        let { code, stack, message } = err;
+        return res.contentType('application/json').send({ code, message, stack });
     }
 });
 
-if (process.env.port == null) {
-    https.createServer({
-        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
-    }, app)
-        .listen(3200, () => console.log('Playground server running on 3200'));
+if (process.env.NODE_ENV === 'production') {
+    app.listen(process.env.port || 1337, () => console.log(`Add-in Playground Runner listening on port ${process.env.PORT}`));
 }
 else {
-    app.listen(process.env.PORT, () => {
-        console.log(`Add-in Playground Runner listening on port ${process.env.PORT}`);
-    });
+    const cert = {
+        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+    };
+    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 }
 
 async function compileCommon(request: express.Request, wrapWithRunnerChrome?: boolean): Promise<string> {
