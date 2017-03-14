@@ -22,9 +22,10 @@
     "version": "1.0.0",
     "scripts": {
         "compile": "tsc -p tsconfig.server.json --watch",
+        "copy-config": "cpx \"config/env.config.js\" \"dist/server\" --watch",
         "copy": "cpx \"server/**/!(*.ts)\" \"dist/server\" --watch",
         "client": "webpack-dev-server --config config/webpack.dev.js --progress",
-        "start": "rimraf dist && concurrently --kill-others --raw \"npm run client\" \"npm run compile\" \"npm run copy\"",
+        "start": "rimraf dist && concurrently --kill-others --raw \"npm run client\" \"npm run compile\" \"npm run copy\" \"npm run copy-config\"",
         "lint": "tslint --project tsconfig.json",
         "build": "rimraf dist && tsc -p tsconfig.server.json && cpx \"server/**/!(*.ts)\" \"dist/server\" && rimraf dist/client && webpack --config config/webpack.prod.js",
         "deploy": "node config/deploy.js"

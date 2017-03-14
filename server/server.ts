@@ -10,6 +10,7 @@ import { Utilities } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
+let { config } = require('./env.config.js');
 
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
@@ -27,7 +28,6 @@ app.get('/', handler((req: express.Request, res: express.Response) => {
     res.writeHead(302, {
         'Location': 'https://dev.office.com'
     });
-
     return res.send();
 }));
 
@@ -51,21 +51,25 @@ app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Res
         return new BadRequestError('Received invalid code.', code);
     }
 
-    // TODO: Determine the right configuration
-    let source = null;
+    let source = config[env] as IEnvironmentConfig;
     if (source == null) {
         return new BadRequestError(`Bad environment configuration: ${env}`, env);
     }
 
-    let { client_id, client_secret, redirect_uri } = source;
-
+    let { clientId, editorUrl } = source;
     let token = await new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
             headers: {
                 'Accept': 'application/json'
             },
-            json: { client_id, client_secret, redirect_uri, code, state }
+            json: {
+                client_id: clientId,
+                // client_secret: clientSecret,
+                redirect_uri: editorUrl,
+                code,
+                state
+            }
         }, (error, httpResponse, body) => error ? reject(new UnauthorizedError('Failed to authenticate user.', error)) : resolve(body));
     });
 
