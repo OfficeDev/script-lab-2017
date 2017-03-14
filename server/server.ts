@@ -3,6 +3,7 @@ import * as https from 'https';
 import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as serverStatic from 'serve-static';
 import * as cors from 'cors';
 import * as Request from 'request';
 import { Utilities } from './core/utilities';
@@ -15,6 +16,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(serverStatic(__dirname));
 
 /**
  * HTTP GET: /
@@ -152,16 +154,16 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
             snippet: compiledSnippet,
             includeBackButton: wrapWithRunnerChrome != null,
             refreshUrl:
-                `${snippet.origin}/refresh.html?${
-                    (() => {
-                        const result = [];
-                        for (const key in refreshParams) {
-                            if (refreshParams.hasOwnProperty(key)) {
-                                result.push(`${key}=${encodeURIComponent(refreshParams[key])}`);
-                            }
-                        }
-                        return result.join('&');
-                    })()}`,
+            `${snippet.origin}/refresh.html?${
+            (() => {
+                const result = [];
+                for (const key in refreshParams) {
+                    if (refreshParams.hasOwnProperty(key)) {
+                        result.push(`${key}=${encodeURIComponent(refreshParams[key])}`);
+                    }
+                }
+                return result.join('&');
+            })()}`,
             returnUrl: returnUrl
         });
     }
