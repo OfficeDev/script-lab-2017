@@ -82,11 +82,18 @@ export class Gallery {
             this.render();
         }
 
-        let data = JSON.stringify({
-            snippet: snippet,
-            showBackButton: true
+        const overrides = <ISnippet>{
+            host: environment.current.host,
+            platform: environment.current.platform,
+            origin: environment.current.config.editorUrl,
+        };
+
+        const data = JSON.stringify({
+            snippet: { ...snippet, ...overrides },
+            showBackButton: true,
+            returnUrl: location.href
         });
 
-        return post(environment.current.config.runnerUrl + '/compile/page', JSON.stringify({ data }));
+        return post(environment.current.config.runnerUrl + '/compile/page', { data });
     }
 }
