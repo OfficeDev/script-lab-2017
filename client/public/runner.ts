@@ -37,14 +37,14 @@ async function initializeRunner(params: IInitializeRunnerParams) {
 
     // Set up the functions that the snippet iframe will call
 
-    (window as any).beginInitializingSnippet = function () {
+    (window as any).beginInitializingSnippet = () => {
         (contentWindow as any).console = window.console;
         if (officeJS) {
             contentWindow['Office'] = window['Office'] || {};
         }
     };
 
-    (window as any).finishInitializingSnippet = function () {
+    (window as any).finishInitializingSnippet = () => {
         if (officeJS) {
             ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(
                 namespace => contentWindow[namespace] = window[namespace]);
