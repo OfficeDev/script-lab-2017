@@ -5,7 +5,7 @@
 @import 'containers';
 
 .app {
-    home, dialog, gallery, editor, hamburger {
+    home, dialog, editor {
         flex: 1 1 100%;
         @include flex();
         height: 100%;
@@ -15,15 +15,6 @@
         height: auto;
         background: transparent;
         border: none;
-    }
-
-    hamburger {
-        flex: 0 0 auto;
-        height: 100vh;
-    }
-
-    gallery {
-        height: calc(100vh - 40px);
     }
 
     main {

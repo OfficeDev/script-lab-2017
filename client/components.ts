@@ -1,12 +1,10 @@
-import { Collapse, Hamburger, Command, Alert, About, Dialog, SnippetInfo, Profile } from './app/components';
-import { Editor, Gallery, GalleryList, Import } from './app/containers';
+import { Collapse, Command, Alert, About, Dialog, SnippetInfo, Profile } from './app/components';
+import { Editor, GalleryList, Import } from './app/containers';
 
 export const COMPONENT_DECLARATIONS = [
-    Gallery,
     GalleryList,
     Editor,
     Import,
-    Hamburger,
     Collapse,
     Alert,
     Profile,
