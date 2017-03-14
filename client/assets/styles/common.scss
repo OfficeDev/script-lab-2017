@@ -1,8 +1,7 @@
-﻿@import 'vars';
+@import 'vars';
 @import 'mixins';
-@import 'fabric';
-@import 'components';
-@import 'containers';
+@import 'components/spinner';
+@import 'components/command';
 
 * {
     margin: 0;
@@ -26,6 +25,7 @@ body {
     position: relative;
     min-width: 320px;
     min-height: 430px;
+	@include flex();
 }
 
 main {
@@ -52,80 +52,15 @@ ul {
     position: absolute;
     top: 0;
     left: 0;
-
-    home, dialog, gallery, editor, hamburger {
-        flex: 1 1 100%;
-        @include flex();
-        height: 100%;
-    }
-
-    dialog {
-        height: auto;
-        background: transparent;
-        border: none;
-    }
-
-    hamburger {
-        flex: 0 0 auto;
-        height: 100vh;
-    }
-
-    gallery {
-        height: calc(100vh - 40px);
-    }
-
-    main {
-        @include flex();
-        height: 100vh;
-        width: 100%;
-    }
-
-    editor-view {
-        flex-direction: row;
-    }
-
-    monaco-editor {
-        overflow: hidden;
-    }
-
-    tab {
-        display: none;
-        height: 100% !important;
-    }
-
-    footer.command__bar--condensed {
-        flex: 0 0 22px;
-
-        .ms-font-m {
-            font-size: 12px;
-        }
-
-        .command__icon {
-            padding: 3px 7.5px
-        }
-
-        command:first-child .command__icon {
-            margin-left: 0px;
-        }
-
-        command.language {
-            span {
-                margin-left: 0;
-                text-transform: uppercase;
-            }
-        }
-    }
 }
 
-.collapse {
-    &__info {
-        background: rgba(#FFF100, 0.6);
-        padding: $default-spacing;
-
-        & .ms-Button {
-            margin-top: $default-spacing/2;
-        }
-    }
+#progress {
+    @include inline-flex();
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #hosts {

@@ -29,6 +29,29 @@ command {
     }
 }
 
+footer.command__bar--condensed {
+    flex: 0 0 22px;
+
+    .ms-font-m {
+        font-size: 12px;
+    }
+
+    .command__icon {
+        padding: 3px 7.5px
+    }
+
+    command:first-child .command__icon {
+        margin-left: 0px;
+    }
+
+    command.language {
+        span {
+            margin-left: 0;
+            text-transform: uppercase;
+        }
+    }
+}
+
 .command {
     &__bar {
         @include inline-flex();
