@@ -8,6 +8,10 @@ class Settings {
         return this._settings.notify;
     }
 
+    set notify(value: (event?: StorageEvent) => void) {
+        this._settings.notify = value;
+    }
+
     get current() {
         if (environment.current && environment.current.host) {
             return this._settings.get(environment.current.host);

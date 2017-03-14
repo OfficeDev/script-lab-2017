@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import '../assets/styles/spinner.scss';
 import '../assets/styles/runner.scss';
 
 function loadFirebug(origin) {

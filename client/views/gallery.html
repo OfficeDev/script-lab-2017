@@ -5,6 +5,10 @@
 	<base href="/">
 	<title>Gallery</title>
 
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
 	<link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
@@ -21,12 +25,7 @@
 	<link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
 	<link rel="manifest" href="favicon/manifest.json">
 
-	<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css">
-
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
+	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.min.css">
 	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 
 	<style>
@@ -322,7 +321,7 @@
 			width: calc(100% - 30px);
 		}
 
-		.gallery-list__item--template > * {
+		.gallery-list__item--template>* {
 			cursor: pointer;
 		}
 
@@ -335,234 +334,47 @@
 			padding: 7.5px 15px;
 			margin-top: 10px;
 		}
-
-		.ms-progress-component {
-			height: 100%;
-			width: 100%;
-			background-color: #fff;
-			display: -webkit-flex;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-flex-direction: column;
-			-ms-flex-direction: column;
-			flex-direction: column;
-			-webkit-flex-wrap: nowrap;
-			-ms-flex-wrap: nowrap;
-			flex-wrap: nowrap;
-		}
-
-		.app main {
-			display: -webkit-flex;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-flex-direction: column;
-			-ms-flex-direction: column;
-			flex-direction: column;
-			-webkit-flex-wrap: nowrap;
-			-ms-flex-wrap: nowrap;
-			flex-wrap: nowrap;
-			height: 100vh;
-			width: 100%;
-		}
-
-		.ms-progress-component__main {
-			height: 100%;
-			-webkit-flex: 1 1 0;
-			-ms-flex: 1 1 0;
-			flex: 1 1 0;
-			padding: 15px;
-			display: -webkit-flex;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-flex-direction: column;
-			-ms-flex-direction: column;
-			flex-direction: column;
-			-webkit-flex-wrap: nowrap;
-			-ms-flex-wrap: nowrap;
-			flex-wrap: nowrap;
-			-webkit-justify-content: center;
-			-ms-flex-pack: center;
-			justify-content: center;
-			-webkit-align-items: center;
-			-ms-flex-align: center;
-			align-items: center;
-		}
-
-		.ms-progress-component__logo {
-			height: 100px;
-			margin-bottom: 15px;
-		}
-
-		.ms-progress-component__title {
-			text-align: center;
-			padding: 0 15px;
-			color: #666;
-		}
-
-		.ms-progress-component__sub-title {
-			text-align: center;
-			padding: 15px;
-			color: #999;
-		}
-
-		.ms-progress-component__footer {
-			display: -webkit-inline-flex;
-			display: -ms-inline-flexbox;
-			display: inline-flex;
-			-webkit-justify-content: center;
-			-ms-flex-pack: center;
-			justify-content: center;
-			-webkit-align-items: center;
-			-ms-flex-align: center;
-			align-items: center;
-			margin-bottom: 75px;
-		}
-
-		.ms-fontColor-white,
-		.ms-fontColor-white--hover:hover {
-			color: #fff;
-		}
-
-		.ms-font-m,
-		.ms-font-xxl {
-			font-family: Segoe UI WestEuropean, Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif;
-			-webkit-font-smoothing: antialiased;
-		}
-
-		.ms-font-xxl {
-			font-size: 28px;
-			font-weight: 100;
-		}
-
-		.ms-font-m {
-			font-size: 14px;
-			font-weight: 400;
-		}
-		/* loader by https://codepen.io/magnus16/pen/BKoRNw */
-
-		#cs-loader {
-			width: 100%;
-			height: calc(100% - 40px);
-			position: fixed;
-			z-index: 1001;
-			background: white;
-		}
-
-		.cs-loader-inner {
-			width: calc(100% - 200px);
-			height: 100%;
-			-webkit-transform: translateY(50%);
-			transform: translateY(50%);
-			color: #f96618;
-			padding: 0 100px;
-			text-align: center;
-		}
-
-		.cs-loader-inner label {
-			font-size: 20px;
-			opacity: 0;
-			display: inline-block;
-		}
-
-		@keyframes lol {
-			0% {
-				opacity: 0;
-				-webkit-transform: translateX(-300px);
-				transform: translateX(-300px);
-			}
-			33% {
-				opacity: 1;
-				-webkit-transform: translateX(0);
-				transform: translateX(0);
-			}
-			66% {
-				opacity: 1;
-				-webkit-transform: translateX(0);
-				transform: translateX(0);
-			}
-			100% {
-				opacity: 0;
-				-webkit-transform: translateX(300px);
-				transform: translateX(300px);
-			}
-		}
-
-		@-webkit-keyframes lol {
-			0% {
-				opacity: 0;
-				-webkit-transform: translateX(-300px);
-			}
-			33% {
-				opacity: 1;
-				-webkit-transform: translateX(0);
-			}
-			66% {
-				opacity: 1;
-				-webkit-transform: translateX(0);
-			}
-			100% {
-				opacity: 0;
-				-webkit-transform: translateX(300px);
-			}
-		}
-
-		.cs-loader-inner label:nth-child(6) {
-			-webkit-animation: lol 3s infinite ease-in-out;
-			animation: lol 3s infinite ease-in-out;
-		}
-
-		.cs-loader-inner label:nth-child(5) {
-			-webkit-animation: lol 3s 100ms infinite ease-in-out;
-			animation: lol 3s 100ms infinite ease-in-out;
-		}
-
-		.cs-loader-inner label:nth-child(4) {
-			-webkit-animation: lol 3s 200ms infinite ease-in-out;
-			animation: lol 3s 200ms infinite ease-in-out;
-		}
-
-		.cs-loader-inner label:nth-child(3) {
-			-webkit-animation: lol 3s 300ms infinite ease-in-out;
-			animation: lol 3s 300ms infinite ease-in-out;
-		}
-
-		.cs-loader-inner label:nth-child(2) {
-			-webkit-animation: lol 3s 400ms infinite ease-in-out;
-			animation: lol 3s 400ms infinite ease-in-out;
-		}
-
-		.cs-loader-inner label:nth-child(1) {
-			-webkit-animation: lol 3s 500ms infinite ease-in-out;
-			animation: lol 3s 500ms infinite ease-in-out;
-		}
 	</style>
 </head>
 
-<body>
+<body class="ms-font-m">
 	<app class="app">
 		<div id="progress" class="ms-progress-component">
-			<main class="ms-progress-component__main ms-fontColor-white">
+			<main class="ms-progress-component__main">
 				<img class="ms-progress-component__logo" src="../assets/images/icon-large.png" />
 				<h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
-				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Loading snippets</p>
+				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Code ● Run ● Share</p>
 			</main>
-			<footer class="ms-progress-component__footer ms-fontColor-white">
+			<footer class="ms-progress-component__footer">
 				<div class="ms-progress">
 					<div class="cs-loader">
 						<div class="cs-loader-inner">
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
+							<label>●</label>
+							<label>●</label>
+							<label>●</label>
+							<label>●</label>
+							<label>●</label>
 						</div>
 					</div>
 				</div>
 			</footer>
+			<div id="hosts" class="ms-u-slideUpIn20">
+				<p>Please choose the playground flavor:</p>
+				<div class="buttons">
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--excel" data-host="EXCEL"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--word" data-host="WORD"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--powerpoint" data-host="POWERPOINT"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--onenote" data-host="ONENOTE"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--project" data-host="PROJECT"></div>
+				</div>
+			</div>
 		</div>
-		<div id="snippet-list" class="hamburger" style="display:none">
+		<section id="gallery" class="hamburger">
+			<p id="snippet-list-empty" class="gallery-list__message ms-font-m">
+				You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
+			</p>
 			<section class="hamburger-menu">
-				<div id="header" class="command__bar command--light">
+				<div class="command__bar command--light">
 					<div class="command__title">
 						<span class="ms-font-m">Local snippet gallery</span>
 					</div>
@@ -572,31 +384,22 @@
 				</div>
 			</section>
 			<div class="hamburger-menu__container">
-				<gallery>
-					<section class="gallery">
-						<section class="gallery__section">
-							<div class="gallery__tabs-container">
-								<collapse>
-									<section class="collapse__panel">
-										<gallery-list>
-											<section class="gallery-list">
-												<section class="gallery-list__group">
-													<section id="local-snippet-list" class="gallery-list__group">
-													</section>
-												</section>
-											</section>
-											<p id="no-local-snippets" class="gallery-list__message ms-font-m" style="display: none">
-												You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
-											</p>
-										</gallery-list>
+				<section class="gallery">
+					<section class="gallery__section">
+						<div class="gallery__tabs-container">
+							<section class="collapse__panel">
+								<section class="gallery-list">
+									<section class="gallery-list__group">
+										<section id="snippet-list" class="gallery-list__group">
+										</section>
 									</section>
-								</collapse>
-							</div>
-						</section>
+								</section>
+							</section>
+						</div>
 					</section>
-				</gallery>
+				</section>
 			</div>
-		</div>
+		</section>
 	</app>
 </body>
 
