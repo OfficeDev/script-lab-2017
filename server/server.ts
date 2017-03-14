@@ -10,7 +10,7 @@ import { Utilities } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
-let { config } = require('./env.config.js');
+let { config } = require('./core/env.config.js');
 
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
