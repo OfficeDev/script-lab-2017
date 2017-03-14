@@ -1,5 +1,5 @@
-import { queryParamsToJson, post } from '../app/helpers';
-import { Storage, StorageType } from '@microsoft/office-js-helpers';
+import { post } from '../app/helpers';
+import { Storage, StorageType, Authenticator } from '@microsoft/office-js-helpers';
 import '../assets/styles/extras.scss';
 
 (() => {
@@ -9,49 +9,45 @@ import '../assets/styles/extras.scss';
     // (e.g., host) about itself.
     // Any information it needs should come on query parameters for efficiency's sake.
 
-    const queryParams = queryParamsToJson(window.location.href);
+    const queryParams = Authenticator.getUrlParams(location.href, location.origin, '?') as any;
     const { host, id, runnerUrl, returnUrl } = queryParams;
 
-    if (!host || !id || !runnerUrl) {
-        console.error(queryParams);
+    if (!(host && id && runnerUrl)) {
         return showError('Missing some snippet parameters.', returnUrl);
     }
 
     const snippets = new Storage<ISnippet>(`playground_${host}_snippets`);
     let snippet = snippets.get(id);
-    if (!snippet) {
+    if (snippet == null) {
         // Check if it might be an unsaved (unmodified) last-opened snippet:
-        const settings = (new Storage<ISettings>('playground_settings', StorageType.LocalStorage)).get(host);
+        const settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage).get(host);
         if (settings && settings.lastOpened && settings.lastOpened.id === id) {
             snippet = settings.lastOpened;
         }
     }
 
     // If still no snippet, no luck:
-    if (!snippet) {
+    if (snippet == null) {
         return showError('Could not find the snippet.', returnUrl);
     }
 
-    const data = JSON.stringify({
-        snippet: snippet
-    });
-
+    const data = JSON.stringify({ snippet });
     post(runnerUrl + '/compile/page', { data });
 
-
     // Helpers
-
-    function showError(text: string, returnUrl?: string): void {
-        const subtitle = document.getElementById('subtitle');
-        subtitle.innerHTML = text + ' ' +
-            (returnUrl ? 'Returning...' : 'Please close this window and try again.');
-        subtitle.style.color = 'red';
+    function showError(message: string, returnUrl?: string): void {
+        const subtitle = document.querySelector('#subtitle') as HTMLElement;
+        const progress = document.querySelector('#progress-dots') as HTMLElement;
+        const text = returnUrl ? 'Returning...' : 'Please close this window and try again.';
+        subtitle.innerHTML = `${message} ${text}`;
 
         if (returnUrl) {
-            setTimeout(() => window.location.href = returnUrl, 2500);
-        } else {
-            document.getElementById('progress').style.display = 'none';
+            setTimeout(() => window.location.replace(returnUrl), 2500);
+        }
+        else {
+            console.error(message, queryParams);
+            progress.style.display = 'none';
+            subtitle.style.color = '#ff6700';
         }
     }
-
 })();
