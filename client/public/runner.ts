@@ -1,6 +1,5 @@
 import * as $ from 'jquery';
-import '../assets/styles/spinner.scss';
-import '../assets/styles/runner.scss';
+import '../assets/styles/extras.scss';
 
 function loadFirebug(origin) {
     return new Promise<any>((resolve, reject) => {

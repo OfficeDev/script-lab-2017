@@ -1,8 +1,7 @@
 import * as $ from 'jquery';
 import { settings, environment, applyTheme, post } from '../app/helpers';
 import { Storage } from '@microsoft/office-js-helpers';
-import '../assets/styles/spinner.scss';
-import '../assets/styles/globals.scss';
+import '../assets/styles/extras.scss';
 
 (async () => {
     await environment.initialize();

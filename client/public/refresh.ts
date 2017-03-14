@@ -1,7 +1,6 @@
 import { queryParamsToJson, post } from '../app/helpers';
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
-
-import '../assets/styles/refresh.scss';
+import '../assets/styles/extras.scss';
 
 (() => {
 
