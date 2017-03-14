@@ -16,7 +16,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(serverStatic(__dirname));
+app.use(serverStatic(path.resolve(__dirname, 'favicon')));
 
 /**
  * HTTP GET: /
