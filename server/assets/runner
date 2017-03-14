@@ -35,24 +35,23 @@
         <script src="{{snippet.officeJS}}"></script>
     {{/if}}
 
-    <header id="header" class="command__bar">
-        {{#if includeBackButton}}
-        <command>
-            <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
-                <i class="ms-Icon ms-Icon--Back"></i>
-            </a>
-        </command>
-        {{/if}}
-        <command>
-            <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
-                <i class="ms-Icon ms-Icon--Refresh"></i>
-                <span class="ms-font-m ms-u-slideLeftIn10">{{snippet.name}}</span>
-            </a>
-        </command>
-    </header>
-
-    <app id="progress" class="app">
-		<div class="ms-progress-component">
+    <app class="app">
+        <header id="header" class="command__bar">
+            {{#if includeBackButton}}
+            <command>
+                <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
+                    <i class="ms-Icon ms-Icon--Back"></i>
+                </a>
+            </command>
+            {{/if}}
+            <command>
+                <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
+                    <i class="ms-Icon ms-Icon--Refresh"></i>
+                    <span class="ms-font-m ms-u-slideLeftIn10">{{snippet.name}}</span>
+                </a>
+            </command>
+        </header>
+		<div id="progress" class="ms-progress-component">
 			<main class="ms-progress-component__main">
 				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
 				<h1 class="ms-progress-component__title ms-font-xxl">{{snippet.name}}</h1>
