@@ -1,11 +1,11 @@
-let {name, version, author} = require('../package.json');
-let _ = require('lodash');
+let { name, version, author } = require('../package.json');
+let { startCase } = require('lodash');
 
 const build = (() => {
     let timestamp = new Date().getTime();
 
     return {
-        name: _.startCase(name),
+        name: startCase(name),
         version,
         timestamp,
         author
