@@ -65,6 +65,17 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                postcss: [
+                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
+                    perfectionist
+                ],
+                htmlLoader: {
+                    minimize: false
+                }
+            }
+        }),        
         new CheckerPlugin(),
         new webpack.LoaderOptionsPlugin({
             options: {
@@ -74,6 +85,7 @@ module.exports = {
                 ]
             }
         }),
+        new ExtractTextPlugin('[name].bundle.css'),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['vendor', 'polyfills'],
             minChunks: Infinity

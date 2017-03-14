@@ -1,15 +1,12 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
-// var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var path = require('path');
-var chalk = require('chalk');
 var { build, config } = require('./env.config');
-var autoprefixer = require('autoprefixer');
-var perfectionist = require('perfectionist');
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const { TRAVIS } = process.env;
 
 module.exports = webpackMerge(commonConfig, {
     devtool: 'source-map',
@@ -66,17 +63,7 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        new webpack.LoaderOptionsPlugin({
-            options: {
-                postcss: [
-                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
-                    perfectionist
-                ],
-                htmlLoader: {
-                    minimize: false
-                }
-            }
-        }),
+        TRAVIS ? new BundleAnalyzerPlugin() : undefined,
         new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.UglifyJsPlugin({
@@ -86,8 +73,6 @@ module.exports = webpackMerge(commonConfig, {
                 keep_fnames: true
             }
         }),
-        // new BundleAnalyzerPlugin(),
-        new ExtractTextPlugin('[name].bundle.css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 devMode: false,

@@ -1,6 +1,5 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var path = require('path');
@@ -17,7 +16,6 @@ module.exports = webpackMerge(commonConfig, {
 
     plugins: [
         new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
-        new ExtractTextPlugin('[name].bundle.css'),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
                 devMode: true,
