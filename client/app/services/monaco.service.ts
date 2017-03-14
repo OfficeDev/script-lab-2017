@@ -137,7 +137,7 @@ export class MonacoService extends Disposable {
             tokenizer: {
                 root: [
                     [Regex.STARTS_WITH_COMMENT, 'comment'],
-                    [Regex.ENDS_WITH_CSS, 'variable'],
+                    [Regex.ENDS_WITH_CSS, 'number'],
                     [Regex.STARTS_WITH_TYPINGS, 'string'],
                     [Regex.ENDS_WITH_DTS, 'string'],
                     [Regex.GLOBAL, 'keyword']

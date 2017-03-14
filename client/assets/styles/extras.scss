@@ -1,6 +1,7 @@
 @import 'vars';
 @import 'mixins';
 @import 'themes/minimal';
+@import 'containers/gallery';
 
 #header {
 	a {
@@ -37,6 +38,12 @@
 
 #gallery {
 	display: none;
+	width: 100vw;
+}
+
+#title-refresh {
+	justify-content: center;
+	align-items: center;
 }
 
 iframe#FirebugUI {

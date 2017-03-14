@@ -7,13 +7,14 @@ import '../assets/styles/extras.scss';
     await environment.initialize();
     await applyTheme(environment.current.host);
     const gallery = new Gallery();
+    gallery.hideProgress();
     gallery.render();
+    gallery.renderLastOpened();
 })();
 
 export class Gallery {
     private _$progress = $('#progress');
     private _$gallery = $('#gallery');
-
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
     private _$lastOpened = $('#last-opened');
@@ -30,45 +31,43 @@ export class Gallery {
         settings.notify = () => this.renderLastOpened();
     }
 
+    hideProgress() {
+        this._$progress.hide();
+        this._$gallery.show();
+    }
+
     renderLastOpened() {
-        this._$lastOpened.hide();
+        this._$lastOpened.html('');
+        if (settings.current && settings.current.lastOpened) {
+            this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
+            this._$lastOpened.show();
+        }
+        else {
+            this._$lastOpened.hide();
+        }
     }
 
     render() {
         this._$snippetList.html('');
-        this._snippets.values().forEach(snippet => this.insertSnippet(snippet));
-        this._setViewState();
+        if (this._snippets.count) {
+            this._$noSnippets.hide();
+            this._snippets.values().forEach(snippet => this.insertSnippet(snippet, this._$snippetList));
+            this._$snippetList.show();
+        }
+        else {
+            this._$noSnippets.show();
+            this._$snippetList.hide();
+        }
     }
 
-    insertSnippet({ id, name, description }: ISnippet) {
+    insertSnippet({ id, name, description }: ISnippet, location: JQuery) {
         let template = this._template
             .replace('{{name}}', name)
             .replace('{{description}}', description);
 
         let $item = $(template);
         $item.click(() => this._navigate(id));
-        $item.appendTo(this._$snippetList);
-    }
-
-    private _setViewState() {
-        if (environment.current.host) {
-            if (this._snippets.count || (settings.current && settings.current.lastOpened)) {
-                this._$progress.hide();
-                this._$noSnippets.hide();
-                this._$snippetList.show();
-                this._$gallery.show();
-            }
-            else {
-                this._$progress.hide();
-                this._$noSnippets.show();
-                this._$snippetList.hide();
-                this._$gallery.show();
-            }
-        }
-        else {
-            this._$progress.show();
-            this._$gallery.hide();
-        }
+        $item.appendTo(location);
     }
 
     private _navigate(id: string) {

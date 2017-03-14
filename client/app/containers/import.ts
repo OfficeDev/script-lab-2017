@@ -27,7 +27,7 @@ import { isEmpty } from 'lodash';
                         <i class="ms-Icon ms-Icon--Download"></i><span>Import</span>
                     </li>
                 </ul>
-                <div class="gallery__tabs-container">
+                <section class="gallery__tabs-container">
                     <section class="import-tab__section" [hidden]="view !== 'snippets'">
                         <h1 class="ms-font-xxl import__title">Snippets</h1>
                         <p class="ms-font-l import__subtitle">Choose from the snippets that you have created.</p>
@@ -90,7 +90,7 @@ import { isEmpty } from 'lodash';
 
                         </div>
                     </section>
-                </div>
+                </section>
             </section>
 
         </dialog>

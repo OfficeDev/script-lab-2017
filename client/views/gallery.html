@@ -25,17 +25,17 @@
 	<link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
 	<link rel="manifest" href="favicon/manifest.json">
 	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.min.css">
-	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.components.min.css">	
+	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.components.min.css">
 </head>
 
 <body class="ms-font-m">
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>		
+	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 	<app class="app">
 		<div id="progress" class="ms-progress-component">
 			<main class="ms-progress-component__main">
 				<img class="ms-progress-component__logo" src="../assets/images/icon-large.png" />
 				<h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
-				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Snippet Gallery</p>
+				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Snippets explorer</p>
 			</main>
 			<footer class="ms-progress-component__footer">
 				<div class="ms-progress">
@@ -61,36 +61,28 @@
 				</div>
 			</div>
 		</div>
-		<section id="gallery" class="hamburger">
-			<p id="snippet-list-empty" class="gallery-list__message ms-font-m">
-				You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
-			</p>
-			<section class="hamburger-menu">
-				<div class="command__bar command--light">
-					<div class="command__title">
-						<span class="ms-font-m">Local snippet gallery</span>
-					</div>
-					<div class="command__icon" onclick="window.location.reload()">
-						<i class="ms-Icon ms-Icon--Refresh" title="Refresh"></i>
-					</div>
-				</div>
-			</section>
-			<div class="hamburger-menu__container">
-				<section class="gallery">
-					<section class="gallery__section">
-						<div class="gallery__tabs-container">
-							<section class="collapse__panel">
-								<section class="gallery-list">
-									<section class="gallery-list__group">
-										<section id="snippet-list" class="gallery-list__group">
-										</section>
-									</section>
-								</section>
-							</section>
+		<section id="gallery">
+			<section class="gallery__section">				
+				<section class="gallery-list">
+					<div class="command__bar command--light">
+						<div class="command__title ms-u-slideLeftIn10">
+							<span class="ms-font-m ms-u-slideLeftIn10">Last opened snippet</span>
 						</div>
+					</div>
+					<section id="last-opened" class="gallery-list__group ms-u-slideUpIn10">
 					</section>
+					<div class="command__bar command--light">
+						<div class="command__title ms-u-slideLeftIn10">
+							<span class="ms-font-m ms-u-slideLeftIn10">My local snippets</span>
+						</div>
+					</div>
+					<section id="snippet-list" class="gallery-list__group ms-u-slideUpIn10">
+					</section>
+					<div id="snippet-list-empty" class="gallery-list__message ms-font-m ms-u-slideUpIn10">
+						You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
+					</div>
 				</section>
-			</div>
+			</section>
 		</section>
 	</app>
 </body>
