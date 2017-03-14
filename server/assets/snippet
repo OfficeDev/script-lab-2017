@@ -15,19 +15,6 @@
     <link rel="stylesheet" href="{{this}}" />
     {{/each}}
 
-    <script>
-        {{!-- Initially, only set up the console and the Office variable (for Office.initialize). --}}
-        {{!-- This should be called at the very beginning of the HTML, before any actual snippet code. --}}
-        try { window.parent.beginInitializingSnippet(); } catch (e) { }
-    </script>
-
-    {{#if isOfficeSnippet}}
-    {{!-- Add a comment about Office.js, just in case someone inspects the inner frame (snippet) code --}}
-    <!-- Outside of the playground (which references office.js differently), you would need to include: -->
-    <!-- <script src="{{{officeJS}}}"></script> -->
-
-    {{/if}}
-
     <!-- Style -->
     <style type="text/css">
         {{{indent style 2}}}
@@ -35,6 +22,12 @@
 </head>
 
 <body>
+    {{#if isOfficeSnippet}}
+    {{!-- Add a comment about Office.js, just in case someone inspects the inner frame (snippet) code --}}
+    <!-- Outside of the playground (which references office.js differently), you would need to include: -->
+    <!-- <script src="{{{officeJS}}}"></script> -->
+    {{/if}}
+
     <!-- HTML -->
     {{{indent template 1}}}
 
@@ -47,13 +40,11 @@
     <script type="text/javascript">
         {{#if officeJS}}
         Office.initialize = function() {
-            try { window.parent.finishInitializingSnippet(); } catch (e) { }
-
+            parent.postMessage({ type: 0, message: 'Snippet' }, location.origin);
             {{{indent script 3}}}
         };
         {{else}}
-        try { window.parent.finishInitializingSnippet(); } catch (e) { }
-
+        parent.postMessage({ type: 0, message: 'Snippet' }, location.origin);
         {{{indent script 2}}}
         {{/if}}
     </script>

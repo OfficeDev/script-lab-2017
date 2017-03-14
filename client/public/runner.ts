@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import { Messenger, MessageType } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
 function loadFirebug(origin) {
@@ -16,57 +17,45 @@ function loadFirebug(origin) {
     });
 }
 
-interface IInitializeRunnerParams {
-    origin: string;
-    officeJS: string;
-}
+async function initializeRunner(origin: string) {
+    try {
+        const $iframe = $('#snippet-container');
+        const $snippetContent = $('#snippet-code-content');
+        const $progress = $('#progress');
+        const $header = $('#header');
+        const firebug = await loadFirebug(origin);
+        const iframe = $iframe[0] as HTMLIFrameElement;
+        const messenger = new Messenger(location.origin);
+        let { contentWindow } = iframe;
 
-async function initializeRunner(params: IInitializeRunnerParams) {
-    const { origin, officeJS } = params;
-
-    const firebug = await loadFirebug(origin);
-
-    const $iframe = $('#snippet-container');
-    const iframe = $iframe[0] as HTMLIFrameElement;
-    let { contentWindow } = iframe;
-    let $snippetContent = $('#snippet-code-content');
-    let $progress = $('#progress');
-    let $header = $('#header');
-
-
-    // Set up the functions that the snippet iframe will call
-
-    (window as any).beginInitializingSnippet = () => {
+        // Set up the functions that the snippet iframe will call
         (contentWindow as any).console = window.console;
-        if (officeJS) {
-            contentWindow['Office'] = window['Office'] || {};
-        }
-    };
+        contentWindow['Office'] = window['Office'] || undefined;
+        contentWindow.onerror = (...args) => console.error(args);
+        contentWindow.document.open();
+        contentWindow.document.write($snippetContent.text());
+        contentWindow.document.close();
+        $snippetContent.remove();
 
-    (window as any).finishInitializingSnippet = () => {
-        if (officeJS) {
-            ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(
-                namespace => contentWindow[namespace] = window[namespace]);
-        }
-
-        $iframe.show();
-        $progress.hide();
-        $header.show();
-        if (firebug.chrome) {
-            firebug.chrome.open();
-        }
-    };
-
-
-    // And finally, write to the iframe:
-
-    contentWindow.onerror = (...args) => console.error(args);
-
-    contentWindow.document.open();
-    contentWindow.document.write($snippetContent.text());
-    contentWindow.document.close();
-
-    $snippetContent.remove();
+        // Listen to a snippet ready message from the inner frame
+        let subscription = messenger.listen()
+            .filter(({ type }) => type === MessageType.SNIPPET)
+            .subscribe(message => {
+                ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(namespace => contentWindow[namespace] = window[namespace] || undefined);
+                $iframe.show();
+                $progress.hide();
+                $header.show();
+                if (firebug.chrome) {
+                    firebug.chrome.open();
+                }
+                if (subscription && !subscription.closed) {
+                    subscription.unsubscribe();
+                }
+            });
+    }
+    catch (error) {
+        console.error(error);
+    }
 }
 
 (window as any).initializeRunner = initializeRunner;
