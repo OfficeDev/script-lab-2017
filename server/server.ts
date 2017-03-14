@@ -23,18 +23,19 @@ app.use(serverStatic(__dirname));
  * Redirect to a non-error page (there is nothing to do on the root page of the runner,
  * nor do we know the environment in order to redirect to the editor)
  */
-app.get('/', handler(async (req: express.Request, res: express.Response) => {
+app.get('/', handler((req: express.Request, res: express.Response) => {
     res.writeHead(302, {
         'Location': 'https://dev.office.com'
     });
-    res.send();
+
+    return res.send();
 }));
 
 /**
  * HTTP GET: /run
  * Returns the standalone runner page
  */
-app.get('/run', handler(async (req: express.Request, res: express.Response) => {
+app.get('/run', handler((req: express.Request, res: express.Response) => {
     return res.sendfile(path.resolve(__dirname, 'templates/editor-runner.html'));
 }));
 
@@ -75,20 +76,18 @@ app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Res
  * HTTP POST: /compile/snippet
  * Returns the compiled snippet only (no outer runner chrome)
  */
-app.post('/compile/snippet', handler(async (request: express.Request, response: express.Response) => {
-    return response.contentType('text/html').status(200).send(
-        await compileCommon(request)
-    );
+app.post('/compile/snippet', handler(async (req: express.Request, res: express.Response) => {
+    const response = await compileCommon(req);
+    return res.contentType('text/html').status(200).send(response);
 }));
 
 /**
  * HTTP POST: /compile/page
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
-app.post('/compile/page', handler(async (request: express.Request, response: express.Response) => {
-    return response.contentType('text/html').status(200).send(
-        await compileCommon(request, true /*wrapWithRunnerChrome*/)
-    );
+app.post('/compile/page', handler(async (req: express.Request, res: express.Response) => {
+    const response = await compileCommon(req, true /*wrapWithRunnerChrome*/);
+    return res.contentType('text/html').status(200).send(response);
 }));
 
 /**
