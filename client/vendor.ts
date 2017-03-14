@@ -6,8 +6,6 @@ import '@angular/http';
 
 // External libraries
 import '@microsoft/office-js-helpers';
-import 'js-yaml';
-
 // RxJS
 import 'rxjs/Observable';
 import 'rxjs/Subscription';

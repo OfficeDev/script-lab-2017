@@ -19,8 +19,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { rootReducer, createDefaultState } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 
-import './assets/styles/spinner.scss';
-import './assets/styles/globals.scss';
+import './assets/styles/editor.scss';
 
 @NgModule({
     imports: [
