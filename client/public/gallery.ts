@@ -14,6 +14,7 @@ import '../assets/styles/extras.scss';
 
 export class Gallery {
     private _$progress = $('#progress');
+    private _$subtitle = $('#subtitle');
     private _$gallery = $('#gallery');
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
@@ -31,11 +32,19 @@ export class Gallery {
         this._snippets.notify = () => this.render();
         settings.notify = () => this.renderLastOpened();
         this._$refresh.click(() => {
+            this.showProgress('Refreshing...');
             this._snippets.load();
             settings.reload();
             this.render();
             this.renderLastOpened();
+            this.hideProgress();
         });
+    }
+
+    showProgress(message: string) {
+        this._$subtitle.text(message);
+        this._$progress.show();
+        this._$gallery.hide();
     }
 
     hideProgress() {
@@ -85,7 +94,7 @@ export class Gallery {
          */
         if (snippet === null) {
             let lastOpened = settings.lastOpened;
-            snippet = snippet.id === lastOpened.id ? lastOpened : null;
+            snippet = id === lastOpened.id ? lastOpened : null;
         }
 
         /**
@@ -109,6 +118,7 @@ export class Gallery {
             returnUrl: location.href
         });
 
+        this.showProgress(`Running ${snippet.name}`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data });
     }
 }

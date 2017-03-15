@@ -43,12 +43,12 @@
         </a>
     </header>
 
-    <app id="progress" class="app">        
+    <app id="progress" class="app">
 		<div class="ms-progress-component">
 			<main class="ms-progress-component__main">
 				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
 				<h1 class="ms-progress-component__title ms-font-xxl">{{snippet.name}}</h1>
-				<p class="ms-progress-component__sub-title ms-font-m">Compiling...</p>
+				<p class="ms-progress-component__sub-title ms-font-m">Loading...</p>
 			</main>
 			<footer class="ms-progress-component__footer">
 				<div class="ms-progress">

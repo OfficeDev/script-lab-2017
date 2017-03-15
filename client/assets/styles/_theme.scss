@@ -112,7 +112,9 @@
             .command__text,
             .command__title {
                 color: $foreground-light;
+            }
 
+            .command__icon {
                 @include focus-states($accent-background-primary, $accent-foreground-primary);
 
                 &:hover {
