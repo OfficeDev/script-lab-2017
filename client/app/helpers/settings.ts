@@ -25,6 +25,10 @@ class Settings {
             this._settings.insert(environment.current.host, updatedSettings);
         }
     }
+
+    reload() {
+        this._settings.load();
+    }
 }
 
 export const settings = new Settings();
