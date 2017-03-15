@@ -39,7 +39,7 @@ function loadOfficeJS(url: string) {
             clearInterval(interval);
             clearTimeout(timeout);
             return reject(new Error('Failed to load Office.js'));
-        }, 3000);
+        }, 5000);
     });
 }
 
@@ -57,10 +57,10 @@ async function initializeRunner(origin: string, officeJS: string) {
         let { contentWindow } = iframe;
 
         // Set up the functions that the snippet iframe will call
-        (contentWindow as any).console = window.console;
-        contentWindow.onerror = (...args) => console.error(args);
         contentWindow.document.open();
         contentWindow.document.write($snippetContent.text());
+        (contentWindow as any).console = window.console;
+        contentWindow.onerror = (...args) => console.error(args);
         contentWindow['Office'] = await officeLoadPromise;
         contentWindow.document.close();
         $snippetContent.remove();
