@@ -1,5 +1,5 @@
 import * as $ from 'jquery';
-import { Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 let { devMode, build, config } = PLAYGROUND;
 
 class Environment {
@@ -57,8 +57,9 @@ class Environment {
         }
 
         let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
-            if (window.location.href.toLowerCase().indexOf('?mode=web') > 0) {
-                return resolve({ host: 'WEB', platform: null });
+            if (window.location.search.toLowerCase().indexOf('mode') > 0) {
+                let { mode } = Authenticator.getUrlParams(window.location.search, '', '?') as any;
+                return resolve({ host: mode.toUpperCase(), platform: null });
             }
             else {
                 let hostButtonsTimeout = setTimeout(() => {

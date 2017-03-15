@@ -40,11 +40,15 @@
     <script type="text/javascript">
         {{#if officeJS}}
         Office.initialize = function() {
-            parent.postMessage({ type: 0, message: 'Snippet' }, location.origin);
+            // Inform the playground runner that the snippet is ready (only needed inside the Playground)
+            parent.postMessage({ type: 0 /*MessageType.SNIPPET*/ }, location.origin);
+
             {{{indent script 3}}}
         };
         {{else}}
-        parent.postMessage({ type: 0, message: 'Snippet' }, location.origin);
+        // Inform the playground runner that the snippet is ready (only needed inside the Playground)
+        parent.postMessage({ type: 0 /*MessageType.SNIPPET*/ }, location.origin);
+
         {{{indent script 2}}}
         {{/if}}
     </script>
