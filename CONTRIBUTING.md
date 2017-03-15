@@ -71,7 +71,7 @@ At the root level of the repo, the folders of interest (and skipping over the ot
 * `dist`: The generated files for `client` and `server` (it has subfolders for each), which are the compiled and minified html/js/css/etc. (TODO: Add why generate and check in, and which commands generate these files)
 * `manifests`: Add-in manifests (both localhost and production) for side-loading the Add-in into Office applications.
 * `node_modules`: The folder with all the node module dependencies that get installed as part of `npm install`.
-* `server`: A stateless Node backend that receives a POST request with the snippet's HTML, TypeScript, CSS, and Libraries, and creates a web-browser-servable web page out of them.
+* `server`: A stateless Node backend that receives a POST request with the snippet's HTML, TypeScript, CSS, and Libraries, and creates a web-browser-servable web page out of them. The server makes extensive use of [Handlebars.js](http://handlebarsjs.com/) for templates, which are located in the `server/templates` directory.
 * `typings`: Type definitions for a few of the libraries.
 
 There are also files related to Azure deployment, git ignores, a Travis configuration for continuous-integration, a package.json with the project's metadata, TypeScript configuration files for client and server, a linter configuration, and etc.  And of course, the project's README.
