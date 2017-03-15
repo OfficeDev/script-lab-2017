@@ -162,6 +162,12 @@ export class SnippetEffects {
                         snippet.name = this._generateName(snippet.name, suffix);
                     }
                     return new Snippet.ImportSuccessAction(snippet);
+                })
+                .catch((exception: Error) => {
+                    return Observable.from([
+                        new UI.ReportErrorAction(Strings.snippetImportError, exception),
+                        new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
+                    ]);
                 });
         })
         .catch(exception => Observable.from([

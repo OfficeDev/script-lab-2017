@@ -70,7 +70,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.RUN: {
             AI.trackEvent(action.type, { id: action.payload.id });
-            return { ...state, running: false };
+            return { ...state, running: true };
         }
 
         case SnippetActionTypes.VIEW: {
