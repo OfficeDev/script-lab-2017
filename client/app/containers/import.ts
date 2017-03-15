@@ -74,7 +74,7 @@ import { isEmpty } from 'lodash';
                                 <li>sampleGistId</li>
                             </ol>
                         </collapse>
-                        <collapse title="Import using a snippet yaml" collapsed="false">
+                        <collapse title="Import using a snippet yaml">
                             <p class="ms-font-l import__subtitle">Paste the snippet's yaml into the text area below, and then choose the "Import" button.</p>
                             <div class="ms-TextField ms-TextField--multiline import__field">
                                 <label class="ms-Label">Snippet Yaml</label>
