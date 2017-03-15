@@ -87,12 +87,10 @@ import { isEmpty } from 'lodash';
                                     <span class="ms-Button-label">Import</span>
                                 </button>
                             </div>
-
                         </div>
                     </section>
                 </section>
             </section>
-
         </dialog>
     `
 })
