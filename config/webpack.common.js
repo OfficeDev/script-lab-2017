@@ -75,7 +75,7 @@ module.exports = {
                     minimize: false
                 }
             }
-        }),        
+        }),
         new CheckerPlugin(),
         new webpack.LoaderOptionsPlugin({
             options: {
@@ -125,8 +125,8 @@ module.exports = {
             chunks: ['polyfills', 'vendor', 'functions'],
         }),
         new HtmlWebpackPlugin({
-            filename: 'gallery.html',
-            template: './views/gallery.html',
+            filename: 'run.html',
+            template: './views/run.html',
             chunks: ['polyfills', 'vendor', 'gallery'],
         }),
         new HtmlWebpackPlugin({
