@@ -18,6 +18,7 @@ export class Gallery {
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
     private _$lastOpened = $('#last-opened');
+    private _$refresh = $('#refresh');
 
     private _snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
     private _template =
@@ -29,6 +30,12 @@ export class Gallery {
     constructor() {
         this._snippets.notify = () => this.render();
         settings.notify = () => this.renderLastOpened();
+        this._$refresh.click(() => {
+            this._snippets.load();
+            settings.reload();
+            this.render();
+            this.renderLastOpened();
+        });
     }
 
     hideProgress() {
