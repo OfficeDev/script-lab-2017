@@ -25,6 +25,7 @@ function loadOfficeJS(url: string) {
 
         const script = $(`<script type="text/javascript" src="${url}"></script>`);
         script.appendTo('head');
+        let timeout;
 
         const interval = setInterval(() => {
             if ((window as any).Office) {
@@ -34,7 +35,7 @@ function loadOfficeJS(url: string) {
             }
         }, 250);
 
-        const timeout = setTimeout(() => {
+        timeout = setTimeout(() => {
             clearInterval(interval);
             clearTimeout(timeout);
             return reject(new Error('Failed to load Office.js'));
