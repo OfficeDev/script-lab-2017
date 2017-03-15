@@ -484,7 +484,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG.Code.Url" DefaultValue="https://bornholm-edge.azurewebsites.net" />
-        <bt:Url id="PG.Run.Url" DefaultValue="https://bornholm-edge.azurewebsites.net/run" />
+        <bt:Url id="PG.Run.Url" DefaultValue="https://bornholm-edge.azurewebsites.net/run.html" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://bornholm-edge.azurewebsites.net/functions.html" />
       </bt:Urls>
       <bt:ShortStrings>
