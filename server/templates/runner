@@ -31,10 +31,6 @@
 </head>
 
 <body class="{{snippet.host}}">
-    {{#if snippet.officeJS}}
-        <script src="{{snippet.officeJS}}"></script>
-    {{/if}}
-
     <header id="header" class="command__bar">
         {{#if includeBackButton}}
         <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
@@ -77,7 +73,7 @@
     <script src="{{snippet.origin}}/vendor.bundle.js"></script>
     <script src="{{snippet.origin}}/runner.bundle.js"></script>
     <script type="text/javascript">
-        window.initializeRunner('{{{snippet.origin}}}');
+        window.initializeRunner('{{{snippet.origin}}}', '{{{snippet.officeJS}}}');
     </script>
 </body>
 
