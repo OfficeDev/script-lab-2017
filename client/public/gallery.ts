@@ -45,7 +45,7 @@ export class Gallery {
 
     renderLastOpened() {
         this._$lastOpened.html('');
-        if (settings.current && settings.current.lastOpened) {
+        if (settings.lastOpened) {
             this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
             this._$lastOpened.show();
         }
@@ -78,7 +78,15 @@ export class Gallery {
     }
 
     private _navigate(id: string) {
-        const snippet = this._snippets.get(id);
+        let snippet = this._snippets.get(id);
+
+        /**
+         * Check if the clicked snippet is the lastOpened
+         */
+        if (snippet === null) {
+            let lastOpened = settings.lastOpened;
+            snippet = snippet.id === lastOpened.id ? lastOpened : null;
+        }
 
         /**
          * If the snippet was deleted or was corrupt,

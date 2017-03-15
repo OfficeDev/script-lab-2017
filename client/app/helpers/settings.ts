@@ -12,6 +12,10 @@ class Settings {
         this._settings.notify = value;
     }
 
+    get lastOpened() {
+        return this.current && this.current.lastOpened;
+    }
+
     get current() {
         if (environment.current && environment.current.host) {
             return this._settings.get(environment.current.host);
