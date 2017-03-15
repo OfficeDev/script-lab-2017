@@ -77,30 +77,6 @@
                   </Action>
                 </Control>
               </Group>
-              <Group id="PG.GalleryGroup">
-                <Label resid="PG.GalleryGroupLabel" />
-                <Icon>
-                  <bt:Image size="16" resid="PG.Icon.16" />
-                  <bt:Image size="32" resid="PG.Icon.32" />
-                  <bt:Image size="80" resid="PG.Icon.80" />
-                </Icon>
-                <Control xsi:type="Button" id="PG.GalleryCommand">
-                  <Label resid="PG.GalleryCommand.Label" />
-                  <Supertip>
-                    <Title resid="PG.GalleryCommand.TipTitle" />
-                    <Description resid="PG.GalleryCommand.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Gallery.16" />
-                    <bt:Image size="32" resid="PG.Icon.Gallery.32" />
-                    <bt:Image size="80" resid="PG.Icon.Gallery.80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="PG.Gallery.Url" />
-                    <Title resid="PG.GalleryCommand.Title" />
-                  </Action>
-                </Control>
-              </Group>
               <Group id="PG.AboutGroup">
                 <Label resid="PG.AboutGroupLabel" />
                 <Icon>
@@ -239,30 +215,6 @@
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG.Run.Url" />
                     <Title resid="PG.RunCommand.Title" />
-                  </Action>
-                </Control>
-              </Group>
-              <Group id="PG.GalleryGroup">
-                <Label resid="PG.GalleryGroupLabel" />
-                <Icon>
-                  <bt:Image size="16" resid="PG.Icon.16" />
-                  <bt:Image size="32" resid="PG.Icon.32" />
-                  <bt:Image size="80" resid="PG.Icon.80" />
-                </Icon>
-                <Control xsi:type="Button" id="PG.GalleryCommand">
-                  <Label resid="PG.GalleryCommand.Label" />
-                  <Supertip>
-                    <Title resid="PG.GalleryCommand.TipTitle" />
-                    <Description resid="PG.GalleryCommand.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Gallery.16" />
-                    <bt:Image size="32" resid="PG.Icon.Gallery.32" />
-                    <bt:Image size="80" resid="PG.Icon.Gallery.80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="PG.Gallery.Url" />
-                    <Title resid="PG.GalleryCommand.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -407,30 +359,6 @@
                   </Action>
                 </Control>
               </Group>
-              <Group id="PG.GalleryGroup">
-                <Label resid="PG.GalleryGroupLabel" />
-                <Icon>
-                  <bt:Image size="16" resid="PG.Icon.16" />
-                  <bt:Image size="32" resid="PG.Icon.32" />
-                  <bt:Image size="80" resid="PG.Icon.80" />
-                </Icon>
-                <Control xsi:type="Button" id="PG.GalleryCommand">
-                  <Label resid="PG.GalleryCommand.Label" />
-                  <Supertip>
-                    <Title resid="PG.GalleryCommand.TipTitle" />
-                    <Description resid="PG.GalleryCommand.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Gallery.16" />
-                    <bt:Image size="32" resid="PG.Icon.Gallery.32" />
-                    <bt:Image size="80" resid="PG.Icon.Gallery.80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="PG.Gallery.Url" />
-                    <Title resid="PG.GalleryCommand.Title" />
-                  </Action>
-                </Control>
-              </Group>
               <Group id="PG.AboutGroup">
                 <Label resid="PG.AboutGroupLabel" />
                 <Icon>
@@ -538,9 +466,6 @@
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://localhost:3000/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://localhost:3000/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://localhost:3000/assets/images/run-80.png" />
-        <bt:Image id="PG.Icon.Gallery.16" DefaultValue="https://localhost:3000/assets/images/run-16.png" />
-        <bt:Image id="PG.Icon.Gallery.32" DefaultValue="https://localhost:3000/assets/images/run-32.png" />
-        <bt:Image id="PG.Icon.Gallery.80" DefaultValue="https://localhost:3000/assets/images/run-80.png" />
         <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://localhost:3000/assets/images/icon-tutorial-16.png" />
         <bt:Image id="PG.Icon.Tutorial.32" DefaultValue="https://localhost:3000/assets/images/icon-tutorial-32.png" />
         <bt:Image id="PG.Icon.Tutorial.80" DefaultValue="https://localhost:3000/assets/images/icon-tutorial-80.png" />
@@ -559,14 +484,12 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG.Code.Url" DefaultValue="https://localhost:3000" />
-        <bt:Url id="PG.Run.Url" DefaultValue="https://localhost:3200/run" />
-        <bt:Url id="PG.Gallery.Url" DefaultValue="https://localhost:3000/gallery.html" />
+        <bt:Url id="PG.Run.Url" DefaultValue="https://localhost:3000/run" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://localhost:3000/functions.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="[DEV] Add-in Playground" />
         <bt:String id="PG.GroupLabel" DefaultValue="Play" />
-        <bt:String id="PG.GalleryGroupLabel" DefaultValue="Browse" />
         <bt:String id="PG.AboutGroupLabel" DefaultValue="About the Playground" />
         <bt:String id="PG.ApiGroupLabel" DefaultValue="APIs" />
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
@@ -575,9 +498,6 @@
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run currently-editing snippet" />
-        <bt:String id="PG.GalleryCommand.Label" DefaultValue="My Snippets" />
-        <bt:String id="PG.GalleryCommand.Title" DefaultValue="My Snippets" />
-        <bt:String id="PG.GalleryCommand.TipTitle" DefaultValue="Run a previously-created snippet" />
         <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
         <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Playground tutorial" />
         <bt:String id="PG.UsingCommand.Label" DefaultValue="Help" />
@@ -592,7 +512,6 @@
       <bt:LongStrings>
         <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Add-in Playground code editor." />
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a taskpane that runs the currently-edited snippet." />
-        <bt:String id="PG.GalleryCommand.Desc" DefaultValue="Opens a gallery view of snippets authored by you." />
         <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick playground tutorial." />
         <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using the Playground." />
         <bt:String id="PG.FeedbackCommand.Desc" DefaultValue="Opens a web page where you can file issues or suggestions." />
