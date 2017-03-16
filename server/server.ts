@@ -10,8 +10,8 @@ import { Utilities } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
-let { config } = require('./core/env.config.js');
-
+const { config } = require('./core/env.config.js');
+const currentConfig = config[process.env.PG_ENV || 'local'] as IEnvironmentConfig;
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
 app.use(bodyParser.json());
@@ -26,7 +26,7 @@ app.use(serverStatic(path.resolve(__dirname, 'favicon')));
  */
 app.get('/', handler((req: express.Request, res: express.Response) => {
     res.writeHead(302, {
-        'Location': 'https://dev.office.com'
+        'Location': currentConfig.editorUrl
     });
     return res.send();
 }));
