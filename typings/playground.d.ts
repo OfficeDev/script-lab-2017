@@ -46,6 +46,9 @@ interface IRunnerHandlebarsContext {
     includeBackButton: boolean;
     refreshUrl: string;
     returnUrl: string;
+    editorUrl: string;
+    initialHostClassIfAny: string,
+    initialLoadSubtitle: string;
 }
 
 interface IRunnerState {

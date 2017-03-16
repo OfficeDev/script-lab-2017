@@ -3,11 +3,10 @@
 
 <head>
     <base href="/">
-    <title>{{snippet.name}}</title>
+    <title>Run snippet</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="{{snippet.author}}" />
 
     <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
@@ -24,13 +23,13 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="favicon/favicon.ico" />
     <link rel="manifest" href="favicon/manifest.json">
-    <link rel="stylesheet" href="{{snippet.origin}}/libs/office-ui-fabric-js/css/fabric.min.css" />
-    <link rel="stylesheet" href="{{snippet.origin}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
-    <link rel="stylesheet" href="{{snippet.origin}}/polyfills.bundle.css" />
-    <link rel="stylesheet" href="{{snippet.origin}}/runner.bundle.css" />
+    <link rel="stylesheet" href="{{{editorUrl}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{editorUrl}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{editorUrl}}}/polyfills.bundle.css" />
+    <link rel="stylesheet" href="{{{editorUrl}}}/runner.bundle.css" />
 </head>
 
-<body class="{{snippet.host}}">
+<body class="{{{initialHostClassIfAny}}}">
     <header id="header" class="command__bar">
         {{#if includeBackButton}}
         <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
@@ -44,36 +43,36 @@
     </header>
 
     <app id="progress" class="app">
-		<div class="ms-progress-component">
-			<main class="ms-progress-component__main">
-				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
-				<h1 class="ms-progress-component__title ms-font-xxl">{{snippet.name}}</h1>
-				<p class="ms-progress-component__sub-title ms-font-m">Loading...</p>
-			</main>
-			<footer class="ms-progress-component__footer">
-				<div class="ms-progress">
-					<div class="cs-loader">
-						<div class="cs-loader-inner">
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-							<label>	●</label>
-						</div>
-					</div>
-				</div>
-			</footer>
-		</div>
-	</app>
+        <div class="ms-progress-component">
+            <main class="ms-progress-component__main">
+                <img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
+                <h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
+                <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
+            </main>
+            <footer class="ms-progress-component__footer">
+                <div class="ms-progress">
+                    <div class="cs-loader">
+                        <div class="cs-loader-inner">
+                            <label>	●</label>
+                            <label>	●</label>
+                            <label>	●</label>
+                            <label>	●</label>
+                            <label>	●</label>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </app>
 
     <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
     <iframe id="snippet-container" src="about:blank"></iframe>
 
-    <script src="{{snippet.origin}}/polyfills.bundle.js"></script>
-    <script src="{{snippet.origin}}/vendor.bundle.js"></script>
-    <script src="{{snippet.origin}}/runner.bundle.js"></script>
+    <script src="{{{editorUrl}}}/polyfills.bundle.js"></script>
+    <script src="{{{editorUrl}}}/vendor.bundle.js"></script>
+    <script src="{{{editorUrl}}}/runner.bundle.js"></script>
     <script type="text/javascript">
-        window.initializeRunner('{{{snippet.origin}}}', '{{{snippet.officeJS}}}');
+        window.initializeRunner('{{{editorUrl}}}', '{{{snippet.officeJS}}}');
     </script>
 </body>
 

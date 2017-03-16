@@ -136,6 +136,24 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
     let html = snippetHtml(compiledSnippet);
 
     if (wrapWithRunnerChrome) {
+        html = runnerHtml({
+            snippetContent: html,
+            snippet: compiledSnippet,
+            includeBackButton: wrapWithRunnerChrome != null,
+            refreshUrl: generateRefreshUrl(),
+            returnUrl: returnUrl,
+            editorUrl: snippet.origin,
+            initialHostClassIfAny: snippet.host,
+            initialLoadSubtitle: `Loading "${snippet.name}"` //'Code ● Run ● Share'
+        });
+    }
+
+    return Utilities.replaceAllTabsWithSpaces(html);
+
+
+    // Helpers
+
+    function generateRefreshUrl() {
         // Parameters needed for refresh:
         // * id, to find the snippet.
         // * host, to know which host container to find the snippet in.
@@ -146,12 +164,7 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
             returnUrl: returnUrl
         };
 
-        html = runnerHtml({
-            snippetContent: html,
-            snippet: compiledSnippet,
-            includeBackButton: wrapWithRunnerChrome != null,
-            refreshUrl:
-            `${snippet.origin}/refresh.html?${
+        return `${snippet.origin}/refresh.html?${
             (() => {
                 const result = [];
                 for (const key in refreshParams) {
@@ -160,10 +173,6 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
                     }
                 }
                 return result.join('&');
-            })()}`,
-            returnUrl: returnUrl
-        });
+            })()}`;
     }
-
-    return Utilities.replaceAllTabsWithSpaces(html);
 }
