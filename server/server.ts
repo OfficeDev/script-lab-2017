@@ -10,7 +10,7 @@ import { Utilities } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
-const { config } = require('./core/env.config.js');
+const { config, secrets } = require('./core/env.config.js');
 const currentConfig = config[process.env.PG_ENV || 'local'] as IEnvironmentConfig;
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
@@ -43,7 +43,7 @@ app.get('/run', handler((req: express.Request, res: express.Response) => {
  * HTTP POST: /auth
  * Returns the access_token
  */
-app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Response) => {
+app.post('/auth/:env', handler(async (req: express.Request, res: express.Response) => {
     let { code, state } = req.body;
     let { env } = req.params;
 
@@ -65,7 +65,7 @@ app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Res
             },
             json: {
                 client_id: clientId,
-                // client_secret: clientSecret,
+                client_secret: secrets[env],
                 redirect_uri: editorUrl,
                 code,
                 state

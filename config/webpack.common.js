@@ -123,7 +123,12 @@ module.exports = {
                     }
 
                     const secrets = GH_SECRETS.split(',');
-                    const data = `\nexports.secrets = ${JSON.stringify(secrets)};`;
+                    let mappedSecrets = {};
+                    ['local', 'edge', 'insiders', 'production', 'cdn'].forEach((value, index) => {
+                        mappedSecrets[value] = secrets[index];
+                    });
+
+                    const data = `\nexports.secrets = ${JSON.stringify(mappedSecrets)};`;
                     return content + data;
                 }
             },
