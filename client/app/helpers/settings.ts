@@ -1,15 +1,33 @@
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { environment } from './environment';
+import { Observable } from 'rxjs/Observable';
 
 class Settings {
     private _settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
+    private _snippets = null;
 
-    get notify() {
-        return this._settings.notify;
+    onSettingsChanged() {
+        return new Observable<void>((observer) => {
+            this._settings.notify(() => observer.next());
+        });
     }
 
-    set notify(value: (event?: StorageEvent) => void) {
-        this._settings.notify = value;
+    onSnippetsChanged() {
+        return new Observable<void>((observer) => {
+            if (!(this._snippets == null)) {
+                this._snippets.notify(() => observer.next());
+            }
+            return () => {
+                /* no tear down */
+            };
+        });
+    }
+
+    get snippets() {
+        if (this._snippets == null && environment.current && environment.current.host) {
+            this._snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
+        }
+        return this._snippets;
     }
 
     get lastOpened() {
@@ -32,6 +50,7 @@ class Settings {
 
     reload() {
         this._settings.load();
+        this._snippets.load();
     }
 }
 
