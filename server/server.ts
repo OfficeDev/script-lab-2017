@@ -11,7 +11,7 @@ import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
 const { config } = require('./core/env.config.js');
-const currentConfig = config[process.env.PG_ENV || 'local'] as IEnvironmentConfig;
+//const currentConfig = config[process.env.PG_ENV || 'local'] as IEnvironmentConfig;
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
 app.use(bodyParser.json());
@@ -19,17 +19,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(serverStatic(path.resolve(__dirname, 'favicon')));
 
-/**
- * HTTP GET: /
- * Redirect to a non-error page (there is nothing to do on the root page of the runner,
- * nor do we know the environment in order to redirect to the editor)
- */
-app.get('/', handler((req: express.Request, res: express.Response) => {
-    res.writeHead(302, {
-        'Location': currentConfig.editorUrl
-    });
-    return res.send();
-}));
+// /**
+//  * HTTP GET: /
+//  * Redirect to a non-error page (there is nothing to do on the root page of the runner,
+//  * nor do we know the environment in order to redirect to the editor)
+//  */
+// app.get('/', handler((req: express.Request, res: express.Response) => {
+//     res.writeHead(302, {
+//         'Location': currentConfig.editorUrl
+//     });
+//     return res.send();
+// }));
 
 /**
  * HTTP GET: /run
