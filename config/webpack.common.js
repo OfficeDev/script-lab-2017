@@ -6,6 +6,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var { CheckerPlugin } = require('awesome-typescript-loader');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
+var { GH_SECRETS } = process.env;
 
 module.exports = {
     context: path.resolve('./client'),
@@ -112,6 +113,19 @@ module.exports = {
             {
                 from: '../node_modules/office-ui-fabric-js/dist/js',
                 to: './libs/office-ui-fabric-js/js'
+            },
+            {
+                from: '../config/env.config.js',
+                to: '../server/core/env.config.js',
+                transform: (content, path) => {
+                    if (GH_SECRETS == null) {
+                        return content;
+                    }
+
+                    const secrets = GH_SECRETS.split(',');
+                    const data = `\nexports.secrets = ${JSON.stringify(secrets)};`;
+                    return content + data;
+                }
             },
         ]),
         new HtmlWebpackPlugin({
