@@ -27,6 +27,10 @@
     <link rel="stylesheet" href="{{{editorUrl}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{editorUrl}}}/polyfills.bundle.css" />
     <link rel="stylesheet" href="{{{editorUrl}}}/runner.bundle.css" />
+    {{#if snippet.officeJS}}
+
+    <script src="{{{snippet.officeJS}}}"></script>
+    {{/if}}
 </head>
 
 <body class="{{{initialHostClassIfAny}}}">
@@ -65,12 +69,19 @@
         </div>
     </app>
 
+    <div id="error" class="fullscreen" style="display:none">
+        <h1 class="title ms-font-xxl">Error</h1>
+        <p class="subtitle ms-font-m"></p>
+    </div>
+
     <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
-    <iframe id="snippet-container" src="about:blank"></iframe>
+
+    <iframe id="snippet-container" class="fullscreen" style="display:none" src="about:blank"></iframe>
 
     <script src="{{{editorUrl}}}/polyfills.bundle.js"></script>
     <script src="{{{editorUrl}}}/vendor.bundle.js"></script>
     <script src="{{{editorUrl}}}/runner.bundle.js"></script>
+
     <script type="text/javascript">
         window.initializeRunner('{{{editorUrl}}}', '{{{snippet.officeJS}}}');
     </script>

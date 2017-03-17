@@ -31,8 +31,5 @@ export class Messenger {
 }
 
 export enum MessageType {
-    SNIPPET,
-    NEEDS_RELOAD,
-    RELOAD,
-    ERROR
+    // TODO
 };
