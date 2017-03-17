@@ -60,3 +60,5 @@ node_modules/**
 packages/**
 typings/**
 dist/**
+
+npm-debug.log.*

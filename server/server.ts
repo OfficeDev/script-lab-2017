@@ -106,7 +106,7 @@ app.use((err, req, res, next) => {
 });
 
 if (process.env.NODE_ENV === 'production') {
-    app.listen(process.env.port || 1337, () => console.log(`Add-in Playground Runner listening on port ${process.env.PORT}`));
+    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
 }
 else {
     const cert = {
