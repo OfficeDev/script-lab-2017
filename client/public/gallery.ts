@@ -87,6 +87,10 @@ export class Gallery {
     }
 
     private _navigate(id: string) {
+        // Refresh the snippets and settings, in case there was a code change to one of the snippets.
+        this._snippets.load();
+        settings.reload();
+
         let snippet = this._snippets.get(id);
 
         /**

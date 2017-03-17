@@ -52,7 +52,7 @@ module.exports = webpackMerge(commonConfig, {
         quiet: true,
         stats: {
             // Add asset Information
-            assets: false,
+            assets: true,
             // Add information about cached (not built) modules
             cached: false,
             // Add children information
