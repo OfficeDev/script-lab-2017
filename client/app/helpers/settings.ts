@@ -2,14 +2,15 @@ import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { environment } from './environment';
 
 class Settings {
-    private _settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
+    private _snippets: Storage<ISnippet> = null;
 
-    get notify() {
-        return this._settings.notify;
-    }
+    settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
 
-    set notify(value: (event?: StorageEvent) => void) {
-        this._settings.notify = value;
+    get snippets() {
+        if (this._snippets == null && environment.current && environment.current.host) {
+            this._snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
+        }
+        return this._snippets;
     }
 
     get lastOpened() {
@@ -18,7 +19,7 @@ class Settings {
 
     get current() {
         if (environment.current && environment.current.host) {
-            return this._settings.get(environment.current.host);
+            return this.settings.get(environment.current.host);
         }
         return null;
     }
@@ -26,12 +27,8 @@ class Settings {
     set current(value: ISettings) {
         if (environment.current && environment.current.host) {
             let updatedSettings = { ...this.current, ...value };
-            this._settings.insert(environment.current.host, updatedSettings);
+            this.settings.insert(environment.current.host, updatedSettings);
         }
-    }
-
-    reload() {
-        this._settings.load();
     }
 }
 

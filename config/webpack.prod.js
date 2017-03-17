@@ -23,7 +23,7 @@ module.exports = webpackMerge(commonConfig, {
 
     stats: {
         // Add asset Information
-        assets: false,
+        assets: true,
         // Add information about cached (not built) modules
         cached: false,
         // Add children information

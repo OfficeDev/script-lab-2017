@@ -10,8 +10,7 @@ import { Utilities } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
-const { config } = require('./core/env.config.js');
-const currentConfig = config[process.env.PG_ENV || 'local'] as IEnvironmentConfig;
+const { config, secrets } = require('./core/env.config.js');
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
 app.use(bodyParser.json());
@@ -19,17 +18,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(serverStatic(path.resolve(__dirname, 'favicon')));
 
-/**
- * HTTP GET: /
- * Redirect to a non-error page (there is nothing to do on the root page of the runner,
- * nor do we know the environment in order to redirect to the editor)
- */
-app.get('/', handler((req: express.Request, res: express.Response) => {
-    res.writeHead(302, {
-        'Location': currentConfig.editorUrl
-    });
-    return res.send();
-}));
+// /**
+//  * HTTP GET: /
+//  * Redirect to a non-error page (there is nothing to do on the root page of the runner,
+//  * nor do we know the environment in order to redirect to the editor)
+//  */
+// app.get('/', handler((req: express.Request, res: express.Response) => {
+//     res.writeHead(302, {
+//         'Location': currentConfig.editorUrl
+//     });
+//     return res.send();
+// }));
+
+
 
 /**
  * HTTP GET: /run
@@ -43,7 +44,7 @@ app.get('/run', handler((req: express.Request, res: express.Response) => {
  * HTTP POST: /auth
  * Returns the access_token
  */
-app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Response) => {
+app.post('/auth/:env', handler(async (req: express.Request, res: express.Response) => {
     let { code, state } = req.body;
     let { env } = req.params;
 
@@ -65,7 +66,7 @@ app.post('/auth/:env/:id', handler(async (req: express.Request, res: express.Res
             },
             json: {
                 client_id: clientId,
-                // client_secret: clientSecret,
+                client_secret: secrets[env],
                 redirect_uri: editorUrl,
                 code,
                 state
@@ -105,7 +106,7 @@ app.use((err, req, res, next) => {
 });
 
 if (process.env.NODE_ENV === 'production') {
-    app.listen(process.env.port || 1337, () => console.log(`Add-in Playground Runner listening on port ${process.env.PORT}`));
+    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
 }
 else {
     const cert = {

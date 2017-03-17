@@ -1,6 +1,5 @@
 import * as $ from 'jquery';
 import { settings, environment, applyTheme, post } from '../app/helpers';
-import { Storage } from '@microsoft/office-js-helpers';
 import '../assets/styles/extras.scss';
 
 (async () => {
@@ -19,9 +18,9 @@ export class Gallery {
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
     private _$lastOpened = $('#last-opened');
+    private _$lastOpenedEmpty = $('#last-opened-empty');
     private _$refresh = $('#refresh');
 
-    private _snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
     private _template =
     `<article class="gallery-list__item gallery-list__item--template ms-font-m">
         <div class="name">{{name}}</div>
@@ -29,12 +28,11 @@ export class Gallery {
     </article>`;
 
     constructor() {
-        this._snippets.notify = () => this.render();
-        settings.notify = () => this.renderLastOpened();
+        settings.settings.notify().subscribe(next => this.renderLastOpened());
+
+        settings.snippets.notify().subscribe(next => this.render());
+
         this._$refresh.click(() => {
-            this.showProgress('Refreshing...');
-            this._snippets.load();
-            settings.reload();
             this.render();
             this.renderLastOpened();
             this.hideProgress();
@@ -57,17 +55,20 @@ export class Gallery {
         if (settings.lastOpened) {
             this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
             this._$lastOpened.show();
+            this._$lastOpenedEmpty.hide();
         }
         else {
             this._$lastOpened.hide();
+            this._$lastOpenedEmpty.show();
         }
     }
 
     render() {
+        console.log('Refreshing snippets');
         this._$snippetList.html('');
-        if (this._snippets.count) {
+        if (settings.snippets.count) {
             this._$noSnippets.hide();
-            this._snippets.values().forEach(snippet => this.insertSnippet(snippet, this._$snippetList));
+            settings.snippets.values().forEach(snippet => this.insertSnippet(snippet, this._$snippetList));
             this._$snippetList.show();
         }
         else {
@@ -87,7 +88,8 @@ export class Gallery {
     }
 
     private _navigate(id: string) {
-        let snippet = this._snippets.get(id);
+        // Refresh the snippets and settings, in case there was a code change to one of the snippets.
+        let snippet = settings.snippets.get(id);
 
         /**
          * Check if the clicked snippet is the lastOpened
@@ -102,7 +104,6 @@ export class Gallery {
          * then just reload to clear cache.
          */
         if (snippet === null) {
-            this._snippets.load();
             this.render();
         }
 

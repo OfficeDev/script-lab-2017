@@ -32,14 +32,18 @@ import '../assets/styles/extras.scss';
     }
 
     const data = JSON.stringify({ snippet });
-    post(runnerUrl + '/compile/page', { data });
+
+    showError(data);
+    (document.querySelector('#subtitle') as any).onclick = () =>
+        post(runnerUrl + '/compile/page', { data });
+
 
     // Helpers
     function showError(message: string, returnUrl?: string): void {
         const subtitle = document.querySelector('#subtitle') as HTMLElement;
         const progress = document.querySelector('#progress-dots') as HTMLElement;
         const text = returnUrl ? 'Returning...' : 'Please close this window and try again.';
-        subtitle.innerHTML = `${message} ${text}`;
+        subtitle.innerText = `${message} ${text}`;
 
         if (returnUrl) {
             setTimeout(() => window.location.replace(returnUrl), 2500);

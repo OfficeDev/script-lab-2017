@@ -23,7 +23,7 @@
  * NOTE: This file contains a number of small modifications, relative
  * to the original file found on http://getfirebug.com/firebuglite
  * The modifications were necessary to make it work in the
- * Add-in Playground scenario. They are marked with
+ * Project Bornholm scenario. They are marked with
  * "[BEGIN PLAYGROUND MODIFICATION]" and "[BEGIN PLAYGROUND MODIFICATION]"
  */
 

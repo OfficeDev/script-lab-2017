@@ -56,7 +56,7 @@ async function initializeRunner(origin: string, officeJS: string) {
         const messenger = new Messenger(location.origin);
         let { contentWindow } = iframe;
 
-        // Set up the functions that the snippet iframe will call
+        // Write to the iframe (and note that must write first, before setting any window properties)
         contentWindow.document.open();
         contentWindow.document.write($snippetContent.text());
         (contentWindow as any).console = window.console;

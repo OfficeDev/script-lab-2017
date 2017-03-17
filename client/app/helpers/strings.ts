@@ -1,5 +1,5 @@
 export class Strings {
-    static readonly PlaygroundName = 'Add-in Playground';
+    static readonly PlaygroundName = 'Project Bornholm';
 
     static readonly run = 'Run';
     static readonly share = 'Share';

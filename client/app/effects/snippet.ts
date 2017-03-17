@@ -114,9 +114,9 @@ export class SnippetEffects {
             return observable
                 .filter(snippet => !(snippet == null))
                 .map(snippet => {
-                    if (snippet.host && snippet.host !== environment.current.host) {
-                        throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
-                    }
+                    // if (snippet.host && snippet.host !== environment.current.host) {
+                    //     throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
+                    // }
 
                     if (snippet.api_set == null || environment.current.host === HostType.WEB) {
                         return snippet;

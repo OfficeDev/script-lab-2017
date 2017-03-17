@@ -16,12 +16,15 @@
     }
 
     &__title {
+        width: calc(100% - 30px) !important;
         text-align: center;
         padding: 0 $default-spacing;
         color: #666;
     }
 
      &__sub-title {
+        width: calc(100% - 30px) !important;
+        word-break: break-word;
         text-align: center;
         padding: $default-spacing;
         color: #999;
