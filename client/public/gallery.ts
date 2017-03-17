@@ -18,6 +18,7 @@ export class Gallery {
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
     private _$lastOpened = $('#last-opened');
+    private _$lastOpenedEmpty = $('#last-opened-empty');
     private _$refresh = $('#refresh');
 
     private _template =
@@ -27,15 +28,14 @@ export class Gallery {
     </article>`;
 
     constructor() {
-        settings.onSnippetsChanged().subscribe(next => this.render());
-        settings.onSettingsChanged().subscribe(next => {
-            this._$refresh.click(() => {
-                this.showProgress('Refreshing...');
-                settings.reload();
-                this.render();
-                this.renderLastOpened();
-                this.hideProgress();
-            });
+        settings.settings.notify().subscribe(next => this.renderLastOpened());
+
+        settings.snippets.notify().subscribe(next => this.render());
+
+        this._$refresh.click(() => {
+            this.render();
+            this.renderLastOpened();
+            this.hideProgress();
         });
     }
 
@@ -55,13 +55,16 @@ export class Gallery {
         if (settings.lastOpened) {
             this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
             this._$lastOpened.show();
+            this._$lastOpenedEmpty.hide();
         }
         else {
             this._$lastOpened.hide();
+            this._$lastOpenedEmpty.show();
         }
     }
 
     render() {
+        console.log('Refreshing snippets');
         this._$snippetList.html('');
         if (settings.snippets.count) {
             this._$noSnippets.hide();

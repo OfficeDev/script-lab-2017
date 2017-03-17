@@ -62,21 +62,24 @@
 			</div>
 		</div>
 		<section id="gallery">
-			<header id="header" class="command__bar">
+			<!--<header id="header" class="command__bar">
 				<div id="refresh" class="command__icon command__center ms-u-slideLeftIn10">
 					<i class="ms-Icon ms-Icon--Refresh"></i>
 					<span class="ms-font-m ms-u-slideLeftIn10">Refresh</span>
 				</div>
-			</header>
+			</header>-->
 			<section class="gallery__section">
 				<section class="gallery-list">
-					<div class="command__bar command--light">
+					<div id="last-opened-header" class="command__bar command--light">
 						<div class="command__title ms-u-slideLeftIn10">
 							<span class="ms-font-m ms-u-slideLeftIn10">Last opened snippet</span>
 						</div>
 					</div>
 					<section id="last-opened" class="gallery-list__group ms-u-slideUpIn10">
 					</section>
+					<div id="last-opened-empty" class="gallery-list__message ms-font-m ms-u-slideUpIn10">
+						You have no last opened snippet. To get started, create or import a snippet via the 'Code' button.
+					</div>
 					<div class="command__bar command--light">
 						<div class="command__title ms-u-slideLeftIn10">
 							<span class="ms-font-m ms-u-slideLeftIn10">My saved snippets</span>
@@ -85,7 +88,7 @@
 					<section id="snippet-list" class="gallery-list__group ms-u-slideUpIn10">
 					</section>
 					<div id="snippet-list-empty" class="gallery-list__message ms-font-m ms-u-slideUpIn10">
-						You have no local snippets. To get started, create or import a snippet in the editor taskpane first.
+						You have no local snippets. To get started, create or import a snippet via the 'Code' button.
 					</div>
 				</section>
 			</section>
