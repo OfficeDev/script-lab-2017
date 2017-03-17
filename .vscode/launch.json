@@ -5,18 +5,42 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach",
+            "name": "Launch server.js via nodemon",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "nodemon",
+            "runtimeArgs": [
+                "--debug=5858"
+            ],
+            "program": "${workspaceRoot}/dist/server/server.js",
+            "outFiles": [
+                "${workspaceRoot}/dist/server/**/*.js"
+            ],
+            "sourceMaps": true,
+            "restart": true,
+            "port": 5858,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "windows": {
+                "program": "${workspaceRoot}\\dist\\server\\server.js",
+                "outFiles": [
+                    "${workspaceRoot}\\dist\\server\\**\\*.js"
+                ],
+            }
+        },
+        {
             "type": "node",
             "request": "attach",
-            "port": 5858,
-            "address": "localhost",
-            "restart": true,
+            "name": "Attach (Inspector Protocol)",
+            "port": 9229,
+            "protocol": "inspector",
             "sourceMaps": true,
+            "restart": true,
             "outFiles": [
-                "${workspaceRoot}/dist/**/*.js"
+                "${workspaceRoot}/dist/server/**/*.js"
             ],
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
+            "localRoot": "${workspaceRoot}/server"
         }
     ]
 }

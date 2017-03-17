@@ -1,23 +1,26 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "removeComments": false,
-    "noImplicitAny": false,
-    "noEmitOnError": true,
-    "rootDir": "src",
-    "outDir": "dist",
-    "allowUnusedLabels": false,
-    "noImplicitReturns": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "lib": [
-      "dom",
-      "es2015"
-    ]
-  }
+    "compilerOptions": {
+        "target": "es5",
+        "module": "es2015",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "removeComments": false,
+        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "outDir": "dist",
+        "allowUnusedLabels": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "pretty": true,
+        "rootDirs": [
+            "client",
+            "server"
+        ]
+    }
 }

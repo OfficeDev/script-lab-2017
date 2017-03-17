@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+    <title>{{snippet.name}}</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="{{snippet.author}}" />
+
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="favicon/favicon.ico" />
+    <link rel="manifest" href="favicon/manifest.json">
+    <link rel="stylesheet" href="{{snippet.origin}}/libs/office-ui-fabric-js/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{snippet.origin}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{snippet.origin}}/polyfills.bundle.css" />
+    <link rel="stylesheet" href="{{snippet.origin}}/runner.bundle.css" />
+</head>
+
+<body class="{{snippet.host}}">
+    <header id="header" class="command__bar">
+        {{#if includeBackButton}}
+        <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
+            <i class="ms-Icon ms-Icon--Back"></i>
+        </a>
+        {{/if}}
+        <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
+            <i class="ms-Icon ms-Icon--Refresh"></i>
+            <span class="ms-font-m ms-u-slideLeftIn10">{{snippet.name}}</span>
+        </a>
+    </header>
+
+    <app id="progress" class="app">
+		<div class="ms-progress-component">
+			<main class="ms-progress-component__main">
+				<img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
+				<h1 class="ms-progress-component__title ms-font-xxl">{{snippet.name}}</h1>
+				<p class="ms-progress-component__sub-title ms-font-m">Loading...</p>
+			</main>
+			<footer class="ms-progress-component__footer">
+				<div class="ms-progress">
+					<div class="cs-loader">
+						<div class="cs-loader-inner">
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+							<label>	●</label>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</app>
+
+    <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
+    <iframe id="snippet-container" src="about:blank"></iframe>
+
+    <script src="{{snippet.origin}}/polyfills.bundle.js"></script>
+    <script src="{{snippet.origin}}/vendor.bundle.js"></script>
+    <script src="{{snippet.origin}}/runner.bundle.js"></script>
+    <script type="text/javascript">
+        window.initializeRunner('{{{snippet.origin}}}', '{{{snippet.officeJS}}}');
+    </script>
+</body>
+
+</html>

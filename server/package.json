@@ -1,0 +1,36 @@
+{
+    "name": "addin-playground-runner",
+    "description": "Code, run and share your Add-in snippets directly from Office.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/officedev/addin-playground"
+    },
+    "engines": {
+        "node": ">=6.9.4"
+    },
+    "keywords": [
+        "Office",
+        "Add-in",
+        "API",
+        "Playground"
+    ],
+    "author": "Microsoft",
+    "bugs": {
+        "url": "https://github.com/officedev/addin-playground/issues"
+    },
+    "homepage": "https://github.com/officedev/addin-playground#readme",
+    "version": "1.0.0",
+    "license": "MIT",
+    "dependencies": {
+        "js-yaml": "3.8.2",
+        "typescript": "2.2.1",
+        "request": "2.80.0",
+        "cors": "2.8.1",
+        "lodash": "4.17.4",
+        "body-parser": "1.17.1",
+        "handlebars": "4.0.6",
+        "express": "4.15.2",
+        "uuid": "3.0.1",
+        "applicationinsights": "0.18.0"
+    }
+}

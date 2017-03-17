@@ -2,6 +2,11 @@
 [![Build Status](https://travis-ci.com/OfficeDev/addin-playground.svg?token=zKp5xy2SuSortMzv5Pqc&branch=insiders)](https://travis-ci.com/OfficeDev/addin-playground)
 [![INSIDERS](https://img.shields.io/badge/INSIDERS-bornholm-yellowgreen.svg)](https://bornholm.azurewebsites.net)
 
+
+## Contributing code changes or samples:
+
+To contribute to either the Playground itself, or to sample code, please see the [CONTRIBUTING.md](contributing.md) doc.
+
 ## Noteworthy changes:
 
 **Feb 4 2017:**

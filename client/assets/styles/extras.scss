@@ -1,0 +1,80 @@
+@import 'vars';
+@import 'mixins';
+@import 'themes/minimal';
+@import 'containers/gallery';
+
+#header {
+	a {
+		text-decoration: none;
+	}
+	.command {
+		&__title,
+		&__icon {
+			padding: 0 12px;
+		}
+
+		&__center {
+			flex: 1 1 auto;
+		}
+	}
+}
+
+@media (min-width: 0px) and (max-width: 900px) {
+	.command {
+		&__icon {
+			span {
+				display: block;
+			}
+		}
+	}
+}
+
+#snippet-container {
+	flex: 1 1 300px;
+	width: 100%;
+	border: none;
+	outline: none;
+} 
+
+#gallery {
+	display: none;
+	width: 100vw;
+}
+
+#title-refresh {
+	justify-content: center;
+	align-items: center;
+}
+
+iframe#FirebugUI {
+	z-index: 1000 !important; /* so that doesn't conflict with loader */
+	position: static !important;
+	box-sizing: border-box;
+	outline: none;
+	border: none;
+}
+
+/* Themes */
+body.EXCEL {
+	@include theme-min($excel);
+}
+
+body.POWERPOINT {
+	@include theme-min($powerpoint);
+}
+
+body.ONENOTE {
+	@include theme-min($onenote);
+}
+
+body.WORD {
+	@include theme-min($word);
+}
+
+body.WEB {
+	@include theme-min($web);
+}
+
+body.PROJECT {
+	@include theme-min($project);
+}

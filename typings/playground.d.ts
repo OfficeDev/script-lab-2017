@@ -2,9 +2,16 @@ interface ITemplate {
     id?: string;
     gist?: string;
     author?: string;
-    source?: string;
     name?: string;
     description?: string;
+    host: string;
+    api_set: {
+        [index: string]: number
+    },
+    platform: string;
+    origin: string;
+    created_at: number;
+    modified_at: number;
 }
 
 interface ISnippet extends ITemplate {
@@ -21,18 +28,31 @@ interface ISnippet extends ITemplate {
         language: string;
     };
     libraries?: string;
-    lastModified?: number;
 }
 
-interface IRunnerPostData {
-    snippet: ISnippet | string; /* ISnippet when passed around, but string over the wire */
-    returnUrl: string;
-    refreshUrl: string;
+interface ICompiledSnippet extends ITemplate {
+    script?: string;
+    style?: string;
+    template?: string;
+    scriptReferences?: string[];
+    linkReferences?: string[];
+    officeJS?: string;
+    typings?: string[];
+}
 
-    // Any further fields will simply get passed in to the refresh page:
-    id: string;
-    host: string;
-    platform: string;
+interface IRunnerHandlebarsContext {
+    snippetContent: string;
+    snippet: ICompiledSnippet;
+    includeBackButton: boolean;
+    refreshUrl: string;
+    returnUrl: string;
+}
+
+interface IRunnerState {
+    snippet: ISnippet;
+
+    /** URL to return to (editor, or gallery view). More than just origin domain */
+    returnUrl: string;
 }
 
 interface IMonacoEditorState {
@@ -63,16 +83,14 @@ interface IEvent<T> {
 }
 
 interface IEnvironment {
-    devMode: boolean;
-    build: {
+    devMode?: boolean;
+    build?: {
         name: string;
         version: string;
         timestamp: number;
         author: string;
     },
-    config: {
-        [env: string]: IEnvironmentConfig
-    },
+    config?: IEnvironmentConfig
     host?: string,
     platform?: string
 }
@@ -81,11 +99,14 @@ interface IEnvironmentConfig {
     name: string,
     clientId: string
     instrumentationKey: string,
+    editorUrl: string,
     tokenUrl: string,
     runnerUrl: string,
     feedbackUrl: string,
     samplesUrl: string
 }
+
+declare var PLAYGROUND: IEnvironment;
 
 interface ISettings {
     lastOpened: ISnippet,
@@ -93,16 +114,4 @@ interface ISettings {
     theme: boolean,
     language: string,
     env: string
-}
-
-interface IOuterTemplateData {
-    snippetName: string;
-    snippetAuthor: string;
-    iframeContent: string;
-    hostLowercase: string;
-    returnUrl: string;
-    refreshUrl: string;
-    OfficeJsRefIfAny: string;
-    isOfficeSnippet: boolean;
-    addPaddingRight: boolean;
 }
