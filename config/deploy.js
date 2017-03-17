@@ -1,14 +1,16 @@
 #!/usr/bin/env node --harmony
 
+let path = require('path');
 let chalk = require('chalk');
 let _ = require('lodash');
 let { build, config } = require('./env.config');
-let git = require('simple-git')();
+let shell = require('shelljs');
 let webpackConfig = require('./webpack.prod');
 let webpack = require('webpack');
 let { TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_COMMIT_MESSAGE, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
 process.env.NODE_ENV = process.env.ENV = 'production';
 
+deployBuild('http://blahblah.git', 'dist/server', 'demo');
 precheck();
 
 if (TRAVIS_PULL_REQUEST === 'false') {
@@ -57,35 +59,35 @@ if (TRAVIS_PULL_REQUEST === 'false') {
         .catch((err) => exit(err, true));
 }
 
-function deployBuild(url, path) {
-    return new Promise((resolve, reject) => {
+function deployBuild(url, folder, commit) {
+    // return new Promise((resolve, reject) => {
+    try {
+        let current_path = path.resolve();
+        let next_path = path.resolve(folder);
         const start = Date.now();
-        try {
-            git.addConfig('user.name', 'Travis CI')
-                .addConfig('user.email', 'travis.ci@microsoft.com')
-                .checkout('HEAD')
-                .add([path, '-A', '-f'], (err) => {
-                    if (err) {
-                        log(`Failed to add files...`, 'red');
-                        return reject(err.replace(url, ''));
-                    }
-                })
-                .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing ' + path + '... Please wait...'))
-                .push(['-f', '-u', url, 'HEAD:refs/heads/master'], (err) => {
-                    if (err) {
-                        log(`Deployment failed...`, 'red');
-                        return reject(err.replace(url, ''));
-                    }
-
-                    const end = Date.now();
-                    log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
-                    return resolve();
-                });
-        }
-        catch (error) {
-            return reject(err);
-        }
-    });
+        shell.cd(next_path)
+        shell.exec('ls');
+        shell.exec('git init');
+        shell.exec('git config --add user.name "Travis CI"');
+        shell.exec('git config --add user.email "travis.ci@microsoft.com"');
+        shell.exec('git checkout HEAD');
+        shell.exec('git add -A');
+        shell.exec('git status');
+        // shell.exec(`git commit -m ${commit}`);
+        log('Pushing ' + path + '... Please wait...');
+        // shell.exec(`git push ${url} -u HEAD:refs/heads/master`);
+        const end = Date.now();
+        log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
+        shell.cd(current_path);
+        shell.exec('ls');
+        shell.exit(1);
+    }
+    catch (error) {
+        log(`Deployment failed...`, 'red');
+        console.log(error);
+        // return reject(error);
+    }
+    // });
 }
 
 function log(message, color) {
