@@ -20,7 +20,6 @@ if (TRAVIS_PULL_REQUEST === 'false') {
 
     switch (slot) {
         case 'master':
-        case 'dev':
             slot = 'edge';
             break;
     }
