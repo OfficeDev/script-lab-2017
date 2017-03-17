@@ -35,7 +35,7 @@ const config = {
     },
     insiders: {
         name: 'INSIDERS',
-        clientId: '8d19e9bbcea2a1cee274',
+        clientId: '31ba59b73d83195e58dc',
         instrumentationKey: 'b3f1f065-02a9-49d3-b75c-4586659f51ef',
         editorUrl: 'https://bornholm-insiders.azurewebsites.net',
         tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth/insiders',
