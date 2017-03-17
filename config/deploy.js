@@ -66,14 +66,14 @@ function deployBuild(url, path) {
                 .checkout('HEAD')
                 .add([path, '-A', '-f'], (err) => {
                     if (err) {
-                        log(`Failed to add files...`, chalk.bold.red);
+                        log(`Failed to add files...`, 'red');
                         return reject(err.replace(url, ''));
                     }
                 })
                 .commit(TRAVIS_COMMIT_MESSAGE, () => log('Pushing ' + path + '... Please wait...'))
                 .push(['-f', '-u', url, 'HEAD:refs/heads/master'], (err) => {
                     if (err) {
-                        log(`Deployment failed...`, chalk.bold.red);
+                        log(`Deployment failed...`, 'red');
                         return reject(err.replace(url, ''));
                     }
 
