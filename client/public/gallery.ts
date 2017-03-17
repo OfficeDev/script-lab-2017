@@ -89,8 +89,6 @@ export class Gallery {
 
     private _navigate(id: string) {
         // Refresh the snippets and settings, in case there was a code change to one of the snippets.
-        settings.reload();
-
         let snippet = settings.snippets.get(id);
 
         /**
@@ -106,7 +104,6 @@ export class Gallery {
          * then just reload to clear cache.
          */
         if (snippet === null) {
-            settings.snippets.load();
             this.render();
         }
 
