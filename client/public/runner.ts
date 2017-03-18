@@ -1,10 +1,17 @@
 import * as $ from 'jquery';
+import { generateUrl } from '../app/helpers/utilities';
 import { Messenger } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
+interface InitializationParams {
+    origin: string;
+    officeJS: string;
+    heartbeatParams: HeartbeatParams
+}
+
 (() => {
-    async function initializeRunner(origin: string, officeJS: string) {
-        createMessageListener();
+    async function initializeRunner(params: InitializationParams) {
+        let { origin, officeJS, heartbeatParams } = params;
 
         let frameworkInitialized = createHostAwaiter(officeJS);
 
@@ -49,6 +56,8 @@ import '../assets/styles/extras.scss';
             };
 
             contentWindow.document.close();
+
+            establishHeartbeat(origin, heartbeatParams);
         }
         catch (error) {
             handleError(error);
@@ -68,7 +77,8 @@ import '../assets/styles/extras.scss';
     function loadFirebug(origin: string): Promise<void> {
         return new Promise<any>((resolve, reject) => {
             (window as any).origin = origin;
-            const script = $(`<script type="text/javascript" src="${origin}/assets/firebug/firebug-lite-debug.js#startOpened"></script>`);
+            const firebugUrl = `${origin}/assets/firebug/firebug-lite-debug.js#startOpened`;
+            const script = $(`<script type="text/javascript" src="${firebugUrl}"></script>`);
             script.appendTo('head');
 
             const interval = setInterval(() => {
@@ -98,14 +108,19 @@ import '../assets/styles/extras.scss';
         }
     }
 
-    function createMessageListener() {
+    function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {
+        $('<iframe>', {
+            src: generateUrl(`${origin}/heartbeat.html`, heartbeatParams),
+            id: 'heartbeat'
+        }).css('display', 'none').appendTo('body');
+
         // TODO: Add heartbeat.  Leaving code as is for structure, for now
 
         const messenger = new Messenger(location.origin);
         messenger.listen()
             //.filter(({ type }) => type === MessageType.SNIPPET)
             .subscribe(message => {
-                // TODO
+                console.log(message);
             });
     }
 

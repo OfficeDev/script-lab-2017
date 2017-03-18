@@ -127,4 +127,12 @@ export class Strings {
     static readonly urlExample4 = 'Or you can enter just the gist ID';
     static readonly importYamlDescription = `Paste the snippet's YAML code, then choose Import.`;
     static readonly importYamlTextBoxLabel = 'YAML';
+
+
+    static readonly Runner = {
+
+        /* NEEDS REVIEW */
+        snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.'
+
+    };
 }

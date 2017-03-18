@@ -6,7 +6,7 @@ import * as bodyParser from 'body-parser';
 import * as serverStatic from 'serve-static';
 import * as cors from 'cors';
 import * as Request from 'request';
-import { Utilities } from './core/utilities';
+import { replaceTabsWithSpaces, generateUrl } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
@@ -141,16 +141,18 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
         html = runnerHtml({
             snippetContent: html,
             officeJS: compiledSnippet.officeJS,
+            snippetId: snippet.id,
+            snippetLastModified: snippet.modified_at,
             refreshUrl: generateRefreshUrl(),
             returnUrl: returnUrl,
-            editorUrl: snippet.origin,
+            origin: snippet.origin,
             host: snippet.host,
             initialLoadSubtitle: `Loading "${snippet.name}"`, //'Code ● Run ● Share'
             headerTitle: snippet.name
         });
     }
 
-    return Utilities.replaceAllTabsWithSpaces(html);
+    return replaceTabsWithSpaces(html);
 
 
     // Helpers
@@ -166,15 +168,6 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
             returnUrl: returnUrl
         };
 
-        return `${snippet.origin}/refresh.html?${
-            (() => {
-                const result = [];
-                for (const key in refreshParams) {
-                    if (refreshParams.hasOwnProperty(key)) {
-                        result.push(`${key}=${encodeURIComponent(refreshParams[key])}`);
-                    }
-                }
-                return result.join('&');
-            })()}`;
+        return generateUrl(`${snippet.origin}/refresh.html`, refreshParams);
     }
 }

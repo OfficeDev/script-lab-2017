@@ -31,5 +31,6 @@ export class Messenger {
 }
 
 export enum MessageType {
-    // TODO
+    ERROR,
+    RELOAD
 };
