@@ -114,9 +114,8 @@ function deployBuild(url, folder) {
         }
         log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
         result = shell.exec('git push ' + url + ' -q -f -u HEAD:refs/heads/master', { silent: true });
-        if (result.code !== 1) {
-            shell.echo(result.stderr);
-            exit('An error occurred while deploying to ' + URL + '...', true);
+        if (result.code !== 0) {
+            exit('An error occurred while deploying ' + folder + ' to ' + URL + '...', true);
         }
         const end = Date.now();
         log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
