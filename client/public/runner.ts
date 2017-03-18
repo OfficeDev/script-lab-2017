@@ -1,91 +1,112 @@
 import * as $ from 'jquery';
-import { Messenger, MessageType } from '../app/helpers/messenger';
+import { Messenger } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
-function loadFirebug(origin: string) {
-    return new Promise<any>((resolve, reject) => {
-        (window as any).origin = origin;
-        const script = $(`<script type="text/javascript" src="${origin}/assets/firebug/firebug-lite-debug.js#startOpened"></script>`);
-        script.appendTo('head');
+(() => {
+    async function initializeRunner(origin: string, officeJS: string) {
+        createMessageListener();
 
-        const interval = setInterval(() => {
-            if ((window as any).firebugLiteIsLoaded) {
-                clearInterval(interval);
-                return resolve((window as any).Firebug);
-            }
-        }, 250);
-    });
-}
+        let frameworkInitialized = createHostAwaiter(officeJS);
 
-function loadOfficeJS(url: string) {
-    return new Promise<any>((resolve, reject) => {
-        if (url == null || url.trim() === '') {
-            return resolve(undefined);
-        }
-
-        const script = $(`<script type="text/javascript" src="${url}"></script>`);
-        script.appendTo('head');
-        let timeout;
-
-        const interval = setInterval(() => {
-            if ((window as any).Office) {
-                clearInterval(interval);
-                clearTimeout(timeout);
-                return resolve((window as any).Office);
-            }
-        }, 250);
-
-        timeout = setTimeout(() => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-            return reject(new Error('Failed to load Office.js'));
-        }, 5000);
-    });
-}
-
-async function initializeRunner(origin: string, officeJS: string) {
-    const $subtitle = $('.ms-progress-component__sub-title');
-    try {
-        const officeLoadPromise = loadOfficeJS(officeJS);
         const $iframe = $('#snippet-container');
         const $snippetContent = $('#snippet-code-content');
         const $progress = $('#progress');
         const $header = $('#header');
-        const firebug = await loadFirebug(origin);
         const iframe = $iframe[0] as HTMLIFrameElement;
-        const messenger = new Messenger(location.origin);
         let { contentWindow } = iframe;
 
-        // Write to the iframe (and note that must write first, before setting any window properties)
-        contentWindow.document.open();
-        contentWindow.document.write($snippetContent.text());
-        (contentWindow as any).console = window.console;
-        contentWindow.onerror = (...args) => console.error(args);
-        contentWindow['Office'] = await officeLoadPromise;
-        contentWindow.document.close();
-        $snippetContent.remove();
+        try {
+            await loadFirebug(origin);
+            await frameworkInitialized;
 
-        // Listen to a snippet ready message from the inner frame
-        let subscription = messenger.listen()
-            .filter(({ type }) => type === MessageType.SNIPPET)
+            $iframe.show();
+            $progress.hide();
+            $header.show();
+
+            const snippetHtml = $snippetContent.text();
+            $snippetContent.remove();
+
+            // Write to the iframe (and note that must do the ".write" call first,
+            // before setting any window properties)
+            contentWindow.document.open();
+            contentWindow.document.write(snippetHtml);
+
+            // Now proceed with setting window properties/callbacks:
+            (contentWindow as any).console = window.console;
+            if (officeJS) {
+                contentWindow['Office'] = window['Office'];
+            }
+            contentWindow.onerror = (...args) => console.error(args);
+            contentWindow.document.body.onload = () => {
+                if (officeJS) {
+                    const officeNamespacesToShare = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
+                    officeNamespacesToShare.forEach(namespace => contentWindow[namespace] = window[namespace]);
+
+                    // Call Office.initialize(), which now initializes the snippet.
+                    // The parameter, initializationReason, is not used in the Playground.
+                    Office.initialize(null /*initializationReason*/);
+                }
+            };
+
+            contentWindow.document.close();
+        }
+        catch (error) {
+            handleError(error);
+        }
+    }
+
+    (window as any).initializeRunner = initializeRunner;
+
+
+    function handleError(error: Error) {
+        $('.fullscreen').hide();
+        $('#error').show();
+
+        $('#error .subtitle').text(error.message || error.toString());
+    }
+
+    function loadFirebug(origin: string): Promise<void> {
+        return new Promise<any>((resolve, reject) => {
+            (window as any).origin = origin;
+            const script = $(`<script type="text/javascript" src="${origin}/assets/firebug/firebug-lite-debug.js#startOpened"></script>`);
+            script.appendTo('head');
+
+            const interval = setInterval(() => {
+                if ((window as any).firebugLiteIsLoaded) {
+                    clearInterval(interval);
+                    return resolve((window as any).Firebug);
+                }
+            }, 250);
+        });
+    }
+
+    async function createHostAwaiter(officeJS: string): Promise<any> {
+        if (officeJS) {
+            return new Promise((resolve) => {
+                Office.initialize = () => {
+                    // Set initialize to an empty function -- that way, doesn't cause
+                    // re-initialization of this page in case of a page like the error dialog,
+                    // which doesn't defined (override) Office.initialize.
+                    Office.initialize = () => { };
+
+                    resolve();
+                };
+            });
+        }
+        else {
+            return Promise.resolve();
+        }
+    }
+
+    function createMessageListener() {
+        // TODO: Add heartbeat.  Leaving code as is for structure, for now
+
+        const messenger = new Messenger(location.origin);
+        messenger.listen()
+            //.filter(({ type }) => type === MessageType.SNIPPET)
             .subscribe(message => {
-                ['OfficeExtension', 'Excel', 'Word', 'OneNote'].forEach(namespace => contentWindow[namespace] = window[namespace] || undefined);
-                $iframe.show();
-                $progress.hide();
-                $header.show();
-                if (firebug.chrome) {
-                    firebug.chrome.open();
-                }
-                if (subscription && !subscription.closed) {
-                    subscription.unsubscribe();
-                }
+                // TODO
             });
     }
-    catch (error) {
-        console.error(error);
-        $subtitle.text(error.message || error.toString());
-        $subtitle.css('color', '#ff6700');
-    }
-}
 
-(window as any).initializeRunner = initializeRunner;
+})();
