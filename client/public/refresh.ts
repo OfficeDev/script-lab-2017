@@ -31,11 +31,12 @@ import '../assets/styles/extras.scss';
         return showError('Could not find the snippet.', returnUrl);
     }
 
-    const data = JSON.stringify({ snippet });
+    const data = JSON.stringify({
+        snippet: snippet,
+        returnUrl: returnUrl
+    });
 
-    showError(data);
-    (document.querySelector('#subtitle') as any).onclick = () =>
-        post(runnerUrl + '/compile/page', { data });
+    post(runnerUrl + '/compile/page', { data });
 
 
     // Helpers
