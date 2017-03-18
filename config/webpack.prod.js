@@ -63,7 +63,7 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} © ${build.author}` }),
+        new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${build.timestamp}) © ${build.author}` }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
