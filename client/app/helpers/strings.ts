@@ -129,9 +129,23 @@ export class Strings {
     static readonly importYamlTextBoxLabel = 'YAML';
 
 
+    static readonly Refresh = {
+        /** NEEDS REVIEW. Error if refresh URL is somehow misformed (should essentially never happen) */
+        missingSnippetParameters: 'Missing some snippet parameters.',
+
+        /** NEEDS REVIEW. Error if snippet no longer exists */
+        couldNotFindTheSnippet: 'Could not find the snippet.',
+
+        /** NEEDS REVIEW. Appends one of the following to the error message
+         * (navigating back after a couple of seconds, if there is a return URL) */
+        getErrorMessageAppendum: (returnUrl: string) =>
+            returnUrl ? 'Returning...' : 'Please close this window and try again.',
+
+    };
+
     static readonly Runner = {
 
-        /* NEEDS REVIEW */
+        /** NEEDS REVIEW */
         snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.'
 
     };

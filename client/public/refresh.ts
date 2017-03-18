@@ -1,4 +1,4 @@
-import { post } from '../app/helpers';
+import { post, Strings } from '../app/helpers';
 import { Storage, StorageType, Authenticator } from '@microsoft/office-js-helpers';
 import '../assets/styles/extras.scss';
 
@@ -13,7 +13,7 @@ import '../assets/styles/extras.scss';
     const { host, id, runnerUrl, returnUrl } = queryParams;
 
     if (!(host && id && runnerUrl)) {
-        return showError('Missing some snippet parameters.', returnUrl);
+        return showError(Strings.Refresh.missingSnippetParameters, returnUrl);
     }
 
     const snippets = new Storage<ISnippet>(`playground_${host}_snippets`);
@@ -28,7 +28,7 @@ import '../assets/styles/extras.scss';
 
     // If still no snippet, no luck:
     if (snippet == null) {
-        return showError('Could not find the snippet.', returnUrl);
+        return showError(Strings.Refresh.couldNotFindTheSnippet, returnUrl);
     }
 
     const data = JSON.stringify({
@@ -43,7 +43,7 @@ import '../assets/styles/extras.scss';
     function showError(message: string, returnUrl?: string): void {
         const subtitle = document.querySelector('#subtitle') as HTMLElement;
         const progress = document.querySelector('#progress-dots') as HTMLElement;
-        const text = returnUrl ? 'Returning...' : 'Please close this window and try again.';
+        const text = Strings.Refresh.getErrorMessageAppendum(returnUrl);
         subtitle.innerText = `${message} ${text}`;
 
         if (returnUrl) {
