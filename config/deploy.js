@@ -102,14 +102,14 @@ function deployBuild(url, folder) {
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
         shell.exec('git config --add user.email "travis.ci@microsoft.com"');
-        shell.exec('git checkout HEAD');
         let result = shell.exec('git add -A');
         if (result.code !== 0) {
+            shell.echo(result.stderr);
             exit('An error occurred while adding files...', true);
         }
-        shell.exec('git status');
         result = shell.exec('git commit -m ' + TRAVIS_COMMIT_MESSAGE);
         if (result.code !== 0) {
+            shell.echo(result.stderr);
             exit('An error occurred while commiting files...', true);
         }
         log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
