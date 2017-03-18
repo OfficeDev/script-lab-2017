@@ -42,13 +42,17 @@ interface ICompiledSnippet extends ITemplate {
 
 interface IRunnerHandlebarsContext {
     snippetContent: string;
-    snippet: ICompiledSnippet;
-    includeBackButton: boolean;
+
+    host: string;
     refreshUrl: string;
     returnUrl: string;
     editorUrl: string;
-    initialHostClassIfAny: string,
+
     initialLoadSubtitle: string;
+    headerTitle: string;
+
+    // Office.js URL (or empty)
+    officeJS: string;
 }
 
 interface IRunnerState {

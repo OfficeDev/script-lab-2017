@@ -120,6 +120,7 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
     const data: IRunnerState = JSON.parse(request.body.data);
 
     const { snippet, returnUrl } = data;
+
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
     // and so that refresh page could know where to return to if the snippet weren't found.
 
@@ -139,13 +140,13 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
     if (wrapWithRunnerChrome) {
         html = runnerHtml({
             snippetContent: html,
-            snippet: compiledSnippet,
-            includeBackButton: wrapWithRunnerChrome != null,
+            officeJS: compiledSnippet.officeJS,
             refreshUrl: generateRefreshUrl(),
             returnUrl: returnUrl,
             editorUrl: snippet.origin,
-            initialHostClassIfAny: snippet.host,
-            initialLoadSubtitle: `Loading "${snippet.name}"` //'Code ● Run ● Share'
+            host: snippet.host,
+            initialLoadSubtitle: `Loading "${snippet.name}"`, //'Code ● Run ● Share'
+            headerTitle: snippet.name
         });
     }
 
