@@ -97,8 +97,8 @@ function deployBuild(url, folder) {
     try {
         let current_path = path.resolve();
         let next_path = path.resolve(folder);
+        shell.cd(next_path);
         const start = Date.now();
-        shell.cd(next_path)
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
         shell.exec('git config --add user.email "travis.ci@microsoft.com"');
@@ -107,13 +107,13 @@ function deployBuild(url, folder) {
             shell.echo(result.stderr);
             exit('An error occurred while adding files...', true);
         }
-        result = shell.exec('git commit -m ' + TRAVIS_COMMIT_MESSAGE);
+        result = shell.exec('git commit -m "' + TRAVIS_COMMIT_MESSAGE + '"');
         if (result.code !== 0) {
             shell.echo(result.stderr);
             exit('An error occurred while commiting files...', true);
         }
         log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
-        result = shell.exec('git push ' + url + ' - u HEAD:refs/heads/master');
+        result = shell.exec('git push ' + url + ' -q -u HEAD:refs/heads/master');
         if (result.code !== 0) {
             exit('An error occurred while deploying files to ' + slot, true);
         }
