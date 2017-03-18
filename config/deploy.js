@@ -113,10 +113,11 @@ function deployBuild(url, folder) {
             exit('An error occurred while commiting files...', true);
         }
         log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
-        result = shell.exec('git push ' + url + ' -q -u HEAD:refs/heads/master');
-        if (result.code !== 0) {
-            exit('An error occurred while deploying files to ' + slot, true);
-        }
+        shell.exec('git push ' + url + ' -q -f -u HEAD:refs/heads/master', (code, stdout, stderr) => {
+            if (result.code !== 0) {
+                exit('An error occurred while deploying files to ' + slot, true);
+            }
+        });
         const end = Date.now();
         log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
         shell.cd(current_path);
