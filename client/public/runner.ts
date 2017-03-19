@@ -1,5 +1,5 @@
 import * as $ from 'jquery';
-import { generateUrl } from '../app/helpers/utilities';
+import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings } from '../app/helpers';
 import { Messenger, MessageType } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
@@ -16,6 +16,7 @@ interface InitializationParams {
     const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
 
     let returnUrl: string;
+    let $snippetContent: JQuery;
 
     async function initializeRunner(params: InitializationParams) {
         try {
@@ -24,13 +25,14 @@ interface InitializationParams {
 
             const frameworkInitialized = createHostAwaiter(officeJS);
 
-            const $snippetContent = $('#snippet-code-content');
-
             await loadFirebug(origin);
             await frameworkInitialized;
 
+            $snippetContent = $('#snippet-code-content');
             const snippetHtml = $snippetContent.text();
-            $snippetContent.remove();
+            // Clear the text, but keep the placeholder in the DOM,
+            // so that can add the snippet frame relative to its position
+            $snippetContent.text('');
 
             writeSnippetIframe(snippetHtml, officeJS);
 
@@ -44,8 +46,12 @@ interface InitializationParams {
     (window as any).initializeRunner = initializeRunner;
 
 
-    function writeSnippetIframe(html: string, officeJS: string) {
-        const $iframe = $('#snippet-container');
+    /** Creates a snippet iframe and returns it (still hidden) */
+    function writeSnippetIframe(html: string, officeJS: string): JQuery {
+        const $iframe =
+            $('<iframe class="snippet-frame fullscreen" style="display:none" src="about:blank"></iframe>')
+            .insertAfter($snippetContent);
+
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
 
@@ -63,7 +69,6 @@ interface InitializationParams {
         contentWindow.onerror = (...args) => console.error(args);
 
         contentWindow.document.body.onload = () => {
-            $('#header').show();
             $iframe.show();
 
             $('#progress').hide();
@@ -78,6 +83,8 @@ interface InitializationParams {
         };
 
         contentWindow.document.close();
+
+        return $iframe;
     }
 
     function handleError(error: Error) {
@@ -90,7 +97,7 @@ interface InitializationParams {
 
         const $error = $('#notify-error');
 
-        $error.find('.ms-MessageBar-text').text();
+        $error.find('.ms-MessageBar-text').text(candidateErrorString);
 
         $error.find('.action-back').off('click').click(() =>
             window.location.href = returnUrl);
@@ -154,23 +161,25 @@ interface InitializationParams {
             .filter(({ type }) => type === MessageType.RELOAD)
             .subscribe(input => {
                 const $needsReload = $('#notify-needs-reload');
+                const $reloadingIndicator = $needsReload.find('#reloading-indicator').hide();
+                const $buttons = $needsReload.find('button').show();
 
                 $needsReload.find('.action-fast-reload').off('click').click(() => {
-                    const $refreshIcon = $('#header .ms-Icon--Refresh');
-                    $refreshIcon.addClass('spinning-icon');
-                    $needsReload.hide();
+                    $reloadingIndicator.show();
+                    $buttons.hide();
 
+                    const snippet = input.message as ISnippet;
                     const data = JSON.stringify({
-                        snippet: input.message,
+                        snippet: snippet,
                         returnUrl: returnUrl
                     });
 
                     // Use jQuery post rather than the Utilities post here
                     // (don't want to navigate, just to do an AJAX call)
                     $.post(window.location.origin + '/compile/snippet', { data: data })
-                        .then(processSnippetReload)
+                        .then(html => processSnippetReload(html, snippet))
                         .fail(handleError)
-                        .always(() => $refreshIcon.removeClass('spinning-icon'));
+                        .always(() => $needsReload.hide());
                 });
 
                 $needsReload.find('.action-dismiss').off('click').click(() => {
@@ -182,7 +191,15 @@ interface InitializationParams {
             });
     }
 
-    function processSnippetReload() {
-        console.log('TODO processing!');
+    function processSnippetReload(html: string, snippet: ISnippet) {
+        $('#header-text').text(snippet.name);
+
+        const $originalFrame = $('.snippet-frame');
+
+        writeSnippetIframe(html, processLibraries(snippet).officeJS).show();
+
+        $originalFrame.remove();
+
+        (window as any).Firebug.Console.clear();
     }
 })();

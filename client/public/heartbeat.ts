@@ -43,8 +43,6 @@ interface Listener {
 
 
         function validateSnippet() {
-            console.log("TODO ... validating snippet ... ");
-
             let snippet = settings.snippets.get(params.id);
 
             // If found a snippet now, whereas previously had needed to initiate a

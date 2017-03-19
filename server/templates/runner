@@ -57,13 +57,13 @@
         </div>
     </app>
 
-    <header id="header" class="command__bar" style="display:none">
+    <header id="header" class="command__bar">
         <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>
         <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
             <i class="ms-Icon ms-Icon--Refresh"></i>
-            <span class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
+            <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
     </header>
 
@@ -78,6 +78,10 @@
             </div>
 
             <div class="buttons" style="text-align: right;">
+                <div class="reloading-indicator" style="display:none">
+                    <i class="ms-Icon ms-Icon--Refresh spinning-icon"></i>
+                    <span>Reloading...</span>
+                </div>
                 <button class="action-fast-reload ms-Button host-colored-button">
                     <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Reload</span>
@@ -113,8 +117,6 @@
     </div>
 
     <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
-
-    <iframe id="snippet-container" class="fullscreen" style="display:none" src="about:blank"></iframe>
 
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
     <script src="{{{origin}}}/vendor.bundle.js"></script>
