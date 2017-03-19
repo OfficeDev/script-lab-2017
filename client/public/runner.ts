@@ -1,17 +1,22 @@
 import * as $ from 'jquery';
 import { generateUrl } from '../app/helpers/utilities';
-import { Messenger } from '../app/helpers/messenger';
+import { Strings } from '../app/helpers';
+import { Messenger, MessageType } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
 interface InitializationParams {
     origin: string;
     officeJS: string;
+    returnUrl: string;
     heartbeatParams: HeartbeatParams
 }
 
 (() => {
+    let returnUrl: string;
+
     async function initializeRunner(params: InitializationParams) {
         let { origin, officeJS, heartbeatParams } = params;
+        returnUrl = params.returnUrl;
 
         let frameworkInitialized = createHostAwaiter(officeJS);
 
@@ -68,10 +73,26 @@ interface InitializationParams {
 
 
     function handleError(error: Error) {
-        $('.fullscreen').hide();
-        $('#error').show();
+        console.error(error);
 
-        $('#error .subtitle').text(error.message || error.toString());
+        let candidateErrorString = error.message || error.toString();
+        if (candidateErrorString === '[object Object]') {
+            candidateErrorString = Strings.Runner.unexpectedError;
+        }
+
+        const $error = $('#notify-error');
+
+        $error.find('.ms-MessageBar-text').text();
+
+        $error.find('.action-back').off('click').click(() =>
+            window.location.href = returnUrl);
+
+        $error.find('.action-dismiss').off('click').click(() => {
+            $error.hide();
+            $('#heartbeat').remove();
+        });
+
+        $('#notify-error').show();
     }
 
     function loadFirebug(origin: string): Promise<void> {
@@ -114,14 +135,46 @@ interface InitializationParams {
             id: 'heartbeat'
         }).css('display', 'none').appendTo('body');
 
-        // TODO: Add heartbeat.  Leaving code as is for structure, for now
-
         const messenger = new Messenger(location.origin);
+
         messenger.listen()
-            //.filter(({ type }) => type === MessageType.SNIPPET)
-            .subscribe(message => {
-                console.log(message);
+            .filter(({ type }) => type === MessageType.ERROR)
+            .map(input => input.message)
+            .subscribe(handleError);
+
+        messenger.listen()
+            .filter(({ type }) => type === MessageType.RELOAD)
+            .subscribe(input => {
+                const $needsReload = $('#notify-needs-reload');
+
+                $needsReload.find('.action-fast-reload').off('click').click(() => {
+                    const $refreshIcon = $('#header .ms-Icon--Refresh');
+                    $refreshIcon.addClass('spinning-icon');
+                    $needsReload.hide();
+
+                    const data = JSON.stringify({
+                        snippet: input.message,
+                        returnUrl: returnUrl
+                    });
+
+                    // Use jQuery post rather than the Utilities post here
+                    // (don't want to navigate, just to do an AJAX call)
+                    $.post(window.location.origin + '/compile/snippet', { data: data })
+                        .then(processSnippetReload)
+                        .fail(handleError)
+                        .always(() => $refreshIcon.removeClass('spinning-icon'));
+                });
+
+                $needsReload.find('.action-dismiss').off('click').click(() => {
+                    $needsReload.hide();
+                    $('#heartbeat').remove();
+                });
+
+                $needsReload.show();
             });
     }
 
+    function processSnippetReload() {
+        console.log('TODO processing!');
+    }
 })();

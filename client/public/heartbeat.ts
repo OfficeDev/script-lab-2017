@@ -43,6 +43,8 @@ interface Listener {
 
 
         function validateSnippet() {
+            console.log("TODO ... validating snippet ... ");
+
             let snippet = settings.snippets.get(params.id);
 
             // If found a snippet now, whereas previously had needed to initiate a
@@ -84,85 +86,15 @@ interface Listener {
 
                 // Change means that no longer an unsaved snippet.
                 // so can stop listening to settings:
-                if (settingsListener) {
-                    settingsListener.unsubscribe();
-                }
+                // TODO
+                // if (settingsListener) {
+                //     settingsListener.unsubscribe();
+                // }
 
-                messenger.send(MessageType.RELOAD, JSON.stringify(snippet));
+                messenger.send(MessageType.RELOAD, snippet);
                 return;
             }
         }
     }
 
 })();
-
-
-
-
-
-
-
-// (async () => {
-//     let current: ISnippet = null;
-
-//     await environment.initialize();
-
-
-//     let params = Authenticator.getUrlParams(location.href, location.origin, '?') as any;
-
-
-//     messenger.listen().subscribe(({ type, message }) => {
-//         if (type === MessageType.RELOAD) {
-//             initialize();
-//         }
-//     });
-
-//     setInterval(() => {
-//         let currentSnippet = settings.current.lastOpened;
-//         if (currentSnippet == null) {
-//             return;
-//         }
-//         else if (currentSnippet.id == null) {
-//             return messenger.send(MessageType.ERROR, 'Invalid snippet. Please close and try again.');
-//         }
-//         else {
-//             if (!isEquals(currentSnippet)) {
-//                 return initialize();
-//             }
-//             else if (currentSnippet.modified_at !== current.modified_at) {
-//                 return messenger.send(MessageType.RELOAD, currentSnippet.id);
-//             }
-//         }
-//     }, 200);
-
-
-//     function initialize() {
-//         let snippet = settings.current.lastOpened;
-//         if (snippet == null || snippet.id == null) {
-//             messenger.send(MessageType.ERROR, 'Please create or open a snippet in the editor.');
-//             return null;
-//         }
-
-//         messenger.send(MessageType.SNIPPET, {
-//             snippet: snippet,
-//             refreshUrl: window.location.origin + '/refresh.html'
-//         });
-
-//         return snippet;
-//     }
-
-//     function isEquals(snippet: ISnippet) {
-//         if (this.current == null || snippet == null) {
-//             return false;
-//         }
-//         else if (snippet.id == null || snippet.id.trim() === '') {
-//             return false;
-//         }
-//         else if (snippet.id !== this.current.id) {
-//             return false;
-//         }
-//         else {
-//             return true;
-//         }
-//     }
-// })();
