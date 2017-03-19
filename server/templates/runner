@@ -57,7 +57,7 @@
         </div>
     </app>
 
-    <header id="header" class="command__bar">
+    <header id="header" class="command__bar" style="display:none">
         <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>

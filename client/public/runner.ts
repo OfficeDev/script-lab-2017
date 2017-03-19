@@ -12,55 +12,27 @@ interface InitializationParams {
 }
 
 (() => {
+    /** Namespaces for the runner wrapper to share with the inner snippet iframe */
+    const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
+
     let returnUrl: string;
 
     async function initializeRunner(params: InitializationParams) {
-        let { origin, officeJS, heartbeatParams } = params;
-        returnUrl = params.returnUrl;
-
-        let frameworkInitialized = createHostAwaiter(officeJS);
-
-        const $iframe = $('#snippet-container');
-        const $snippetContent = $('#snippet-code-content');
-        const $progress = $('#progress');
-        const $header = $('#header');
-        const iframe = $iframe[0] as HTMLIFrameElement;
-        let { contentWindow } = iframe;
-
         try {
+            const { origin, officeJS, heartbeatParams } = params;
+            returnUrl = params.returnUrl;
+
+            const frameworkInitialized = createHostAwaiter(officeJS);
+
+            const $snippetContent = $('#snippet-code-content');
+
             await loadFirebug(origin);
             await frameworkInitialized;
-
-            $iframe.show();
-            $progress.hide();
-            $header.show();
 
             const snippetHtml = $snippetContent.text();
             $snippetContent.remove();
 
-            // Write to the iframe (and note that must do the ".write" call first,
-            // before setting any window properties)
-            contentWindow.document.open();
-            contentWindow.document.write(snippetHtml);
-
-            // Now proceed with setting window properties/callbacks:
-            (contentWindow as any).console = window.console;
-            if (officeJS) {
-                contentWindow['Office'] = window['Office'];
-            }
-            contentWindow.onerror = (...args) => console.error(args);
-            contentWindow.document.body.onload = () => {
-                if (officeJS) {
-                    const officeNamespacesToShare = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
-                    officeNamespacesToShare.forEach(namespace => contentWindow[namespace] = window[namespace]);
-
-                    // Call Office.initialize(), which now initializes the snippet.
-                    // The parameter, initializationReason, is not used in the Playground.
-                    Office.initialize(null /*initializationReason*/);
-                }
-            };
-
-            contentWindow.document.close();
+            writeSnippetIframe(snippetHtml, officeJS);
 
             establishHeartbeat(origin, heartbeatParams);
         }
@@ -71,6 +43,42 @@ interface InitializationParams {
 
     (window as any).initializeRunner = initializeRunner;
 
+
+    function writeSnippetIframe(html: string, officeJS: string) {
+        const $iframe = $('#snippet-container');
+        const iframe = $iframe[0] as HTMLIFrameElement;
+        let { contentWindow } = iframe;
+
+        // Write to the iframe (and note that must do the ".write" call first,
+        // before setting any window properties)
+        contentWindow.document.open();
+        contentWindow.document.write(html);
+
+        // Now proceed with setting window properties/callbacks:
+        (contentWindow as any).console = window.console;
+        if (officeJS) {
+            contentWindow['Office'] = window['Office'];
+        }
+
+        contentWindow.onerror = (...args) => console.error(args);
+
+        contentWindow.document.body.onload = () => {
+            $('#header').show();
+            $iframe.show();
+
+            $('#progress').hide();
+
+            if (officeJS) {
+                officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
+
+                // Call Office.initialize(), which now initializes the snippet.
+                // The parameter, initializationReason, is not used in the Playground.
+                Office.initialize(null /*initializationReason*/);
+            }
+        };
+
+        contentWindow.document.close();
+    }
 
     function handleError(error: Error) {
         console.error(error);

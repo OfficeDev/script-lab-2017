@@ -47,7 +47,7 @@
 }
 
 iframe#FirebugUI {
-	z-index: 1000 !important; /* so that doesn't conflict with loader */
+	z-index: 1000 !important; /* so that can load *beneath* the progress splash-screen (z-index of 10,000) */
 	position: static !important;
 	box-sizing: border-box;
 	outline: none;
