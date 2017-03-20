@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import * as moment from 'moment';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings } from '../app/helpers';
 import { Messenger, MessageType } from '../app/helpers/messenger';
@@ -17,10 +18,12 @@ interface InitializationParams {
 
     let returnUrl: string;
     let $snippetContent: JQuery;
+    let lastModified: string;
 
     async function initializeRunner(params: InitializationParams) {
         try {
             const { origin, officeJS, heartbeatParams } = params;
+            lastModified = heartbeatParams.lastModified;
             returnUrl = params.returnUrl;
 
             const frameworkInitialized = createHostAwaiter(officeJS);
@@ -37,6 +40,8 @@ interface InitializationParams {
             writeSnippetIframe(snippetHtml, officeJS);
 
             establishHeartbeat(origin, heartbeatParams);
+
+            initializeTooltipUpdater();
         }
         catch (error) {
             handleError(error);
@@ -192,14 +197,33 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet) {
-        $('#header-text').text(snippet.name);
-
         const $originalFrame = $('.snippet-frame');
 
         writeSnippetIframe(html, processLibraries(snippet).officeJS).show();
 
         $originalFrame.remove();
 
+        $('#header-text').text(snippet.name);
+        lastModified = snippet.modified_at.toString();
+
         (window as any).Firebug.Console.clear();
+    }
+
+    function initializeTooltipUpdater() {
+        moment.relativeTimeThreshold('s', 40);
+        // Note, per documentation, "ss" must be set after "s"
+        moment.relativeTimeThreshold('ss', 2);
+        moment.relativeTimeThreshold('m', 40);
+        moment.relativeTimeThreshold('h', 20);
+        moment.relativeTimeThreshold('d', 25);
+        moment.relativeTimeThreshold('M', 10);
+
+        const $headerTitle = $('#header .command__center');
+
+        $headerTitle.on('mouseover', refreshLastUpdatedText);
+
+        function refreshLastUpdatedText() {
+            $headerTitle.attr('title', `Last updated ${moment(Number.parseInt(lastModified)).fromNow()}`);
+        }
     }
 })();
