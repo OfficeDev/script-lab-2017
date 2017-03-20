@@ -3,7 +3,7 @@ import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { Monaco, Snippet } from '../actions';
-import { MonacoService, Disposable } from '../services';
+import { MonacoService } from '../services';
 import { debounce } from 'lodash';
 
 @Component({
@@ -18,7 +18,7 @@ import { debounce } from 'lodash';
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
 })
-export class Editor extends Disposable implements AfterViewInit {
+export class Editor implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     @ViewChild('editor') private _editor: ElementRef;
     private _readonly: boolean;
@@ -29,9 +29,8 @@ export class Editor extends Disposable implements AfterViewInit {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _monaco: MonacoService,
+        private _monaco: MonacoService
     ) {
-        super();
     }
 
     /**

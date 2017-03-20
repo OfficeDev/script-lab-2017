@@ -1,6 +1,5 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
-import { Disposable } from './disposable';
 import { AI } from '../helpers';
 import { isEmpty } from 'lodash';
 
@@ -13,7 +12,7 @@ const Regex = {
 };
 
 @Injectable()
-export class MonacoService extends Disposable {
+export class MonacoService {
     private _intellisenseFile = this._request.local<any[]>('libraries.json', ResponseTypes.JSON);
 
     private _defaults: monaco.editor.IEditorConstructionOptions = {
@@ -36,7 +35,6 @@ export class MonacoService extends Disposable {
     };
 
     constructor(private _request: Request) {
-        super();
         this._registerLanguageServices();
     }
 
