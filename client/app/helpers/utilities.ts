@@ -66,26 +66,90 @@ export function post(path: string, params: any) {
     form.submit();
 }
 
-export function queryParamsToJson(href: string): { [key: string]: string } {
-    const indexOfQuestionMark = href.indexOf('?');
-    if (indexOfQuestionMark < 0) {
-        return {};
+export function stringOrEmpty(text: string): string {
+    if (text === null || text === undefined) {
+        return '';
     }
 
-    const allParams = href.substr(indexOfQuestionMark + 1).trim();
-    if (allParams.length === 0) {
-        return {};
+    return text;
+}
+
+export function isNullOrWhitespace(text: string) {
+    return text == null || text.trim().length === 0;
+}
+
+export function indentAll(text: string, indentSize: number) {
+    let lines: string[] = stringOrEmpty(text).split('\n');
+    let indentString = '';
+    for (let i = 0; i < indentSize; i++) {
+        indentString += '    ';
     }
 
-    const keyValuePairStrings = allParams.split('&');
-    const result = {};
-    keyValuePairStrings.forEach(item => {
-        const split = item.split('=');
-        if (split.length !== 2) {
-            throw new Error('Invalid key-value pair for ' + item);
+    return lines.map((line) => indentString + line).join('\n');
+}
+
+export function generateUrl(base: string, queryParams: any) {
+    const result = [];
+    for (const key in queryParams) {
+        if (queryParams.hasOwnProperty(key)) {
+            result.push(`${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`);
         }
-        result[split[0]] = decodeURIComponent(split[1]);
-    });
+    }
 
-    return result;
+    if (result.length === 0) {
+        return base;
+    }
+
+    return `${base}?${result.join('&')}`;
+}
+
+export function processLibraries(snippet: ISnippet) {
+    let linkReferences = [];
+    let scriptReferences = [];
+    let officeJS: string = null;
+
+    snippet.libraries.split('\n').forEach(processLibrary);
+
+    return { linkReferences, scriptReferences, officeJS };
+
+
+    function processLibrary(text: string) {
+        if (text == null || text.trim() === '') {
+            return null;
+        }
+
+        text = text.trim();
+
+        let isNotScriptOrStyle =
+            /^#.*|^\/\/.*|^\/\*.*|.*\*\/$.*/im.test(text) ||
+            /^@types/.test(text) ||
+            /^dt~/.test(text) ||
+            /\.d\.ts$/i.test(text);
+
+        if (isNotScriptOrStyle) {
+            return null;
+        }
+
+        let resolvedUrlPath = (/^https?:\/\/|^ftp? :\/\//i.test(text)) ? text : `https://unpkg.com/${text}`;
+
+        if (/\.css$/i.test(resolvedUrlPath)) {
+            return linkReferences.push(resolvedUrlPath);
+        }
+
+        if (/\.ts$|\.js$/i.test(resolvedUrlPath)) {
+            /*
+            * Don't add Office.js to the rest of the script references --
+            * it is special because of how it needs to be *outside* of the iframe,
+            * whereas the rest of the script references need to be inside the iframe.
+            */
+            if (/(?:office|office.debug).js$/.test(resolvedUrlPath.toLowerCase())) {
+                officeJS = resolvedUrlPath;
+                return null;
+            }
+
+            return scriptReferences.push(resolvedUrlPath);
+        }
+
+        return scriptReferences.push(resolvedUrlPath);
+    }
 }

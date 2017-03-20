@@ -1,70 +1,131 @@
-// import { Authenticator } from '@microsoft/office-js-helpers';
-// import { settings, environment, Messenger, MessageType } from '../app/helpers';
+import { environment, settings, Strings, Messenger, MessageType } from '../app/helpers';
+import { Authenticator } from '@microsoft/office-js-helpers';
 
-// (async () => {
-//     let current: ISnippet = null;
+// Note: this page expects to be initialized with some query parameters.
+// See interface definition of HeartbeatParams.
 
-//     await environment.initialize();
-//     let messenger = new Messenger(environment.current.config.runnerUrl);
+// TODO: Makeshift Listener interface until have appropriate typings for OfficeHelpers listeners
+// TODO: Go through the other "FIXME" comments regarding unsubscribe
+interface Listener {
+    subscribe(callback: () => void);
+    unsubscribe();
+}
 
-//     let params = Authenticator.getUrlParams(location.href, location.origin, '?') as any;
-//     if (params == null || params.host == null) {
-//         messenger.send(MessageType.ERROR, 'Invalid runner state, missing "host" parameter. Please close and try again.');
-//         return;
-//     }
+(() => {
+    let messenger: Messenger;
 
-//     messenger.listen().subscribe(({ type, message }) => {
-//         if (type === MessageType.RELOAD) {
-//             initialize();
-//         }
-//     });
+    let lastModified: string;
 
-//     setInterval(() => {
-//         let currentSnippet = settings.current.lastOpened;
-//         if (currentSnippet == null) {
-//             return;
-//         }
-//         else if (currentSnippet.id == null) {
-//             return messenger.send(MessageType.ERROR, 'Invalid snippet. Please close and try again.');
-//         }
-//         else {
-//             if (!isEquals(currentSnippet)) {
-//                 return initialize();
-//             }
-//             else if (currentSnippet.modified_at !== current.modified_at) {
-//                 return messenger.send(MessageType.RELOAD, currentSnippet.id);
-//             }
-//         }
-//     }, 200);
+    let snippetListener: Listener;
+    let settingsListener: Listener;
+
+    (async () => {
+        // Environment will initialize based off of "mode" being passed in to the snippet
+        await environment.initialize();
+        messenger = new Messenger(environment.current.config.runnerUrl);
+        setupRequestReloadListener(messenger);
+
+        const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
+
+        if (params.id) {
+            lastModified = params.lastModified;
+            createSnippetSpecificListener(params.id);
+        } else {
+            // TODO (TEMPORARY)
+            messenger.send(window.parent, MessageType.ERROR, 'Non-snippet-bound heartbeat not yet supported');
+        }
+    })();
+
+    function createSnippetSpecificListener(id: string) {
+        if (!snippetListener) {
+            snippetListener = settings.snippets.notify();
+        }
+
+        snippetListener.subscribe(() => {
+            settings.snippets.load();
+            validateSnippet();
+        });
+
+        validateSnippet();
 
 
-//     function initialize() {
-//         let snippet = settings.current.lastOpened;
-//         if (snippet == null || snippet.id == null) {
-//             messenger.send(MessageType.ERROR, 'Please create or open a snippet in the editor.');
-//             return null;
-//         }
+        function validateSnippet() {
+            let snippet = settings.snippets.get(id);
 
-//         messenger.send(MessageType.SNIPPET, {
-//             snippet: snippet,
-//             refreshUrl: window.location.origin + '/refresh.html'
-//         });
+            // If found a snippet now, whereas previously had needed to initiate a
+            // settings listener, this means that was previously unsaved and now
+            // a saved snippet.  In that case, no longer need to listen to settings.
+            if (snippet && settingsListener) {
+                // FIXME uncomment once we have unsubscribe:
+                // settingsListener.unsubscribe();
+            }
 
-//         return snippet;
-//     }
+            if (snippet == null) {
+                if (settings.lastOpened.id === id) {
+                    snippet = settings.lastOpened;
+                    // Also subscribe to the settings changed event, since it looks like this
+                    // is an unsaved snippet -- and hence deleting it would not get reflected
+                    // if don't also listen to settings:
 
-//     function isEquals(snippet: ISnippet) {
-//         if (this.current == null || snippet == null) {
-//             return false;
-//         }
-//         else if (snippet.id == null || snippet.id.trim() === '') {
-//             return false;
-//         }
-//         else if (snippet.id !== this.current.id) {
-//             return false;
-//         }
-//         else {
-//             return true;
-//         }
-//     }
-// })();
+                    if (!settingsListener) {
+                        settingsListener = settings.settings.notify();
+                    }
+
+                    settingsListener.subscribe(() => {
+                        settings.settings.load();
+                        validateSnippet();
+                    });
+                }
+            }
+
+            if (snippet == null) {
+                // If cannot find snippet on a snippet-specific listener, unsubscribe
+                // and message back an error (not recoverable without the user going back):
+
+                // FIXME uncomment once we have unsubscribe:
+                // snippetListener.unsubscribe();
+                // if (settingsListener) {
+                //     settingsListener.unsubscribe();
+                // }
+
+                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
+                return;
+            }
+
+            if (snippet.modified_at.toString() !== lastModified) {
+                // Unsubscribe from listeners.  Nothing to do now, until the user decides
+                // that they do want to reload -- and at that point, the runner frame will
+                // send a message, asking for the latest.
+
+                // FIXME uncomment once we have unsubscribe:
+                // snippetListener.unsubscribe();
+                // if (settingsListener) {
+                //     settingsListener.unsubscribe();
+                // }
+
+                messenger.send(window.parent, MessageType.INFORM_STALE);
+                return;
+            }
+        }
+    }
+
+    function setupRequestReloadListener(messenger: Messenger) {
+        messenger.listen()
+            .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
+            .subscribe((input) => {
+                try {
+                    settings.snippets.load();
+                    let snippet = settings.snippets.get(input.message /* message is the snippet ID */);
+
+                    lastModified = snippet.modified_at.toString();
+                    createSnippetSpecificListener(snippet.id);
+
+                    messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+                }
+                catch (e) {
+                    messenger.send(window.parent, MessageType.ERROR, Strings.Runner.getCouldNotRefreshSnippetText(e));
+                }
+            });
+    }
+
+})();

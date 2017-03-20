@@ -23,33 +23,21 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="favicon/favicon.ico" />
     <link rel="manifest" href="favicon/manifest.json">
-    <link rel="stylesheet" href="{{{editorUrl}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
-    <link rel="stylesheet" href="{{{editorUrl}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
-    <link rel="stylesheet" href="{{{editorUrl}}}/polyfills.bundle.css" />
-    <link rel="stylesheet" href="{{{editorUrl}}}/runner.bundle.css" />
-    {{#if snippet.officeJS}}
+    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
+    <link rel="stylesheet" href="{{{origin}}}/runner.bundle.css" />
+    {{#if officeJS}}
 
-    <script src="{{{snippet.officeJS}}}"></script>
+    <script src="{{{officeJS}}}"></script>
     {{/if}}
 </head>
 
-<body class="{{{initialHostClassIfAny}}}">
-    <header id="header" class="command__bar">
-        {{#if includeBackButton}}
-        <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
-            <i class="ms-Icon ms-Icon--Back"></i>
-        </a>
-        {{/if}}
-        <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
-            <i class="ms-Icon ms-Icon--Refresh"></i>
-            <span class="ms-font-m ms-u-slideLeftIn10">{{snippet.name}}</span>
-        </a>
-    </header>
-
+<body class="{{{host}}}">
     <app id="progress" class="app">
         <div class="ms-progress-component">
             <main class="ms-progress-component__main">
-                <img class="ms-progress-component__logo" src="{{snippet.origin}}/assets/images/icon-large.png">
+                <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.png">
                 <h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
                 <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
             </main>
@@ -69,21 +57,76 @@
         </div>
     </app>
 
-    <div id="error" class="fullscreen" style="display:none">
-        <h1 class="title ms-font-xxl">Error</h1>
-        <p class="subtitle ms-font-m"></p>
+    <header id="header" class="command__bar">
+        <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
+            <i class="ms-Icon ms-Icon--Back"></i>
+        </a>
+        <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
+            <i class="ms-Icon ms-Icon--Refresh"></i>
+            <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
+        </a>
+    </header>
+
+    <div id="notify-needs-reload" class="runner-notification ms-MessageBar ms-MessageBar--warning" style="display:none">
+        <div class="ms-MessageBar-content">
+            <div class="ms-MessageBar-text">
+                <!-- NEEDS STRING REVIEW -->
+                The snippet has changed since it was last opened. Reload it?
+            </div>
+
+            <div class="buttons" style="text-align: right;">
+                <div class="reloading-indicator" style="display:none">
+                    <i class="ms-Icon ms-Icon--Refresh spinning-icon"></i>
+                    <span>Reloading...</span>
+                </div>
+                <button class="action-fast-reload ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Reload</span>
+                </button>
+                <button class="action-dismiss ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Dismiss</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notify-error" class="runner-notification ms-MessageBar ms-MessageBar--error" style="display:none">
+        <div class="ms-MessageBar-content">
+            <div class="ms-MessageBar-text">
+                <!-- Error text will dynamically go here -->
+            </div>
+
+            <div class="buttons" style="text-align: right;">
+                <button class="action-back ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Back</span>
+                </button>
+                <button class="action-dismiss ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Dismiss</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
 
-    <iframe id="snippet-container" class="fullscreen" style="display:none" src="about:blank"></iframe>
-
-    <script src="{{{editorUrl}}}/polyfills.bundle.js"></script>
-    <script src="{{{editorUrl}}}/vendor.bundle.js"></script>
-    <script src="{{{editorUrl}}}/runner.bundle.js"></script>
+    <script src="{{{origin}}}/polyfills.bundle.js"></script>
+    <script src="{{{origin}}}/vendor.bundle.js"></script>
+    <script src="{{{origin}}}/runner.bundle.js"></script>
 
     <script type="text/javascript">
-        window.initializeRunner('{{{editorUrl}}}', '{{{snippet.officeJS}}}');
+        window.initializeRunner({
+            origin: '{{{origin}}}',
+            officeJS: '{{{officeJS}}}',
+            returnUrl: '{{{returnUrl}}}',
+            heartbeatParams: {
+                mode: '{{{host}}}',
+                id: '{{{snippetId}}}',
+                lastModified: {{snippetLastModified}}
+            }
+        });
     </script>
 </body>
 

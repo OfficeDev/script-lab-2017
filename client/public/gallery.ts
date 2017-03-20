@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import * as moment from 'moment';
 import { settings, environment, applyTheme, post } from '../app/helpers';
 import '../assets/styles/extras.scss';
 
@@ -28,6 +29,8 @@ export class Gallery {
     </article>`;
 
     constructor() {
+        this.setUpMomentJsDurationDefaults();
+
         settings.settings.notify().subscribe(next => this.renderLastOpened());
 
         settings.snippets.notify().subscribe(next => this.render());
@@ -77,13 +80,21 @@ export class Gallery {
         }
     }
 
-    insertSnippet({ id, name, description }: ISnippet, location: JQuery) {
+    insertSnippet({ id, name, description, modified_at }: ISnippet, location: JQuery) {
         let template = this._template
             .replace('{{name}}', name)
             .replace('{{description}}', description);
 
         let $item = $(template);
-        $item.click(() => this._navigate(id));
+
+        $item.click(() => {
+            $item.attr('title', '');
+            this._navigate(id);
+        });
+
+        $item.on('mouseover', () => $item.attr(
+            'title', `Last updated ${moment(modified_at).fromNow()}`));
+
         $item.appendTo(location);
     }
 
@@ -121,5 +132,15 @@ export class Gallery {
 
         this.showProgress(`Running ${snippet.name}`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data });
+    }
+
+    private setUpMomentJsDurationDefaults() {
+        moment.relativeTimeThreshold('s', 40);
+        // Note, per documentation, "ss" must be set after "s"
+        moment.relativeTimeThreshold('ss', 2);
+        moment.relativeTimeThreshold('m', 40);
+        moment.relativeTimeThreshold('h', 20);
+        moment.relativeTimeThreshold('d', 25);
+        moment.relativeTimeThreshold('M', 10);
     }
 }
