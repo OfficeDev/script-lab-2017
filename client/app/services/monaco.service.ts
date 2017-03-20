@@ -1,7 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
 import { AI } from '../helpers';
-import { isEmpty } from 'lodash';
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types\/.+|^dt~.+/i,
@@ -13,8 +12,6 @@ const Regex = {
 
 @Injectable()
 export class MonacoService {
-    private _intellisenseFile = this._request.local<any[]>('libraries.json', ResponseTypes.JSON);
-
     private _defaults: monaco.editor.IEditorConstructionOptions = {
         value: '',
         language: 'text',
@@ -38,43 +35,48 @@ export class MonacoService {
         this._registerLanguageServices();
     }
 
-    static current: Promise<typeof monaco>;
+    private _loadLibrariesIntellisense =
+    this._request.local<ILibraryDefinition[]>('libraries.json', ResponseTypes.JSON)
+        .toPromise()
+        .then((libraries) => libraries.map(
+            (library) => {
+                let insertText = '';
 
-    private _typings: Promise<monaco.languages.CompletionItem[]>;
-    get typings() {
-        if (this._typings == null) {
-            this._typings = this._intellisenseFile.toPromise().then(
-                item => item
-                    .filter(({ typings }) => !isEmpty(typings))
-                    .map(({ typings, documentation }) => <monaco.languages.CompletionItem>{
-                        label: typings,
-                        documentation: documentation,
-                        kind: monaco.languages.CompletionItemKind.Module,
-                        insertText: `${typings}\n`
-                    })
-            );
-        }
+                if (Array.isArray(library.value)) {
+                    insertText += library.value.join('\n');
+                }
+                else {
+                    insertText += library.value || '';
+                    insertText += '\n';
+                }
 
-        return this._typings;
-    }
+                if (Array.isArray(library.typings)) {
+                    insertText += (library.typings as string[]).join('\n');
+                }
+                else {
+                    insertText += library.typings || '';
+                    insertText += '\n';
+                }
+
+                return <monaco.languages.CompletionItem>{
+                    label: library.label,
+                    documentation: library.description,
+                    kind: monaco.languages.CompletionItemKind.Module,
+                    insertText: insertText
+                };
+            }
+        ));
 
     private _libraries: Promise<monaco.languages.CompletionItem[]>;
     get libraries() {
         if (this._libraries == null) {
-            this._libraries = this._intellisenseFile.toPromise().then(
-                item => item
-                    .filter(({ label }) => !isEmpty(label))
-                    .map(({ label, documentation }) => <monaco.languages.CompletionItem>{
-                        label: label,
-                        documentation: documentation,
-                        kind: monaco.languages.CompletionItemKind.Property,
-                        insertText: `${label}\n`,
-                    })
-            );
+            this._libraries = this._loadLibrariesIntellisense;
         }
 
         return this._libraries;
     }
+
+    static current: Promise<typeof monaco>;
 
     async create(element: ElementRef, overrides?: monaco.editor.IEditorConstructionOptions) {
         let options = { ...this._defaults, ...overrides };
@@ -129,7 +131,6 @@ export class MonacoService {
 
     private async _registerLanguageServices() {
         let monaco = await MonacoService.current;
-
         monaco.languages.register({ id: 'libraries' });
         monaco.languages.setMonarchTokensProvider('libraries', {
             tokenizer: {
@@ -148,20 +149,16 @@ export class MonacoService {
             provideCompletionItems: (model, position) => {
                 let currentLine = model.getValueInRange({
                     startLineNumber: position.lineNumber,
-                    startColumn: 1,
                     endLineNumber: position.lineNumber,
+                    startColumn: 1,
                     endColumn: position.column
                 });
 
-                if (Regex.STARTS_WITH_TYPINGS.test(currentLine)) {
-                    return this.typings;
-                }
-                else if (Regex.GLOBAL.test(currentLine)) {
+                if (Regex.GLOBAL.test(currentLine)) {
                     return this.libraries;
                 }
-                else {
-                    return [];
-                }
+
+                return Promise.resolve([]);
             }
         });
 
