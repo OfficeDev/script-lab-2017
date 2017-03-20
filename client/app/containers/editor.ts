@@ -38,7 +38,6 @@ export class Editor implements AfterViewInit {
      */
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
-        this._monacoEditor.onKeyUp(() => this._debouncedInput());
         this._createTabs();
         this._subscribeToState();
     }
@@ -132,6 +131,8 @@ export class Editor implements AfterViewInit {
                 language = snippet[item.name].language;
             }
             model = monaco.editor.createModel(content, language);
+
+            model.onDidChangeContent(() => this._debouncedInput());
 
             item.model = model;
             item.content = content;
