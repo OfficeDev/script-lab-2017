@@ -12,6 +12,7 @@
   <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/addin-playground/issues" /> 
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://localhost:3200</AppDomain>
@@ -36,7 +37,7 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
-              <Label resid="PG.TabLabel"/>
+              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -168,6 +169,7 @@
                   </Action>
                 </Control>
               </Group>
+              <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
@@ -177,7 +179,7 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
-              <Label resid="PG.TabLabel"/>
+              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -309,6 +311,7 @@
                   </Action>
                 </Control>
               </Group>
+              <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
@@ -318,7 +321,7 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
-              <Label resid="PG.TabLabel"/>
+              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -450,6 +453,7 @@
                   </Action>
                 </Control>
               </Group>
+              <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
@@ -499,7 +503,7 @@
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run currently-editing snippet" />
         <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
-        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Playground tutorial" />
+        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Project Bornholm tutorial" />
         <bt:String id="PG.UsingCommand.Label" DefaultValue="Help" />
         <bt:String id="PG.UsingCommand.TipTitle" DefaultValue="Browser help topics" />
         <bt:String id="PG.FeedbackCommand.Label" DefaultValue="Send Feedback" />
@@ -512,8 +516,8 @@
       <bt:LongStrings>
         <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Project Bornholm code editor." />
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a taskpane that runs the currently-edited snippet." />
-        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick playground tutorial." />
-        <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using the Playground." />
+        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Project Bornholm tutorial." />
+        <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using Project Bornholm." />
         <bt:String id="PG.FeedbackCommand.Desc" DefaultValue="Opens a web page where you can file issues or suggestions." />
         <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running." />
         <bt:String id="PG.AskCommand.Desc" DefaultValue="Lauches a community forum for questions about the Office JavaScript APIs." />
