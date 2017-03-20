@@ -1,107 +1,87 @@
-export class Utilities {
-    static stringOrEmpty(text: string): string {
-        if (text === null || text === undefined) {
-            return '';
-        }
-
-        return text;
+export function stringOrEmpty(text: string): string {
+    if (text === null || text === undefined) {
+        return '';
     }
 
-    static isNullOrWhitespace(text: string) {
-        return text == null || text.trim().length === 0;
+    return text;
+}
+
+export function indentAll(text: string, indentSize: number) {
+    let lines: string[] = stringOrEmpty(text).split('\n');
+    let indentString = '';
+    for (let i = 0; i < indentSize; i++) {
+        indentString += '    ';
     }
 
-    static stripSpaces(text: string) {
-        let lines: string[] = Utilities.stringOrEmpty(text).split('\n').map((item) => item.replace(new RegExp('	', 'g'), '    '));
+    return lines.map((line) => indentString + line).join('\n');
+}
 
-        let isZeroLengthLine: boolean = true;
-        let arrayPosition: number = 0;
-
-        // Remove zero length lines from the beginning of the snippet.
-        do {
-            let currentLine: string = lines[arrayPosition];
-            if (currentLine.trim() === '') {
-                lines.splice(arrayPosition, 1);
-            } else {
-                isZeroLengthLine = false;
-            }
-        } while (isZeroLengthLine || (arrayPosition === lines.length));
-
-        arrayPosition = lines.length - 1;
-        isZeroLengthLine = true;
-
-        // Remove zero length lines from the end of the snippet.
-        do {
-            let currentLine: string = lines[arrayPosition];
-            if (currentLine.trim() === '') {
-                lines.splice(arrayPosition, 1);
-                arrayPosition--;
-            } else {
-                isZeroLengthLine = false;
-            }
-        } while (isZeroLengthLine);
-
-        // Get smallest indent for align left.
-        let shortestIndentSize: number = 1024;
-        for (let line of lines) {
-            let currentLine: string = line;
-            if (currentLine.trim() !== '') {
-                let spaces: number = line.search(/\S/);
-                if (spaces < shortestIndentSize) {
-                    shortestIndentSize = spaces;
-                }
-            }
-        }
-
-        // Align left
-        for (let i: number = 0; i < lines.length; i++) {
-            if (lines[i].length >= shortestIndentSize) {
-                lines[i] = lines[i].substring(shortestIndentSize);
-            }
-        }
-
-        // Convert the array back into a string and return it.
-        let finalSetOfLines: string = '';
-        for (let i: number = 0; i < lines.length; i++) {
-            if (i < lines.length - 1) {
-                finalSetOfLines += lines[i] + '\n';
-            }
-            else {
-                finalSetOfLines += lines[i];
-            }
-        }
-
-        return finalSetOfLines;
-    }
-
-    static indentAll(text: string, indentSize: number) {
-        let lines: string[] = Utilities.stringOrEmpty(text).split('\n');
-        let indentString = '';
-        for (let i = 0; i < indentSize; i++) {
-            indentString += '    ';
-        }
-
-        return lines.map((line) => indentString + line).join('\n');
-    }
-
-    static isUrl(entry: string): boolean {
-        entry = entry.trim().toLowerCase();
-        return entry.startsWith('http://') || entry.startsWith('https://') || entry.startsWith('//');
-    }
-
-    static normalizeUrl(url: string): string {
-        url = url.trim();
-        if (Utilities.isUrl(url)) {
-            // strip out https: or http:
-            return url.substr(url.indexOf('//'));
-        } else {
-            throw new Error('Could not normalize URL ' + url);
+export function generateUrl(base: string, queryParams: any) {
+    const result = [];
+    for (const key in queryParams) {
+        if (queryParams.hasOwnProperty(key)) {
+            result.push(`${key}=${encodeURIComponent(queryParams[key])}`);
         }
     }
 
-    static replaceAllTabsWithSpaces(data: string): string {
-        return data.replace(new RegExp('\t', 'g'), '    ');
+    if (result.length === 0) {
+        return base;
     }
 
-    static randomize = (limit = 100000, start = 0) => Math.floor(Math.random() * limit + start);
+    return `${base}?${result.join('&')}`;
+}
+
+export function replaceTabsWithSpaces(data: string): string {
+    return data.replace(new RegExp('\t', 'g'), '    ');
+}
+
+export function processLibraries(snippet: ISnippet) {
+    let linkReferences = [];
+    let scriptReferences = [];
+    let officeJS: string = null;
+
+    snippet.libraries.split('\n').forEach(processLibrary);
+
+    return { linkReferences, scriptReferences, officeJS };
+
+
+    function processLibrary(text: string) {
+        if (text == null || text.trim() === '') {
+            return null;
+        }
+
+        text = text.trim();
+
+        let isNotScriptOrStyle =
+            /^#.*|^\/\/.*|^\/\*.*|.*\*\/$.*/im.test(text) ||
+            /^@types/.test(text) ||
+            /^dt~/.test(text) ||
+            /\.d\.ts$/i.test(text);
+
+        if (isNotScriptOrStyle) {
+            return null;
+        }
+
+        let resolvedUrlPath = (/^https?:\/\/|^ftp? :\/\//i.test(text)) ? text : `https://unpkg.com/${text}`;
+
+        if (/\.css$/i.test(resolvedUrlPath)) {
+            return linkReferences.push(resolvedUrlPath);
+        }
+
+        if (/\.ts$|\.js$/i.test(resolvedUrlPath)) {
+            /*
+            * Don't add Office.js to the rest of the script references --
+            * it is special because of how it needs to be *outside* of the iframe,
+            * whereas the rest of the script references need to be inside the iframe.
+            */
+            if (/(?:office|office.debug).js$/.test(resolvedUrlPath.toLowerCase())) {
+                officeJS = resolvedUrlPath;
+                return null;
+            }
+
+            return scriptReferences.push(resolvedUrlPath);
+        }
+
+        return scriptReferences.push(resolvedUrlPath);
+    }
 }

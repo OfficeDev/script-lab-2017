@@ -30,4 +30,21 @@
             }
         }
     }
+
+    .host-colored-button {
+        background: $accent-background-primary;
+
+        .ms-Button-label {
+            color: white;
+        }
+
+        &:hover {
+            background: darken($accent-background-primary, 10%);
+        }
+
+        &:active,
+        &:focus {
+            background: darken($accent-background-primary, 15%);
+        }
+    }
 }

@@ -47,11 +47,45 @@
 }
 
 iframe#FirebugUI {
-	z-index: 1000 !important; /* so that doesn't conflict with loader */
+	z-index: 1000 !important; /* so that can load *beneath* the progress splash-screen (z-index of 10,000) */
 	position: static !important;
 	box-sizing: border-box;
 	outline: none;
 	border: none;
+}
+
+.runner-notification {
+	width: 100%;
+	box-sizing: border-box;
+
+	.ms-MessageBar-icon {
+		font-size: 30px;
+	}
+
+	.ms-MessageBar-text {
+		font-size: 1em;
+	}
+
+	.buttons {
+		text-align: right;
+		margin-top: 15px;
+	}
+
+	.reloading-indicator {
+		display: inline-block;
+		height: 32px;
+
+		span {
+			margin: 0 10px;
+			top: -2px;
+			position: relative;
+		}
+	}
+}
+
+.spinning-icon {
+	-webkit-animation: spin 1s infinite linear;
+		animation: spin 1s infinite linear;
 }
 
 /* Themes */
@@ -77,4 +111,26 @@ body.WEB {
 
 body.PROJECT {
 	@include theme-min($project);
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
 }

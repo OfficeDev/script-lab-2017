@@ -127,4 +127,37 @@ export class Strings {
     static readonly urlExample4 = 'Or you can enter just the gist ID';
     static readonly importYamlDescription = `Paste the snippet's YAML code, then choose Import.`;
     static readonly importYamlTextBoxLabel = 'YAML';
+
+
+    static readonly Refresh = {
+        /** NEEDS STRING REVIEW. Error if refresh URL is somehow misformed (should essentially never happen) */
+        missingSnippetParameters: 'Missing some snippet parameters.',
+
+        /** NEEDS STRING REVIEW. Error if snippet no longer exists */
+        couldNotFindTheSnippet: 'Could not find the snippet.',
+
+        /** NEEDS STRING REVIEW. Appends one of the following to the error message
+         * (navigating back after a couple of seconds, if there is a return URL) */
+        getErrorMessageAppendum: (returnUrl: string) =>
+            returnUrl ? 'Returning...' : 'Please close this window and try again.',
+
+    };
+
+    static readonly Runner = {
+        /** NEEDS STRING REVIEW */
+        snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.',
+
+        /** NEEDS STRING REVIEW */
+        unexpectedError: 'An unexpected error had occurred',
+
+        /** NEEDS STRING REVIEW. */
+        getCouldNotRefreshSnippetText: (e: Error) => {
+            if (!e || e.message === '' || e.toString() === '' || e.toString() === '[object Object]') {
+                return 'Could not refresh the snippet';
+            } else {
+                return 'Could not refresh the snippet due to the following error: ' +
+                    e.message || e.toString();
+            }
+        }
+    };
 }
