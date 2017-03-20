@@ -20,6 +20,11 @@ interface InitializationParams {
     let $snippetContent: JQuery;
     let lastModified: string;
 
+    const $needsReload = $('#notify-needs-reload');
+    const $needsReloadIndicator = $needsReload.find('.reloading-indicator');
+    const $needsReloadButtons = $needsReload.find('button');
+
+
     async function initializeRunner(params: InitializationParams) {
         try {
             const { origin, officeJS, heartbeatParams } = params;
@@ -150,12 +155,13 @@ interface InitializationParams {
     }
 
     function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {
-        $('<iframe>', {
+        const $iframe = $('<iframe>', {
             src: generateUrl(`${origin}/heartbeat.html`, heartbeatParams),
             id: 'heartbeat'
         }).css('display', 'none').appendTo('body');
+        const iframeWindow = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        const messenger = new Messenger(location.origin);
+        const messenger = new Messenger(origin);
 
         messenger.listen()
             .filter(({ type }) => type === MessageType.ERROR)
@@ -163,28 +169,15 @@ interface InitializationParams {
             .subscribe(handleError);
 
         messenger.listen()
-            .filter(({ type }) => type === MessageType.RELOAD)
+            .filter(({ type }) => type === MessageType.INFORM_STALE)
             .subscribe(input => {
-                const $needsReload = $('#notify-needs-reload');
-                const $reloadingIndicator = $needsReload.find('#reloading-indicator').hide();
-                const $buttons = $needsReload.find('button').show();
+                $needsReloadIndicator.hide();
+                $needsReloadButtons.show();
 
                 $needsReload.find('.action-fast-reload').off('click').click(() => {
-                    $reloadingIndicator.show();
-                    $buttons.hide();
-
-                    const snippet = input.message as ISnippet;
-                    const data = JSON.stringify({
-                        snippet: snippet,
-                        returnUrl: returnUrl
-                    });
-
-                    // Use jQuery post rather than the Utilities post here
-                    // (don't want to navigate, just to do an AJAX call)
-                    $.post(window.location.origin + '/compile/snippet', { data: data })
-                        .then(html => processSnippetReload(html, snippet))
-                        .fail(handleError)
-                        .always(() => $needsReload.hide());
+                    $needsReloadButtons.hide();
+                    $needsReloadIndicator.show();
+                    messenger.send(iframeWindow, MessageType.REFRESH_REQUEST, heartbeatParams.id);
                 });
 
                 $needsReload.find('.action-dismiss').off('click').click(() => {
@@ -193,6 +186,23 @@ interface InitializationParams {
                 });
 
                 $needsReload.show();
+            });
+
+        messenger.listen()
+            .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
+            .subscribe(input => {
+                const snippet = input.message as ISnippet;
+                const data = JSON.stringify({
+                    snippet: snippet,
+                    returnUrl: returnUrl
+                });
+
+                // Use jQuery post rather than the Utilities post here
+                // (don't want to navigate, just to do an AJAX call)
+                $.post(window.location.origin + '/compile/snippet', { data: data })
+                    .then(html => processSnippetReload(html, snippet))
+                    .fail(handleError)
+                    .always(() => $needsReload.hide());
             });
     }
 
@@ -226,4 +236,5 @@ interface InitializationParams {
             $headerTitle.attr('title', `Last updated ${moment(Number.parseInt(lastModified)).fromNow()}`);
         }
     }
+
 })();

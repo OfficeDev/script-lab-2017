@@ -69,9 +69,6 @@
 
     <div id="notify-needs-reload" class="runner-notification ms-MessageBar ms-MessageBar--warning" style="display:none">
         <div class="ms-MessageBar-content">
-            <div class="ms-MessageBar-icon">
-                <i class="ms-Icon ms-Icon--Info"></i>
-            </div>
             <div class="ms-MessageBar-text">
                 <!-- NEEDS STRING REVIEW -->
                 The snippet has changed since it was last opened. Reload it?
@@ -96,9 +93,6 @@
 
     <div id="notify-error" class="runner-notification ms-MessageBar ms-MessageBar--error" style="display:none">
         <div class="ms-MessageBar-content">
-            <div class="ms-MessageBar-icon">
-                <i class="ms-Icon ms-Icon--Info"></i>
-            </div>
             <div class="ms-MessageBar-text">
                 <!-- Error text will dynamically go here -->
             </div>

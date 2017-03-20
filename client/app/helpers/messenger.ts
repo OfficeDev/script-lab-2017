@@ -3,8 +3,8 @@ import { Observable } from 'rxjs/Observable';
 export class Messenger {
     constructor(public source: string) { }
 
-    send(type: MessageType, message: any) {
-        return window.top.postMessage({ type, message }, this.source);
+    send(recepient: Window, type: MessageType, message?: any) {
+        return recepient.postMessage({ type, message }, this.source);
     }
 
     listen() {
@@ -31,6 +31,15 @@ export class Messenger {
 }
 
 export enum MessageType {
+    /** Error. Also carries a string message */
     ERROR,
-    RELOAD
+
+    /** A message to let the runner know to show a "would you like to refresh" dialog.  No actual message content */
+    INFORM_STALE,
+
+    /** A request for refreshing the snippet (from runner to heartbeat).  Message is the ID of the snippet */
+    REFRESH_REQUEST,
+
+    /** A response from heartbeat to runner. Message is the full snippet object */
+    REFRESH_RESPONSE
 };

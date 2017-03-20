@@ -148,6 +148,16 @@ export class Strings {
         snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.',
 
         /** NEEDS STRING REVIEW */
-        unexpectedError: 'An unexpected error had occurred'
+        unexpectedError: 'An unexpected error had occurred',
+
+        /** NEEDS STRING REVIEW. */
+        getCouldNotRefreshSnippetText: (e: Error) => {
+            if (!e || e.message === '' || e.toString() === '' || e.toString() === '[object Object]') {
+                return 'Could not refresh the snippet';
+            } else {
+                return 'Could not refresh the snippet due to the following error: ' +
+                    e.message || e.toString();
+            }
+        }
     };
 }
