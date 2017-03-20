@@ -14,6 +14,13 @@ interface ITemplate {
     modified_at: number;
 }
 
+interface ILibraryDefinition {
+    label?: string;
+    typings?: string | string[];
+    value?: string | string[];
+    description?: string
+}
+
 interface ISnippet extends ITemplate {
     script?: {
         content: string;
@@ -42,10 +49,19 @@ interface ICompiledSnippet extends ITemplate {
 
 interface IRunnerHandlebarsContext {
     snippetContent: string;
-    snippet: ICompiledSnippet;
-    includeBackButton: boolean;
+    snippetId: string,
+    snippetLastModified: number;
+
+    host: string;
     refreshUrl: string;
     returnUrl: string;
+    origin: string;
+
+    initialLoadSubtitle: string;
+    headerTitle: string;
+
+    // Office.js URL (or empty)
+    officeJS: string;
 }
 
 interface IRunnerState {
@@ -114,4 +130,15 @@ interface ISettings {
     theme: boolean,
     language: string,
     env: string
+}
+
+interface HeartbeatParams {
+    /** mode (equivalent to "host" in this case -- used for environment detection) */
+    mode: string;
+
+    /** snippet ID, if any */
+    id: string;
+
+    /** snippet last modified, if relevant (comes in as a string on URL parameters) */
+    lastModified: string;
 }

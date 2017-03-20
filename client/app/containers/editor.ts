@@ -3,7 +3,7 @@ import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { Monaco, Snippet } from '../actions';
-import { MonacoService, Disposable } from '../services';
+import { MonacoService } from '../services';
 import { debounce } from 'lodash';
 
 @Component({
@@ -18,7 +18,7 @@ import { debounce } from 'lodash';
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
 })
-export class Editor extends Disposable implements AfterViewInit {
+export class Editor implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     @ViewChild('editor') private _editor: ElementRef;
     private _readonly: boolean;
@@ -29,9 +29,8 @@ export class Editor extends Disposable implements AfterViewInit {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _monaco: MonacoService,
+        private _monaco: MonacoService
     ) {
-        super();
     }
 
     /**
@@ -39,7 +38,6 @@ export class Editor extends Disposable implements AfterViewInit {
      */
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
-        this._monacoEditor.onKeyUp(() => this._debouncedInput());
         this._createTabs();
         this._subscribeToState();
     }
@@ -133,6 +131,8 @@ export class Editor extends Disposable implements AfterViewInit {
                 language = snippet[item.name].language;
             }
             model = monaco.editor.createModel(content, language);
+
+            model.onDidChangeContent(() => this._debouncedInput());
 
             item.model = model;
             item.content = content;
