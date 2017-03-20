@@ -30,16 +30,6 @@ app.use(serverStatic(path.resolve(__dirname, 'favicon')));
 //     return res.send();
 // }));
 
-
-
-/**
- * HTTP GET: /run
- * Returns the standalone runner page
- */
-app.get('/run', handler((req: express.Request, res: express.Response) => {
-    return res.sendfile(path.resolve(__dirname, 'templates/editor-runner.html'));
-}));
-
 /**
  * HTTP POST: /auth
  * Returns the access_token

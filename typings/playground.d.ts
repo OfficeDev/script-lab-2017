@@ -14,6 +14,13 @@ interface ITemplate {
     modified_at: number;
 }
 
+interface ILibraryDefinition {
+    label?: string;
+    typings?: string | string[];
+    value?: string | string[];
+    description?: string
+}
+
 interface ISnippet extends ITemplate {
     script?: {
         content: string;
