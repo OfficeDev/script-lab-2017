@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { compose } from '@ngrx/core/compose';
+// import { compose } from '@ngrx/core/compose';
 import { Action, combineReducers, ActionReducer } from '@ngrx/store';
 
 /**
@@ -42,15 +42,12 @@ export function stateSetter(reducer: ActionReducer<any>): ActionReducer<any> {
 }
 
 export function rootReducer(state: State, action: Action) {
-    return compose(
-        stateSetter,
-        combineReducers({
-            snippet: snippet.reducer,
-            monaco: monaco.reducer,
-            ui: ui.reducer,
-            github: github.reducer
-        })
-    );
+    return combineReducers({
+        snippet: snippet.reducer,
+        monaco: monaco.reducer,
+        ui: ui.reducer,
+        github: github.reducer
+    })(state, action);
 }
 
 const getSnippetsState = (state: State) => state.snippet;
