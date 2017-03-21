@@ -27,7 +27,7 @@
     "watch:server": "tsc -p tsconfig.server.json",
     "watch:copy": "cpx \"server/**/!(*.ts)\" \"dist/server\"",
     "watch:config": "cpx \"config/env.config.js\" \"dist/server/core\"",
-    "start": "npm-run-all clean -p build:client watch:* --watch",
+    "start": "npm-run-all clean -p build:client watch:* -- --watch",
     "build": "npm-run-all clean -p build:client watch:*",
     "deploy": "node config/deploy.js"
   },
