@@ -26,7 +26,6 @@ interface Listener {
         setupRequestReloadListener(messenger);
 
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
-
         if (params.id) {
             lastModified = params.lastModified;
             createSnippetSpecificListener(params.id);
@@ -39,12 +38,12 @@ interface Listener {
     function createSnippetSpecificListener(id: string) {
         if (!snippetListener) {
             snippetListener = settings.snippets.notify();
-        }
 
-        snippetListener.subscribe(() => {
-            settings.snippets.load();
-            validateSnippet();
-        });
+            snippetListener.subscribe(() => {
+                settings.snippets.load();
+                validateSnippet();
+            });
+        }
 
         validateSnippet();
 
@@ -58,6 +57,7 @@ interface Listener {
             if (snippet && settingsListener) {
                 // FIXME uncomment once we have unsubscribe:
                 // settingsListener.unsubscribe();
+                // settingsListener = null;
             }
 
             if (snippet == null) {
@@ -87,6 +87,8 @@ interface Listener {
                 // if (settingsListener) {
                 //     settingsListener.unsubscribe();
                 // }
+                // snippetListener = null;
+                // settingsListener = null;
 
                 messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
                 return;
@@ -102,8 +104,21 @@ interface Listener {
                 // if (settingsListener) {
                 //     settingsListener.unsubscribe();
                 // }
+                // snippetListener = null;
+                // settingsListener = null;
 
-                messenger.send(window.parent, MessageType.INFORM_STALE);
+                const immediate =
+                    lastModified == null ||
+                    lastModified === undefined ||
+                    lastModified === '0' ||
+                    (lastModified as any) === 0;
+
+                if (immediate) {
+                    sendSnippetAndStartTracking(snippet);
+                } else {
+                    messenger.send(window.parent, MessageType.INFORM_STALE);
+                }
+
                 return;
             }
         }
@@ -117,15 +132,19 @@ interface Listener {
                     settings.snippets.load();
                     let snippet = settings.snippets.get(input.message /* message is the snippet ID */);
 
-                    lastModified = snippet.modified_at.toString();
-                    createSnippetSpecificListener(snippet.id);
-
-                    messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+                    sendSnippetAndStartTracking(snippet);
                 }
                 catch (e) {
                     messenger.send(window.parent, MessageType.ERROR, Strings.Runner.getCouldNotRefreshSnippetText(e));
                 }
             });
+    }
+
+    function sendSnippetAndStartTracking(snippet: ISnippet) {
+        lastModified = snippet.modified_at.toString();
+        createSnippetSpecificListener(snippet.id);
+
+        messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
     }
 
 })();

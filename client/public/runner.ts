@@ -19,6 +19,7 @@ interface InitializationParams {
     let returnUrl: string;
     let $snippetContent: JQuery;
     let lastModified: string;
+    let currentOfficeJS: string;
 
     const $needsReload = $('#notify-needs-reload');
     const $needsReloadIndicator = $needsReload.find('.reloading-indicator');
@@ -30,6 +31,7 @@ interface InitializationParams {
             const { origin, officeJS, heartbeatParams } = params;
             lastModified = heartbeatParams.lastModified;
             returnUrl = params.returnUrl;
+            currentOfficeJS = officeJS;
 
             const frameworkInitialized = createHostAwaiter(officeJS);
 
@@ -42,7 +44,9 @@ interface InitializationParams {
             // so that can add the snippet frame relative to its position
             $snippetContent.text('');
 
-            writeSnippetIframe(snippetHtml, officeJS);
+            if (snippetHtml.length > 0) {
+                writeSnippetIframe(snippetHtml, officeJS);
+            }
 
             establishHeartbeat(origin, heartbeatParams);
 

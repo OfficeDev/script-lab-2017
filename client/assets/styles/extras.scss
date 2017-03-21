@@ -59,6 +59,7 @@ iframe#FirebugUI {
 	box-sizing: border-box;
 	position: absolute;
 	top: 40px;
+	z-index: 50000; /* make sure it shows up above everything, including the progress splash-screen */
 
 	.ms-MessageBar-icon {
 		font-size: 30px;

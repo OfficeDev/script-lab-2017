@@ -110,6 +110,7 @@
         </div>
     </div>
 
+    {{!-- Keep this as a placeholder even if not loading any initial content --}}
     <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
 
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
