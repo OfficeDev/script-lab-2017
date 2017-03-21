@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-// import { compose } from '@ngrx/core/compose';
+import { compose } from '@ngrx/core/compose';
 import { Action, combineReducers, ActionReducer } from '@ngrx/store';
 
 /**
@@ -31,24 +31,19 @@ export interface State {
  * wrapping that in storeLogger. Remember that compose applies
  * the result from right to left.
  */
-export function stateSetter(reducer: ActionReducer<any>): ActionReducer<any> {
-    return (state, action) => {
-        console.log(state, action, 'on', reducer);
-        if (action.type === 'SET_ROOT_STATE') {
-            return action.payload;
-        }
-        return reducer(state, action);
-    };
+export function stateSetter(reducer: ActionReducer<State>): ActionReducer<State> {
+    return (state: State, action: Action) =>
+        action.type === 'SET_ROOT_STATE' ?
+            action.payload :
+            reducer(state, action);
 }
 
-export function rootReducer(state: State, action: Action) {
-    return combineReducers({
-        snippet: snippet.reducer,
-        monaco: monaco.reducer,
-        ui: ui.reducer,
-        github: github.reducer
-    })(state, action);
-}
+export const rootReducer = compose(stateSetter, combineReducers)({
+    snippet: snippet.reducer,
+    monaco: monaco.reducer,
+    ui: ui.reducer,
+    github: github.reducer
+});
 
 const getSnippetsState = (state: State) => state.snippet;
 export const getCurrent = createSelector(getSnippetsState, snippet.getCurrent);

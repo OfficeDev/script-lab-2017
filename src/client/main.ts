@@ -55,7 +55,6 @@ if ((module as any).hot) {
 })
 export class AppModule {
     constructor(public appRef: ApplicationRef, private _store: Store<any>) {
-
     }
 
     hmrOnInit(store) {
@@ -64,8 +63,8 @@ export class AppModule {
         }
 
         // restore state by dispatch a SET_ROOT_STATE action
-        if (store.rootState) {
-            console.log('Applying HMR...', store.rootState);
+        if (store.state) {
+            console.log('Applying HMR...', store.state);
             this._store.dispatch({
                 type: 'SET_ROOT_STATE',
                 payload: store.rootState
@@ -77,13 +76,17 @@ export class AppModule {
         }
 
         this.appRef.tick();
-        Object.keys(store).forEach(prop => delete store[prop]);
+        delete store.state;
+        delete store.restoreInputValues;
     }
 
     hmrOnDestroy(store) {
         const cmpLocation = this.appRef.components.map(cmp => cmp.location.nativeElement);
-        this._store.take(1).subscribe(s => store.rootState = s);
         store.disposeOldHosts = createNewHosts(cmpLocation);
+        this._store.take(1).subscribe(s => {
+            store.state = s;
+            console.log('Saving state...', s);
+        });
         store.restoreInputValues = createInputTransfer();
         removeNgStyles();
     }
