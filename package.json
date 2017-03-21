@@ -29,7 +29,7 @@
     "prod:server": "tsc -p tsconfig.server.json",
     "prod:copy": "cpx \"src/server/**/!(*.ts)\" \"dist/server\"",
     "build:dev": "webpack-dev-server --hot --inline --config config/webpack.dev.js --progress",
-    "build:prod": "webpack --config config/webpack.prod.js --progress --colors --bail",
+    "build:prod": "webpack --config config/webpack.prod.js --env.mode=prod --progress --colors --bail",
     "start": "npm-run-all clean -p build:dev dev:*",
     "build": "npm-run-all clean -p build:prod prod:*",
     "deploy": "node config/deploy.js"
