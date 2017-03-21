@@ -1,11 +1,11 @@
 import { environment, settings, Strings, Messenger, MessageType } from '../app/helpers';
-import { Authenticator, Listener } from '@microsoft/office-js-helpers';
+import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
     let lastModified: string;
-    let snippetListener: Listener;
-    let settingsListener: Listener;
+    let snippetListener: any;
+    let settingsListener: any;
 
     (async () => {
         // Environment will initialize based off of "mode" being passed in to the snippet
