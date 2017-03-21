@@ -58,9 +58,9 @@
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@angularclass/hmr/-/hmr-1.2.2.tgz#46a18f89a1e94d05c268b83c9480e005f73fc265"
 
-"@microsoft/office-js-helpers@0.6.0-beta.0":
-  version "0.6.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js-helpers/-/office-js-helpers-0.6.0-beta.0.tgz#03fe8f49314958d422510fa01c59703a5ee6593c"
+"@microsoft/office-js-helpers@0.6.0-beta.6":
+  version "0.6.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js-helpers/-/office-js-helpers-0.6.0-beta.6.tgz#4536c0933fbaaa26e37967544d634ae975b6199f"
   dependencies:
     "@types/jquery" "2.0.41"
     "@types/lodash" "4.14.55"

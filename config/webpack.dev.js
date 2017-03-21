@@ -4,7 +4,7 @@ const commonConfig = require('./webpack.common.js');
 const path = require('path');
 
 module.exports = (env) => 
-    webpackMerge(commonConfig(env.mode === 'prod', {
+    webpackMerge(commonConfig(env.mode === 'prod'), {
         devtool: '#source-map',
 
         output: {

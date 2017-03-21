@@ -31,9 +31,9 @@ export class Gallery {
     constructor() {
         this.setUpMomentJsDurationDefaults();
 
-        settings.settings.notify().subscribe(next => this.renderLastOpened());
+        settings.settings.notify().subscribe(() => this.renderLastOpened());
 
-        settings.snippets.notify().subscribe(next => this.render());
+        settings.snippets.notify().subscribe(() => this.render());
 
         this._$refresh.click(() => {
             this.render();
