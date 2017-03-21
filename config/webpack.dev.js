@@ -1,7 +1,7 @@
-let webpack = require('webpack');
-let webpackMerge = require('webpack-merge');
-let commonConfig = require('./webpack.common.js');
-let path = require('path');
+const webpack = require('webpack');
+const webpackMerge = require('webpack-merge');
+const commonConfig = require('./webpack.common.js');
+const path = require('path');
 
 module.exports = webpackMerge(commonConfig, {
     devtool: '#source-map',
@@ -24,15 +24,14 @@ module.exports = webpackMerge(commonConfig, {
         publicPath: "/",
         contentBase: path.resolve('./dist/client'),
         https: true,
-        inline: false,
         overlay: {
             warnings: false,
             errors: true
         },
         open: true,
         port: 3000,
+        hot: true,
         historyApiFallback: true,
-        quiet: true,
         stats: {
             assets: false,
             cached: false,
@@ -52,7 +51,7 @@ module.exports = webpackMerge(commonConfig, {
             source: false,
             timings: true,
             version: true,
-            warnings: false
+            warnings: true
         }
     }
 });

@@ -28,7 +28,7 @@ import { isEmpty } from 'lodash';
                 </ul>
                 <section class="gallery__tabs-container">
                     <section class="import-tab__section" [hidden]="view !== 'snippets'">
-                        <h1 class="ms-font-xxl import__title">Boo</h1>
+                        <h1 class="ms-font-xxl import__title">Snippets</h1>
                         <p class="ms-font-l import__subtitle">Choose from the snippets that you have created.</p>
                         <collapse title="My local snippets">
                             <gallery-list [current]="current$|async" [items]="snippets$|async" (select)="import($event)">

@@ -1,7 +1,7 @@
-let webpack = require('webpack');
-let webpackMerge = require('webpack-merge');
-let commonConfig = require('./webpack.common.js');
-let path = require('path');
+const webpack = require('webpack');
+const webpackMerge = require('webpack-merge');
+const commonConfig = require('./webpack.common.js');
+const path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;
 

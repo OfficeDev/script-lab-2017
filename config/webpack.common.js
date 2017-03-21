@@ -1,12 +1,11 @@
-let webpack = require('webpack');
-let path = require('path');
-let CopyWebpackPlugin = require('copy-webpack-plugin');
-let HtmlWebpackPlugin = require('html-webpack-plugin');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
-let { CheckerPlugin } = require('awesome-typescript-loader');
-let autoprefixer = require('autoprefixer');
-let perfectionist = require('perfectionist');
-
+const webpack = require('webpack');
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { CheckerPlugin } = require('awesome-typescript-loader');
+const autoprefixer = require('autoprefixer');
+const perfectionist = require('perfectionist');
 const { build, config } = require('./env.config');
 const { GH_SECRETS, ENV } = process.env;
 const isDev = ENV !== 'production';
@@ -37,9 +36,10 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                use: [                   
-                    'awesome-typescript-loader?{configFileName: "tsconfig.webpack.json"}'
-                ].concat(isDev? '@angularclass/hmr-loader':''),
+                use: [
+                    'awesome-typescript-loader',
+                    '@angularclass/hmr-loader'
+                ],                   
                 exclude: /node_modules/
             },
             {
@@ -62,8 +62,8 @@ module.exports = {
         ]
     },
 
-    plugins: [
-        new webpack.NoErrorsPlugin(),
+    plugins: [       
+        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${build.timestamp}) © ${build.author}` }),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({

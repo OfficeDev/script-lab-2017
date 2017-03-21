@@ -100,8 +100,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 else {
     const cert = {
-        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+        key: fs.readFileSync(path.resolve('node_modules/webpack-dev-server/ssl/server.pem')),
+        cert: fs.readFileSync(path.resolve('node_modules/webpack-dev-server/ssl/server.pem'))
     };
     https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 }
