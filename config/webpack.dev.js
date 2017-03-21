@@ -16,10 +16,6 @@ module.exports = webpackMerge(commonConfig, {
         modules: ["node_modules"]
     },
 
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()
-    ],
-
     devServer: {
         publicPath: "/",
         contentBase: path.resolve('./dist/client'),
@@ -31,6 +27,7 @@ module.exports = webpackMerge(commonConfig, {
         open: true,
         port: 3000,
         hot: true,
+        quiet: true,
         historyApiFallback: true,
         stats: {
             assets: false,

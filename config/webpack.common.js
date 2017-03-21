@@ -36,10 +36,10 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                use: [
-                    'awesome-typescript-loader',
-                    '@angularclass/hmr-loader'
-                ],                   
+                use: isDev ? [
+                    '@angularclass/hmr-loader',
+                    'awesome-typescript-loader'                    
+                ] : 'awesome-typescript-loader',                   
                 exclude: /node_modules/
             },
             {
