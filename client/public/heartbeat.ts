@@ -61,7 +61,7 @@ interface Listener {
             }
 
             if (snippet == null) {
-                if (settings.lastOpened.id === id) {
+                if (settings.lastOpened && (settings.lastOpened.id === id)) {
                     snippet = settings.lastOpened;
                     // Also subscribe to the settings changed event, since it looks like this
                     // is an unsaved snippet -- and hence deleting it would not get reflected
