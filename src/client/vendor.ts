@@ -33,3 +33,4 @@ import 'lodash/first';
 // External libraries
 import '@microsoft/office-js-helpers';
 import 'js-yaml';
+import 'crypto-js/sha1';
