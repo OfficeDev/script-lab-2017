@@ -10,7 +10,6 @@ import { isEmpty } from 'lodash';
         <dialog class="panel" [show]="true">
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
-
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon" (click)="cancel()">
                         <i class="ms-Icon ms-Icon--Cancel"></i><span>Close</span>
                     </li>
@@ -29,7 +28,7 @@ import { isEmpty } from 'lodash';
                 </ul>
                 <section class="gallery__tabs-container">
                     <section class="import-tab__section" [hidden]="view !== 'snippets'">
-                        <h1 class="ms-font-xxl import__title">Snippets</h1>
+                        <h1 class="ms-font-xxl import__title">Boo</h1>
                         <p class="ms-font-l import__subtitle">Choose from the snippets that you have created.</p>
                         <collapse title="My local snippets">
                             <gallery-list [current]="current$|async" [items]="snippets$|async" (select)="import($event)">

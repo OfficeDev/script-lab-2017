@@ -1,10 +1,10 @@
-var webpack = require('webpack');
-var webpackMerge = require('webpack-merge');
-var commonConfig = require('./webpack.common.js');
-var path = require('path');
+let webpack = require('webpack');
+let webpackMerge = require('webpack-merge');
+let commonConfig = require('./webpack.common.js');
+let path = require('path');
 
 module.exports = webpackMerge(commonConfig, {
-    devtool: 'cheap-eval-source-map',
+    devtool: '#source-map',
 
     output: {
         path: path.resolve('./dist/client'),
@@ -12,22 +12,24 @@ module.exports = webpackMerge(commonConfig, {
         chunkFilename: '[name].chunk.js',
     },
 
+    resolve: {
+        modules: ["node_modules"]
+    },
+
     plugins: [
         new webpack.HotModuleReplacementPlugin()
     ],
 
     devServer: {
+        publicPath: "/",
         contentBase: path.resolve('./dist/client'),
-        compress: true,
         https: true,
-        inline: true,
+        inline: false,
         overlay: {
             warnings: false,
             errors: true
         },
         open: true,
-        watchContentBase: true,
-        compress: true,
         port: 3000,
         historyApiFallback: true,
         quiet: true,

@@ -1,14 +1,15 @@
-var webpack = require('webpack');
-var path = require('path');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var { CheckerPlugin } = require('awesome-typescript-loader');
-var autoprefixer = require('autoprefixer');
-var perfectionist = require('perfectionist');
-var { build, config } = require('./env.config');
-var { GH_SECRETS, ENV } = process.env;
-var isDev = ENV !== 'production';
+let webpack = require('webpack');
+let path = require('path');
+let CopyWebpackPlugin = require('copy-webpack-plugin');
+let HtmlWebpackPlugin = require('html-webpack-plugin');
+let ExtractTextPlugin = require('extract-text-webpack-plugin');
+let { CheckerPlugin } = require('awesome-typescript-loader');
+let autoprefixer = require('autoprefixer');
+let perfectionist = require('perfectionist');
+
+const { build, config } = require('./env.config');
+const { GH_SECRETS, ENV } = process.env;
+const isDev = ENV !== 'production';
 
 module.exports = {
     context: path.resolve('./src/client'),
@@ -36,10 +37,9 @@ module.exports = {
             },
             {
                 test: /\.ts$/,
-                use: [
-                    '@angularclass/hmr-loader',
+                use: [                   
                     'awesome-typescript-loader?{configFileName: "tsconfig.webpack.json"}'
-                ],
+                ].concat(isDev? '@angularclass/hmr-loader':''),
                 exclude: /node_modules/
             },
             {
@@ -118,6 +118,18 @@ module.exports = {
                     return content + data;
                 }
             },
+            {
+                from: '../../node_modules/monaco-editor/min',
+                to: './libs/monaco-editor'
+            },
+            {
+                from: '../../node_modules/office-ui-fabric-js/dist/css',
+                to: './libs/office-ui-fabric-js/css'
+            },
+            {
+                from: '../../node_modules/office-ui-fabric-js/dist/js',
+                to: './libs/office-ui-fabric-js/js'
+            }
         ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',

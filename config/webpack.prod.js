@@ -1,8 +1,7 @@
-var webpack = require('webpack');
-var webpackMerge = require('webpack-merge');
-var commonConfig = require('./webpack.common.js');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
-var path = require('path');
+let webpack = require('webpack');
+let webpackMerge = require('webpack-merge');
+let commonConfig = require('./webpack.common.js');
+let path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;
 
@@ -54,20 +53,6 @@ module.exports = webpackMerge(commonConfig, {
                 screw_ie8: true
             },
             comments: false
-        }),
-        new CopyWebpackPlugin([
-            {
-                from: '../../node_modules/monaco-editor/min',
-                to: './libs/monaco-editor'
-            },
-            {
-                from: '../../node_modules/office-ui-fabric-js/dist/css',
-                to: './libs/office-ui-fabric-js/css'
-            },
-            {
-                from: '../../node_modules/office-ui-fabric-js/dist/js',
-                to: './libs/office-ui-fabric-js/js'
-            }
-        ])
+        })        
     ]
 });
