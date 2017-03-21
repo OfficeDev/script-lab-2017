@@ -6,7 +6,7 @@ import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
-import * as sha256 from 'crypto-js/sha256';
+import * as sha1 from 'crypto-js/sha1';
 
 export interface IIntellisenseFile {
     url: string;
