@@ -23,12 +23,13 @@
   "scripts": {
     "clean": "rimraf dist && rimraf .awcache",
     "lint": "tslint --project tsconfig.json",
-    "build:client": "webpack-dev-server --hot --config config/webpack.dev.js --progress",
+    "build:dev": "webpack-dev-server --hot --config config/webpack.dev.js --progress",
+    "build:prod": "webpack --config config/webpack.prod.js --progress --colors --bail",
     "watch:server": "tsc -p tsconfig.server.json",
     "watch:copy": "cpx \"src/server/**/!(*.ts)\" \"dist/server\"",
     "watch:config": "cpx \"config/env.config.js\" \"dist/server/core\"",
-    "start": "npm-run-all clean -p build:client watch:* -- --watch",
-    "build": "npm-run-all clean -p build:client watch:*",
+    "start": "npm-run-all clean -p build:dev watch:* -- --watch",
+    "build": "npm-run-all clean -p build:prod watch:*",
     "deploy": "node config/deploy.js"
   },
   "license": "MIT",
