@@ -107,7 +107,7 @@ export class MonacoService {
                 let start = performance.now();
                 let require = (<any>window).require;
                 if (require) {
-                    let path = `${location.origin}/libs/monaco-editor/vs`;
+                    let path = `/node_modules/monaco-editor/vs`;
 
                     const requireConfig = {
                         paths: {
