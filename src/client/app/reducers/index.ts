@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
-import { compose } from '@ngrx/core/compose';
-import { Action, combineReducers, ActionReducer } from '@ngrx/store';
+import { combineReducers } from '@ngrx/store';
 
 /**
  * Every reducer module's default export is the reducer function itself. In
@@ -31,19 +30,13 @@ export interface State {
  * wrapping that in storeLogger. Remember that compose applies
  * the result from right to left.
  */
-export function stateSetter(reducer: ActionReducer<State>): ActionReducer<State> {
-    return (state: State, action: Action) =>
-        action.type === 'SET_ROOT_STATE' ?
-            action.payload :
-            reducer(state, action);
-}
 
-export const rootReducer = compose(stateSetter, combineReducers)({
+export const rootReducer = (state, action) => combineReducers({
     snippet: snippet.reducer,
     monaco: monaco.reducer,
     ui: ui.reducer,
     github: github.reducer
-});
+})(state, action);
 
 const getSnippetsState = (state: State) => state.snippet;
 export const getCurrent = createSelector(getSnippetsState, snippet.getCurrent);

@@ -18,18 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(serverStatic(path.resolve(__dirname, 'favicon')));
 
-// /**
-//  * HTTP GET: /
-//  * Redirect to a non-error page (there is nothing to do on the root page of the runner,
-//  * nor do we know the environment in order to redirect to the editor)
-//  */
-// app.get('/', handler((req: express.Request, res: express.Response) => {
-//     res.writeHead(302, {
-//         'Location': currentConfig.editorUrl
-//     });
-//     return res.send();
-// }));
-
 /**
  * HTTP POST: /auth
  * Returns the access_token
@@ -86,7 +74,7 @@ app.post('/compile/page', handler(async (req: express.Request, res: express.Resp
 }));
 
 /**
-  * Generic exception handler
+ * Generic exception handler
  */
 app.use((err, req, res, next) => {
     if (err) {
@@ -94,17 +82,6 @@ app.use((err, req, res, next) => {
         return res.contentType('application/json').send({ code, message, stack });
     }
 });
-
-if (process.env.NODE_ENV === 'production') {
-    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
-}
-else {
-    const cert = {
-        key: fs.readFileSync(path.resolve('node_modules/webpack-dev-server/ssl/server.pem')),
-        cert: fs.readFileSync(path.resolve('node_modules/webpack-dev-server/ssl/server.pem'))
-    };
-    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
-}
 
 async function compileCommon(request: express.Request, wrapWithRunnerChrome?: boolean): Promise<string> {
     const data: IRunnerState = JSON.parse(request.body.data);
@@ -133,7 +110,22 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
             officeJS: compiledSnippet.officeJS,
             snippetId: snippet.id,
             snippetLastModified: snippet.modified_at,
-            refreshUrl: generateRefreshUrl(),
+            refreshUrl: (() => {
+                /**
+                 * Parameters needed for refresh:
+                 * id, to find the snippet.
+                 * host, to know which host container to find the snippet in.
+                 */
+
+                const refreshParams = {
+                    host: snippet.host /* to know which host flavor to search for the snippet in */,
+                    id: snippet.id /* to find the snippet */,
+                    runnerUrl: request.protocol + '://' + request.get('host') /* for refreshing the snippet */,
+                    returnUrl: returnUrl
+                };
+
+                return generateUrl(`${snippet.origin}/refresh.html`, refreshParams);
+            })(),
             returnUrl: returnUrl,
             origin: snippet.origin,
             host: snippet.host,
@@ -143,21 +135,15 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
     }
 
     return replaceTabsWithSpaces(html);
+}
 
-
-    // Helpers
-
-    function generateRefreshUrl() {
-        // Parameters needed for refresh:
-        // * id, to find the snippet.
-        // * host, to know which host container to find the snippet in.
-        const refreshParams = {
-            host: snippet.host /* to know which host flavor to search for the snippet in */,
-            id: snippet.id /* to find the snippet */,
-            runnerUrl: request.protocol + '://' + request.get('host') /* for refreshing the snippet */,
-            returnUrl: returnUrl
-        };
-
-        return generateUrl(`${snippet.origin}/refresh.html`, refreshParams);
-    }
+if (process.env.NODE_ENV === 'production') {
+    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
+}
+else {
+    const cert = {
+        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+    };
+    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 }

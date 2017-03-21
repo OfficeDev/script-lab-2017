@@ -2,10 +2,11 @@ const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.common.js');
 const path = require('path');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 module.exports = () =>
     webpackMerge(commonConfig(false), {
-        devtool: '#source-map',
+        devtool: 'eval-source-map',
 
         output: {
             path: path.resolve('./dist/client'),
@@ -17,6 +18,20 @@ module.exports = () =>
             modules: ["node_modules"]
         },
 
+        plugins: [
+            new BrowserSyncPlugin(
+                {
+                    https: true,
+                    host: 'localhost',
+                    port: 3000,
+                    proxy: 'https://localhost:3100/'
+                },
+                {
+                    reload: false
+                }
+            )
+        ],
+
         devServer: {
             publicPath: "/",
             contentBase: path.resolve('./dist/client'),
@@ -25,9 +40,7 @@ module.exports = () =>
                 warnings: false,
                 errors: true
             },
-            open: true,
-            port: 3000,
-            hot: true,
+            port: 3100,
             quiet: true,
             historyApiFallback: true,
             stats: {

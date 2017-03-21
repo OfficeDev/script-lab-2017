@@ -36,12 +36,7 @@ module.exports = (prodMode) =>
                 },
                 {
                     test: /\.ts$/,
-                    use: prodMode ? 
-                        'awesome-typescript-loader?configFileName=tsconfig.webpack.json' :
-                        [
-                            '@angularclass/hmr-loader',
-                            'awesome-typescript-loader?configFileName=tsconfig.webpack.json'                    
-                        ],                   
+                    use: 'awesome-typescript-loader?configFileName=tsconfig.webpack.json',
                     exclude: /node_modules/
                 },
                 {
@@ -64,9 +59,9 @@ module.exports = (prodMode) =>
             ]
         },
 
-        plugins: [       
+        plugins: [
             new webpack.NoEmitOnErrorsPlugin(),
-            new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${prodMode?'PROD':'DEV'}:${build.timestamp}) © ${build.author}` }),
+            new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${prodMode ? 'PROD' : 'DEV'}:${build.timestamp}) © ${build.author}` }),
             new webpack.DefinePlugin({
                 PLAYGROUND: JSON.stringify({
                     devMode: !prodMode,
