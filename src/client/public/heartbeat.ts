@@ -1,21 +1,9 @@
 import { environment, settings, Strings, Messenger, MessageType } from '../app/helpers';
-import { Authenticator } from '@microsoft/office-js-helpers';
-
-// Note: this page expects to be initialized with some query parameters.
-// See interface definition of HeartbeatParams.
-
-// TODO: Makeshift Listener interface until have appropriate typings for OfficeHelpers listeners
-// TODO: Go through the other "FIXME" comments regarding unsubscribe
-interface Listener {
-    subscribe(callback: () => void);
-    unsubscribe();
-}
+import { Authenticator, Listener } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
-
     let lastModified: string;
-
     let snippetListener: Listener;
     let settingsListener: Listener;
 

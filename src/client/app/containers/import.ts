@@ -105,8 +105,7 @@ export class Import {
 
         this._store.select(fromRoot.getCurrent)
             .filter(snippet => snippet == null)
-            .do(() => this._store.dispatch(new UI.ToggleImportAction(true)))
-            .subscribe();
+            .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
     }
 
     show$ = this._store.select(fromRoot.getImportState);
