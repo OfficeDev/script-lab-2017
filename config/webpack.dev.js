@@ -3,8 +3,8 @@ const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.common.js');
 const path = require('path');
 
-module.exports = (env) => 
-    webpackMerge(commonConfig(env.mode === 'prod'), {
+module.exports = () =>
+    webpackMerge(commonConfig(false), {
         devtool: '#source-map',
 
         output: {
