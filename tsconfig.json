@@ -18,14 +18,12 @@
             "es7",
             "dom"
         ],
-        "noEmitHelpers": true,
-        "skipDefaultLibCheck": true,
         "pretty": true,
         "sourceMap": true,
         "strictNullChecks": false,
         "typeRoots": [
             "node_modules/@types",
-            "typings"
+            "src/interfaces"
         ]
     },
     "exclude": [
