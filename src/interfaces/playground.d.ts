@@ -103,7 +103,7 @@ interface IEnvironment {
     build?: {
         name: string;
         version: string;
-        timestamp: number;
+        timestamp: string;
         author: string;
     },
     config?: IEnvironmentConfig

@@ -1,8 +1,21 @@
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { environment } from './environment';
+import * as cuid from 'cuid';
 
 class Settings {
     private _snippets: Storage<ISnippet> = null;
+
+    private _user: string;
+    get user(): string {
+        if (this._user == null) {
+            this._user = this.settings.get('userId') as any;
+            if (this._user == null) {
+                this._user = cuid();
+                this.settings.insert('userId', this._user as any);
+            }
+        }
+        return this._user;
+    }
 
     settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
 

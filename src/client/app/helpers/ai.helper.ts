@@ -1,24 +1,30 @@
 import { AppInsights } from 'applicationinsights-js';
 import { environment } from './environment';
+import { settings } from './settings';
 import { Utilities } from '@microsoft/office-js-helpers';
+
 
 class ApplicationInsights {
     private _current = AppInsights;
     private _disable = false;
 
-    // Sometimes AppInsights will encounter a failure on first use
-    // (https://github.com/Microsoft/ApplicationInsights-JS/issues/347)
-    // To avoid the issue, wrap any use of "this.current" in a try/catch
-
+    /**
+     * Sometimes AppInsights will encounter a failure on first use
+     * (https://github.com/Microsoft/ApplicationInsights-JS/issues/347)
+     * To avoid the issue, wrap any use of "this.current" in a try/catch
+    */
     initialize(instrumentationKey, disable?: boolean) {
         AppInsights.downloadAndSetup({
             instrumentationKey: instrumentationKey,
             autoTrackPageVisitTime: true
         });
 
+        console.log(instrumentationKey, disable);
+
         try {
             this._disable = disable || environment.current.devMode;
             this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
+            this.setAuthenticatedUserContext();
         }
         catch (e) {
             console.error('Could not initialize AppInsights.');
@@ -34,6 +40,20 @@ class ApplicationInsights {
         }
     }
 
+    trackTimedEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
+        let timer = performance || Date;
+        const tStart = timer.now();
+        return {
+            stop: () => {
+                const tEnd = timer.now();
+                this.trackEvent(name, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+            },
+            get elapsed() {
+                return timer.now() - tStart;
+            }
+        };
+    }
+
     /**
      * Log an exception you have caught.
      * @param   exception   An Error from a catch clause, or the string error message.
@@ -47,9 +67,11 @@ class ApplicationInsights {
                 Utilities.log(error);
             }
             this._current.trackException(error.innerError || error, location, {
+                user: settings.user,
                 message: error.message,
                 host: environment.current.host,
-                build: JSON.stringify(environment.current.build)
+                platform: environment.current.platform,
+                ...environment.current.build
             });
         }
         catch (e) {
@@ -66,9 +88,21 @@ class ApplicationInsights {
     trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
         try {
             if (environment.current.devMode) {
-                console.info(name, properties, measurement);
+                console.info(name, {
+                    ...properties,
+                    user: settings.user,
+                    host: environment.current.host,
+                    platform: environment.current.platform,
+                    ...environment.current.build
+                }, measurement);
             }
-            this._current.trackEvent(name, properties, measurement);
+            this._current.trackEvent(name, {
+                ...properties,
+                user: settings.user,
+                host: environment.current.host,
+                platform: environment.current.platform,
+                ...environment.current.build
+            }, measurement);
         }
         catch (e) {
 
@@ -92,9 +126,21 @@ class ApplicationInsights {
     ) {
         try {
             if (environment.current.devMode) {
-                console.info(name, average, sampleCount, min, max, properties);
+                console.info(name, average, sampleCount, min, max, {
+                    ...properties,
+                    user: settings.user,
+                    host: environment.current.host,
+                    platform: environment.current.platform,
+                    ...environment.current.build
+                });
             }
-            this._current.trackMetric(name, average, sampleCount, min, max, properties);
+            this._current.trackMetric(name, average, sampleCount, min, max, {
+                ...properties,
+                user: settings.user,
+                host: environment.current.host,
+                platform: environment.current.platform,
+                ...environment.current.build
+            });
         }
         catch (e) {
 
@@ -108,12 +154,12 @@ class ApplicationInsights {
     * @param authenticatedUserId {string} - The authenticated user id. A unique and persistent string that represents each authenticated user in the service.
     * @param accountId {string} - An optional string to represent the account associated with the authenticated user.
     */
-    setAuthenticatedUserContext(authenticatedUserId: string, accountId?: string) {
+    setAuthenticatedUserContext(handle?) {
         try {
             if (environment.current.devMode) {
-                console.info(authenticatedUserId, accountId);
+                console.info(settings.user, handle);
             }
-            this._current.setAuthenticatedUserContext(authenticatedUserId, accountId);
+            this._current.setAuthenticatedUserContext(handle || settings.user, settings.user);
         }
         catch (e) {
 
