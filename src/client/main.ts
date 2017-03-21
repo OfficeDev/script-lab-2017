@@ -40,16 +40,16 @@ import './assets/styles/editor.scss';
 export class AppModule {
     static async start() {
         try {
+            await Promise.all([
+                environment.initialize(),
+                MonacoService.initialize()
+            ]);
+
             if (!environment.current.devMode) {
                 enableProdMode();
             }
 
             AI.initialize(environment.current.config.instrumentationKey);
-
-            await Promise.all([
-                environment.initialize(),
-                MonacoService.initialize()
-            ]);
 
             await applyTheme(environment.current.host);
 

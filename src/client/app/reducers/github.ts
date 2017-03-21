@@ -27,7 +27,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_IN: {
-            AI.setAuthenticatedUserContext(action.payload.id.toString(), action.payload.login);
+            AI.setAuthenticatedUserContext(action.payload.id.toString());
             return {
                 ...state,
                 loading: false,
@@ -38,7 +38,6 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
 
         case GitHubActionTypes.LOGGED_OUT: {
             AI.trackEvent(action.type);
-
             return {
                 ...state,
                 loading: false,

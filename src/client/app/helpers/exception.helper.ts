@@ -26,16 +26,15 @@ export class PlaygroundError extends Error {
             if (error.stack) {
                 let last_part = error.stack.match(/[^\s]+$/);
                 this.stack = `${this.name} at ${last_part}`;
-                AI.trackException(this, last_part);
+                AI.trackException(this, error.stack);
             }
         }
     }
 }
 
-
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any) {
-        AI.trackException(exception, 'Global Handler');
+        AI.trackException(exception, 'Global Exception Service');
     }
 }
 

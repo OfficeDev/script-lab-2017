@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs/Observable';
+import { AI } from './ai.helper';
 
 export class Messenger {
     constructor(public source: string) { }
@@ -17,6 +18,7 @@ export class Messenger {
                     }
                 }
                 catch (error) {
+                    AI.trackException(error, 'Messenger Service');
                     observer.error(error);
                 }
             };

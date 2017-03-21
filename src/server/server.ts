@@ -10,8 +10,15 @@ import { replaceTabsWithSpaces, generateUrl } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
+import { ApplicationInsights } from './core/ai.helper';
+
 const { config, secrets } = require('./core/env.config.js');
+const env = process.env.PG_ENV || 'local';
+const source = config[env] as IEnvironmentConfig;
+const ai = new ApplicationInsights(source.instrumentationKey);
+
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
+
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,20 +29,19 @@ app.use(serverStatic(path.resolve(__dirname, 'favicon')));
  * HTTP POST: /auth
  * Returns the access_token
  */
-app.post('/auth/:env', handler(async (req: express.Request, res: express.Response) => {
+app.post('/auth', handler(async (req: express.Request, res: express.Response) => {
     let { code, state } = req.body;
-    let { env } = req.params;
 
     if (code == null) {
         return new BadRequestError('Received invalid code.', code);
     }
 
-    let source = config[env] as IEnvironmentConfig;
     if (source == null) {
         return new BadRequestError(`Bad environment configuration: ${env}`, env);
     }
 
     let { clientId, editorUrl } = source;
+    let timer = ai.trackTimedEvent('GitHub Authentication');
     let token = await new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
@@ -49,7 +55,11 @@ app.post('/auth/:env', handler(async (req: express.Request, res: express.Respons
                 code,
                 state
             }
-        }, (error, httpResponse, body) => error ? reject(new UnauthorizedError('Failed to authenticate user.', error)) : resolve(body));
+        }, (error, httpResponse, body) => {
+            timer.stop();
+            return error ?
+                reject(new UnauthorizedError('Failed to authenticate user.', error)) : resolve(body);
+        });
     });
 
     return res.contentType('application/json').status(200).send(token);
@@ -85,7 +95,6 @@ app.use((err, req, res, next) => {
 
 async function compileCommon(request: express.Request, wrapWithRunnerChrome?: boolean): Promise<string> {
     const data: IRunnerState = JSON.parse(request.body.data);
-
     const { snippet, returnUrl } = data;
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
@@ -94,6 +103,8 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
     if (snippet == null) {
         throw new BadRequestError('Received invalid snippet data.', snippet);
     }
+
+    const timer = ai.trackTimedEvent('Compile Snippet', { id: snippet.id });
 
     const [compiledSnippet, snippetHtml, runnerHtml] =
         await Promise.all([
@@ -134,6 +145,7 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
         });
     }
 
+    timer.stop();
     return replaceTabsWithSpaces(html);
 }
 

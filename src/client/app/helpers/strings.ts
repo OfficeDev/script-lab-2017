@@ -75,7 +75,7 @@ export class Strings {
     //app.ts
 
     static readonly shareMenuPublic = 'Public gist';
-    static readonly shareMenuPrivate = 'Private gist';
+    static readonly shareMenuPrivate = 'Secret gist';
     static readonly shareMenuClipboard = 'Copy to clipboard';
 
     static readonly loginGithub = 'Sign in to GitHub';

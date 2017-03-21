@@ -145,7 +145,7 @@ export class AppComponent {
             return;
         }
 
-        this.isLoggedIn$
+        let sub = this.isLoggedIn$
             .subscribe(isLoggedIn => {
                 if (!isLoggedIn) {
                     this._store.dispatch(new GitHub.LoginAction());
@@ -156,6 +156,10 @@ export class AppComponent {
                 }
                 else {
                     this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                }
+
+                if (!sub.closed) {
+                    sub.unsubscribe();
                 }
             });
     }

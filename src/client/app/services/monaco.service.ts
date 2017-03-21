@@ -104,7 +104,7 @@ export class MonacoService {
     static _loadMonaco() {
         return new Promise((resolve, reject) => {
             try {
-                let start = performance.now();
+                let event = AI.trackTimedEvent('Monaco loaded');
                 let require = (<any>window).require;
                 if (require) {
                     let path = `${location.origin}/libs/monaco-editor/vs`;
@@ -117,9 +117,8 @@ export class MonacoService {
 
                     require.config(requireConfig);
                     require(['vs/editor/editor.main'], () => {
-                        let end = performance.now();
+                        event.stop();
                         resolve(monaco);
-                        AI.trackEvent('Monaco Loaded', {}, { 'Monaco Load Duration': ((end - start) / 1000) });
                     });
                 }
             }

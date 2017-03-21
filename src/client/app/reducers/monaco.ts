@@ -9,8 +9,7 @@ export interface MonacoState {
 export const initialState = {
     activeTab: null,
     activeLanguage: null,
-    loading: false,
-    intellisenseLoadCount: 0
+    loading: false
 };
 
 export function reducer(state = initialState, action: MonacoActions): MonacoState {

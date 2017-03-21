@@ -1,10 +1,7 @@
-import { AppInsights } from 'applicationinsights-js';
-import { environment } from './environment';
-import { settings } from './settings';
-import { Utilities } from '@microsoft/office-js-helpers';
+import * as AppInsights from 'applicationinsights';
 
-class ApplicationInsights {
-    private _current = AppInsights;
+export class ApplicationInsights {
+    private _current: Client;
     private _disable = false;
 
     /**
@@ -12,35 +9,21 @@ class ApplicationInsights {
      * (https://github.com/Microsoft/ApplicationInsights-JS/issues/347)
      * To avoid the issue, wrap any use of "this.current" in a try/catch
     */
-    initialize(instrumentationKey, disable?: boolean) {
-        AppInsights.downloadAndSetup({
-            instrumentationKey: instrumentationKey,
-            autoTrackPageVisitTime: true
-        });
-
-        console.log(instrumentationKey, disable);
-
+    constructor(instrumentationKey, disable?: boolean) {
         try {
-            this._disable = disable || environment.current.devMode;
-            this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
-            this.setAuthenticatedUserContext();
+            this._disable = disable;
+            this._current = AppInsights.setup(instrumentationKey).start().client;
+            if (!this._disable) {
+                AppInsights.enableVerboseLogging();
+            }
         }
         catch (e) {
             console.error('Could not initialize AppInsights.');
         }
     }
 
-    toggleTelemetry(force?: boolean) {
-        try {
-            this._current.config.disableTelemetry = force || !this._disable;
-        }
-        catch (e) {
-            console.error(force, 'Could not toggle telemetry.');
-        }
-    }
-
     trackTimedEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
-        let timer = performance || Date;
+        let timer = Date;
         const tStart = timer.now();
         return {
             stop: () => {
@@ -62,16 +45,12 @@ class ApplicationInsights {
      */
     trackException(error, location) {
         try {
-            if (environment.current.devMode) {
-                Utilities.log(error);
+            if (this._disable) {
+                console.log(error);
             }
-            this._current.trackException(error.innerError || error, location, {
-                user: settings.user,
+            this._current.trackException(error.innerError || error, {
                 message: error.message,
-                location: location,
-                host: environment.current.host,
-                platform: environment.current.platform,
-                ...environment.current.build
+                location: location
             });
         }
         catch (e) {
@@ -87,21 +66,13 @@ class ApplicationInsights {
     */
     trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
         try {
-            if (environment.current.devMode) {
+            if (this._disable) {
                 console.info(name, {
                     ...properties,
-                    user: settings.user,
-                    host: environment.current.host,
-                    platform: environment.current.platform,
-                    ...environment.current.build
                 }, measurement);
             }
             this._current.trackEvent(name, {
                 ...properties,
-                user: settings.user,
-                host: environment.current.host,
-                platform: environment.current.platform,
-                ...environment.current.build
             }, measurement);
         }
         catch (e) {
@@ -125,46 +96,17 @@ class ApplicationInsights {
         }
     ) {
         try {
-            if (environment.current.devMode) {
+            if (this._disable) {
                 console.info(name, average, sampleCount, min, max, {
                     ...properties,
-                    user: settings.user,
-                    host: environment.current.host,
-                    platform: environment.current.platform,
-                    ...environment.current.build
                 });
             }
-            this._current.trackMetric(name, average, sampleCount, min, max, {
-                ...properties,
-                user: settings.user,
-                host: environment.current.host,
-                platform: environment.current.platform,
-                ...environment.current.build
+            this._current.trackMetric(name, average, sampleCount, min, max, null, {
+                ...properties
             });
         }
         catch (e) {
 
         }
     }
-
-    /**
-    * Sets the autheticated user id and the account id in this session.
-    * User auth id and account id should be of type string. They should not contain commas, semi-colons, equal signs, spaces, or vertical-bars.
-    *
-    * @param authenticatedUserId {string} - The authenticated user id. A unique and persistent string that represents each authenticated user in the service.
-    * @param accountId {string} - An optional string to represent the account associated with the authenticated user.
-    */
-    setAuthenticatedUserContext(handle?) {
-        try {
-            if (environment.current.devMode) {
-                console.info(settings.user, handle);
-            }
-            this._current.setAuthenticatedUserContext(handle || settings.user, settings.user);
-        }
-        catch (e) {
-
-        }
-    }
 }
-
-export const AI = new ApplicationInsights();

@@ -5,7 +5,6 @@ import { Utilities } from '@microsoft/office-js-helpers';
 export interface UIState {
     menuOpened?: boolean;
     dialog?: IAlert;
-    language?: string;
     theme?: boolean;
     errors?: Error[];
     showImport?: boolean;

@@ -45,10 +45,8 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.IS_LOGGED_IN)
         .map(() => this._github.profile)
         .filter(profile => !(profile == null))
-
         .mergeMap(profile => Observable.from([new GitHub.LoggedInAction(profile)]))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.profileCheckFailed, exception)));
-
 
     @Effect()
     loadGists$: Observable<Action> = this.actions$
