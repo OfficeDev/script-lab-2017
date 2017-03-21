@@ -31,15 +31,9 @@ export interface State {
  * wrapping that in storeLogger. Remember that compose applies
  * the result from right to left.
  */
-const reducers = {
-    snippet: snippet.reducer,
-    monaco: monaco.reducer,
-    ui: ui.reducer,
-    github: github.reducer
-};
-
 export function stateSetter(reducer: ActionReducer<any>): ActionReducer<any> {
     return (state, action) => {
+        console.log(state, action, 'on', reducer);
         if (action.type === 'SET_ROOT_STATE') {
             return action.payload;
         }
@@ -48,7 +42,15 @@ export function stateSetter(reducer: ActionReducer<any>): ActionReducer<any> {
 }
 
 export function rootReducer(state: State, action: Action) {
-    return compose(stateSetter, combineReducers(reducers)(state, action));
+    return compose(
+        stateSetter,
+        combineReducers({
+            snippet: snippet.reducer,
+            monaco: monaco.reducer,
+            ui: ui.reducer,
+            github: github.reducer
+        })
+    );
 }
 
 const getSnippetsState = (state: State) => state.snippet;

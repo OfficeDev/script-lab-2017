@@ -36,10 +36,15 @@ let imports = [
 ];
 
 if ((module as any).hot) {
-    console.log('hello');
-    imports.push(
-        StoreDevtoolsModule.instrumentOnlyWithExtension()
-    );
+    imports.push(...[
+        StoreDevtoolsModule.instrumentStore({
+            monitor: useLogMonitor({
+                visible: true,
+                position: 'right'
+            })
+        }),
+        StoreLogMonitorModule
+    ]);
 }
 
 @NgModule({
@@ -54,7 +59,6 @@ export class AppModule {
     }
 
     hmrOnInit(store) {
-        console.log(store);
         if (!store || !store.rootState) {
             return;
         }
