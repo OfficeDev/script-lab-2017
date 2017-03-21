@@ -14,12 +14,12 @@ module.exports = {
     entry: {
         polyfills: './polyfills.ts',
         vendor: './vendor.ts',
-        main: './main.ts',
-        functions: './public/functions.ts',
-        gallery: './public/gallery.ts',
-        heartbeat: './public/heartbeat.ts',
-        refresh: './public/refresh.ts',
-        runner: './public/runner.ts'
+        main: ['./main.ts', 'webpack-hot-middleware/client'],
+        functions: ['./public/functions.ts', 'webpack-hot-middleware/client'],
+        gallery: ['./public/gallery.ts', 'webpack-hot-middleware/client'],
+        heartbeat: ['./public/heartbeat.ts', 'webpack-hot-middleware/client'],
+        refresh: ['./public/refresh.ts', 'webpack-hot-middleware/client'],
+        runner: ['./public/runner.ts', 'webpack-hot-middleware/client']
     },
 
     resolve: {
@@ -40,8 +40,8 @@ module.exports = {
             {
                 test: /\.ts$/,
                 use: [
-                    'awesome-typescript-loader',
-                    'angular2-template-loader'
+                    '@angularclass/hmr-loader',
+                    'awesome-typescript-loader'
                 ],
                 exclude: /node_modules/
             },

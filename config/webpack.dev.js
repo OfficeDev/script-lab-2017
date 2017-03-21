@@ -1,6 +1,5 @@
 var webpack = require('webpack');
 var webpackMerge = require('webpack-merge');
-var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 var commonConfig = require('./webpack.common.js');
 var path = require('path');
 var { build, config } = require('./env.config');
@@ -15,6 +14,8 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin(),
         new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${build.timestamp}) © ${build.author}` }),
         new webpack.DefinePlugin({
             PLAYGROUND: JSON.stringify({
@@ -22,18 +23,7 @@ module.exports = webpackMerge(commonConfig, {
                 build: build,
                 config: config
             })
-        }),
-        new BrowserSyncPlugin(
-            {
-                https: true,
-                host: 'localhost',
-                port: 3000,
-                proxy: 'https://localhost:3100/'
-            },
-            {
-                reload: false
-            }
-        )
+        })
     ],
 
     devServer: {
@@ -45,9 +35,10 @@ module.exports = webpackMerge(commonConfig, {
             warnings: false,
             errors: true
         },
+        open: true,
         watchContentBase: true,
         compress: true,
-        port: 3100,
+        port: 3000,
         historyApiFallback: true,
         quiet: true,
         stats: {

@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
-import { combineReducers } from '@ngrx/store';
+import { compose } from '@ngrx/core/compose';
+import { Action, combineReducers, ActionReducer } from '@ngrx/store';
 
 /**
  * Every reducer module's default export is the reducer function itself. In
@@ -37,7 +38,18 @@ const reducers = {
     github: github.reducer
 };
 
-export const rootReducer = (state: any, action: any) => combineReducers(reducers)(state, action);
+export function stateSetter(reducer: ActionReducer<any>): ActionReducer<any> {
+    return (state, action) => {
+        if (action.type === 'SET_ROOT_STATE') {
+            return action.payload;
+        }
+        return reducer(state, action);
+    };
+}
+
+export function rootReducer(state: State, action: Action) {
+    return compose(stateSetter, combineReducers(reducers)(state, action));
+}
 
 const getSnippetsState = (state: State) => state.snippet;
 export const getCurrent = createSelector(getSnippetsState, snippet.getCurrent);
@@ -78,7 +90,7 @@ export const createDefaultState = (settings: ISettings) => {
     if (settings == null) {
         return null;
     }
-    let {profile, lastOpened, theme, language, env} = settings;
+    let { profile, lastOpened, theme, language, env } = settings;
 
     return <State>{
         github: { ...github.initialState, profile },
