@@ -46,8 +46,14 @@ module.exports = webpackMerge(commonConfig, {
             sourceMap: true,
             compress: true,
             mangle: {
+                screw_ie8: true,
                 keep_fnames: true
-            }
+            },
+            compress: {
+                warnings: false,
+                screw_ie8: true
+            },
+            comments: false
         }),
         new CopyWebpackPlugin([
             {
