@@ -1,15 +1,17 @@
-var webpack = require('webpack');
-var path = require('path');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var { CheckerPlugin } = require('awesome-typescript-loader');
-var autoprefixer = require('autoprefixer');
-var perfectionist = require('perfectionist');
-var { GH_SECRETS } = process.env;
+const webpack = require('webpack');
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { CheckerPlugin } = require('awesome-typescript-loader');
+const autoprefixer = require('autoprefixer');
+const perfectionist = require('perfectionist');
+const { build, config } = require('./env.config');
+const { GH_SECRETS, ENV } = process.env;
+const isDev = ENV !== 'production';
 
 module.exports = {
-    context: path.resolve('./client'),
+    context: path.resolve('./src/client'),
 
     entry: {
         polyfills: './polyfills.ts',
@@ -29,20 +31,15 @@ module.exports = {
     module: {
         rules: [
             {
-                enforce: 'pre',
-                test: /\.js$/,
-                use: "source-map-loader"
-            },
-            {
                 test: /\.html$/,
                 use: 'html-loader'
             },
             {
                 test: /\.ts$/,
-                use: [
-                    'awesome-typescript-loader',
-                    'angular2-template-loader'
-                ],
+                use: isDev ? [
+                    '@angularclass/hmr-loader',
+                    'awesome-typescript-loader'                    
+                ] : 'awesome-typescript-loader',                   
                 exclude: /node_modules/
             },
             {
@@ -65,7 +62,16 @@ module.exports = {
         ]
     },
 
-    plugins: [
+    plugins: [       
+        new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${build.timestamp}) © ${build.author}` }),
+        new webpack.DefinePlugin({
+            PLAYGROUND: JSON.stringify({
+                devMode: isDev,
+                build: build,
+                config: config
+            })
+        }),
         new webpack.LoaderOptionsPlugin({
             options: {
                 postcss: [
@@ -78,14 +84,6 @@ module.exports = {
             }
         }),
         new CheckerPlugin(),
-        new webpack.LoaderOptionsPlugin({
-            options: {
-                postcss: [
-                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
-                    perfectionist
-                ]
-            }
-        }),
         new ExtractTextPlugin('[name].bundle.css'),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['vendor', 'polyfills'],
@@ -103,19 +101,7 @@ module.exports = {
                 ignore: ['*.ts']
             },
             {
-                from: '../node_modules/monaco-editor/min',
-                to: './libs/monaco-editor'
-            },
-            {
-                from: '../node_modules/office-ui-fabric-js/dist/css',
-                to: './libs/office-ui-fabric-js/css'
-            },
-            {
-                from: '../node_modules/office-ui-fabric-js/dist/js',
-                to: './libs/office-ui-fabric-js/js'
-            },
-            {
-                from: '../config/env.config.js',
+                from: '../../config/env.config.js',
                 to: '../server/core/env.config.js',
                 transform: (content, path) => {
                     if (GH_SECRETS == null) {
@@ -132,6 +118,18 @@ module.exports = {
                     return content + data;
                 }
             },
+            {
+                from: '../../node_modules/monaco-editor/min',
+                to: './libs/monaco-editor'
+            },
+            {
+                from: '../../node_modules/office-ui-fabric-js/dist/css',
+                to: './libs/office-ui-fabric-js/css'
+            },
+            {
+                from: '../../node_modules/office-ui-fabric-js/dist/js',
+                to: './libs/office-ui-fabric-js/js'
+            }
         ]),
         new HtmlWebpackPlugin({
             filename: 'index.html',

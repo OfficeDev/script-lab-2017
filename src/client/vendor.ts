@@ -4,8 +4,6 @@ import '@angular/core';
 import '@angular/common';
 import '@angular/http';
 
-// External libraries
-import '@microsoft/office-js-helpers';
 // RxJS
 import 'rxjs/Observable';
 import 'rxjs/Subscription';
@@ -31,3 +29,8 @@ import 'lodash/forIn';
 import 'lodash/map';
 import 'lodash/each';
 import 'lodash/first';
+
+// External libraries
+import '@microsoft/office-js-helpers';
+import 'js-yaml';
+import 'crypto-js/sha1';

@@ -14,7 +14,6 @@ export const initialState = {
 };
 
 export function reducer(state = initialState, action: MonacoActions): MonacoState {
-
     switch (action.type) {
         case MonacoActionTypes.CHANGE_TAB:
             return {

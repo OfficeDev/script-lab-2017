@@ -6,7 +6,7 @@ import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
-import * as sha256 from 'crypto-js/sha256';
+import * as sha1 from 'crypto-js/sha1';
 
 export interface IIntellisenseFile {
     url: string;
@@ -71,7 +71,7 @@ export class MonacoEffects {
             .fromPromise(MonacoService.current)
             .mergeMap(() => this._get(url))
             .map(file => {
-                AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha256(file.url).toString() });
+                AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha1(file.url).toString() });
                 let disposable = source.addExtraLib(file.content, file.url);
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;
