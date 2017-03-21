@@ -6,7 +6,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var { CheckerPlugin } = require('awesome-typescript-loader');
 var autoprefixer = require('autoprefixer');
 var perfectionist = require('perfectionist');
-var { GH_SECRETS } = process.env;
+var { build, config } = require('./env.config');
+var { GH_SECRETS, ENV } = process.env;
+var isDev = ENV !== 'production';
 
 module.exports = {
     context: path.resolve('./src/client'),
@@ -14,12 +16,12 @@ module.exports = {
     entry: {
         polyfills: './polyfills.ts',
         vendor: './vendor.ts',
-        main: ['./main.ts', 'webpack-hot-middleware/client'],
-        functions: ['./public/functions.ts', 'webpack-hot-middleware/client'],
-        gallery: ['./public/gallery.ts', 'webpack-hot-middleware/client'],
-        heartbeat: ['./public/heartbeat.ts', 'webpack-hot-middleware/client'],
-        refresh: ['./public/refresh.ts', 'webpack-hot-middleware/client'],
-        runner: ['./public/runner.ts', 'webpack-hot-middleware/client']
+        main: './main.ts',
+        functions: './public/functions.ts',
+        gallery: './public/gallery.ts',
+        heartbeat: './public/heartbeat.ts',
+        refresh: './public/refresh.ts',
+        runner: './public/runner.ts'
     },
 
     resolve: {
@@ -28,11 +30,6 @@ module.exports = {
 
     module: {
         rules: [
-            {
-                enforce: 'pre',
-                test: /\.js$/,
-                use: "source-map-loader"
-            },
             {
                 test: /\.html$/,
                 use: 'html-loader'
@@ -66,6 +63,15 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.NoErrorsPlugin(),
+        new webpack.BannerPlugin({ banner: `${build.name} v.${build.version} (${build.timestamp}) © ${build.author}` }),
+        new webpack.DefinePlugin({
+            PLAYGROUND: JSON.stringify({
+                devMode: isDev,
+                build: build,
+                config: config
+            })
+        }),
         new webpack.LoaderOptionsPlugin({
             options: {
                 postcss: [
@@ -78,14 +84,6 @@ module.exports = {
             }
         }),
         new CheckerPlugin(),
-        new webpack.LoaderOptionsPlugin({
-            options: {
-                postcss: [
-                    autoprefixer({ browsers: ['Safari >= 8', 'last 2 versions'] }),
-                    perfectionist
-                ]
-            }
-        }),
         new ExtractTextPlugin('[name].bundle.css'),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['vendor', 'polyfills'],
@@ -101,18 +99,6 @@ module.exports = {
                 from: './public',
                 to: '',
                 ignore: ['*.ts']
-            },
-            {
-                from: '../../node_modules/monaco-editor/min',
-                to: './libs/monaco-editor'
-            },
-            {
-                from: '../../node_modules/office-ui-fabric-js/dist/css',
-                to: './libs/office-ui-fabric-js/css'
-            },
-            {
-                from: '../../node_modules/office-ui-fabric-js/dist/js',
-                to: './libs/office-ui-fabric-js/js'
             },
             {
                 from: '../../config/env.config.js',
