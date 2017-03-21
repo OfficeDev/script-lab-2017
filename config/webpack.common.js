@@ -9,7 +9,7 @@ var perfectionist = require('perfectionist');
 var { GH_SECRETS } = process.env;
 
 module.exports = {
-    context: path.resolve('./client'),
+    context: path.resolve('./src/client'),
 
     entry: {
         polyfills: './polyfills.ts',
@@ -41,7 +41,7 @@ module.exports = {
                 test: /\.ts$/,
                 use: [
                     '@angularclass/hmr-loader',
-                    'awesome-typescript-loader'
+                    'awesome-typescript-loader?{configFileName: "tsconfig.webpack.json"}'
                 ],
                 exclude: /node_modules/
             },
@@ -103,19 +103,19 @@ module.exports = {
                 ignore: ['*.ts']
             },
             {
-                from: '../node_modules/monaco-editor/min',
+                from: '../../node_modules/monaco-editor/min',
                 to: './libs/monaco-editor'
             },
             {
-                from: '../node_modules/office-ui-fabric-js/dist/css',
+                from: '../../node_modules/office-ui-fabric-js/dist/css',
                 to: './libs/office-ui-fabric-js/css'
             },
             {
-                from: '../node_modules/office-ui-fabric-js/dist/js',
+                from: '../../node_modules/office-ui-fabric-js/dist/js',
                 to: './libs/office-ui-fabric-js/js'
             },
             {
-                from: '../config/env.config.js',
+                from: '../../config/env.config.js',
                 to: '../server/core/env.config.js',
                 transform: (content, path) => {
                     if (GH_SECRETS == null) {
