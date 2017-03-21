@@ -57,6 +57,8 @@ iframe#FirebugUI {
 .runner-notification {
 	width: 100%;
 	box-sizing: border-box;
+	position: absolute;
+	top: 40px;
 
 	.ms-MessageBar-icon {
 		font-size: 30px;
