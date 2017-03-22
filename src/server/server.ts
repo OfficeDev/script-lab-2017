@@ -3,7 +3,6 @@ import * as https from 'https';
 import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import * as serverStatic from 'serve-static';
 import * as cors from 'cors';
 import * as Request from 'request';
 import { replaceTabsWithSpaces, generateUrl } from './core/utilities';
@@ -23,7 +22,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(serverStatic(path.resolve(__dirname, 'favicon')));
+app.use('/favicon', express.static('favicon'));
 
 /**
  * HTTP POST: /auth
