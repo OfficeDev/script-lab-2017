@@ -44,12 +44,17 @@ class ApplicationInsights {
         const tStart = timer.now();
         return {
             stop: () => {
-                const tEnd = timer.now();
-                if (environment.current.devMode) {
-                    console.info(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                try {
+                    const tEnd = timer.now();
+                    if (environment.current.devMode) {
+                        console.info(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                    }
+                    this._current.trackPageView(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                    return tEnd - tStart;
                 }
-                this._current.trackPageView(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
-                return tEnd - tStart;
+                catch (e) {
+                    return -1;
+                }
             },
             get elapsed() {
                 return timer.now() - tStart;
@@ -62,9 +67,14 @@ class ApplicationInsights {
         const tStart = timer.now();
         return {
             stop: () => {
-                const tEnd = timer.now();
-                this.trackEvent(name, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
-                return tEnd - tStart;
+                try {
+                    const tEnd = timer.now();
+                    this.trackEvent(name, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                    return tEnd - tStart;
+                }
+                catch (e) {
+                    return -1;
+                }
             },
             get elapsed() {
                 return timer.now() - tStart;

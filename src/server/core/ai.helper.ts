@@ -27,8 +27,12 @@ export class ApplicationInsights {
         const tStart = timer.now();
         return {
             stop: () => {
-                const tEnd = timer.now();
-                this.trackEvent(name, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                try {
+                    const tEnd = timer.now();
+                    this.trackEvent(name, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                }
+                catch (e) {
+                }
             },
             get elapsed() {
                 return timer.now() - tStart;
