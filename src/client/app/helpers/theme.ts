@@ -43,6 +43,14 @@ export function applyTheme(host: string): Promise<boolean> {
                 });
                 break;
 
+            case 'TEAMS':
+                (require as any).ensure([], (require) => {
+                    require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/teams.scss'], () => {
+                        resolve(true);
+                    });
+                });
+                break;
+
             case HostType.WEB:
             default:
                 (require as any).ensure([], (require) => {

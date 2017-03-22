@@ -54,7 +54,7 @@ export class AppModule {
 
             await applyTheme(environment.current.host);
 
-            if (!Authenticator.isAuthDialog()) {
+            if (!Authenticator.isAuthDialog(environment.current.host === 'TEAMS')) {
                 AI.trackEvent(`[Perf] Playground ready`, { host: environment.current.host });
                 await platformBrowserDynamic().bootstrapModule(AppModule);
                 timer.stop();

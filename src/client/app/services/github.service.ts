@@ -79,7 +79,7 @@ export class GitHubService {
     }
 
     async login(): Promise<IBasicProfile> {
-        this._token = await this._authenticator.authenticate('GitHub');
+        this._token = await this._authenticator.authenticate('GitHub', environment.current.host === 'TEAMS');
         this._setDefaultHeaders(this._token);
         this.profile = await this.user().toPromise();
         return this.profile;

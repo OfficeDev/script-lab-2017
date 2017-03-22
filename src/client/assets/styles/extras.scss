@@ -115,6 +115,10 @@ body.PROJECT {
 	@include theme-min($project);
 }
 
+body.TEAMS {
+	@include theme-min($teams);
+}
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
