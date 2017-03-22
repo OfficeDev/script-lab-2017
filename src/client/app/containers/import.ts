@@ -143,11 +143,12 @@ export class Import {
                 break;
 
             case 'import':
+                debugger;
                 if (this.url) {
                     mode = Snippet.ImportType.URL;
                 }
                 else {
-                    mode = Snippet.ImportType.GIST;
+                    mode = Snippet.ImportType.YAML;
                 }
                 data = this.url || this.snippet;
                 break;

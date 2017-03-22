@@ -49,9 +49,10 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
+        .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode }))
         .mergeMap(({ data, mode }) => this._importFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
         .filter(({ snippet }) => !(snippet == null))
-        .map(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+        .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
         .catch((exception: Error) => {
             return Observable.from([
                 new UI.ReportErrorAction(Strings.snippetImportError, exception),
@@ -212,7 +213,6 @@ export class SnippetEffects {
 
     private _importFromSource(data: string, type: string): Observable<ISnippet> {
         AI.trackEvent(type);
-
         switch (type) {
             /* If creating a new snippet, try to load it from cache */
             case Snippet.ImportType.DEFAULT:
@@ -229,9 +229,30 @@ export class SnippetEffects {
             case Snippet.ImportType.OPEN:
                 return Observable.of(settings.snippets.get(data));
 
-            /* If importing a gist, then extract the gist ID and use the apis to retrieve it */
+            /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
+            case Snippet.ImportType.SAMPLE:
+            case Snippet.ImportType.URL:
             case Snippet.ImportType.GIST:
-                const id = data.replace(/https:\/\/gist.github.com\/.*?\//, '');
+                let id = null;
+
+                const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
+
+                if (match != null) {
+                    /* If importing a gist, then extract the gist ID and use the apis to retrieve it */
+                    id = match[1];
+                }
+                else {
+                    if (data.length === 32 && !(/https?:\/\//.test(data))) {
+                        /* The user provided a gist ID and its not a url*/
+                        id = data;
+                    }
+                    else {
+                        /* Assume its a regular URL */
+                        return this._request.get<ISnippet>(data, ResponseTypes.YAML);
+                    }
+                }
+
+                /* use the github api to get the gist, needed for secret gists as well */
                 return this._github.gist(id)
                     .map(gist => {
                         /* Try to find a yaml file */
@@ -250,12 +271,6 @@ export class SnippetEffects {
                         }
                     });
 
-
-            /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
-            case Snippet.ImportType.SAMPLE:
-            case Snippet.ImportType.URL:
-                return this._request.get<ISnippet>(data, ResponseTypes.YAML);
-
             /* If import type is YAML, then simply load */
             case Snippet.ImportType.YAML:
                 let snippet = jsyaml.load(data);
@@ -268,10 +283,6 @@ export class SnippetEffects {
     private _massageSnippet(snippet: ISnippet, mode: string): Observable<Action> {
         if (snippet.host && snippet.host !== environment.current.host) {
             throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
-        }
-
-        if (environment.current.host === HostType.WEB || snippet.api_set == null) {
-            return Observable.of(new Snippet.ImportSuccessAction(snippet));
         }
 
         this._checkForUnSupportedAPIs(snippet.api_set);
@@ -311,6 +322,10 @@ export class SnippetEffects {
 
     private _checkForUnSupportedAPIs(api_set: { [index: string]: number }) {
         let unsupportedApiSet: { api: string, version: number } = null;
+        if (api_set == null) {
+            return;
+        }
+
         find(api_set, (version, api) => {
             if (Office.context.requirements.isSetSupported(api, version)) {
                 return false;
