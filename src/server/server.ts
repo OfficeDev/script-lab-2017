@@ -60,7 +60,7 @@ app.post('/auth/:user', handler(async (req: express.Request, res: express.Respon
             timer.stop();
             if (error) {
                 ai.trackEvent('[Github] Login failed', { user });
-                return reject(new UnauthorizedError('Failed to authenticate user.', error))
+                return reject(new UnauthorizedError('Failed to authenticate user.', error));
             }
             else {
                 ai.trackEvent('[Github] Login succeeded', { user });
