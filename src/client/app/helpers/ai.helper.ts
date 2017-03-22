@@ -45,6 +45,9 @@ class ApplicationInsights {
         return {
             stop: () => {
                 const tEnd = timer.now();
+                if (environment.current.devMode) {
+                    console.info(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                }
                 this._current.trackPageView(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
                 return tEnd - tStart;
             },
