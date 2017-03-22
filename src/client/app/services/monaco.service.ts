@@ -153,6 +153,10 @@ export class MonacoService {
                     endColumn: position.column
                 });
 
+                if (Regex.STARTS_WITH_COMMENT.test(currentLine)) {
+                    return [];
+                }
+
                 if (Regex.GLOBAL.test(currentLine)) {
                     return this.libraries;
                 }
