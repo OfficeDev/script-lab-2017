@@ -39,6 +39,21 @@ class ApplicationInsights {
         }
     }
 
+    trackPageView(name: string, url?: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
+        let timer = performance || Date;
+        const tStart = timer.now();
+        return {
+            stop: () => {
+                const tEnd = timer.now();
+                this._current.trackPageView(name, url, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                return tEnd - tStart;
+            },
+            get elapsed() {
+                return timer.now() - tStart;
+            }
+        };
+    }
+
     trackTimedEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
         let timer = performance || Date;
         const tStart = timer.now();
@@ -46,6 +61,7 @@ class ApplicationInsights {
             stop: () => {
                 const tEnd = timer.now();
                 this.trackEvent(name, properties, { ...measurement, duration: (tEnd - tStart) / 1000 });
+                return tEnd - tStart;
             },
             get elapsed() {
                 return timer.now() - tStart;
