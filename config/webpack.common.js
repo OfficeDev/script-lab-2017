@@ -18,7 +18,6 @@ module.exports = {
         functions: './public/functions.ts',
         gallery: './public/gallery.ts',
         heartbeat: './public/heartbeat.ts',
-        refresh: './public/refresh.ts',
         runner: './public/runner.ts'
     },
 
@@ -152,11 +151,6 @@ module.exports = {
             filename: 'heartbeat.html',
             template: './views/heartbeat.html',
             chunks: ['polyfills', 'vendor', 'heartbeat'],
-        }),
-        new HtmlWebpackPlugin({
-            filename: 'refresh.html',
-            template: './views/refresh.html',
-            chunks: ['polyfills', 'vendor', 'refresh'],
         })
     ]
 };
