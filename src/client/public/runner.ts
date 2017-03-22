@@ -18,7 +18,7 @@ interface InitializationParams {
 
     let returnUrl: string;
     let $snippetContent: JQuery;
-    let lastModified: string;
+    let lastModified: number;
 
     const $needsReload = $('#notify-needs-reload');
     const $needsReloadIndicator = $needsReload.find('.reloading-indicator');
@@ -28,7 +28,7 @@ interface InitializationParams {
     async function initializeRunner(params: InitializationParams) {
         try {
             const { origin, officeJS, heartbeatParams } = params;
-            lastModified = heartbeatParams.lastModified;
+            lastModified = +heartbeatParams.lastModified;
             returnUrl = params.returnUrl;
 
             const frameworkInitialized = createHostAwaiter(officeJS);
@@ -60,7 +60,7 @@ interface InitializationParams {
     function writeSnippetIframe(html: string, officeJS: string): JQuery {
         const $iframe =
             $('<iframe class="snippet-frame fullscreen" style="display:none" src="about:blank"></iframe>')
-            .insertAfter($snippetContent);
+                .insertAfter($snippetContent);
 
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
@@ -214,7 +214,7 @@ interface InitializationParams {
         $originalFrame.remove();
 
         $('#header-text').text(snippet.name);
-        lastModified = snippet.modified_at.toString();
+        lastModified = snippet.modified_at;
 
         (window as any).Firebug.Console.clear();
     }
@@ -233,7 +233,7 @@ interface InitializationParams {
         $headerTitle.on('mouseover', refreshLastUpdatedText);
 
         function refreshLastUpdatedText() {
-            $headerTitle.attr('title', `Last updated ${moment(Number.parseInt(lastModified)).fromNow()}`);
+            $headerTitle.attr('title', `Last updated ${moment(lastModified).fromNow()}`);
         }
     }
 

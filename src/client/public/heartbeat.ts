@@ -3,7 +3,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
-    let lastModified: string;
+    let lastModified: number;
     let snippetListener: any;
     let settingsListener: any;
 
@@ -16,7 +16,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
         if (params.id) {
-            lastModified = params.lastModified;
+            lastModified = +params.lastModified;
             createSnippetSpecificListener(params.id);
         } else {
             // TODO (TEMPORARY)
@@ -80,7 +80,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 return;
             }
 
-            if (snippet.modified_at.toString() !== lastModified) {
+            if (snippet.modified_at !== lastModified) {
                 // Unsubscribe from listeners.  Nothing to do now, until the user decides
                 // that they do want to reload -- and at that point, the runner frame will
                 // send a message, asking for the latest.
@@ -105,7 +105,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                     settings.snippets.load();
                     let snippet = settings.snippets.get(input.message /* message is the snippet ID */);
 
-                    lastModified = snippet.modified_at.toString();
+                    lastModified = snippet.modified_at;
                     createSnippetSpecificListener(snippet.id);
 
                     messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
