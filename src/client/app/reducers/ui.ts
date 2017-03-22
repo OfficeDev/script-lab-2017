@@ -26,13 +26,17 @@ export function reducer(state = initialState, action: UIActions): UIState {
     switch (action.type) {
         case UIActionTypes.TOGGLE_IMPORT: {
             if (action.payload) {
-                AI.trackPageView(UIActionTypes.TOGGLE_IMPORT, '/import').stop();
+                AI.trackPageView(action.type, '/import').stop();
             }
             return { ...state, showImport: action.payload };
         }
 
-        case UIActionTypes.SHOW_ALERT:
+        case UIActionTypes.SHOW_ALERT: {
+            if (action.payload) {
+                AI.trackPageView(action.type, '/about').stop();
+            }
             return { ...state, dialog: action.payload };
+        }
 
         case UIActionTypes.DISMISS_ALERT:
             return { ...state, dialog: null };
