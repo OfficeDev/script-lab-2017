@@ -4,7 +4,7 @@ import { environment, storageSize, Strings } from '../helpers';
 @Component({
     selector: 'about',
     template: `
-        <dialog [show]="show">
+        <dialog class="ms-u-slideUpIn10" [show]="show">
             <div class="about">
                 <div class="about__image"></div>
                 <div class="about__details">

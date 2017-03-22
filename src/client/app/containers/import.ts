@@ -8,7 +8,7 @@ import { isEmpty } from 'lodash';
 @Component({
     selector: 'import',
     template: `
-        <dialog class="panel" [show]="true">
+        <dialog class="panel ms-u-slideUpIn10" [show]="true">
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon" (click)="cancel()">
