@@ -1,27 +1,40 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "es2015",
+        "module": "commonjs",
         "moduleResolution": "node",
-        "sourceMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "removeComments": false,
         "noImplicitAny": false,
         "noEmitOnError": true,
+        "rootDir": "src",
         "outDir": "dist",
         "allowUnusedLabels": false,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "allowSyntheticDefaultImports": true,
         "lib": [
-            "dom",
-            "es2015"
+            "es7",
+            "dom"
         ],
         "pretty": true,
-        "rootDirs": [
-            "client",
-            "server"
+        "sourceMap": true,
+        "strictNullChecks": false,
+        "typeRoots": [
+            "node_modules/@types",
+            "src/interfaces"
         ]
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "compiled"
+    ],
+    "awesomeTypescriptLoaderOptions": {
+        "useWebpackText": true,
+        "forkChecker": true,
+        "useCache": true
+    },
+    "compileOnSave": false,
+    "buildOnSave": false
 }
