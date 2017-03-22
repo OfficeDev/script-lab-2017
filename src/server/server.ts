@@ -29,8 +29,9 @@ app.use(serverStatic(path.resolve(__dirname, 'favicon')));
  * HTTP POST: /auth
  * Returns the access_token
  */
-app.post('/auth', handler(async (req: express.Request, res: express.Response) => {
-    let { code, state } = req.body;
+app.post('/auth/:user', handler(async (req: express.Request, res: express.Response) => {
+    const { code, state } = req.body;
+    const { user } = req.params;
 
     if (code == null) {
         return new BadRequestError('Received invalid code.', code);
@@ -57,8 +58,14 @@ app.post('/auth', handler(async (req: express.Request, res: express.Response) =>
             }
         }, (error, httpResponse, body) => {
             timer.stop();
-            return error ?
-                reject(new UnauthorizedError('Failed to authenticate user.', error)) : resolve(body);
+            if (error) {
+                ai.trackEvent('[Github] Login failed', { user });
+                return reject(new UnauthorizedError('Failed to authenticate user.', error))
+            }
+            else {
+                ai.trackEvent('[Github] Login succeeded', { user });
+                return resolve(body);
+            }
         });
     });
 
@@ -89,6 +96,7 @@ app.post('/compile/page', handler(async (req: express.Request, res: express.Resp
 app.use((err, req, res, next) => {
     if (err) {
         let { code, stack, message } = err;
+        ai.trackException(err, 'Server - Global handler');
         return res.contentType('application/json').send({ code, message, stack });
     }
 });
