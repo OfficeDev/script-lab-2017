@@ -104,7 +104,7 @@ export class MonacoService {
     static _loadMonaco() {
         return new Promise((resolve, reject) => {
             try {
-                let event = AI.trackTimedEvent('Monaco loaded');
+                let event = AI.trackTimedEvent('[Perf] Monaco loaded');
                 let require = (<any>window).require;
                 if (require) {
                     let path = `${location.origin}/libs/monaco-editor/vs`;

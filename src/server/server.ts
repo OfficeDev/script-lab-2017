@@ -41,7 +41,7 @@ app.post('/auth', handler(async (req: express.Request, res: express.Response) =>
     }
 
     let { clientId, editorUrl } = source;
-    let timer = ai.trackTimedEvent('GitHub Authentication');
+    let timer = ai.trackTimedEvent('[Runner] GitHub Authentication');
     let token = await new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
@@ -104,7 +104,7 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
         throw new BadRequestError('Received invalid snippet data.', snippet);
     }
 
-    const timer = ai.trackTimedEvent('Compile Snippet', { id: snippet.id });
+    const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
 
     const [compiledSnippet, snippetHtml, runnerHtml] =
         await Promise.all([

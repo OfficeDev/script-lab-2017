@@ -54,7 +54,7 @@ export class AppModule {
             await applyTheme(environment.current.host);
 
             if (!Authenticator.isAuthDialog()) {
-                AI.trackEvent(`Playground ready`, { host: environment.current.host });
+                AI.trackEvent(`[Perf] Playground ready`, { host: environment.current.host });
                 platformBrowserDynamic().bootstrapModule(AppModule);
             }
         }

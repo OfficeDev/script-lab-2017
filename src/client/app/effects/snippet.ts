@@ -59,7 +59,7 @@ export class SnippetEffects {
 
             switch (importType) {
                 case 'DEFAULT':
-                    AI.trackEvent('[IMPORT] Creating new snippet');
+                    AI.trackEvent('[Import] Creating new snippet');
                     info = environment.current.host;
                     if (environment.cache.contains('default_template')) {
                         observable = Observable.of(environment.cache.get('default_template'));
@@ -72,14 +72,14 @@ export class SnippetEffects {
                     break;
 
                 case 'CUID':
-                    AI.trackEvent('[IMPORT] Importing local snippet', { id: data });
+                    AI.trackEvent('[Import] Importing local snippet', { id: data });
                     info = data;
                     observable = Observable.of(this._store.get(data));
                     break;
 
                 case 'GIST':
                     data = data.replace(/https:\/\/gist.github.com\/.*?\//, '');
-                    AI.trackEvent('[IMPORT] Importing gist', { id: data });
+                    AI.trackEvent('[Import] Importing gist', { id: data });
                     observable = this._github.gist(data)
                         .map(gist => {
                             let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
@@ -100,12 +100,12 @@ export class SnippetEffects {
                     break;
 
                 case 'URL':
-                    AI.trackEvent('[IMPORT] Importing url', { id: data });
+                    AI.trackEvent('[Import] Importing url', { id: data });
                     observable = this._request.get<ISnippet>(data, ResponseTypes.YAML);
                     break;
 
                 case 'YAML':
-                    AI.trackEvent('[IMPORT] Importing YAML');
+                    AI.trackEvent('[Import] Importing YAML');
                     let snippet = jsyaml.load(data);
                     info = snippet.id;
                     observable = Observable.of(snippet);
@@ -246,7 +246,7 @@ export class SnippetEffects {
                 returnUrl: window.location.href
             });
 
-            AI.trackEvent('Running snippet', { snippet: snippet.id });
+            AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
             post(environment.current.config.runnerUrl + '/compile/page', { data });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
@@ -355,7 +355,7 @@ export class SnippetEffects {
             }
         });
 
-        AI.trackEvent('Upgrading snippet', { upgradeFrom: 'preview' });
+        AI.trackEvent('[Snippet] Upgrading Snippet', { upgradeFrom: 'preview' });
         return snippet;
     }
 }
