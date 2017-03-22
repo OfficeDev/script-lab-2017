@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Strings, settings } from '../helpers';
+import { Strings } from '../helpers';
 
 @Component({
     selector: 'profile',
