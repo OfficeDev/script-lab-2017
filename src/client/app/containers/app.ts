@@ -158,7 +158,7 @@ export class AppComponent {
                     this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
                 }
 
-                if (!sub.closed) {
+                if (sub && !sub.closed) {
                     sub.unsubscribe();
                 }
             });
