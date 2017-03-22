@@ -5,7 +5,7 @@
     <title>Run snippet</title>
 
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
@@ -28,11 +28,11 @@
                 <div class="ms-progress">
                     <div class="cs-loader">
                         <div class="cs-loader-inner">
-                            <label>	●</label>
-                            <label>	●</label>
-                            <label>	●</label>
-                            <label>	●</label>
-                            <label>	●</label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
                         </div>
                     </div>
                 </div>
