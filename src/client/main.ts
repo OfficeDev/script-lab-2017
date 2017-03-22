@@ -45,17 +45,19 @@ export class AppModule {
                 MonacoService.initialize()
             ]);
 
+            const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
+            AI.initialize(environment.current.config.instrumentationKey);
+
             if (!environment.current.devMode) {
                 enableProdMode();
             }
-
-            AI.initialize(environment.current.config.instrumentationKey);
 
             await applyTheme(environment.current.host);
 
             if (!Authenticator.isAuthDialog()) {
                 AI.trackEvent(`[Perf] Playground ready`, { host: environment.current.host });
-                platformBrowserDynamic().bootstrapModule(AppModule);
+                await platformBrowserDynamic().bootstrapModule(AppModule);
+                timer.stop();
             }
         }
         catch (e) {

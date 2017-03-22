@@ -2,6 +2,7 @@ import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
+import { AI } from '../helpers';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 import { debounce } from 'lodash';
@@ -101,6 +102,7 @@ export class Editor implements AfterViewInit {
                 if (newTab) {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
+                    let timer = AI.trackPageView(this.currentState.view, `/edit/${this.currentState.name}`);
                     if (this.currentState.name === 'script') {
                         this.updateIntellisense();
                     }
@@ -108,6 +110,7 @@ export class Editor implements AfterViewInit {
                     this._monacoEditor.restoreViewState(this.currentState.viewState);
                     this._monacoEditor.focus();
                     this._resize();
+                    timer.stop();
                 }
             });
     }

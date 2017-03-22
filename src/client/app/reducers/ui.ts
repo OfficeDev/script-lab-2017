@@ -24,8 +24,12 @@ export function reducer(state = initialState, action: UIActions): UIState {
     AI.trackEvent(action.type);
 
     switch (action.type) {
-        case UIActionTypes.TOGGLE_IMPORT:
+        case UIActionTypes.TOGGLE_IMPORT: {
+            if (action.payload) {
+                AI.trackPageView(UIActionTypes.TOGGLE_IMPORT, '/import').stop();
+            }
             return { ...state, showImport: action.payload };
+        }
 
         case UIActionTypes.SHOW_ALERT:
             return { ...state, dialog: action.payload };
