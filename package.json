@@ -19,7 +19,7 @@
     "url": "https://github.com/officedev/addin-playground/issues"
   },
   "homepage": "https://github.com/officedev/addin-playground#readme",
-  "version": "1.0.0",
+  "version": "1.0.0-preview",
   "scripts": {
     "clean": "rimraf dist && rimraf .awcache",
     "lint": "tslint --project tsconfig.json",

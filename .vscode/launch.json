@@ -26,7 +26,7 @@
                 "program": "${workspaceRoot}\\dist\\server\\server.js",
                 "outFiles": [
                     "${workspaceRoot}\\dist\\server\\**\\*.js"
-                ],
+                ]
             }
         },
         {
