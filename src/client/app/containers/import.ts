@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
+import { AI } from '../helpers';
 import { isEmpty } from 'lodash';
 
 @Component({
@@ -11,18 +12,18 @@ import { isEmpty } from 'lodash';
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon" (click)="cancel()">
-                        <i class="ms-Icon ms-Icon--Cancel"></i><span>Close</span>
+                        <i class="ms-Icon ms-Icon--GlobalNavButton"></i><span>Close</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon gallery__tab--highlighted" (click)="new()">
                         <i class="ms-Icon ms-Icon--Add"></i><span>New snippet</span>
                     </li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'snippets'}" (click)="view = 'snippets'">
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'snippets'}" (click)="switch('snippets')">
                         <i class="ms-Icon ms-Icon--DocumentSet"></i><span>My snippets</span>
                     </li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'samples'}" (click)="view = 'samples'">
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'samples'}" (click)="switch('samples')">
                         <i class="ms-Icon ms-Icon--Dictionary"></i><span>Samples</span>
                     </li>
-                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'import'}" (click)="view = 'import'">
+                    <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'import'}" (click)="switch('import')">
                         <i class="ms-Icon ms-Icon--Download"></i><span>Import</span>
                     </li>
                 </ul>
@@ -112,15 +113,19 @@ export class Import {
     templates$ = this._store.select(fromRoot.getTemplates);
     gists$ = this._store.select(fromRoot.getGists);
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
-
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
             if (isEmpty(snippets)) {
-                this.view = 'samples';
+                this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
             return snippets;
         });
+
+    switch(view = 'samples') {
+        AI.trackPageView(view, `/import/${view}`).stop();
+        this.view = view;
+    }
 
     import(item?: ITemplate) {
         let data = null;
