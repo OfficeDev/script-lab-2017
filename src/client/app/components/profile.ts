@@ -4,7 +4,7 @@ import { Strings } from '../helpers';
 @Component({
     selector: 'profile',
     template: `
-        <dialog class="ms-u-slideDownIn10" *ngIf="!(profile==null)" [show]="show">
+        <dialog *ngIf="!(profile==null)" [show]="show">
             <div class="profile">
                 <img class="profile__image" [src]="profile?.avatar_url">
                 <div class="profile__details">

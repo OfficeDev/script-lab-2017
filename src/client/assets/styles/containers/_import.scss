@@ -4,7 +4,11 @@
 import {
     .gallery__tabs .ms-Icon {
         display: none;
-    }
+
+        &.ms-Icon--GlobalNavButton {
+            font-size: 14pt;
+        }
+    }    
 
     .gallery__tab--icon .ms-Icon {
         display: inline-block;
