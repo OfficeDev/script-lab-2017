@@ -91,13 +91,9 @@ app.post('/auth/:user', handler(async (req: express.Request, res: express.Respon
         return new BadRequestError('Received invalid code.', code);
     }
 
-    if (currentConfig == null) {
-        return new BadRequestError(`Bad environment configuration: ${env}`, env);
-    }
-
-    let { clientId, editorUrl } = currentConfig;
-    let timer = ai.trackTimedEvent('[Runner] GitHub Authentication');
-    let token = await new Promise((resolve, reject) => {
+    const { clientId, editorUrl } = currentConfig;
+    const timer = ai.trackTimedEvent('[Runner] GitHub Authentication');
+    const token = await new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
             headers: {
@@ -149,7 +145,7 @@ app.post('/compile/page', handler(async (req: express.Request, res: express.Resp
  */
 app.use((err, req, res, next) => {
     if (err) {
-        let { code, stack, message } = err;
+        const { code, stack, message } = err;
         ai.trackException(err, 'Server - Global handler');
         return res.contentType('application/json').send({ code, message, stack });
     }
