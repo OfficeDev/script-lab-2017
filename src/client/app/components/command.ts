@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'command',
     template: `
         <div class="command__icon ms-u-slideLeftIn10">

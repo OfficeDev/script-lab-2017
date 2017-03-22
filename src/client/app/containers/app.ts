@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
@@ -6,6 +6,7 @@ import { UIEffects } from '../effects/ui';
 import { Strings, settings, environment } from '../helpers';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app',
     template: `
         <main [ngClass]="theme$|async">
@@ -100,14 +101,6 @@ export class AppComponent {
         }
 
         this._store.dispatch(new Snippet.DeleteAction((this.snippet.id)));
-    }
-
-    duplicate() {
-        if (this.snippet == null) {
-            return;
-        }
-
-        this._store.dispatch(new Snippet.DuplicateAction(this.snippet.id));
     }
 
     create(save?: boolean) {

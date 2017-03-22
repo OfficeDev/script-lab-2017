@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { environment, storageSize, Strings } from '../helpers';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'about',
     template: `
         <dialog [show]="show">
