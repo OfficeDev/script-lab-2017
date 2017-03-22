@@ -143,7 +143,6 @@ export class Import {
                 break;
 
             case 'import':
-                debugger;
                 if (this.url) {
                     mode = Snippet.ImportType.URL;
                 }
