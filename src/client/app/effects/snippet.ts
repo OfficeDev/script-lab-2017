@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, Strings, environment, settings } from '../helpers';
