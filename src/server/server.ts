@@ -157,7 +157,7 @@ app.post('/compile/page', handler(async (req: express.Request, res: express.Resp
  */
 app.use((err, req, res, next) => {
     if (err) {
-        let { code, stack, message } = err;
+        const { code, stack, message } = err;
         ai.trackException(err, 'Server - Global handler');
         return res.contentType('application/json').send({ code, message, stack });
     }
