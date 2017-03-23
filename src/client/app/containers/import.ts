@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
@@ -6,6 +6,7 @@ import { AI } from '../helpers';
 import { isEmpty } from 'lodash';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'import',
     template: `
         <dialog class="panel" [show]="true">
@@ -129,16 +130,30 @@ export class Import {
 
     import(item?: ITemplate) {
         let data = null;
+        let mode = null;
         switch (this.view) {
             case 'snippets':
+                if (item.id) {
+                    mode = Snippet.ImportType.OPEN;
+                }
+                else {
+                    mode = Snippet.ImportType.GIST;
+                }
                 data = item.id || item.gist;
                 break;
 
             case 'import':
+                if (this.url) {
+                    mode = Snippet.ImportType.URL;
+                }
+                else {
+                    mode = Snippet.ImportType.YAML;
+                }
                 data = this.url || this.snippet;
                 break;
 
             case 'samples':
+                mode = Snippet.ImportType.SAMPLE;
                 data = item.gist;
                 break;
         }
@@ -147,7 +162,7 @@ export class Import {
             return;
         }
 
-        this._store.dispatch(new Snippet.ImportAction(data));
+        this._store.dispatch(new Snippet.ImportAction(mode, data));
         this.cancel();
     }
 
@@ -156,7 +171,7 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction('default'));
+        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.DEFAULT));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 

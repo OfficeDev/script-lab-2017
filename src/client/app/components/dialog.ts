@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'dialog',
     template: `
     <div class="ms-Dialog-center" [hidden]="!show">

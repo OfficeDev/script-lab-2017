@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Strings, settings } from '../helpers';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'profile',
     template: `
         <dialog *ngIf="!(profile==null)" [show]="show">

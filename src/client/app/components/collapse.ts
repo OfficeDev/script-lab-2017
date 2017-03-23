@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'collapse',
     template: `
         <div class="command__bar command--light" (click)="collapsed = !collapsed" *ngIf="title !== 'undefined'">

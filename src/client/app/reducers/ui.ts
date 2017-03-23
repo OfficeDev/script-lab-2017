@@ -1,6 +1,5 @@
 import { UIActions, UIActionTypes } from '../actions/ui';
 import { PlaygroundError, AI, environment } from '../helpers';
-import { Utilities } from '@microsoft/office-js-helpers';
 
 export interface UIState {
     menuOpened?: boolean;
@@ -52,7 +51,7 @@ export function reducer(state = initialState, action: UIActions): UIState {
         case UIActionTypes.REPORT_ERROR: {
             let error = new PlaygroundError(action.payload, action.exception);
             if (environment.current.devMode) {
-                Utilities.log(error);
+                console.error(error, error.innerError);
             }
             return { ...state, errors: [...state.errors, error] };
         }

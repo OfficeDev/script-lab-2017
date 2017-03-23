@@ -28,6 +28,15 @@ export class SnippetActionTypes {
     static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
 };
 
+export class ImportType {
+    static readonly DEFAULT = type('[Import] Load blank snippet');
+    static readonly OPEN = type('[Import] Open an existing snippet');
+    static readonly GIST = type('[Import] Import from a gist');
+    static readonly YAML = type('[Import] Import from yaml');
+    static readonly URL = type('[Import] Import from url');
+    static readonly SAMPLE = type('[Import] Import from sample');
+};
+
 /**
  * Every action is comprised of at least a type and an optional
  * payload. Expressing actions as classes enables powerful
@@ -44,7 +53,7 @@ export class ViewAction implements Action {
 export class ImportAction implements Action {
     readonly type = SnippetActionTypes.IMPORT;
 
-    constructor(public payload: string, public params: string = '') { }
+    constructor(public mode: string, public payload?: string) { }
 }
 
 export class ImportSuccessAction implements Action {

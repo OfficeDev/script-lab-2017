@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { groupBy, isEmpty } from 'lodash';
 import * as moment from 'moment';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'gallery-list',
     template: `
         <section class="gallery-list ms-u-slideUpIn10" [hidden]="empty">

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Storage, HostType } from '@microsoft/office-js-helpers';
+import { HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment, settings } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
@@ -14,8 +14,6 @@ import { isEmpty, find, assign, reduce, forIn } from 'lodash';
 
 @Injectable()
 export class SnippetEffects {
-    private _store = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
-
     private _defaults = <ISnippet>{
         id: '',
         gist: '',
@@ -51,134 +49,16 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map((action: Snippet.ImportAction) => ({ data: action.payload, suffix: action.params }))
-        .mergeMap(({ data, suffix }) => {
-            let observable: Observable<ISnippet>;
-            let importType = this._determineImportType(data);
-            let info = '';
-
-            switch (importType) {
-                case 'DEFAULT':
-                    AI.trackEvent('[Import] Creating new snippet');
-                    info = environment.current.host;
-                    if (environment.cache.contains('default_template')) {
-                        observable = Observable.of(environment.cache.get('default_template'));
-                    }
-                    else {
-                        observable = this._request
-                            .get<string>(`${environment.current.config.samplesUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
-                            .map(snippet => environment.cache.insert('default_template', snippet));
-                    }
-                    break;
-
-                case 'CUID':
-                    AI.trackEvent('[Import] Importing local snippet', { id: data });
-                    info = data;
-                    observable = Observable.of(this._store.get(data));
-                    break;
-
-                case 'GIST':
-                    data = data.replace(/https:\/\/gist.github.com\/.*?\//, '');
-                    AI.trackEvent('[Import] Importing gist', { id: data });
-                    observable = this._github.gist(data)
-                        .map(gist => {
-                            let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
-                            if (gist.public) {
-                                info = gist.id;
-                            }
-                            if (snippet == null) {
-                                let output = this._upgrade(gist.files);
-                                output.description = '';
-                                output.author = '';
-                                output.gist = data;
-                                return output;
-                            }
-                            else {
-                                return jsyaml.load(snippet.content);
-                            }
-                        });
-                    break;
-
-                case 'URL':
-                    AI.trackEvent('[Import] Importing url', { id: data });
-                    observable = this._request.get<ISnippet>(data, ResponseTypes.YAML);
-                    break;
-
-                case 'YAML':
-                    AI.trackEvent('[Import] Importing YAML');
-                    let snippet = jsyaml.load(data);
-                    info = snippet.id;
-                    observable = Observable.of(snippet);
-                    break;
-
-                default: return null;
-            }
-
-            AI.trackEvent(Snippet.SnippetActionTypes.IMPORT, { type: importType, info: info });
-
-            return observable
-                .filter(snippet => !(snippet == null))
-                .map(snippet => {
-                    // if (snippet.host && snippet.host !== environment.current.host) {
-                    //     throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
-                    // }
-
-                    if (snippet.api_set == null || environment.current.host === HostType.WEB) {
-                        return snippet;
-                    }
-
-                    let unsupportedApiSet: { api: string, version: number } = null;
-                    find(snippet.api_set, (version, api) => {
-                        if (Office.context.requirements.isSetSupported(api, version)) {
-                            return false;
-                        }
-                        else {
-                            unsupportedApiSet = { api, version };
-                            return true;
-                        }
-                    });
-
-                    if (unsupportedApiSet) {
-                        throw new PlaygroundError(`${snippet.host} does not support the required API Set ${unsupportedApiSet.api} @ ${unsupportedApiSet.version}.`);
-                    }
-
-                    return snippet;
-                })
-                .map(snippet => assign({}, this._defaults, snippet, <ISnippet>{
-                    host: environment.current.host,
-                    platform: environment.current.platform,
-                    modified_at: Date.now(),
-                    origin: environment.current.config.editorUrl,
-                }))
-                .map(snippet => {
-                    let local = importType === 'CUID';
-                    if (!local) {
-                        snippet.id = '';
-                    }
-                    if (snippet.id === '') {
-                        snippet.id = cuid();
-                    }
-
-                    // Note: this method is used both for true "import", and also
-                    // just opening of existing snippets.
-                    // If the action here involves true importing rather than re-opening,
-                    // and if the name is already taken by a local snippet, generate a new name:
-                    if (!local && this._exists(snippet.name)) {
-                        snippet.name = this._generateName(snippet.name, suffix);
-                    }
-                    return new Snippet.ImportSuccessAction(snippet);
-                })
-                .catch((exception: Error) => {
-                    return Observable.from([
-                        new UI.ReportErrorAction(Strings.snippetImportError, exception),
-                        new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
-                    ]);
-                });
-        })
-        .catch(exception => Observable.from([
-            new UI.ReportErrorAction(Strings.snippetImportError, exception),
-            new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
-        ]));
+        .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode }))
+        .mergeMap(({ data, mode }) => this._importFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
+        .filter(({ snippet }) => !(snippet == null))
+        .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+        .catch((exception: Error) => {
+            return Observable.from([
+                new UI.ReportErrorAction(Strings.snippetImportError, exception),
+                new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
+            ]);
+        });
 
     @Effect()
     save$: Observable<Action> = this.actions$
@@ -188,11 +68,11 @@ export class SnippetEffects {
             this._validate(snippet);
             snippet.modified_at = Date.now();
 
-            if (this._store.contains(snippet.id)) {
-                this._store.insert(snippet.id, snippet);
+            if (settings.snippets.contains(snippet.id)) {
+                settings.snippets.insert(snippet.id, snippet);
             }
             else {
-                this._store.add(snippet.id, snippet);
+                settings.snippets.add(snippet.id, snippet);
             }
 
             return new Snippet.StoreUpdatedAction();
@@ -204,7 +84,7 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.DUPLICATE)
         .map((action: Snippet.DuplicateAction) => action.payload)
         .map(id => {
-            let orignial = this._store.get(id);
+            let orignial = settings.snippets.get(id);
             let copy: ISnippet = assign({}, this._defaults, orignial);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
@@ -216,7 +96,7 @@ export class SnippetEffects {
     delete$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE)
         .map((action: Snippet.DeleteAction) => action.payload)
-        .map(id => this._store.remove(id))
+        .map(id => settings.snippets.remove(id))
         .mergeMap(() => Observable.from([
             new Snippet.StoreUpdatedAction(),
             new UI.ToggleImportAction(true)
@@ -226,14 +106,14 @@ export class SnippetEffects {
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
-        .map(() => this._store.clear())
+        .map(() => settings.snippets.clear())
         .map(() => new Snippet.StoreUpdatedAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDeleteAllError, exception)));
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
-        .map(() => new Snippet.LoadSnippetsSuccessAction(this._store.values()))
+        .map(() => new Snippet.LoadSnippetsSuccessAction(settings.snippets.values()))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })
@@ -267,36 +147,8 @@ export class SnippetEffects {
         .map(data => new Snippet.LoadTemplatesSuccessAction(data))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadDefaultsError, exception)));
 
-    private _determineImportType(data: string): 'DEFAULT' | 'CUID' | 'URL' | 'GIST' | 'YAML' | null {
-        if (data == null) {
-            return null;
-        }
-
-        if (/^https:\/\/gist.github.com/.test(data)) {
-            return 'GIST';
-        }
-
-        if (/^https?/.test(data)) {
-            return 'URL';
-        }
-
-        if (data === 'default') {
-            return 'DEFAULT';
-        }
-
-        if (data.length === 25) {
-            return 'CUID';
-        }
-
-        if (data.length === 32) {
-            return 'GIST';
-        }
-
-        return 'YAML';
-    }
-
     private _exists(name: string) {
-        return this._store.values().some(item => item.name.trim() === name.trim());
+        return settings.snippets.values().some(item => item.name.trim() === name.trim());
     }
 
     private _validate(snippet: ISnippet) {
@@ -312,7 +164,7 @@ export class SnippetEffects {
     private _generateName(name: string, suffix: string = ''): string {
         let newName = isEmpty(name.trim()) ? Strings.newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
-        let collisions = this._store.values().filter(item => regex.test(item.name.trim()));
+        let collisions = settings.snippets.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = reduce(collisions, (max, item: any) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
             if (max <= ~~match[1]) {
@@ -357,5 +209,135 @@ export class SnippetEffects {
 
         AI.trackEvent('[Snippet] Upgrading Snippet', { upgradeFrom: 'preview' });
         return snippet;
+    }
+
+    private _importFromSource(data: string, type: string): Observable<ISnippet> {
+        AI.trackEvent(type);
+        switch (type) {
+            /* If creating a new snippet, try to load it from cache */
+            case Snippet.ImportType.DEFAULT:
+                if (environment.cache.contains('default_template')) {
+                    return Observable.of(environment.cache.get('default_template'));
+                }
+                else {
+                    return this._request
+                        .get<string>(`${environment.current.config.samplesUrl}/samples/${environment.current.host.toLowerCase()}/default.yaml`, ResponseTypes.YAML)
+                        .map(snippet => environment.cache.insert('default_template', snippet));
+                }
+
+            /* If importing a local snippet, then load it off the store */
+            case Snippet.ImportType.OPEN:
+                return Observable.of(settings.snippets.get(data));
+
+            /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
+            case Snippet.ImportType.SAMPLE:
+            case Snippet.ImportType.URL:
+            case Snippet.ImportType.GIST:
+                let id = null;
+
+                const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
+
+                if (match != null) {
+                    /* If importing a gist, then extract the gist ID and use the apis to retrieve it */
+                    id = match[1];
+                }
+                else {
+                    if (data.length === 32 && !(/https?:\/\//.test(data))) {
+                        /* The user provided a gist ID and its not a url*/
+                        id = data;
+                    }
+                    else {
+                        /* Assume its a regular URL */
+                        return this._request.get<ISnippet>(data, ResponseTypes.YAML);
+                    }
+                }
+
+                /* use the github api to get the gist, needed for secret gists as well */
+                return this._github.gist(id)
+                    .map(gist => {
+                        /* Try to find a yaml file */
+                        let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
+
+                        /* Try to upgrade the gist if there was no yaml file in it */
+                        if (snippet == null) {
+                            let output = this._upgrade(gist.files);
+                            output.description = '';
+                            output.author = '';
+                            output.gist = data;
+                            return output;
+                        }
+                        else {
+                            return jsyaml.load(snippet.content);
+                        }
+                    });
+
+            /* If import type is YAML, then simply load */
+            case Snippet.ImportType.YAML:
+                let snippet = jsyaml.load(data);
+                return Observable.of(snippet);
+
+            default: return Observable.of(null);
+        }
+    }
+
+    private _massageSnippet(snippet: ISnippet, mode: string): Observable<Action> {
+        if (snippet.host && snippet.host !== environment.current.host) {
+            throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
+        }
+
+        this._checkForUnSupportedAPIs(snippet.api_set);
+        snippet = assign({}, this._defaults, snippet, <ISnippet>{
+            host: environment.current.host,
+            platform: environment.current.platform,
+            modified_at: Date.now(),
+            origin: environment.current.config.editorUrl,
+        });
+
+        /* Scrub the Id is the snippet is loaded from an external source */
+        if (mode !== Snippet.ImportType.OPEN) {
+            snippet.id = '';
+            /* TODO: show import warning here */
+        }
+
+        snippet.id = snippet.id === '' ? cuid() : snippet.id;
+
+        /**
+         * If the action here involves true importing rather than re-opening,
+         * and if the name is already taken by a local snippet, generate a new name.
+         */
+        if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
+            snippet.name = this._generateName(snippet.name, '');
+        }
+
+        /* If a imported snippet is a SAMPLE, then skip the save */
+        if (mode === Snippet.ImportType.SAMPLE) {
+            return Observable.of(new Snippet.ImportSuccessAction(snippet));
+        }
+
+        return Observable.from([
+            new Snippet.ImportSuccessAction(snippet),
+            new Snippet.SaveAction(snippet)
+        ]);
+    }
+
+    private _checkForUnSupportedAPIs(api_set: { [index: string]: number }) {
+        let unsupportedApiSet: { api: string, version: number } = null;
+        if (api_set == null) {
+            return;
+        }
+
+        find(api_set, (version, api) => {
+            if (Office.context.requirements.isSetSupported(api, version)) {
+                return false;
+            }
+            else {
+                unsupportedApiSet = { api, version };
+                return true;
+            }
+        });
+
+        if (unsupportedApiSet) {
+            throw new PlaygroundError(`${environment.current.host} does not support the required API Set ${unsupportedApiSet.api} @ ${unsupportedApiSet.version}.`);
+        }
     }
 }

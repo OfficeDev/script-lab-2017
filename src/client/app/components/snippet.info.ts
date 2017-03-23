@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import {Strings} from '../helpers';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { Strings } from '../helpers';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'snippet-info',
     template: `
         <dialog title="Info" *ngIf="!(snippet==null)" [show]="show">
