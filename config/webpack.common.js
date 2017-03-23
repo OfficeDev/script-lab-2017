@@ -20,6 +20,10 @@ module.exports = (prodMode) =>
             functions: './public/functions.ts',
             gallery: './public/gallery.ts',
             heartbeat: './public/heartbeat.ts',
+<<<<<<< HEAD
+=======
+            refresh: './public/refresh.ts',
+>>>>>>> master
             runner: './public/runner.ts'
         },
 

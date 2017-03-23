@@ -16,10 +16,22 @@ const { config, secrets } = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
 const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
-
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
-
 const app = express();
+
+/**
+ * Server CERT and PORT configuration
+ */
+if (process.env.NODE_ENV === 'production') {
+    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
+}
+else {
+    const cert = {
+        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+    };
+    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
+}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -91,13 +103,9 @@ app.post('/auth/:user', handler(async (req: express.Request, res: express.Respon
         return new BadRequestError('Received invalid code.', code);
     }
 
-    if (currentConfig == null) {
-        return new BadRequestError(`Bad environment configuration: ${env}`, env);
-    }
-
-    let { clientId, editorUrl } = currentConfig;
-    let timer = ai.trackTimedEvent('[Runner] GitHub Authentication');
-    let token = await new Promise((resolve, reject) => {
+    const { clientId, editorUrl } = currentConfig;
+    const timer = ai.trackTimedEvent('[Runner] GitHub Authentication');
+    const token = await new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
             headers: {
@@ -206,15 +214,4 @@ function generateRefreshUrl(
     }
 ) {
     return generateUrl(`${req.protocol}://${req.get('host')}/run`, refreshParams);
-}
-
-if (process.env.NODE_ENV === 'production') {
-    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
-}
-else {
-    const cert = {
-        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
-    };
-    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 }
