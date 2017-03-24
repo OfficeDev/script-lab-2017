@@ -9,7 +9,7 @@ import { AI } from './ai.helper';
 export class PlaygroundError extends CustomError {
     constructor(message: string, error?: Error) {
         super('Playground Error', message, error);
-        AI.trackException(this, error.stack);
+        AI.trackException(this, this.stack);
     }
 }
 
