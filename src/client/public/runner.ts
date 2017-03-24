@@ -136,7 +136,7 @@ interface InitializationParams {
                     clearInterval(interval);
                     return resolve((window as any).Firebug);
                 }
-            }, 250);
+            }, 300);
         });
     }
 

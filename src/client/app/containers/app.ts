@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { Strings, settings, environment } from '../helpers';
+import { Strings, environment } from '../helpers';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,11 +55,6 @@ export class AppComponent {
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
-
-    settings$ = this._store
-        .select(fromRoot.getSettings)
-        .debounceTime(250)
-        .subscribe(changes => { settings.current = changes; });
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
