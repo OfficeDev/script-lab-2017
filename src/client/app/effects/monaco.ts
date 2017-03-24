@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Dictionary, Storage, StorageType } from '@microsoft/office-js-helpers';
-import { AI, Strings } from '../helpers';
+import { Dictionary } from '@microsoft/office-js-helpers';
+import { AI, Strings, settings } from '../helpers';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
@@ -21,14 +21,12 @@ export interface IDisposableFile {
 
 @Injectable()
 export class MonacoEffects {
-    private _cache: Storage<string>;
     private _current: Dictionary<IDisposableFile>;
 
     constructor(
         private actions$: Actions,
         private _request: Request
     ) {
-        this._cache = new Storage<string>('playground_intellisense', StorageType.SessionStorage);
         this._current = new Dictionary<IDisposableFile>();
     }
 
@@ -54,7 +52,7 @@ export class MonacoEffects {
 
             return { files: filesToAdd as string[], language };
         })
-        .mergeMap(({files, language}) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction(file, language)))
+        .mergeMap(({ files, language }) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction(file, language)))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseUpdateError, exception)));
 
     @Effect()
@@ -103,13 +101,13 @@ export class MonacoEffects {
     }
 
     private _get(url: string): Observable<IIntellisenseFile> {
-        if (this._cache.contains(url)) {
-            let content = this._cache.get(url);
+        if (settings.intellisenseCache.contains(url)) {
+            let content = settings.intellisenseCache.get(url);
             return Observable.of({ url, content });
         }
         else {
             return this._request.get<string>(url, null, ResponseTypes.TEXT)
-                .map(content => this._cache.insert(url, content))
+                .map(content => settings.intellisenseCache.insert(url, content))
                 .map(content => ({ content, url }));
         }
     }
