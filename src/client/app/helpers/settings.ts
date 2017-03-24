@@ -3,7 +3,6 @@ import { environment } from './environment';
 import * as cuid from 'cuid';
 
 class Settings {
-
     private _user: string;
     get user(): string {
         if (this._user == null) {
