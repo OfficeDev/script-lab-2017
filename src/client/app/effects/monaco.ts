@@ -86,7 +86,7 @@ export class MonacoEffects {
             }
             else if (/^dt~/.test(library)) {
                 let libName = library.split('dt~')[1];
-                return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/${libName}/index.d.ts`;
+                return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/${libName}/index.d.ts`;
             }
             else if (/\.d\.ts$/i.test(library)) {
                 if (/^https?:/i.test(library)) {
