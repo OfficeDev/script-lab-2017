@@ -9,7 +9,6 @@ import '../assets/styles/extras.scss';
     const gallery = new Gallery();
     gallery.hideProgress();
     gallery.render();
-    gallery.renderLastOpened();
 })();
 
 export class Gallery {
@@ -18,8 +17,6 @@ export class Gallery {
     private _$gallery = $('#gallery');
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
-    private _$lastOpened = $('#last-opened');
-    private _$lastOpenedEmpty = $('#last-opened-empty');
     private _$refresh = $('#refresh');
 
     private _template =
@@ -31,14 +28,16 @@ export class Gallery {
     constructor() {
         this.setUpMomentJsDurationDefaults();
 
-        settings.settings.notify().subscribe(() => this.renderLastOpened());
-
         settings.snippets.notify().subscribe(() => this.render());
 
         this._$refresh.click(() => {
             this.render();
-            this.renderLastOpened();
             this.hideProgress();
+        });
+
+        $('#currently-editing-snippet').click(() => {
+            this.showProgress('Loading...');
+            window.location.href = `${environment.current.config.runnerUrl}/run/${environment.current.host}`;
         });
     }
 
@@ -51,19 +50,6 @@ export class Gallery {
     hideProgress() {
         this._$progress.hide();
         this._$gallery.show();
-    }
-
-    renderLastOpened() {
-        this._$lastOpened.html('');
-        if (settings.lastOpened) {
-            this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
-            this._$lastOpened.show();
-            this._$lastOpenedEmpty.hide();
-        }
-        else {
-            this._$lastOpened.hide();
-            this._$lastOpenedEmpty.show();
-        }
     }
 
     render() {

@@ -51,12 +51,15 @@ interface InitializationParams {
             ]);
 
             $snippetContent = $('#snippet-code-content');
-            const snippetHtml = $snippetContent.text();
-            // Clear the text, but keep the placeholder in the DOM,
-            // so that can add the snippet frame relative to its position
-            $snippetContent.text('');
+
+            // Because it's a multiline text inside of a "pre" tag, trim it:
+            const snippetHtml = $snippetContent.text().trim();
 
             if (snippetHtml.length > 0) {
+                // Clear the text, but keep the placeholder in the DOM,
+                // so that can keep adding the snippet frame relative to its position
+                $snippetContent.text('');
+
                 writeSnippetIframe(snippetHtml, officeJS);
             }
 

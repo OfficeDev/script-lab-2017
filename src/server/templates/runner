@@ -123,7 +123,11 @@
     </div>
 
     {{!-- Keep this as a placeholder even if not loading any initial content --}}
-    <pre id="snippet-code-content" style="display:none">{{snippetContent}}</pre>
+    <pre id="snippet-code-content" style="display:none">
+        {{#if snippet.content}}
+        {{snippet.content}}
+        {{/if}}
+    </pre>
 
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
     <script src="{{{origin}}}/vendor.bundle.js"></script>
@@ -136,9 +140,13 @@
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
             heartbeatParams: {
-                mode: '{{{host}}}',
-                id: '{{{snippetId}}}',
-                lastModified: {{snippetLastModified}}
+                {{#if snippet.id}}
+                id: '{{{snippet.id}}}',
+                {{/if}}
+                {{#if snippet.lastModified}}
+                lastModified: {{snippet.lastModified}},
+                {{/if}}
+                mode: '{{{host}}}'
             }
         });
     </script>

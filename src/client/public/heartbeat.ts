@@ -1,3 +1,4 @@
+import { toNumber } from 'lodash';
 import { environment, settings, Strings, Messenger, MessageType } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
@@ -15,7 +16,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
         if (params.id) {
-            lastModified = +params.lastModified;
+            lastModified = toNumber(params.lastModified);
             createSnippetSpecificListener(params.id);
         } else {
             // TODO (TEMPORARY)
