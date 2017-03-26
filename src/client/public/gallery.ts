@@ -81,11 +81,9 @@ export class Gallery {
     }
 
     insertSnippet({ id, name, description, modified_at }: ISnippet, location: JQuery) {
-        let template = this._template
-            .replace('{{name}}', name)
-            .replace('{{description}}', description);
-
-        let $item = $(template);
+        let $item = $(this._template);
+        $item.children('.name').text(name);
+        $item.children('.description').text(description);
 
         $item.click(() => {
             $item.attr('title', '');
