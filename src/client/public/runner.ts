@@ -1,5 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
+import { toNumber } from 'lodash';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings } from '../app/helpers';
 import { Messenger, MessageType } from '../app/helpers/messenger';
@@ -16,8 +17,9 @@ interface InitializationParams {
     /** Namespaces for the runner wrapper to share with the inner snippet iframe */
     const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
 
-    let returnUrl: string;
     let $snippetContent: JQuery;
+
+    let returnUrl = '';
     let lastModified: number;
     let currentOfficeJS: string;
 
@@ -29,14 +31,24 @@ interface InitializationParams {
     async function initializeRunner(params: InitializationParams) {
         try {
             const { origin, officeJS, heartbeatParams } = params;
-            lastModified = +heartbeatParams.lastModified;
+
+            if (params.returnUrl) {
+                window.sessionStorage.playground_returnUrl = params.returnUrl;
+            }
+
+            if (window.sessionStorage.playground_returnUrl) {
+                returnUrl = window.sessionStorage.playground_returnUrl;
+                $('#header-back').attr('href', returnUrl).show();
+            }
+
             returnUrl = params.returnUrl;
+            lastModified = toNumber(heartbeatParams.lastModified);
             currentOfficeJS = officeJS;
 
-            const frameworkInitialized = createHostAwaiter(officeJS);
-
-            await loadFirebug(origin);
-            await frameworkInitialized;
+            await Promise.all([
+                loadFirebug(origin),
+                ensureHostInitialized()
+            ]);
 
             $snippetContent = $('#snippet-code-content');
             const snippetHtml = $snippetContent.text();
@@ -113,8 +125,12 @@ interface InitializationParams {
 
         $error.find('.ms-MessageBar-text').text(candidateErrorString);
 
-        $error.find('.action-back').off('click').click(() =>
-            window.location.href = returnUrl);
+        const $actionBack = $error.find('.action-back').off('click');
+        if (returnUrl) {
+            $actionBack.show().click(() => window.location.href = returnUrl);
+        } else {
+            $actionBack.hide();
+        }
 
         $error.find('.action-dismiss').off('click').click(() => {
             $error.hide();
@@ -136,26 +152,25 @@ interface InitializationParams {
                     clearInterval(interval);
                     return resolve((window as any).Firebug);
                 }
-            }, 300);
+            }, 100);
         });
     }
 
-    async function createHostAwaiter(officeJS: string): Promise<any> {
-        if (officeJS) {
-            return new Promise((resolve) => {
-                Office.initialize = () => {
-                    // Set initialize to an empty function -- that way, doesn't cause
-                    // re-initialization of this page in case of a page like the error dialog,
-                    // which doesn't defined (override) Office.initialize.
-                    Office.initialize = () => { };
-
-                    resolve();
-                };
-            });
-        }
-        else {
+    async function ensureHostInitialized(): Promise<any> {
+        // window.playground_host_ready is set within the runner template (embedded in html code)
+        // when the host is ready (i.e., in Office.initialized callback, if Office host)
+        if ((window as any).playground_host_ready) {
             return Promise.resolve();
         }
+
+        return new Promise((resolve) => {
+            const interval = setInterval(() => {
+                if ((window as any).playground_host_ready) {
+                    clearInterval(interval);
+                    return resolve();
+                }
+            }, 100);
+        });
     }
 
     function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {
@@ -211,6 +226,19 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet) {
+        const desiredOfficeJs = processLibraries(snippet).officeJS || '';
+
+        let refreshUrl = generateRefreshUrl();
+        $('#header-refresh').attr('href', refreshUrl);
+        if (desiredOfficeJs !== currentOfficeJS) {
+            $('#subtitle').text(Strings.Runner.reloadingOfficeJs);
+            $('#progress').show();
+            window.location.href = refreshUrl;
+            return;
+        }
+
+        // If still here, proceed to render:
+
         const $originalFrame = $('.snippet-frame');
 
         writeSnippetIframe(html, processLibraries(snippet).officeJS).show();
@@ -221,6 +249,17 @@ interface InitializationParams {
         lastModified = snippet.modified_at;
 
         (window as any).Firebug.Console.clear();
+
+
+        // Helper function
+
+        function generateRefreshUrl() {
+            let refreshUrl = `${window.location.origin}/run/${snippet.host}/${snippet.id}`;
+            if (desiredOfficeJs) {
+                refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJs)}`;
+            }
+            return refreshUrl;
+        }
     }
 
     function initializeTooltipUpdater() {

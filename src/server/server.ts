@@ -5,8 +5,8 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
-import { forIn, isNil } from 'lodash';
-import { replaceTabsWithSpaces, generateUrl } from './core/utilities';
+import { forIn } from 'lodash';
+import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
@@ -18,6 +18,10 @@ const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
+
+const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
+const otherValidHosts = ['WEB'];
+
 
 /**
  * Server CERT and PORT configuration
@@ -39,50 +43,46 @@ app.use(cors());
 app.use('/favicon', express.static('favicon'));
 
 /**
+ * Generic exception handler
+ */
+app.use((err, req, res, next) => {
+    if (err) {
+        const { code, stack, message } = err;
+        ai.trackException(err, 'Server - Global handler');
+        return res.contentType('application/json').send({ code, message, stack });
+    }
+});
+
+
+/**
  * HTTP GET: /run
- * Returns a runner page, with query-string parameters for:
+ * Returns a runner page, parameters for:
  * Required:
  *   - host
  *   - id
- * Optional:
- *   - officeJS reference (to allow switching between prod and beta, minified vs release)
- *   - returnUrl
+ * And also the following optional query parameter:
+ *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
+ *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-app.get('/run', handler(async (req: express.Request, res: express.Response) => {
-    const queryParamsLowercase: {
-        id: string,
-        host: string,
-        officejs: string,
-        returnurl: string
-    } = <any>{};
-    forIn(req.query as { [key: string]: string },
-        (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
+app.get('/run/:host/:id', handler(async (req: express.Request, res: express.Response) => {
+    const host = (req.params.host as string).toUpperCase();
 
-    const { id, host } = queryParamsLowercase;
-    const returnUrl = queryParamsLowercase.returnurl || '';
-    if (!id || !host) {
-        return new BadRequestError('Host and snippet id are required parameters for "run"');
+    if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
+        return new BadRequestError(`Invalid host "${host}"`);
     }
 
-    let officeJS = queryParamsLowercase.officejs;
-    if (isNil(officeJS) || officeJS.length === 0) {
-        // Assume a production Office.js for the Office products --
-        // and worse case (e.g., if targeting Beta, or debug version),
-        // the runner will just force a refresh after the page has loaded
-        const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
-        if (officeHosts.indexOf(host.toUpperCase()) >= 0) {
-            officeJS = 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
-        }
+    const id = (req.params.id as string).toLowerCase() || '';
+    if (!id) {
+        return new BadRequestError('Snippet id is a required parameters for "run"');
     }
 
     const runnerHtmlGenerator = await loadTemplate<IRunnerHandlebarsContext>('runner');
     const html = runnerHtmlGenerator({
         snippetContent: '',
-        officeJS: officeJS,
+        officeJS: determineOfficeJS(req.query, host),
         snippetId: id,
         snippetLastModified: 0,
-        refreshUrl: generateRefreshUrl(req, { id, host, returnUrl }),
-        returnUrl: returnUrl,
+        returnUrl: '',
         origin: currentConfig.editorUrl,
         host: host,
         initialLoadSubtitle: 'Loading snippet...',
@@ -152,16 +152,8 @@ app.post('/compile/page', handler(async (req: express.Request, res: express.Resp
     return res.contentType('text/html').status(200).send(response);
 }));
 
-/**
- * Generic exception handler
- */
-app.use((err, req, res, next) => {
-    if (err) {
-        const { code, stack, message } = err;
-        ai.trackException(err, 'Server - Global handler');
-        return res.contentType('application/json').send({ code, message, stack });
-    }
-});
+
+// HELPERS
 
 async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolean): Promise<string> {
     const data: IRunnerState = JSON.parse(req.body.data);
@@ -184,7 +176,6 @@ async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolea
         ]);
 
     let html = snippetHtml(compiledSnippet);
-    const { id, host } = snippet;
 
     if (wrapWithRunnerChrome) {
         html = runnerHtml({
@@ -192,7 +183,6 @@ async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolea
             officeJS: compiledSnippet.officeJS,
             snippetId: snippet.id,
             snippetLastModified: snippet.modified_at,
-            refreshUrl: generateRefreshUrl(req, { host, id, returnUrl }),
             returnUrl: returnUrl,
             origin: snippet.origin,
             host: snippet.host,
@@ -205,13 +195,22 @@ async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolea
     return replaceTabsWithSpaces(html);
 }
 
-function generateRefreshUrl(
-    req: express.Request,
-    refreshParams: {
-        host: string /* to know which host flavor to search for the snippet in */,
-        id: string /* to find the snippet */,
-        returnUrl: string
+/** return the OfficeJS URL (from query parameter, or from guessing based on host), or empty string */
+function determineOfficeJS(query: any, host: string): string {
+    const queryParamsLowercase: { officejs: string } = <any>{};
+    forIn(query as { [key: string]: string },
+        (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
+
+    if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
+        return queryParamsLowercase.officejs.trim();
     }
-) {
-    return generateUrl(`${req.protocol}://${req.get('host')}/run`, refreshParams);
+
+    if (officeHosts.indexOf(host.toUpperCase()) >= 0) {
+        // Assume a production Office.js for the Office products --
+        // and worse case (e.g., if targeting Beta, or debug version),
+        // the runner will just force a refresh after the page has loaded
+        return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+    }
+
+    return '';
 }
