@@ -158,6 +158,9 @@ export class Strings {
                 return 'Could not refresh the snippet due to the following error: ' +
                     e.message || e.toString();
             }
-        }
+        },
+
+        /** NEEDS STRING REVIEW */
+        reloadingOfficeJs: 'Reloading Office.js'
     };
 }
