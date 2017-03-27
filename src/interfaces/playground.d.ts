@@ -52,16 +52,17 @@ interface IRunnerHandlebarsContext {
     snippetId: string,
     snippetLastModified: number;
 
-    host: string;
-    refreshUrl: string;
-    returnUrl: string;
     origin: string;
+    host: string;
 
     initialLoadSubtitle: string;
     headerTitle: string;
 
-    // Office.js URL (or empty)
+    /** Office.js URL, or empty */
     officeJS: string;
+
+    /** return url (for back button / errors), or empty */
+    returnUrl: string;
 }
 
 interface IRunnerState {

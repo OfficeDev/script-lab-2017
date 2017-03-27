@@ -48,13 +48,10 @@
   dependencies:
     tsickle "^0.2"
 
-"@microsoft/office-js-helpers@0.6.0-beta.0":
-  version "0.6.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js-helpers/-/office-js-helpers-0.6.0-beta.0.tgz#03fe8f49314958d422510fa01c59703a5ee6593c"
+"@microsoft/office-js-helpers@0.6.0-beta.8":
+  version "0.6.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js-helpers/-/office-js-helpers-0.6.0-beta.8.tgz#6fd720fd0d0cf8b52a9ac7295a6120ace3cd8e3b"
   dependencies:
-    "@types/jquery" "2.0.41"
-    "@types/lodash" "4.14.55"
-    "@types/office-js" "0.0.39"
     core-js "2.4.1"
     crypto-js "3.1.9-1"
     lodash "4.17.4"
@@ -144,10 +141,6 @@
   version "2.0.40"
   resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.40.tgz#acdd69e29b74cdec15dc3c074bcb064bc1b87213"
 
-"@types/jquery@2.0.41":
-  version "2.0.41"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.41.tgz#b87ba051011f99edbe586d8f97282e7786e01a6d"
-
 "@types/js-yaml@3.5.29":
   version "3.5.29"
   resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-3.5.29.tgz#29f4dd9314fbccb080d8bd84b9c23811ec5090c2"
@@ -156,19 +149,9 @@
   version "4.14.54"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.54.tgz#287dbbcd97d5da69c25ca99fb5afa81c4839b7fa"
 
-"@types/lodash@4.14.55":
-  version "4.14.55"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.55.tgz#75d7d4eba020ee4103d4cbd0f2a3ef5db8f7534f"
-
 "@types/mime@*", "@types/mime@0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-0.0.29.tgz#fbcfd330573b912ef59eeee14602bface630754b"
-
-"@types/moment@2.13.0":
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
-  dependencies:
-    moment "*"
 
 "@types/node@*", "@types/node@7.0.5":
   version "7.0.5"
@@ -177,10 +160,6 @@
 "@types/office-js@0.0.38":
   version "0.0.38"
   resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.38.tgz#52bc5069e8b0a84cdb570d109b846e022c6d50c1"
-
-"@types/office-js@0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.39.tgz#a1e5d8d49e57ec2421a4aaa5f39195bf7b74046e"
 
 "@types/request@0.0.40":
   version "0.0.40"
@@ -3076,7 +3055,7 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-moment@*, moment@2.18.0:
+moment@2.18.0:
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.0.tgz#6cfec6a495eca915d02600a67020ed994937252c"
 

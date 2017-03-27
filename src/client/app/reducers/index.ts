@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
-import { combineReducers } from '@ngrx/store';
+import { compose } from '@ngrx/core';
+import { combineReducers, ActionReducer } from '@ngrx/store';
 
 /**
  * Every reducer module's default export is the reducer function itself. In
@@ -31,13 +32,6 @@ export interface State {
  * the result from right to left.
  */
 
-export const rootReducer = (state, action) => combineReducers({
-    snippet: snippet.reducer,
-    monaco: monaco.reducer,
-    ui: ui.reducer,
-    github: github.reducer
-})(state, action);
-
 const getSnippetsState = (state: State) => state.snippet;
 export const getCurrent = createSelector(getSnippetsState, snippet.getCurrent);
 export const getSnippets = createSelector(getSnippetsState, snippet.getSnippets);
@@ -65,18 +59,25 @@ export const getProfile = createSelector(getGitHubState, github.getProfile);
 export const getLoggedIn = createSelector(getGitHubState, github.getLoggedIn);
 export const getSharing = createSelector(getGitHubState, github.getSharing);
 
-const getSettingsState = (state: State) => ({
+const getSettingsState = (state: State) => (<ISettings>{
     lastOpened: getCurrent(state),
     profile: getProfile(state),
     theme: getTheme(state),
     language: getLanguage(state)
-}) as ISettings;
+});
 
 export const getSettings = createSelector(state => state, getSettingsState);
-export const createDefaultState = (settings: ISettings) => {
+
+const createDefaultState = (settings: ISettings) => {
     if (settings == null) {
-        return null;
+        return <State>{
+            github: github.initialState,
+            monaco: monaco.initialState,
+            ui: ui.initialState,
+            snippet: snippet.initialState
+        };
     }
+
     let { profile, lastOpened, theme, language, env } = settings;
 
     return <State>{
@@ -86,3 +87,20 @@ export const createDefaultState = (settings: ISettings) => {
         snippet: { ...snippet.initialState, lastOpened }
     };
 };
+
+export const stateSetter: ActionReducer<any> = (reducer: ActionReducer<any>) => {
+    return (state, { type, payload }) => {
+        if (type === 'SET_ROOT_STATE') {
+            console.log('Setting root state', payload);
+            return createDefaultState(payload);
+        }
+        return reducer(state, { type, payload });
+    };
+};
+
+export const rootReducer = compose(stateSetter, combineReducers)({
+    snippet: snippet.reducer,
+    monaco: monaco.reducer,
+    ui: ui.reducer,
+    github: github.reducer
+});

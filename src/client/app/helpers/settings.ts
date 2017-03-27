@@ -3,8 +3,6 @@ import { environment } from './environment';
 import * as cuid from 'cuid';
 
 class Settings {
-    private _snippets: Storage<ISnippet> = null;
-
     private _user: string;
     get user(): string {
         if (this._user == null) {
@@ -17,8 +15,10 @@ class Settings {
         return this._user;
     }
 
-    settings = new Storage<ISettings>('playground_settings', StorageType.LocalStorage);
+    settings = new Storage<ISettings>('playground_settings');
+    intellisenseCache = new Storage<string>('playground_intellisense', StorageType.SessionStorage);
 
+    private _snippets: Storage<ISnippet> = null;
     get snippets() {
         if (this._snippets == null && environment.current && environment.current.host) {
             this._snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);

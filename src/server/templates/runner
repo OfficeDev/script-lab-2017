@@ -10,10 +10,39 @@
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
     <link rel="stylesheet" href="{{{origin}}}/runner.bundle.css" />
-    {{#if officeJS}}
 
+    {{#if officeJS}}
     <script src="{{{officeJS}}}"></script>
+
+    <script>
+        Office.initialize = function() {
+            // Set initialize to an empty function -- that way, doesn't cause
+            // re-initialization of this page in case of a page like the error dialog,
+            // which doesn't defined (override) Office.initialize.
+            Office.initialize = function() { };
+
+            window.playground_host_ready = true;
+        };
+    </script>
+    {{else}}
+    <script>
+        window.playground_host_ready = true;
+    </script>
     {{/if}}
+
+    <script>
+        {{#if Office}}
+        Office.initialize = function() {
+            window.playground_host_ready = true;
+            // Set initialize to an empty function -- that way, doesn't cause
+            // re-initialization of this page in case of a page like the error dialog,
+            // which doesn't defined (override) Office.initialize.
+            Office.initialize = function() { };
+        };
+        {{else}}
+        window.playground_host_ready = true;
+        {{/if}}
+    </script>
 </head>
 
 <body class="{{{host}}}">
@@ -21,7 +50,7 @@
         <div class="ms-progress-component">
             <main class="ms-progress-component__main">
                 <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.png">
-                <h1 id="title" class="ms-progress-component__title ms-font-xxl">Add-in Playground</h1>
+                <h1 id="title" class="ms-progress-component__title ms-font-xxl">Project Bornholm</h1>
                 <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
             </main>
             <footer class="ms-progress-component__footer">
@@ -41,10 +70,10 @@
     </app>
 
     <header id="header" class="command__bar">
-        <a class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
+        <a id="header-back" style="display:none" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>
-        <a class="command__icon command__center ms-u-slideLeftIn10" href="{{{refreshUrl}}}">
+        <a id="header-refresh" class="command__icon command__center ms-u-slideLeftIn10" href="#">
             <i class="ms-Icon ms-Icon--Refresh"></i>
             <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
@@ -105,6 +134,7 @@
             origin: '{{{origin}}}',
             officeJS: '{{{officeJS}}}',
             returnUrl: '{{{returnUrl}}}',
+            refreshUrl: '{{{refreshUrl}}}',
             heartbeatParams: {
                 mode: '{{{host}}}',
                 id: '{{{snippetId}}}',

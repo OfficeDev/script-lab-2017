@@ -1,7 +1,13 @@
 import { AppInsights } from 'applicationinsights-js';
 import { environment } from './environment';
 import { settings } from './settings';
-import { Utilities } from '@microsoft/office-js-helpers';
+import { Utilities, CustomError } from '@microsoft/office-js-helpers';
+
+class TelemetryError extends CustomError {
+    constructor(message: string, innerError?: Error) {
+        super('Telemetry Error', message, innerError);
+    }
+}
 
 class ApplicationInsights {
     private _current = AppInsights;
@@ -18,15 +24,13 @@ class ApplicationInsights {
             autoTrackPageVisitTime: true
         });
 
-        console.log(instrumentationKey, disable);
-
         try {
             this._disable = disable || environment.current.devMode;
             this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
             this.setAuthenticatedUserContext();
         }
         catch (e) {
-            console.error('Could not initialize AppInsights.');
+            Utilities.log(new TelemetryError('Could not initialize application insights', e));
         }
     }
 
@@ -34,8 +38,8 @@ class ApplicationInsights {
         try {
             this._current.config.disableTelemetry = force || !this._disable;
         }
-        catch (e) {
-            console.error(force, 'Could not toggle telemetry.');
+        catch (error) {
+            Utilities.log(new TelemetryError(`Could not toggle telemetry ${force ? 'on' : 'off'}`, error));
         }
     }
 
@@ -53,6 +57,7 @@ class ApplicationInsights {
                     return tEnd - tStart;
                 }
                 catch (e) {
+                    Utilities.log(new TelemetryError('Could not track page view', e));
                     return -1;
                 }
             },
@@ -73,6 +78,7 @@ class ApplicationInsights {
                     return tEnd - tStart;
                 }
                 catch (e) {
+                    Utilities.log(new TelemetryError('Could not track timed event', e));
                     return -1;
                 }
             },
@@ -94,8 +100,9 @@ class ApplicationInsights {
             if (environment.current.devMode) {
                 Utilities.log(error);
             }
-            this._current.trackException(error.innerError || error, location, {
+            this._current.trackException(error, location, {
                 user: settings.user,
+                innerError: error.innerError,
                 message: error.message,
                 location: location,
                 host: environment.current.host,
@@ -104,7 +111,7 @@ class ApplicationInsights {
             });
         }
         catch (e) {
-            console.error(error, location);
+            Utilities.log(new TelemetryError('Could not track exception', error));
         }
     }
 
@@ -185,9 +192,6 @@ class ApplicationInsights {
     */
     setAuthenticatedUserContext(handle?) {
         try {
-            if (environment.current.devMode) {
-                console.info(settings.user, handle);
-            }
             this._current.setAuthenticatedUserContext(handle || settings.user, settings.user);
         }
         catch (e) {
