@@ -25,6 +25,20 @@ app.use(cors());
 app.use('/favicon', express.static('favicon'));
 
 /**
+ * Server CERT and PORT configuration
+ */
+if (process.env.NODE_ENV === 'production') {
+    app.listen(process.env.port || 1337, () => console.log(`Script Lab Runner listening on port ${process.env.PORT}`));
+}
+else {
+    const cert = {
+        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+    };
+    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
+}
+
+/**
  * HTTP POST: /auth
  * Returns the access_token
  */

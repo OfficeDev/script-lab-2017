@@ -1,6 +1,6 @@
 # Welcome to the Playground!
-[![Build Status](https://travis-ci.com/OfficeDev/addin-playground.svg?token=zKp5xy2SuSortMzv5Pqc&branch=insiders)](https://travis-ci.com/OfficeDev/addin-playground)
-[![INSIDERS](https://img.shields.io/badge/INSIDERS-bornholm-yellowgreen.svg)](https://bornholm-insiders.azurewebsites.net)
+[![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/script-lab)
+[![PRODUCTION](https://img.shields.io/badge/EDGE-script--lab-orange.svg)](https://script-lab.azureedge.net)
 
 
 ## Contributing code changes or samples:
@@ -18,7 +18,7 @@ To contribute to either the Playground itself, or to sample code, please see the
 
 ## Issue
 
-Any issues should be logged into the appropriate milestones at <https://github.com/OfficeDev/addin-playground/milestones>.  One bug (or group of related bugs) per issue.
+Any issues should be logged into the appropriate milestones at <https://github.com/OfficeDev/script-lab/milestones>.  One bug (or group of related bugs) per issue.
 
 # Test scenarios
 
