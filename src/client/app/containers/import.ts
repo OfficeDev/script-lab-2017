@@ -62,32 +62,23 @@ import { isEmpty } from 'lodash';
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
-                        <collapse title="Import using a snippet url">
-                            <p class="ms-font-l import__subtitle">Paste the snippet's URL or ID, then choose Import.</p>
+                        
+                            <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
                             <div class="ms-TextField import__field">
-                                <label class="ms-Label">URL or gist ID</label>
-                                <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="Enter your URL or GitHub gist ID here" >
+                                <label class="ms-Label">{{strings.importUrlLabel}}</label>
+                                <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
                             </div>
-                            <p class="ms-font-m import__examples">Examples:</p>
-                            <ol class="ms-font-m import__examples-list">
-                                <li>https://gist.github.com/sampleGistId</li>
-                                <li>https://addin-playground.azurewebsites.net/#/gist/sampleGistId</li>
-                                <li>https://mywebsite.com/myfolder/mysnippet.yaml</li>
-                                <li>Alternatively you can also input just a gist ID such as</li>
-                                <li>sampleGistId</li>
-                            </ol>
-                        </collapse>
-                        <collapse title="Import using a snippet yaml">
-                            <p class="ms-font-l import__subtitle">Paste the snippet's yaml into the text area below, and then choose the "Import" button.</p>
+                            
+                        
                             <div class="ms-TextField ms-TextField--multiline import__field">
-                                <label class="ms-Label">Snippet Yaml</label>
+                                <label class="ms-Label">{{strings.importYamlLabel}}</label>
                                 <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
                             </div>
-                        </collapse>
+                        
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
                                 <button class="ms-Dialog-action ms-Button" (click)="import() ">
-                                    <span class="ms-Button-label">Import</span>
+                                    <span class="ms-Button-label">{{strings.importButtonLabel}}</span>
                                 </button>
                             </div>
                         </div>

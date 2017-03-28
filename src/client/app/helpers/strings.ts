@@ -64,7 +64,7 @@ export class Strings {
 
     // Components strings
     // about.ts
-    static readonly aboutUpdated = 'Last updaated:';
+    static readonly aboutUpdated = 'Last updated:';
     static readonly aboutStorage = 'Storage:';
     static readonly aboutSnippets = 'Local snippets';
     static readonly aboutIntellisense = 'IntelliSense';
@@ -120,7 +120,7 @@ export class Strings {
     static readonly newSnippetLabel = 'New snippet';
     static readonly mySnippetsLabel = 'My snippets';
     static readonly samplesLabel = 'Samples';
-    static readonly importLabel = 'Import snippets';
+    static readonly importLabel = 'Import snippet';
     static readonly mySnippetsDescription = 'Choose a snippet that you saved.';
     static readonly localSnippetsLabel = 'My snippets on this computer';
     static readonly noLocalSnippets = `You haven't saved snippets on this computer. To get started, create a new snippet or import one.`;
@@ -128,8 +128,13 @@ export class Strings {
     static readonly sharedGistsSignIn = 'Sign in to get any snippets you shared via GitHub gists.';
     static readonly samplesDescription = 'Choose one of the samples below to get started.';
     static readonly noSamplesMessage = `There aren't any samples available for this host yet.`;
+
+    static readonly importInstructions = `Enter the snippet's URL or paste the YAML below, then choose`;
+    static readonly importUrlLabel = `Snippet URL or GitHub gist ID`;
+    static readonly importUrlPlaceholder = `eg. https://gist.github.com/sampleGistId`;
+    static readonly importYamlLabel = `Snippet YAML`;
     
-    //static readonly importUrlTab = 'From URL';
+    /*static readonly importUrlTab = 'From URL';
     static readonly importYamlTab = 'Paste code';
     static readonly importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`;
     static readonly importUrlTextBoxLabel = 'URL or gist ID';
@@ -141,7 +146,7 @@ export class Strings {
     static readonly urlExample4 = 'Or you can enter just the gist ID';
     static readonly importYamlDescription = `Paste the snippet's YAML code, then choose Import.`;
     static readonly importYamlTextBoxLabel = 'YAML';
-
+    */
 
     static readonly Refresh = {
         /** NEEDS STRING REVIEW. Error if refresh URL is somehow misformed (should essentially never happen) */
