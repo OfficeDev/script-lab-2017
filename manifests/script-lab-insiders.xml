@@ -56,6 +56,7 @@
                     <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
                     <SourceLocation resid="PG.Code.Url" />
                     <Title resid="PG.CodeCommand.Title" />
                   </Action>
