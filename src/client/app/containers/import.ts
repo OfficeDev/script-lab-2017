@@ -27,7 +27,7 @@ import { isEmpty } from 'lodash';
                         <i class="ms-Icon ms-Icon--Dictionary"></i><span>{{strings.samplesLabel}}</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'import'}" (click)="switch('import')">
-                        <i class="ms-Icon ms-Icon--Download"></i><span>{{strings.importLabel}}</span>
+                        <i class="ms-Icon ms-Icon--Download"></i><span>{{strings.importButtonLabel}}</span>
                     </li>
                 </ul>
                 <section class="gallery__tabs-container">
