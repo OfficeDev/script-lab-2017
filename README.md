@@ -5,7 +5,7 @@
 
 ## Contributing code changes or samples:
 
-To contribute to either the Playground itself, or to sample code, please see the [CONTRIBUTING.md](contributing.md) doc.
+To contribute to either the Playground itself, or to sample code, please see the [CONTRIBUTING.md](CONTRIBUTING.md) doc.
 
 ## Noteworthy changes:
 
