@@ -23,6 +23,10 @@ interface InitializationParams {
     let lastModified: number;
     let currentOfficeJS: string;
 
+    let host: string;
+    /** Id of the snippet that the runner was created for (or empty if the runner is a companion to the editor, regardless of what snippet is loaded) */
+    let tetheredSnippetId: string;
+
     const $needsReload = $('#notify-needs-reload');
     const $needsReloadIndicator = $needsReload.find('.reloading-indicator');
     const $needsReloadButtons = $needsReload.find('button');
@@ -30,8 +34,6 @@ interface InitializationParams {
 
     async function initializeRunner(params: InitializationParams) {
         try {
-            const { origin, officeJS, heartbeatParams } = params;
-
             if (params.returnUrl) {
                 window.sessionStorage.playground_returnUrl = params.returnUrl;
             }
@@ -42,13 +44,17 @@ interface InitializationParams {
             }
 
             returnUrl = params.returnUrl;
-            lastModified = toNumber(heartbeatParams.lastModified);
-            currentOfficeJS = officeJS;
+            host = params.heartbeatParams.host;
+            tetheredSnippetId = params.heartbeatParams.id;
+            lastModified = toNumber(params.heartbeatParams.lastModified);
+            currentOfficeJS = params.officeJS;
 
             await Promise.all([
-                loadFirebug(origin),
+                loadFirebug(params.origin),
                 ensureHostInitialized()
             ]);
+
+            $('#header-refresh').attr('href', generateRefreshUrl(currentOfficeJS));
 
             $snippetContent = $('#snippet-code-content');
 
@@ -60,10 +66,10 @@ interface InitializationParams {
                 // so that can keep adding the snippet frame relative to its position
                 $snippetContent.text('');
 
-                writeSnippetIframe(snippetHtml, officeJS);
+                writeSnippetIframe(snippetHtml, params.officeJS);
             }
 
-            establishHeartbeat(origin, heartbeatParams);
+            establishHeartbeat(params.origin, params.heartbeatParams);
 
             initializeTooltipUpdater();
         }
@@ -231,8 +237,9 @@ interface InitializationParams {
     function processSnippetReload(html: string, snippet: ISnippet) {
         const desiredOfficeJs = processLibraries(snippet).officeJS || '';
 
-        let refreshUrl = generateRefreshUrl();
+        const refreshUrl = generateRefreshUrl(desiredOfficeJs);
         $('#header-refresh').attr('href', refreshUrl);
+
         if (desiredOfficeJs !== currentOfficeJS) {
             $('#subtitle').text(Strings.Runner.reloadingOfficeJs);
             $('#progress').show();
@@ -243,26 +250,23 @@ interface InitializationParams {
         // If still here, proceed to render:
 
         const $originalFrame = $('.snippet-frame');
-
         writeSnippetIframe(html, processLibraries(snippet).officeJS).show();
-
         $originalFrame.remove();
 
         $('#header-text').text(snippet.name);
         lastModified = snippet.modified_at;
 
         (window as any).Firebug.Console.clear();
+    }
 
-
-        // Helper function
-
-        function generateRefreshUrl() {
-            let refreshUrl = `${window.location.origin}/run/${snippet.host}/${snippet.id}`;
-            if (desiredOfficeJs) {
-                refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJs)}`;
-            }
-            return refreshUrl;
+    function generateRefreshUrl(desiredOfficeJs: string) {
+        let refreshUrl = `${window.location.origin}/run/${host}` +
+            (tetheredSnippetId ? `/${tetheredSnippetId}` : '');
+        if (desiredOfficeJs) {
+            refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJs)}`;
         }
+
+        return refreshUrl;
     }
 
     function initializeTooltipUpdater() {

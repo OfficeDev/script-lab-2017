@@ -67,7 +67,7 @@ app.use((err, req, res, next) => {
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-app.get('/run/:host/:id', handler(async (req: express.Request, res: express.Response) => {
+app.get(['/run/:host/', '/run/:host/:id'], handler(async (req: express.Request, res: express.Response) => {
     const host = (req.params.host as string).toUpperCase();
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
@@ -77,7 +77,7 @@ app.get('/run/:host/:id', handler(async (req: express.Request, res: express.Resp
     const runnerHtmlGenerator = await loadTemplate<IRunnerHandlebarsContext>('runner');
     const html = runnerHtmlGenerator({
         snippet: {
-            id: (req.params.id as string).toLowerCase() || ''
+            id: ((req.params.id as string) || '').toLowerCase()
         },
         officeJS: determineOfficeJS(req.query, host),
         returnUrl: '',

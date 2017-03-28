@@ -146,7 +146,7 @@
                 {{#if snippet.lastModified}}
                 lastModified: {{snippet.lastModified}},
                 {{/if}}
-                mode: '{{{host}}}'
+                host: '{{{host}}}'
             }
         });
     </script>

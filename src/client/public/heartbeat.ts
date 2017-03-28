@@ -4,7 +4,10 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
-    let lastModified: number;
+    let trackingSnippet: {
+        id: string;
+        lastModified: number;
+    };
     let snippetListener: any;
     let settingsListener: any;
 
@@ -15,16 +18,17 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         setupRequestReloadListener(messenger);
 
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
-        if (params.id) {
-            lastModified = toNumber(params.lastModified);
-            createSnippetSpecificListener(params.id);
-        } else {
-            // TODO (TEMPORARY)
-            messenger.send(window.parent, MessageType.ERROR, 'Non-snippet-bound heartbeat not yet supported');
-        }
+
+        trackingSnippet = {
+            id: params.id || '',
+            lastModified: params.id ? toNumber(params.lastModified) : 0
+        };
+
+        params.id ? createSnippetSpecificListener() : createCurrentlyEditingListener();
     })();
 
-    function createSnippetSpecificListener(id: string) {
+
+    function createSnippetSpecificListener() {
         if (!snippetListener) {
             snippetListener = settings.snippets.notify();
 
@@ -37,8 +41,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         validateSnippet();
 
 
+        // Helper
+
         function validateSnippet() {
-            let snippet = settings.snippets.get(id);
+            settings.snippets.load();
+            let snippet = settings.snippets.get(trackingSnippet.id);
 
             // If found a snippet now, whereas previously had needed to initiate a
             // settings listener, this means that was previously unsaved and now
@@ -50,7 +57,8 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             }
 
             if (snippet == null) {
-                if (settings.lastOpened && (settings.lastOpened.id === id)) {
+                settings.settings.load();
+                if (settings.lastOpened && (settings.lastOpened.id === trackingSnippet.id)) {
                     snippet = settings.lastOpened;
                     // Also subscribe to the settings changed event, since it looks like this
                     // is an unsaved snippet -- and hence deleting it would not get reflected
@@ -79,11 +87,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 // snippetListener = null;
                 // settingsListener = null;
 
-                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
+                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExistsUnrecoverable);
                 return;
             }
 
-            if (snippet.modified_at !== lastModified) {
+            if (snippet.modified_at !== trackingSnippet.lastModified) {
                 // Unsubscribe from listeners.  Nothing to do now, until the user decides
                 // that they do want to reload -- and at that point, the runner frame will
                 // send a message, asking for the latest.
@@ -96,13 +104,62 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 // snippetListener = null;
                 // settingsListener = null;
 
-                if (lastModified) {
+
+                // If was already tracking the snippet and had a real lastModified number set,
+                // inform the user that the snippet is stale.  Otherwise, just send it immediately.
+                if (trackingSnippet.lastModified) {
                     messenger.send(window.parent, MessageType.INFORM_STALE);
                 } else {
-                    sendSnippetAndStartTracking(snippet);
+                    trackingSnippet.lastModified = snippet.modified_at;
+                    messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
                 }
+            }
+        }
+    }
 
+    function createCurrentlyEditingListener() {
+        if (!settingsListener) {
+            settingsListener = settings.settings.notify();
+
+            settingsListener.subscribe(() => {
+                settings.settings.load();
+                validateSnippet();
+            });
+        }
+
+        validateSnippet();
+
+
+        // Helper
+
+        function validateSnippet() {
+            settings.settings.load();
+            let snippet = settings.lastOpened;
+
+            if (snippet == null) {
+                messenger.send(window.parent, MessageType.ERROR, 'No snippet is opened. Please open a snippet in the editor.'); // FIXME
+
+                // But keep on listening (don't unsubscribe from settings notifications, just exit the function for the present)
                 return;
+            }
+
+            if (snippet.id === trackingSnippet.id) {
+                if (snippet.modified_at !== trackingSnippet.lastModified) {
+                    if (trackingSnippet.lastModified) {
+                        messenger.send(window.parent, MessageType.INFORM_STALE);
+                    } else {
+                        trackingSnippet.lastModified = snippet.modified_at;
+                        messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+                    }
+                }
+            } else {
+                // When switching between snippets, just switch
+                trackingSnippet = {
+                    id: snippet.id,
+                    lastModified: snippet.modified_at
+                };
+
+                messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
             }
         }
     }
@@ -111,21 +168,18 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         messenger.listen()
             .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
             .subscribe((input) => {
+                const id = input.message as string /* message is the snippet ID */ || '';
+                const lastModified = 0; // Set to last modified, so that refreshes immediately
+
+                trackingSnippet = { id, lastModified };
+
                 try {
-                    settings.snippets.load();
-                    let snippet = settings.snippets.get(input.message /* message is the snippet ID */);
-                    sendSnippetAndStartTracking(snippet);
+                    (id ? createSnippetSpecificListener() : createCurrentlyEditingListener());
                 }
                 catch (e) {
                     messenger.send(window.parent, MessageType.ERROR, Strings.Runner.getCouldNotRefreshSnippetText(e));
                 }
             });
-    }
-
-    function sendSnippetAndStartTracking(snippet: ISnippet) {
-        lastModified = snippet.modified_at;
-        createSnippetSpecificListener(snippet.id);
-        messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
     }
 
 })();

@@ -145,7 +145,7 @@ export class Strings {
 
     static readonly Runner = {
         /** NEEDS STRING REVIEW */
-        snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.',
+        snippetNoLongerExistsUnrecoverable: 'Snippet no longer exists. Please reload this page, or return to the previous one.',
 
         /** NEEDS STRING REVIEW */
         unexpectedError: 'An unexpected error had occurred',

@@ -141,8 +141,8 @@ interface ISettings {
 }
 
 interface HeartbeatParams {
-    /** mode (equivalent to "host" in this case -- used for environment detection) */
-    mode: string;
+    /** mode (used for environment detection) */
+    host: string;
 
     /** snippet ID, if any */
     id: string;
