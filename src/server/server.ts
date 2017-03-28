@@ -27,7 +27,7 @@ const otherValidHosts = ['WEB'];
  * Server CERT and PORT configuration
  */
 if (process.env.NODE_ENV === 'production') {
-    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
+    app.listen(process.env.port || 1337, () => console.log(`Script Lab Runner listening on port ${process.env.PORT}`));
 }
 else {
     const cert = {

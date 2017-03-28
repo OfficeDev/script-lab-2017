@@ -1,9 +1,9 @@
 {
-    "name": "addin-playground-runner",
+    "name": "script-lab-runner",
     "description": "Code, run and share your Add-in snippets directly from Office.",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/officedev/addin-playground"
+        "url": "git+https://github.com/officedev/script-lab"
     },
     "engines": {
         "node": ">=6.9.4"
@@ -16,9 +16,9 @@
     ],
     "author": "Microsoft",
     "bugs": {
-        "url": "https://github.com/officedev/addin-playground/issues"
+        "url": "https://github.com/officedev/script-lab/issues"
     },
-    "homepage": "https://github.com/officedev/addin-playground#readme",
+    "homepage": "https://github.com/officedev/script-lab#readme",
     "version": "1.0.0",
     "license": "MIT",
     "dependencies": {

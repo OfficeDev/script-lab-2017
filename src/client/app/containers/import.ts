@@ -69,7 +69,7 @@ import { isEmpty } from 'lodash';
                             <p class="ms-font-m import__examples">Here are examples:</p>
                             <ol class="ms-font-m import__examples-list">
                                 <li>https://gist.github.com/sampleGistId</li>
-                                <li>https://addin-playground.azurewebsites.net/#/gist/sampleGistId</li>
+                                <li>https://script-lab.azurewebsites.net/#/gist/sampleGistId</li>
                                 <li>https://mywebsite.com/myfolder/mysnippet.yaml</li>
                                 <li>Alternatively you can also input just a gist ID such as</li>
                                 <li>sampleGistId</li>

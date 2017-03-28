@@ -8,11 +8,11 @@
   <Version>1.0.0.4</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="[EDGE] Project Bornholm" />
+  <DisplayName DefaultValue="[EDGE] Script Lab" />
   <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://bornholm-edge.azurewebsites.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://bornholm-edge.azurewebsites.net/assets/images/icon-64.png" />
-  <SupportUrl DefaultValue="https://github.com/OfficeDev/addin-playground/issues" /> 
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://bornholm-runner-edge.azurewebsites.net</AppDomain>
@@ -493,7 +493,7 @@
         <bt:Url id="PG.Functions.Url" DefaultValue="https://bornholm-edge.azurewebsites.net/functions.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="PG.TabLabel" DefaultValue="[EDGE] Project Bornholm" />
+        <bt:String id="PG.TabLabel" DefaultValue="[EDGE] Script Lab" />
         <bt:String id="PG.GroupLabel" DefaultValue="Play" />
         <bt:String id="PG.AboutGroupLabel" DefaultValue="About the Playground" />
         <bt:String id="PG.ApiGroupLabel" DefaultValue="APIs" />
@@ -504,7 +504,7 @@
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run currently-editing snippet" />
         <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
-        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Project Bornholm tutorial" />
+        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial" />
         <bt:String id="PG.UsingCommand.Label" DefaultValue="Help" />
         <bt:String id="PG.UsingCommand.TipTitle" DefaultValue="Browser help topics" />
         <bt:String id="PG.FeedbackCommand.Label" DefaultValue="Send Feedback" />
@@ -515,10 +515,10 @@
         <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API Help from the Community" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Project Bornholm code editor." />
+        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor." />
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a taskpane that runs the currently-edited snippet." />
-        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Project Bornholm tutorial." />
-        <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using Project Bornholm." />
+        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial." />
+        <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using Script Lab." />
         <bt:String id="PG.FeedbackCommand.Desc" DefaultValue="Opens a web page where you can file issues or suggestions." />
         <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running." />
         <bt:String id="PG.AskCommand.Desc" DefaultValue="Lauches a community forum for questions about the Office JavaScript APIs." />
