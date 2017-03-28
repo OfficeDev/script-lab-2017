@@ -12,7 +12,6 @@ export class Strings {
     static readonly saveButtonLabel = 'Save';
     static readonly moreInfoButtonLabel = 'More info';
     static readonly importButtonLabel = 'Import';
-    
 
     // effects strings
     //snippet.ts strings:
@@ -133,7 +132,6 @@ export class Strings {
     static readonly importUrlLabel = `Snippet URL or GitHub gist ID`;
     static readonly importUrlPlaceholder = `eg. https://gist.github.com/sampleGistId`;
     static readonly importYamlLabel = `Snippet YAML`;
-    
     /*static readonly importUrlTab = 'From URL';
     static readonly importYamlTab = 'Paste code';
     static readonly importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`;
