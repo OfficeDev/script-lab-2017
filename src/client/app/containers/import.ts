@@ -2,8 +2,10 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI } from '../helpers';
+import { AI, Strings } from '../helpers';
 import { isEmpty } from 'lodash';
+
+//strings are specified inline (not imported) for performance reasons
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,60 +15,60 @@ import { isEmpty } from 'lodash';
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon" (click)="cancel()">
-                        <i class="ms-Icon ms-Icon--GlobalNavButton"></i><span>Close</span>
+                        <i class="ms-Icon ms-Icon--GlobalNavButton"></i><span>{{strings.close}}</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon gallery__tab--highlighted" (click)="new()">
-                        <i class="ms-Icon ms-Icon--Add"></i><span>New snippet</span>
+                        <i class="ms-Icon ms-Icon--Add"></i><span>{{strings.newSnippetLabel}}</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'snippets'}" (click)="switch('snippets')">
-                        <i class="ms-Icon ms-Icon--DocumentSet"></i><span>My snippets</span>
+                        <i class="ms-Icon ms-Icon--DocumentSet"></i><span>{{strings.mySnippetsLabel}}</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'samples'}" (click)="switch('samples')">
-                        <i class="ms-Icon ms-Icon--Dictionary"></i><span>Samples</span>
+                        <i class="ms-Icon ms-Icon--Dictionary"></i><span>{{strings.samplesLabel}}</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'import'}" (click)="switch('import')">
-                        <i class="ms-Icon ms-Icon--Download"></i><span>Import</span>
+                        <i class="ms-Icon ms-Icon--Download"></i><span>{{strings.importLabel}}</span>
                     </li>
                 </ul>
                 <section class="gallery__tabs-container">
                     <section class="import-tab__section" [hidden]="view !== 'snippets'">
-                        <h1 class="ms-font-xxl import__title">Snippets</h1>
-                        <p class="ms-font-l import__subtitle">Choose from the snippets that you have created.</p>
-                        <collapse title="My local snippets">
+                        <h1 class="ms-font-xxl import__title">{{strings.mySnippetsLabel}}</h1>
+                        <p class="ms-font-l import__subtitle">{{strings.mySnippetsDescription}}</p>
+                        <collapse title="{{strings.localSnippetsLabel}}">
                             <gallery-list [current]="current$|async" [items]="snippets$|async" (select)="import($event)">
-                                You have no snippets. To get started, create a new snippet or use the import option to load a snippet from various sources.
+                                {{strings.noLocalSnippets}}
                             </gallery-list>
                         </collapse>
-                        <collapse title="My shared gists">
+                        <collapse title="{{strings.sharedGistsLabel}}">
                             <gallery-list [items]="gists$|async" (select)="import($event, 'gist')">
                                 <div [hidden]="(isLoggedIn$|async)">
-                                    <p class="ms-font-m import__subtitle">Please sign in to GitHub so that we can get your playground gists.</p>
+                                    <p class="ms-font-m import__subtitle">{{strings.sharedGistsSignIn}}</p>
                                     <button class="ms-Button" (click)="login() ">
-                                        <span class="ms-Button-label">Sign in to GitHub</span>
+                                        <span class="ms-Button-label">{{strings.loginGithub}}</span>
                                     </button>
                                 </div>
                                 <div [hidden]="!(isLoggedIn$|async)">
-                                    You have no gists exported. To get started, create a new snippet and share it to your gists.
+                                    {{strings.noGistsMessage}}
                                 </div>
                             </gallery-list>
                         </collapse>
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'samples'">
-                        <h1 class="ms-font-xxl import__title">Samples</h1>
-                        <p class="ms-font-l import__subtitle">Choose from one of the predefined samples below to get started.</p>
+                        <h1 class="ms-font-xxl import__title">{{strings.samplesTab}}</h1>
+                        <p class="ms-font-l import__subtitle">{{strings.samplesDescription}}</p>
                         <gallery-list title="Microsoft" [items]="templates$|async" (select)="import($event, 'gist')">
-                            There are currently no samples available for this host. Be sure to check back later.
+                            {{strings.noSamplesMessage}}
                         </gallery-list>
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'import'">
-                        <h1 class="ms-font-xxl import__title">Import</h1>
+                        <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
                         <collapse title="Import using a snippet url">
-                            <p class="ms-font-l import__subtitle">Paste the snippet's URL or ID into the text area below, and then choose the "Import" button.</p>
+                            <p class="ms-font-l import__subtitle">Paste the snippet's URL or ID, then choose Import.</p>
                             <div class="ms-TextField import__field">
-                                <label class="ms-Label">Url or gist id</label>
-                                <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="Enter your url or gist id here" >
+                                <label class="ms-Label">URL or gist ID</label>
+                                <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="Enter your URL or GitHub gist ID here" >
                             </div>
-                            <p class="ms-font-m import__examples">Here are examples:</p>
+                            <p class="ms-font-m import__examples">Examples:</p>
                             <ol class="ms-font-m import__examples-list">
                                 <li>https://gist.github.com/sampleGistId</li>
                                 <li>https://addin-playground.azurewebsites.net/#/gist/sampleGistId</li>
@@ -110,6 +112,7 @@ export class Import {
             .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
     }
 
+    strings = Strings;
     show$ = this._store.select(fromRoot.getImportState);
     templates$ = this._store.select(fromRoot.getTemplates);
     gists$ = this._store.select(fromRoot.getGists);
