@@ -139,7 +139,7 @@ export class Strings {
     static readonly importUrlTextBoxPlaceholder = 'Enter the URL or GitHub gist ID here';
     static readonly urlExamplesTitle = 'Examples:';
     static readonly urlExample1 = `https://gist.github.com/sampleGistId`;
-    static readonly urlExample2 = `https://addin-playground.azurewebsites.net/#/gist/sampleGistId`;
+    static readonly urlExample2 = `https://script-lab.azurewebsites.net/#/gist/sampleGistId`;
     static readonly urlExample3 = `https://mywebsite.com/myfolder/mysnippet.yaml`;
     static readonly urlExample4 = 'Or you can enter just the gist ID';
     static readonly importYamlDescription = `Paste the snippet's YAML code, then choose Import.`;

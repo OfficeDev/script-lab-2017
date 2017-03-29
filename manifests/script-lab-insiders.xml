@@ -12,7 +12,7 @@
   <Description DefaultValue="Create, run, and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/icon-64.png" />
-  <SupportUrl DefaultValue="https://github.com/OfficeDev/addin-playground/issues" />
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
@@ -211,7 +211,6 @@
         <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets" />
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
-        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet" />
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor" />

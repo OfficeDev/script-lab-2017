@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <OfficeApp
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -12,7 +12,7 @@
   <Description DefaultValue="Create, run, and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
-  <SupportUrl DefaultValue="https://github.com/OfficeDev/addin-playground/issues" /> 
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://localhost:3200</AppDomain>
@@ -31,7 +31,7 @@
   <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Description resid="PG.Description" />
-<Hosts>
+    <Hosts>
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
           <FunctionFile resid="PG.Functions.Url" />

@@ -2,9 +2,9 @@ import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 Office.initialize = () => {
     const urls = {
-        tutorial: 'https://github.com/OfficeDev/addin-playground',
-        playground_help: 'https://github.com/OfficeDev/addin-playground',
-        feedback: 'https://github.com/OfficeDev/addin-playground/issues',
+        tutorial: 'https://github.com/OfficeDev/script-lab',
+        playground_help: 'https://github.com/OfficeDev/script-lab',
+        feedback: 'https://github.com/OfficeDev/script-lab/issues',
         ask: 'http://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
         word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',

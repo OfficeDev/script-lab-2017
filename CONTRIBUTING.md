@@ -3,7 +3,7 @@
 There are several ways in which you can contribute to the project:
 
 1. **Log bugs or file feature suggestions**. To do this, simply file the bugs/suggestions in the Issues tab on GitHub for this project.
-2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/addin-playground-samples>**.
+2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/script-lab-samples>**.
 3. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
 
 
@@ -55,7 +55,7 @@ The website is now running.  To try it out in an Add-in, see the next section.
 
 ## Testing inside of an add-in
 
-1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `addin-playground-local.xml`.
+1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `script-lab-local.xml`.
 
 2. Sideload the manfiest into your office host application.  See <https://dev.office.com/docs/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
 

@@ -15,7 +15,7 @@ import { isEmpty } from 'lodash';
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon" (click)="cancel()">
-                        <i class="ms-Icon ms-Icon--GlobalNavButton"></i><span>{{strings.close}}</span>
+                        <i class="ms-Icon ms-Icon--GlobalNavButton"></i><span></span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link gallery__tab--icon gallery__tab--highlighted" (click)="new()">
                         <i class="ms-Icon ms-Icon--Add"></i><span>{{strings.newSnippetLabel}}</span>
@@ -68,8 +68,6 @@ import { isEmpty } from 'lodash';
                                 <label class="ms-Label">{{strings.importUrlLabel}}</label>
                                 <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
                             </div>
-                            
-                        
                             <div class="ms-TextField ms-TextField--multiline import__field">
                                 <label class="ms-Label">{{strings.importYamlLabel}}</label>
                                 <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
