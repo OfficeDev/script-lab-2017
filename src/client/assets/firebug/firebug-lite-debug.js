@@ -26841,7 +26841,7 @@ Firebug.CSSModule = extend(Firebug.Module,
         style.parentNode.removeChild(style);
 
         // https://bugzilla.mozilla.org/show_bug.cgi?id=500365
-        // This voodoo touches each style sheet to force some Firefox internal change to allow edits.
+        // This touches each style sheet to force some Firefox internal change to allow edits.
         var styleSheets = getAllStyleSheets(context);
         for(var i = 0; i < styleSheets.length; i++)
         {

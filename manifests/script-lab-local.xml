@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <OfficeApp
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,7 +9,7 @@
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="[DEV] Script Lab" />
-  <Description DefaultValue="Create, run and share your Office Add-in snippets from within an Office application." />
+  <Description DefaultValue="Create, run, and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
   <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
@@ -57,6 +57,7 @@
                     <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
                     <SourceLocation resid="PG.Code.Url" />
                     <Title resid="PG.CodeCommand.Title" />
                   </Action>
@@ -113,21 +114,6 @@
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>launchUsingHelp</FunctionName>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="PG.FeedbackCommand">
-                  <Label resid="PG.FeedbackCommand.Label" />
-                  <Supertip>
-                    <Title resid="PG.FeedbackCommand.TipTitle" />
-                    <Description resid="PG.FeedbackCommand.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Feedback.16" />
-                    <bt:Image size="32" resid="PG.Icon.Feedback.32" />
-                    <bt:Image size="80" resid="PG.Icon.Feedback.80" />
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>launchFeedback</FunctionName>
                   </Action>
                 </Control>
               </Group>
@@ -199,6 +185,7 @@
                     <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
                     <SourceLocation resid="PG.Code.Url" />
                     <Title resid="PG.CodeCommand.Title" />
                   </Action>
@@ -255,21 +242,6 @@
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>launchUsingHelp</FunctionName>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="PG.FeedbackCommand">
-                  <Label resid="PG.FeedbackCommand.Label" />
-                  <Supertip>
-                    <Title resid="PG.FeedbackCommand.TipTitle" />
-                    <Description resid="PG.FeedbackCommand.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Feedback.16" />
-                    <bt:Image size="32" resid="PG.Icon.Feedback.32" />
-                    <bt:Image size="80" resid="PG.Icon.Feedback.80" />
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>launchFeedback</FunctionName>
                   </Action>
                 </Control>
               </Group>
@@ -341,6 +313,7 @@
                     <bt:Image size="80" resid="PG.Icon.Code.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Office.AutoShowTaskpaneWithDocument</TaskpaneId>
                     <SourceLocation resid="PG.Code.Url" />
                     <Title resid="PG.CodeCommand.Title" />
                   </Action>
@@ -397,21 +370,6 @@
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>launchUsingHelp</FunctionName>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="PG.FeedbackCommand">
-                  <Label resid="PG.FeedbackCommand.Label" />
-                  <Supertip>
-                    <Title resid="PG.FeedbackCommand.TipTitle" />
-                    <Description resid="PG.FeedbackCommand.Desc" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="PG.Icon.Feedback.16" />
-                    <bt:Image size="32" resid="PG.Icon.Feedback.32" />
-                    <bt:Image size="80" resid="PG.Icon.Feedback.80" />
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>launchFeedback</FunctionName>
                   </Action>
                 </Control>
               </Group>
@@ -476,9 +434,6 @@
         <bt:Image id="PG.Icon.Using.16" DefaultValue="https://localhost:3000/assets/images/icon-using-16.png" />
         <bt:Image id="PG.Icon.Using.32" DefaultValue="https://localhost:3000/assets/images/icon-using-32.png" />
         <bt:Image id="PG.Icon.Using.80" DefaultValue="https://localhost:3000/assets/images/icon-using-80.png" />
-        <bt:Image id="PG.Icon.Feedback.16" DefaultValue="https://localhost:3000/assets/images/icon-feedback-16.png" />
-        <bt:Image id="PG.Icon.Feedback.32" DefaultValue="https://localhost:3000/assets/images/icon-feedback-32.png" />
-        <bt:Image id="PG.Icon.Feedback.80" DefaultValue="https://localhost:3000/assets/images/icon-feedback-80.png" />
         <bt:Image id="PG.Icon.ApiDocs.16" DefaultValue="https://localhost:3000/assets/images/icon-api-docs-16.png" />
         <bt:Image id="PG.Icon.ApiDocs.32" DefaultValue="https://localhost:3000/assets/images/icon-api-docs-32.png" />
         <bt:Image id="PG.Icon.ApiDocs.80" DefaultValue="https://localhost:3000/assets/images/icon-api-docs-80.png" />
@@ -492,36 +447,33 @@
         <bt:Url id="PG.Functions.Url" DefaultValue="https://localhost:3000/functions.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="PG.TabLabel" DefaultValue="[DEV] Script Lab" />
-        <bt:String id="PG.GroupLabel" DefaultValue="Play" />
-        <bt:String id="PG.AboutGroupLabel" DefaultValue="About the Playground" />
-        <bt:String id="PG.ApiGroupLabel" DefaultValue="APIs" />
+        <bt:String id="PG.TabLabel" DefaultValue="[EDGE] Script Lab" />
+        <bt:String id="PG.GroupLabel" DefaultValue="Script" />
+        <bt:String id="PG.AboutGroupLabel" DefaultValue="About Script Lab" />
+        <bt:String id="PG.ApiGroupLabel" DefaultValue="About the APIs" />
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.Title" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets" />
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
-        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run currently-editing snippet" />
+        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet" />
         <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
         <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial" />
         <bt:String id="PG.UsingCommand.Label" DefaultValue="Help" />
-        <bt:String id="PG.UsingCommand.TipTitle" DefaultValue="Browser help topics" />
-        <bt:String id="PG.FeedbackCommand.Label" DefaultValue="Send Feedback" />
-        <bt:String id="PG.FeedbackCommand.TipTitle" DefaultValue="Send Feedback" />
+        <bt:String id="PG.UsingCommand.TipTitle" DefaultValue="Help for Script Lab" />
         <bt:String id="PG.ApiDocsCommand.Label" DefaultValue="Reference Docs" />
         <bt:String id="PG.ApiDocsCommand.TipTitle" DefaultValue="API Reference Documentation" />
         <bt:String id="PG.AskCommand.Label" DefaultValue="Ask the Community" />
-        <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API Help from the Community" />
+        <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API help from the community" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor." />
-        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a taskpane that runs the currently-edited snippet." />
-        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial." />
-        <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using Script Lab." />
-        <bt:String id="PG.FeedbackCommand.Desc" DefaultValue="Opens a web page where you can file issues or suggestions." />
-        <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running." />
-        <bt:String id="PG.AskCommand.Desc" DefaultValue="Lauches a community forum for questions about the Office JavaScript APIs." />
-        <bt:String id="PG.Description" DefaultValue="Code, run and share your Add-in snippets directly from Office." />
+        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor" />
+        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet" />
+        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial" />
+        <bt:String id="PG.UsingCommand.Desc" DefaultValue="Launches documentation on using Script Lab" />
+        <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running" />
+        <bt:String id="PG.AskCommand.Desc" DefaultValue="Launches a community forum for questions about the Office JavaScript APIs" />
+        <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
