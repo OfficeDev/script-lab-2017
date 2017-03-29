@@ -1,6 +1,7 @@
 language: node_js
 
 cache:
+  yarn: true
   directories:
   - node_modules
 
@@ -11,7 +12,7 @@ node_js:
 - 6.9.4
 
 install:
-- npm install
+- yarn install
 
 before_script:
 - npm run lint
