@@ -48,10 +48,10 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode }))
-        .mergeMap(({ data, mode }) => this._importFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
+        .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode, readonly: action.readonly }))
+        .mergeMap(({ data, mode, readonly }) => this._importFromSource(data, mode), ({ mode, readonly }, snippet) => ({ mode, snippet, readonly }))
         .filter(({ snippet }) => !(snippet == null))
-        .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+        .mergeMap(({ snippet, mode, readonly }) => this._massageSnippet(snippet, mode, readonly))
         .catch((exception: Error) => {
             return Observable.from([
                 new UI.ReportErrorAction(Strings.snippetImportError, exception),
@@ -77,6 +77,7 @@ export class SnippetEffects {
             router.updateHash({
                 host: environment.current.host,
                 id: snippet.id,
+                store: 'LOCAL',
                 mode: router.current.mode
             });
 
@@ -104,7 +105,9 @@ export class SnippetEffects {
         .map(id => {
             router.updateHash({
                 host: environment.current.host,
-                mode: router.current.mode
+                mode: router.current.mode,
+                store: undefined,
+                id: undefined
             });
 
             return storage.snippets.remove(id);
@@ -238,7 +241,7 @@ export class SnippetEffects {
                 }
 
             /* If importing a local snippet, then load it off the store */
-            case Snippet.ImportType.OPEN:
+            case Snippet.ImportType.LOCAL:
                 return Observable.of(storage.snippets.get(data));
 
             /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
@@ -292,7 +295,7 @@ export class SnippetEffects {
         }
     }
 
-    private _massageSnippet(snippet: ISnippet, mode: string): Observable<Action> {
+    private _massageSnippet(snippet: ISnippet, mode: string, readonly: boolean): Observable<Action> {
         if (snippet.host && snippet.host !== environment.current.host) {
             throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
         }
@@ -306,7 +309,7 @@ export class SnippetEffects {
         });
 
         /* Scrub the Id is the snippet is loaded from an external source */
-        if (mode !== Snippet.ImportType.OPEN) {
+        if (mode !== Snippet.ImportType.LOCAL) {
             snippet.id = '';
             /* TODO: show import warning here */
         }
@@ -317,12 +320,15 @@ export class SnippetEffects {
          * If the action here involves true importing rather than re-opening,
          * and if the name is already taken by a local snippet, generate a new name.
          */
-        if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
+        if (mode !== Snippet.ImportType.LOCAL && this._exists(snippet.name)) {
             snippet.name = this._generateName(snippet.name, '');
         }
 
         /* If a imported snippet is a SAMPLE, then skip the save */
-        if (mode === Snippet.ImportType.SAMPLE) {
+        if (mode === Snippet.ImportType.SAMPLE || readonly === true) {
+            if (readonly) {
+                console.warn('View works!');
+            }
             return Observable.of(new Snippet.ImportSuccessAction(snippet));
         }
 

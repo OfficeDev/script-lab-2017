@@ -12,10 +12,9 @@ import { EffectsModule } from '@ngrx/effects';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
-import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment, router } from './app/helpers';
+import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { COMPONENT_DECLARATIONS } from './components';
 import { AppComponent } from './app/containers';
-import { Snippet } from './app/actions';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
@@ -71,20 +70,10 @@ let imports = [
 })
 export class AppModule {
     constructor(private _store: Store<State>) {
-        router.onHashChange$
-            .filter(params => !(params.id == null) && params.id.trim() !== '')
-            .subscribe(params => {
-                this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType[params.store] || Snippet.ImportType.OPEN, params.id));
-            });
-
         this._store.dispatch({
             type: 'SET_ROOT_STATE',
             payload: storage.current
         });
-
-        if (storage.current.lastOpened) {
-            router.updateHash({ ...router.current, id: storage.current.lastOpened.id });
-        }
 
         this._store
             .select(getSettings)

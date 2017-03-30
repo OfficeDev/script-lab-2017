@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { Strings, environment } from '../helpers';
+import { Strings, environment, router, storage } from '../helpers';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,15 +13,15 @@ import { Strings, environment } from '../helpers';
             <header class="command__bar">
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
-                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
+                <command [hidden]="isEmpty||readonly" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
+                <command [hidden]="isEmpty||readonly" icon="Share" [async]="sharing$|async" title="${Strings.share}">
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
-                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
-                <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
+                <command [hidden]="isEmpty||readonly" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
+                <command [hidden]="readonly||(isLoggedIn$|async)" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
+                <command [hidden]="readonly||!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
             <editor></editor>
             <footer class="command__bar command__bar--condensed">
@@ -43,6 +43,7 @@ import { Strings, environment } from '../helpers';
 export class AppComponent {
     snippet: ISnippet;
     isEmpty: boolean;
+    readonly: boolean;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -54,6 +55,21 @@ export class AppComponent {
         });
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
+
+        router.onHashChange$
+            .filter(params => !(params.id == null) && params.id.trim() !== '')
+            .subscribe(params => {
+                this.readonly = params.mode === 'VIEW';
+                this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType[params.store], params.id, params.mode === 'VIEW'));
+            });
+
+        if (router.current.id) {
+            this.readonly = router.current.mode === 'VIEW';
+            this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType[router.current.store], router.current.id, router.current.mode === 'VIEW'));
+        }
+        else if (storage.current.lastOpened) {
+            router.updateHash({ ...router.current, store: 'LOCAL', id: storage.current.lastOpened.id });
+        }
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

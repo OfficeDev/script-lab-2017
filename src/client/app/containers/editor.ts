@@ -2,7 +2,7 @@ import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI } from '../helpers';
+import { AI, router, storage } from '../helpers';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 import { debounce } from 'lodash';
@@ -23,6 +23,7 @@ export class Editor implements AfterViewInit {
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     @ViewChild('editor') private _editor: ElementRef;
     private _readonly: boolean;
+    private _options: monaco.editor.IEditorOptions;
 
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
@@ -38,6 +39,7 @@ export class Editor implements AfterViewInit {
      * Initialize the component and subscribe to all the neccessary actions.
      */
     async ngAfterViewInit() {
+        this._options = storage.settings.get('monaco_options') as any;
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
         this._createTabs();
         this._subscribeToState();
@@ -68,11 +70,20 @@ export class Editor implements AfterViewInit {
     }
 
     private _subscribeToState() {
+        router.onHashChange$
+            .subscribe(params => {
+                this._options = this._monaco.updateOptions(this._monacoEditor, { ...this._options, readOnly: params.mode === 'VIEW' })
+                storage.settings.insert('monaco_options', this._options as any);
+            });
+
         this._store.select(fromRoot.getMenu)
             .subscribe(() => this._resize());
 
         this._store.select(fromRoot.getTheme)
-            .subscribe(theme => this._monaco.updateOptions(this._monacoEditor, { theme: theme ? 'vs' : 'vs-dark' }));
+            .subscribe(theme => {
+                this._options = this._monaco.updateOptions(this._monacoEditor, { ...this._options, theme: theme ? 'vs' : 'vs-dark' });
+                storage.settings.insert('monaco_options', this._options as any);
+            });
 
         this._store.select(fromRoot.getCurrent)
             .filter(data => {

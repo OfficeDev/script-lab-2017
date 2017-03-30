@@ -39,20 +39,21 @@ class Router {
         }
     }
 
-    updateHash({ host, id, mode, store }: IUrlParams): string {
-        let hash;
+    updateHash(params: IUrlParams): string {
+        const updatedParams = { ...this.current, ...params };
+        const { host, id, mode, store } = updatedParams;
+
         if (host == null || mode == null) {
             return null;
         }
 
         if (mode === 'VIEW') {
-            hash = `#/${host}/${mode}/${store}/${id}`;
+            location.hash = `#/${host}/${mode}/${store}/${id}`.toLowerCase();
         }
         else {
-            hash = `#/${host}/${mode}/${id}`;
+            location.hash = `#/${host}/${mode}/${store}/${id}`.toLowerCase();
         }
 
-        location.hash = hash.toLowerCase();
         return location.hash;
     }
 
@@ -72,8 +73,8 @@ class Router {
         return {
             host: host.toUpperCase(),
             mode: mode.toUpperCase() as any,
-            id: mode === 'VIEW' ? id : store,
-            store: (mode === 'VIEW' ? store : undefined) as any
+            id: id && id.toLowerCase(),
+            store: store && store.toUpperCase()
         };
     }
 }

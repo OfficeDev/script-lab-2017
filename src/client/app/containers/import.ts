@@ -145,7 +145,7 @@ export class Import {
         switch (this.view) {
             case 'snippets':
                 if (item.id) {
-                    mode = Snippet.ImportType.OPEN;
+                    mode = Snippet.ImportType.LOCAL;
                 }
                 else {
                     mode = Snippet.ImportType.GIST;

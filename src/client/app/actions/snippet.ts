@@ -30,7 +30,7 @@ export class SnippetActionTypes {
 
 export class ImportType {
     static readonly DEFAULT = type('[Import] Load blank snippet');
-    static readonly OPEN = type('[Import] Open an existing snippet');
+    static readonly LOCAL = type('[Import] Open an existing snippet');
     static readonly GIST = type('[Import] Import from a gist');
     static readonly YAML = type('[Import] Import from yaml');
     static readonly URL = type('[Import] Import from url');

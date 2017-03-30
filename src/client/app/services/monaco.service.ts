@@ -86,11 +86,12 @@ export class MonacoService {
 
     updateOptions(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
         if (editor == null || overrides == null) {
-            return;
+            return null;
         }
 
         let options = { ...this._defaults, ...overrides };
         editor.updateOptions(options);
+        return options;
     }
 
     static initialize() {
