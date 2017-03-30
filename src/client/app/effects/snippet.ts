@@ -77,7 +77,7 @@ export class SnippetEffects {
             router.updateHash({
                 host: environment.current.host,
                 id: snippet.id,
-                mode: router.mode
+                mode: router.current.mode
             });
 
             return new Snippet.StoreUpdatedAction();
@@ -104,7 +104,7 @@ export class SnippetEffects {
         .map(id => {
             router.updateHash({
                 host: environment.current.host,
-                mode: router.mode
+                mode: router.current.mode
             });
 
             return storage.snippets.remove(id);

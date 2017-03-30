@@ -2,6 +2,13 @@ import { Observable } from 'rxjs/Observable';
 import { debounce } from 'lodash';
 
 class Router {
+    private _default: IUrlParams = {
+        mode: 'EDIT',
+        host: null,
+        id: null,
+        store: null
+    };
+
     onHashChange$: Observable<IUrlParams> = new Observable(observer => {
         const _listener = debounce((event: HashChangeEvent) => {
             try {
@@ -22,27 +29,27 @@ class Router {
         };
     });
 
-    get mode() {
-        return (this.current && this.current.mode) || 'EDIT';
-    }
-
     get current() {
         let params = this._getParams();
         if (!(params == null) && params.host && params.host.trim() !== '') {
-            return params;
+            return { ...this._default, ...params };
         }
         else {
-            return null;
+            return this._default;
         }
     }
 
     updateHash({ host, id, mode, store }: IUrlParams): string {
-        let hash = '';
+        let hash;
+        if (host == null || mode == null) {
+            return null;
+        }
+
         if (mode === 'VIEW') {
             hash = `#/${host}/${mode}/${store}/${id}`;
         }
         else {
-            hash = `#/${host}/${mode}/${id || ''} `;
+            hash = `#/${host}/${mode}/${id}`;
         }
 
         location.hash = hash.toLowerCase();
@@ -50,7 +57,13 @@ class Router {
     }
 
     private _getParams() {
-        const [host, mode, store, id] = location.hash.toLowerCase().replace('#/', '').split('/');
+        const { hash } = location;
+
+        if (hash == null || hash.trim() === '') {
+            return null;
+        }
+
+        const [host, mode, store, id] = hash.toLowerCase().replace('#/', '').split('/');
 
         if (host == null) {
             return null;

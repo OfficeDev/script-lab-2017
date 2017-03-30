@@ -50,19 +50,19 @@ class Environment {
     async initialize(currHost?: string, currPlatform?: string) {
         if (currHost) {
             this.current = { host: currHost, platform: currPlatform };
-            router.updateHash({ host: currHost, mode: router.mode });
+            router.updateHash({ host: currHost, mode: router.current.mode, id: router.current.id });
             return Promise.resolve({ currHost, currPlatform });
         }
 
         if (this.current && this.current.host) {
-            router.updateHash({ host: this.current.host, mode: router.mode });
+            router.updateHash({ host: this.current.host, mode: router.current.mode, id: router.current.id });
             return this.current;
         }
 
         let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
             let params = router.current;
-            if (!(params == null)) {
-                router.updateHash({ host: params.host, mode: router.mode });
+            if (!(params == null) && params.host) {
+                router.updateHash({ host: params.host, mode: router.current.mode, id: router.current.id });
                 return resolve({ host: params.host.toUpperCase(), platform: null });
             }
             else {
@@ -70,7 +70,7 @@ class Environment {
                     $('#hosts').show();
                     $('.ms-progress-component__footer').hide();
                     $('.hostButton').click(function hostButtonClick() {
-                        router.updateHash({ host: $(this).data('host'), mode: router.mode });
+                        router.updateHash({ host: $(this).data('host'), mode: router.current.mode, id: router.current.id });
                         resolve({ host: $(this).data('host'), platform: null });
                     });
                 }, 2000);
@@ -78,7 +78,7 @@ class Environment {
                 Office.initialize = () => {
                     clearTimeout(hostButtonsTimeout);
                     let { host, platform } = Utilities;
-                    router.updateHash({ host, mode: router.mode });
+                    router.updateHash({ host, mode: router.current.mode, id: router.current.id });
                     return resolve({ host, platform });
                 };
             }
