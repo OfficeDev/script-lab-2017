@@ -143,3 +143,10 @@ interface HeartbeatParams {
     /** snippet last modified, if relevant (comes in as a string on URL parameters) */
     lastModified: string;
 }
+
+interface IUrlParams {
+    host: string;
+    mode?: 'EDIT' | 'VIEW';
+    store?: 'LOCAL' | 'GIST' | 'SAMPLE';
+    id?: string;
+}

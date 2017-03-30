@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment, storage } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment, storage, router } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
@@ -74,6 +74,12 @@ export class SnippetEffects {
                 storage.snippets.add(snippet.id, snippet);
             }
 
+            router.updateHash({
+                host: environment.current.host,
+                id: snippet.id,
+                mode: router.mode
+            });
+
             return new Snippet.StoreUpdatedAction();
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetSaveError, exception)));
@@ -95,7 +101,14 @@ export class SnippetEffects {
     delete$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE)
         .map((action: Snippet.DeleteAction) => action.payload)
-        .map(id => storage.snippets.remove(id))
+        .map(id => {
+            router.updateHash({
+                host: environment.current.host,
+                mode: router.mode
+            });
+
+            return storage.snippets.remove(id);
+        })
         .mergeMap(() => Observable.from([
             new Snippet.StoreUpdatedAction(),
             new UI.ToggleImportAction(true)
