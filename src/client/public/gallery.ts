@@ -67,7 +67,6 @@ export class Gallery {
     }
 
     render() {
-        console.log('Refreshing snippets');
         this._$snippetList.html('');
         if (storage.snippets.count) {
             this._$noSnippets.hide();

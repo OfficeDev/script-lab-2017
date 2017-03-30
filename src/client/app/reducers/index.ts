@@ -91,7 +91,6 @@ const createDefaultState = (settings: ISettings) => {
 export const stateSetter: ActionReducer<any> = (reducer: ActionReducer<any>) => {
     return (state, { type, payload }) => {
         if (type === 'SET_ROOT_STATE') {
-            console.log('Setting root state', payload);
             return createDefaultState(payload);
         }
         return reducer(state, { type, payload });
