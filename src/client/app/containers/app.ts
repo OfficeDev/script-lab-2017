@@ -11,7 +11,7 @@ import { Strings, environment, router, storage } from '../helpers';
     template: `
         <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command icon="GlobalNavButton" (click)="showMenu()"></command>
+                <command [hidden]="readonly" icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
                 <command [hidden]="isEmpty||readonly" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
                 <command [hidden]="isEmpty||readonly" icon="Share" [async]="sharing$|async" title="${Strings.share}">
@@ -60,6 +60,7 @@ export class AppComponent {
             .filter(params => !(params.id == null) && params.id.trim() !== '')
             .subscribe(params => {
                 this.readonly = params.mode === 'VIEW';
+                // USE THIS IN IMPORT URL
                 this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType[params.store], params.id, params.mode === 'VIEW'));
             });
 
