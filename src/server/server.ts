@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
-import { forIn } from 'lodash';
+import { forIn, isEmpty } from 'lodash';
 import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
@@ -59,25 +59,27 @@ app.use((err, req, res, next) => {
  * Returns a runner page, with the following parameters:
  * Required:
  *   - host
- *
- * Optional:
- *   - id (if not provided, will create "opportunistic" runner that attaches to anything)
+ *   - id
  *
  * Optional query parameters:
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-app.get(['/run/:host/', '/run/:host/:id'], handler(async (req: express.Request, res: express.Response) => {
+app.get(['/run/:host/:id'], handler(async (req: express.Request, res: express.Response) => {
     const host = (req.params.host as string).toUpperCase();
+    const id = (req.params.id as string || '').toLowerCase();
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
         return new BadRequestError(`Invalid host "${host}"`);
+    }
+    if (isEmpty(id)) {
+        return new BadRequestError(`Invalid id "${id}"`);
     }
 
     const runnerHtmlGenerator = await loadTemplate<IRunnerHandlebarsContext>('runner');
     const html = runnerHtmlGenerator({
         snippet: {
-            id: ((req.params.id as string) || '').toLowerCase()
+            id: id
         },
         officeJS: determineOfficeJS(req.query, host),
         returnUrl: '',

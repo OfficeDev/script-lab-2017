@@ -4,12 +4,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
-    let trackingSnippet: {
+    let currentSnippet: {
         id: string;
         lastModified: number;
     };
-    let snippetListener: any;
-    let settingsListener: any;
+
 
     (async () => {
         // Environment will initialize based off of "mode" being passed in to the snippet
@@ -19,166 +18,91 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
-        trackingSnippet = {
-            id: params.id || '',
+        currentSnippet = {
+            id: params.id,
             lastModified: params.id ? toNumber(params.lastModified) : 0
         };
 
-        params.id ? createSnippetSpecificListener() : createCurrentlyEditingListener();
+        sendBackCurrentSnippet(true /*isInitialLoad*/);
+
+        settings.snippets.notify().subscribe(validateSnippet);
+        settings.settings.notify().subscribe(validateSnippet);
     })();
 
 
-    function createSnippetSpecificListener() {
-        if (!snippetListener) {
-            snippetListener = settings.snippets.notify();
+    function validateSnippet() {
+        settings.settings.load();
+        const lastOpened = settings.current.lastOpened;
 
-            snippetListener.subscribe(() => {
-                settings.snippets.load();
-                validateSnippet();
-            });
-        }
+        if (lastOpened) {
+            if (lastOpened.id !== currentSnippet.id) {
+                messenger.send(window.parent, MessageType.INFORM_SWITCHED_SNIPPET, {
+                    id: lastOpened.id,
+                    name: lastOpened.name
+                });
 
-        validateSnippet();
-
-
-        // Helper
-
-        function validateSnippet() {
-            settings.snippets.load();
-            let snippet = settings.snippets.get(trackingSnippet.id);
-
-            // If found a snippet now, whereas previously had needed to initiate a
-            // settings listener, this means that was previously unsaved and now
-            // a saved snippet.  In that case, no longer need to listen to settings.
-            if (snippet && settingsListener) {
-                // FIXME uncomment once we have unsubscribe:
-                // settingsListener.unsubscribe();
-                // settingsListener = null;
-            }
-
-            if (snippet == null) {
-                settings.settings.load();
-                if (settings.lastOpened && (settings.lastOpened.id === trackingSnippet.id)) {
-                    snippet = settings.lastOpened;
-                    // Also subscribe to the settings changed event, since it looks like this
-                    // is an unsaved snippet -- and hence deleting it would not get reflected
-                    // if don't also listen to settings:
-
-                    if (!settingsListener) {
-                        settingsListener = settings.settings.notify();
-                    }
-
-                    settingsListener.subscribe(() => {
-                        settings.settings.load();
-                        validateSnippet();
-                    });
-                }
-            }
-
-            if (snippet == null) {
-                // If cannot find snippet on a snippet-specific listener, unsubscribe
-                // and message back an error (not recoverable without the user going back):
-
-                // FIXME uncomment once we have unsubscribe:
-                // snippetListener.unsubscribe();
-                // if (settingsListener) {
-                //     settingsListener.unsubscribe();
-                // }
-                // snippetListener = null;
-                // settingsListener = null;
-
-                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExistsUnrecoverable);
                 return;
             }
-
-            if (snippet.modified_at !== trackingSnippet.lastModified) {
-                // Unsubscribe from listeners.  Nothing to do now, until the user decides
-                // that they do want to reload -- and at that point, the runner frame will
-                // send a message, asking for the latest.
-
-                // FIXME uncomment once we have unsubscribe:
-                // snippetListener.unsubscribe();
-                // if (settingsListener) {
-                //     settingsListener.unsubscribe();
-                // }
-                // snippetListener = null;
-                // settingsListener = null;
-
-
-                // If was already tracking the snippet and had a real lastModified number set,
-                // inform the user that the snippet is stale.  Otherwise, just send it immediately.
-                if (trackingSnippet.lastModified) {
-                    messenger.send(window.parent, MessageType.INFORM_STALE);
-                } else {
-                    trackingSnippet.lastModified = snippet.modified_at;
-                    messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
-                }
-            }
         }
+
+        // If haven't quit yet, validate and inform (or send back) current snippet:
+        sendBackCurrentSnippet(false /*isInitialLoad*/);
     }
 
-    function createCurrentlyEditingListener() {
-        if (!settingsListener) {
-            settingsListener = settings.settings.notify();
-
-            settingsListener.subscribe(() => {
-                settings.settings.load();
-                validateSnippet();
-            });
+    function sendBackCurrentSnippet(isInitialLoad: boolean) {
+        if (!isInitialLoad) {
+            settings.snippets.load();
         }
 
-        validateSnippet();
-
-
-        // Helper
-
-        function validateSnippet() {
-            settings.settings.load();
-            let snippet = settings.lastOpened;
-
-            if (snippet == null) {
-                messenger.send(window.parent, MessageType.ERROR, 'No snippet is opened. Please open a snippet in the editor.'); // FIXME
-
-                // But keep on listening (don't unsubscribe from settings notifications, just exit the function for the present)
-                return;
+        let snippet = settings.snippets.get(currentSnippet.id);
+        if (snippet == null) {
+            if (settings.lastOpened && (settings.lastOpened.id === currentSnippet.id)) {
+                snippet = settings.lastOpened;
             }
+        }
 
-            if (snippet.id === trackingSnippet.id) {
-                if (snippet.modified_at !== trackingSnippet.lastModified) {
-                    if (trackingSnippet.lastModified) {
-                        messenger.send(window.parent, MessageType.INFORM_STALE);
-                    } else {
-                        trackingSnippet.lastModified = snippet.modified_at;
-                        messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
-                    }
-                }
-            } else {
-                // When switching between snippets, just switch
-                trackingSnippet = {
-                    id: snippet.id,
-                    lastModified: snippet.modified_at
-                };
+        if (snippet == null) {
+            messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
+            return;
+        }
 
+        if (snippet.modified_at !== currentSnippet.lastModified) {
+            // If was already tracking the snippet and had a real lastModified number set,
+            // inform the user that the snippet is stale.  Otherwise, just send it immediately.
+
+            const sendImmediately = isInitialLoad || currentSnippet.lastModified < 1;
+            if (sendImmediately) {
+                currentSnippet.lastModified = snippet.modified_at;
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+            } else {
+                messenger.send<void>(window.parent, MessageType.INFORM_STALE, null);
             }
         }
     }
 
     function setupRequestReloadListener(messenger: Messenger) {
-        messenger.listen()
+        messenger.listen<string>()
             .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
             .subscribe((input) => {
-                const id = input.message as string /* message is the snippet ID */ || '';
-                const lastModified = 0; // Set to last modified, so that refreshes immediately
+                currentSnippet = {
+                    id: input.message,
+                    lastModified: 0 /* Set to last modified, so that refreshes immediately */
+                };
 
-                trackingSnippet = { id, lastModified };
+                // The ID on the input.message was optional.  If it was indeed specified, just send it back.  Otherwise, more processing is needed.
+                if (currentSnippet.id) {
+                    sendBackCurrentSnippet(false /*isInitialLoad*/);
+                    return;
+                }
 
-                try {
-                    (id ? createSnippetSpecificListener() : createCurrentlyEditingListener());
+                settings.settings.load();
+                const lastOpened = settings.current.lastOpened;
+                if (lastOpened) {
+                    messenger.send(window.parent, MessageType.REFRESH_RESPONSE, lastOpened);
+                    return;
                 }
-                catch (e) {
-                    messenger.send(window.parent, MessageType.ERROR, Strings.Runner.getCouldNotRefreshSnippetText(e));
-                }
+
+                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.noSnippetIsCurrentlyOpened);
             });
     }
 

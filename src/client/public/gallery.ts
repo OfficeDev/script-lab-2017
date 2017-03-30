@@ -9,6 +9,7 @@ import '../assets/styles/extras.scss';
     const gallery = new Gallery();
     gallery.hideProgress();
     gallery.render();
+    gallery.renderLastOpened();
 })();
 
 export class Gallery {
@@ -17,7 +18,8 @@ export class Gallery {
     private _$gallery = $('#gallery');
     private _$snippetList = $('#snippet-list');
     private _$noSnippets = $('#snippet-list-empty');
-    private _$refresh = $('#refresh');
+    private _$lastOpened = $('#last-opened');
+    private _$lastOpenedEmpty = $('#last-opened-empty');
 
     private _template =
     `<article class="gallery-list__item gallery-list__item--template ms-font-m">
@@ -29,16 +31,7 @@ export class Gallery {
         this.setUpMomentJsDurationDefaults();
 
         settings.snippets.notify().subscribe(() => this.render());
-
-        this._$refresh.click(() => {
-            this.render();
-            this.hideProgress();
-        });
-
-        $('#currently-editing-snippet').click(() => {
-            this.showProgress('Loading...');
-            window.location.href = `${environment.current.config.runnerUrl}/run/${environment.current.host}`;
-        });
+        settings.settings.notify().subscribe(() => this.renderLastOpened());
     }
 
     showProgress(message: string) {
@@ -63,6 +56,19 @@ export class Gallery {
         else {
             this._$noSnippets.show();
             this._$snippetList.hide();
+        }
+    }
+
+    renderLastOpened() {
+        this._$lastOpened.html('');
+        if (settings.lastOpened) {
+            this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
+            this._$lastOpened.show();
+            this._$lastOpenedEmpty.hide();
+        }
+        else {
+            this._$lastOpened.hide();
+            this._$lastOpenedEmpty.show();
         }
     }
 

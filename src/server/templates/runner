@@ -29,20 +29,6 @@
         window.playground_host_ready = true;
     </script>
     {{/if}}
-
-    <script>
-        {{#if Office}}
-        Office.initialize = function() {
-            window.playground_host_ready = true;
-            // Set initialize to an empty function -- that way, doesn't cause
-            // re-initialization of this page in case of a page like the error dialog,
-            // which doesn't defined (override) Office.initialize.
-            Office.initialize = function() { };
-        };
-        {{else}}
-        window.playground_host_ready = true;
-        {{/if}}
-    </script>
 </head>
 
 <body class="{{{host}}}">
@@ -70,16 +56,21 @@
     </app>
 
     <header id="header" class="command__bar">
-        <a id="header-back" style="display:none" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}">
+        <a id="header-back" style="display:none" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="Back">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>
         <a id="header-refresh" class="command__icon command__center ms-u-slideLeftIn10" href="#">
             <i class="ms-Icon ms-Icon--Refresh"></i>
             <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
+        <!-- NEEDS STRING REVIEW (tooltip (title attribute))-->
+        <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="Switch to the currently-editing snippet">
+            <i class="ms-Icon ms-Icon--Switch"></i>
+        </a>
+        <div id="padding-for-personality-menu" style="width: 0px"></div>
     </header>
 
-    <div id="notify-needs-reload" class="runner-notification ms-MessageBar ms-MessageBar--warning" style="display:none">
+    <div id="notify-current-snippet-changed" class="runner-notification ms-MessageBar ms-MessageBar--info" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
                 <!-- NEEDS STRING REVIEW -->
@@ -94,6 +85,30 @@
                 <button class="action-fast-reload ms-Button host-colored-button">
                     <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Reload</span>
+                </button>
+                <button class="action-dismiss ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Dismiss</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notify-another-snippet-selected" class="runner-notification ms-MessageBar ms-MessageBar--info" style="display:none">
+        <div class="ms-MessageBar-content">
+            <div class="ms-MessageBar-text">
+                <!-- NEEDS STRING REVIEW -->
+                The currently-editing snippet has changed to "<span class="snippet-name"></span>". Would you like to switch to that snippet in the runner as well?
+            </div>
+
+            <div class="buttons" style="text-align: right;">
+                <div class="reloading-indicator" style="display:none">
+                    <i class="ms-Icon ms-Icon--Refresh spinning-icon"></i>
+                    <span>Reloading...</span>
+                </div>
+                <button class="action-fast-reload ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Switch</span>
                 </button>
                 <button class="action-dismiss ms-Button host-colored-button">
                     <!-- NEEDS STRING REVIEW -->
@@ -140,12 +155,10 @@
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
             heartbeatParams: {
-                {{#if snippet.id}}
-                id: '{{{snippet.id}}}',
-                {{/if}}
                 {{#if snippet.lastModified}}
                 lastModified: {{snippet.lastModified}},
                 {{/if}}
+                id: '{{{snippet.id}}}',
                 host: '{{{host}}}'
             }
         });

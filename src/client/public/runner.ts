@@ -1,6 +1,7 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber } from 'lodash';
+import { toNumber, includes, assign } from 'lodash';
+import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings } from '../app/helpers';
 import { Messenger, MessageType } from '../app/helpers/messenger';
@@ -17,20 +18,28 @@ interface InitializationParams {
     /** Namespaces for the runner wrapper to share with the inner snippet iframe */
     const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
 
+    /**
+     * A "pre" tag containing the original snippet content, and acting as a placemarker
+     * for where to insert the rendered snippet iframe
+     * */
     let $snippetContent: JQuery;
 
     let returnUrl = '';
-    let lastModified: number;
-    let currentOfficeJS: string;
-
     let host: string;
-    /** Id of the snippet that the runner was created for (or empty if the runner is a companion to the editor, regardless of what snippet is loaded) */
-    let tetheredSnippetId: string;
 
-    const $needsReload = $('#notify-needs-reload');
-    const $needsReloadIndicator = $needsReload.find('.reloading-indicator');
-    const $needsReloadButtons = $needsReload.find('button');
+    let currentSnippet: { id: string, lastModified: number, officeJS: string };
 
+    const defaultIsListeningTo = {
+        snippetSwitching: true,
+        currentSnippetContentChange: true
+    };
+
+    let isListeningTo = assign(defaultIsListeningTo);
+
+    const heartbeat: {
+        messenger: Messenger,
+        window: Window
+    } = <any>{};
 
     async function initializeRunner(params: InitializationParams) {
         try {
@@ -45,16 +54,23 @@ interface InitializationParams {
 
             returnUrl = params.returnUrl;
             host = params.heartbeatParams.host;
-            tetheredSnippetId = params.heartbeatParams.id;
-            lastModified = toNumber(params.heartbeatParams.lastModified);
-            currentOfficeJS = params.officeJS;
+
+            currentSnippet = {
+                id: params.heartbeatParams.id,
+                lastModified: toNumber(params.heartbeatParams.lastModified),
+                officeJS: params.officeJS
+            };
 
             await Promise.all([
                 loadFirebug(params.origin),
                 ensureHostInitialized()
             ]);
 
-            $('#header-refresh').attr('href', generateRefreshUrl(currentOfficeJS));
+            $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
+            if (Utilities.platform === PlatformType.PC || PlatformType.MAC) {
+                $('#padding-for-personality-menu').width('20px');
+            }
+
 
             $snippetContent = $('#snippet-code-content');
 
@@ -70,6 +86,11 @@ interface InitializationParams {
             }
 
             establishHeartbeat(params.origin, params.heartbeatParams);
+
+            $('#sync-with-editor').click(() => {
+                isListeningTo = assign(defaultIsListeningTo);
+                heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, null /*no id = current*/);
+            });
 
             initializeTooltipUpdater();
         }
@@ -187,39 +208,48 @@ interface InitializationParams {
             src: generateUrl(`${origin}/heartbeat.html`, heartbeatParams),
             id: 'heartbeat'
         }).css('display', 'none').appendTo('body');
-        const iframeWindow = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        const messenger = new Messenger(origin);
+        heartbeat.messenger = new Messenger(origin);
+        heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        messenger.listen()
+        heartbeat.messenger.listen<string>()
             .filter(({ type }) => type === MessageType.ERROR)
-            .map(input => input.message)
+            .map(input => new Error(input.message))
             .subscribe(handleError);
 
-        messenger.listen()
+        heartbeat.messenger.listen()
             .filter(({ type }) => type === MessageType.INFORM_STALE)
-            .subscribe(input => {
-                $needsReloadIndicator.hide();
-                $needsReloadButtons.show();
-
-                $needsReload.find('.action-fast-reload').off('click').click(() => {
-                    $needsReloadButtons.hide();
-                    $needsReloadIndicator.show();
-                    messenger.send(iframeWindow, MessageType.REFRESH_REQUEST, heartbeatParams.id);
-                });
-
-                $needsReload.find('.action-dismiss').off('click').click(() => {
-                    $needsReload.hide();
-                    $('#heartbeat').remove();
-                });
-
-                $needsReload.show();
+            .subscribe(() => {
+                if (isListeningTo.currentSnippetContentChange) {
+                    showReloadNotification($('#notify-current-snippet-changed'),
+                        () => heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, currentSnippet.id),
+                        () => isListeningTo.currentSnippetContentChange = false);
+                }
             });
 
-        messenger.listen()
+        heartbeat.messenger.listen<{ id: string, name: string }>()
+            .filter(({ type }) => type === MessageType.INFORM_SWITCHED_SNIPPET)
+            .subscribe(input => {
+                const $anotherSnippetSelected = $('#notify-another-snippet-selected');
+
+                // if switched back to the snippet that was already being tracked,
+                // that's great, and just silently hide the previously-shown notification
+                if (input.message.id === currentSnippet.id) {
+                    $anotherSnippetSelected.hide();
+                } else {
+                    if (isListeningTo.snippetSwitching) {
+                        $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
+                        showReloadNotification($anotherSnippetSelected,
+                            () => heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, input.message.id),
+                            () => isListeningTo.snippetSwitching = false);
+                    }
+                }
+            });
+
+        heartbeat.messenger.listen<ISnippet>()
             .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
             .subscribe(input => {
-                const snippet = input.message as ISnippet;
+                const snippet = input.message;
                 const data = JSON.stringify({
                     snippet: snippet,
                     returnUrl: returnUrl
@@ -230,17 +260,49 @@ interface InitializationParams {
                 $.post(window.location.origin + '/compile/snippet', { data: data })
                     .then(html => processSnippetReload(html, snippet))
                     .fail(handleError)
-                    .always(() => $needsReload.hide());
+                    .always(() => $('.runner-notification').not('#notify-error').hide());
             });
     }
 
+    function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void) {
+        const $needsReloadIndicator = $notificationContainer.find('.reloading-indicator');
+        const $needsReloadButtons = $notificationContainer.find('button');
+
+        $notificationContainer.find('.action-fast-reload').off('click').click(() => {
+            $needsReloadButtons.hide();
+            $needsReloadIndicator.show();
+            reloadAction();
+        });
+
+        $notificationContainer.find('.action-dismiss').off('click').click(() => {
+            $notificationContainer.hide();
+            dismissAction();
+            if (includes(isListeningTo, true)) {
+                $('#heartbeat').remove();
+            }
+        });
+
+        // Show the current notification (with the buttons visible, and the reloading indicator hidden)
+        $('.runner-notification').hide();
+        $needsReloadIndicator.hide();
+        $needsReloadButtons.show();
+        $notificationContainer.show();
+    }
+
     function processSnippetReload(html: string, snippet: ISnippet) {
-        const desiredOfficeJs = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
-        const refreshUrl = generateRefreshUrl(desiredOfficeJs);
-        $('#header-refresh').attr('href', refreshUrl);
+        currentSnippet = {
+            id: snippet.id,
+            lastModified: snippet.modified_at,
+            officeJS: desiredOfficeJS
+        };
 
-        if (desiredOfficeJs !== currentOfficeJS) {
+        isListeningTo.currentSnippetContentChange = true;
+
+        const refreshUrl = generateRefreshUrl(desiredOfficeJS);
+        if (reloadDueToOfficeJSMismatch) {
             $('#subtitle').text(Strings.Runner.reloadingOfficeJs);
             $('#progress').show();
             window.location.href = refreshUrl;
@@ -249,21 +311,22 @@ interface InitializationParams {
 
         // If still here, proceed to render:
 
+        $('#header-refresh').attr('href', refreshUrl);
+
         const $originalFrame = $('.snippet-frame');
         writeSnippetIframe(html, processLibraries(snippet).officeJS).show();
         $originalFrame.remove();
 
         $('#header-text').text(snippet.name);
-        lastModified = snippet.modified_at;
+        currentSnippet.lastModified = snippet.modified_at;
 
         (window as any).Firebug.Console.clear();
     }
 
-    function generateRefreshUrl(desiredOfficeJs: string) {
-        let refreshUrl = `${window.location.origin}/run/${host}` +
-            (tetheredSnippetId ? `/${tetheredSnippetId}` : '');
-        if (desiredOfficeJs) {
-            refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJs)}`;
+    function generateRefreshUrl(desiredOfficeJS: string) {
+        let refreshUrl = `${window.location.origin}/run/${host}/${currentSnippet.id}`;
+        if (desiredOfficeJS) {
+            refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJS)}`;
         }
 
         return refreshUrl;
@@ -283,7 +346,8 @@ interface InitializationParams {
         $headerTitle.on('mouseover', refreshLastUpdatedText);
 
         function refreshLastUpdatedText() {
-            $headerTitle.attr('title', `Last updated ${moment(lastModified).fromNow()}`);
+            // NEEDS STRING REVIEW (added "Click to refresh")
+            $headerTitle.attr('title', `Last updated ${moment(currentSnippet.lastModified).fromNow()}. Click to refresh`);
         }
     }
 
