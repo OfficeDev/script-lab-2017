@@ -1,4 +1,4 @@
-import { environment, settings, Strings, Messenger, MessageType } from '../app/helpers';
+import { environment, storage, Strings, Messenger, MessageType } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
@@ -25,10 +25,10 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
     function createSnippetSpecificListener(id: string) {
         if (!snippetListener) {
-            snippetListener = settings.snippets.notify();
+            snippetListener = storage.snippets.notify();
 
             snippetListener.subscribe(() => {
-                settings.snippets.load();
+                storage.snippets.load();
                 validateSnippet();
             });
         }
@@ -37,7 +37,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 
         function validateSnippet() {
-            let snippet = settings.snippets.get(id);
+            let snippet = storage.snippets.get(id);
 
             // If found a snippet now, whereas previously had needed to initiate a
             // settings listener, this means that was previously unsaved and now
@@ -49,18 +49,18 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             }
 
             if (snippet == null) {
-                if (settings.lastOpened && (settings.lastOpened.id === id)) {
-                    snippet = settings.lastOpened;
+                if (storage.lastOpened && (storage.lastOpened.id === id)) {
+                    snippet = storage.lastOpened;
                     // Also subscribe to the settings changed event, since it looks like this
                     // is an unsaved snippet -- and hence deleting it would not get reflected
                     // if don't also listen to settings:
 
                     if (!settingsListener) {
-                        settingsListener = settings.settings.notify();
+                        settingsListener = storage.settings.notify();
                     }
 
                     settingsListener.subscribe(() => {
-                        settings.settings.load();
+                        storage.settings.load();
                         validateSnippet();
                     });
                 }
@@ -111,8 +111,8 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
             .subscribe((input) => {
                 try {
-                    settings.snippets.load();
-                    let snippet = settings.snippets.get(input.message /* message is the snippet ID */);
+                    storage.snippets.load();
+                    let snippet = storage.snippets.get(input.message /* message is the snippet ID */);
                     sendSnippetAndStartTracking(snippet);
                 }
                 catch (e) {

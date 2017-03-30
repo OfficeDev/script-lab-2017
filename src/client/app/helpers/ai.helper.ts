@@ -1,6 +1,6 @@
 import { AppInsights } from 'applicationinsights-js';
 import { environment } from './environment';
-import { settings } from './settings';
+import { storage } from './storage';
 import { Utilities, CustomError } from '@microsoft/office-js-helpers';
 
 class TelemetryError extends CustomError {
@@ -101,7 +101,7 @@ class ApplicationInsights {
                 Utilities.log(error);
             }
             this._current.trackException(error, location, {
-                user: settings.user,
+                user: storage.user,
                 innerError: error.innerError,
                 message: error.message,
                 location: location,
@@ -126,7 +126,7 @@ class ApplicationInsights {
             if (environment.current.devMode) {
                 console.info(name, {
                     ...properties,
-                    user: settings.user,
+                    user: storage.user,
                     host: environment.current.host,
                     platform: environment.current.platform,
                     ...environment.current.build
@@ -134,7 +134,7 @@ class ApplicationInsights {
             }
             this._current.trackEvent(name, {
                 ...properties,
-                user: settings.user,
+                user: storage.user,
                 host: environment.current.host,
                 platform: environment.current.platform,
                 ...environment.current.build
@@ -164,7 +164,7 @@ class ApplicationInsights {
             if (environment.current.devMode) {
                 console.info(name, average, sampleCount, min, max, {
                     ...properties,
-                    user: settings.user,
+                    user: storage.user,
                     host: environment.current.host,
                     platform: environment.current.platform,
                     ...environment.current.build
@@ -172,7 +172,7 @@ class ApplicationInsights {
             }
             this._current.trackMetric(name, average, sampleCount, min, max, {
                 ...properties,
-                user: settings.user,
+                user: storage.user,
                 host: environment.current.host,
                 platform: environment.current.platform,
                 ...environment.current.build
@@ -192,7 +192,7 @@ class ApplicationInsights {
     */
     setAuthenticatedUserContext(handle?) {
         try {
-            this._current.setAuthenticatedUserContext(handle || settings.user, settings.user);
+            this._current.setAuthenticatedUserContext(handle || storage.user, storage.user);
         }
         catch (e) {
 

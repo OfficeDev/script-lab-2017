@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Authenticator, IToken } from '@microsoft/office-js-helpers';
 import { Request, ResponseTypes } from './request';
-import { environment, settings } from '../helpers';
+import { environment, storage } from '../helpers';
 
 @Injectable()
 export class GitHubService {
@@ -19,7 +19,7 @@ export class GitHubService {
             clientId: clientId,
             baseUrl: 'https://github.com/login',
             authorizeUrl: '/oauth/authorize',
-            tokenUrl: `${tokenUrl}/${settings.user}`,
+            tokenUrl: `${tokenUrl}/${storage.user}`,
             scope: 'gist',
             state: true
         });

@@ -12,7 +12,7 @@ import { EffectsModule } from '@ngrx/effects';
 
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
-import { EXCEPTION_PROVIDER, applyTheme, AI, settings, environment } from './app/helpers';
+import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { COMPONENT_DECLARATIONS } from './components';
 import { AppComponent } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
@@ -72,12 +72,12 @@ export class AppModule {
     constructor(private _store: Store<State>) {
         this._store.dispatch({
             type: 'SET_ROOT_STATE',
-            payload: settings.current
+            payload: storage.current
         });
 
         this._store
             .select(getSettings)
             .debounceTime(300)
-            .subscribe(changes => { settings.current = changes; });
+            .subscribe(changes => { storage.current = changes; });
     }
 }

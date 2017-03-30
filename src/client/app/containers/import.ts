@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI, Strings } from '../helpers';
+import { AI, Strings, storage } from '../helpers';
 import { isEmpty } from 'lodash';
 
 //strings are specified inline (not imported) for performance reasons
@@ -123,6 +123,8 @@ export class Import {
     import(item?: ITemplate) {
         let data = null;
         let mode = null;
+        let showWarning = false;
+
         switch (this.view) {
             case 'snippets':
                 if (item.id) {
@@ -142,6 +144,7 @@ export class Import {
                     mode = Snippet.ImportType.YAML;
                 }
                 data = this.url || this.snippet;
+                showWarning = true;
                 break;
 
             case 'samples':
