@@ -12,7 +12,7 @@
   <Description DefaultValue="Create, run, and share your Office Add-in snippets from within an Office application." />
   <IconUrl DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/icon-64.png" />
-  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" />
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
@@ -37,6 +37,7 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
+              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -75,6 +76,82 @@
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG.Run.Url" />
                     <Title resid="PG.RunCommand.Title" />
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle" />
+                    <Description resid="PG.TutorialCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16" />
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32" />
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.HelpCommand">
+                  <Label resid="PG.HelpCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.HelpCommand.TipTitle" />
+                    <Description resid="PG.HelpCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Help.16" />
+                    <bt:Image size="32" resid="PG.Icon.Help.32" />
+                    <bt:Image size="80" resid="PG.Icon.Help.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchHelp</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle" />
+                    <Description resid="PG.ApiDocsCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16" />
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32" />
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle" />
+                    <Description resid="PG.AskCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16" />
+                    <bt:Image size="32" resid="PG.Icon.Ask.32" />
+                    <bt:Image size="80" resid="PG.Icon.Ask.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
                   </Action>
                 </Control>
               </Group>
@@ -88,6 +165,7 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
+              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -129,6 +207,82 @@
                   </Action>
                 </Control>
               </Group>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle" />
+                    <Description resid="PG.TutorialCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16" />
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32" />
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.HelpCommand">
+                  <Label resid="PG.HelpCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.HelpCommand.TipTitle" />
+                    <Description resid="PG.HelpCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Help.16" />
+                    <bt:Image size="32" resid="PG.Icon.Help.32" />
+                    <bt:Image size="80" resid="PG.Icon.Help.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchHelp</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle" />
+                    <Description resid="PG.ApiDocsCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16" />
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32" />
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle" />
+                    <Description resid="PG.AskCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16" />
+                    <bt:Image size="32" resid="PG.Icon.Ask.32" />
+                    <bt:Image size="80" resid="PG.Icon.Ask.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
               <Label resid="PG.TabLabel"/>
             </CustomTab>
           </ExtensionPoint>
@@ -139,6 +293,7 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
+              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -177,6 +332,82 @@
                   <Action xsi:type="ShowTaskpane">
                     <SourceLocation resid="PG.Run.Url" />
                     <Title resid="PG.RunCommand.Title" />
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.AboutGroup">
+                <Label resid="PG.AboutGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.TutorialCommand">
+                  <Label resid="PG.TutorialCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.TutorialCommand.TipTitle" />
+                    <Description resid="PG.TutorialCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Tutorial.16" />
+                    <bt:Image size="32" resid="PG.Icon.Tutorial.32" />
+                    <bt:Image size="80" resid="PG.Icon.Tutorial.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchTutorial</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.HelpCommand">
+                  <Label resid="PG.HelpCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.HelpCommand.TipTitle" />
+                    <Description resid="PG.HelpCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Help.16" />
+                    <bt:Image size="32" resid="PG.Icon.Help.32" />
+                    <bt:Image size="80" resid="PG.Icon.Help.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchHelp</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Group id="PG.ApiGroup">
+                <Label resid="PG.ApiGroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="PG.Icon.16" />
+                  <bt:Image size="32" resid="PG.Icon.32" />
+                  <bt:Image size="80" resid="PG.Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="PG.ApiDocsCommand">
+                  <Label resid="PG.ApiDocsCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.ApiDocsCommand.TipTitle" />
+                    <Description resid="PG.ApiDocsCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.ApiDocs.16" />
+                    <bt:Image size="32" resid="PG.Icon.ApiDocs.32" />
+                    <bt:Image size="80" resid="PG.Icon.ApiDocs.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchApiDocs</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.AskCommand">
+                  <Label resid="PG.AskCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.AskCommand.TipTitle" />
+                    <Description resid="PG.AskCommand.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.Ask.16" />
+                    <bt:Image size="32" resid="PG.Icon.Ask.32" />
+                    <bt:Image size="80" resid="PG.Icon.Ask.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>launchAsk</FunctionName>
                   </Action>
                 </Control>
               </Group>
@@ -197,6 +428,18 @@
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/run-80.png" />
+        <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/tutorial-16.png" />
+        <bt:Image id="PG.Icon.Tutorial.32" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/tutorial-32.png" />
+        <bt:Image id="PG.Icon.Tutorial.80" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/tutorial-80.png" />
+        <bt:Image id="PG.Icon.Help.16" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/help-16.png" />
+        <bt:Image id="PG.Icon.Help.32" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/help-32.png" />
+        <bt:Image id="PG.Icon.Help.80" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/help-80.png" />
+        <bt:Image id="PG.Icon.ApiDocs.16" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/docs-16.png" />
+        <bt:Image id="PG.Icon.ApiDocs.32" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/docs-32.png" />
+        <bt:Image id="PG.Icon.ApiDocs.80" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/docs-80.png" />
+        <bt:Image id="PG.Icon.Ask.16" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/ask-16.png" />
+        <bt:Image id="PG.Icon.Ask.32" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/ask-32.png" />
+        <bt:Image id="PG.Icon.Ask.80" DefaultValue="https://bornholm-insiders.azurewebsites.net/assets/images/ask-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG.Code.Url" DefaultValue="https://bornholm-insiders.azurewebsites.net" />
@@ -206,15 +449,30 @@
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="Script Lab" />
         <bt:String id="PG.GroupLabel" DefaultValue="Script" />
+        <bt:String id="PG.AboutGroupLabel" DefaultValue="About Script Lab" />
+        <bt:String id="PG.ApiGroupLabel" DefaultValue="About the APIs" />
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.Title" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets" />
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
+        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet" />
+        <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
+        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial" />
+        <bt:String id="PG.HelpCommand.Label" DefaultValue="Help" />
+        <bt:String id="PG.HelpCommand.TipTitle" DefaultValue="Help for Script Lab" />
+        <bt:String id="PG.ApiDocsCommand.Label" DefaultValue="Reference Docs" />
+        <bt:String id="PG.ApiDocsCommand.TipTitle" DefaultValue="API Reference Documentation" />
+        <bt:String id="PG.AskCommand.Label" DefaultValue="Ask the Community" />
+        <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API help from the community" />
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor" />
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet" />
+        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial" />
+        <bt:String id="PG.HelpCommand.Desc" DefaultValue="Launches documentation on using Script Lab" />
+        <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running" />
+        <bt:String id="PG.AskCommand.Desc" DefaultValue="Launches a community forum for questions about the Office JavaScript APIs" />
         <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office." />
       </bt:LongStrings>
     </Resources>
