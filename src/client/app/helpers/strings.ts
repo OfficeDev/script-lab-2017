@@ -127,6 +127,8 @@ export class Strings {
     static readonly sharedGistsSignIn = 'Sign in to get any snippets you shared via GitHub gists.';
     static readonly samplesDescription = 'Choose one of the samples below to get started.';
     static readonly noSamplesMessage = `There aren't any samples available for this host yet.`;
+    static readonly importWarning = `Externally imported scripts may contain malicious code. Please make sure trust the source before running them.`;
+    static readonly importWarningAction = `Dont show this warning again`;
 
     static readonly importInstructions = `Enter the snippet's URL or paste the YAML below, then choose`;
     static readonly importUrlLabel = `Snippet URL or GitHub gist ID`;

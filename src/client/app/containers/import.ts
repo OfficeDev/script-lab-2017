@@ -62,17 +62,27 @@ import { isEmpty } from 'lodash';
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
-                        
-                            <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
-                            <div class="ms-TextField import__field">
-                                <label class="ms-Label">{{strings.importUrlLabel}}</label>
-                                <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
+                        <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
+                        <div *ngIf="showImportWarning" class="ms-MessageBar ms-MessageBar--severeWarning">
+                            <div class="ms-MessageBar-content">
+                                <div class="ms-MessageBar-icon">
+                                    <i class="ms-Icon ms-Icon--Warning"></i>
+                                </div>
+                                <div class="ms-MessageBar-text">
+                                    {{strings.importWarning}}
+                                    <br />
+                                    <a href="#" (click)="hideWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
+                                </div>
                             </div>
-                            <div class="ms-TextField ms-TextField--multiline import__field">
-                                <label class="ms-Label">{{strings.importYamlLabel}}</label>
-                                <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
-                            </div>
-                        
+                        </div>
+                        <div class="ms-TextField import__field">
+                            <label class="ms-Label">{{strings.importUrlLabel}}</label>
+                            <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
+                        </div>
+                        <div class="ms-TextField ms-TextField--multiline import__field">
+                            <label class="ms-Label">{{strings.importYamlLabel}}</label>
+                            <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
+                        </div>                        
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
                                 <button class="ms-Dialog-action ms-Button" (click)="import() ">
@@ -90,6 +100,7 @@ export class Import {
     view = 'snippets';
     url: string;
     snippet: string;
+    showImportWarning: boolean;
 
     constructor(private _store: Store<fromRoot.State>) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
@@ -99,6 +110,8 @@ export class Import {
         this._store.select(fromRoot.getCurrent)
             .filter(snippet => snippet == null)
             .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
+
+        this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
     }
 
     strings = Strings;
@@ -115,6 +128,11 @@ export class Import {
             return snippets;
         });
 
+    hideWarning() {
+        this.showImportWarning = false;
+        storage.settings.insert('disableImportWarning', true as any);
+    }
+
     switch(view = 'samples') {
         AI.trackPageView(view, `/import/${view}`).stop();
         this.view = view;
@@ -123,7 +141,6 @@ export class Import {
     import(item?: ITemplate) {
         let data = null;
         let mode = null;
-        let showWarning = false;
 
         switch (this.view) {
             case 'snippets':
@@ -144,7 +161,6 @@ export class Import {
                     mode = Snippet.ImportType.YAML;
                 }
                 data = this.url || this.snippet;
-                showWarning = true;
                 break;
 
             case 'samples':
