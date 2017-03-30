@@ -5,4 +5,5 @@ export * from './ai.helper';
 export * from './strings';
 export * from './storage';
 export * from './environment';
+export * from './router';
 export * from './messenger';

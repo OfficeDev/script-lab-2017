@@ -1,5 +1,6 @@
 import * as $ from 'jquery';
-import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { router } from './router';
+import { Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 let { devMode, build, config } = PLAYGROUND;
 
 class Environment {
@@ -49,23 +50,27 @@ class Environment {
     async initialize(currHost?: string, currPlatform?: string) {
         if (currHost) {
             this.current = { host: currHost, platform: currPlatform };
+            router.updateHash({ host: currHost, mode: router.mode });
             return Promise.resolve({ currHost, currPlatform });
         }
 
         if (this.current && this.current.host) {
+            router.updateHash({ host: this.current.host, mode: router.mode });
             return this.current;
         }
 
         let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
-            if (window.location.search.toLowerCase().indexOf('mode') > 0) {
-                let { mode } = Authenticator.getUrlParams(window.location.search, '', '?') as any;
-                return resolve({ host: mode.toUpperCase(), platform: null });
+            let params = router.current;
+            if (!(params == null)) {
+                router.updateHash({ host: params.host, mode: router.mode });
+                return resolve({ host: params.host.toUpperCase(), platform: null });
             }
             else {
                 let hostButtonsTimeout = setTimeout(() => {
                     $('#hosts').show();
                     $('.ms-progress-component__footer').hide();
                     $('.hostButton').click(function hostButtonClick() {
+                        router.updateHash({ host: $(this).data('host'), mode: router.mode });
                         resolve({ host: $(this).data('host'), platform: null });
                     });
                 }, 2000);
@@ -73,6 +78,7 @@ class Environment {
                 Office.initialize = () => {
                     clearTimeout(hostButtonsTimeout);
                     let { host, platform } = Utilities;
+                    router.updateHash({ host, mode: router.mode });
                     return resolve({ host, platform });
                 };
             }
