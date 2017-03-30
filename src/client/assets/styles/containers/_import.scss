@@ -18,6 +18,24 @@ import {
     .gallery__tab--icon span {
         display: none;
     }
+
+    .ms-MessageBar {
+        width: calc(100% - 16px);
+        margin-bottom: 20px;
+
+        &-icon {
+            font-size: 2.5em;
+            padding-right: 10px;
+        }
+
+        &-text {
+            font-size: 11pt;
+        }
+        
+        &-link {
+            font-size: 9pt;
+        }        
+    }
 }
 
 .import {

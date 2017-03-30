@@ -5,12 +5,12 @@ const path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;
 
-module.exports = (env) => 
+module.exports = (env) =>
     webpackMerge(commonConfig(env.mode === 'prod'), {
         devtool: 'source-map',
 
         output: {
-            path: './dist/client',
+            path: path.resolve('./dist/client'),
             filename: '[name].bundle.js',
             chunkFilename: '[id].chunk.js'
         },
@@ -26,7 +26,7 @@ module.exports = (env) =>
             chunks: true,
             chunkModules: true,
             chunkOrigins: false,
-            context: "./dist/client/",
+            context: path.resolve("./dist/client/"),
             colors: true,
             errors: true,
             errorDetails: true,
@@ -54,6 +54,6 @@ module.exports = (env) =>
                     screw_ie8: true
                 },
                 comments: false
-            })        
+            })
         ]
     });

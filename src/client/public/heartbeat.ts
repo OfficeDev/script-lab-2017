@@ -1,5 +1,5 @@
 import { toNumber } from 'lodash';
-import { environment, settings, Strings, Messenger, MessageType } from '../app/helpers';
+import { environment, storage, Strings, Messenger, MessageType } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
@@ -25,14 +25,14 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         sendBackCurrentSnippet(true /*isInitialLoad*/);
 
-        settings.snippets.notify().subscribe(validateSnippet);
-        settings.settings.notify().subscribe(validateSnippet);
+        storage.snippets.notify().subscribe(validateSnippet);
+        storage.settings.notify().subscribe(validateSnippet);
     })();
 
 
     function validateSnippet() {
-        settings.settings.load();
-        const lastOpened = settings.current.lastOpened;
+        storage.settings.load();
+        const lastOpened = storage.current.lastOpened;
 
         if (lastOpened) {
             if (lastOpened.id !== currentSnippet.id) {
@@ -51,13 +51,13 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
     function sendBackCurrentSnippet(isInitialLoad: boolean) {
         if (!isInitialLoad) {
-            settings.snippets.load();
+            storage.snippets.load();
         }
 
-        let snippet = settings.snippets.get(currentSnippet.id);
+        let snippet = storage.snippets.get(currentSnippet.id);
         if (snippet == null) {
-            if (settings.lastOpened && (settings.lastOpened.id === currentSnippet.id)) {
-                snippet = settings.lastOpened;
+            if (storage.lastOpened && (storage.lastOpened.id === currentSnippet.id)) {
+                snippet = storage.lastOpened;
             }
         }
 
@@ -95,8 +95,8 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                     return;
                 }
 
-                settings.settings.load();
-                const lastOpened = settings.current.lastOpened;
+                storage.settings.load();
+                const lastOpened = storage.current.lastOpened;
                 if (lastOpened) {
                     messenger.send(window.parent, MessageType.REFRESH_RESPONSE, lastOpened);
                     return;

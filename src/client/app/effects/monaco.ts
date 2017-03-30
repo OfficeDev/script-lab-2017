@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, Strings, settings } from '../helpers';
+import { AI, Strings, storage } from '../helpers';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
@@ -101,13 +101,13 @@ export class MonacoEffects {
     }
 
     private _get(url: string): Observable<IIntellisenseFile> {
-        if (settings.intellisenseCache.contains(url)) {
-            let content = settings.intellisenseCache.get(url);
+        if (storage.intellisenseCache.contains(url)) {
+            let content = storage.intellisenseCache.get(url);
             return Observable.of({ url, content });
         }
         else {
             return this._request.get<string>(url, null, ResponseTypes.TEXT)
-                .map(content => settings.intellisenseCache.insert(url, content))
+                .map(content => storage.intellisenseCache.insert(url, content))
                 .map(content => ({ content, url }));
         }
     }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment, settings } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment, storage } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { GitHub, Snippet, UI } from '../actions';
@@ -67,11 +67,11 @@ export class SnippetEffects {
             this._validate(snippet);
             snippet.modified_at = Date.now();
 
-            if (settings.snippets.contains(snippet.id)) {
-                settings.snippets.insert(snippet.id, snippet);
+            if (storage.snippets.contains(snippet.id)) {
+                storage.snippets.insert(snippet.id, snippet);
             }
             else {
-                settings.snippets.add(snippet.id, snippet);
+                storage.snippets.add(snippet.id, snippet);
             }
 
             return new Snippet.StoreUpdatedAction();
@@ -83,7 +83,7 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.DUPLICATE)
         .map((action: Snippet.DuplicateAction) => action.payload)
         .map(id => {
-            let orignial = settings.snippets.get(id);
+            let orignial = storage.snippets.get(id);
             let copy: ISnippet = assign({}, this._defaults, orignial);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
@@ -95,7 +95,7 @@ export class SnippetEffects {
     delete$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE)
         .map((action: Snippet.DeleteAction) => action.payload)
-        .map(id => settings.snippets.remove(id))
+        .map(id => storage.snippets.remove(id))
         .mergeMap(() => Observable.from([
             new Snippet.StoreUpdatedAction(),
             new UI.ToggleImportAction(true)
@@ -105,14 +105,14 @@ export class SnippetEffects {
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
-        .map(() => settings.snippets.clear())
+        .map(() => storage.snippets.clear())
         .map(() => new Snippet.StoreUpdatedAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDeleteAllError, exception)));
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
-        .map(() => new Snippet.LoadSnippetsSuccessAction(settings.snippets.values()))
+        .map(() => new Snippet.LoadSnippetsSuccessAction(storage.snippets.values()))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })
@@ -147,7 +147,7 @@ export class SnippetEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadDefaultsError, exception)));
 
     private _exists(name: string) {
-        return settings.snippets.values().some(item => item.name.trim() === name.trim());
+        return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }
 
     private _validate(snippet: ISnippet) {
@@ -163,7 +163,7 @@ export class SnippetEffects {
     private _generateName(name: string, suffix: string = ''): string {
         let newName = isEmpty(name.trim()) ? Strings.newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
-        let collisions = settings.snippets.values().filter(item => regex.test(item.name.trim()));
+        let collisions = storage.snippets.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = reduce(collisions, (max, item: any) => {
             let match = /\(?(\d+)?\)?$/.exec(item.name.trim());
             if (max <= ~~match[1]) {
@@ -226,7 +226,7 @@ export class SnippetEffects {
 
             /* If importing a local snippet, then load it off the store */
             case Snippet.ImportType.OPEN:
-                return Observable.of(settings.snippets.get(data));
+                return Observable.of(storage.snippets.get(data));
 
             /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
             case Snippet.ImportType.SAMPLE:

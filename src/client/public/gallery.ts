@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { settings, environment, applyTheme, post } from '../app/helpers';
+import { storage, environment, applyTheme, post } from '../app/helpers';
 import '../assets/styles/extras.scss';
 
 (async () => {
@@ -30,8 +30,8 @@ export class Gallery {
     constructor() {
         this.setUpMomentJsDurationDefaults();
 
-        settings.snippets.notify().subscribe(() => this.render());
-        settings.settings.notify().subscribe(() => this.renderLastOpened());
+        storage.snippets.notify().subscribe(() => this.render());
+        storage.settings.notify().subscribe(() => this.renderLastOpened());
     }
 
     showProgress(message: string) {
@@ -48,9 +48,9 @@ export class Gallery {
     render() {
         console.log('Refreshing snippets');
         this._$snippetList.html('');
-        if (settings.snippets.count) {
+        if (storage.snippets.count) {
             this._$noSnippets.hide();
-            settings.snippets.values().forEach(snippet => this.insertSnippet(snippet, this._$snippetList));
+            storage.snippets.values().forEach(snippet => this.insertSnippet(snippet, this._$snippetList));
             this._$snippetList.show();
         }
         else {
@@ -61,8 +61,8 @@ export class Gallery {
 
     renderLastOpened() {
         this._$lastOpened.html('');
-        if (settings.lastOpened) {
-            this.insertSnippet(settings.current.lastOpened, this._$lastOpened);
+        if (storage.lastOpened) {
+            this.insertSnippet(storage.current.lastOpened, this._$lastOpened);
             this._$lastOpened.show();
             this._$lastOpenedEmpty.hide();
         }
@@ -90,13 +90,13 @@ export class Gallery {
 
     private _navigate(id: string) {
         // Refresh the snippets and settings, in case there was a code change to one of the snippets.
-        let snippet = settings.snippets.get(id);
+        let snippet = storage.snippets.get(id);
 
         /**
          * Check if the clicked snippet is the lastOpened
          */
         if (snippet === null) {
-            let lastOpened = settings.lastOpened;
+            let lastOpened = storage.lastOpened;
             snippet = id === lastOpened.id ? lastOpened : null;
         }
 

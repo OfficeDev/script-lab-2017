@@ -2,7 +2,7 @@ import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { environment } from './environment';
 import * as cuid from 'cuid';
 
-class Settings {
+class StorageHelper {
     private _user: string;
     get user(): string {
         if (this._user == null) {
@@ -45,4 +45,4 @@ class Settings {
     }
 }
 
-export const settings = new Settings();
+export const storage = new StorageHelper();

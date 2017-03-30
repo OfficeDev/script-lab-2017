@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
-import { Strings, settings } from '../helpers';
+import { Strings, storage } from '../helpers';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,7 +12,7 @@ import { Strings, settings } from '../helpers';
                     <div class="profile__primary-text ms-font-xxl">{{profile?.name}}</div>
                     <div class="profile__secondary-text ms-font-l">{{profile?.login}}</div>
                     <div class="profile__tertiary-text ms-font-m">{{profile?.bio}}</div>
-                    <div class="profile__tertiary-text ms-font-m">ID: ${settings.user}</div>
+                    <div class="profile__tertiary-text ms-font-m">ID: ${storage.user}</div>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
