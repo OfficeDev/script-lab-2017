@@ -149,37 +149,33 @@ export class Strings {
     */
 
     static readonly Refresh = {
-        /** NEEDS STRING REVIEW. Error if refresh URL is somehow misformed (should essentially never happen) */
-        missingSnippetParameters: 'Missing some snippet parameters.',
+        /** Error if refresh URL is somehow misformed (should essentially never happen) */
+        missingSnippetParameters: `A configuration problem prevented the snippet from loading`,
 
-        /** NEEDS STRING REVIEW. Error if snippet no longer exists */
-        couldNotFindTheSnippet: 'Could not find the snippet.',
+        /** Error if snippet no longer exists */
+        couldNotFindTheSnippet: `Couldn't find the snippet. It might have been deleted.`,
 
-        /** NEEDS STRING REVIEW. Appends one of the following to the error message
+        /** Appends one of the following to the error message
          * (navigating back after a couple of seconds, if there is a return URL) */
         getErrorMessageAppendum: (returnUrl: string) =>
-            returnUrl ? 'Returning...' : 'Please close this window and try again.',
+            returnUrl ? 'Returning...' : 'Close this window and try again.',
 
     };
 
     static readonly Runner = {
-        /** NEEDS STRING REVIEW */
-        snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.',
+        snippetNoLongerExists: 'That snippet no longer exists. Reload this page, or return to the previous one.',
 
-        /** NEEDS STRING REVIEW */
-        unexpectedError: 'An unexpected error had occurred',
+        unexpectedError: 'An unexpected error occurred',
 
-        /** NEEDS STRING REVIEW. */
         getCouldNotRefreshSnippetText: (e: Error) => {
             if (!e || e.message === '' || e.toString() === '' || e.toString() === '[object Object]') {
-                return 'Could not refresh the snippet';
+                return `Couldn't refresh the snippet`;
             } else {
-                return 'Could not refresh the snippet due to the following error: ' +
+                return `Couldn't refresh the snippet due to the following error: ` +
                     e.message || e.toString();
             }
         },
 
-        /** NEEDS STRING REVIEW */
         reloadingOfficeJs: 'Reloading Office.js'
     };
 }
