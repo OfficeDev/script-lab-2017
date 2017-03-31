@@ -36,7 +36,7 @@ export enum MessageType {
     /** Error. Also carries a string message */
     ERROR,
 
-    /** A message to let the runner know to show a "would you like to refresh" dialog.  No actual message content */
+    /** A message to let the runner know to show a "would you like to refresh" dialog.  No message content. */
     INFORM_STALE,
 
     /** A message that the currently-editing snippet has changed.  Message is {id: string, name: string} */
@@ -46,5 +46,8 @@ export enum MessageType {
     REFRESH_REQUEST,
 
     /** A response from heartbeat to runner. Message is the full snippet object */
-    REFRESH_RESPONSE
+    REFRESH_RESPONSE,
+
+    /** A message sent by the heartbeat, once it has initialized.  Message is { lastOpenedId: string } */
+    HEARTBEAT_INITIALIZED,
 };

@@ -23,6 +23,10 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             lastModified: params.id ? toNumber(params.lastModified) : 0
         };
 
+        messenger.send(window.parent, MessageType.HEARTBEAT_INITIALIZED, {
+            lastOpenedId: storage.lastOpened ? storage.lastOpened.id : null
+        });
+
         sendBackCurrentSnippet(true /*isInitialLoad*/);
 
         storage.snippets.notify().subscribe(validateSnippet);

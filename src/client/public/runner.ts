@@ -71,7 +71,6 @@ interface InitializationParams {
                 $('#padding-for-personality-menu').width('20px');
             }
 
-
             $snippetContent = $('#snippet-code-content');
 
             // Because it's a multiline text inside of a "pre" tag, trim it:
@@ -211,6 +210,14 @@ interface InitializationParams {
 
         heartbeat.messenger = new Messenger(origin);
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
+
+        heartbeat.messenger.listen<{lastOpenedId: string}>()
+            .filter(({ type }) => type === MessageType.HEARTBEAT_INITIALIZED)
+            .subscribe(input => {
+                if (input.message.lastOpenedId !== heartbeatParams.id) {
+                    isListeningTo.snippetSwitching = false;
+                }
+            });
 
         heartbeat.messenger.listen<string>()
             .filter(({ type }) => type === MessageType.ERROR)
