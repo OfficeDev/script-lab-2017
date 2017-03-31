@@ -5,7 +5,7 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>8bc018e3-f345-40d4-8f1d-97951765d531</Id>
-  <Version>1.0.0.4</Version>
+  <Version>1.1.0.0</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
@@ -442,7 +442,7 @@
         <bt:Image id="PG.Icon.Ask.80" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="PG.Code.Url" DefaultValue="https://script-lab.azureedge.net" />
+        <bt:Url id="PG.Code.Url" DefaultValue="https://script-lab.azureedge.net?commands=1" />
         <bt:Url id="PG.Run.Url" DefaultValue="https://script-lab.azureedge.net/run.html" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://script-lab.azureedge.net/functions.html" />
       </bt:Urls>
