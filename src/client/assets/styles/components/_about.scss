@@ -12,7 +12,7 @@
         border-radius: 100%;
         margin-top: $default-spacing * 2;
         @include background-fill() {
-            @include background-image-circle(150px, '../images/icon-large.png');
+            @include background-image-circle(150px, '../images/icon-large.svg');
         }
     }
 
