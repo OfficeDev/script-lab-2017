@@ -131,7 +131,8 @@ export class SnippetEffects {
         .map((action: Snippet.DuplicateAction) => action.payload)
         .map(id => {
             const original = getScrubbedSnippet(storage.snippets.get(id), SnippetFieldType.PUBLIC);
-            const copy: ISnippet = assign({}, getSnippetDefaults(), original);
+            const copy: ISnippet = {} as any;
+            assign(copy, getSnippetDefaults(), original);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy);
@@ -337,7 +338,8 @@ export class SnippetEffects {
                 assign({}, rawSnippet) :
                 getScrubbedSnippet(assign({}, rawSnippet), SnippetFieldType.PUBLIC);
 
-        const snippet = assign({}, getSnippetDefaults(), scrubbedIfNeeded);
+        const snippet = {} as ISnippet;
+        assign(snippet, getSnippetDefaults(), scrubbedIfNeeded);
 
         /* Scrub the Id is the snippet is loaded from an external source */
         if (mode === Snippet.ImportType.OPEN) {

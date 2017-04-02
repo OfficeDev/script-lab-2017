@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber, includes, assign } from 'lodash';
+import { toNumber, assign } from 'lodash';
 import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings } from '../app/helpers';
@@ -34,15 +34,24 @@ interface InitializationParams {
         currentSnippetContentChange: true
     };
 
-    let isListeningTo = assign(defaultIsListeningTo);
+    const isListeningTo = {} as any;
+    assign(isListeningTo, defaultIsListeningTo);
 
     const heartbeat: {
         messenger: Messenger,
         window: Window
     } = <any>{};
 
-    async function initializeRunner(params: InitializationParams) {
+    function initializeRunner(params: InitializationParams): void {
         try {
+            initializeRunnerHelper();
+        }
+        catch (error) {
+            handleError(error);
+        }
+
+        // Helper:
+        async function initializeRunnerHelper() {
             if (params.returnUrl) {
                 window.sessionStorage.playground_returnUrl = params.returnUrl;
             }
@@ -67,8 +76,10 @@ interface InitializationParams {
             ]);
 
             $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
-            if (Utilities.platform === PlatformType.PC || PlatformType.MAC) {
+            if (Utilities.platform === PlatformType.PC) {
                 $('#padding-for-personality-menu').width('20px');
+            } else if (Utilities.platform === PlatformType.MAC) {
+                $('#padding-for-personality-menu').width('40px');
             }
 
             $snippetContent = $('#snippet-code-content');
@@ -86,15 +97,9 @@ interface InitializationParams {
 
             establishHeartbeat(params.origin, params.heartbeatParams);
 
-            $('#sync-with-editor').click(() => {
-                isListeningTo = assign(defaultIsListeningTo);
-                heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, null /*no id = current*/);
-            });
+            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/));
 
             initializeTooltipUpdater();
-        }
-        catch (error) {
-            handleError(error);
         }
     }
 
@@ -103,6 +108,8 @@ interface InitializationParams {
 
     /** Creates a snippet iframe and returns it (still hidden) */
     function writeSnippetIframe(html: string, officeJS: string): JQuery {
+        showHeader();
+
         const $iframe =
             $('<iframe class="snippet-frame fullscreen" style="display:none" src="about:blank"></iframe>')
                 .insertAfter($snippetContent);
@@ -110,45 +117,52 @@ interface InitializationParams {
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
 
-        // Write to the iframe (and note that must do the ".write" call first,
-        // before setting any window properties)
-        contentWindow.document.open();
-        contentWindow.document.write(html);
-
-        // Now proceed with setting window properties/callbacks:
-        (contentWindow as any).console = window.console;
-        if (officeJS) {
-            contentWindow['Office'] = window['Office'];
-        }
-
-        contentWindow.onerror = (...args) => console.error(args);
-
-        contentWindow.document.body.onload = () => {
-            $iframe.show();
-
-            $('#progress').hide();
+        (window as any).scriptRunnerBeginInit = () => {
+            (contentWindow as any).console = window.console;
+            contentWindow.onerror = (...args) => console.error(args);
 
             if (officeJS) {
+                contentWindow['Office'] = window['Office'];
                 officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
+            }
 
+            toggleProgress(false);
+            $iframe.show();
+        };
+
+        (window as any).scriptRunnerEndInit = () => {
+            if (officeJS) {
                 // Call Office.initialize(), which now initializes the snippet.
-                // The parameter, initializationReason, is not used in the Playground.
+                // The parameter, initializationReason, is not used in the playground.
                 Office.initialize(null /*initializationReason*/);
             }
         };
 
+        // Write to the iframe (and note that must do the ".write" call first,
+        // before setting any window properties). Setting console and onerror here
+        // (for any initial logging or error handling from snippet-referenced libraries),
+        // but for extra safety also setting them inside of scriptRunnerInitialized.
+        contentWindow.document.open();
+        contentWindow.document.write(html);
+        (contentWindow as any).console = window.console;
+        contentWindow.onerror = (...args) => console.error(args);
         contentWindow.document.close();
 
         return $iframe;
     }
 
     function handleError(error: Error) {
-        console.error(error);
-
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
             candidateErrorString = Strings.Runner.unexpectedError;
         }
+
+        $('#header-text').text('');
+        showHeader();
+        toggleProgressLoadingIndicators(false);
+
+        // Hide other notifications:
+        $('.runner-notification').hide();
 
         const $error = $('#notify-error');
 
@@ -161,9 +175,13 @@ interface InitializationParams {
             $actionBack.hide();
         }
 
+        $error.find('.action-fast-reload').off('click').click(() => {
+            clearAndRefresh(null /*id*/);
+            $error.hide();
+        });
+
         $error.find('.action-dismiss').off('click').click(() => {
             $error.hide();
-            $('#heartbeat').remove();
         });
 
         $('#notify-error').show();
@@ -211,7 +229,7 @@ interface InitializationParams {
         heartbeat.messenger = new Messenger(origin);
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        heartbeat.messenger.listen<{lastOpenedId: string}>()
+        heartbeat.messenger.listen<{ lastOpenedId: string }>()
             .filter(({ type }) => type === MessageType.HEARTBEAT_INITIALIZED)
             .subscribe(input => {
                 if (input.message.lastOpenedId !== heartbeatParams.id) {
@@ -229,7 +247,7 @@ interface InitializationParams {
             .subscribe(() => {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
-                        () => heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, currentSnippet.id),
+                        () => clearAndRefresh(currentSnippet.id),
                         () => isListeningTo.currentSnippetContentChange = false);
                 }
             });
@@ -238,7 +256,6 @@ interface InitializationParams {
             .filter(({ type }) => type === MessageType.INFORM_SWITCHED_SNIPPET)
             .subscribe(input => {
                 const $anotherSnippetSelected = $('#notify-another-snippet-selected');
-
                 // if switched back to the snippet that was already being tracked,
                 // that's great, and just silently hide the previously-shown notification
                 if (input.message.id === currentSnippet.id) {
@@ -247,7 +264,7 @@ interface InitializationParams {
                     if (isListeningTo.snippetSwitching) {
                         $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                         showReloadNotification($anotherSnippetSelected,
-                            () => heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, input.message.id),
+                            () => clearAndRefresh(input.message.id),
                             () => isListeningTo.snippetSwitching = false);
                     }
                 }
@@ -284,9 +301,6 @@ interface InitializationParams {
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
             $notificationContainer.hide();
             dismissAction();
-            if (includes(isListeningTo, true)) {
-                $('#heartbeat').remove();
-            }
         });
 
         // Show the current notification (with the buttons visible, and the reloading indicator hidden)
@@ -311,7 +325,7 @@ interface InitializationParams {
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
             $('#subtitle').text(Strings.Runner.reloadingOfficeJs);
-            $('#progress').show();
+            toggleProgress(true);
             window.location.href = refreshUrl;
             return;
         }
@@ -321,13 +335,30 @@ interface InitializationParams {
         $('#header-refresh').attr('href', refreshUrl);
 
         const $originalFrame = $('.snippet-frame');
-        writeSnippetIframe(html, processLibraries(snippet).officeJS).show();
+        writeSnippetIframe(html, processLibraries(snippet).officeJS);
         $originalFrame.remove();
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
 
         (window as any).Firebug.Console.clear();
+    }
+
+    /** Clear current snippet frame and send a refresh REFRESH_REQUEST
+     * @param id: id of snippet, or null to fetch the last-opened
+     */
+    function clearAndRefresh(id: string) {
+        // From here on out, now that the page has loaded, adjust progress so that
+        // it keeps the header visible -- and then show it
+        toggleProgress(true);
+
+        $('.snippet-frame').remove();
+
+        if (id == null) {
+            assign(isListeningTo, defaultIsListeningTo);
+        }
+
+        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, id);
     }
 
     function generateRefreshUrl(desiredOfficeJS: string) {
@@ -337,6 +368,24 @@ interface InitializationParams {
         }
 
         return refreshUrl;
+    }
+
+    function toggleProgress(visible: boolean) {
+        if (visible) {
+            toggleProgressLoadingIndicators(true);
+            $('#progress').show();
+        } else {
+            $('#progress').hide();
+        }
+    }
+
+    /** Shows or hides loading subtitle and dots */
+    function toggleProgressLoadingIndicators(visible: boolean) {
+        $('#progress .cs-loader, #subtitle').css('visibility', visible ? 'visible' : 'hidden');
+    }
+
+    function showHeader() {
+        $('#header').css('visibility', 'visible');
     }
 
     function initializeTooltipUpdater() {

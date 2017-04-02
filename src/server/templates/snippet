@@ -38,6 +38,10 @@
 
     <!-- Script -->
     <script type="text/javascript">
+        {{!-- It appears that doing document.body.onload from the runner can sometimes be --}}
+        {{!-- unreliable and fail to fire. So, do a safer (albeit polluting) approach --}}
+        try { window.parent.scriptRunnerBeginInit(); } catch (e) { /* ignore*/ }
+
         {{#if officeJS}}
         Office.initialize = function() {
             {{{indent script 3}}}
@@ -45,6 +49,8 @@
         {{else}}
         {{{indent script 2}}}
         {{/if}}
+
+        try { window.parent.scriptRunnerEndInit(); } catch (e) { /* ignore*/ }
     </script>
 </body>
 
