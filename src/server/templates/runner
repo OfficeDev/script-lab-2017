@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
     <link rel="stylesheet" href="{{{origin}}}/runner.bundle.css" />
+    <style>
+        /** On this particular page, adjust progress so that it keeps the header visible */
+        #progress {
+            top: 40px;
+            height: calc(100vh - 40px);
+        }
+    </style>
 
     {{#if officeJS}}
     <script src="{{{officeJS}}}"></script>
@@ -55,7 +62,7 @@
         </div>
     </app>
 
-    <header id="header" class="command__bar">
+    <header id="header" class="command__bar" style="visibility:hidden">
         <a id="header-back" style="display:none" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="Back">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>
@@ -129,6 +136,10 @@
                     <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Back</span>
                 </button>
+                <button class="action-fast-reload ms-Button host-colored-button">
+                    <!-- NEEDS STRING REVIEW -->
+                    <span class="ms-Button-label">Load latest snippet</span>
+                </button>
                 <button class="action-dismiss ms-Button host-colored-button">
                     <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Dismiss</span>
@@ -143,6 +154,12 @@
         {{snippet.content}}
         {{/if}}
     </pre>
+
+    {{!-- A hidden but taking-up-space div to serve in place of the snippet         --}}
+    {{!-- (That way, Firebug doesn't take up the entirety of the screen initially). --}}
+    {{!-- It will get replaced when the real snippet frame loads                    --}}
+    <div class="snippet-frame fullscreen" style="visibility:hidden">
+    </div>
 
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
     <script src="{{{origin}}}/vendor.bundle.js"></script>

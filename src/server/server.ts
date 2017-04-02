@@ -86,7 +86,7 @@ app.get(['/run/:host/:id'], handler(async (req: express.Request, res: express.Re
         origin: currentConfig.editorUrl,
         host: host,
         initialLoadSubtitle: 'Loading snippet...',
-        headerTitle: 'Loading snippet...'
+        headerTitle: ''
     });
 
     return res.contentType('text/html').status(200).send(html);

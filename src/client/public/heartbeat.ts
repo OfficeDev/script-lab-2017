@@ -58,18 +58,39 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             storage.snippets.load();
         }
 
-        let snippet = storage.snippets.get(trackingSnippet.id);
-        if (snippet == null) {
+        let snippet: ISnippet;
+        if (trackingSnippet.id) {
+            snippet = storage.snippets.get(trackingSnippet.id);
+
+            if (snippet == null) {
+                if (!isInitialLoad) {
+                    storage.settings.load();
+                }
+
+                if (storage.lastOpened && storage.lastOpened.id === trackingSnippet.id) {
+                    snippet = storage.lastOpened;
+                }
+            }
+        } else {
             if (!isInitialLoad) {
                 storage.settings.load();
             }
 
-            if (storage.lastOpened && storage.lastOpened.id === trackingSnippet.id) {
+            if (storage.lastOpened) {
+                trackingSnippet.id = storage.lastOpened.id;
                 snippet = storage.lastOpened;
+            } else {
+                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.noSnippetIsCurrentlyOpened);
+                return;
             }
         }
 
         if (snippet == null) {
+            trackingSnippet = {
+                id: '',
+                lastModified: 0
+            };
+
             messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
             return;
         }
@@ -97,25 +118,10 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                     lastModified: 0 /* Set to last modified, so that refreshes immediately */
                 };
 
-                // The ID on the input.message was optional.  If it was indeed specified, just send it back.  Otherwise, more processing is needed.
-                if (trackingSnippet.id) {
-                    sendBackCurrentSnippet(false /*isInitialLoad*/);
-                    return;
-                }
 
-                storage.settings.load();
-                const lastOpened = storage.current.lastOpened;
-                if (lastOpened) {
-                    trackingSnippet = {
-                        id: lastOpened.id,
-                        lastModified: lastOpened.modified_at
-                    };
-
-                    messenger.send(window.parent, MessageType.REFRESH_RESPONSE, lastOpened);
-                    return;
-                }
-
-                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.noSnippetIsCurrentlyOpened);
+                // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
+                // will be sure to send the last-opened snippet if the ID is empty
+                sendBackCurrentSnippet(false /*isInitialLoad*/);
             });
     }
 
