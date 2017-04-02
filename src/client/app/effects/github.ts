@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings } from '../helpers';
+import { AI, Strings, getScrubbedSnippet, SnippetFieldType } from '../helpers';
 import { GitHubService } from '../services';
 import * as jsyaml from 'js-yaml';
 import { Action } from '@ngrx/store';
@@ -9,7 +9,6 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
 import { find } from 'lodash';
-import { getScrubbedSnippet, SnippetFieldType } from './snippet';
 
 @Injectable()
 export class GitHubEffects {

@@ -6,3 +6,4 @@ export * from './strings';
 export * from './storage';
 export * from './environment';
 export * from './messenger';
+export * from './snippet.helper';

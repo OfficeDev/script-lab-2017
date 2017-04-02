@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment, storage } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment, storage,
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { Snippet, UI } from '../actions';
@@ -10,71 +11,6 @@ import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { isEmpty, find, assign, reduce, forIn, isEqual } from 'lodash';
-
-export enum SnippetFieldType {
-    /** PUBLIC = Store internally, and also include in copy-to-clipboard */
-    PUBLIC = 1 << 0,
-
-    /** INTERNAL = Necessary to store, but not copy out */
-    INTERNAL = 1 << 1,
-
-    /** TRANSIENT = Only useful at runtime, needn't be stored at all */
-    TRANSIENT = 1 << 2
-}
-
-const snippetFields: { [key: string]: SnippetFieldType; } = {
-    /* ITemplate base class */
-    id: SnippetFieldType.INTERNAL,
-    gist: SnippetFieldType.INTERNAL,
-    name: SnippetFieldType.PUBLIC,
-    description: SnippetFieldType.PUBLIC,
-    // author: export-only, always want to generate on the fly, so skip altogether
-    host: SnippetFieldType.PUBLIC,
-    api_set: SnippetFieldType.PUBLIC,
-    platform: SnippetFieldType.TRANSIENT,
-    origin: SnippetFieldType.TRANSIENT,
-    created_at: SnippetFieldType.INTERNAL,
-    modified_at: SnippetFieldType.INTERNAL,
-
-    /* ISnippet */
-    script: SnippetFieldType.PUBLIC,
-    template: SnippetFieldType.PUBLIC,
-    style: SnippetFieldType.PUBLIC,
-    libraries: SnippetFieldType.PUBLIC
-};
-
-function getSnippetDefaults(): ISnippet {
-    return {
-        id: '',
-        gist: '',
-        name: Strings.defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
-        description: '',
-        // author: export-only, always want to generate on the fly, so skip altogether
-        host: environment.current.host,
-        api_set: {},
-        platform: environment.current.platform,
-        origin: environment.current.config.editorUrl,
-        created_at: Date.now(),
-        modified_at: Date.now(),
-
-        script: { content: '', language: 'typescript' },
-        template: { content: '', language: 'html' },
-        style: { content: '', language: 'css' },
-        libraries: ''
-    };
-}
-
-/** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
-export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
-    const copy = <any>{};
-    forIn(snippetFields, (fieldType, fieldName) => {
-        if (fieldType & keep) {
-            copy[fieldName] = snippet[fieldName];
-        }
-    });
-
-    return copy;
-}
 
 @Injectable()
 export class SnippetEffects {
