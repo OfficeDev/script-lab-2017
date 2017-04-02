@@ -9,6 +9,7 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
 import { find } from 'lodash';
+import { getScrubbedSnippet, SnippetFieldType } from './snippet';
 
 @Injectable()
 export class GitHubEffects {
@@ -80,13 +81,13 @@ export class GitHubEffects {
     shareGist$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
         .filter(action => this._github.profile && action.payload)
-        .mergeMap(({ payload, type }) => {
-            let { name, description } = payload;
+        .mergeMap(({ rawSnippet, type }) => {
+            const scrubbedSnippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
+            let { name, description } = scrubbedSnippet;
             let files: IGistFiles = {};
-            payload.author = this._github.profile.login;
 
             files[`${name}.yaml`] = {
-                content: jsyaml.safeDump(payload),
+                content: jsyaml.safeDump(scrubbedSnippet),
                 language: 'yaml'
             };
 
@@ -130,15 +131,13 @@ ${Strings.gistSharedDialogEnd}
         .ofType(GitHub.GitHubActionTypes.SHARE_COPY)
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
-        .map((snippet: ISnippet) => {
-            if (this._github.profile) {
-                snippet.author = this._github.profile.login;
-            }
-            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: snippet.id });
+        .map((rawSnippet: ISnippet) => {
+            const scrubbedSnippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
+            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: scrubbedSnippet.id });
             new clipboard('#CopyToClipboard', {
                 text: () => {
                     this._uiEffects.alert(Strings.snippetCopiedConfirmation, null, Strings.okButtonLabel);
-                    return jsyaml.safeDump(snippet);
+                    return jsyaml.safeDump(scrubbedSnippet);
                 }
             });
         })

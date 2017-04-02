@@ -1,7 +1,10 @@
 interface ITemplate {
+    /**
+     * NOTE: if you add or remove any top-level fields from this list, be sure
+     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
+     */
     id?: string;
     gist?: string;
-    author?: string;
     name?: string;
     description?: string;
     host: string;
@@ -12,16 +15,17 @@ interface ITemplate {
     origin: string;
     created_at: number;
     modified_at: number;
-}
-
-interface ILibraryDefinition {
-    label?: string;
-    typings?: string | string[];
-    value?: string | string[];
-    description?: string
+    /**
+     * NOTE: if you add or remove any top-level fields from this list, be sure
+     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
+     */
 }
 
 interface ISnippet extends ITemplate {
+    /**
+     * NOTE: if you add or remove any top-level fields from this list, be sure
+     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
+     */
     script?: {
         content: string;
         language: string;
@@ -35,6 +39,17 @@ interface ISnippet extends ITemplate {
         language: string;
     };
     libraries?: string;
+    /**
+     * NOTE: if you add or remove any top-level fields from this list, be sure
+     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
+     */
+}
+
+interface ILibraryDefinition {
+    label?: string;
+    typings?: string | string[];
+    value?: string | string[];
+    description?: string
 }
 
 interface ICompiledSnippet extends ITemplate {
