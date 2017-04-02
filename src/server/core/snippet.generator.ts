@@ -13,7 +13,6 @@ class SnippetGenerator {
         let compiledSnippet: ICompiledSnippet = {
             id: snippet.id,
             gist: snippet.gist,
-            author: snippet.author,
             name: snippet.name,
             description: snippet.description,
             host: snippet.host,
