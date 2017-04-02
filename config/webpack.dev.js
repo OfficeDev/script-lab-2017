@@ -6,7 +6,7 @@ const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 module.exports = () =>
     webpackMerge(commonConfig(false), {
-        devtool: 'eval-source-map',
+        devtool: 'inline-source-map',
 
         output: {
             path: path.resolve('./dist/client'),

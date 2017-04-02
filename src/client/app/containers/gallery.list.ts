@@ -10,7 +10,13 @@ import * as moment from 'moment';
             <section class="gallery-list__group" *ngFor="let group of (groupedItems|keys)">
                 <collapse [title]="group?.key">
                     <section class="gallery-list__group">
-                        <article class="gallery-list__item gallery-list__item--template ms-font-m" *ngFor="let item of group?.value" (mouseover)="setLastUpdatedText(item)" [title]="item.lastUpdatedText" (click)="select.emit(item)" [ngClass]="{'gallery-list__item--selected' : item?.id === current?.id}">
+                        <article class="gallery-list__item gallery-list__item--template ms-font-m"
+                            *ngFor="let item of group?.value"
+                            (mouseover)="setLastUpdatedText(item)"
+                            [title]="item.lastUpdatedText"
+                            (click)="select.emit(item)"
+                            [ngClass]="{'gallery-list__item--selected' : item?.id === selected}"
+                        >
                             <div class="name">{{item?.name}}</div>
                             <div class="description">{{item?.description}}</div>
                         </article>
@@ -25,7 +31,7 @@ export class GalleryList {
     @Input() items: any[];
     @Input() title: string;
     @Input() fallback: string;
-    @Input() current: string;
+    @Input() selected: string;
     @Output() select = new EventEmitter<any>();
 
     groupedItems: any;
