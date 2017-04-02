@@ -84,7 +84,8 @@ export class SnippetEffects {
         .map((action: Snippet.DuplicateAction) => action.payload)
         .map(id => {
             let orignial = storage.snippets.get(id);
-            let copy: ISnippet = assign({}, this._defaults, orignial);
+            let copy: ISnippet = {} as any;
+            assign(copy, this._defaults, orignial);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy);
@@ -279,13 +280,14 @@ export class SnippetEffects {
         }
     }
 
-    private _massageSnippet(snippet: ISnippet, mode: string): Observable<Action> {
-        if (snippet.host && snippet.host !== environment.current.host) {
-            throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
+    private _massageSnippet(rawSnippet: ISnippet, mode: string): Observable<Action> {
+        if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
+            throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
         }
 
-        this._checkForUnSupportedAPIs(snippet.api_set);
-        snippet = assign({}, this._defaults, snippet, <ISnippet>{
+        this._checkForUnSupportedAPIs(rawSnippet.api_set);
+        const snippet = {} as ISnippet;
+        assign(snippet, this._defaults, rawSnippet, <ISnippet>{
             host: environment.current.host,
             platform: environment.current.platform,
             modified_at: Date.now(),

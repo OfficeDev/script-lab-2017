@@ -48,9 +48,16 @@ interface ICompiledSnippet extends ITemplate {
 }
 
 interface IRunnerHandlebarsContext {
-    snippetContent: string;
-    snippetId: string,
-    snippetLastModified: number;
+    /** Snippet info (or null, to signify "opportunistic" runner that attaches to anything open) */
+    snippet: {
+        id: string,
+
+        /** Last modified (or 0, if want to load from scratch) */
+        lastModified?: number
+
+        /** Snippet contents (or empty, if want to read it off of the ID using the heartbeat) */
+        content?: string;
+    }
 
     origin: string;
     host: string;
@@ -134,8 +141,8 @@ interface ISettings {
 }
 
 interface HeartbeatParams {
-    /** mode (equivalent to "host" in this case -- used for environment detection) */
-    mode: string;
+    /** mode (used for environment detection) */
+    host: string;
 
     /** snippet ID, if any */
     id: string;

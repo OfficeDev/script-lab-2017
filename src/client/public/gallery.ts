@@ -20,7 +20,6 @@ export class Gallery {
     private _$noSnippets = $('#snippet-list-empty');
     private _$lastOpened = $('#last-opened');
     private _$lastOpenedEmpty = $('#last-opened-empty');
-    private _$refresh = $('#refresh');
 
     private _template =
     `<article class="gallery-list__item gallery-list__item--template ms-font-m">
@@ -31,15 +30,8 @@ export class Gallery {
     constructor() {
         this.setUpMomentJsDurationDefaults();
 
-        storage.settings.notify().subscribe(() => this.renderLastOpened());
-
         storage.snippets.notify().subscribe(() => this.render());
-
-        this._$refresh.click(() => {
-            this.render();
-            this.renderLastOpened();
-            this.hideProgress();
-        });
+        storage.settings.notify().subscribe(() => this.renderLastOpened());
     }
 
     showProgress(message: string) {
@@ -51,19 +43,6 @@ export class Gallery {
     hideProgress() {
         this._$progress.hide();
         this._$gallery.show();
-    }
-
-    renderLastOpened() {
-        this._$lastOpened.html('');
-        if (storage.lastOpened) {
-            this.insertSnippet(storage.current.lastOpened, this._$lastOpened);
-            this._$lastOpened.show();
-            this._$lastOpenedEmpty.hide();
-        }
-        else {
-            this._$lastOpened.hide();
-            this._$lastOpenedEmpty.show();
-        }
     }
 
     render() {
@@ -80,12 +59,23 @@ export class Gallery {
         }
     }
 
-    insertSnippet({ id, name, description, modified_at }: ISnippet, location: JQuery) {
-        let template = this._template
-            .replace('{{name}}', name)
-            .replace('{{description}}', description);
+    renderLastOpened() {
+        this._$lastOpened.html('');
+        if (storage.lastOpened) {
+            this.insertSnippet(storage.current.lastOpened, this._$lastOpened);
+            this._$lastOpened.show();
+            this._$lastOpenedEmpty.hide();
+        }
+        else {
+            this._$lastOpened.hide();
+            this._$lastOpenedEmpty.show();
+        }
+    }
 
-        let $item = $(template);
+    insertSnippet({ id, name, description, modified_at }: ISnippet, location: JQuery) {
+        let $item = $(this._template);
+        $item.children('.name').text(name);
+        $item.children('.description').text(description);
 
         $item.click(() => {
             $item.attr('title', '');

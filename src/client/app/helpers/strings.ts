@@ -164,22 +164,15 @@ export class Strings {
 
     static readonly Runner = {
         /** NEEDS STRING REVIEW */
-        snippetNoLongerExists: 'Snippet no longer exists. Please reload this page, or return to the previous one.',
+        snippetNoLongerExists: 'Snippet no longer exists.',
 
         /** NEEDS STRING REVIEW */
         unexpectedError: 'An unexpected error had occurred',
 
-        /** NEEDS STRING REVIEW. */
-        getCouldNotRefreshSnippetText: (e: Error) => {
-            if (!e || e.message === '' || e.toString() === '' || e.toString() === '[object Object]') {
-                return 'Could not refresh the snippet';
-            } else {
-                return 'Could not refresh the snippet due to the following error: ' +
-                    e.message || e.toString();
-            }
-        },
+        /** NEEDS STRING REVIEW */
+        reloadingOfficeJs: 'Reloading Office.js',
 
         /** NEEDS STRING REVIEW */
-        reloadingOfficeJs: 'Reloading Office.js'
+        noSnippetIsCurrentlyOpened: 'No snippet is currently opened in the editor.'
     };
 }

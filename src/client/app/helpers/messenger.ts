@@ -4,12 +4,12 @@ import { AI } from './ai.helper';
 export class Messenger {
     constructor(public source: string) { }
 
-    send(recepient: Window, type: MessageType, message?: any) {
+    send<T>(recepient: Window, type: MessageType, message: T) {
         return recepient.postMessage({ type, message }, this.source);
     }
 
-    listen() {
-        return new Observable<{ type: MessageType, message: any }>(observer => {
+    listen<T>() {
+        return new Observable<{ type: MessageType, message: T }>(observer => {
             function _listener(event: MessageEvent) {
                 try {
                     if (event.origin !== this._origin) {
@@ -36,12 +36,18 @@ export enum MessageType {
     /** Error. Also carries a string message */
     ERROR,
 
-    /** A message to let the runner know to show a "would you like to refresh" dialog.  No actual message content */
+    /** A message to let the runner know to show a "would you like to refresh" dialog.  No message content. */
     INFORM_STALE,
 
-    /** A request for refreshing the snippet (from runner to heartbeat).  Message is the ID of the snippet */
+    /** A message that the currently-editing snippet has changed.  Message is {id: string, name: string} */
+    INFORM_SWITCHED_SNIPPET,
+
+    /** A request for refreshing the snippet (from runner to heartbeat).  Message is the ID of the snippet (or empty, if want latest) */
     REFRESH_REQUEST,
 
     /** A response from heartbeat to runner. Message is the full snippet object */
-    REFRESH_RESPONSE
+    REFRESH_RESPONSE,
+
+    /** A message sent by the heartbeat, once it has initialized.  Message is { lastOpenedId: string } */
+    HEARTBEAT_INITIALIZED,
 };

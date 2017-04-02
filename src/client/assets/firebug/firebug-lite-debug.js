@@ -31243,7 +31243,7 @@ FirebugChrome.Skin.CSS =
         window.origin + '/assets/firebug/') +
     '\n' +
     [
-        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2 {',
+        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2, #fbLargeCommandLineIcon {',
         '    display: none !important;',
         '}',
         '',
