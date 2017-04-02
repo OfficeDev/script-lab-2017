@@ -35,7 +35,7 @@ import { isEmpty } from 'lodash';
                         <h1 class="ms-font-xxl import__title">{{strings.mySnippetsLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.mySnippetsDescription}}</p>
                         <collapse title="{{strings.localSnippetsLabel}}">
-                            <gallery-list [current]="current$|async" [items]="snippets$|async" (select)="import($event)">
+                            <gallery-list [selected]="activeSnippetId" [items]="snippets$|async" (select)="import($event)">
                                 {{strings.noLocalSnippets}}
                             </gallery-list>
                         </collapse>
@@ -101,6 +101,7 @@ export class Import {
     url: string;
     snippet: string;
     showImportWarning: boolean;
+    activeSnippetId: string;
 
     constructor(private _store: Store<fromRoot.State>) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
@@ -108,6 +109,7 @@ export class Import {
         this._store.dispatch(new GitHub.LoadGistsAction());
 
         this._store.select(fromRoot.getCurrent)
+            .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
             .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
 
