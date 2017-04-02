@@ -1,12 +1,13 @@
 interface ITemplate {
-    /**
-     * NOTE: if you add or remove any top-level fields from this list, be sure
-     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
-     */
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // NOTE: if you add or remove any top-level fields from this list, be sure
+    // to update "snippetFields" and "getSnippetDefaults" in "src\client\app\effects\snippet.ts"
+    ////////////////////////////////////////////////////////////////////////////////////////////
     id?: string;
     gist?: string;
     name?: string;
     description?: string;
+    author?: string;
     host: string;
     api_set: {
         [index: string]: number
@@ -15,17 +16,13 @@ interface ITemplate {
     origin: string;
     created_at: number;
     modified_at: number;
-    /**
-     * NOTE: if you add or remove any top-level fields from this list, be sure
-     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
-     */
 }
 
 interface ISnippet extends ITemplate {
-    /**
-     * NOTE: if you add or remove any top-level fields from this list, be sure
-     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
-     */
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // NOTE: if you add or remove any top-level fields from this list, be sure
+    // to update "snippetFields" and "getSnippetDefaults" in "src\client\app\effects\snippet.ts"
+    ////////////////////////////////////////////////////////////////////////////////////////////
     script?: {
         content: string;
         language: string;
@@ -39,10 +36,6 @@ interface ISnippet extends ITemplate {
         language: string;
     };
     libraries?: string;
-    /**
-     * NOTE: if you add or remove any top-level fields from this list, be sure
-     *    to update "snippetFields" in "src\client\app\effects\snippet.ts"
-     */
 }
 
 interface ILibraryDefinition {

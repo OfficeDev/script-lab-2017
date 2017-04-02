@@ -12,11 +12,11 @@ import * as fromRoot from '../reducers';
 import { isEmpty, find, assign, reduce, forIn, isEqual } from 'lodash';
 
 export enum SnippetFieldType {
-    /** PUBLIC = include in copy-to-clipboard and store, of course */
+    /** PUBLIC = Store internally, and also include in copy-to-clipboard */
     PUBLIC = 1 << 0,
 
-    /** STORABLE_INTERNAL = necessary to store, but not copy out */
-    STORABLE_INTERNAL = 1 << 1,
+    /** INTERNAL = Necessary to store, but not copy out */
+    INTERNAL = 1 << 1,
 
     /** TRANSIENT = Only useful at runtime, needn't be stored at all */
     TRANSIENT = 1 << 2
@@ -24,16 +24,17 @@ export enum SnippetFieldType {
 
 const snippetFields: { [key: string]: SnippetFieldType; } = {
     /* ITemplate base class */
-    id: SnippetFieldType.STORABLE_INTERNAL,
-    gist: SnippetFieldType.STORABLE_INTERNAL,
+    id: SnippetFieldType.INTERNAL,
+    gist: SnippetFieldType.INTERNAL,
     name: SnippetFieldType.PUBLIC,
     description: SnippetFieldType.PUBLIC,
+    // author: export-only, always want to generate on the fly, so skip altogether
     host: SnippetFieldType.PUBLIC,
     api_set: SnippetFieldType.PUBLIC,
     platform: SnippetFieldType.TRANSIENT,
     origin: SnippetFieldType.TRANSIENT,
-    created_at: SnippetFieldType.STORABLE_INTERNAL,
-    modified_at: SnippetFieldType.STORABLE_INTERNAL,
+    created_at: SnippetFieldType.INTERNAL,
+    modified_at: SnippetFieldType.INTERNAL,
 
     /* ISnippet */
     script: SnippetFieldType.PUBLIC,
@@ -46,17 +47,19 @@ function getSnippetDefaults(): ISnippet {
     return {
         id: '',
         gist: '',
+        name: Strings.defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
+        description: '',
+        // author: export-only, always want to generate on the fly, so skip altogether
         host: environment.current.host,
         api_set: {},
         platform: environment.current.platform,
+        origin: environment.current.config.editorUrl,
         created_at: Date.now(),
         modified_at: Date.now(),
-        origin: environment.current.config.editorUrl,
-        name: Strings.defaultSnippetTitle, // UI unknown (TODO: clarify comment)
-        description: '',
+
         script: { content: '', language: 'typescript' },
-        style: { content: '', language: 'css' },
         template: { content: '', language: 'html' },
+        style: { content: '', language: 'css' },
         libraries: ''
     };
 }
@@ -103,7 +106,7 @@ export class SnippetEffects {
         .map(rawSnippet => {
             this._validate(rawSnippet);
 
-            const publicOrInternal = SnippetFieldType.PUBLIC | SnippetFieldType.STORABLE_INTERNAL;
+            const publicOrInternal = SnippetFieldType.PUBLIC | SnippetFieldType.INTERNAL;
             const scrubbedSnippet = getScrubbedSnippet(rawSnippet, publicOrInternal);
             delete scrubbedSnippet.modified_at;
 
@@ -113,14 +116,15 @@ export class SnippetEffects {
                 delete originalScrubbedSnippet.modified_at;
 
                 if (isEqual(scrubbedSnippet, originalScrubbedSnippet)) {
-                    // No change, so no need to re-save (and incorrectly modify the modified_at property)
-                    return new Snippet.StoreUpdatedAction();
+                    return null;
                 }
             }
-
+            return scrubbedSnippet;
+        })
+        .filter(snippet => snippet != null)
+        .map(scrubbedSnippet => {
             scrubbedSnippet.modified_at = Date.now();
             storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
-
             return new Snippet.StoreUpdatedAction();
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetSaveError, exception)));
@@ -335,8 +339,8 @@ export class SnippetEffects {
         this._checkForUnsupportedAPIs(rawSnippet.api_set);
         const scrubbedIfNeeded =
             (mode === Snippet.ImportType.OPEN) ?
-                assign({}, rawSnippet) :
-                getScrubbedSnippet(assign({}, rawSnippet), SnippetFieldType.PUBLIC);
+                {...rawSnippet} :
+                getScrubbedSnippet({...rawSnippet}, SnippetFieldType.PUBLIC);
 
         const snippet = {} as ISnippet;
         assign(snippet, getSnippetDefaults(), scrubbedIfNeeded);

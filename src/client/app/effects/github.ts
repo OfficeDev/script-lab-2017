@@ -82,12 +82,13 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
         .filter(action => this._github.profile && action.payload)
         .mergeMap(({ rawSnippet, type }) => {
-            const scrubbedSnippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
-            let { name, description } = scrubbedSnippet;
+            const shareableSnippet = this._getShareableSnippet(rawSnippet);
+
+            let { name, description } = shareableSnippet;
             let files: IGistFiles = {};
 
             files[`${name}.yaml`] = {
-                content: jsyaml.safeDump(scrubbedSnippet),
+                content: jsyaml.safeDump(shareableSnippet),
                 language: 'yaml'
             };
 
@@ -132,14 +133,22 @@ ${Strings.gistSharedDialogEnd}
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((rawSnippet: ISnippet) => {
-            const scrubbedSnippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
-            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: scrubbedSnippet.id });
+            const shareable = this._getShareableSnippet(rawSnippet);
+            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: shareable.id });
             new clipboard('#CopyToClipboard', {
                 text: () => {
                     this._uiEffects.alert(Strings.snippetCopiedConfirmation, null, Strings.okButtonLabel);
-                    return jsyaml.safeDump(scrubbedSnippet);
+                    return jsyaml.safeDump(shareable);
                 }
             });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
+
+    _getShareableSnippet(rawSnippet: ISnippet): ISnippet {
+        const snippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
+        if (this._github.profile) {
+            snippet.author = this._github.profile.login;
+        }
+        return snippet;
+    }
 }
