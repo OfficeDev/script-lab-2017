@@ -10481,12 +10481,20 @@ append(ChromeBase,
 
         // Small tweak to FireBug Lite, to have it scroll to the bottom-most line.
         // Taken from https://github.com/firebug/firebug-lite/issues/19
+        // Also, don't display anything that starts with "POST https://browser.pipe.aria.microsoft.com/"
+
         // create an observer instance
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList') {
                     var a = mutation.addedNodes;
                     if (a.length) {
+                        for (var i = 0; i < a.length; i++) {
+                            if (a[i].textContent.trim().indexOf('POST https://browser.pipe.aria.microsoft.com/') === 0) {
+                                a[i].style.display = 'none';
+                            }
+                        }
+
                         a[a.length - 1].scrollIntoView();
                     }
                 }
