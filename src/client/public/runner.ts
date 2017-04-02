@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber, includes, assign } from 'lodash';
+import { toNumber, assign } from 'lodash';
 import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings } from '../app/helpers';
@@ -67,8 +67,10 @@ interface InitializationParams {
             ]);
 
             $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
-            if (Utilities.platform === PlatformType.PC || PlatformType.MAC) {
+            if (Utilities.platform === PlatformType.PC) {
                 $('#padding-for-personality-menu').width('20px');
+            } else if (Utilities.platform === PlatformType.MAC) {
+                $('#padding-for-personality-menu').width('40px');
             }
 
             $snippetContent = $('#snippet-code-content');
@@ -163,7 +165,6 @@ interface InitializationParams {
 
         $error.find('.action-dismiss').off('click').click(() => {
             $error.hide();
-            $('#heartbeat').remove();
         });
 
         $('#notify-error').show();
@@ -284,9 +285,6 @@ interface InitializationParams {
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
             $notificationContainer.hide();
             dismissAction();
-            if (includes(isListeningTo, true)) {
-                $('#heartbeat').remove();
-            }
         });
 
         // Show the current notification (with the buttons visible, and the reloading indicator hidden)

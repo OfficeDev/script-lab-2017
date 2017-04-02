@@ -4,7 +4,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
-    let currentSnippet: {
+    let trackingSnippet: {
         id: string;
         lastModified: number;
     };
@@ -18,7 +18,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
-        currentSnippet = {
+        trackingSnippet = {
             id: params.id,
             lastModified: params.id ? toNumber(params.lastModified) : 0
         };
@@ -39,7 +39,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         const lastOpened = storage.current.lastOpened;
 
         if (lastOpened) {
-            if (lastOpened.id !== currentSnippet.id) {
+            if (lastOpened.id !== trackingSnippet.id) {
                 messenger.send(window.parent, MessageType.INFORM_SWITCHED_SNIPPET, {
                     id: lastOpened.id,
                     name: lastOpened.name
@@ -58,9 +58,13 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             storage.snippets.load();
         }
 
-        let snippet = storage.snippets.get(currentSnippet.id);
+        let snippet = storage.snippets.get(trackingSnippet.id);
         if (snippet == null) {
-            if (storage.lastOpened && (storage.lastOpened.id === currentSnippet.id)) {
+            if (!isInitialLoad) {
+                storage.settings.load();
+            }
+
+            if (storage.lastOpened && storage.lastOpened.id === trackingSnippet.id) {
                 snippet = storage.lastOpened;
             }
         }
@@ -70,13 +74,13 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             return;
         }
 
-        if (snippet.modified_at !== currentSnippet.lastModified) {
+        if (snippet.modified_at !== trackingSnippet.lastModified) {
             // If was already tracking the snippet and had a real lastModified number set,
             // inform the user that the snippet is stale.  Otherwise, just send it immediately.
 
-            const sendImmediately = isInitialLoad || currentSnippet.lastModified < 1;
+            const sendImmediately = isInitialLoad || trackingSnippet.lastModified < 1;
             if (sendImmediately) {
-                currentSnippet.lastModified = snippet.modified_at;
+                trackingSnippet.lastModified = snippet.modified_at;
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
             } else {
                 messenger.send<void>(window.parent, MessageType.INFORM_STALE, null);
@@ -88,13 +92,13 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         messenger.listen<string>()
             .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
             .subscribe((input) => {
-                currentSnippet = {
+                trackingSnippet = {
                     id: input.message,
                     lastModified: 0 /* Set to last modified, so that refreshes immediately */
                 };
 
                 // The ID on the input.message was optional.  If it was indeed specified, just send it back.  Otherwise, more processing is needed.
-                if (currentSnippet.id) {
+                if (trackingSnippet.id) {
                     sendBackCurrentSnippet(false /*isInitialLoad*/);
                     return;
                 }
@@ -102,6 +106,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 storage.settings.load();
                 const lastOpened = storage.current.lastOpened;
                 if (lastOpened) {
+                    trackingSnippet = {
+                        id: lastOpened.id,
+                        lastModified: lastOpened.modified_at
+                    };
+
                     messenger.send(window.parent, MessageType.REFRESH_RESPONSE, lastOpened);
                     return;
                 }

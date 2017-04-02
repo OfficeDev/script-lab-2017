@@ -66,7 +66,7 @@
         <!-- NEEDS STRING REVIEW (tooltip (title attribute))-->
         <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="Switch to the currently-editing snippet">
             <i class="ms-Icon ms-Icon--Switch"></i>
-        </a>
+        </div>
         <div id="padding-for-personality-menu" style="width: 0px"></div>
     </header>
 
