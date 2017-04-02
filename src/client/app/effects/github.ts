@@ -81,13 +81,13 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
         .filter(action => this._github.profile && action.payload)
         .mergeMap(({ rawSnippet, type }) => {
-            const shareableSnippet = this._getShareableSnippet(rawSnippet);
+            const shareable = this._getShareableSnippet(rawSnippet);
 
-            let { name, description } = shareableSnippet;
+            let { name, description } = shareable;
             let files: IGistFiles = {};
 
             files[`${name}.yaml`] = {
-                content: jsyaml.safeDump(shareableSnippet),
+                content: jsyaml.safeDump(shareable),
                 language: 'yaml'
             };
 
