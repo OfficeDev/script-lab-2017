@@ -117,21 +117,25 @@ interface InitializationParams {
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
 
-        (window as any).scriptRunnerInitialized = () => {
+        (window as any).scriptRunnerBeginInit = () => {
             (contentWindow as any).console = window.console;
             contentWindow.onerror = (...args) => console.error(args);
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
                 officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
-
-                // Call Office.initialize(), which now initializes the snippet.
-                // The parameter, initializationReason, is not used in the Playground.
-                Office.initialize(null /*initializationReason*/);
             }
 
             toggleProgress(false);
             $iframe.show();
+        };
+
+        (window as any).scriptRunnerEndInit = () => {
+            if (officeJS) {
+                // Call Office.initialize(), which now initializes the snippet.
+                // The parameter, initializationReason, is not used in the playground.
+                Office.initialize(null /*initializationReason*/);
+            }
         };
 
         // Write to the iframe (and note that must do the ".write" call first,
