@@ -60,5 +60,5 @@ node_modules
 packages
 typings
 dist
-npm-debug.log.
+npm-debug.log*
 compiled
