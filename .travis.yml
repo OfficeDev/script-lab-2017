@@ -1,16 +1,32 @@
 language: node_js
 
 cache:
+  yarn: true
   directories:
   - node_modules
+
+git:
+  depth: 3
 
 node_js:
 - 6.9.4
 
 install:
-- npm install
+- yarn install
+
+before_script:
+- npm run lint
 
 script:
-- npm run lint
 - npm run build
+
+after_success:
 - npm run deploy
+
+notifications:
+  webhooks:
+    urls:
+      - https://outlook.office.com/webhook/cd954b0a-08e5-4935-933b-a1cda4e6d5e9@72f988bf-86f1-41af-91ab-2d7cd011db47/TravisCI/de47dffaad604dfdaafbb6be2a414469/5bf9ad7e-4cad-45e8-9812-e553da1c05c6
+    on_success: change
+    on_failure: always
+    on_start: change

@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json.schemastore.org/tsconfig",
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "es2015",
+        "noEmitHelpers": true,
+        "pretty": false,
+        "noEmit": true
+    },
+    "exclude": [
+        "node_modules",
+        "compiled",
+        "src/main.browser.aot.ts",
+        "src/app/app.module.universal.browser.ts"
+    ],
+    "angularCompilerOptions": {
+        "genDir": "compiled",
+        "skipMetadataEmit": true
+    }
+}

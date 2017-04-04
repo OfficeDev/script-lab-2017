@@ -6,59 +6,57 @@ var path = require('path');
 var chalk = require('chalk');
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const { TRAVIS } = process.env;
 
-var config = webpackMerge(commonConfig, {
-    devtool: 'source-map',
+module.exports = (env) =>
+    webpackMerge(commonConfig(env.mode === 'prod'), {
+        devtool: 'source-map',
 
-    output: {
-        path: path.resolve('dist'),
-        filename: '[name].js',
-        chunkFilename: '[id].chunk.js'
-    },
+        output: {
+            path: path.resolve('./dist/client'),
+            filename: '[name].bundle.js',
+            chunkFilename: '[id].chunk.js'
+        },
 
-    htmlLoader: {
-        minimize: false
-    },
+        performance: {
+            hints: "warning"
+        },
 
-    plugins: [
-        new webpack.NoErrorsPlugin(),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            mangle: {
-                keep_fnames: true
-            }
-        }),
-        new ExtractTextPlugin('[name].css'),
-        new webpack.DefinePlugin({
-            PLAYGROUND: JSON.stringify({
-                devMode: false,
-                build: commonConfig.build,
-                config: commonConfig.config
+        stats: {
+            assets: true,
+            cached: false,
+            children: false,
+            chunks: true,
+            chunkModules: true,
+            chunkOrigins: false,
+            context: path.resolve("./dist/client/"),
+            colors: true,
+            errors: true,
+            errorDetails: true,
+            hash: true,
+            modules: false,
+            modulesSort: "field",
+            publicPath: true,
+            reasons: false,
+            source: false,
+            timings: true,
+            version: true,
+            warnings: false
+        },
+
+        plugins: [
+            new webpack.optimize.UglifyJsPlugin({
+                sourceMap: true,
+                compress: true,
+                mangle: {
+                    screw_ie8: true,
+                    keep_fnames: true
+                },
+                compress: {
+                    warnings: false,
+                    screw_ie8: true
+                },
+                comments: false
             })
-        })
-    ]
-});
-
-
-const start = Date.now();
-webpack(config, function (err, stats) {
-    stats.chunks = false;
-    stats.hash = true;
-    stats.version = true;
-    stats.modules = true;
-
-    if (err) {
-        console.log(chalk.bold.red(err));
-        process.exit(1);
-    }
-
-    if (stats.hasErrors()) {
-        let json = stats.toJson();
-        console.log(chalk.bold.red(json.errors));
-        process.exit(1);
-    }
-
-    const end = Date.now();
-    console.log(chalk.bold.green('\n\nGenerated build #' + config.build.timestamp + ' in ' + (end - start) / 1000 + ' seconds'));
-    console.log(chalk.bold.magenta(config.build.name + ' - v' + config.build.version + '\n\n'));
-});
+        ]
+    });

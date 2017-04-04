@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+    <title>Run: {{name}}</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="{{author}}" />
+
+    <!-- CSS Libraries -->
+    {{#each linkReferences}}
+    <link rel="stylesheet" href="{{this}}" />
+    {{/each}}
+
+    <!-- Style -->
+    <style type="text/css">
+        {{{indent style 2}}}
+    </style>
+</head>
+
+<body>
+    {{#if isOfficeSnippet}}
+    {{!-- Add a comment about Office.js, just in case someone inspects the inner frame (snippet) code --}}
+    <!-- Outside of the playground (which references office.js differently), you would need to include: -->
+    <!-- <script src="{{{officeJS}}}"></script> -->
+    {{/if}}
+
+    <!-- HTML -->
+    {{{indent template 1}}}
+
+    <!-- JS Libraries -->
+    {{#each scriptReferences}}
+    <script src="{{this}}"></script>
+    {{/each}}
+
+    <!-- Script -->
+    <script type="text/javascript">
+        {{#if officeJS}}
+        Office.initialize = function() {
+            {{{indent script 3}}}
+        };
+        {{else}}
+        {{{indent script 2}}}
+        {{/if}}
+    </script>
+</body>
+
+</html>

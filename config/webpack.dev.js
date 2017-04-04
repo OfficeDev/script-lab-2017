@@ -1,75 +1,68 @@
-var webpack = require('webpack');
-var webpackMerge = require('webpack-merge');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-var commonConfig = require('./webpack.common.js');
-var path = require('path');
+const webpack = require('webpack');
+const webpackMerge = require('webpack-merge');
+const commonConfig = require('./webpack.common.js');
+const path = require('path');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
-module.exports = webpackMerge(commonConfig, {
-    devtool: 'inline-source-map',
+module.exports = () =>
+    webpackMerge(commonConfig(false), {
+        devtool: 'eval-source-map',
 
-    output: {
-        path: path.resolve('dist'),
-        filename: '[name].[hash].js',
-        chunkFilename: '[name].[hash].chunk.js'
-    },
+        output: {
+            path: path.resolve('./dist/client'),
+            filename: '[name].bundle.js',
+            chunkFilename: '[name].chunk.js',
+        },
 
-    tslint: {
-        emitErrors: true,
-        failOnHint: true,
-        resourcePath: path.resolve('src')
-    },
+        resolve: {
+            modules: ["node_modules"]
+        },
 
-    plugins: [
-        new ExtractTextPlugin('[name].[hash].css'),
-        new webpack.DefinePlugin({
-            PLAYGROUND: JSON.stringify({
-                devMode: true,
-                build: commonConfig.build,
-                config: commonConfig.config
-            })
-        }),
-        new BrowserSyncPlugin(
-            {
-                https: false,
-                host: 'localhost',
-                port: 3000,
-                proxy: 'http://localhost:3100/'
+        plugins: [
+            new BrowserSyncPlugin(
+                {
+                    https: true,
+                    host: 'localhost',
+                    port: 3000,
+                    proxy: 'https://localhost:3100/'
+                },
+                {
+                    reload: false
+                }
+            )
+        ],
+
+        devServer: {
+            publicPath: "/",
+            contentBase: path.resolve('./dist/client'),
+            https: true,
+            overlay: {
+                warnings: false,
+                errors: true
             },
-            {
-                reload: false
+            port: 3100,
+            quiet: true,
+            historyApiFallback: true,
+            stats: {
+                assets: false,
+                cached: false,
+                children: false,
+                chunks: true,
+                chunkModules: true,
+                chunkOrigins: false,
+                context: "./dist/client/",
+                colors: true,
+                errors: true,
+                errorDetails: true,
+                hash: true,
+                modules: false,
+                modulesSort: "field",
+                publicPath: true,
+                reasons: false,
+                source: false,
+                timings: true,
+                version: true,
+                warnings: true
             }
-        )
-    ],
-
-    devServer: {
-        stats: {
-            colors: true,
-            hash: false,
-            version: false,
-            timings: false,
-            assets: false,
-            chunks: false,
-            modules: false,
-            reasons: false,
-            children: false,
-            source: false,
-            errors: true,
-            errorDetails: false,
-            warnings: false,
-            publicPath: false
-        },
-        watch: true,
-        https: false,
-        inline: true,
-        compress: true,
-        port: 3100,
-        historyApiFallback: true,
-        stats: 'minimal',
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000
-        },
-        outputPath: path.resolve('dist')
-    }
-});
+        }
+    });

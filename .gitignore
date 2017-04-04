@@ -48,15 +48,17 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Ignore the following folders
+# Ignore the following folders or files
 .vs
 .idea
+.awcache
 *.log
 obj
 bin
 *.user
-
-node_modules/**
-packages/**
-typings/**
-dist/**
+node_modules
+packages
+typings
+dist
+npm-debug.log.
+compiled
