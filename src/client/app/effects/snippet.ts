@@ -1,55 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment, storage } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment, storage,
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { Action } from '@ngrx/store';
-import { GitHub, Snippet, UI } from '../actions';
+import { Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { isEmpty, find, assign, reduce, forIn } from 'lodash';
+import { isEmpty, find, assign, reduce, forIn, isEqual } from 'lodash';
 
 @Injectable()
 export class SnippetEffects {
-    private _defaults = <ISnippet>{
-        id: '',
-        gist: '',
-        host: environment.current.host,
-        api_set: {},
-        platform: environment.current.platform,
-        created_at: Date.now(),
-        modified_at: Date.now(),
-        origin: environment.current.config.editorUrl,
-        author: '',
-        name: Strings.defaultSnippetTitle, // UI unknown
-        description: '',
-        script: { content: '', language: 'typescript' },
-        style: { content: '', language: 'css' },
-        template: { content: '', language: 'html' },
-        libraries: ''
-    };
-
     constructor(
         private actions$: Actions,
         private _request: Request,
         private _github: GitHubService,
         reduxStore: Store<fromRoot.State>,
-    ) {
-        this._defaults.author = this._github.profile ? this._github.profile.login : '';
-    }
-
-    @Effect({ dispatch: false })
-    loggedIn$: Observable<Action> = this.actions$
-        .ofType(GitHub.GitHubActionTypes.LOGGED_IN)
-        .do(() => this._defaults.author = this._github.profile ? this._github.profile.login : '');
+    ) { }
 
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
         .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode }))
-        .mergeMap(({ data, mode }) => this._importFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
+        .mergeMap(({ data, mode }) => this._importRawFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
         .filter(({ snippet }) => !(snippet == null))
         .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
         .catch((exception: Error) => {
@@ -63,17 +39,28 @@ export class SnippetEffects {
     save$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.SAVE, Snippet.SnippetActionTypes.CREATE)
         .map((action: Snippet.SaveAction) => action.payload)
-        .map(snippet => {
-            this._validate(snippet);
-            snippet.modified_at = Date.now();
+        .map(rawSnippet => {
+            this._validate(rawSnippet);
 
-            if (storage.snippets.contains(snippet.id)) {
-                storage.snippets.insert(snippet.id, snippet);
-            }
-            else {
-                storage.snippets.add(snippet.id, snippet);
-            }
+            const publicOrInternal = SnippetFieldType.PUBLIC | SnippetFieldType.INTERNAL;
+            const scrubbedSnippet = getScrubbedSnippet(rawSnippet, publicOrInternal);
+            delete scrubbedSnippet.modified_at;
 
+            if (storage.snippets.contains(scrubbedSnippet.id)) {
+                const originalRawSnippet = storage.snippets.get(scrubbedSnippet.id);
+                const originalScrubbedSnippet = getScrubbedSnippet(originalRawSnippet, publicOrInternal);
+                delete originalScrubbedSnippet.modified_at;
+
+                if (isEqual(scrubbedSnippet, originalScrubbedSnippet)) {
+                    return null;
+                }
+            }
+            return scrubbedSnippet;
+        })
+        .filter(snippet => snippet != null)
+        .map(scrubbedSnippet => {
+            scrubbedSnippet.modified_at = Date.now();
+            storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
             return new Snippet.StoreUpdatedAction();
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetSaveError, exception)));
@@ -83,8 +70,9 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.DUPLICATE)
         .map((action: Snippet.DuplicateAction) => action.payload)
         .map(id => {
-            let orignial = storage.snippets.get(id);
-            let copy: ISnippet = assign({}, this._defaults, orignial);
+            const original = getScrubbedSnippet(storage.snippets.get(id), SnippetFieldType.PUBLIC);
+            const copy: ISnippet = {} as any;
+            assign(copy, getSnippetDefaults(), original);
             copy.id = cuid();
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy);
@@ -176,7 +164,7 @@ export class SnippetEffects {
     }
 
     private _upgrade(files: IGistFiles) {
-        let snippet = { ...this._defaults } as ISnippet;
+        let snippet = { ...getSnippetDefaults() } as ISnippet;
         forIn(files, (file, name) => {
             switch (name) {
                 case 'libraries.txt':
@@ -210,7 +198,8 @@ export class SnippetEffects {
         return snippet;
     }
 
-    private _importFromSource(data: string, type: string): Observable<ISnippet> {
+    /** Does a raw import of the snippet.  A subsequent function, _massageSnippet, will clean up any extraneous fields */
+    private _importRawFromSource(data: string, type: string): Observable<ISnippet> {
         AI.trackEvent(type);
         switch (type) {
             /* If creating a new snippet, try to load it from cache */
@@ -261,7 +250,6 @@ export class SnippetEffects {
                         if (snippet == null) {
                             let output = this._upgrade(gist.files);
                             output.description = '';
-                            output.author = '';
                             output.gist = data;
                             return output;
                         }
@@ -279,22 +267,22 @@ export class SnippetEffects {
         }
     }
 
-    private _massageSnippet(snippet: ISnippet, mode: string): Observable<Action> {
-        if (snippet.host && snippet.host !== environment.current.host) {
-            throw new PlaygroundError(`Cannot import a snippet created for ${snippet.host} in ${environment.current.host}.`);
+    private _massageSnippet(rawSnippet: ISnippet, mode: string): Observable<Action> {
+        if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
+            throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
         }
 
-        this._checkForUnSupportedAPIs(snippet.api_set);
-        snippet = assign({}, this._defaults, snippet, <ISnippet>{
-            host: environment.current.host,
-            platform: environment.current.platform,
-            modified_at: Date.now(),
-            origin: environment.current.config.editorUrl,
-        });
+        this._checkForUnsupportedAPIs(rawSnippet.api_set);
+        const scrubbedIfNeeded =
+            (mode === Snippet.ImportType.OPEN) ?
+                {...rawSnippet} :
+                getScrubbedSnippet({...rawSnippet}, SnippetFieldType.PUBLIC);
+
+        const snippet = {} as ISnippet;
+        assign(snippet, getSnippetDefaults(), scrubbedIfNeeded);
 
         /* Scrub the Id is the snippet is loaded from an external source */
-        if (mode !== Snippet.ImportType.OPEN) {
-            snippet.id = '';
+        if (mode === Snippet.ImportType.OPEN) {
             /* TODO: show import warning here */
         }
 
@@ -308,18 +296,22 @@ export class SnippetEffects {
             snippet.name = this._generateName(snippet.name, '');
         }
 
-        /* If a imported snippet is a SAMPLE, then skip the save */
-        if (mode === Snippet.ImportType.SAMPLE) {
-            return Observable.of(new Snippet.ImportSuccessAction(snippet));
+        const actions: Action[] = [
+            new Snippet.ImportSuccessAction(snippet)
+        ];
+
+        /*
+         * If a imported snippet is a SAMPLE, then skip the save (simply to avoid clutter).
+         * The snippet will get saved as soon as the user makes any changes.
+         */
+        if (mode !== Snippet.ImportType.SAMPLE) {
+            actions.push(new Snippet.SaveAction(snippet));
         }
 
-        return Observable.from([
-            new Snippet.ImportSuccessAction(snippet),
-            new Snippet.SaveAction(snippet)
-        ]);
+        return Observable.from(actions);
     }
 
-    private _checkForUnSupportedAPIs(api_set: { [index: string]: number }) {
+    private _checkForUnsupportedAPIs(api_set: { [index: string]: number }) {
         let unsupportedApiSet: { api: string, version: number } = null;
         if (api_set == null) {
             return;

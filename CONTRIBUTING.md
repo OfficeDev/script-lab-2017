@@ -75,3 +75,29 @@ At the root level of the repo, the folders of interest (and skipping over the ot
 * `typings`: Type definitions for a few of the libraries.
 
 There are also files related to Azure deployment, git ignores, a Travis configuration for continuous-integration, a package.json with the project's metadata, TypeScript configuration files for client and server, a linter configuration, and etc.  And of course, the project's README.
+
+
+## Enabling auth for local testing
+1. Go to <https://github.com/settings/developers>, and click "[Register new application](https://github.com/settings/applications/new)" if you haven't done it before for your own dev copy of ScriptLab.
+2. Give it a name like "ScriptLab Local Dev", with a Homepage URL of `https://localhost:3000`, and an authorization callback URL `https://localhost:3200`.
+3. TODO...
+
+
+# Manual-testing scenarios
+
+* Create a snippet -- both "new" and from template
+* Import someone else's snippet
+  * From YAML
+  * From Gist (incl. old-style)
+  * From Non-GitHub URL **[Currently doesn't work, [Issue #146](https://github.com/OfficeDev/script-lab/issues/146)]**.
+* Run snippet, in both in-editor runner (Office 2016 RTM and earlier, or online, or via tweaking the manifest to remove `command=true`) and via the "Run" button (`run.html`), testing that:
+  * Snippet renders correctly
+  * Console log renders correctly (and scrolls correctly, if many lines)
+  * Erroneous code (e.g, syntax error) shows error correctly [**Currently doesn't work: [Issue #227](https://github.com/OfficeDev/script-lab/issues/227)**].
+  * Running deleted snippet has reasonable behavior.
+  * [Side-by-side runner]:
+    * Edit to code causes runner want to refresh.
+    * Whether starting from error or going to error state and back out, should act correctly.
+* Sharing:
+  * Copying to clipboard works
+  * Can share as gist

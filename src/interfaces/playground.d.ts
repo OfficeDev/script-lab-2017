@@ -1,9 +1,13 @@
 interface ITemplate {
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOTE: if you add or remove any top-level fields from this list, be sure
+    // to update "snippetFields" and "getSnippetDefaults" in "src\client\app\helpers\snippet.helper.ts"
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
     id?: string;
     gist?: string;
-    author?: string;
     name?: string;
     description?: string;
+    author?: string;
     host: string;
     api_set: {
         [index: string]: number
@@ -14,14 +18,11 @@ interface ITemplate {
     modified_at: number;
 }
 
-interface ILibraryDefinition {
-    label?: string;
-    typings?: string | string[];
-    value?: string | string[];
-    description?: string
-}
-
 interface ISnippet extends ITemplate {
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOTE: if you add or remove any top-level fields from this list, be sure
+    // to update "snippetFields" and "getSnippetDefaults" in "src\client\app\helpers\snippet.helper.ts"
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
     script?: {
         content: string;
         language: string;
@@ -37,6 +38,13 @@ interface ISnippet extends ITemplate {
     libraries?: string;
 }
 
+interface ILibraryDefinition {
+    label?: string;
+    typings?: string | string[];
+    value?: string | string[];
+    description?: string
+}
+
 interface ICompiledSnippet extends ITemplate {
     script?: string;
     style?: string;
@@ -48,9 +56,16 @@ interface ICompiledSnippet extends ITemplate {
 }
 
 interface IRunnerHandlebarsContext {
-    snippetContent: string;
-    snippetId: string,
-    snippetLastModified: number;
+    /** Snippet info (or null, to signify "opportunistic" runner that attaches to anything open) */
+    snippet: {
+        id: string,
+
+        /** Last modified (or 0, if want to load from scratch) */
+        lastModified?: number
+
+        /** Snippet contents (or empty, if want to read it off of the ID using the heartbeat) */
+        content?: string;
+    }
 
     origin: string;
     host: string;
@@ -134,8 +149,8 @@ interface ISettings {
 }
 
 interface HeartbeatParams {
-    /** mode (equivalent to "host" in this case -- used for environment detection) */
-    mode: string;
+    /** mode (used for environment detection) */
+    host: string;
 
     /** snippet ID, if any */
     id: string;

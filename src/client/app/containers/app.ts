@@ -13,7 +13,7 @@ import { Strings, environment } from '../helpers';
             <header class="command__bar">
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
+                <command [hidden]="hideRunButton||isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
@@ -54,6 +54,10 @@ export class AppComponent {
         });
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
+    }
+
+    get hideRunButton() {
+        return /commands=true/ig.test(location.search);
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

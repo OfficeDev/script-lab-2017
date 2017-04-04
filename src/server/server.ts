@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
-import { forIn } from 'lodash';
+import { forIn, isEmpty } from 'lodash';
 import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { loadTemplate } from './core/template.generator';
@@ -56,37 +56,37 @@ app.use((err, req, res, next) => {
 
 /**
  * HTTP GET: /run
- * Returns a runner page, parameters for:
+ * Returns a runner page, with the following parameters:
  * Required:
  *   - host
  *   - id
- * And also the following optional query parameter:
+ *
+ * Optional query parameters:
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-app.get('/run/:host/:id', handler(async (req: express.Request, res: express.Response) => {
+app.get(['/run/:host/:id'], handler(async (req: express.Request, res: express.Response) => {
     const host = (req.params.host as string).toUpperCase();
+    const id = (req.params.id as string || '').toLowerCase();
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
         return new BadRequestError(`Invalid host "${host}"`);
     }
-
-    const id = (req.params.id as string).toLowerCase() || '';
-    if (!id) {
-        return new BadRequestError('Snippet id is a required parameters for "run"');
+    if (isEmpty(id)) {
+        return new BadRequestError(`Invalid id "${id}"`);
     }
 
     const runnerHtmlGenerator = await loadTemplate<IRunnerHandlebarsContext>('runner');
     const html = runnerHtmlGenerator({
-        snippetContent: '',
+        snippet: {
+            id: id
+        },
         officeJS: determineOfficeJS(req.query, host),
-        snippetId: id,
-        snippetLastModified: 0,
         returnUrl: '',
         origin: currentConfig.editorUrl,
         host: host,
         initialLoadSubtitle: 'Loading snippet...',
-        headerTitle: 'Loading snippet...'
+        headerTitle: ''
     });
 
     return res.contentType('text/html').status(200).send(html);
@@ -179,10 +179,12 @@ async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolea
 
     if (wrapWithRunnerChrome) {
         html = runnerHtml({
-            snippetContent: html,
+            snippet: {
+                id: snippet.id,
+                lastModified: snippet.modified_at,
+                content: html
+            },
             officeJS: compiledSnippet.officeJS,
-            snippetId: snippet.id,
-            snippetLastModified: snippet.modified_at,
             returnUrl: returnUrl,
             origin: snippet.origin,
             host: snippet.host,

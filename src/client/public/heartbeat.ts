@@ -1,11 +1,14 @@
+import { toNumber } from 'lodash';
 import { environment, storage, Strings, Messenger, MessageType } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
     let messenger: Messenger;
-    let lastModified: number;
-    let snippetListener: any;
-    let settingsListener: any;
+    let trackingSnippet: {
+        id: string;
+        lastModified: number;
+    };
+
 
     (async () => {
         // Environment will initialize based off of "mode" being passed in to the snippet
@@ -14,117 +17,112 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         setupRequestReloadListener(messenger);
 
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
-        if (params.id) {
-            lastModified = +params.lastModified;
-            createSnippetSpecificListener(params.id);
-        } else {
-            // TODO (TEMPORARY)
-            messenger.send(window.parent, MessageType.ERROR, 'Non-snippet-bound heartbeat not yet supported');
-        }
+
+        trackingSnippet = {
+            id: params.id,
+            lastModified: params.id ? toNumber(params.lastModified) : 0
+        };
+
+        messenger.send(window.parent, MessageType.HEARTBEAT_INITIALIZED, {
+            lastOpenedId: storage.lastOpened ? storage.lastOpened.id : null
+        });
+
+        sendBackCurrentSnippet(true /*isInitialLoad*/);
+
+        storage.snippets.notify().subscribe(validateSnippet);
+        storage.settings.notify().subscribe(validateSnippet);
     })();
 
-    function createSnippetSpecificListener(id: string) {
-        if (!snippetListener) {
-            snippetListener = storage.snippets.notify();
 
-            snippetListener.subscribe(() => {
-                storage.snippets.load();
-                validateSnippet();
-            });
+    function validateSnippet() {
+        storage.settings.load();
+        const lastOpened = storage.current.lastOpened;
+
+        if (lastOpened) {
+            if (lastOpened.id !== trackingSnippet.id) {
+                messenger.send(window.parent, MessageType.INFORM_SWITCHED_SNIPPET, {
+                    id: lastOpened.id,
+                    name: lastOpened.name
+                });
+
+                return;
+            }
         }
 
-        validateSnippet();
+        // If haven't quit yet, validate and inform (or send back) current snippet:
+        sendBackCurrentSnippet(false /*isInitialLoad*/);
+    }
 
+    function sendBackCurrentSnippet(isInitialLoad: boolean) {
+        if (!isInitialLoad) {
+            storage.snippets.load();
+        }
 
-        function validateSnippet() {
-            let snippet = storage.snippets.get(id);
-
-            // If found a snippet now, whereas previously had needed to initiate a
-            // settings listener, this means that was previously unsaved and now
-            // a saved snippet.  In that case, no longer need to listen to settings.
-            if (snippet && settingsListener) {
-                // FIXME uncomment once we have unsubscribe:
-                // settingsListener.unsubscribe();
-                // settingsListener = null;
-            }
+        let snippet: ISnippet;
+        if (trackingSnippet.id) {
+            snippet = storage.snippets.get(trackingSnippet.id);
 
             if (snippet == null) {
-                if (storage.lastOpened && (storage.lastOpened.id === id)) {
+                if (!isInitialLoad) {
+                    storage.settings.load();
+                }
+
+                if (storage.lastOpened && storage.lastOpened.id === trackingSnippet.id) {
                     snippet = storage.lastOpened;
-                    // Also subscribe to the settings changed event, since it looks like this
-                    // is an unsaved snippet -- and hence deleting it would not get reflected
-                    // if don't also listen to settings:
-
-                    if (!settingsListener) {
-                        settingsListener = storage.settings.notify();
-                    }
-
-                    settingsListener.subscribe(() => {
-                        storage.settings.load();
-                        validateSnippet();
-                    });
                 }
             }
-
-            if (snippet == null) {
-                // If cannot find snippet on a snippet-specific listener, unsubscribe
-                // and message back an error (not recoverable without the user going back):
-
-                // FIXME uncomment once we have unsubscribe:
-                // snippetListener.unsubscribe();
-                // if (settingsListener) {
-                //     settingsListener.unsubscribe();
-                // }
-                // snippetListener = null;
-                // settingsListener = null;
-
-                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
-                return;
+        } else {
+            if (!isInitialLoad) {
+                storage.settings.load();
             }
 
-            if (snippet.modified_at !== lastModified) {
-                // Unsubscribe from listeners.  Nothing to do now, until the user decides
-                // that they do want to reload -- and at that point, the runner frame will
-                // send a message, asking for the latest.
-
-                // FIXME uncomment once we have unsubscribe:
-                // snippetListener.unsubscribe();
-                // if (settingsListener) {
-                //     settingsListener.unsubscribe();
-                // }
-                // snippetListener = null;
-                // settingsListener = null;
-
-                if (lastModified) {
-                    messenger.send(window.parent, MessageType.INFORM_STALE);
-                } else {
-                    sendSnippetAndStartTracking(snippet);
-                }
-
+            if (storage.lastOpened) {
+                trackingSnippet.id = storage.lastOpened.id;
+                snippet = storage.lastOpened;
+            } else {
+                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.noSnippetIsCurrentlyOpened);
                 return;
+            }
+        }
+
+        if (snippet == null) {
+            trackingSnippet = {
+                id: '',
+                lastModified: 0
+            };
+
+            messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
+            return;
+        }
+
+        if (snippet.modified_at !== trackingSnippet.lastModified) {
+            // If was already tracking the snippet and had a real lastModified number set,
+            // inform the user that the snippet is stale.  Otherwise, just send it immediately.
+
+            const sendImmediately = isInitialLoad || trackingSnippet.lastModified < 1;
+            if (sendImmediately) {
+                trackingSnippet.lastModified = snippet.modified_at;
+                messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+            } else {
+                messenger.send<void>(window.parent, MessageType.INFORM_STALE, null);
             }
         }
     }
 
     function setupRequestReloadListener(messenger: Messenger) {
-        messenger.listen()
+        messenger.listen<string>()
             .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
             .subscribe((input) => {
-                try {
-                    storage.snippets.load();
-                    let snippet = storage.snippets.get(input.message /* message is the snippet ID */);
-                    sendSnippetAndStartTracking(snippet);
-                }
-                catch (e) {
-                    messenger.send(window.parent, MessageType.ERROR, Strings.Runner.getCouldNotRefreshSnippetText(e));
-                }
-            });
-    }
+                trackingSnippet = {
+                    id: input.message,
+                    lastModified: 0 /* Set to last modified, so that refreshes immediately */
+                };
 
-    function sendSnippetAndStartTracking(snippet: ISnippet) {
-        lastModified = snippet.modified_at;
-        createSnippetSpecificListener(snippet.id);
-        messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+
+                // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
+                // will be sure to send the last-opened snippet if the ID is empty
+                sendBackCurrentSnippet(false /*isInitialLoad*/);
+            });
     }
 
 })();
