@@ -156,7 +156,7 @@ export class Editor implements AfterViewInit {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
         }
-    }, 250);
+    }, 300);
 
     /**
      * Rehydrate the 'snippet' with the content from the various tabs.
