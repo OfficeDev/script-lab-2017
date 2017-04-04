@@ -113,7 +113,7 @@ app.post('/auth/:user', handler(async (req: express.Request, res: express.Respon
             },
             json: {
                 client_id: clientId,
-                client_secret: secrets[env],
+                client_secret: secrets ? secrets[env] : '',
                 redirect_uri: editorUrl,
                 code,
                 state
