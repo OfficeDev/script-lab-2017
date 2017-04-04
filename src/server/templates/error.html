@@ -1,0 +1,266 @@
+<!-- Any errors  -->
+
+<html>
+<head>
+	<base href="/">
+	<title>Error</title>
+
+	<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			color: #333;
+		}
+	</style>
+
+	<!--Header-->
+	<style>
+		#header {
+			background: #666;
+			margin-bottom: 20px;
+			display: block;
+			flex: 0 0 40px;
+			-ms-flex: 0 0 40px;
+			-webkit-flex: 0 0 40px;
+			height: 40px;
+			width: 100%;
+			padding: 0;
+			border: 0;
+			overflow: hidden;
+			box-sizing: border-box;
+		}
+
+		#header .clickable {
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+		#header .clickable:hover {
+			background: #333;
+		}
+
+		#snippet-title {
+			flex-grow: 1;
+			-ms-flex-grow: 1;
+			-webkit-flex-grow: 1;
+			width: 0px;
+			{{#if returnUrl}}
+			{{else}}
+			display: block; /* Override flex display for children, and make text left-aligned */
+			{{/if}}
+		}
+
+			#snippet-title span {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				cursor: default;
+			}
+
+		.command__bar {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+			-webkit-flex: 0 0 40px;
+			-ms-flex: 0 0 40px;
+			flex: 0 0 40px;
+			width: 100%;
+			height: 40px;
+		}
+
+        .command__bar.padding-right {
+            box-sizing: border-box;
+			padding-right: 20px;
+        }
+
+		.command__icon {
+			height: auto !important;
+		}
+
+		.command__icon span, .command__icon i {
+			color: white;
+		}
+
+		.command__icon, .command__title {
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+			padding: 12px;
+			position: relative;
+		}
+
+		.command__icon i+span, .command__icon img+span, .command__title {
+			width: auto;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		.command__icon i+span, .command__icon img+span {
+			max-width: auto;
+			max-width: 200px;
+			margin-left: 7.5px;
+		}
+	</style>
+
+	<!--Page-specific-->
+	<style>
+		.fullscreen {
+			display: -webkit-inline-flex;
+			display: -ms-inline-flexbox;
+			display: inline-flex;
+			height: 100vh;
+			width: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		.fullpage__main {
+			box-sizing: border-box;
+			height: 100%;
+			-webkit-flex: 1 1 0;
+			-ms-flex: 1 1 0;
+			flex: 1 1 0;
+			padding: 15px;
+			display: -webkit-flex;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
+			-webkit-flex-wrap: nowrap;
+			-ms-flex-wrap: nowrap;
+			flex-wrap: nowrap;
+			-webkit-justify-content: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			-webkit-align-items: center;
+			-ms-flex-align: center;
+			align-items: center;
+		}
+
+		.fullpage__title {
+			text-align: center;
+			padding: 0 15px;
+			color: #666;
+		}
+
+		.fullpage__sub-title {
+			text-align: center;
+			padding: 15px;
+			color: #999;
+		}
+
+		#details {
+			margin-top: 20px;
+			border-radius: 10px;
+			width: 100%;
+			background: #eee;
+			color: black;
+			padding: 15px;
+			box-sizing: border-box;
+		}
+
+			#details pre {
+				overflow-wrap: normal;
+				max-height: 75%;
+				box-sizing: border-box;
+				overflow-y: auto;
+				overflow-x: hidden;
+				white-space: pre-wrap;
+				white-space: -moz-pre-wrap;
+				white-space: -pre-wrap;
+				white-space: -o-pre-wrap;
+				word-wrap: break-word;
+			}
+
+		#error-body .clickable {
+			color: #4579ca;
+			cursor: pointer;
+		}
+
+		#error-body .clickable:hover,
+		#error-body .clickable:focus {
+			text-decoration: underline;
+		}
+
+		#error-outer-card {
+			box-shadow: 10px 10px 5px #888888;
+			width: calc(100% - 20px);
+		}
+	</style>
+</head>
+
+<body>
+	<div id="error" class="fullscreen fullpage__main hidden">
+		<div id="error-outer-card">
+			<div id="header">
+				<div class="command__bar">
+					{{#if returnUrl}}
+					<a class="command__icon clickable" href="{{{returnUrl}}}">
+						<i class="ms-Icon ms-Icon--Back"></i>
+						<span class="ms-font-m">Back</span>
+					</a>
+					{{/if}}
+
+					<div id="snippet-title" class="command__icon">
+						<span class="ms-font-m">Error</span>
+					</div>
+
+					<a class="command__icon clickable" onclick="window.top.location.reload()">
+						<i class="ms-Icon ms-Icon--Refresh"></i>
+						<span class="ms-font-m">Reload</span>
+					</a>
+				</div>
+			</div>
+
+			<h1 class="fullpage__title ms-font-xxl">{{message}}</h1>
+
+			{{#if details}}
+			<div id="error-body">
+				<p id="more-details-link" class="fullpage__sub-title clickable ms-font-m" onclick="showMoreDetails()"></p>
+				<div id="details" style="display: none">
+					<pre>{{details}}</pre>
+				</div>
+			</div>
+			{{/if}}
+		</div>
+	</div>
+
+	<script>
+		var detailsElement = document.getElementById('details');
+		var moreDetailsLink = document.getElementById('more-details-link');
+		
+		var moreDetailsDefaultText = '(More details...)';
+		moreDetailsLink.textContent = moreDetailsDefaultText;
+
+		try { window.parent.playgroundLoaded(); } catch (e) { }
+		
+
+		function showMoreDetails() {
+			if (detailsElement.style.display === 'none') {
+				detailsElement.style.display = 'block';
+				moreDetailsLink.innerText = '(Hide details)';
+			} else {
+				moreDetailsLink.innerText = '(More details...)';
+				detailsElement.style.display = 'none';
+			}
+		}
+	</script>
+</body>
+</html>
