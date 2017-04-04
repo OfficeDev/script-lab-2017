@@ -21,10 +21,8 @@ Office.initialize = () => {
         }
     };
 
-    /* TODO: remap to tutorial, once have it */
     (window as any).launchTutorial = (event) => launch(urls.tutorial, event);
 
-    /* TODO: remap to help topic, once have it */
     (window as any).launchHelp = (event) => launch(urls.playground_help, event);
 
     (window as any).launchFeedback = (event) => launch(urls.feedback, event);
