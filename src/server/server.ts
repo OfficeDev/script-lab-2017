@@ -169,14 +169,3 @@ async function compileCommon(request: express.Request, wrapWithRunnerChrome?: bo
     timer.stop();
     return replaceTabsWithSpaces(html);
 }
-
-if (process.env.NODE_ENV === 'production') {
-    app.listen(process.env.port || 1337, () => console.log(`Project Bornholm Runner listening on port ${process.env.PORT}`));
-}
-else {
-    const cert = {
-        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
-    };
-    https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
-}
