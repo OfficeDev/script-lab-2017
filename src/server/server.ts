@@ -37,7 +37,7 @@ else {
     https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 }
 
-app.use(bodyParser.json());
+app.use(bodyParser({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/favicon', express.static('favicon'));
