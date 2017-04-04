@@ -168,7 +168,6 @@ export class Strings {
 
         reloadingOfficeJs: 'Reloading Office.js',
 
-        /** NEEDS STRING REVIEW */
-        noSnippetIsCurrentlyOpened: 'No snippet is currently opened in the editor.'
+        noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`
     };
 }
