@@ -161,9 +161,6 @@ interface InitializationParams {
         showHeader();
         toggleProgressLoadingIndicators(false);
 
-        // Hide other notifications:
-        $('.runner-notification').hide();
-
         const $error = $('#notify-error');
 
         $error.find('.ms-MessageBar-text').text(candidateErrorString);
@@ -184,6 +181,7 @@ interface InitializationParams {
             $error.hide();
         });
 
+        $('.runner-notification').hide();
         $('#notify-error').show();
     }
 
@@ -289,24 +287,15 @@ interface InitializationParams {
     }
 
     function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void) {
-        const $needsReloadIndicator = $notificationContainer.find('.reloading-indicator');
-        const $needsReloadButtons = $notificationContainer.find('button');
-
-        $notificationContainer.find('.action-fast-reload').off('click').click(() => {
-            $needsReloadButtons.hide();
-            $needsReloadIndicator.show();
-            reloadAction();
-        });
+        $notificationContainer.find('.action-fast-reload').off('click').click(reloadAction);
 
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
             $notificationContainer.hide();
             dismissAction();
         });
 
-        // Show the current notification (with the buttons visible, and the reloading indicator hidden)
+        // Show the current notification (and hide any others)
         $('.runner-notification').hide();
-        $needsReloadIndicator.hide();
-        $needsReloadButtons.show();
         $notificationContainer.show();
     }
 
@@ -348,8 +337,8 @@ interface InitializationParams {
      * @param id: id of snippet, or null to fetch the last-opened
      */
     function clearAndRefresh(id: string) {
-        // From here on out, now that the page has loaded, adjust progress so that
-        // it keeps the header visible -- and then show it
+        $('.runner-notification').hide();
+
         toggleProgress(true);
 
         $('.snippet-frame').remove();
