@@ -2,7 +2,7 @@ import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 Office.initialize = () => {
     const urls = {
-        tutorial: 'https://script-lab.azureedge.net/assets/documents/Script_Lab_Tutorial.xlsx',
+        tutorial: 'https://script-lab.azureedge.net/assets/documents/script-Lab-tutorial.xlsx',
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
         feedback: 'https://github.com/OfficeDev/script-lab/issues',
         ask: 'http://stackoverflow.com/questions/tagged/office-js',
