@@ -84,10 +84,6 @@
             </div>
 
             <div class="buttons" style="text-align: right;">
-                <div class="reloading-indicator" style="display:none">
-                    <i class="ms-Icon ms-Icon--Refresh spinning-icon"></i>
-                    <span>Reloading...</span>
-                </div>
                 <button class="action-fast-reload ms-Button host-colored-button">
                     <span class="ms-Button-label">Refresh</span>
                 </button>
@@ -105,10 +101,6 @@
             </div>
 
             <div class="buttons" style="text-align: right;">
-                <div class="reloading-indicator" style="display:none">
-                    <i class="ms-Icon ms-Icon--Refresh spinning-icon"></i>
-                    <span>Refreshing...</span>
-                </div>
                 <button class="action-fast-reload ms-Button host-colored-button">
                     <span class="ms-Button-label">Refresh</span>
                 </button>

@@ -81,6 +81,10 @@ import {
             padding: $default-spacing/2 0px;
         }
 
+        .gallery-list__group {
+            padding-bottom: 10px;
+        }
+
         .gallery__tabs {
             flex: 0 0 200px;
             flex-direction: column;

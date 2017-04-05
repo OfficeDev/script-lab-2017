@@ -45,9 +45,7 @@ export class GalleryList {
     }
 
     setLastUpdatedText(item: ISnippet): void {
-        if (item.modified_at) {
-            (item as any).lastUpdatedText = `Last updated ${moment(item.modified_at).fromNow()}`;
-        }
+        (item as any).lastUpdatedText = item.modified_at ? `Last updated ${moment(item.modified_at).fromNow()}` : '';
     }
 
     static setUpMomentJsDurationDefaults() {
