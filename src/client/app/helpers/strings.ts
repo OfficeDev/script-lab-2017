@@ -117,7 +117,7 @@ export class Strings {
     // import.ts strings
 
     static readonly newSnippetLabel = 'New snippet';
-    static readonly mySnippetsLabel = 'My snippets!';
+    static readonly mySnippetsLabel = 'My snippets';
     static readonly samplesLabel = 'Samples';
     static readonly importLabel = 'Import snippet';
     static readonly mySnippetsDescription = 'Choose a snippet that you saved.';
