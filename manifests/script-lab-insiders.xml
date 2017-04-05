@@ -15,6 +15,8 @@
   <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
+    <AppDomain>https://stackoverflow.com</AppDomain>
+    <AppDomain>https://dev.office.com</AppDomain>
     <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>

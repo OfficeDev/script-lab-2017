@@ -2,10 +2,10 @@ import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 Office.initialize = () => {
     const urls = {
-        tutorial: 'https://script-lab.azureedge.net/assets/documents/script-Lab-tutorial.xlsx',
+        tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
         feedback: 'https://github.com/OfficeDev/script-lab/issues',
-        ask: 'http://stackoverflow.com/questions/tagged/office-js',
+        ask: 'https://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
         word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
         onenote_api: 'https://dev.office.com/docs/add-ins/onenote/onenote-add-ins-programming-overview',
