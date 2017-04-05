@@ -391,7 +391,6 @@ interface InitializationParams {
         $headerTitle.on('mouseover', refreshLastUpdatedText);
 
         function refreshLastUpdatedText() {
-            // NEEDS STRING REVIEW (added "Click to refresh")
             $headerTitle.attr('title', `Last updated ${moment(currentSnippet.lastModified).fromNow()}. Click to refresh`);
         }
     }
