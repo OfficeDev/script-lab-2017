@@ -41,10 +41,6 @@ export class UIEffects {
     }
 
     private async _showAlert(dialog: IAlert): Promise<string> {
-        if (!(this._resolve == null)) {
-            return Promise.reject(new PlaygroundError(Strings.dialogOpenError));
-        }
-
         try {
             let result = await new Promise<string>((resolve, reject) => {
                 this._resolve = resolve;

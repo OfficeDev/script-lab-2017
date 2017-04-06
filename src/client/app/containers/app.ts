@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
@@ -6,7 +6,6 @@ import { UIEffects } from '../effects/ui';
 import { Strings, environment } from '../helpers';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app',
     template: `
         <main [ngClass]="theme$|async">
