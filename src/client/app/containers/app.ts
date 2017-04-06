@@ -140,6 +140,7 @@ export class AppComponent {
             .subscribe(isLoggedIn => {
                 if (!isLoggedIn) {
                     this._store.dispatch(new GitHub.LoginAction());
+                    return;
                 }
 
                 if (isPublic) {

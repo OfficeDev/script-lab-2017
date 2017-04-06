@@ -79,13 +79,12 @@ export class GitHubEffects {
     @Effect()
     shareGist$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
-        .filter(action => this._github.profile && action.payload)
-        .mergeMap(({ rawSnippet, type }) => {
-            let { name, description } = rawSnippet;
+        .mergeMap(({ payload, type }) => {
+            let { name, description } = payload;
             let files: IGistFiles = {};
 
             files[`${name}.yaml`] = {
-                content: this._getShareableYaml(rawSnippet),
+                content: this._getShareableYaml(payload),
                 language: 'yaml'
             };
 
