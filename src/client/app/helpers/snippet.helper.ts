@@ -76,12 +76,12 @@ export function getSnippetDefaults(): ISnippet {
 
 /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
 export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
-    const copy = <any>{};
+    let copy = {};
     forIn(snippetFields, (fieldType, fieldName) => {
         if (fieldType & keep) {
             copy[fieldName] = snippet[fieldName];
         }
     });
 
-    return copy;
+    return copy as ISnippet;
 }

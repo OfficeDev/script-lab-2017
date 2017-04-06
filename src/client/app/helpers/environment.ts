@@ -12,10 +12,10 @@ class Environment {
         }
         else {
             let { origin } = location;
-            if (/insiders/.test(origin)) {
+            if (/bornholm-insiders/.test(origin)) {
                 this._config = config['insiders'];
             }
-            else if (/edge/.test(origin)) {
+            else if (/bornholm-edge/.test(origin)) {
                 this._config = config['edge'];
             }
             else {
