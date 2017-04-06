@@ -70,8 +70,8 @@
             <i class="ms-Icon ms-Icon--Refresh"></i>
             <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
-        <!-- NEEDS STRING REVIEW (tooltip (title attribute))-->
-        <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="Switch to the currently-editing snippet">
+        <!-- (tooltip (title attribute))-->
+        <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="Switch to the snippet that you're editing.">
             <i class="ms-Icon ms-Icon--Switch"></i>
         </div>
         <div id="padding-for-personality-menu" style="width: 0px"></div>
@@ -80,17 +80,14 @@
     <div id="notify-current-snippet-changed" class="runner-notification ms-MessageBar ms-MessageBar--info" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
-                <!-- NEEDS STRING REVIEW -->
-                The snippet has changed since it was last opened. Reload it?
+                You changed the code in this snippet. Refresh this pane to run the new version.
             </div>
 
             <div class="buttons" style="text-align: right;">
                 <button class="action-fast-reload ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
-                    <span class="ms-Button-label">Reload</span>
+                    <span class="ms-Button-label">Refresh</span>
                 </button>
                 <button class="action-dismiss ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Dismiss</span>
                 </button>
             </div>
@@ -100,17 +97,14 @@
     <div id="notify-another-snippet-selected" class="runner-notification ms-MessageBar ms-MessageBar--info" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
-                <!-- NEEDS STRING REVIEW -->
-                The currently-editing snippet has changed to "<span class="snippet-name"></span>". Would you like to switch to that snippet in the runner as well?
+                You're now editing a different snippet: "<span class="snippet-name"></span>". Refresh this pane to run it.
             </div>
 
             <div class="buttons" style="text-align: right;">
                 <button class="action-fast-reload ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
-                    <span class="ms-Button-label">Switch</span>
+                    <span class="ms-Button-label">Refresh</span>
                 </button>
                 <button class="action-dismiss ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Dismiss</span>
                 </button>
             </div>
@@ -125,15 +119,12 @@
 
             <div class="buttons" style="text-align: right;">
                 <button class="action-back ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Back</span>
                 </button>
                 <button class="action-fast-reload ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
-                    <span class="ms-Button-label">Load latest snippet</span>
+                    <span class="ms-Button-label">Load the latest snippet</span>
                 </button>
                 <button class="action-dismiss ms-Button host-colored-button">
-                    <!-- NEEDS STRING REVIEW -->
                     <span class="ms-Button-label">Dismiss</span>
                 </button>
             </div>

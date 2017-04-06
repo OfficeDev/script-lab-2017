@@ -149,30 +149,25 @@ export class Strings {
     */
 
     static readonly Refresh = {
-        /** NEEDS STRING REVIEW. Error if refresh URL is somehow misformed (should essentially never happen) */
-        missingSnippetParameters: 'Missing some snippet parameters.',
+        /** Error if refresh URL is somehow misformed (should essentially never happen) */
+        missingSnippetParameters: `A configuration problem prevented the snippet from loading`,
 
-        /** NEEDS STRING REVIEW. Error if snippet no longer exists */
-        couldNotFindTheSnippet: 'Could not find the snippet.',
+        /** Error if snippet no longer exists */
+        couldNotFindTheSnippet: `Couldn't find the snippet. It might have been deleted.`,
 
-        /** NEEDS STRING REVIEW. Appends one of the following to the error message
+        /** Appends one of the following to the error message
          * (navigating back after a couple of seconds, if there is a return URL) */
         getErrorMessageAppendum: (returnUrl: string) =>
-            returnUrl ? 'Returning...' : 'Please close this window and try again.',
+            returnUrl ? 'Returning...' : 'Close this window and try again.',
 
     };
 
     static readonly Runner = {
-        /** NEEDS STRING REVIEW */
-        snippetNoLongerExists: 'Snippet no longer exists.',
+        snippetNoLongerExists: 'That snippet no longer exists. Reload this page, or return to the previous one.',
+        unexpectedError: 'An unexpected error occurred',
 
-        /** NEEDS STRING REVIEW */
-        unexpectedError: 'An unexpected error had occurred',
-
-        /** NEEDS STRING REVIEW */
         reloadingOfficeJs: 'Reloading Office.js',
 
-        /** NEEDS STRING REVIEW */
-        noSnippetIsCurrentlyOpened: 'No snippet is currently opened in the editor.'
+        noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`
     };
 }

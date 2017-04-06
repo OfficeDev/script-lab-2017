@@ -2,8 +2,8 @@ import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 Office.initialize = () => {
     const urls = {
-        tutorial: 'https://github.com/OfficeDev/script-lab',
-        playground_help: 'https://github.com/OfficeDev/script-lab',
+        tutorial: 'https://script-lab.azureedge.net/assets/documents/Script_Lab_Tutorial.xlsx',
+        playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
         feedback: 'https://github.com/OfficeDev/script-lab/issues',
         ask: 'http://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
@@ -21,10 +21,8 @@ Office.initialize = () => {
         }
     };
 
-    /* TODO: remap to tutorial, once have it */
     (window as any).launchTutorial = (event) => launch(urls.tutorial, event);
 
-    /* TODO: remap to help topic, once have it */
     (window as any).launchHelp = (event) => launch(urls.playground_help, event);
 
     (window as any).launchFeedback = (event) => launch(urls.feedback, event);
