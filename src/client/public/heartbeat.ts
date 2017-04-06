@@ -20,14 +20,17 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         trackingSnippet = {
             id: params.id,
-            lastModified: params.id ? toNumber(params.lastModified) : 0
+            lastModified: params.id ? toNumber(params.lastModified) || 0 : 0
+            /* Note: toNumber returns NaN on empty, but NaN || 0 gives 0. */
         };
 
         messenger.send(window.parent, MessageType.HEARTBEAT_INITIALIZED, {
             lastOpenedId: storage.lastOpened ? storage.lastOpened.id : null
         });
 
-        sendBackCurrentSnippet(true /*isInitialLoad*/);
+        if (trackingSnippet.lastModified === 0) {
+            sendBackCurrentSnippet(true /*settingsAreFresh: true because just loaded the page*/);
+        }
 
         storage.snippets.notify().subscribe(validateSnippet);
         storage.settings.notify().subscribe(validateSnippet);
@@ -50,11 +53,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         }
 
         // If haven't quit yet, validate and inform (or send back) current snippet:
-        sendBackCurrentSnippet(false /*isInitialLoad*/);
+        sendBackCurrentSnippet(false /*settingsAreFresh: not fresh, will need to reload*/);
     }
 
-    function sendBackCurrentSnippet(isInitialLoad: boolean) {
-        if (!isInitialLoad) {
+    function sendBackCurrentSnippet(settingsAreFresh: boolean) {
+        if (!settingsAreFresh) {
             storage.snippets.load();
         }
 
@@ -63,7 +66,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             snippet = storage.snippets.get(trackingSnippet.id);
 
             if (snippet == null) {
-                if (!isInitialLoad) {
+                if (!settingsAreFresh) {
                     storage.settings.load();
                 }
 
@@ -72,7 +75,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 }
             }
         } else {
-            if (!isInitialLoad) {
+            if (!settingsAreFresh) {
                 storage.settings.load();
             }
 
@@ -99,7 +102,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             // If was already tracking the snippet and had a real lastModified number set,
             // inform the user that the snippet is stale.  Otherwise, just send it immediately.
 
-            const sendImmediately = isInitialLoad || trackingSnippet.lastModified < 1;
+            const sendImmediately = trackingSnippet.lastModified < 1;
             if (sendImmediately) {
                 trackingSnippet.lastModified = snippet.modified_at;
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
@@ -121,7 +124,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
                 // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
                 // will be sure to send the last-opened snippet if the ID is empty
-                sendBackCurrentSnippet(false /*isInitialLoad*/);
+                sendBackCurrentSnippet(false /*settingsAreFresh*/);
             });
     }
 

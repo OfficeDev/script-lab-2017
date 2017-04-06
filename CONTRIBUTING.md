@@ -94,6 +94,7 @@ There are also files related to Azure deployment, git ignores, a Travis configur
   * From Non-GitHub URL **[Currently doesn't work, [Issue #146](https://github.com/OfficeDev/script-lab/issues/146)]**.
 * Run snippet, in both in-editor runner (Office 2016 RTM and earlier, or online, or via tweaking the manifest to remove `command=true`) and via the "Run" button (`run.html`), testing that:
   * Snippet renders correctly
+  * "Run" from editor or run gallery, in-place refresh, and full refresh all work correctly (render the snippet, don't double-refresh, etc.). The run (either type) doesn't show a "snippet needs reloading" message if the snippet is already fresh.
   * Console log renders correctly (and scrolls correctly, if many lines)
   * Erroneous code (e.g, syntax error) shows error correctly [**Currently doesn't work: [Issue #227](https://github.com/OfficeDev/script-lab/issues/227)**].
   * Running deleted snippet has reasonable behavior.

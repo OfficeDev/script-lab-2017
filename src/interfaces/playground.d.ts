@@ -155,6 +155,8 @@ interface HeartbeatParams {
     /** snippet ID, if any */
     id: string;
 
-    /** snippet last modified, if relevant (comes in as a string on URL parameters) */
+    /** Snippet last modified timestamp, if relevant (comes in as a string on URL parameters)
+     * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
+    */
     lastModified: string;
 }

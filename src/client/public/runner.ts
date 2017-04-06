@@ -92,7 +92,7 @@ interface InitializationParams {
                 // so that can keep adding the snippet frame relative to its position
                 $snippetContent.text('');
 
-                writeSnippetIframe(snippetHtml, params.officeJS);
+                replaceSnippetIframe(snippetHtml, params.officeJS);
             }
 
             establishHeartbeat(params.origin, params.heartbeatParams);
@@ -107,8 +107,14 @@ interface InitializationParams {
 
 
     /** Creates a snippet iframe and returns it (still hidden) */
-    function writeSnippetIframe(html: string, officeJS: string): JQuery {
+    function replaceSnippetIframe(html: string, officeJS: string): void {
         showHeader();
+
+        // Remove any previous iFrames (if any) or the placeholder snippet-frame div
+        $('.snippet-frame').remove();
+
+        const $emptySnippetPlaceholder = $('<div class="snippet-frame fullscreen"></div>')
+                .insertAfter($snippetContent);
 
         const $iframe =
             $('<iframe class="snippet-frame fullscreen" style="display:none" src="about:blank"></iframe>')
@@ -126,8 +132,9 @@ interface InitializationParams {
                 officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
             }
 
-            toggleProgress(false);
+            $emptySnippetPlaceholder.remove();
             $iframe.show();
+            toggleProgress(false);
         };
 
         (window as any).scriptRunnerEndInit = () => {
@@ -147,8 +154,6 @@ interface InitializationParams {
         (contentWindow as any).console = window.console;
         contentWindow.onerror = (...args) => console.error(args);
         contentWindow.document.close();
-
-        return $iframe;
     }
 
     function handleError(error: Error) {
@@ -323,9 +328,7 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        const $originalFrame = $('.snippet-frame');
-        writeSnippetIframe(html, processLibraries(snippet).officeJS);
-        $originalFrame.remove();
+        replaceSnippetIframe(html, processLibraries(snippet).officeJS);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
@@ -341,6 +344,7 @@ interface InitializationParams {
 
         toggleProgress(true);
 
+        // Remove the frame (in case had a timer or anything else that may as well get destroyed...)
         $('.snippet-frame').remove();
 
         if (id == null) {
