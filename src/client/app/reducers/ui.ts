@@ -32,7 +32,7 @@ export function reducer(state = initialState, action: UIActions): UIState {
 
         case UIActionTypes.SHOW_ALERT: {
             if (action.payload) {
-                AI.trackPageView(action.type, '/about').stop();
+                AI.trackPageView(action.type, `/${action.payload.title || 'alert'}`).stop();
             }
             return { ...state, dialog: action.payload };
         }

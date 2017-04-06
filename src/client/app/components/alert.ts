@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ApplicationRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI } from '../actions';
@@ -23,8 +23,11 @@ import { UI } from '../actions';
 export class Alert {
     dialog: IAlert;
 
-    constructor(private _store: Store<fromRoot.State>) {
-        this._store.select(fromRoot.getDialog).subscribe(dialog => this.dialog = dialog);
+    constructor(private _store: Store<fromRoot.State>, private _appRef: ApplicationRef) {
+        this._store.select(fromRoot.getDialog).subscribe(dialog => {
+            this.dialog = dialog;
+            this._appRef.tick();
+        });
     }
 
     dismiss(action: string) {
