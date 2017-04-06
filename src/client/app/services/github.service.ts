@@ -28,7 +28,9 @@ export class GitHubService {
         this._setDefaultHeaders(this._token);
     }
 
-    profile: IBasicProfile;
+    get profile(): IBasicProfile {
+        return storage.current.profile;
+    };
 
     user(): Observable<IBasicProfile> {
         return this._request.get<IBasicProfile>(`${this._baseUrl}/user`, ResponseTypes.JSON, this._headers);
