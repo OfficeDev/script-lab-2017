@@ -1,15 +1,18 @@
 interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
-    // to update "snippetFields" and "getSnippetDefaults" in "src\client\app\helpers\snippet.helper.ts"
+    // to update "snippetFields" and "snippetFieldSortingOrder" and "getSnippetDefaults" in
+    // "src\client\app\helpers\snippet.helper.ts"
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     id?: string;
     gist?: string;
     name?: string;
     description?: string;
-    author?: string;
+    /** author: export-only */
+    author?: string; 
     host: string;
-    api_set: {
+    /** api_set: export-only (+ check at first level of import) */
+    api_set?: {
         [index: string]: number
     },
     platform: string;
@@ -21,7 +24,8 @@ interface ITemplate {
 interface ISnippet extends ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
-    // to update "snippetFields" and "getSnippetDefaults" in "src\client\app\helpers\snippet.helper.ts"
+    // to update "snippetFields" and "snippetFieldSortingOrder" and "getSnippetDefaults" in
+    // "src\client\app\helpers\snippet.helper.ts"
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     script?: {
         content: string;

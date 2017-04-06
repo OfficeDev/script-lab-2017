@@ -29,9 +29,10 @@ export class SnippetEffects {
         .filter(({ snippet }) => !(snippet == null))
         .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
         .catch((exception: Error) => {
+            const message = (exception instanceof PlaygroundError) ? exception.message : Strings.snippetImportErrorBody;
             return Observable.from([
                 new UI.ReportErrorAction(Strings.snippetImportError, exception),
-                new UI.ShowAlertAction({ message: Strings.snippetImportErrorBody, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
+                new UI.ShowAlertAction({ message, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
             ]);
         });
 
@@ -273,6 +274,9 @@ export class SnippetEffects {
         }
 
         this._checkForUnsupportedAPIs(rawSnippet.api_set);
+        // Note that doe the unsupported-api check before anything else, and before scrubbing --
+        // because api_set will get erased as part of scrubbing (it's only for pre-import and export)
+
         const scrubbedIfNeeded =
             (mode === Snippet.ImportType.OPEN) ?
                 {...rawSnippet} :

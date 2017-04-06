@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings, getScrubbedSnippet, SnippetFieldType } from '../helpers';
+import { AI, Strings, getScrubbedSnippet, SnippetFieldType, snippetFieldSortingOrder } from '../helpers';
 import { GitHubService } from '../services';
 import * as jsyaml from 'js-yaml';
 import { Action } from '@ngrx/store';
@@ -81,13 +81,11 @@ export class GitHubEffects {
         .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
         .filter(action => this._github.profile && action.payload)
         .mergeMap(({ rawSnippet, type }) => {
-            const shareable = this._getShareableSnippet(rawSnippet);
-
-            let { name, description } = shareable;
+            let { name, description } = rawSnippet;
             let files: IGistFiles = {};
 
             files[`${name}.yaml`] = {
-                content: jsyaml.safeDump(shareable),
+                content: this._getShareableYaml(rawSnippet),
                 language: 'yaml'
             };
 
@@ -132,22 +130,29 @@ ${Strings.gistSharedDialogEnd}
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((rawSnippet: ISnippet) => {
-            const shareable = this._getShareableSnippet(rawSnippet);
-            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: shareable.id });
+            const yaml = this._getShareableYaml(rawSnippet);
+            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: rawSnippet.id });
             new clipboard('#CopyToClipboard', {
                 text: () => {
                     this._uiEffects.alert(Strings.snippetCopiedConfirmation, null, Strings.okButtonLabel);
-                    return jsyaml.safeDump(shareable);
+                    return yaml;
                 }
             });
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
 
-    _getShareableSnippet(rawSnippet: ISnippet): ISnippet {
+    _getShareableYaml(rawSnippet: ISnippet): string {
         const snippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
+
         if (this._github.profile) {
             snippet.author = this._github.profile.login;
         }
-        return snippet;
+        snippet.api_set = {};
+
+        return jsyaml.safeDump(snippet, {
+            indent: 4,
+            lineWidth: -1,
+            sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b])
+        });
     }
 }

@@ -13,7 +13,7 @@ export enum SnippetFieldType {
     TRANSIENT = 1 << 2
 }
 
-const snippetFields: { [key: string]: SnippetFieldType; } = {
+const snippetFields: { [key: string]: SnippetFieldType } = {
     /* ITemplate base class */
     id: SnippetFieldType.INTERNAL,
     gist: SnippetFieldType.INTERNAL,
@@ -21,7 +21,7 @@ const snippetFields: { [key: string]: SnippetFieldType; } = {
     description: SnippetFieldType.PUBLIC,
     // author: export-only, always want to generate on the fly, so skip altogether
     host: SnippetFieldType.PUBLIC,
-    api_set: SnippetFieldType.PUBLIC,
+    // api_set: export-only, always want to generate on the fly, so skip altogether
     platform: SnippetFieldType.TRANSIENT,
     origin: SnippetFieldType.TRANSIENT,
     created_at: SnippetFieldType.INTERNAL,
@@ -34,6 +34,25 @@ const snippetFields: { [key: string]: SnippetFieldType; } = {
     libraries: SnippetFieldType.PUBLIC
 };
 
+export const snippetFieldSortingOrder: { [key: string]: number } = {
+    /* ITemplate base class */
+    name: 1,
+    description: 2,
+    author: 3,
+    host: 4,
+    api_set: 5,
+
+    /* ISnippet */
+    script: 10,
+    template: 11,
+    style: 12,
+    libraries: 13,
+
+    /* And within scripts / templates / styles, content should always be before language */
+    content: 100,
+    language: 101
+};
+
 export function getSnippetDefaults(): ISnippet {
     return {
         id: '',
@@ -42,7 +61,7 @@ export function getSnippetDefaults(): ISnippet {
         description: '',
         // author: export-only, always want to generate on the fly, so skip altogether
         host: environment.current.host,
-        api_set: {},
+        // api_set: export-only, always want to generate on the fly, so skip altogether
         platform: environment.current.platform,
         origin: environment.current.config.editorUrl,
         created_at: Date.now(),

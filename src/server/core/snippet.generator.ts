@@ -16,7 +16,6 @@ class SnippetGenerator {
             name: snippet.name,
             description: snippet.description,
             host: snippet.host,
-            api_set: snippet.api_set,
             platform: snippet.platform,
             origin: snippet.origin,
             created_at: snippet.created_at,
