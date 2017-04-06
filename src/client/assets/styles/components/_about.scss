@@ -7,12 +7,12 @@
     justify-content: center;
 
     &__image {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
         border-radius: 100%;
         margin-top: $default-spacing * 2;
         @include background-fill() {
-            @include background-image-circle(150px, '../images/icon-large.svg');
+            @include background-image-circle(120px, '../images/icon-large.svg');
         }
     }
 
