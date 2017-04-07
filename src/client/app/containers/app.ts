@@ -56,7 +56,7 @@ export class AppComponent {
     }
 
     get hideRunButton() {
-        return /commands=true/ig.test(location.search);
+        return /commands=1/ig.test(location.search);
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
