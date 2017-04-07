@@ -25,23 +25,31 @@ class Environment {
     }
 
     private _current: IEnvironment;
-    get current(): IEnvironment {
+    private _setupCurrentDefaultsIfEmpty() {
         if (this._current == null) {
             this._current = {
                 devMode,
                 build,
                 config: this._config
             };
+
             let environment = this.cache.get('environment') as IEnvironment;
             if (environment) {
-                this.current = { host: environment.host, platform: environment.platform };
+                this._current.host = environment.host;
+                this._current.platform = environment.platform;
             }
-        }
 
+            this.cache.insert('environment', this._current);
+        }
+    }
+
+    get current(): IEnvironment {
+        this._setupCurrentDefaultsIfEmpty();
         return this._current;
     }
 
     set current(value: IEnvironment) {
+        this._setupCurrentDefaultsIfEmpty();
         let updatedEnv = { ...this._current, ...value };
         this._current = this.cache.insert('environment', updatedEnv);
     }

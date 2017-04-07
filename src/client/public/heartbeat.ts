@@ -11,12 +11,12 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
 
     (async () => {
-        // Environment will initialize based off of "mode" being passed in to the snippet
-        await environment.initialize();
+        const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
+
+        await environment.initialize(params.host);
+
         messenger = new Messenger(environment.current.config.runnerUrl);
         setupRequestReloadListener(messenger);
-
-        const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
         trackingSnippet = {
             id: params.id,
