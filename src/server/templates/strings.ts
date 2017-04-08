@@ -170,14 +170,4 @@ export class Strings {
 
         noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`
     };
-
-    /** Error strings served by the server and displayed in the Error page */
-    static readonly ServerError = {
-        /** NEEDS STRING REVIEW */
-        moreDetails: '(More details...)',
-
-        /** NEEDS STRING REVIEW */
-        hideDetails: '(Hide details...)'
-    };
-
 }

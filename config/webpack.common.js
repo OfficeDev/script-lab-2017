@@ -20,7 +20,8 @@ module.exports = (prodMode) =>
             functions: './public/functions.ts',
             gallery: './public/gallery.ts',
             heartbeat: './public/heartbeat.ts',
-            runner: './public/runner.ts'
+            runner: './public/runner.ts',
+            error: './public/error.ts'
         },
 
         resolve: {

@@ -84,11 +84,18 @@ interface IRunnerHandlebarsContext {
     returnUrl: string;
 }
 
+/** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
 
     /** URL to return to (editor, or gallery view). More than just origin domain */
     returnUrl: string;
+}
+
+interface IErrorHandlebarsContext {
+    origin: string;
+    message: string;
+    details: string;
 }
 
 interface IMonacoEditorState {

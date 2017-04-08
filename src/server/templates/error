@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Error</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
+    <link rel="stylesheet" href="{{{origin}}}/error.bundle.css" />
+</head>
+
+<body class="app error-page">
+    <div>
+        <h1 class="ms-font-xxl">Error</h1>
+        <h2 class="ms-font-xl">{{message}}</h2>
+    </div>
+    {{#if details}}
+    <div>
+        <p id="more-details-link" class="ms-font-m clickable center"></p>
+        <div id="details" class="details">
+            <pre>{{details}}</pre>
+        </div>
+    </div>
+    {{/if}}
+
+    <script src="{{{origin}}}/polyfills.bundle.js"></script>
+    <script src="{{{origin}}}/vendor.bundle.js"></script>
+    <script src="{{{origin}}}/error.bundle.js"></script>
+</body>
+
+</html>

@@ -8,6 +8,7 @@ import * as Request from 'request';
 import { forIn, isEmpty } from 'lodash';
 import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
+import { Strings } from './core/strings';
 import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
@@ -16,7 +17,6 @@ const { config, secrets } = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
 const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
-const handler = callback => (...args) => callback(...args).catch(args[2] /* pass the error as the 'next' param */);
 const app = express();
 
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
@@ -42,17 +42,6 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors());
 app.use('/favicon', express.static('favicon'));
 
-/**
- * Generic exception handler
- */
-app.use((err, req, res, next) => {
-    if (err) {
-        const { code, stack, message } = err;
-        ai.trackException(err, 'Server - Global handler');
-        return res.contentType('application/json').send({ code, message, stack });
-    }
-});
-
 
 /**
  * HTTP GET: /run
@@ -65,47 +54,79 @@ app.use((err, req, res, next) => {
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-app.get(['/run/:host/:id'], handler(async (req: express.Request, res: express.Response) => {
+registerRoute('get', '/run/:host/:id', (req, res) => {
     const host = (req.params.host as string).toUpperCase();
     const id = (req.params.id as string || '').toLowerCase();
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
-        return new BadRequestError(`Invalid host "${host}"`);
+        throw new BadRequestError(`Invalid host "${host}"`);
     }
     if (isEmpty(id)) {
-        return new BadRequestError(`Invalid id "${id}"`);
+        throw new BadRequestError(`Invalid id "${id}"`);
     }
 
-    const runnerHtmlGenerator = await loadTemplate<IRunnerHandlebarsContext>('runner');
-    const html = runnerHtmlGenerator({
-        snippet: {
-            id: id
-        },
-        officeJS: determineOfficeJS(req.query, host),
-        returnUrl: '',
-        origin: currentConfig.editorUrl,
-        host: host,
-        initialLoadSubtitle: 'Loading snippet...',
-        headerTitle: ''
-    });
+    // NOTE: using Promise-based code instead of async/await
+    // to avoid unhandled exception-pausing on debugging.
+    return loadTemplate<IRunnerHandlebarsContext>('runner')
+        .then(runnerHtmlGenerator => {
+            const html = runnerHtmlGenerator({
+                snippet: {
+                    id: id
+                },
+                officeJS: determineOfficeJS(req.query, host),
+                returnUrl: '',
+                origin: currentConfig.editorUrl,
+                host: host,
+                initialLoadSubtitle: 'Loading snippet...',
+                headerTitle: ''
+            });
 
-    return res.contentType('text/html').status(200).send(html);
-}));
+            return res.contentType('text/html').status(200).send(html);
+        });
+
+    /**
+     * Helper function to return the OfficeJS URL (from query parameter,
+     * or from guessing based on host), or empty string
+     **/
+    function determineOfficeJS(query: any, host: string): string {
+        const queryParamsLowercase: { officejs: string } = <any>{};
+        forIn(query as { [key: string]: string },
+            (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
+
+        if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
+            return queryParamsLowercase.officejs.trim();
+        }
+
+        if (officeHosts.indexOf(host.toUpperCase()) >= 0) {
+            // Assume a production Office.js for the Office products --
+            // and worse case (e.g., if targeting Beta, or debug version),
+            // the runner will just force a refresh after the page has loaded
+            return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+        }
+
+        return '';
+    }
+});
+
+
 /**
  * HTTP POST: /auth
  * Returns the access_token
  */
-app.post('/auth/:user', handler(async (req: express.Request, res: express.Response) => {
+registerRoute('post', '/auth/:user', (req, res) => {
     const { code, state } = req.body;
     const { user } = req.params;
 
     if (code == null) {
-        return new BadRequestError('Received invalid code.', code);
+        throw new BadRequestError('Received invalid code.', code);
     }
 
     const { clientId, editorUrl } = currentConfig;
     const timer = ai.trackTimedEvent('[Runner] GitHub Authentication');
-    const token = await new Promise((resolve, reject) => {
+
+    // NOTE: using Promise-based code instead of async/await
+    // to avoid unhandled exception-pausing on debugging.
+    return new Promise((resolve, reject) => {
         return Request.post({
             url: 'https://github.com/login/oauth/access_token',
             headers: {
@@ -129,33 +150,28 @@ app.post('/auth/:user', handler(async (req: express.Request, res: express.Respon
                 return resolve(body);
             }
         });
-    });
+    })
+    .then(token => res.contentType('application/json').status(200).send(token));
+});
 
-    return res.contentType('application/json').status(200).send(token);
-}));
 
 /**
  * HTTP POST: /compile/snippet
  * Returns the compiled snippet only (no outer runner chrome)
  */
-app.post('/compile/snippet', handler(async (req: express.Request, res: express.Response) => {
-    const response = await compileCommon(req);
-    return res.contentType('text/html').status(200).send(response);
-}));
+registerRoute('post', '/compile/snippet', compileCommon);
+
 
 /**
  * HTTP POST: /compile/page
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
-app.post('/compile/page', handler(async (req: express.Request, res: express.Response) => {
-    const response = await compileCommon(req, true /*wrapWithRunnerChrome*/);
-    return res.contentType('text/html').status(200).send(response);
-}));
+registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
 
 // HELPERS
 
-async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolean): Promise<string> {
+function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
 
@@ -168,51 +184,74 @@ async function compileCommon(req: express.Request, wrapWithRunnerChrome?: boolea
 
     const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
 
-    const [compiledSnippet, snippetHtml, runnerHtml] =
-        await Promise.all([
-            snippetGenerator.compile(snippet),
-            loadTemplate<ICompiledSnippet>('snippet'),
-            wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
-        ]);
+    // NOTE: using Promise-based code instead of async/await
+    // to avoid unhandled exception-pausing on debugging.
+    return Promise.all([
+        snippetGenerator.compile(snippet),
+        loadTemplate<ICompiledSnippet>('snippet'),
+        wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
+    ])
+        .then(templates => {
+            const [compiledSnippet, snippetHtml, runnerHtml] = templates;
 
-    let html = snippetHtml(compiledSnippet);
+            let html = snippetHtml(compiledSnippet);
 
-    if (wrapWithRunnerChrome) {
-        html = runnerHtml({
-            snippet: {
-                id: snippet.id,
-                lastModified: snippet.modified_at,
-                content: html
-            },
-            officeJS: compiledSnippet.officeJS,
-            returnUrl: returnUrl,
-            origin: snippet.origin,
-            host: snippet.host,
-            initialLoadSubtitle: `Loading "${snippet.name}"`,
-            headerTitle: snippet.name
+            if (wrapWithRunnerChrome) {
+                html = runnerHtml({
+                    snippet: {
+                        id: snippet.id,
+                        lastModified: snippet.modified_at,
+                        content: html
+                    },
+                    officeJS: compiledSnippet.officeJS,
+                    returnUrl: returnUrl,
+                    origin: snippet.origin,
+                    host: snippet.host,
+                    initialLoadSubtitle: `Loading "${snippet.name}"`,
+                    headerTitle: snippet.name
+                });
+            }
+
+            timer.stop();
+
+            res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
-    }
-
-    timer.stop();
-    return replaceTabsWithSpaces(html);
 }
 
-/** return the OfficeJS URL (from query parameter, or from guessing based on host), or empty string */
-function determineOfficeJS(query: any, host: string): string {
-    const queryParamsLowercase: { officejs: string } = <any>{};
-    forIn(query as { [key: string]: string },
-        (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
 
-    if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
-        return queryParamsLowercase.officejs.trim();
+
+////////////////////////////////////////////////////////////////
+// Helper functions for registering routes and handling errors:
+////////////////////////////////////////////////////////////////
+
+function registerRoute(
+    verb: 'get'|'post',
+    path: string|string[],
+    action: (req: express.Request, res: express.Response) => Promise<any>
+) {
+    app[verb](path, (async (req: express.Request, res: express.Response) => {
+        try {
+            return await action(req, res);
+        } catch (e) {
+            return await errorHandler(res, e);
+        }
+    }));
+}
+
+async function errorHandler(res: express.Response, error: Error) {
+    ai.trackException(error, 'Server - Per-route handler');
+    const errorHtmlGenerator = await loadTemplate<IErrorHandlebarsContext>('error');
+
+    let message = error.message || error.toString();
+    if (message === '[object Object]') {
+        message = Strings.unexpectedError;
     }
 
-    if (officeHosts.indexOf(host.toUpperCase()) >= 0) {
-        // Assume a production Office.js for the Office products --
-        // and worse case (e.g., if targeting Beta, or debug version),
-        // the runner will just force a refresh after the page has loaded
-        return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
-    }
+    const html = errorHtmlGenerator({
+        origin: currentConfig.editorUrl,
+        message: message,
+        details: JSON.stringify(error, null, 4)
+    });
 
-    return '';
+    return res.contentType('text/html').status(200).send(html);
 }
