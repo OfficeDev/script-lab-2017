@@ -21,4 +21,13 @@ import { Strings } from '../app/helpers';
         detailsDisplayed = !detailsDisplayed;
     };
 
+
+    try {
+        (window.parent as any).scriptRunnerBeginInit();
+        (window.parent as any).scriptRunnerEndInit();
+    }
+    catch (e) {
+        /* ignore*/
+    }
+
 })();

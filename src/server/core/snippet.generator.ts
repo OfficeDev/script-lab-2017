@@ -3,45 +3,48 @@ import { BadRequestError } from './errors';
 import { processLibraries } from './utilities';
 
 class SnippetGenerator {
-    async compile(snippet: ISnippet): Promise<ICompiledSnippet> {
-        // TODO: Compilation time log here
+    /**
+     * Compiles the snippet, and returns it as a Promise (Promise<ICompiledSnippet>)
+     * Using a Promise in case some future compilation does need to be promise-ful.
+     **/
+    compile(snippet: ISnippet): Promise<ICompiledSnippet> {
+        return Promise.resolve()
+            .then(() => {
+            if (snippet == null) {
+                throw new BadRequestError('Snippet is null');
+            }
 
-        if (snippet == null) {
-            throw new BadRequestError('Snippet is null');
-        }
+            let compiledSnippet: ICompiledSnippet = {
+                id: snippet.id,
+                gist: snippet.gist,
+                name: snippet.name,
+                description: snippet.description,
+                host: snippet.host,
+                platform: snippet.platform,
+                origin: snippet.origin,
+                created_at: snippet.created_at,
+                modified_at: snippet.modified_at,
+                style: snippet.style.content,
+                template: snippet.template.content,
+            };
 
-        let compiledSnippet: ICompiledSnippet = {
-            id: snippet.id,
-            gist: snippet.gist,
-            name: snippet.name,
-            description: snippet.description,
-            host: snippet.host,
-            platform: snippet.platform,
-            origin: snippet.origin,
-            created_at: snippet.created_at,
-            modified_at: snippet.modified_at,
-            style: snippet.style.content,
-            template: snippet.template.content,
-        };
+            const { scriptReferences, linkReferences, officeJS } = processLibraries(snippet);
 
-        const { scriptReferences, linkReferences, officeJS } = processLibraries(snippet);
+            const script = this.compileScript(snippet.script);
 
-        const script = await this.compileScript(snippet.script);
+            // HACK: Need to manually remove es2015 module generation
+            compiledSnippet.script = script.replace('Object.defineProperty(exports, "__esModule", { value: true });', '');
+            compiledSnippet.officeJS = officeJS;
+            compiledSnippet.scriptReferences = scriptReferences;
+            compiledSnippet.linkReferences = linkReferences;
 
-        // HACK: Need to manually remove es2015 module generation
-        compiledSnippet.script = script.replace('Object.defineProperty(exports, "__esModule", { value: true });', '');
-        compiledSnippet.officeJS = officeJS;
-        compiledSnippet.scriptReferences = scriptReferences;
-        compiledSnippet.linkReferences = linkReferences;
-
-        return compiledSnippet;
+            return compiledSnippet;
+        });
     }
 
-    async compileScript({ language, content }: { language: string, content: string }) {
+    compileScript({ language, content }: { language: string, content: string }): string {
         switch (language.toLowerCase()) {
             case 'typescript':
-                // TODO: Compilation time log here
-
                 let result = ts.transpileModule(content, {
                     reportDiagnostics: true,
                     compilerOptions: {
@@ -53,20 +56,25 @@ class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new BadRequestError(result.diagnostics.map(item => {
-                        let upThroughError = content.substr(0, item.start);
-                        let afterError = content.substr(item.start + 1);
-                        let lineNumber = upThroughError.split('\n').length;
-                        let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
-                        let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
-                        return `Line #${lineNumber}:  ${item.messageText}` + '\n\n' + lineText;
-                    }).join('\n\n\n'));
+                    throw new BadRequestError('Error during compilation',
+                        result.diagnostics.map(item => {
+                            let upThroughError = content.substr(0, item.start);
+                            let afterError = content.substr(item.start + 1);
+                            let lineNumber = upThroughError.split('\n').length;
+                            let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
+                            let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
+                            return `Line #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
+                        }).join('\n\n')
+                    );
                 }
 
                 return result.outputText;
 
             case 'javascript':
-            default: return content;
+                return content;
+
+            default:
+                throw new BadRequestError(`Unrecognized script language ${language}`);
         }
     }
 }

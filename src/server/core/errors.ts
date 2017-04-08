@@ -27,7 +27,7 @@ export class UnauthorizedError extends ServerError {
 }
 
 export class BadRequestError extends ServerError {
-    constructor(message: string, public innerError?: any) {
+    constructor(message: string, public details?: string, public innerError?: any) {
         super('BadRequestError', 400, message, innerError);
     }
 }

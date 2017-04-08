@@ -5,6 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
+import * as jsyaml from 'js-yaml';
 import { forIn, isEmpty } from 'lodash';
 import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
@@ -179,7 +180,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
     // and so that refresh page could know where to return to if the snippet weren't found.
 
     if (snippet == null) {
-        throw new BadRequestError('Received invalid snippet data.', snippet);
+        throw new BadRequestError('Received invalid snippet data.', null /*details*/, snippet);
     }
 
     const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
@@ -187,27 +188,39 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        snippetGenerator.compile(snippet),
+        snippetGenerator.compile(snippet).catch(e => e),
         loadTemplate<ICompiledSnippet>('snippet'),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
-        .then(templates => {
-            const [compiledSnippet, snippetHtml, runnerHtml] = templates;
+        .then(async templates => {
+            const [compiledSnippetOrError, snippetHtmlGenerator, runnerHtmlGenerator] = templates;
 
-            let html = snippetHtml(compiledSnippet);
+            const isError = (compiledSnippetOrError instanceof Error);
+            let initialLoadSubtitle = Strings.getInitialLoadSubtitle(isError, snippet.name);
+            let officeJS = '';
+            let html: string;
+
+            if (isError) {
+                ai.trackException(compiledSnippetOrError, 'Server - Compile error');
+                html = await generateErrorHtml(compiledSnippetOrError);
+
+            } else {
+                html = snippetHtmlGenerator(compiledSnippetOrError);
+                officeJS = (compiledSnippetOrError as ICompiledSnippet).officeJS;
+            }
 
             if (wrapWithRunnerChrome) {
-                html = runnerHtml({
+                html = runnerHtmlGenerator({
                     snippet: {
                         id: snippet.id,
                         lastModified: snippet.modified_at,
                         content: html
                     },
-                    officeJS: compiledSnippet.officeJS,
+                    officeJS,
                     returnUrl: returnUrl,
                     origin: snippet.origin,
                     host: snippet.host,
-                    initialLoadSubtitle: `Loading "${snippet.name}"`,
+                    initialLoadSubtitle,
                     headerTitle: snippet.name
                 });
             }
@@ -240,6 +253,11 @@ function registerRoute(
 
 async function errorHandler(res: express.Response, error: Error) {
     ai.trackException(error, 'Server - Per-route handler');
+    const html = await generateErrorHtml(error);
+    return res.contentType('text/html').status(200).send(html);
+}
+
+async function generateErrorHtml(error: Error): Promise<string> {
     const errorHtmlGenerator = await loadTemplate<IErrorHandlebarsContext>('error');
 
     let message = error.message || error.toString();
@@ -247,11 +265,16 @@ async function errorHandler(res: express.Response, error: Error) {
         message = Strings.unexpectedError;
     }
 
-    const html = errorHtmlGenerator({
+    return errorHtmlGenerator({
         origin: currentConfig.editorUrl,
         message: message,
-        details: JSON.stringify(error, null, 4)
+        details:
+            (error instanceof BadRequestError && error.details) ?
+            error.details :
+            jsyaml.safeDump(error, {
+                indent: 4,
+                flowLevel: -1,
+                lineWidth: -1
+            })
     });
-
-    return res.contentType('text/html').status(200).send(html);
 }

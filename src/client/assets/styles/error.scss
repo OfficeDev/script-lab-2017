@@ -4,9 +4,15 @@
 	@include center-flex();
 
 	> div {
-		flex: 1 1 100%;
+		-webkit-flex: 1 1 100%;
+			-ms-flex: 1 1 100%;
+				flex: 1 1 100%;
+		display: -webkit-flex;
+		display: -ms-flexbox;
 		display: flex;
-		flex-direction: column;
+		-webkit-flex-direction: column;
+			-ms-flex-direction: column;
+				flex-direction: column;
 		width: 100%;
 
 		> h1 {
@@ -49,6 +55,10 @@
 	.clickable {
 		color: #4579ca;
 		cursor: pointer;
+		-webkit-user-select: none;
+		   -moz-user-select: none;
+			-ms-user-select: none;
+				user-select: none;
 
 		&:focus,
 		&:hover {
