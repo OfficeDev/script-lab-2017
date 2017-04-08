@@ -183,10 +183,12 @@ interface InitializationParams {
         });
 
         $error.find('.action-dismiss').off('click').click(() => {
+            $('.runner-overlay').hide();
             $error.hide();
         });
 
         $('.runner-notification').hide();
+        $('.runner-overlay').show();
         $('#notify-error').show();
     }
 
@@ -262,6 +264,7 @@ interface InitializationParams {
                 // if switched back to the snippet that was already being tracked,
                 // that's great, and just silently hide the previously-shown notification
                 if (input.message.id === currentSnippet.id) {
+                    $('.runner-overlay').hide();
                     $anotherSnippetSelected.hide();
                 } else {
                     if (isListeningTo.snippetSwitching) {
@@ -287,7 +290,10 @@ interface InitializationParams {
                 $.post(window.location.origin + '/compile/snippet', { data: data })
                     .then(html => processSnippetReload(html, snippet))
                     .fail(handleError)
-                    .always(() => $('.runner-notification').not('#notify-error').hide());
+                    .always(() => {
+                        $('.runner-overlay').hide();
+                        $('.runner-notification').not('#notify-error').hide();
+                    });
             });
     }
 
@@ -295,12 +301,14 @@ interface InitializationParams {
         $notificationContainer.find('.action-fast-reload').off('click').click(reloadAction);
 
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
+            $('.runner-overlay').hide();
             $notificationContainer.hide();
             dismissAction();
         });
 
         // Show the current notification (and hide any others)
         $('.runner-notification').hide();
+        $('.runner-overlay').show();
         $notificationContainer.show();
     }
 
@@ -340,6 +348,7 @@ interface InitializationParams {
      * @param id: id of snippet, or null to fetch the last-opened
      */
     function clearAndRefresh(id: string) {
+        $('.runner-overlay').hide();
         $('.runner-notification').hide();
 
         toggleProgress(true);

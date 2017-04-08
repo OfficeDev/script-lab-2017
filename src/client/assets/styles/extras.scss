@@ -75,6 +75,17 @@ iframe#FirebugUI {
 	}
 }
 
+.runner-overlay {
+	display: none;
+    position: absolute;
+    z-index: 40000;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.2);
+}
+
 /* Themes */
 body.EXCEL {
 	@include theme-min($excel);

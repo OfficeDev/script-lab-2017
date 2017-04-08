@@ -131,6 +131,8 @@
         </div>
     </div>
 
+    <div class="runner-overlay"></div>
+
     {{!-- Keep this as a placeholder even if not loading any initial content --}}
     <pre id="snippet-code-content" style="display:none">
         {{#if snippet.content}}
