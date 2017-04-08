@@ -37,9 +37,12 @@
 		text-align: center;
 	}
 
+	#more-details-link {
+		margin-bottom: 20px;
+	}
+
 	.details {
 		display: none;
-		margin-top: 20px;
 		width: 100%;
 		color: black;
 		overflow-y: auto;

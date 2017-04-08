@@ -17,14 +17,12 @@
         <h1 class="ms-font-xxl">Error</h1>
         <h2 class="ms-font-xl">{{message}}</h2>
     </div>
-    {{#if details}}
     <div>
         <p id="more-details-link" class="ms-font-m clickable center"></p>
         <div id="details" class="details">
             <pre>{{details}}</pre>
         </div>
     </div>
-    {{/if}}
 
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
     <script src="{{{origin}}}/vendor.bundle.js"></script>

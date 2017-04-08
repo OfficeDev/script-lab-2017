@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import { BadRequestError } from './errors';
 import { processLibraries } from './utilities';
+import { Strings } from './strings';
 
 class SnippetGenerator {
     /**
@@ -56,7 +57,7 @@ class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new BadRequestError('Error during compilation',
+                    throw new BadRequestError(Strings.getSyntaxErrorsTitle(result.diagnostics.length),
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);
                             let afterError = content.substr(item.start + 1);
