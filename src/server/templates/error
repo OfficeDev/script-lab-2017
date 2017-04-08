@@ -29,6 +29,10 @@
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
     <script src="{{{origin}}}/vendor.bundle.js"></script>
     <script src="{{{origin}}}/error.bundle.js"></script>
+
+    <script>
+        window.initializeErrorView({{{expandDetailsByDefault}}});
+    </script>
 </body>
 
 </html>

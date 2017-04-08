@@ -96,6 +96,7 @@ interface IErrorHandlebarsContext {
     origin: string;
     message: string;
     details: string;
+    expandDetailsByDefault: boolean;
 }
 
 interface IMonacoEditorState {

@@ -10,35 +10,35 @@ class SnippetGenerator {
     compile(snippet: ISnippet): Promise<ICompiledSnippet> {
         return Promise.resolve()
             .then(() => {
-            if (snippet == null) {
-                throw new BadRequestError('Snippet is null');
-            }
+                if (snippet == null) {
+                    throw new BadRequestError('Snippet is null');
+                }
 
-            let compiledSnippet: ICompiledSnippet = {
-                id: snippet.id,
-                gist: snippet.gist,
-                name: snippet.name,
-                description: snippet.description,
-                host: snippet.host,
-                platform: snippet.platform,
-                origin: snippet.origin,
-                created_at: snippet.created_at,
-                modified_at: snippet.modified_at,
-                style: snippet.style.content,
-                template: snippet.template.content,
-            };
+                let compiledSnippet: ICompiledSnippet = {
+                    id: snippet.id,
+                    gist: snippet.gist,
+                    name: snippet.name,
+                    description: snippet.description,
+                    host: snippet.host,
+                    platform: snippet.platform,
+                    origin: snippet.origin,
+                    created_at: snippet.created_at,
+                    modified_at: snippet.modified_at,
+                    style: snippet.style.content,
+                    template: snippet.template.content,
+                };
 
-            const { scriptReferences, linkReferences, officeJS } = processLibraries(snippet);
+                const { scriptReferences, linkReferences, officeJS } = processLibraries(snippet);
 
-            const script = this.compileScript(snippet.script);
+                const script = this.compileScript(snippet.script);
 
-            // HACK: Need to manually remove es2015 module generation
-            compiledSnippet.script = script.replace('Object.defineProperty(exports, "__esModule", { value: true });', '');
-            compiledSnippet.officeJS = officeJS;
-            compiledSnippet.scriptReferences = scriptReferences;
-            compiledSnippet.linkReferences = linkReferences;
+                // HACK: Need to manually remove es2015 module generation
+                compiledSnippet.script = script.replace('Object.defineProperty(exports, "__esModule", { value: true });', '');
+                compiledSnippet.officeJS = officeJS;
+                compiledSnippet.scriptReferences = scriptReferences;
+                compiledSnippet.linkReferences = linkReferences;
 
-            return compiledSnippet;
+                return compiledSnippet;
         });
     }
 

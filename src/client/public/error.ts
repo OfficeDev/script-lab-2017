@@ -1,25 +1,17 @@
 import '../assets/styles/error.scss';
 import { Strings } from '../app/helpers';
 
-(() => {
+(window as any).initializeErrorView = (expandDetailsByDefault: boolean) => {
     const detailsElement = document.getElementById('details');
     const moreDetailsLink = document.getElementById('more-details-link');
 
     const moreDetailsDefaultText = Strings.ServerError.moreDetails;
     moreDetailsLink.textContent = moreDetailsDefaultText;
 
-    let detailsDisplayed = false;
-    moreDetailsLink.onclick = () => {
-        if (detailsDisplayed) {
-            moreDetailsLink.innerText = '(More details...)';
-            detailsElement.style.display = 'none';
-        } else {
-            detailsElement.style.display = 'block';
-            moreDetailsLink.innerText = '(Hide details)';
-        }
+    moreDetailsLink.onclick = () => toggleShowDetails(detailsElement.style.display === 'none' /*show*/);
 
-        detailsDisplayed = !detailsDisplayed;
-    };
+
+    toggleShowDetails(expandDetailsByDefault);
 
 
     try {
@@ -30,4 +22,16 @@ import { Strings } from '../app/helpers';
         /* ignore*/
     }
 
-})();
+
+    // Helper:
+
+    function toggleShowDetails(show: boolean) {
+        if (show) {
+            detailsElement.style.display = 'block';
+            moreDetailsLink.innerText = '(Hide details)';
+        } else {
+            moreDetailsLink.innerText = '(More details...)';
+            detailsElement.style.display = 'none';
+        }
+    }
+};

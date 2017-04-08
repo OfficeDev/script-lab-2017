@@ -5,8 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
-import * as jsyaml from 'js-yaml';
-import { forIn, isEmpty } from 'lodash';
+import { isString, forIn, isEmpty } from 'lodash';
 import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { Strings } from './core/strings';
@@ -195,12 +194,11 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
         .then(async templates => {
             const [compiledSnippetOrError, snippetHtmlGenerator, runnerHtmlGenerator] = templates;
 
-            const isError = (compiledSnippetOrError instanceof Error);
-            let initialLoadSubtitle = Strings.getInitialLoadSubtitle(isError, snippet.name);
             let officeJS = '';
             let html: string;
 
-            if (isError) {
+
+            if (compiledSnippetOrError instanceof Error) {
                 ai.trackException(compiledSnippetOrError, 'Server - Compile error');
                 html = await generateErrorHtml(compiledSnippetOrError);
 
@@ -220,7 +218,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     returnUrl: returnUrl,
                     origin: snippet.origin,
                     host: snippet.host,
-                    initialLoadSubtitle,
+                    initialLoadSubtitle: Strings.getInitialLoadSubtitle(snippet.name),
                     headerTitle: snippet.name
                 });
             }
@@ -260,21 +258,33 @@ async function errorHandler(res: express.Response, error: Error) {
 async function generateErrorHtml(error: Error): Promise<string> {
     const errorHtmlGenerator = await loadTemplate<IErrorHandlebarsContext>('error');
 
-    let message = error.message || error.toString();
-    if (message === '[object Object]') {
-        message = Strings.unexpectedError;
+    let message;
+    let expandDetailsByDefault: boolean;
+    let details: string;
+
+    if (isString(error)) {
+        message = error;
+        // And don't set details to anything -- as there is nothing to expand upon.
+    } else {
+        message = error.message || error.toString();
+        if (message === '[object Object]') {
+            message = Strings.unexpectedError;
+        }
+
+        if (error instanceof BadRequestError && error.details != null) {
+            details = error.details;
+
+            /** Will be useful details to see, if explicitly specified on the BadRequestContext */
+            expandDetailsByDefault = true;
+        } else {
+            details = JSON.stringify(error, null, 4);
+        }
     }
 
     return errorHtmlGenerator({
         origin: currentConfig.editorUrl,
-        message: message,
-        details:
-            (error instanceof BadRequestError && error.details) ?
-            error.details :
-            jsyaml.safeDump(error, {
-                indent: 4,
-                flowLevel: -1,
-                lineWidth: -1
-            })
+        message,
+        details,
+        expandDetailsByDefault
     });
 }
