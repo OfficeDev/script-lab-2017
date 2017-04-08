@@ -12,6 +12,9 @@ import { Strings } from '../app/helpers';
 
 
     toggleShowDetails(expandDetailsByDefault);
+    if (expandDetailsByDefault) {
+        moreDetailsLink.style.display = 'none';
+    }
 
 
     try {
