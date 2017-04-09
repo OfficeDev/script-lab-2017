@@ -1,3 +1,11 @@
+////////////////////////////////////////////////////////////////////////////////////
+/// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///         
+///       Script Lab Samples project.  Please be sure that any changes that you  ///
+///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
+///       in https://github.com/OfficeDev/script-lab-samples                     ///
+////////////////////////////////////////////////////////////////////////////////////
+
+import * as jsyaml from 'js-yaml';
 import { forIn } from 'lodash';
 import { environment } from './environment';
 import { Strings } from './strings';
@@ -35,22 +43,26 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
 };
 
 export const snippetFieldSortingOrder: { [key: string]: number } = {
+    /* Sample-exported fields */
+    order: 1,
+    id: 2,
+
     /* ITemplate base class */
-    name: 1,
-    description: 2,
-    author: 3,
-    host: 4,
-    api_set: 5,
+    name: 11,
+    description: 12,
+    author: 13,
+    host: 14,
+    api_set: 15,
 
     /* ISnippet */
-    script: 10,
-    template: 11,
-    style: 12,
-    libraries: 13,
+    script: 110,
+    template: 111,
+    style: 112,
+    libraries: 113,
 
     /* And within scripts / templates / styles, content should always be before language */
-    content: 100,
-    language: 101
+    content: 1000,
+    language: 1001
 };
 
 export function getSnippetDefaults(): ISnippet {
@@ -84,4 +96,15 @@ export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): I
     });
 
     return copy as ISnippet;
+}
+
+export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
+    const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
+
+    return jsyaml.safeDump(snippet, {
+        indent: 4,
+        lineWidth: -1,
+        sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
+        skipInvalid: true
+    });
 }

@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings, getScrubbedSnippet, SnippetFieldType, snippetFieldSortingOrder } from '../helpers';
+import { AI, Strings, getShareableYaml } from '../helpers';
 import { GitHubService } from '../services';
-import * as jsyaml from 'js-yaml';
 import { Action } from '@ngrx/store';
 import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
@@ -141,17 +140,13 @@ ${Strings.gistSharedDialogEnd}
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
 
     _getShareableYaml(rawSnippet: ISnippet): string {
-        const snippet = getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC);
+        const additionalFields: ISnippet = <any>{};
 
         if (this._github.profile) {
-            snippet.author = this._github.profile.login;
+            additionalFields.author = this._github.profile.login;
         }
-        snippet.api_set = {};
+        additionalFields.api_set = {};
 
-        return jsyaml.safeDump(snippet, {
-            indent: 4,
-            lineWidth: -1,
-            sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b])
-        });
+        return getShareableYaml(rawSnippet, additionalFields);
     }
 }
