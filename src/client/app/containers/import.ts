@@ -167,7 +167,7 @@ export class Import {
 
             case 'samples':
                 mode = Snippet.ImportType.SAMPLE;
-                data = item.gist;
+                data = (item as any).rawUrl /** rawUrl field that comes from samples playlists */;
                 break;
         }
 
