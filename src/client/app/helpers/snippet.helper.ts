@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////
-/// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///         
+/// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///
 ///       Script Lab Samples project.  Please be sure that any changes that you  ///
 ///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
 ///       in https://github.com/OfficeDev/script-lab-samples                     ///
