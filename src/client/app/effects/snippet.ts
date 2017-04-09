@@ -10,7 +10,7 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { isEmpty, find, assign, reduce, forIn, isEqual } from 'lodash';
+import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 
 @Injectable()
 export class SnippetEffects {
@@ -144,13 +144,13 @@ export class SnippetEffects {
             throw new PlaygroundError(Strings.snippetValidationEmpty);
         }
 
-        if (isEmpty(snippet.name)) {
+        if (isNil(snippet.name)) {
             throw new PlaygroundError(Strings.snippetValidationNoTitle);
         }
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = isEmpty(name.trim()) ? Strings.newSnippetTitle : name.trim();
+        let newName = isNil(name.trim()) ? Strings.newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
         let collisions = storage.snippets.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = reduce(collisions, (max, item: any) => {

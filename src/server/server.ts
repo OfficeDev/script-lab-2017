@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
-import { isString, forIn, isEmpty } from 'lodash';
+import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces } from './core/utilities';
 import { BadRequestError, UnauthorizedError } from './core/errors';
 import { Strings } from './core/strings';
@@ -61,7 +61,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
         throw new BadRequestError(`Invalid host "${host}"`);
     }
-    if (isEmpty(id)) {
+    if (isNil(id)) {
         throw new BadRequestError(`Invalid id "${id}"`);
     }
 
