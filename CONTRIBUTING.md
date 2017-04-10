@@ -11,12 +11,14 @@ There are several ways in which you can contribute to the project:
 
 ## Prereq:
 
-* Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.10 at time of writing)
+* Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
+  * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
 * Download & install Node, version 6.9+.  <https://nodejs.org/en>.
 * Install `nodemon` for global use using
 ~~~
     npm install nodemon -g
 ~~~
+
 
 
 ## Build steps:
