@@ -288,9 +288,8 @@ export class SnippetEffects {
         const snippet = {} as ISnippet;
         assign(snippet, getSnippetDefaults(), scrubbedIfNeeded);
 
-        /* Scrub the Id is the snippet is loaded from an external source */
-        if (mode === Snippet.ImportType.OPEN) {
-            /* TODO: show import warning here */
+        if (mode === Snippet.ImportType.DEFAULT) {
+            snippet.description = '';
         }
 
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
