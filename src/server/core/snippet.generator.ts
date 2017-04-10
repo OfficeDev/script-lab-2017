@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { BadRequestError } from './errors';
-import { processLibraries } from './utilities';
+import { processLibraries } from './libraries.processor';
 import { Strings } from './strings';
 
 class SnippetGenerator {

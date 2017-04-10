@@ -87,7 +87,7 @@ There are also files related to Azure deployment, git ignores, a Travis configur
 
 # Manual-testing scenarios
 
-* Create a snippet -- both "new" and from template
+* Create a snippet -- both "new" and from a sample
 * Import someone else's snippet
   * From YAML
   * From Gist (incl. old-style)
