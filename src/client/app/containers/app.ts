@@ -170,7 +170,7 @@ export class AppComponent {
             .subscribe(errors => {
                 let data = errors.map(error => error.message).join('\n\n');
                 this._effects.alert(data, 'Errors', 'Dismiss')
-                    .then(() => errors.splice(0, errors.length));
+                    .then(() => this._store.dispatch(new UI.DismissAllErrorsAction()));
             });
     }
 

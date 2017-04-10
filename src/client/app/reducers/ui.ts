@@ -56,6 +56,9 @@ export function reducer(state = initialState, action: UIActions): UIState {
             return { ...state, errors: [...state.errors, error] };
         }
 
+        case UIActionTypes.DISMISS_ALL_ERRORS:
+            return { ...state, errors: [] };
+
         case UIActionTypes.CHANGE_LANGUAGE: {
             AI.trackEvent(action.type, { language: action.payload });
             return { ...state, language: action.payload };

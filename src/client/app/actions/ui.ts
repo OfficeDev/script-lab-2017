@@ -17,6 +17,7 @@ export class UIActionTypes {
     static readonly CHANGE_THEME = type('[UI] Change Theme');
     static readonly CHANGE_LANGUAGE = type('[UI] Change Language');
     static readonly REPORT_ERROR = type('[UI] Report Error');
+    static readonly DISMISS_ALL_ERRORS = type('[UI] Dismiss All Errors');
 };
 
 /**
@@ -62,6 +63,12 @@ export class ReportErrorAction implements Action {
     constructor(public payload: string, public exception?: any) { }
 }
 
+export class DismissAllErrorsAction implements Action {
+    readonly type = UIActionTypes.DISMISS_ALL_ERRORS;
+
+    constructor() { }
+}
+
 export class SwitchEnvAction implements Action {
     readonly type = UIActionTypes.SWITCH_ENV;
 
@@ -79,4 +86,5 @@ export type UIActions =
     | ShowAlertAction
     | ToggleImportAction
     | DismissAlertAction
+    | DismissAllErrorsAction
     | SwitchEnvAction;
