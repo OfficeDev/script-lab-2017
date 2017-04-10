@@ -133,7 +133,10 @@ export class SnippetEffects {
             }
         })
         .map(data => new Snippet.LoadTemplatesSuccessAction(data))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadDefaultsError, exception)));
+        .catch(exception => {
+            console.log(Strings.snippetLoadDefaultsError, exception);
+            return Observable.of(new Snippet.LoadTemplatesSuccessAction([]));
+        });
 
     private _exists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
