@@ -98,6 +98,10 @@ module.exports = (prodMode) =>
                     ignore: ['*.ts']
                 },
                 {
+                    from: './views/webpagelauncher.html',
+                    to: 'webpagelauncher.html',
+                },
+                {
                     from: '../../config/env.config.js',
                     to: '../server/core/env.config.js',
                     transform: (content, path) => {
