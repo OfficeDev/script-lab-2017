@@ -218,7 +218,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     returnUrl: returnUrl,
                     origin: snippet.origin,
                     host: snippet.host,
-                    initialLoadSubtitle: Strings.getInitialLoadSubtitle(snippet.name),
+                    initialLoadSubtitle: Strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name
                 });
             }

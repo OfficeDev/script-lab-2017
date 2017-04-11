@@ -107,7 +107,9 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 trackingSnippet.lastModified = snippet.modified_at;
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
             } else {
-                messenger.send<void>(window.parent, MessageType.INFORM_STALE, null);
+                messenger.send<{name: string}>(window.parent, MessageType.INFORM_STALE, {
+                    name: snippet.name
+                });
             }
         }
     }

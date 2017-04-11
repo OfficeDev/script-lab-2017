@@ -97,7 +97,7 @@ interface InitializationParams {
 
             establishHeartbeat(params.origin, params.heartbeatParams);
 
-            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/));
+            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/));
 
             initializeTooltipUpdater();
         }
@@ -114,7 +114,7 @@ interface InitializationParams {
         $('.snippet-frame').remove();
 
         const $emptySnippetPlaceholder = $('<div class="snippet-frame fullscreen"></div>')
-                .insertAfter($snippetContent);
+            .insertAfter($snippetContent);
 
         const $iframe =
             $('<iframe class="snippet-frame fullscreen" style="display:none" src="about:blank"></iframe>')
@@ -178,7 +178,7 @@ interface InitializationParams {
         }
 
         $error.find('.action-fast-reload').off('click').click(() => {
-            clearAndRefresh(null /*id*/);
+            clearAndRefresh(null /*id*/, null /*name*/);
             $error.hide();
         });
 
@@ -247,12 +247,12 @@ interface InitializationParams {
             .map(input => new Error(input.message))
             .subscribe(handleError);
 
-        heartbeat.messenger.listen()
+        heartbeat.messenger.listen<{ name: string }>()
             .filter(({ type }) => type === MessageType.INFORM_STALE)
-            .subscribe(() => {
+            .subscribe(input => {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
-                        () => clearAndRefresh(currentSnippet.id),
+                        () => clearAndRefresh(currentSnippet.id, input.message.name),
                         () => isListeningTo.currentSnippetContentChange = false);
                 }
             });
@@ -270,7 +270,7 @@ interface InitializationParams {
                     if (isListeningTo.snippetSwitching) {
                         $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                         showReloadNotification($anotherSnippetSelected,
-                            () => clearAndRefresh(input.message.id),
+                            () => clearAndRefresh(input.message.id, input.message.name),
                             () => isListeningTo.snippetSwitching = false);
                     }
                 }
@@ -326,8 +326,7 @@ interface InitializationParams {
 
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
-            $('#subtitle').text(Strings.Runner.reloadingOfficeJs);
-            toggleProgress(true);
+            toggleProgress(true, Strings.Runner.reloadingOfficeJs);
             window.location.href = refreshUrl;
             return;
         }
@@ -346,12 +345,13 @@ interface InitializationParams {
 
     /** Clear current snippet frame and send a refresh REFRESH_REQUEST
      * @param id: id of snippet, or null to fetch the last-opened
+     * @param name: name of the snippet, or null to use a generic "loading snippet" text
      */
-    function clearAndRefresh(id: string) {
+    function clearAndRefresh(id: string, name: string) {
         $('.runner-overlay').hide();
         $('.runner-notification').hide();
 
-        toggleProgress(true);
+        toggleProgress(true, Strings.Runner.getLoadingSnippetSubtitle(name));
 
         // Remove the frame (in case had a timer or anything else that may as well get destroyed...)
         $('.snippet-frame').remove();
@@ -372,8 +372,11 @@ interface InitializationParams {
         return refreshUrl;
     }
 
-    function toggleProgress(visible: boolean) {
+    function toggleProgress(visible: boolean, subtitleText?: string) {
         if (visible) {
+            if (subtitleText) {
+                $('#subtitle').text(subtitleText);
+            }
             toggleProgressLoadingIndicators(true);
             $('#progress').show();
         } else {

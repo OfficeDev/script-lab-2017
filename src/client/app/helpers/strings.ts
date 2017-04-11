@@ -168,7 +168,12 @@ export class Strings {
 
         reloadingOfficeJs: 'Reloading Office.js',
 
-        noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`
+        noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`,
+
+        /** NEEDS STRING REVIEW */
+        getLoadingSnippetSubtitle(snippetName?: string) {
+            return 'Loading ' + snippetName ? `"${snippetName}"` : 'snippet';
+        }
     };
 
     /** Error strings served by the server and displayed in the Error page */
