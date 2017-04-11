@@ -21,13 +21,28 @@ Office.initialize = () => {
         }
     };
 
+    const launchFromDialog = (url: string, event?: any) => {
+        let dialog;
+        Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`,null,function(asyncResult){
+            dialog = asyncResult.value;
+            dialog.addEventHandler(Office.EventType.DialogMessageReceived, function(arg){
+                dialog.close();
+                // arg.message
+            });
+         
+        });
+        if (event) {
+            event.completed();
+        }
+    };
+
     (window as any).launchTutorial = (event) => launch(urls.tutorial, event);
 
     (window as any).launchHelp = (event) => launch(urls.playground_help, event);
 
     (window as any).launchFeedback = (event) => launch(urls.feedback, event);
 
-    (window as any).launchAsk = (event) => launch(urls.ask, event);
+    (window as any).launchAsk = (event) => launchFromDialog(urls.ask, event);
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
