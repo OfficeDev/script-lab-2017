@@ -172,7 +172,7 @@ export class Strings {
 
         /** NEEDS STRING REVIEW */
         getLoadingSnippetSubtitle(snippetName?: string) {
-            return 'Loading ' + snippetName ? `"${snippetName}"` : 'snippet';
+            return 'Loading ' + (snippetName ? `"${snippetName}"` : 'snippet');
         }
     };
 
