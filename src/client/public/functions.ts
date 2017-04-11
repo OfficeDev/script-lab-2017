@@ -23,13 +23,12 @@ Office.initialize = () => {
 
     const launchFromDialog = (url: string, event?: any) => {
         let dialog;
-        Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`,null,function(asyncResult){
+        Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, null, (asyncResult) => {
             dialog = asyncResult.value;
-            dialog.addEventHandler(Office.EventType.DialogMessageReceived, function(arg){
+            dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
                 dialog.close();
                 // arg.message
             });
-         
         });
         if (event) {
             event.completed();
