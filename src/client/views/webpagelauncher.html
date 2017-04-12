@@ -6,8 +6,13 @@
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+</head>
+
+<body>
+	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 	<script>
-        function getParameterByName(name, url) {
+		function getParameterByName(name, url) {
 			if (!url) {
 				url = window.location.href;
 			}
@@ -20,15 +25,11 @@
 		}    
 		
 		Office.initialize = function () {
-            window.open(getParameterByName(destination));
-			//Office.context.ui.messageParent("launched");
+			window.open(getParameterByName("destination"));
+			Office.context.ui.messageParent("launched");
         };
         
     </script>
-</head>
-
-<body>
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 </body>
 
 </html>
