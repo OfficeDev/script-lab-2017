@@ -2,34 +2,25 @@
 <html>
 
 <head>
-	<title>Launch Web Page</title>
+	<base href="/">
+	<title>Tutorial</title>
+
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
+	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.min.css" />
+	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.components.min.css" />
 </head>
 
-<body>
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-	<script>
-		function getParameterByName(name, url) {
-			if (!url) {
-				url = window.location.href;
-			}
-			name = name.replace(/[\[\]]/g, "\\$&");
-			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-				results = regex.exec(url);
-			if (!results) return null;
-			if (!results[2]) return '';
-			return decodeURIComponent(results[2].replace(/\+/g, " "));
-		}    
-		
-		Office.initialize = function () {
-			window.open(getParameterByName("destination"));
-			Office.context.ui.messageParent("launched");
-        };
-        
-    </script>
+<body class="ms-font-m">
+	<p>
+		This Excel file shows you how to use Script Lab in a few easy steps:
+		<a href="../assets/documents/script-lab-tutorial.xlsx">download script-lab-tutorial.xlsx</a>
+	</p>
+	<p>
+		<a href="../assets/documents/script-lab-tutorial.xlsx"><img src="../assets/images/tutorial.png"></a>
+	</p>
 </body>
 
 </html>
