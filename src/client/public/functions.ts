@@ -21,7 +21,6 @@ Office.initialize = () => {
                 event.completed();
             }
         };
-    
         const launchFromDialog = (url: string, event?: any) => {
             let dialog;
             Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, { height: 1, width: 1 }, (asyncResult) => {
