@@ -102,6 +102,10 @@ module.exports = (prodMode) =>
                     to: 'webpagelauncher.html',
                 },
                 {
+                    from: './views/tutorial.html',
+                    to: 'tutorial.html',
+                },
+                {
                     from: '../../config/env.config.js',
                     to: '../server/core/env.config.js',
                     transform: (content, path) => {
