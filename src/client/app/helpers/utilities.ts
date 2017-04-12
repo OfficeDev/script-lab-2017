@@ -1,5 +1,6 @@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
+import { Observable } from 'rxjs/Observable';
 
 let typeCache = new Dictionary<boolean>();
 
@@ -153,3 +154,6 @@ export function processLibraries(snippet: ISnippet) {
         return scriptReferences.push(resolvedUrlPath);
     }
 }
+
+export const safeguard = <T>(source: Observable<T>) =>
+    source.catch<T, T>(error => Observable.throw(error));

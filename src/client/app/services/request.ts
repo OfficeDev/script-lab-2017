@@ -56,21 +56,23 @@ export class Request {
     }
 
     private _response(xhr: Observable<Response>, responseType: ResponseTypes): Observable<any> {
-        return xhr.map(res => {
-            switch (responseType) {
-                case ResponseTypes.YAML:
-                    return jsyaml.safeLoad(res.text());
+        return xhr
+            .map(res => {
+                switch (responseType) {
+                    case ResponseTypes.YAML:
+                        return jsyaml.safeLoad(res.text());
 
-                case ResponseTypes.JSON:
-                    return res.json();
+                    case ResponseTypes.JSON:
+                        return res.json();
 
-                case ResponseTypes.BLOB:
-                    return res.blob();
+                    case ResponseTypes.BLOB:
+                        return res.blob();
 
-                case ResponseTypes.TEXT:
-                default:
-                    return res.text();
-            }
-        });
+                    case ResponseTypes.TEXT:
+                    default:
+                        return res.text();
+                }
+            })
+            .catch(error => Observable.throw(error));
     }
 }
