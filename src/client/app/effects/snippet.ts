@@ -276,8 +276,8 @@ export class SnippetEffects {
             throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
         }
 
-        this._checkForUnsupportedAPIs(rawSnippet.api_set);
-        // Note that doe the unsupported-api check before anything else, and before scrubbing --
+        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
+        // Note that need to do the unsupported-api check before anything else, and before scrubbing --
         // because api_set will get erased as part of scrubbing (it's only for pre-import and export)
 
         const scrubbedIfNeeded =
@@ -317,9 +317,14 @@ export class SnippetEffects {
         return Observable.from(actions);
     }
 
-    private _checkForUnsupportedAPIs(api_set: { [index: string]: number }) {
+    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {
         let unsupportedApiSet: { api: string, version: number } = null;
         if (api_set == null) {
+            return;
+        }
+
+        // On the web, there is no "Office.context.requirements". So skip it.
+        if (!Office || !Office.context || !Office.context.requirements) {
             return;
         }
 

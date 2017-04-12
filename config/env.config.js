@@ -20,7 +20,7 @@ const config = {
         editorUrl: 'https://localhost:3000',
         tokenUrl: 'https://localhost:3200/auth',
         runnerUrl: 'https://localhost:3200',
-        samplesUrl: 'https://raw.githubusercontent.com/WrathOfZombies/samples/prod',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
     },
     edge: {
@@ -30,7 +30,7 @@ const config = {
         editorUrl: 'https://bornholm-edge.azurewebsites.net',
         tokenUrl: 'https://bornholm-runner-edge.azurewebsites.net/auth',
         runnerUrl: 'https://bornholm-runner-edge.azurewebsites.net',
-        samplesUrl: 'https://raw.githubusercontent.com/WrathOfZombies/samples/prod',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
     },
     insiders: {
@@ -40,7 +40,7 @@ const config = {
         editorUrl: 'https://bornholm-insiders.azurewebsites.net',
         tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
         runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
-        samplesUrl: 'https://raw.githubusercontent.com/WrathOfZombies/samples/prod',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
     },
     production: {
@@ -50,7 +50,7 @@ const config = {
         editorUrl: 'https://script-lab.azureedge.net',
         tokenUrl: 'https://script-lab-runner.azureedge.net/auth',
         runnerUrl: 'https://script-lab-runner.azureedge.net',
-        samplesUrl: 'https://raw.githubusercontent.com/WrathOfZombies/samples/prod',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
     }
 };
