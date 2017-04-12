@@ -23,7 +23,7 @@ Office.initialize = () => {
 
     const launchFromDialog = (url: string, event?: any) => {
         let dialog;
-        Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, null, (asyncResult) => {
+        Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, { height: 1, width: 1 }, (asyncResult) => {
             dialog = asyncResult.value;
             dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
                 dialog.close();
@@ -35,11 +35,11 @@ Office.initialize = () => {
         }
     };
 
-    (window as any).launchTutorial = (event) => launch(urls.tutorial, event);
+    (window as any).launchTutorial = (event) => launchFromDialog(urls.tutorial, event);
 
-    (window as any).launchHelp = (event) => launch(urls.playground_help, event);
+    (window as any).launchHelp = (event) => launchFromDialog(urls.playground_help, event);
 
-    (window as any).launchFeedback = (event) => launch(urls.feedback, event);
+    (window as any).launchFeedback = (event) => launchFromDialog(urls.feedback, event);
 
     (window as any).launchAsk = (event) => launchFromDialog(urls.ask, event);
 
