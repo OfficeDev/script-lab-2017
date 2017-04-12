@@ -20,7 +20,7 @@ Office.initialize = () => {
             event.completed();
         }
     };
-
+/*
     const launchFromDialog = (url: string, event?: any) => {
         let dialog;
         Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, { height: 1, width: 1 }, (asyncResult) => {
@@ -41,7 +41,7 @@ Office.initialize = () => {
             event.completed();
         }
     };
-
+*/
     (window as any).launchTutorial = (event) => launch(urls.tutorial, event);
 
     (window as any).launchHelp = (event) => launch(urls.playground_help, event);
