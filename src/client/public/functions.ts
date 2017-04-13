@@ -48,33 +48,33 @@ Office.initialize = () => {
         }
     };
 
-    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, 35, 40);
+    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, 35, 45);
 
-    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event);
+    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event, 60, 60);
 
-    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event);
+    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event, 60, 60);
 
-    (window as any).launchAsk = (event) => launchInDialog(urls.ask, event);
+    (window as any).launchAsk = (event) => launchInDialog(urls.ask, event, 60, 60);
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
-            return launchInDialog(urls.excel_api, event);
+            return launchInDialog(urls.excel_api, event, 60, 60);
         }
         else if (Office.context.requirements.isSetSupported('WordApi')) {
-            return launchInDialog(urls.word_api, event);
+            return launchInDialog(urls.word_api, event, 60, 60);
         }
         else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-            return launchInDialog(urls.onenote_api, event);
+            return launchInDialog(urls.onenote_api, event, 60, 60);
         }
         else {
             if (Utilities.host === HostType.POWERPOINT) {
-                return launchInDialog(urls.powepoint_api, event);
+                return launchInDialog(urls.powepoint_api, event, 60, 60);
             }
             else if (Utilities.host === HostType.PROJECT) {
-                return launchInDialog(urls.project_api, event);
+                return launchInDialog(urls.project_api, event, 60, 60);
             }
             else {
-                return launchInDialog(urls.generic_api, event);
+                return launchInDialog(urls.generic_api, event, 60, 60);
             }
         }
     };
