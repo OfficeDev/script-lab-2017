@@ -36,12 +36,12 @@ Office.initialize = () => {
         };
     */
     const launchInDialog = (url: string, event?: any, x?: number, y?: number) => {
+        let myOptions = null;
         if (x && y) {
-            Office.context.ui.displayDialogAsync(url, { height: y, width: x }, (asyncResult) => { });
+            myOptions = { height: y, width: x };
         }
-        else {
-            Office.context.ui.displayDialogAsync(url, null, (asyncResult) => { });
-        }
+
+        Office.context.ui.displayDialogAsync(url, myOptions, null);
 
         if (event) {
             event.completed();
