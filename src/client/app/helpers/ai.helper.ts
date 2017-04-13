@@ -38,8 +38,8 @@ class ApplicationInsights {
         try {
             this._current.config.disableTelemetry = force || !this._disable;
         }
-        catch (error) {
-            Utilities.log(new TelemetryError(`Could not toggle telemetry ${force ? 'on' : 'off'}`, error));
+        catch (e) {
+            Utilities.log(new TelemetryError(`Could not toggle telemetry ${force ? 'on' : 'off'}`, e));
         }
     }
 
@@ -90,10 +90,8 @@ class ApplicationInsights {
 
     /**
      * Log an exception you have caught.
-     * @param   exception   An Error from a catch clause, or the string error message.
-     * @param   properties  map[string, string] - additional data used to filter events and metrics in the portal. Defaults to empty.
-     * @param   measurements    map[string, number] - metrics associated with this event, displayed in Metrics Explorer on the portal. Defaults to empty.
-     * @param   severityLevel   AI.SeverityLevel - severity level
+     * @param  error - An Error from a catch clause, or the string error message.
+     * @param  location - Call stack, or a string description.
      */
     trackException(error, location) {
         try {
@@ -111,7 +109,7 @@ class ApplicationInsights {
             });
         }
         catch (e) {
-            Utilities.log(new TelemetryError('Could not track exception', error));
+            Utilities.log(new TelemetryError('Could not track exception', e));
         }
     }
 
@@ -141,7 +139,7 @@ class ApplicationInsights {
             }, measurement);
         }
         catch (e) {
-
+            Utilities.log(new TelemetryError('Could not track event', e));
         }
     }
 
@@ -183,19 +181,12 @@ class ApplicationInsights {
         }
     }
 
-    /**
-    * Sets the autheticated user id and the account id in this session.
-    * User auth id and account id should be of type string. They should not contain commas, semi-colons, equal signs, spaces, or vertical-bars.
-    *
-    * @param authenticatedUserId {string} - The authenticated user id. A unique and persistent string that represents each authenticated user in the service.
-    * @param accountId {string} - An optional string to represent the account associated with the authenticated user.
-    */
-    setAuthenticatedUserContext(handle?) {
+    setAuthenticatedUserContext() {
         try {
-            this._current.setAuthenticatedUserContext(handle || storage.user, storage.user);
+            this._current.setAuthenticatedUserContext(storage.user);
         }
         catch (e) {
-
+            this.trackException(e, 'setAuthenticatedUserContext');
         }
     }
 }
