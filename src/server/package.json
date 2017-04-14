@@ -31,6 +31,7 @@
         "handlebars": "4.0.6",
         "express": "4.15.2",
         "uuid": "3.0.1",
-        "applicationinsights": "0.18.0"
+        "applicationinsights": "0.18.0",
+        "moment": "2.18.1"
     }
 }
