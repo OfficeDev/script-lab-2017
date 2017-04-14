@@ -1,4 +1,6 @@
 export class Strings {
+    // TODO: clean up comments and commented-out strings
+
     static readonly PlaygroundName = 'Script Lab';
 
     static readonly run = 'Run';
@@ -108,12 +110,6 @@ export class Strings {
     static readonly newSnippetDescription = 'Create a new snippet';
     static readonly importDescription = 'Create a snippet from YAML or a GitHub gist';
 
-    static readonly localStorageWarning = `Snippets are erased if you clear your browser cache.
-
-                    To save permanent copies of your snippets, export them as gists from the Share menu.`;
-    static readonly deleteLocalSnippets = 'Are you sure you want to delete all your local snippets?';
-    static readonly deleteLocalSnippetsTitle = `Delete local snippets`;
-
     // import.ts strings
 
     static readonly newSnippetLabel = 'New snippet';
@@ -130,10 +126,16 @@ export class Strings {
     static readonly importWarning = `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`;
     static readonly importWarningAction = `Don't show this warning again.`;
 
+    /** NEEDS STRING REVIEW */
+    static readonly localStorageWarning = `Snippets are stored in your browser's localStorage and are erased if you clear your browser cache. ` +
+        `To save permanent copies of your snippets, export them as gists from the Share menu.`;
+    static readonly localStorageWarningAction = `Don't show this warning again.`;
+
     static readonly importInstructions = `Enter the snippet's URL or paste the YAML below, then choose`;
     static readonly importUrlLabel = `Snippet URL or GitHub gist ID`;
     static readonly importUrlPlaceholder = `eg. https://gist.github.com/sampleGistId`;
     static readonly importYamlLabel = `Snippet YAML`;
+
     /*static readonly importUrlTab = 'From URL';
     static readonly importYamlTab = 'Paste code';
     static readonly importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`;
