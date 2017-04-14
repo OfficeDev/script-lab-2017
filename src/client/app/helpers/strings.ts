@@ -1,5 +1,4 @@
 export class Strings {
-    // TODO: clean up comments and commented-out strings
 
     static readonly PlaygroundName = 'Script Lab';
 
@@ -14,9 +13,6 @@ export class Strings {
     static readonly saveButtonLabel = 'Save';
     static readonly moreInfoButtonLabel = 'More info';
     static readonly importButtonLabel = 'Import';
-
-    // effects strings
-    //snippet.ts strings:
 
     static readonly snippetImportError = 'Failed to import snippet';
     static readonly snippetImportErrorTitle = 'Import failed';
@@ -34,7 +30,7 @@ export class Strings {
     static readonly snippetValidationNoTitle = 'Your snippet needs a title';
 
 
-    static readonly defaultSnippetTitle = 'New Snippet'; // not sure how it's different from newSnippet
+    static readonly defaultSnippetTitle = 'New Snippet';
     static readonly newSnippetTitle = 'Blank Snippet'; // string gets modified at runtime
 
     //ui.ts strings:
@@ -47,7 +43,6 @@ export class Strings {
     static readonly intellisenseLoadError = 'Failed to load the IntelliSense file';
 
     //github.ts strings:
-
     static readonly githubLoginFailed = 'Failed to sign in to GitHub';
     static readonly githubLogoutFailed = 'Failed to sign out of GitHub';
     static readonly profileCheckFailed = 'Failed to get the GitHub profile';
@@ -126,29 +121,14 @@ export class Strings {
     static readonly importWarning = `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`;
     static readonly importWarningAction = `Don't show this warning again.`;
 
-    /** NEEDS STRING REVIEW */
-    static readonly localStorageWarning = `Snippets are stored in your browser's localStorage and are erased if you clear your browser cache. ` +
-        `To save permanent copies of your snippets, export them as gists from the Share menu.`;
+    static readonly localStorageWarning = `Snippets you create get erased if you clear your browser cache. ` +
+        `To save snippets permanently, export them as gists from the Share menu.`;
     static readonly localStorageWarningAction = `Don't show this warning again.`;
 
     static readonly importInstructions = `Enter the snippet's URL or paste the YAML below, then choose`;
     static readonly importUrlLabel = `Snippet URL or GitHub gist ID`;
     static readonly importUrlPlaceholder = `eg. https://gist.github.com/sampleGistId`;
     static readonly importYamlLabel = `Snippet YAML`;
-
-    /*static readonly importUrlTab = 'From URL';
-    static readonly importYamlTab = 'Paste code';
-    static readonly importUrlDescription = `Paste the snippet's URL or GitHub gist ID, then choose Import.`;
-    static readonly importUrlTextBoxLabel = 'URL or gist ID';
-    static readonly importUrlTextBoxPlaceholder = 'Enter the URL or GitHub gist ID here';
-    static readonly urlExamplesTitle = 'Examples:';
-    static readonly urlExample1 = `https://gist.github.com/sampleGistId`;
-    static readonly urlExample2 = `https://script-lab.azurewebsites.net/#/gist/sampleGistId`;
-    static readonly urlExample3 = `https://mywebsite.com/myfolder/mysnippet.yaml`;
-    static readonly urlExample4 = 'Or you can enter just the gist ID';
-    static readonly importYamlDescription = `Paste the snippet's YAML code, then choose Import.`;
-    static readonly importYamlTextBoxLabel = 'YAML';
-    */
 
     static readonly Refresh = {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -172,7 +152,6 @@ export class Strings {
 
         noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`,
 
-        /** NEEDS STRING REVIEW */
         getLoadingSnippetSubtitle(snippetName?: string) {
             return 'Loading ' + (snippetName ? `"${snippetName}"` : 'snippet');
         }
@@ -180,10 +159,7 @@ export class Strings {
 
     /** Error strings served by the server and displayed in the Error page */
     static readonly ServerError = {
-        /** NEEDS STRING REVIEW */
         moreDetails: '(More details...)',
-
-        /** NEEDS STRING REVIEW */
         hideDetails: '(Hide details...)'
     };
 
