@@ -1,13 +1,15 @@
-let { name, version, author } = require('../package.json');
-let { startCase } = require('lodash');
+const { name, version, author } = require('../package.json');
+const moment = require('moment');
+const { startCase } = require('lodash');
 
 const build = (() => {
     let timestamp = new Date().getTime();
-
+    
     return {
         name: startCase(name),
         version,
         timestamp,
+        humanReadibleTimestamp: moment(timestamp).utcOffset("PDT").format('YYYY-MM-DD hh:mm a'),
         author
     };
 })();
