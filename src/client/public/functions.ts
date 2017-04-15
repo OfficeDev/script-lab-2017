@@ -47,7 +47,7 @@ Office.initialize = () => {
             event.completed();
         }
     };
-    const launchInIframe = (url: string, event?: any, x?: number, y?: number) => {
+    const launchDialogNavigation = (url: string, event?: any, x?: number, y?: number) => {
         let myOptions = null;
         if (x && y) {
             myOptions = { height: y, width: x };
@@ -66,27 +66,27 @@ Office.initialize = () => {
 
     (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event, 60, 60);
 
-    (window as any).launchAsk = (event) => launchInIframe(urls.ask, event, 60, 60);
+    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, 60, 60);
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
-            return launchInIframe(urls.excel_api, event, 60, 60);
+            return launchDialogNavigation(urls.excel_api, event, 60, 60);
         }
         else if (Office.context.requirements.isSetSupported('WordApi')) {
-            return launchInIframe(urls.word_api, event, 60, 60);
+            return launchDialogNavigation(urls.word_api, event, 60, 60);
         }
         else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-            return launchInIframe(urls.onenote_api, event, 60, 60);
+            return launchDialogNavigation(urls.onenote_api, event, 60, 60);
         }
         else {
             if (Utilities.host === HostType.POWERPOINT) {
-                return launchInIframe(urls.powepoint_api, event, 60, 60);
+                return launchDialogNavigation(urls.powepoint_api, event, 60, 60);
             }
             else if (Utilities.host === HostType.PROJECT) {
-                return launchInIframe(urls.project_api, event, 60, 60);
+                return launchDialogNavigation(urls.project_api, event, 60, 60);
             }
             else {
-                return launchInIframe(urls.generic_api, event, 60, 60);
+                return launchDialogNavigation(urls.generic_api, event, 60, 60);
             }
         }
     };
