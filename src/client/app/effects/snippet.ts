@@ -33,8 +33,7 @@ export class SnippetEffects {
         .catch((exception: Error) => {
             const message = (exception instanceof PlaygroundError) ? exception.message : Strings.snippetImportErrorBody;
             this._uiEffects.alert(
-/** NEEDS STRING REVIEW */
-                message + '\n\n' + 'Script Lab needs to reload to continue.',
+                message + '\n\n' + Strings.reloadPrompt,
                 Strings.snippetImportErrorTitle,
                 Strings.okButtonLabel)
                 .then(() => window.location.reload());
