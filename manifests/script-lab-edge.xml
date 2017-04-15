@@ -23,6 +23,7 @@
     <Host Name="Workbook" />
     <Host Name="Document" />
     <Host Name="Presentation"/>
+    <Host Name="Project"/>
   </Hosts>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://bornholm-edge.azurewebsites.net" />
