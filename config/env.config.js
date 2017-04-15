@@ -1,5 +1,5 @@
 const { name, version, author } = require('../package.json');
-const moment = require('moment-timezone');
+const moment = require('moment');
 const { startCase } = require('lodash');
 
 const build = (() => {
@@ -7,7 +7,7 @@ const build = (() => {
         name: startCase(name),
         version: version,
         timestamp: moment().utc().valueOf(),
-        humanReadibleTimestamp: moment().tz("America/Seattle").format('YYYY-MM-DD hh:mm a') + ' PDT',
+        humanReadibleTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
         author: author
     };
 })();
