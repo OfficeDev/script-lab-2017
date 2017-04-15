@@ -14,27 +14,6 @@ Office.initialize = () => {
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
         generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
     };
-    /*
-        const launch = (url: string, event?: any) => {
-            window.open(url);
-            if (event) {
-                event.completed();
-            }
-        };
-        const launchFromDialog = (url: string, event?: any) => {
-            let dialog;
-            Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, { height: 1, width: 1 }, (asyncResult) => {
-                dialog = asyncResult.value;
-                dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-                    dialog.close();
-                    // arg.message
-                });
-            });
-            if (event) {
-                event.completed();
-            }
-        };
-    */
     const launchInDialog = (url: string, event?: any, x?: number, y?: number) => {
         let myOptions = null;
         if (x && y) {
