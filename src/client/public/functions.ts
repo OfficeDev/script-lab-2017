@@ -14,10 +14,15 @@ Office.initialize = () => {
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
         generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
     };
-    const launchInDialog = (url: string, event?: any, x?: number, y?: number) => {
-        let myOptions = null;
+    const launchInDialog = (url: string, event?: any, x?: number, y?: number, doNotIframe?: boolean) => {
+        let myOptions = {};
         if (x && y) {
-            myOptions = { height: y, width: x };
+            myOptions['height'] = y;
+            myOptions['width'] = x;
+        }
+        if(!doNotIframe){
+            myOptions['displayInIframe'] = true;
+            // by default, use the iframe capability
         }
 
         Office.context.ui.displayDialogAsync(url, myOptions, null);
@@ -26,10 +31,15 @@ Office.initialize = () => {
             event.completed();
         }
     };
-    const launchDialogNavigation = (url: string, event?: any, x?: number, y?: number) => {
-        let myOptions = null;
+    const launchDialogNavigation = (url: string, event?: any, x?: number, y?: number, doNotIframe?: boolean) => {
+        let myOptions = {};
         if (x && y) {
-            myOptions = { height: y, width: x };
+            myOptions['height'] = y;
+            myOptions['width'] = x;
+        }
+        if(!doNotIframe){
+            myOptions['displayInIframe'] = true;
+            // by default, use the iframe capability. Skip this setting if the destination can't be iframed.'
         }
 
         Office.context.ui.displayDialogAsync(`${window.location.origin}/externalpagedisplay.html?destination=${url}`, myOptions, null);
@@ -45,7 +55,7 @@ Office.initialize = () => {
 
     (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event, 60, 60);
 
-    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, 60, 60);
+    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, 60, 60, true);
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
