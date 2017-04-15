@@ -4,6 +4,7 @@ import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, Strings, environment, storage,
     SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
+import { UIEffects } from './ui';
 import { Action } from '@ngrx/store';
 import { Snippet, UI } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
@@ -18,6 +19,7 @@ export class SnippetEffects {
         private actions$: Actions,
         private _request: Request,
         private _github: GitHubService,
+        private _uiEffects: UIEffects,
         reduxStore: Store<fromRoot.State>,
     ) { }
 
@@ -30,10 +32,12 @@ export class SnippetEffects {
         .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
         .catch((exception: Error) => {
             const message = (exception instanceof PlaygroundError) ? exception.message : Strings.snippetImportErrorBody;
-            return Observable.from([
-                new UI.ReportErrorAction(Strings.snippetImportError, exception),
-                new UI.ShowAlertAction({ message, title: Strings.snippetImportErrorTitle, actions: [Strings.okButtonLabel] })
-            ]);
+            this._uiEffects.alert(
+                message + '\n\n' + Strings.reloadPrompt,
+                Strings.snippetImportErrorTitle,
+                Strings.okButtonLabel)
+                .then(() => window.location.reload());
+            return Observable.from([]);
         });
 
     @Effect()
@@ -132,7 +136,9 @@ export class SnippetEffects {
                 return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
             }
         })
-        .map(data => new Snippet.LoadTemplatesSuccessAction(data))
+        .map(data => {
+            return new Snippet.LoadTemplatesSuccessAction(data);
+        })
         .catch(exception => {
             console.log(Strings.snippetLoadDefaultsError, exception);
             return Observable.of(new Snippet.LoadTemplatesSuccessAction([]));
