@@ -59,31 +59,31 @@ Office.initialize = () => {
 
     (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, 35, 45);
 
-    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event, 60, 60);
+    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event);
 
-    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event, 60, 60);
+    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event);
 
     (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, 60, 60, true);
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
-            return launchDialogNavigation(urls.excel_api, event, 60, 60);
+            return launchDialogNavigation(urls.excel_api, event);
         }
         else if (Office.context.requirements.isSetSupported('WordApi')) {
-            return launchDialogNavigation(urls.word_api, event, 60, 60);
+            return launchDialogNavigation(urls.word_api, event);
         }
         else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-            return launchDialogNavigation(urls.onenote_api, event, 60, 60);
+            return launchDialogNavigation(urls.onenote_api, event);
         }
         else {
             if (Utilities.host === HostType.POWERPOINT) {
-                return launchDialogNavigation(urls.powepoint_api, event, 60, 60);
+                return launchDialogNavigation(urls.powepoint_api, event);
             }
             else if (Utilities.host === HostType.PROJECT) {
-                return launchDialogNavigation(urls.project_api, event, 60, 60);
+                return launchDialogNavigation(urls.project_api, event);
             }
             else {
-                return launchDialogNavigation(urls.generic_api, event, 60, 60);
+                return launchDialogNavigation(urls.generic_api, event);
             }
         }
     };
