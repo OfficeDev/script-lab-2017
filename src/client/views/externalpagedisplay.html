@@ -11,6 +11,7 @@
 </head>
 
 <body>
+	<iframe id="pageDisplay"></iframe>
 	<script>
 		function getParameterByName(name, url) {
 			if (!url) {
@@ -23,9 +24,7 @@
 			if (!results[2]) return '';
 			return decodeURIComponent(results[2].replace(/\+/g, " "));
 		}
-
-		
-		    
+		document.getElementById('pageDisplay').src = getParameterByName("destination");
 	</script>
 </body>
 

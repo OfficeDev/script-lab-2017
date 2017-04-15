@@ -47,6 +47,18 @@ Office.initialize = () => {
             event.completed();
         }
     };
+    const launchInIframe = (url: string, event?: any, x?: number, y?: number) => {
+        let myOptions = null;
+        if (x && y) {
+            myOptions = { height: y, width: x };
+        }
+
+        Office.context.ui.displayDialogAsync(`${window.location.origin}/externalpagedisplay.html?destination=${url}`, myOptions, null);
+
+        if (event) {
+            event.completed();
+        }
+    };
 
     (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, 35, 45);
 
