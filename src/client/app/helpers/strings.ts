@@ -16,7 +16,8 @@ export class Strings {
 
     static readonly snippetImportError = 'Failed to import snippet';
     static readonly snippetImportErrorTitle = 'Import failed';
-    static readonly snippetImportErrorBody = `We couldn't import the snippet. Check your GIST ID or URL.`;
+    static readonly snippetImportErrorBody = `We couldn't import the snippet.`;
+    static readonly reloadPrompt = 'Reload this task pane and then try another URL or ID.';
 
     static readonly snippetSaveError = 'Failed to save the current snippet';
     static readonly snippetDupeError = 'Failed to duplicate the current snippet';

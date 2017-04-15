@@ -79,9 +79,11 @@ class Environment {
                 }, 2000);
 
                 Office.initialize = () => {
-                    clearTimeout(hostButtonsTimeout);
                     let { host, platform } = Utilities;
-                    return resolve({ host, platform });
+                    if (platform) {
+                        clearTimeout(hostButtonsTimeout);
+                        return resolve({ host, platform });
+                    }
                 };
             }
         });
