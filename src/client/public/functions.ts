@@ -42,7 +42,7 @@ Office.initialize = () => {
             // by default, use the iframe capability. Skip this setting if the destination can't be iframed.'
         }
 
-        Office.context.ui.displayDialogAsync(`${window.location.origin}/externalpagedisplay.html?destination=${url}`, myOptions, null);
+        Office.context.ui.displayDialogAsync(`${window.location.origin}/external-page.html?destination=${url}`, myOptions, null);
 
         if (event) {
             event.completed();
