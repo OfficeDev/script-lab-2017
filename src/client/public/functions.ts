@@ -20,6 +20,10 @@ Office.initialize = () => {
             myOptions['height'] = y;
             myOptions['width'] = x;
         }
+        else{
+            myOptions['height'] = 60;
+            myOptions['width'] = 60;
+        }
         if(!doNotIframe){
             myOptions['displayInIframe'] = true;
             // by default, use the iframe capability
@@ -34,8 +38,12 @@ Office.initialize = () => {
     const launchDialogNavigation = (url: string, event?: any, x?: number, y?: number, doNotIframe?: boolean) => {
         let myOptions = {};
         if (x && y) {
-            myOptions['height'] = y;
-            myOptions['width'] = x;
+            myOptions['height'] = 60;
+            myOptions['width'] = 60;
+        }
+        else{
+            x = 60;
+            y = 60;
         }
         if(!doNotIframe){
             myOptions['displayInIframe'] = true;
