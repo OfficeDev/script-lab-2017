@@ -106,6 +106,10 @@ module.exports = (prodMode) =>
                     to: 'tutorial.html',
                 },
                 {
+                    from: './views/externalpagedisplay.html',
+                    to: 'externalpagedisplay.html',
+                },
+                {
                     from: '../../config/env.config.js',
                     to: '../server/core/env.config.js',
                     transform: (content, path) => {

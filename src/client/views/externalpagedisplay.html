@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+	<title>About the APIs</title>
+
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+	<iframe id="pageDisplay" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe>
+	<script>
+		function getParameterByName(name, url) {
+			if (!url) {
+				url = window.location.href;
+			}
+			name = name.replace(/[\[\]]/g, "\\$&");
+			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+				results = regex.exec(url);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+		document.getElementById('pageDisplay').src = getParameterByName("destination");
+	</script>
+</body>
+
+</html>
