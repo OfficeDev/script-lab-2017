@@ -4,7 +4,7 @@ const { startCase } = require('lodash');
 
 const build = (() => {
     let timestamp = new Date().getTime();
-    
+
     return {
         name: startCase(name),
         version,

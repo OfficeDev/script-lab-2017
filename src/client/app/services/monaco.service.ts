@@ -7,7 +7,7 @@ const Regex = {
     STARTS_WITH_COMMENT: /^#.*|^\/\/.*|^\/\*.*|.*\*\/$.*/im,
     ENDS_WITH_CSS: /.*\.css$/i,
     ENDS_WITH_DTS: /.*\.d\.ts$/i,
-    GLOBAL: /.*/i
+    GLOBAL: /^.*/i
 };
 
 @Injectable()

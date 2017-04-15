@@ -13,7 +13,7 @@ import { loadTemplate } from './core/template.generator';
 import { snippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
 
-const { config, secrets } = require('./core/env.config.js');
+const { build, config, secrets } = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
 const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
@@ -167,6 +167,12 @@ registerRoute('post', '/compile/snippet', compileCommon);
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
+
+
+/** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
+registerRoute('get', '/version', (req, res) => {
+    throw new BadRequestError('Version information', JSON.stringify(build, null, 4));
+});
 
 
 // HELPERS

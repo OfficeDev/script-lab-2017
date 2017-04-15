@@ -35,6 +35,18 @@ import { isEmpty } from 'lodash';
                         <h1 class="ms-font-xxl import__title">{{strings.mySnippetsLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.mySnippetsDescription}}</p>
                         <collapse title="{{strings.localSnippetsLabel}}">
+                            <div *ngIf="showLocalStorageWarning" class="ms-MessageBar ms-MessageBar--warning">
+                                <div class="ms-MessageBar-content">
+                                    <div class="ms-MessageBar-icon">
+                                        <i class="ms-Icon ms-Icon--Warning"></i>
+                                    </div>
+                                    <div class="ms-MessageBar-text">
+                                        {{strings.localStorageWarning}}
+                                        <br />
+                                        <a href="javascript:void(0);" (click)="hideLocalStorageWarning()" class="ms-Link">{{strings.localStorageWarningAction}}</a> 
+                                    </div>
+                                </div>
+                            </div>
                             <gallery-list [selected]="activeSnippetId" [items]="snippets$|async" (select)="import($event)">
                                 {{strings.noLocalSnippets}}
                             </gallery-list>
@@ -71,7 +83,7 @@ import { isEmpty } from 'lodash';
                                 <div class="ms-MessageBar-text">
                                     {{strings.importWarning}}
                                     <br />
-                                    <a href="#" (click)="hideWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
+                                    <a href="javascript:void(0);" (click)="hideImportWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
                                 </div>
                             </div>
                         </div>
@@ -82,7 +94,7 @@ import { isEmpty } from 'lodash';
                         <div class="ms-TextField ms-TextField--multiline import__field">
                             <label class="ms-Label">{{strings.importYamlLabel}}</label>
                             <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
-                        </div>                        
+                        </div>
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
                                 <button class="ms-Dialog-action ms-Button" (click)="import() ">
@@ -100,6 +112,7 @@ export class Import {
     view = 'snippets';
     url: string;
     snippet: string;
+    showLocalStorageWarning: boolean;
     showImportWarning: boolean;
     activeSnippetId: string;
 
@@ -113,6 +126,7 @@ export class Import {
             .filter(snippet => snippet == null)
             .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
 
+        this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
     }
 
@@ -130,7 +144,12 @@ export class Import {
             return snippets;
         });
 
-    hideWarning() {
+    hideLocalStorageWarning() {
+        this.showLocalStorageWarning = false;
+        storage.settings.insert('disableLocalStorageWarning', true as any);
+    }
+
+    hideImportWarning() {
         this.showImportWarning = false;
         storage.settings.insert('disableImportWarning', true as any);
     }

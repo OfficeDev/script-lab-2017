@@ -56,7 +56,10 @@ let imports = [
         }
     }
     catch (e) {
-        $('.ms-progress-component__sub-title').text('Error initializing the Playground.');
+        $('.ms-progress-component__sub-title').text('Error initializing Script Lab.')
+            .click(() => {
+                $('.ms-progress-component__sub-title').text(JSON.stringify(e, null, 4));
+            });
         $('.ms-progress-component__footer').hide();
         AI.trackException(e, 'Playground Initialization');
     }
