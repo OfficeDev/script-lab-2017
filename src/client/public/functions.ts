@@ -20,11 +20,11 @@ Office.initialize = () => {
             myOptions['height'] = y;
             myOptions['width'] = x;
         }
-        else{
+        else {
             myOptions['height'] = 60;
             myOptions['width'] = 60;
         }
-        if(!doNotIframe){
+        if (!doNotIframe) {
             myOptions['displayInIframe'] = true;
             // by default, use the iframe capability
         }
@@ -41,11 +41,11 @@ Office.initialize = () => {
             myOptions['height'] = 60;
             myOptions['width'] = 60;
         }
-        else{
+        else {
             x = 60;
             y = 60;
         }
-        if(!doNotIframe){
+        if (!doNotIframe) {
             myOptions['displayInIframe'] = true;
             // by default, use the iframe capability. Skip this setting if the destination can't be iframed.'
         }
