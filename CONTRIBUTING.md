@@ -14,9 +14,10 @@ There are several ways in which you can contribute to the project:
 * Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
   * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
 * Download & install Node, version 6.9+.  <https://nodejs.org/en>.
-* Install `nodemon` for global use using
+* Download & install Yarn, for use as an alternative for `npm install`.  Download from  <https://yarnpkg.com/en/docs/install>.  The documentation also describes why Yarn is preferable to `npm install`.
+* Install `nodemon` for global use, using
 ~~~
-    npm install nodemon -g
+    yarn global add nodemon
 ~~~
 
 
@@ -30,7 +31,7 @@ There are several ways in which you can contribute to the project:
 3. Open the terminal from within VS Code (**View --> Integrated Terminal**)
 ![alt text](.github/images/vs-code-terminal.jpg)
 
-4. In the terminal, type in "npm install" and wait for all of the packages to be downloaded (this may take a few minutes).  The command prompt will return the control back to you once it's done.
+4. In the terminal, type in `yarn install` and wait for all of the packages to be downloaded (this may take a few minutes).  The command prompt will return the control back to you once it's done.
 
 5.	Run `npm start` in the terminal (or `ctrl+shift+b` and select `start` in the dropdown).  The process may pause for a few seconds, and you may see messages like "compilation complete"; but don't believe it!  You'll know that it's finally done when the web browser launches to https://localhost:3000, and when you see the following appear in the terminal:
 
@@ -50,7 +51,7 @@ There are several ways in which you can contribute to the project:
 
 ![](.github/images/trust-ssl-internet-explorer.gif).
 
-7.  Start the runner (server) by pressing `F5` within VS Code.  If you get an error that `nodemon` is not installed, be sure that you've installed it globally `npm install nodemon -g`, and that Node is part of your path.
+7.  Start the runner (server) by pressing `F5` within VS Code.  If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.
 
 The website is now running.  To try it out in an Add-in, see the next section.
 
@@ -72,7 +73,7 @@ At the root level of the repo, the folders of interest (and skipping over the ot
 * `config`: Configuration related to webpack & deployment
 * `dist`: The generated files for `client` and `server` (it has subfolders for each), which are the compiled and minified html/js/css/etc. (TODO: Add why generate and check in, and which commands generate these files)
 * `manifests`: Add-in manifests (both localhost and production) for side-loading the Add-in into Office applications.
-* `node_modules`: The folder with all the node module dependencies that get installed as part of `npm install`.
+* `node_modules`: The folder with all the node module dependencies that get installed as part of `yarn install`.
 * `server`: A stateless Node backend that receives a POST request with the snippet's HTML, TypeScript, CSS, and Libraries, and creates a web-browser-servable web page out of them. The server makes extensive use of [Handlebars.js](http://handlebarsjs.com/) for templates, which are located in the `server/templates` directory.
 * `typings`: Type definitions for a few of the libraries.
 
@@ -98,7 +99,7 @@ There are also files related to Azure deployment, git ignores, a Travis configur
   * Snippet renders correctly
   * "Run" from editor or run gallery, in-place refresh, and full refresh all work correctly (render the snippet, don't double-refresh, etc.). The run (either type) doesn't show a "snippet needs reloading" message if the snippet is already fresh.
   * Console log renders correctly (and scrolls correctly, if many lines)
-  * Erroneous code (e.g, syntax error) shows error correctly [**Currently doesn't work: [Issue #227](https://github.com/OfficeDev/script-lab/issues/227)**].
+  * Erroneous code (e.g, syntax error) shows error correctly.
   * Running deleted snippet has reasonable behavior.
   * [Side-by-side runner]:
     * Edit to code causes runner want to refresh.
@@ -106,3 +107,9 @@ There are also files related to Azure deployment, git ignores, a Travis configur
 * Sharing:
   * Copying to clipboard works
   * Can share as gist
+
+
+# Tips & tricks
+
+* There are two `package.json` files, one at the global level (for the client), and one inside of `src\server`. This can lead to differences in behavior between `localhost` and the deployed site, so be careful (e.g., if add one dependency in one place that should be shared, add it in both!). Their version numbers should also be bumped in synchrony.
+* On IE, `console.log` in the runner won't display anything in FirebugLite **if F12 tools are open**.  It works fine if they're closed.

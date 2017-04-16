@@ -2,15 +2,15 @@
 <html>
 
 <head>
-	<title>Launch Web Page</title>
+	<base href="/">
+	<title>About the APIs</title>
+
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
 </head>
 
 <body>
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 	<script>
 		function getParameterByName(name, url) {
 			if (!url) {
@@ -22,14 +22,9 @@
 			if (!results) return null;
 			if (!results[2]) return '';
 			return decodeURIComponent(results[2].replace(/\+/g, " "));
-		}    
-		
-		Office.initialize = function () {
-			window.open(getParameterByName("destination"));
-			Office.context.ui.messageParent("launched");
-        };
-        
-    </script>
+		}
+		window.location.href = getParameterByName("destination");
+	</script>
 </body>
 
 </html>

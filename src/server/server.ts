@@ -171,7 +171,12 @@ registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, tru
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/version', (req, res) => {
-    throw new BadRequestError('Version information', JSON.stringify(build, null, 4));
+    throw new BadRequestError('Version information', JSON.stringify({
+        build: build,
+        editorUrl: currentConfig.editorUrl,
+        runnerUrl: currentConfig.runnerUrl,
+        samplesUrl: currentConfig.samplesUrl
+    }, null, 4));
 });
 
 

@@ -3,14 +3,12 @@ const moment = require('moment');
 const { startCase } = require('lodash');
 
 const build = (() => {
-    let timestamp = new Date().getTime();
-
     return {
         name: startCase(name),
-        version,
-        timestamp,
-        humanReadibleTimestamp: moment(timestamp).utcOffset("PDT").format('YYYY-MM-DD hh:mm a'),
-        author
+        version: version,
+        timestamp: moment().utc().valueOf(),
+        humanReadibleTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
+        author: author
     };
 })();
 

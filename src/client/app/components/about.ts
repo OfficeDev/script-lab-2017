@@ -9,10 +9,11 @@ import { environment, storageSize, Strings, storage } from '../helpers';
             <div class="about">
                 <div class="about__image"></div>
                 <div class="about__details">
-                    <div class="about__primary-text ms-font-xxl">{{config?.name}}</div>
+                    <div class="about__primary-text ms-font-xxl">{{config?.build?.name}}</div>
                     <div class="profile__tertiary-text ms-font-m">User ID: ${storage.user}</div>
-                    <div class="about__secondary-text ms-font-l">Version: {{config?.version}}
-                    <br/><span class="ms-font-m">(Deployed {{config?.humanReadibleTimestamp}})</span>
+                    <div class="about__secondary-text ms-font-l">Version: {{config?.build?.version}}
+                    <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadibleTimestamp}})</span>
+                    <br/><span class="ms-font-m">{{config?.editorUrl}}</span>
                     </div>
                     <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
                 </div>
@@ -31,7 +32,10 @@ import { environment, storageSize, Strings, storage } from '../helpers';
 export class About {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
-    config = environment.current.build;
+    config = {
+        build: environment.current.build,
+        editorUrl: environment.current.config.editorUrl,
+    };
 
     cache = `
     ${Strings.aboutStorage}
