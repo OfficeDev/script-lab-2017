@@ -5,7 +5,6 @@ Office.initialize = () => {
         //tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
         tutorial: `${window.location.origin}/tutorial.html`,
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
-        feedback: 'https://github.com/OfficeDev/script-lab/issues',
         ask: 'https://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
         word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
@@ -36,9 +35,7 @@ Office.initialize = () => {
 
     (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, { width: 35, height: 45 });
 
-    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event);
-
-    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event);
+    (window as any).launchHelp = (event) => launchDialogNavigation(urls.playground_help, event, { displayInIframe: false });
 
     (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, { displayInIframe: false });
 
