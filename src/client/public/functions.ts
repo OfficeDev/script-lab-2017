@@ -5,7 +5,6 @@ Office.initialize = () => {
         //tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
         tutorial: `${window.location.origin}/tutorial.html`,
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
-        feedback: 'https://github.com/OfficeDev/script-lab/issues',
         ask: 'https://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
         word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
@@ -14,56 +13,31 @@ Office.initialize = () => {
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
         generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
     };
-    const launchInDialog = (url: string, event?: any, x?: number, y?: number, doNotIframe?: boolean) => {
-        let myOptions = {};
-        if (x && y) {
-            myOptions['height'] = y;
-            myOptions['width'] = x;
-        }
-        else {
-            myOptions['height'] = 60;
-            myOptions['width'] = 60;
-        }
-        if (!doNotIframe) {
-            myOptions['displayInIframe'] = true;
-            // by default, use the iframe capability
+
+    const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+        options = options || {};
+        options.width = options.width || 60;
+        options.height = options.height || 60;
+        if (typeof options.displayInIframe === 'undefined') {
+            options.displayInIframe = true;
         }
 
-        Office.context.ui.displayDialogAsync(url, myOptions, null);
-
-        if (event) {
-            event.completed();
-        }
-    };
-    const launchDialogNavigation = (url: string, event?: any, x?: number, y?: number, doNotIframe?: boolean) => {
-        let myOptions = {};
-        if (x && y) {
-            myOptions['height'] = y;
-            myOptions['width'] = x;
-        }
-        else {
-            myOptions['height'] = 60;
-            myOptions['width'] = 60;
-        }
-        if (!doNotIframe) {
-            myOptions['displayInIframe'] = true;
-            // by default, use the iframe capability. Skip this setting if the destination can't be iframed.'
-        }
-
-        Office.context.ui.displayDialogAsync(`${window.location.origin}/external-page.html?destination=${url}`, myOptions, null);
+        Office.context.ui.displayDialogAsync(url, options, null);
 
         if (event) {
             event.completed();
         }
     };
 
-    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, 35, 45);
+    const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+        launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
+    };
 
-    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event);
+    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, { width: 35, height: 45 });
 
-    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event);
+    (window as any).launchHelp = (event) => launchDialogNavigation(urls.playground_help, event, { displayInIframe: false });
 
-    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, 60, 60, true);
+    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, { displayInIframe: false });
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
