@@ -35,7 +35,7 @@ Office.initialize = () => {
             event.completed();
         }
     };
-    const launchDialogNavigation = (url: string, event?: any, x?: number, y?: number, doNotIframe?: boolean) => {
+    const launchDialogNavigation = (url: string, event: any, x?: number, y?: number, doNotIframe?: boolean) => {
         let myOptions = {};
         if (x && y) {
             myOptions['height'] = y;
