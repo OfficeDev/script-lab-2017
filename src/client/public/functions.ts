@@ -29,7 +29,7 @@ Office.initialize = () => {
             event.completed();
         }
     };
-    
+
     const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
         launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
     };
