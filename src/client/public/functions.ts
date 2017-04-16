@@ -5,7 +5,6 @@ Office.initialize = () => {
         //tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
         tutorial: `${window.location.origin}/tutorial.html`,
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
-        feedback: 'https://github.com/OfficeDev/script-lab/issues',
         ask: 'https://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
         word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
@@ -14,67 +13,51 @@ Office.initialize = () => {
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
         generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
     };
-    /*
-        const launch = (url: string, event?: any) => {
-            window.open(url);
-            if (event) {
-                event.completed();
-            }
-        };
-        const launchFromDialog = (url: string, event?: any) => {
-            let dialog;
-            Office.context.ui.displayDialogAsync(`${window.location.origin}/webpagelauncher.html?destination=${url}`, { height: 1, width: 1 }, (asyncResult) => {
-                dialog = asyncResult.value;
-                dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-                    dialog.close();
-                    // arg.message
-                });
-            });
-            if (event) {
-                event.completed();
-            }
-        };
-    */
-    const launchInDialog = (url: string, event?: any, x?: number, y?: number) => {
-        let myOptions = null;
-        if (x && y) {
-            myOptions = { height: y, width: x };
+
+    const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+        options = options || {};
+        options.width = options.width || 60;
+        options.height = options.height || 60;
+        if (typeof options.displayInIframe === 'undefined') {
+            options.displayInIframe = true;
         }
 
-        Office.context.ui.displayDialogAsync(url, myOptions, null);
+        Office.context.ui.displayDialogAsync(url, options, null);
 
         if (event) {
             event.completed();
         }
     };
 
-    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, 35, 45);
+    const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+        launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
+    };
 
-    (window as any).launchHelp = (event) => launchInDialog(urls.playground_help, event, 60, 60);
+    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, { width: 35, height: 45 });
 
-    (window as any).launchFeedback = (event) => launchInDialog(urls.feedback, event, 60, 60);
+    (window as any).launchHelp = (event) => launchDialogNavigation(urls.playground_help, event, { displayInIframe: false });
 
-    (window as any).launchAsk = (event) => launchInDialog(urls.ask, event, 60, 60);
+    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, { displayInIframe: false });
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
-            return launchInDialog(urls.excel_api, event, 60, 60);
+            return launchDialogNavigation(urls.excel_api, event);
         }
         else if (Office.context.requirements.isSetSupported('WordApi')) {
-            return launchInDialog(urls.word_api, event, 60, 60);
+            return launchDialogNavigation(urls.word_api, event);
         }
         else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-            return launchInDialog(urls.onenote_api, event, 60, 60);
+            return launchDialogNavigation(urls.onenote_api, event);
         }
         else {
             if (Utilities.host === HostType.POWERPOINT) {
-                return launchInDialog(urls.powepoint_api, event, 60, 60);
+                return launchDialogNavigation(urls.powepoint_api, event);
             }
             else if (Utilities.host === HostType.PROJECT) {
-                return launchInDialog(urls.project_api, event, 60, 60);
+                return launchDialogNavigation(urls.project_api, event);
             }
             else {
-                return launchInDialog(urls.generic_api, event, 60, 60);
+                return launchDialogNavigation(urls.generic_api, event);
             }
         }
     };
