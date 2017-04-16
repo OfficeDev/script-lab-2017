@@ -143,8 +143,12 @@
     {{!-- A hidden but taking-up-space div to serve in place of the snippet         --}}
     {{!-- (That way, Firebug doesn't take up the entirety of the screen initially). --}}
     {{!-- It will get replaced when the real snippet frame loads                    --}}
-    <div class="snippet-frame fullscreen" style="visibility:hidden">
+    <div class="snippet-frame" style="visibility:hidden">
     </div>
+
+    {{!-- A flexbox div whose sole purpose in to act as a flexbox size-alike to the --}}
+    {{!-- "position:absolute" FirebugUI element                                     --}}
+    <div id="firebug-shadow"></div>
 
     <script src="{{{origin}}}/polyfills.bundle.js"></script>
     <script src="{{{origin}}}/vendor.bundle.js"></script>
