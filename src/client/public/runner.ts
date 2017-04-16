@@ -102,10 +102,8 @@ interface InitializationParams {
             initializeTooltipUpdater();
 
             // create an observer for firebug resizing
-            var observer = new MutationObserver(function (mutations) {
-                mutations.forEach(snippetAndConsoleRefreshSize);
-            });
-            observer.observe(document.getElementById('FirebugUI'), { attributes: true });
+            (new MutationObserver(mutations => mutations.forEach(snippetAndConsoleRefreshSize)))
+                .observe(document.getElementById('FirebugUI'), { attributes: true });
         }
     }
 
