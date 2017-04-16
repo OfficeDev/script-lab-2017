@@ -10495,7 +10495,13 @@ append(ChromeBase,
                             }
                         }
 
-                        a[a.length - 1].scrollIntoView();
+                        var elementToScroll = a[a.length - 1];
+                        // On Safari, use a proprietary method -- or else the UI breaks if Firebug had previously been resized
+                        if (elementToScroll.scrollIntoViewIfNeeded) {
+                            elementToScroll.scrollIntoViewIfNeeded();
+                        } else {
+                            elementToScroll.scrollIntoView();
+                        }
                     }
                 }
             });

@@ -100,6 +100,12 @@ interface InitializationParams {
             $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/));
 
             initializeTooltipUpdater();
+
+            // create an observer for firebug resizing
+            var observer = new MutationObserver(function (mutations) {
+                mutations.forEach(snippetAndConsoleRefreshSize);
+            });
+            observer.observe(document.getElementById('FirebugUI'), { attributes: true });
         }
     }
 
@@ -113,11 +119,11 @@ interface InitializationParams {
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
         $('.snippet-frame').remove();
 
-        const $emptySnippetPlaceholder = $('<div class="snippet-frame fullscreen"></div>')
+        const $emptySnippetPlaceholder = $('<div class="snippet-frame"></div>')
             .insertAfter($snippetContent);
 
         const $iframe =
-            $('<iframe class="snippet-frame fullscreen" style="display:none" src="about:blank"></iframe>')
+            $('<iframe class="snippet-frame" style="display:none" src="about:blank"></iframe>')
                 .insertAfter($snippetContent);
 
         const iframe = $iframe[0] as HTMLIFrameElement;
@@ -135,6 +141,7 @@ interface InitializationParams {
             $emptySnippetPlaceholder.remove();
             $iframe.show();
             toggleProgress(false);
+            snippetAndConsoleRefreshSize();
         };
 
         (window as any).scriptRunnerEndInit = () => {
@@ -409,6 +416,30 @@ interface InitializationParams {
         function refreshLastUpdatedText() {
             $headerTitle.attr('title', `Last updated ${moment(currentSnippet.lastModified).fromNow()}. Click to refresh`);
         }
+    }
+
+    function snippetAndConsoleRefreshSize() {
+        const heightWithPxSuffix = document.getElementById('FirebugUI').style.height;
+        const heightPixels = heightWithPxSuffix.substr(0, heightWithPxSuffix.length - 'px'.length);
+        const flexProperties = ['-webkit-flex', '-ms-flex', 'flex'];
+
+        // On Safari (and maybe others), need to reset the flex rule in order to cause a flex recomputation
+        // Note: will be setting (overriding)( all of the "style" element, but as no one else touches it
+        // or does a jQuery hide/show on it (or at least, it's OK to override), that is OK.
+        const $snippetFrame = $('.snippet-frame');
+        const $shadow = $('#firebug-shadow');
+
+        $shadow.attr('style', '');
+        $snippetFrame.attr('style', '');
+
+        setTimeout(() => {
+            $shadow.attr('style',
+                flexProperties.map(prefix => `${prefix}: 0 0 ${heightPixels}px`).join('; ')
+            );
+            $snippetFrame.attr('style',
+                flexProperties.map(prefix => `${prefix}: 1 1 1px`).join('; ')
+            );
+        }, 0);
     }
 
 })();
