@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/script-lab)
+[![EDGE](https://img.shields.io/badge/EDGE-bornholm--edge-orange.svg)](https://bornholm-edge.azurewebsites.net)
+
 # Script Lab, a Microsoft Garage project
 Experiment with the Office JavaScript API without ever leaving Excel, Word, or PowerPoint! 
 
@@ -34,6 +37,3 @@ You can [install Script Lab right now for free from the Office Store](https://st
 ## Contribute code or samples to Script Lab
 
 To contribute to Script Lab itself, or to contribute sample code, please see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-[![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/script-lab)
-[![EDGE](https://img.shields.io/badge/EDGE-bornholm--edge-orange.svg)](https://bornholm-edge.azurewebsites.net)
