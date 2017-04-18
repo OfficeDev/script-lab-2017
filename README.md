@@ -7,14 +7,6 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, or P
 * [What is Script Lab?](README.md#what-is)
 * How do I...
     - [Get started?]() 
-    - [Browse the samples?]() (coming soon!)
-    - [Create a new snippet?]() (coming soon!)
-    - [Edit the HTML and CSS?]() (coming soon!)
-    - [Save my snippet?]() (coming soon!)
-    - [Run my snippet code?]() (coming soon!)
-    - [Share my snippet with someone else?]() (coming soon!)
-    - [Switch to a snippet I edited before?]() (coming soon!)
-    - [Create an add-in from my snippet?]() (coming soon!)
     - [Contribute code to Script Lab?](README.md#contribute)
 
 <a id="what-is"></a>
