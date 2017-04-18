@@ -6,7 +6,8 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, or P
 ## Topics
 * [What is Script Lab?](README.md#what-is)
 * How do I...
-    - [Get started?](README.md/get-started) 
+    - [Get started?](README.md/#get-started) 
+    - [Stay up-to-date?](README.md/#up-to-date)
     - [Contribute code to Script Lab?](README.md#contribute)
 
 <a id="what-is"></a>
@@ -28,6 +29,11 @@ You can [install Script Lab right now for free from the Office Store](https://st
 ## Get Started
 
 The easiest way to try Script Lab is with the Tutorial file for Excel that walks you through the tool in a few steps. You can get it here on GitHub: [script-lab-tutorial.xlsx](https://github.com/OfficeDev/script-lab/blob/master/src/client/assets/documents/script-lab-tutorial.xlsx)
+
+<a id="up-to-date"></a>
+## Stay up-to-date
+* Follow [@OfficeDev](https://twitter.com/OfficeDev) on Twitter
+* Join our Office Developer program at [dev.office.com](https://dev.office.com/)
 
 <a id="contribute"></a>
 ## Contribute code or samples to Script Lab
