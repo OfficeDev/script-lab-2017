@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/script-lab)
 
 # Script Lab, a Microsoft Garage project
-Experiment with the Office JavaScript API without ever leaving Excel, Word, or PowerPoint! 
+Experiment with the Office JavaScript API without ever leaving Excel, Word, or PowerPoint! Free, from the [Office Store](https://store.office.com/app.aspx?assetid=WA104380862)
 
 ## Topics
 * [What is Script Lab?](README.md#what-is)
 * How do I...
-    - [Get started?]() 
+    - [Get started?](README.md/get-started) 
     - [Contribute code to Script Lab?](README.md#contribute)
 
 <a id="what-is"></a>
@@ -23,6 +23,11 @@ Script Lab has three main features:
 You can [install Script Lab right now for free from the Office Store](https://store.office.com/app.aspx?assetid=WA104380862)! It works for Excel, Word, and PowerPoint on Office 2013 and later, Office Online, and Office for Mac.
 
 ![picture alt](.github/images/screenshot-wide.png "Script Lab screenshot in Excel")
+
+<a id="get-started"></a>
+## Get Started
+
+The easiest way to try Script Lab is with the Tutorial file for Excel that walks you through the tool in a few steps. You can get it here on GitHub: [script-lab-tutorial.xlsx](https://github.com/OfficeDev/script-lab/blob/master/src/client/assets/documents/script-lab-tutorial.xlsx)
 
 <a id="contribute"></a>
 ## Contribute code or samples to Script Lab
