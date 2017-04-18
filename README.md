@@ -23,6 +23,8 @@ Script Lab has three main features:
 
 You can [install Script Lab right now for free from the Office Store](https://store.office.com/app.aspx?assetid=WA104380862)! It works for Excel, Word, and PowerPoint, and Project on Office 2013 and later, Office Online, and Office for Mac. Check out our [teaser video on YouTube](https://youtu.be/yt6os8zPUKc)!
 
+Script Lab is a Microsoft Garage project that began as a hackathon project. You can read our story on the [Garage website](https://www.microsoft.com/en-us/garage/project-details.aspx?project=script-lab)
+
 ![picture alt](.github/images/screenshot-wide.png "Script Lab screenshot in Excel")
 
 <a id="get-started"></a>
