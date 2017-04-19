@@ -8,6 +8,7 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, Powe
 * How do I...
     - [Get started?](README.md/#get-started) 
     - [Stay up-to-date?](README.md/#up-to-date)
+    - [Report a bug?](README.md#report-bug)
     - [Contribute code to Script Lab?](README.md#contribute)
 
 <a id="what-is"></a>
@@ -25,7 +26,7 @@ You can [install Script Lab right now for free from the Office Store](https://st
 
 Script Lab is a Microsoft Garage project that began as a hackathon project. You can read our story on the [Garage website](https://www.microsoft.com/en-us/garage/project-details.aspx?project=script-lab)
 
-[![picture alt](.github/images/screenshot-wide-youtube.png "Script Lab teaser video")](https://aka.ms/scriptlabvideo)
+[![Script Lab teaser video](.github/images/screenshot-wide-youtube.png "Script Lab teaser video")](https://aka.ms/scriptlabvideo)
 
 <a id="get-started"></a>
 ## Get Started
@@ -36,6 +37,17 @@ The easiest way to try Script Lab is with the Tutorial file for Excel that walks
 ## Stay up-to-date
 * Follow [@OfficeDev](https://twitter.com/OfficeDev) on Twitter
 * Join our Office Developer program at [dev.office.com](https://dev.office.com/)
+
+<a id="report-bug"></a>
+## Report a bug
+To report a bug, [create a new issue](https://github.com/OfficeDev/script-lab/issues/new).  Please provide as much detail as you can -- the operating system, the Office build number, which browser the error occurred in (if using Office Online).
+
+It can also help us search the logs if you provide the Script Lab user ID (a generated unique ID, which is created per-device, and stays assigned to you until you clear your browser cache). You can find this ID under the "about" section in the editor:
+
+![About -> User ID](.github/images/screenshot-about-user-id.jpg)
+
+If it's more of a question than an issue, please ask the question on <https://stackoverflow.com> instead, tagging it with `office-js` and `scriptlab`.
+
 
 <a id="contribute"></a>
 ## Contribute code or samples to Script Lab
