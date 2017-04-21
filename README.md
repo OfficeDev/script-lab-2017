@@ -7,8 +7,10 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, Powe
 * [What is Script Lab?](README.md#what-is)
 * How do I...
     - [Get started?](README.md/#get-started) 
+    - [Use Script Lab in **Office 2013?**](README.md/#office-2013)
     - [Stay up-to-date?](README.md/#up-to-date)
     - [Report a bug?](README.md#report-bug)
+    - [Rate and review?](README.md#rate-and-review)
     - [Contribute code to Script Lab?](README.md#contribute)
 
 <a id="what-is"></a>
@@ -33,6 +35,18 @@ Script Lab is a Microsoft Garage project that began as a hackathon project. You 
 
 The easiest way to try Script Lab is with the Tutorial file for Excel that walks you through the tool in a few steps. You can get it here on GitHub: [script-lab-tutorial.xlsx](https://github.com/OfficeDev/script-lab/blob/master/src/client/assets/documents/script-lab-tutorial.xlsx)
 
+Alternatively, you can start from scratch and [install Script Lab from the Store](https://store.office.com/app.aspx?assetid=WA104380862).
+
+<a id="office-2013"></a>
+## Use Script Lab with Office 2013
+Office 2013 has several limitations compared to more recent versions.
+
+First, there are far fewer supported objects and methods in the JavaScript API for Office 2013. As a result, many snippets that work on later versions of Office will not run in Office 2013. In the **Samples** menu we have included certain samples specifically designed to use only capabilities that are available in Office 2013. Those samples are marked **(2013)** in the sample title.
+
+Second, Office 2013 does not support ribbon buttons for Script Lab. As a result, there's a different way to access the **Code** and **Run** functions:
+* To **Code**, select the **INSERT** tab and choose **My Add-ins**, then insert Script Lab.
+* To **Run** a snippet, click the small **Run** triangle icon at the top of the Script Lab code pane.
+
 <a id="up-to-date"></a>
 ## Stay up-to-date
 * Follow [@OfficeDev](https://twitter.com/OfficeDev) on Twitter
@@ -44,10 +58,12 @@ To report a bug, [create a new issue](https://github.com/OfficeDev/script-lab/is
 
 It can also help to provide your Script Lab User ID (we generate it randomly for each device and it stays assigned to you until you clear your browser cache). You can find this ID under the **About** section in the editor view:
 
-![About -> User ID](.github/images/screenshot-about-user-id.jpg)
+<a id="rate-and-review"></a>
+## Rate and review
 
-If you have a question, ask it on <https://stackoverflow.com> instead. Tag your questions with `office-js` and `scriptlab`.
+Leave a star-rating and (optionally) a review blurb for Script Lab on the [Office Store review page](https://store.office.com/writereview.aspx?assetid=WA104380862).
 
+Of course, we'd prefer that if you have issues you [report them on GitHub](https://github.com/OfficeDev/script-lab/issues/new) instead, but you're free to leave any review comments you wish.
 
 <a id="contribute"></a>
 ## Contribute code or samples to Script Lab
