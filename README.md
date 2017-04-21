@@ -7,7 +7,7 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, Powe
 * [What is Script Lab?](README.md#what-is)
 * How do I...
     - [Get started?](README.md/#get-started) 
-    - [Use Script Lab in **Office 2013?**](README.md/#office-2013)
+    - [Use Script Lab in Office 2013?](README.md/#office-2013)
     - [Stay up-to-date?](README.md/#up-to-date)
     - [Report a bug?](README.md#report-bug)
     - [Rate and review?](README.md#rate-and-review)
