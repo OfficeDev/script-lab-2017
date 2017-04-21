@@ -40,13 +40,13 @@ The easiest way to try Script Lab is with the Tutorial file for Excel that walks
 
 <a id="report-bug"></a>
 ## Report a bug
-To report a bug, [create a new issue](https://github.com/OfficeDev/script-lab/issues/new).  Please provide as much detail as you can -- the operating system, the Office build number, which browser the error occurred in (if using Office Online).
+To report a bug, [create a new issue](https://github.com/OfficeDev/script-lab/issues/new). Please provide as much detail as you can: tell us the operating system, the Office build number, and your browser (if you're using Office Online).
 
-It can also help us search the logs if you provide the Script Lab user ID (a generated unique ID, which is created per-device, and stays assigned to you until you clear your browser cache). You can find this ID under the "about" section in the editor:
+It can also help to provide your Script Lab User ID (we generate it randomly for each device and it stays assigned to you until you clear your browser cache). You can find this ID under the **About** section in the editor view:
 
 ![About -> User ID](.github/images/screenshot-about-user-id.jpg)
 
-If it's more of a question than an issue, please ask the question on <https://stackoverflow.com> instead, tagging it with `office-js` and `scriptlab`.
+If you have a question, ask it on <https://stackoverflow.com> instead. Tag your questions with `office-js` and `scriptlab`.
 
 
 <a id="contribute"></a>
