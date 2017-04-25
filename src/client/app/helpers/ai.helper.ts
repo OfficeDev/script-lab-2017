@@ -27,6 +27,7 @@ class ApplicationInsights {
         try {
             this._disable = disable || environment.current.devMode;
             this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
+            this._current.config.disableAjaxTracking = true;
             this.setAuthenticatedUserContext();
         }
         catch (e) {

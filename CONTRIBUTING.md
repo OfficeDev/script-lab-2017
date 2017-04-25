@@ -3,7 +3,7 @@
 There are several ways in which you can contribute to the project:
 
 1. **Log bugs or file feature suggestions**. To do this, simply file the bugs/suggestions in the Issues tab on GitHub for this project.
-2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/script-lab-samples>**.
+2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/office-js-snippets>**.
 3. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
 
 
