@@ -482,7 +482,10 @@ var findLocation =  function findLocation()
         }
         else if (fileName == "firebug-lite-debug.js")
         {
-            Env.isDebugMode = true;
+            // [BEGIN PLAYGROUND MODIFICATION]
+            // Uncommenting "Env.isDebugMode = true;", since don't want to use the filename
+            // to determine debug mode or not.
+            // [BEGIN PLAYGROUND MODIFICATION]
         }
 
         // process the <html debug="true">
@@ -9887,48 +9890,53 @@ append(ChromeBase,
             [
                 {
                     label: "Open Firebug",
-                    type: "shortcut",
-                    key: isFirefox ? "Shift+F12" : "F12",
+                    // [BEGIN PLAYGROUND MODIFICATION]
+                    // Uncomment shortcut type:     type: "shortcut",
+                    // Ucomment shortcut key:       key: isFirefox ? "Shift+F12" : "F12",
+                    // [END PLAYGROUND MODIFICATION]
                     checked: true,
                     command: "toggleChrome"
                 },
-                {
-                    label: "Open Firebug in New Window",
-                    type: "shortcut",
-                    key: isFirefox ? "Ctrl+Shift+F12" : "Ctrl+F12",
-                    command: "openPopup"
-                },
-                {
-                    label: "Inspect Element",
-                    type: "shortcut",
-                    key: "Ctrl+Shift+C",
-                    command: "toggleInspect"
-                },
-                {
-                    label: "Command Line",
-                    type: "shortcut",
-                    key: "Ctrl+Shift+L",
-                    command: "focusCommandLine"
-                },
-                "-",
-                {
-                    label: "Options",
-                    type: "group",
-                    child: "fbFirebugOptionsMenu"
-                },
+                // [BEGIN PLAYGROUND MODIFICATION]
+                // Uncomment unwanted menu elements:
+                // {
+                //     label: "Open Firebug in New Window",
+                //     type: "shortcut",
+                //     key: isFirefox ? "Ctrl+Shift+F12" : "Ctrl+F12",
+                //     command: "openPopup"
+                // },
+                // {
+                //     label: "Inspect Element",
+                //     type: "shortcut",
+                //     key: "Ctrl+Shift+C",
+                //     command: "toggleInspect"
+                // },
+                // {
+                //     label: "Command Line",
+                //     type: "shortcut",
+                //     key: "Ctrl+Shift+L",
+                //     command: "focusCommandLine"
+                // },
+                // "-",
+                // {
+                //     label: "Options",
+                //     type: "group",
+                //     child: "fbFirebugOptionsMenu"
+                // },
                 "-",
                 {
                     label: "Firebug Lite Website...",
                     command: "visitWebsite"
                 },
-                {
-                    label: "Discussion Group...",
-                    command: "visitDiscussionGroup"
-                },
-                {
-                    label: "Issue Tracker...",
-                    command: "visitIssueTracker"
-                }
+                // {
+                //     label: "Discussion Group...",
+                //     command: "visitDiscussionGroup"
+                // },
+                // {
+                //     label: "Issue Tracker...",
+                //     command: "visitIssueTracker"
+                // }
+                // [END PLAYGROUND MODIFICATION]
             ],
 
             onHide: function()
@@ -31259,7 +31267,7 @@ FirebugChrome.Skin.CSS =
         window.origin + '/assets/firebug/') +
     '\n' +
     [
-        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2, #fbLargeCommandLineIcon {',
+        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2, #fbLargeCommandLineIcon, #fbWindow_btDeactivate, #fbWindow_btDetach {',
         '    display: none !important;',
         '}',
         '',
