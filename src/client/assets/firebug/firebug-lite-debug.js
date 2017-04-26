@@ -482,7 +482,10 @@ var findLocation =  function findLocation()
         }
         else if (fileName == "firebug-lite-debug.js")
         {
-            Env.isDebugMode = true;
+            // [BEGIN PLAYGROUND MODIFICATION]
+            // Uncommenting "Env.isDebugMode = true;", since don't want to use the filename
+            // to determine debug mode or not.
+            // [BEGIN PLAYGROUND MODIFICATION]
         }
 
         // process the <html debug="true">
@@ -31259,8 +31262,13 @@ FirebugChrome.Skin.CSS =
         window.origin + '/assets/firebug/') +
     '\n' +
     [
-        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2, #fbLargeCommandLineIcon {',
+        '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2, #fbLargeCommandLineIcon, #fbFirebugButton, #fbWindow_btDeactivate, #fbWindow_btDetach {',
         '    display: none !important;',
+        '}',
+        '',
+        '#fbWindowButtons > a {',
+        '    -webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */',
+        '    filter: grayscale(100%);',
         '}',
         '',
         '#fbPanelBox1, #fbFitHeight {',
