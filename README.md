@@ -58,6 +58,12 @@ To report a bug, [create a new issue](https://github.com/OfficeDev/script-lab/is
 
 It can also help to provide your Script Lab User ID (we generate it randomly for each device and it stays assigned to you until you clear your browser cache). You can find this ID under the **About** section in the editor view:
 
+![About -> User ID](.github/images/screenshot-about-user-id.jpg)
+
+If you have a suggestion for a feature, please feel free to file it under "issues" as well, and we will tag it appropriately.  The more detail, the better!  We also gladly accept pull requests... (see more at [CONTRIBUTING.md](CONTRIBUTING.md)).
+
+Finally, if you have a **question**, please ask it on <https://stackoverflow.com> instead. Tag your questions with `office-js` and `scriptlab`.
+
 <a id="rate-and-review"></a>
 ## Rate and review
 
