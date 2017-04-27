@@ -19,7 +19,7 @@
     </style>
 
     {{#if officeJS}}
-    <script src="{{{officeJS}}}"></script>
+    <script crossorigin="anonymous" src="{{{officeJS}}}"></script>
 
     <script>
         Office.initialize = function() {
@@ -150,9 +150,9 @@
     {{!-- "position:absolute" FirebugUI element                                     --}}
     <div id="firebug-shadow"></div>
 
-    <script src="{{{origin}}}/polyfills.bundle.js"></script>
-    <script src="{{{origin}}}/vendor.bundle.js"></script>
-    <script src="{{{origin}}}/runner.bundle.js"></script>
+    <script crossorigin="anonymous" src="{{{origin}}}/polyfills.bundle.js"></script>
+    <script crossorigin="anonymous" src="{{{origin}}}/vendor.bundle.js"></script>
+    <script crossorigin="anonymous" src="{{{origin}}}/runner.bundle.js"></script>
 
     <script type="text/javascript">
         window.initializeRunner({
