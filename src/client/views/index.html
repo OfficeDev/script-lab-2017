@@ -27,6 +27,21 @@
 
 	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.min.css" />
 	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.components.min.css" />
+
+	<script>
+		(function() {
+			var azureEdgeRegex = /(http[s]?:\/\/)(script-lab)(\.azureedge\.net.*)/;
+			// matches "script-lab" as group #2 for all cases
+			// http://script-lab.azureedge.net
+			// https://script-lab.azureedge.net
+			// https://script-lab.azureedge.net/?mode=web
+			// http://script-lab.azureedge.net/?mode=web
+			var result = azureEdgeRegex.exec(window.location);
+			if (result) {
+				window.location.href = result[1] + "scriptlab" + result[3];
+			}
+		})();
+	</script>
 </head>
 
 <body class="ms-font-m">
