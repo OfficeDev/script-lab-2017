@@ -133,7 +133,7 @@ interface IEnvironment {
         version: string;
         timestamp: string;
         author: string;
-        humanReadibleTimestamp: string;
+        humanReadableTimestamp: string;
     },
     config?: IEnvironmentConfig
     host?: string,
