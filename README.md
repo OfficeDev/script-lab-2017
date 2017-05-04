@@ -5,16 +5,16 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, Powe
 
 ## Topics
 * [What is Script Lab?](README.md#what-is)
-* [Getting Started](README.md/#get-started)
-* [Articles & FAQs](README.md/#articles)
 * [External blog posts & media coverage](README.md/#external-posts)
 * [How do I...](README.md/#how-do-i)
     - [Import someone else's snippet?](README.md#import)
     - [Report a bug, or suggest a feature?](README.md#report-bug)
     - [Contribute to Script Lab?](README.md#contribute)
-    - [Use Script Lab with older Office versions (Office 2013)](README.md/#office-2013)
+    - [Use Script Lab with older Office versions (Office 2013)?](README.md/#office-2013)
     - [Stay up-to-date?](README.md/#up-to-date)
     - [Rate and review?](README.md#rate-and-review)
+* [Getting Started](README.md/#get-started)
+* [Articles & FAQs](README.md/#articles)
 * [Meet the Team](README.md/#meet-the-team)
 
 <a id="what-is"></a>
@@ -41,19 +41,6 @@ Script Lab is a Microsoft Garage project that began as a hackathon project. You 
 The easiest way to try Script Lab is with the Tutorial file for Excel that walks you through the tool in a few steps. You can get it here on GitHub: [script-lab-tutorial.xlsx](https://github.com/OfficeDev/script-lab/blob/master/src/client/assets/documents/script-lab-tutorial.xlsx)
 
 Alternatively, you can start from scratch and [install Script Lab from the Store](https://store.office.com/app.aspx?assetid=WA104380862).
-
-
-<a id="articles"></a>
-## Articles & FAQs
-
-* Script Lab overview: ["You can write JavaScript in Excel!"](https://medium.com/script-lab/you-can-write-javascript-in-excel-4ba588a948bd)
-* Project history & the technology behind it: [Episode 127 on the Office 365 Developer Podcast](https://blogs.office.com/2017/04/20/episode-127-new-script-lab-office-add-michael-zlatkovsky-bhargav-krishna-office-365-developer-podcast/)
-
-<a id="external-posts"></a>
-## External blog posts & media coverage
-
-* May 1, 2017: *[German]* ["Prototyping von Microsoft Office JavaScript Add-Ins mit Script Lab"](http://www.excel-ticker.de/prototyping-von-microsoft-office-javascript-add-ins-mit-script-lab/).  (Auto-translation: ["Prototyping Microsoft Office JavaScript add-ins with Script Lab"](http://www.microsofttranslator.com/bv.aspx?&lo=TP&from=de&to=en&a=http%3A%2F%2Fwww.excel-ticker.de%2Fprototyping-von-microsoft-office-javascript-add-ins-mit-script-lab%2F).  *Written by [Mourad Louha](https://twitter.com/maninweb)*.
-
 
 <a id="how-do-i"></a>
 ## How do I...
@@ -117,6 +104,16 @@ Leave a star-rating and (optionally) a review blurb for Script Lab on the [Offic
 
 Of course, we'd prefer that if you have issues you [report them on GitHub](https://github.com/OfficeDev/script-lab/issues/new) instead, but you're free to leave any review comments you wish.
 
+<a id="articles"></a>
+## Articles & FAQs
+
+* Script Lab overview: ["You can write JavaScript in Excel!"](https://medium.com/script-lab/you-can-write-javascript-in-excel-4ba588a948bd)
+* Project history & the technology behind it: [Episode 127 on the Office 365 Developer Podcast](https://blogs.office.com/2017/04/20/episode-127-new-script-lab-office-add-michael-zlatkovsky-bhargav-krishna-office-365-developer-podcast/)
+
+<a id="external-posts"></a>
+## External blog posts & media coverage
+
+* May 1, 2017: *[German]* ["Prototyping von Microsoft Office JavaScript Add-Ins mit Script Lab"](http://www.excel-ticker.de/prototyping-von-microsoft-office-javascript-add-ins-mit-script-lab/).  (Auto-translation: ["Prototyping Microsoft Office JavaScript add-ins with Script Lab"](http://www.microsofttranslator.com/bv.aspx?&lo=TP&from=de&to=en&a=http%3A%2F%2Fwww.excel-ticker.de%2Fprototyping-von-microsoft-office-javascript-add-ins-mit-script-lab%2F).  *Written by [Mourad Louha](https://twitter.com/maninweb)*.
 
 <a id="meet-the-team"></a>
 ## Meet the Team
