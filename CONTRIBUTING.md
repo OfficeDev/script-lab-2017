@@ -20,7 +20,7 @@ There are several ways in which you can contribute to the project:
     yarn global add nodemon
 ~~~
 
-
+Note: the installation of Node JS and Yarn add paths to your operating system's PATH variable. Therefore, in some cases you may log off and log in from your System to get Node JS and Yarn work withing Visual Studio Code.
 
 ## Build steps:
 
@@ -106,6 +106,7 @@ There are also files related to Azure deployment, git ignores, a Travis configur
   * [Side-by-side runner]:
     * Edit to code causes runner want to refresh.
     * Whether starting from error or going to error state and back out, should act correctly.
+  * Note: when running a script on localhost, you may see two compiler warnings for a critical dependency in the console log. These two warnings always appear in debug mode and are normal.
 * Sharing:
   * Copying to clipboard works
   * Can share as gist
