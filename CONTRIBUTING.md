@@ -87,7 +87,8 @@ There are also files related to Azure deployment, git ignores, a Travis configur
 2. Give it a name like "ScriptLab Local Dev", with a Homepage and Auth callback URL of `https://localhost:3000`.
 3. In `config/env.config.js`, find the `const config = { ... ` line, and under `local: { ...`, find `clientId: ''`, and replace with `clientId: '<id-from-github>'`.
 4. In `server/server.ts`, find `client_secret: secrets ? secrets[env] : '',`, and replace it with `secrets ? secrets[env] : '<client-secret-from-github>'`.
-5. Once you are done with your testing, **be sure to undo both changes!**.
+5. If the site is running, re-start it and do a new `npm start`.  Incremental compilation is not enough for these changes. Note, too, that you need both the site and the server (F5) running to make auth work.
+6. Once you are done with your testing, **be sure to undo both changes!**.
 
 
 # Manual-testing scenarios
