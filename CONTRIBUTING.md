@@ -20,7 +20,7 @@ There are several ways in which you can contribute to the project:
     yarn global add nodemon
 ~~~
 
-Note: the installation of Node JS and Yarn add paths to your operating system's PATH variable. Therefore, in some cases you may log off and log in from your System to get Node JS and Yarn work withing Visual Studio.
+Note: the installation of Node JS and Yarn add paths to your operating system's PATH variable. Therefore, in some cases you may log off and log in from your System to get Node JS and Yarn work withing Visual Studio Code.
 
 ## Build steps:
 
