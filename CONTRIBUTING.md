@@ -25,10 +25,10 @@ There are several ways in which you can contribute to the project:
 ## Build steps:
 
 1. Clone the repo
-2. Open the root of the repository with VS Code.  (**File --> Open Folder...**)
+2. Open the root of the repository with VS Code.  (**File --> Open Folder...**) <br /><br />
 ![alt text](.github/images/vs-code-open-folder.jpg)
 
-3. Open the terminal from within VS Code (**View --> Integrated Terminal**)
+3. Open the terminal from within VS Code (**View --> Integrated Terminal**) <br /><br />
 ![alt text](.github/images/vs-code-terminal.jpg)
 
 4. In the terminal, type in `yarn install` and wait for all of the packages to be downloaded (this may take a few minutes).  The command prompt will return the control back to you once it's done.
@@ -55,12 +55,14 @@ There are several ways in which you can contribute to the project:
 
 The website is now running.  To try it out in an Add-in, see the next section.
 
+> Note:  To **stop debugging**, first press the "stop" button on the debugger (shift + F5). You will see an error on the server terminal window (`[nodemon] app crashed - waiting for file changes before starting...`); that's ok, just close that terminal instance (trash icon on top-right of terminal).  If you want to restart debugging later, just re-press F5 again.
+
 
 ## Testing inside of an add-in
 
 1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `script-lab-local.xml`.
 
-2. Sideload the manfiest into your office host application.  See <https://dev.office.com/docs/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
+2. Sideload the manifest into your office host application.  See <https://dev.office.com/docs/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
 
 
 ## General structure
@@ -80,7 +82,7 @@ At the root level of the repo, the folders of interest (and skipping over the ot
 There are also files related to Azure deployment, git ignores, a Travis configuration for continuous-integration, a package.json with the project's metadata, TypeScript configuration files for client and server, a linter configuration, and etc.  And of course, the project's README.
 
 
-## Enabling auth for local testing
+## Enabling auth for local testing (optional, if debugging auth-related code)
 1. Go to <https://github.com/settings/developers>, and click "[Register new application](https://github.com/settings/applications/new)" if you haven't done it before for your own dev copy of ScriptLab.
 2. Give it a name like "ScriptLab Local Dev", with a Homepage and Auth callback URL of `https://localhost:3000`.
 3. In `config/env.config.js`, find the `const config = { ... ` line, and under `local: { ...`, find `clientId: ''`, and replace with `clientId: '<id-from-github>'`.
