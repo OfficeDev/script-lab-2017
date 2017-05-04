@@ -7,7 +7,7 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, Powe
 * [What is Script Lab?](README.md#what-is)
 * [External blog posts & media coverage](README.md/#external-posts)
 * [How do I...](README.md/#how-do-i)
-    - [Import someone else's snippet?](README.md#import)
+    - [Import someone else's snippet, or exportmy own?](README.md#import)
     - [Report a bug, or suggest a feature?](README.md#report-bug)
     - [Contribute to Script Lab?](README.md#contribute)
     - [Use Script Lab with older Office versions (Office 2013)?](README.md/#office-2013)
