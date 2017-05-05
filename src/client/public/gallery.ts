@@ -120,7 +120,7 @@ export class Gallery {
             returnUrl: location.href
         });
 
-        this.showProgress(`Running ${snippet.name}`);
+        this.showProgress(`Running "${snippet.name}"`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data });
     }
 

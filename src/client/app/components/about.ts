@@ -12,7 +12,7 @@ import { environment, storageSize, Strings, storage } from '../helpers';
                     <div class="about__primary-text ms-font-xxl">{{config?.build?.name}}</div>
                     <div class="profile__tertiary-text ms-font-m">User ID: ${storage.user}</div>
                     <div class="about__secondary-text ms-font-l">Version: {{config?.build?.version}}
-                    <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadibleTimestamp}})</span>
+                    <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadableTimestamp}})</span>
                     <br/><span class="ms-font-m">{{config?.editorUrl}}</span>
                     </div>
                     <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
