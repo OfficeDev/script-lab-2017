@@ -62,3 +62,7 @@ typings
 dist
 npm-debug.log*
 compiled
+
+# Ignore additional files added by maninweb
+config/env.config.js
+src/server/server.ts
