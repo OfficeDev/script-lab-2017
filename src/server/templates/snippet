@@ -33,7 +33,7 @@
 
     <!-- JS Libraries -->
     {{#each scriptReferences}}
-    <script src="{{this}}"></script>
+    <script crossorigin="anonymous" src="{{this}}"></script>
     {{/each}}
 
     <!-- Script -->

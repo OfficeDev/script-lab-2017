@@ -1,5 +1,6 @@
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
 import { AI } from '../helpers';
+import * as sha1 from 'crypto-js/sha1';
 
 export interface GitHubState {
     isLoggedIn?: boolean;
@@ -27,7 +28,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_IN: {
-            AI.trackEvent('LoggedIn', { githubId: action.payload.id.toString() });
+            AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()).toString() });
             return {
                 ...state,
                 loading: false,

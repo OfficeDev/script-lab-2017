@@ -7,7 +7,7 @@ const build = (() => {
         name: startCase(name),
         version: version,
         timestamp: moment().utc().valueOf(),
-        humanReadibleTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
+        humanReadableTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
         author: author
     };
 })();
