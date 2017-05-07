@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings, getShareableYaml } from '../helpers';
+import { AI, Strings, getShareableYaml, environment, post } from '../helpers';
 import { GitHubService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, GitHub } from '../actions';
@@ -139,7 +139,29 @@ ${Strings.gistSharedDialogEnd}
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
 
+
+    @Effect({ dispatch: false })
+    shareExport$: Observable<Action> = this.actions$
+        .ofType(GitHub.GitHubActionTypes.SHARE_EXPORT)
+        .map(action => action.payload)
+        .filter(snippet => !(snippet == null))
+        .map((rawSnippet: ISnippet) => {
+            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_EXPORT, { id: rawSnippet.id });
+
+            const data = JSON.stringify({
+                snippet: rawSnippet,
+                additionalFields: this._getAdditionalShareableSnippetFields()
+            });
+
+            post(environment.current.config.runnerUrl + '/export', { data });
+        })
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
+
     _getShareableYaml(rawSnippet: ISnippet): string {
+        return getShareableYaml(rawSnippet, this._getAdditionalShareableSnippetFields());
+    }
+
+    _getAdditionalShareableSnippetFields(): ISnippet {
         const additionalFields: ISnippet = <any>{};
 
         if (this._github.profile) {
@@ -147,6 +169,6 @@ ${Strings.gistSharedDialogEnd}
         }
         additionalFields.api_set = {};
 
-        return getShareableYaml(rawSnippet, additionalFields);
+        return additionalFields;
     }
 }

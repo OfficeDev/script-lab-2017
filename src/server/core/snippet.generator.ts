@@ -51,7 +51,6 @@ class SnippetGenerator {
                     compilerOptions: {
                         target: ts.ScriptTarget.ES5,
                         allowJs: true,
-                        inlineSourceMap: true,
                         lib: ['dom', 'es2015']
                     }
                 });

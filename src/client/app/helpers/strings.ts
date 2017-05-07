@@ -76,6 +76,7 @@ export class Strings {
     static readonly shareMenuPublic = 'Public gist';
     static readonly shareMenuPrivate = 'Secret gist';
     static readonly shareMenuClipboard = 'Copy to clipboard';
+    static readonly shareMenuExport = 'Export for publishing';
 
     static readonly loginGithub = 'Sign in to GitHub';
 

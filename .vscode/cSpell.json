@@ -17,9 +17,14 @@
         "Prereq",
         "intellisense",
         "scriptlab",
-        "dropdown",
         "unpkg",
-        "colorpicker"
+        "colorpicker",
+        "jsyaml",
+        "polyfills",
+        "stylesheet",
+        "officejs",
+        "DOCTYPE",
+        "guid"
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.

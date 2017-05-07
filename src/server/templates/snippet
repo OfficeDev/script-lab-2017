@@ -10,6 +10,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="{{author}}" />
 
+    {{#if isOfficeSnippet}}
+    {{#if isExternalExport}}
+    <!-- Office.js Reference -->
+    <script src="{{{officeJS}}}"></script>
+    {{else}}
+    {{!-- Add a comment about Office.js, just in case someone inspects the inner frame (snippet) code --}}
+    <!-- Outside of the playground (which references office.js differently), you would need to include: -->
+    <!-- <script src="{{{officeJS}}}"></script> -->
+    {{/if}}
+    {{/if}}
+
     <!-- CSS Libraries -->
     {{#each linkReferences}}
     <link rel="stylesheet" href="{{this}}" />
@@ -22,12 +33,6 @@
 </head>
 
 <body>
-    {{#if isOfficeSnippet}}
-    {{!-- Add a comment about Office.js, just in case someone inspects the inner frame (snippet) code --}}
-    <!-- Outside of the playground (which references office.js differently), you would need to include: -->
-    <!-- <script src="{{{officeJS}}}"></script> -->
-    {{/if}}
-
     <!-- HTML -->
     {{{indent template 1}}}
 
@@ -38,10 +43,13 @@
 
     <!-- Script -->
     <script type="text/javascript">
+        {{#if isExternalExport}}
+        {{else}}
         {{!-- It appears that doing document.body.onload from the runner can sometimes be --}}
         {{!-- unreliable and fail to fire. So, do a safer (albeit polluting) approach --}}
         try { window.parent.scriptRunnerBeginInit(); } catch (e) { /* ignore*/ }
 
+        {{/if}}
         {{#if officeJS}}
         Office.initialize = function() {
             {{{indent script 3}}}
@@ -50,7 +58,10 @@
         {{{indent script 2}}}
         {{/if}}
 
+        {{#if isExternalExport}}
+        {{else}}
         try { window.parent.scriptRunnerEndInit(); } catch (e) { /* ignore*/ }
+        {{/if}}
     </script>
 </body>
 
