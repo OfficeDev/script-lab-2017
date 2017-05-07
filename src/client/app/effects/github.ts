@@ -1,20 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings, getShareableYaml, environment, post } from '../helpers';
+import { AI, Strings, getShareableYaml, environment } from '../helpers';
 import { GitHubService } from '../services';
-import { Action } from '@ngrx/store';
+import { Store, Action } from '@ngrx/store';
 import { UI, GitHub } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
+import { Http, ResponseContentType } from '@angular/http';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
 import { find } from 'lodash';
+import * as moment from 'moment';
+import * as fromRoot from '../reducers';
+
+const FileSaver = require('file-saver');
 
 @Injectable()
 export class GitHubEffects {
     constructor(
         private actions$: Actions,
         private _github: GitHubService,
-        private _uiEffects: UIEffects
+        private _http: Http,
+        private _uiEffects: UIEffects,
+        private _store: Store<fromRoot.State>,
     ) {
     }
 
@@ -137,7 +144,7 @@ ${Strings.gistSharedDialogEnd}
                 }
             });
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
+        .catch(exception => Observable.of(this._createShowErrorAction(Strings.snippetCopiedFailed, exception)));
 
 
     @Effect({ dispatch: false })
@@ -145,17 +152,43 @@ ${Strings.gistSharedDialogEnd}
         .ofType(GitHub.GitHubActionTypes.SHARE_EXPORT)
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
-        .map((rawSnippet: ISnippet) => {
-            AI.trackEvent(GitHub.GitHubActionTypes.SHARE_EXPORT, { id: rawSnippet.id });
+        .map((snippet: ISnippet) => {
+            AI.trackEvent('Share export initiated', { id: snippet.id });
 
-            const data = JSON.stringify({
-                snippet: rawSnippet,
-                additionalFields: this._getAdditionalShareableSnippetFields()
-            });
+            const additionalFields = this._getAdditionalShareableSnippetFields();
+            const sanitizedFilenameBase =
+                (snippet.name.toLowerCase()
+                    .replace(/([^a-z0-9_]+)/gi, '-')
+                    .replace(/-{2,}/g, '-') /* remove multiple consecutive dashes */
+                    .replace(/(.*)-$/, '$1')
+                    .replace(/^-(.*)/, '$1')
+                ) || 'snippet';
 
-            post(environment.current.config.runnerUrl + '/export', { data });
+            const exportData: IExportState = { snippet, additionalFields, sanitizedFilenameBase };
+
+            this._http.post(
+                environment.current.config.runnerUrl + '/export',
+                { data: JSON.stringify(exportData) },
+                { responseType: ResponseContentType.ArrayBuffer }
+            ).toPromise()
+                .then(res => {
+                    const zipFilename = sanitizedFilenameBase +
+                        '--' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip';
+
+                    let blob = new Blob([res.arrayBuffer()], { type: 'application/zip' });
+                    FileSaver.saveAs(blob, zipFilename);
+
+                    AI.trackEvent('Share export succeeded', { id: snippet.id });
+                })
+                .catch(exception => {
+                    this._store.dispatch(
+                        this._createShowErrorAction(Strings.snippetExportFailed, exception));
+                });
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetCopiedFailed, exception)));
+        .catch(exception => {
+            this._store.dispatch(this._createShowErrorAction(Strings.snippetExportFailed, exception));
+            return null;
+        });
 
     _getShareableYaml(rawSnippet: ISnippet): string {
         return getShareableYaml(rawSnippet, this._getAdditionalShareableSnippetFields());
@@ -170,5 +203,15 @@ ${Strings.gistSharedDialogEnd}
         additionalFields.api_set = {};
 
         return additionalFields;
+    }
+
+    _createShowErrorAction(message: string, exception) {
+        console.log(exception);
+
+        return new UI.ShowAlertAction({
+            title: 'Error',
+            message: message,
+            actions: ['OK']
+        });
     }
 }

@@ -187,24 +187,13 @@ registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, tru
 
 registerRoute('post', '/export', (req, res) => {
     const data: IExportState = JSON.parse(req.body.data);
-    const { snippet, additionalFields } = data;
-
-    const sanitizedFilenameBase =
-        (snippet.name.toLowerCase()
-            .replace(/([^a-z0-9_]+)/gi, '-')
-            .replace(/-{2,}/g, '-') /* remove multiple consecutive dashes */
-            .replace(/(.*)-$/, '$1')
-            .replace(/^-(.*)/, '$1')
-        ) || 'snippet';
-
-    const zipFilename = sanitizedFilenameBase +
-        '--' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip';
+    const { snippet, additionalFields, sanitizedFilenameBase } = data;
 
     const filenames = {
         html: sanitizedFilenameBase + '.html',
         yaml: sanitizedFilenameBase + '--snippet-data.yaml',
         manifest: sanitizedFilenameBase + '--manifest.xml',
-        readme: 'readme.md'
+        readme: 'README.md'
     };
 
     // NOTE: using Promise-based code instead of async/await
@@ -220,7 +209,6 @@ registerRoute('post', '/export', (req, res) => {
             const manifestIfAny: string = results[2];
 
             res.set('Content-Type', 'application/zip');
-            res.set('Content-Disposition', 'attachment; filename=' + zipFilename);
 
             const zip = Archiver('zip')
                 .append(htmlData.html, { name: filenames.html })

@@ -59,6 +59,8 @@ export class Strings {
     static readonly snippetCopiedConfirmation = `The snippet is copied to your clipboard`;
     static readonly snippetCopiedFailed = 'Failed to copy the snippet to your clipboard';
 
+    static readonly snippetExportFailed = 'Failed to export the snippet';
+
     // Components strings
     // about.ts
     static readonly aboutUpdated = 'Last updated:';

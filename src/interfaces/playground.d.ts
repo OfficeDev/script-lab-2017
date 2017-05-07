@@ -99,7 +99,8 @@ interface IRunnerState {
 
 interface IExportState {
     snippet: ISnippet;
-    additionalFields: ISnippet
+    additionalFields: ISnippet;
+    sanitizedFilenameBase: string;
 }
 
 interface IErrorHandlebarsContext {
@@ -129,6 +130,11 @@ interface IReadmeHandlebarsContext {
     isAddin: boolean;
     addinOrWebpage: 'Add-in' | 'webpage';
 }
+
+// interface ISnippetExportData {
+//     filename: string;
+//     zipData: string;
+// }
 
 interface IMonacoEditorState {
     name?: string;
