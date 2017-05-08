@@ -131,11 +131,6 @@ interface IReadmeHandlebarsContext {
     addinOrWebpage: 'Add-in' | 'webpage';
 }
 
-// interface ISnippetExportData {
-//     filename: string;
-//     zipData: string;
-// }
-
 interface IMonacoEditorState {
     name?: string;
     view?: string;
