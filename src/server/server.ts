@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
-import * as Archiver from 'Archiver';
+import * as Archiver from 'archiver';
 import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
