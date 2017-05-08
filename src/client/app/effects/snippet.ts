@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment, storage,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
+import { PlaygroundError, AI, post, Strings, environment, storage, SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, safeguard } from '../helpers';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
 import { Action } from '@ngrx/store';
@@ -27,9 +26,9 @@ export class SnippetEffects {
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
         .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode }))
-        .mergeMap(({ data, mode }) => this._importRawFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
+        .mergeMap(({ data, mode }) => safeguard(this._importRawFromSource(data, mode)), ({ mode }, snippet) => ({ mode, snippet }))
         .filter(({ snippet }) => !(snippet == null))
-        .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+        .mergeMap(({ snippet, mode }) => safeguard(this._massageSnippet(snippet, mode)))
         .catch((exception: Error) => {
             const message = (exception instanceof PlaygroundError) ? exception.message : Strings.snippetImportErrorBody;
             this._uiEffects.alert(
@@ -288,8 +287,8 @@ export class SnippetEffects {
 
         const scrubbedIfNeeded =
             (mode === Snippet.ImportType.OPEN) ?
-                {...rawSnippet} :
-                getScrubbedSnippet({...rawSnippet}, SnippetFieldType.PUBLIC);
+                { ...rawSnippet } :
+                getScrubbedSnippet({ ...rawSnippet }, SnippetFieldType.PUBLIC);
 
         const snippet = {} as ISnippet;
         assign(snippet, getSnippetDefaults(), scrubbedIfNeeded);

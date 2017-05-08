@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, Strings, storage } from '../helpers';
+import { AI, Strings, storage, safeguard } from '../helpers';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
@@ -58,7 +58,7 @@ export class MonacoEffects {
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
-        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload, action.language))
+        .mergeMap((action: Monaco.AddIntellisenseAction) => safeguard(this._addIntellisense(action.payload, action.language)))
         .map(() => new Monaco.UpdateIntellisenseSuccessAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseClearError, exception)));
 
@@ -73,8 +73,7 @@ export class MonacoEffects {
                 let disposable = source.addExtraLib(file.content, file.url);
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;
-            })
-            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseLoadError, exception)));
+            });
     }
 
     private _parse(libraries: string[]) {
