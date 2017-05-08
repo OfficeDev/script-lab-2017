@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Error</title>
+    <title>{{title}}</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,8 +14,10 @@
 
 <body class="app error-page">
     <div>
-        <h1 class="ms-font-xxl">Error</h1>
+        <h1 class="ms-font-xxl">{{title}}</h1>
+        {{#if message}}
         <h2 class="ms-font-xl">{{message}}</h2>
+        {{/if}}
     </div>
     <div>
         <p id="more-details-link" class="ms-font-m clickable center"></p>

@@ -17,6 +17,7 @@ import { Strings, environment } from '../helpers';
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
+                    <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
@@ -162,6 +163,14 @@ export class AppComponent {
         }
 
         this._store.dispatch(new GitHub.ShareCopyGistAction(this.snippet));
+    }
+
+    shareExport() {
+        if (this.snippet == null) {
+            return;
+        }
+
+        this._store.dispatch(new GitHub.ShareExportAction(this.snippet));
     }
 
     showErrors() {

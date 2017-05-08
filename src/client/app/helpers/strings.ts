@@ -59,6 +59,8 @@ export class Strings {
     static readonly snippetCopiedConfirmation = `The snippet is copied to your clipboard`;
     static readonly snippetCopiedFailed = 'Failed to copy the snippet to your clipboard';
 
+    static readonly snippetExportFailed = 'Failed to export the snippet';
+
     // Components strings
     // about.ts
     static readonly aboutUpdated = 'Last updated:';
@@ -76,6 +78,7 @@ export class Strings {
     static readonly shareMenuPublic = 'Public gist';
     static readonly shareMenuPrivate = 'Secret gist';
     static readonly shareMenuClipboard = 'Copy to clipboard';
+    static readonly shareMenuExport = 'Export for publishing';
 
     static readonly loginGithub = 'Sign in to GitHub';
 
