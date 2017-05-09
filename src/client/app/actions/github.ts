@@ -19,10 +19,11 @@ export class GitHubActionTypes {
     static readonly LOGGED_OUT = type('[GitHub] Logged Out');
     static readonly SHARE_PUBLIC_GIST = type('[GitHub] Share Public Gist');
     static readonly SHARE_PRIVATE_GIST = type('[GitHub] Share Private Gist');
-    static readonly SHARE_COPY = type('[GitHub] Share Copy');
+    static readonly SHARE_COPY = type('Share copy to clipboard');
+    static readonly SHARE_EXPORT = type('Share export');
     static readonly SHARE_SUCCESS = type('[GitHub] Share Success');
     static readonly SHARE_FAILED = type('[GitHub] Share Failed');
-    static readonly UDPATE_GIST = type('[GitHub] Update Gist');
+    static readonly UPDATE_GIST = type('[GitHub] Update Gist');
 };
 
 /**
@@ -80,6 +81,12 @@ export class ShareCopyGistAction implements Action {
     constructor(public payload: ISnippet) { }
 }
 
+export class ShareExportAction implements Action {
+    readonly type = GitHubActionTypes.SHARE_EXPORT;
+
+    constructor(public payload: ISnippet) { }
+}
+
 export class SharePublicGistAction implements Action {
     readonly type = GitHubActionTypes.SHARE_PUBLIC_GIST;
 
@@ -105,7 +112,7 @@ export class ShareFailedAction implements Action {
 }
 
 export class UpdateGistAction implements Action {
-    readonly type = GitHubActionTypes.UDPATE_GIST;
+    readonly type = GitHubActionTypes.UPDATE_GIST;
 
     constructor(public payload: ISnippet) { }
 }
@@ -123,6 +130,7 @@ export type GitHubActions
     | IsLoggedInAction
     | LogoutAction
     | ShareCopyGistAction
+    | ShareExportAction
     | SharePrivateGistAction
     | SharePublicGistAction
     | ShareSuccessAction

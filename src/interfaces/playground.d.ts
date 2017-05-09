@@ -59,6 +59,11 @@ interface ICompiledSnippet extends ITemplate {
     typings?: string[];
 }
 
+interface ISnippetHandlebarsContext extends ICompiledSnippet {
+    isOfficeSnippet: boolean;
+    isExternalExport: boolean;
+}
+
 interface IRunnerHandlebarsContext {
     /** Snippet info (or null, to signify "opportunistic" runner that attaches to anything open) */
     snippet: {
@@ -92,11 +97,38 @@ interface IRunnerState {
     returnUrl: string;
 }
 
+interface IExportState {
+    snippet: ISnippet;
+    additionalFields: ISnippet;
+    sanitizedFilenameBase: string;
+}
+
 interface IErrorHandlebarsContext {
     origin: string;
+    title: string;
     message: string;
     details: string;
     expandDetailsByDefault: boolean;
+}
+
+interface IManifestHandlebarsContext {
+    name: string;
+    description: string;
+    hostType: string;
+    htmlFilename: string;
+    supportsAddinCommands: boolean;
+    snippetNameMax125: string;
+    snippetDescriptionMax250: string;
+    providerName: string;
+    guid: string;
+}
+
+interface IReadmeHandlebarsContext {
+    name: string;
+    description: string;
+    exportedOn: string;
+    isAddin: boolean;
+    addinOrWebpage: 'Add-in' | 'webpage';
 }
 
 interface IMonacoEditorState {

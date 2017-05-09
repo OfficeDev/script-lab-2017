@@ -1,18 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////////
-/// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///
-///       Script Lab Samples project.  Please be sure that any changes that you  ///
-///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
-///       in https://github.com/OfficeDev/script-lab-samples                     ///
-///                                                                              ///
-///       That same shared portion is also used in the "server" portion of this  ///
-///       project (src\server\core\snippet.helper.ts). Please ensure that these  ///
-///       copies stay in sync as well.                                           ///
+/// NOTE: This file is a copy of "src\client\app\helpers\snippet.helper.ts"      ///
+///       Please make sure that any changes made here are reflected there,       ///
+///       and vice-versa.                                                        ///
 ////////////////////////////////////////////////////////////////////////////////////
 
 import * as jsyaml from 'js-yaml';
 import { forIn } from 'lodash';
-import { environment } from './environment';
-import { Strings } from './strings';
 
 export enum SnippetFieldType {
     /** PUBLIC = Store internally, and also include in copy-to-clipboard */
@@ -68,27 +61,6 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
     content: 1000,
     language: 1001
 };
-
-export function getSnippetDefaults(): ISnippet {
-    return {
-        id: '',
-        gist: '',
-        name: Strings.defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
-        description: '',
-        // author: export-only, always want to generate on the fly, so skip altogether
-        host: environment.current.host,
-        // api_set: export-only, always want to generate on the fly, so skip altogether
-        platform: environment.current.platform,
-        origin: environment.current.config.editorUrl,
-        created_at: Date.now(),
-        modified_at: Date.now(),
-
-        script: { content: '', language: 'typescript' },
-        template: { content: '', language: 'html' },
-        style: { content: '', language: 'css' },
-        libraries: ''
-    };
-}
 
 /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
 export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
