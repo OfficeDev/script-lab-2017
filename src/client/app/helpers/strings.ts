@@ -1,8 +1,12 @@
+import { stripSpaces } from '../helpers';
+
 export class Strings {
 
     static readonly PlaygroundName = 'Script Lab';
 
     static readonly run = 'Run';
+    static readonly runInThisPane = 'Run in this pane';
+    static readonly runSideBySide = 'Run side-by-side';
     static readonly share = 'Share';
     static readonly delete = 'Delete';
     static readonly close = 'Close';
@@ -165,6 +169,21 @@ export class Strings {
     static readonly ServerError = {
         moreDetails: '(More details...)',
         hideDetails: '(Hide details...)'
+    };
+
+    static readonly SideBySideInstructions = {
+        /** NEEDS STRING REVIEW */
+        title: 'Run side-by-side with editor',
+
+        /** NEEDS STRING REVIEW */
+        message: stripSpaces(`
+            To run the snippet side-by-side with the editor, choose "Run" in the Ribbon.
+
+            Running side-by-side offers both a quicker refresh, and the added advantage of keeping your position and undo-history in the editor.`
+        ),
+
+        /** NEEDS STRING REVIEW */
+        gotIt: 'Got it'
     };
 
 }
