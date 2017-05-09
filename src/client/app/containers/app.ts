@@ -13,8 +13,8 @@ import { Strings, environment } from '../helpers';
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
                 <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
-                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="sharing$|async" title="${Strings.run}">
-                    <command icon="Play" title="${Strings.runInThisPane}" (click)="run()"></command>
+                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="${Strings.run}">
+                    <command icon="Play" title="${Strings.runInThisPane}" [async]="running$|async" (click)="run()"></command>
                     <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
