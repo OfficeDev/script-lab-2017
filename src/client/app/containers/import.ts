@@ -194,6 +194,8 @@ export class Import {
             return;
         }
 
+        data = data.trim();
+
         this._store.dispatch(new Snippet.ImportAction(mode, data));
         this.cancel();
     }
