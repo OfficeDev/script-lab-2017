@@ -12,11 +12,16 @@ import { Strings, environment } from '../helpers';
             <header class="command__bar">
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="hideRunButton||isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
+                <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
+                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="${Strings.run}">
+                    <command icon="Play" title="${Strings.runInThisPane}" [async]="running$|async" (click)="run()"></command>
+                    <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
+                </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
+                    <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
@@ -55,7 +60,7 @@ export class AppComponent {
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
 
-    get hideRunButton() {
+    get isAddinCommands() {
         return /commands=1/ig.test(location.search);
     }
 
@@ -86,6 +91,14 @@ export class AppComponent {
         }
 
         this._store.dispatch(new Snippet.RunAction(this.snippet));
+    }
+
+    runSideBySide() {
+        this._store.dispatch(new UI.ShowAlertAction({
+            actions: [ Strings.SideBySideInstructions.gotIt ],
+            title: Strings.SideBySideInstructions.title,
+            message: Strings.SideBySideInstructions.message
+        }));
     }
 
     async delete() {
@@ -164,6 +177,14 @@ export class AppComponent {
         this._store.dispatch(new GitHub.ShareCopyGistAction(this.snippet));
     }
 
+    shareExport() {
+        if (this.snippet == null) {
+            return;
+        }
+
+        this._store.dispatch(new GitHub.ShareExportAction(this.snippet));
+    }
+
     showErrors() {
         this.errors$
             .filter(errors => errors && errors.length > 0)
@@ -176,5 +197,9 @@ export class AppComponent {
 
     feedback() {
         window.open(environment.current.config.feedbackUrl);
+    }
+
+    noop() {
+        // no-op
     }
 }
