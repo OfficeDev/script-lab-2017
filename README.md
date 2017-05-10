@@ -5,7 +5,7 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, or P
 
 ## Topics
 * [What is Script Lab?](README.md#what-is)
-* [Getting started](README.md/#get-started)
+* [Get started](README.md/#get-started)
 * [Import someone else's snippet, or export your own](README.md#import)
 * [Report a bug, or suggest a feature](README.md#report-bug)
 * [Contribute to Script Lab](README.md#contribute)
@@ -31,6 +31,8 @@ You can [install Script Lab right now for free from the Office Store](https://st
 
 Script Lab is a Microsoft Garage project that began at a hackathon. You can read our story on the [Garage website](https://www.microsoft.com/en-us/garage/project-details.aspx?project=script-lab)
 
+Here's a 1-minute teaser video to give you a taste:
+
 [![Script Lab teaser video](.github/images/screenshot-wide-youtube.png "Script Lab teaser video")](https://aka.ms/scriptlabvideo)
 
 <a id="get-started"></a>
@@ -39,6 +41,10 @@ Script Lab is a Microsoft Garage project that began at a hackathon. You can read
 The easiest way to try Script Lab is with the Tutorial file for Excel that walks you through the tool in a few steps. You can get it here on GitHub: [script-lab-tutorial.xlsx](https://github.com/OfficeDev/script-lab/blob/master/src/client/assets/documents/script-lab-tutorial.xlsx)
 
 Alternatively, you can start from scratch and [install Script Lab from the Store](https://store.office.com/app.aspx?assetid=WA104380862).
+
+This 10-minute demo explains how to use the main features:
+
+[![Michael Saunders demos Script Lab](.github/images/demoscreenshot-youtube.png "Script Lab teaser video")](https://youtu.be/V85_97G7VA4)
 
 <a id="import"></a>
 ## Import someone else's snippet, or export your own
