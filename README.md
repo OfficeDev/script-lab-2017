@@ -8,10 +8,10 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, or P
 * [Get started](README.md/#get-started)
 * [Import someone else's snippet, or export your own](README.md#import)
 * [Report a bug, or suggest a feature](README.md#report-bug)
-* [Contribute to Script Lab](README.md#contribute)
 * [Use Script Lab with older Office versions (Office 2013)](README.md/#office-2013)
 * [Stay up-to-date](README.md/#up-to-date)
 * [Rate and review](README.md#rate-and-review)
+* [Contribute to Script Lab](README.md#contribute)
 * [Articles & FAQs](README.md/#articles)
 * [External blog posts & media coverage](README.md/#external-posts)
 * [Meet the team](README.md/#meet-the-team)
@@ -44,7 +44,7 @@ Alternatively, you can start from scratch and [install Script Lab from the Store
 
 This 10-minute demo explains how to use the main features:
 
-[![Michael Saunders demos Script Lab](.github/images/demoscreenshot-youtube.png "Script Lab teaser video")](https://youtu.be/V85_97G7VA4)
+[![Michael Saunders demos Script Lab](.github/images/demoscreenshot-youtube.png "Michael Saunders demos Script Lab")](https://youtu.be/V85_97G7VA4)
 
 <a id="import"></a>
 ## Import someone else's snippet, or export your own
@@ -70,18 +70,6 @@ If you have a suggestion for a feature, please feel free to file it under "issue
 
 Finally, if you have a **question**, please ask it on <https://stackoverflow.com> instead. Tag your questions with `office-js` and `scriptlab`.
 
-<a id="contribute"></a>
-## Contribute to Script Lab
-
-There are a bunch of ways you can contribute to Script Lab:
-
-* File bugs & suggestions (see more in "[Report a bug, or suggest a feature](README.md#report-bug)" above).
-* Contribute new samples, or improve existing one. Please submit a pull request to the [office-js-snippets repo](https://github.com/OfficeDev/office-js-snippets); more info in the [README](https://github.com/OfficeDev/office-js-snippets/blob/master/README.md) of that repo.
-* Spread the word!  Whether through writing a blog post (README.md#external-posts), recording a video, tweeting about us, or sharing snippets with colleagues or the [StackOverflow](https://stackoverflow.com/questions/tagged/office-js) community -- we want more of the world to use Script Lab!
-* Help improve the documentation. If you feel like this README or the [CONTRIBUTING.md doc](CONTRIBUTING.md) could use more details, please send a pull request!
-
-Finally, if you want to contribute code (bug fixes, features, localization, etc.), please see [CONTRIBUTING.md](CONTRIBUTING.md) to get you up and running with a local copy of Script Lab -- and then send us a pull request.
-
 <a id="office-2013"></a>
 ## Use Script Lab with older Office versions (Office 2013)
 Office 2013 has several limitations compared to more recent versions.
@@ -97,6 +85,18 @@ Second, Office 2013 (and Office 2016 RTM, if you don't have an Office 365 subscr
 * Follow [@OfficeDev](https://twitter.com/OfficeDev) on Twitter
 * Follow [Script Lab](https://medium.com/script-lab) articles on [medium.com](https://medium.com/script-lab)
 * Join our Office Developer program at [dev.office.com](https://dev.office.com/)
+
+<a id="contribute"></a>
+## Contribute to Script Lab
+
+There are a bunch of ways you can contribute to Script Lab:
+
+* File bugs & suggestions (see more in "[Report a bug, or suggest a feature](README.md#report-bug)" above).
+* Contribute new samples, or improve existing one. Please submit a pull request to the [office-js-snippets repo](https://github.com/OfficeDev/office-js-snippets); more info in the [README](https://github.com/OfficeDev/office-js-snippets/blob/master/README.md) of that repo.
+* Spread the word!  Whether through writing a blog post (README.md#external-posts), recording a video, tweeting about us, or sharing snippets with colleagues or the [StackOverflow](https://stackoverflow.com/questions/tagged/office-js) community -- we want more of the world to use Script Lab!
+* Help improve the documentation. If you feel like this README or the [CONTRIBUTING.md doc](CONTRIBUTING.md) could use more details, please send a pull request!
+
+Finally, if you want to contribute code (bug fixes, features, localization, etc.), please see [CONTRIBUTING.md](CONTRIBUTING.md) to get you up and running with a local copy of Script Lab -- and then send us a pull request.
 
 <a id="rate-and-review"></a>
 ## Rate and review
@@ -114,7 +114,9 @@ Of course, we'd prefer that if you have issues you [report them on GitHub](https
 <a id="external-posts"></a>
 ## External blog posts & media coverage
 
-* May 1, 2017: *[German]* ["Prototyping von Microsoft Office JavaScript Add-Ins mit Script Lab"](http://www.excel-ticker.de/prototyping-von-microsoft-office-javascript-add-ins-mit-script-lab/).  (Auto-translation: ["Prototyping Microsoft Office JavaScript add-ins with Script Lab"](http://www.microsofttranslator.com/bv.aspx?&lo=TP&from=de&to=en&a=http%3A%2F%2Fwww.excel-ticker.de%2Fprototyping-von-microsoft-office-javascript-add-ins-mit-script-lab%2F).  *Written by [Mourad Louha](https://twitter.com/maninweb)*.
+* May 1, 2017: *[German]* ["Prototyping von Microsoft Office JavaScript Add-Ins mit Script Lab"](http://www.excel-ticker.de/prototyping-von-microsoft-office-javascript-add-ins-mit-script-lab/).  (Auto-translation: ["Prototyping Microsoft Office JavaScript add-ins with Script Lab"](http://www.microsofttranslator.com/bv.aspx?&lo=TP&from=de&to=en&a=http%3A%2F%2Fwww.excel-ticker.de%2Fprototyping-von-microsoft-office-javascript-add-ins-mit-script-lab%2F)*, by [Mourad Louha](https://twitter.com/maninweb)*
+* April 18, 2017: ["Microsoft Garage Releases Script Lab"](https://winbuzzer.com/2017/04/18/microsoft-garage-releases-script-lab-tool-test-javascript-apis-inside-office-suite-xcxwbn/ ) *by Ryan Maskell at winbuzzer.com*
+* May 1, 2017: *[Portuguese]* ["Microsoft lança o Script Lab"](http://mlf.net.br/blog/microsoft-lanca-o-script-labs/).  (Auto-translation: ["Microsoft Launches Script Lab"](http://www.microsofttranslator.com/bv.aspx?from=pt&to=en&a=http%3A%2F%2Fmlf.net.br%2Fblog%2Fmicrosoft-lanca-o-script-labs%2F)*, by [Felipe Costa Gualberto]*
 
 <a id="meet-the-team"></a>
 ## Meet the Team
