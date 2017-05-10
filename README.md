@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/script-lab)
 <a id="top"></a>
 # Script Lab, a Microsoft Garage project
-Experiment with the Office JavaScript API without ever leaving Excel, Word, PowerPoint, or Project! Free, from the [Office Store](https://store.office.com/app.aspx?assetid=WA104380862).
+Experiment with the Office JavaScript API without ever leaving Excel, Word, or PowerPoint! [**Get Script Lab for free, from the Office Store**](https://store.office.com/app.aspx?assetid=WA104380862).
 
 ## Topics
 * [What is Script Lab?](README.md#what-is)
-* [External blog posts & media coverage](README.md/#external-posts)
+* [Getting Started](README.md/#get-started)
 * [How do I...](README.md/#how-do-i)
     - [Import someone else's snippet, or export my own?](README.md#import)
     - [Report a bug, or suggest a feature?](README.md#report-bug)
@@ -13,8 +13,8 @@ Experiment with the Office JavaScript API without ever leaving Excel, Word, Powe
     - [Use Script Lab with older Office versions (Office 2013)?](README.md/#office-2013)
     - [Stay up-to-date?](README.md/#up-to-date)
     - [Rate and review?](README.md#rate-and-review)
-* [Getting Started](README.md/#get-started)
 * [Articles & FAQs](README.md/#articles)
+* [External blog posts & media coverage](README.md/#external-posts)
 * [Meet the Team](README.md/#meet-the-team)
 
 <a id="what-is"></a>
@@ -34,7 +34,6 @@ Script Lab is a Microsoft Garage project that began as a hackathon project. You 
 
 [![Script Lab teaser video](.github/images/screenshot-wide-youtube.png "Script Lab teaser video")](https://aka.ms/scriptlabvideo)
 
-
 <a id="get-started"></a>
 ## Getting Started
 
@@ -46,7 +45,7 @@ Alternatively, you can start from scratch and [install Script Lab from the Store
 ## How do I...
 
 <a id="import"></a>
-### Import someone else's snippet, or export my own?
+### Import someone else's snippet, or export my own
 
 Script Lab is built around sharing.  If someone gives you a URL to a GitHub GIST, simply open Script Lab, use the hamburger menu at the top left to see the menu, and choose "Import" category (either on the left or top, depending on the available screen space). Then, enter the URL of the GIST, and click the "Import" button at the bottom of the screen.  In just these few clicks, you will be able to view and run someone else's snippet!
 
