@@ -33,9 +33,9 @@ export class MonacoEffects {
     @Effect()
     updateIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
-        .map((action: Monaco.UpdateIntellisenseAction) => ({ payload: action.payload, language: action.language }))
-        .map(({ payload, language }) => {
-            let filesToAdd = this._parse(payload)
+        .map((action: Monaco.UpdateIntellisenseAction) => action.payload)
+        .map(({ libraries, language }) => {
+            let filesToAdd = this._parse(libraries)
                 .filter(url => url && url.trim() !== '')
                 .map(file => {
                     let currentFile = this._current.get(file);
@@ -52,18 +52,19 @@ export class MonacoEffects {
 
             return { files: filesToAdd as string[], language };
         })
-        .mergeMap(({ files, language }) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction(file, language)))
+        .mergeMap(({ files, language }) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction({ url: file, language })))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseUpdateError, exception)));
 
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
-        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload, action.language))
+        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload))
         .map(() => new Monaco.UpdateIntellisenseSuccessAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseClearError, exception)));
 
 
-    private _addIntellisense(url: string, language: string) {
+    private _addIntellisense(payload: { url: string; language: string; }) {
+        let { url, language } = payload;
         let source = this._determineSource(language);
         return Observable
             .fromPromise(MonacoService.current)
