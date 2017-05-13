@@ -133,7 +133,7 @@ interface IReadmeHandlebarsContext {
 
 interface IMonacoEditorState {
     name?: string;
-    view?: string;
+    displayName?: string;
     content?: string;
     language?: string;
     viewState?: monaco.editor.IEditorViewState;
