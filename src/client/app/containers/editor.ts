@@ -43,13 +43,13 @@ export class Editor implements AfterViewInit {
         this._subscribeToState();
     }
 
-    changeTab = (type: string = 'script') => {
+    changeTab = (name: string = 'script') => {
         let language = '';
-        if (type !== 'libraries') {
-            language = this.tabs.get(type).language;
+        if (name !== 'libraries') {
+            language = this.tabs.get(name).language;
         }
 
-        this._store.dispatch(new Monaco.ChangeTabAction({ type: type, language }));
+        this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
     }
 
     updateIntellisense() {

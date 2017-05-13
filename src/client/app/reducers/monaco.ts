@@ -17,7 +17,7 @@ export function reducer(state = initialState, action: MonacoActions): MonacoStat
         case MonacoActionTypes.CHANGE_TAB:
             return {
                 ...state,
-                activeTab: action.payload.type,
+                activeTab: action.payload.name,
                 activeLanguage: action.payload.language
             };
 

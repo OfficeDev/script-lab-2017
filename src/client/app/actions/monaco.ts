@@ -27,7 +27,7 @@ export class MonacoActionTypes {
 export class ChangeTabAction implements Action {
     readonly type = MonacoActionTypes.CHANGE_TAB;
 
-    constructor(public payload: { type: string, language: string }) {}
+    constructor(public payload: { name: string, language: string }) {}
 }
 
 export class ResetAction implements Action {
