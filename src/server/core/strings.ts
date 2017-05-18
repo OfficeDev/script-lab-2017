@@ -16,4 +16,9 @@ export class Strings {
     }
 
     static createdWithScriptLab = 'Created with Script Lab';
+
+    static manifestDefaults = {
+        nameIfEmpty: 'Snippet',
+        descriptionIfEmpty: 'Created with Script Lab'
+    };
 }
