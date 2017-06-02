@@ -17,6 +17,7 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/scan';
 
 // Lodash
 import 'lodash/debounce';
@@ -34,3 +35,4 @@ import 'lodash/first';
 import '@microsoft/office-js-helpers';
 import 'js-yaml';
 import 'crypto-js/sha1';
+
