@@ -5,6 +5,21 @@
 	<base href="/">
 	<title>Code</title>
 
+	<script>
+		(function() {
+			var azureEdgeRegex = /(http[s]?:\/\/)(script-lab)(\.azureedge\.net.*)/;
+			// matches "script-lab" as group #2 for all cases
+			// http://script-lab.azureedge.net
+			// https://script-lab.azureedge.net
+			// https://script-lab.azureedge.net/?mode=web
+			// http://script-lab.azureedge.net/?mode=web
+			var result = azureEdgeRegex.exec(window.location);
+			if (result) {
+				window.location.href = result[1] + "scriptlab" + result[3];
+			}
+		})();
+	</script>
+
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
