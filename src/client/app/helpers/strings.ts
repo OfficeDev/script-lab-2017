@@ -91,17 +91,12 @@ export class Strings {
 
     static readonly deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
 
-    // Editor strings, none are used since there's some kind of literal string dependency - that should be fixed
-
-    static readonly scriptTab = 'Script';
-    static readonly htmlTab = 'Template';
-    static readonly cssTab = 'Style';
-    static readonly librariesTab = 'Libraries';
-    static readonly scriptTabTag = Strings.scriptTab.toLowerCase();
-    static readonly htmlTabTag = 'template';
-    static readonly cssTabTag = Strings.cssTab.toLowerCase();
-    static readonly librariesTabTag = Strings.librariesTab.toLowerCase();
-
+    static readonly tabDisplayNames = {
+        'script': 'Script',
+        'template': 'Template',
+        'style': 'Style',
+        'libraries': 'Libraries'
+    };
     // Gallery.view strings
 
     static readonly snippetsTab = 'Snippets';
