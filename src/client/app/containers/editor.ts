@@ -2,7 +2,7 @@ import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI } from '../helpers';
+import { AI, Strings } from '../helpers';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 import { debounce } from 'lodash';
@@ -12,7 +12,7 @@ import { debounce } from 'lodash';
     template: `
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
-                {{tab.view}}
+                {{tab.displayName}}
             </li>
         </ul>
         <section id="editor" #editor class="viewport"></section>
@@ -35,7 +35,7 @@ export class Editor implements AfterViewInit {
     }
 
     /**
-     * Initialize the component and subscribe to all the neccessary actions.
+     * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
@@ -54,12 +54,15 @@ export class Editor implements AfterViewInit {
     }
 
     private _createTabs() {
-        ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
-            let name = title.toLowerCase();
+        ['script', 'template', 'style', 'libraries'].forEach(name => {
+            const displayName = Strings.tabDisplayNames[name];
+            if (!displayName) {
+                throw new Error(`No display name for tab "${name}"`);
+            }
 
             let tab = <IMonacoEditorState>{
-                name: name,
-                view: title,
+                name,
+                displayName,
                 viewState: null
             };
 
@@ -102,7 +105,7 @@ export class Editor implements AfterViewInit {
                 if (newTab) {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
-                    let timer = AI.trackPageView(this.currentState.view, `/edit/${this.currentState.name}`);
+                    let timer = AI.trackPageView(this.currentState.displayName, `/edit/${this.currentState.name}`);
                     if (this.currentState.name === 'script') {
                         this.updateIntellisense();
                     }
