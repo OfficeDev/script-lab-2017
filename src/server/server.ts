@@ -324,11 +324,14 @@ async function generateManifest(snippet: ISnippet, additionalFields: ISnippet, h
         throw new BadRequestError(`Cannot find matching Office host type for snippet host "${snippet.host}"`);
     }
 
+    const snippetNameMax125 = clipText(snippet.name, 125) || Strings.manifestDefaults.nameIfEmpty;
+    const snippetDescriptionMax250 = clipText(snippet.description, 250) || Strings.manifestDefaults.descriptionIfEmpty;
+
     return manifestGenerator({
-        name: snippet.name,
-        description: snippet.description,
-        snippetNameMax125: clipText(snippet.name, 125),
-        snippetDescriptionMax250: clipText(snippet.description, 250),
+        name: snippetNameMax125,
+        description: snippetDescriptionMax250,
+        snippetNameMax125,
+        snippetDescriptionMax250,
         htmlFilename,
         providerName: snippet.author || additionalFields.author || Strings.createdWithScriptLab ,
         hostType,
