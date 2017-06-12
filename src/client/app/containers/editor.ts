@@ -43,14 +43,23 @@ export class Editor implements AfterViewInit {
         this._subscribeToState();
     }
 
-    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
+    changeTab = (name: string = 'script') => {
+        let language = '';
+        if (name !== 'libraries') {
+            language = this.tabs.get(name).language;
+        }
+
+        this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
+    }
 
     updateIntellisense() {
         if (this.snippet == null) {
             return;
         }
 
-        this._store.dispatch(new Monaco.UpdateIntellisenseAction(this.snippet.libraries.split('\n'), 'typescript'));
+        this._store.dispatch(new Monaco.UpdateIntellisenseAction(
+            { libraries: this.snippet.libraries.split('\n'), language: 'typescript' }
+        ));
     }
 
     private _createTabs() {
