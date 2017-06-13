@@ -15,7 +15,7 @@ export class MonacoService {
     private _defaults: monaco.editor.IEditorConstructionOptions = {
         value: '',
         language: 'text',
-        lineNumbers: 'on',
+        lineNumbers: true as any,
         roundedSelection: false,
         scrollBeyondLastLine: false,
         formatOnType: true,
@@ -166,10 +166,10 @@ export class MonacoService {
             }
         });
 
-        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+        (monaco.languages.typescript.typescriptDefaults as any).compilerOptions = {
             module: monaco.languages.typescript.ModuleKind.CommonJS,
             moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
-        });
+        };
 
         return monaco;
     };
