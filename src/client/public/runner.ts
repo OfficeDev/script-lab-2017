@@ -16,7 +16,7 @@ interface InitializationParams {
 
 (() => {
     /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-    const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
+    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
 
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
