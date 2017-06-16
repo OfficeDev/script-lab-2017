@@ -62,7 +62,7 @@ The website is now running.  To try it out in an Add-in, see the next section.
 
 1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `script-lab-local.xml`.
 
-2. Sideload the manifest into your office host application.  See <https://dev.office.com/docs/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
+2. Sideload the manifest into your office host application.  See <https://aka.ms/sideload-addins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
 
 
 ## General structure
