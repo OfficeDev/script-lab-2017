@@ -66,6 +66,29 @@
 		</div>
 	</app>
 	<script src="libs/monaco-editor/vs/loader.js"></script>
+
+	<script>
+		// Note: inspired by Modernizr's check for localStorage existence:
+		//   https://github.com/Modernizr/Modernizr
+		try {
+			var key = "playground_localstorage_test";
+			window.localStorage.setItem(key, "");
+			window.localStorage.removeItem(key);
+		} catch (e) {
+			/** NEEDS STRING REVIEW. Note: probably OK to have it here rather than in localizable strings,
+			  * because this happens before the localizable strings are ever loaded (and before Office initializes...) */
+			var errorText = 'Cannot initialize Script Lab because the browser\'s Local Storage is disabled. ' +
+				' Please try on a different browser/computer, or check your internet settings.';
+			console.log(errorText);
+
+			document.getElementsByClassName('ms-progress-component__sub-title')[0].textContent = errorText;
+			document.getElementsByClassName('ms-progress-component__sub-title')[0].style.maxWidth = "350px";
+			document.getElementsByClassName('ms-progress-component__footer')[0].style.display = "none";
+
+			// Re-throw the exception, blocking further execution...
+			throw new Error("localStorage is disabled");
+		}
+	</script>
 </body>
 
 </html>
