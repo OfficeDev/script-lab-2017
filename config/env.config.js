@@ -22,6 +22,7 @@ const config = {
         runnerUrl: 'https://localhost:3200',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        officeJsUrl: 'https://localhost:3000/node_modules/@microsoft/office-js/dist/office.js'
     },
     edge: {
         name: 'EDGE',
@@ -32,6 +33,7 @@ const config = {
         runnerUrl: 'https://bornholm-runner-edge.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        officeJsUrl: 'https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js'
     },
     insiders: {
         name: 'INSIDERS',
@@ -42,6 +44,7 @@ const config = {
         runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
+        officeJsUrl: 'https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js'
     },
     production: {
         name: 'PRODUCTION',
@@ -52,6 +55,7 @@ const config = {
         runnerUrl: 'https://script-lab-runner.azureedge.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        officeJsUrl: 'https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js'
     }
 };
 

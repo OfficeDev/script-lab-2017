@@ -138,8 +138,9 @@ module.exports = (prodMode) =>
             ]),
             new HtmlWebpackPlugin({
                 filename: 'index.html',
-                template: './views/index.html',
-                chunks: ['polyfills', 'vendor', 'main']
+                template: './views/index.ejs',
+                chunks: ['polyfills', 'vendor', 'main'],
+                officeJsUrl: config.officeJsUrl
             }),
             new HtmlWebpackPlugin({
                 filename: 'functions.html',
