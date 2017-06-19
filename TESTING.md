@@ -1,3 +1,5 @@
+# Manual-testing scenarios
+
 * Create a snippet -- both "new" and from a sample
 * Import someone else's snippet
   * From YAML
