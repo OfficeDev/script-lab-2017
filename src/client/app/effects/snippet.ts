@@ -255,17 +255,23 @@ export class SnippetEffects {
                     .map(gist => {
                         /* Try to find a yaml file */
                         let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
+                        let output: ISnippet = null;
+                        let profile: IBasicProfile = this._github.profile;
 
                         /* Try to upgrade the gist if there was no yaml file in it */
                         if (snippet == null) {
-                            let output = this._upgrade(gist.files);
+                            output = this._upgrade(gist.files);
                             output.description = '';
                             output.gist = data;
-                            return output;
                         }
                         else {
-                            return jsyaml.load(snippet.content);
+                            output = jsyaml.load(snippet.content);
+                            output.gist = gist.id;
                         }
+
+                        profile.login === gist.owner.login ? output.owned = true : output.owned = false;
+
+                        return output;
                     });
 
             /* If import type is YAML, then simply load */
@@ -298,7 +304,9 @@ export class SnippetEffects {
             snippet.description = '';
         }
 
-        snippet.id = snippet.id === '' ? cuid() : snippet.id;
+        snippet.id = snippet.id === '' ? cuid() : snippet.id;;
+        snippet.gist = rawSnippet.gist;
+        snippet.owned = rawSnippet.owned;
 
         /**
          * If the action here involves true importing rather than re-opening,

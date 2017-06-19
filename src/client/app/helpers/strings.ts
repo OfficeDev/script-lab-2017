@@ -52,7 +52,8 @@ export class Strings {
     static readonly githubLogoutFailed = 'Failed to sign out of GitHub';
     static readonly profileCheckFailed = 'Failed to get the GitHub profile';
     static readonly gistRetrieveFailed = 'Failed to retrieve GitHub gists';
-    static readonly gistShareFailed = 'Failed to share the GitHub gist';
+    static readonly gistShareFailedBody = 'Failed to share the GitHub gist';
+    static readonly gistShareFailedTitle = 'Share failed';
     static readonly gistDescriptionAppendage = `Shared with ${Strings.PlaygroundName}`;
 
     static readonly gistSharedDialogStart = 'The URL of your GitHub gist is:';
@@ -79,8 +80,9 @@ export class Strings {
     // Containers strings
     //app.ts
 
-    static readonly shareMenuPublic = 'Public gist';
-    static readonly shareMenuPrivate = 'Secret gist';
+    static readonly shareMenuPublic = 'New Public Gist';
+    static readonly shareMenuPrivate = 'New Secret Gist';
+    static readonly updateMenu = 'Update Existing Gist';
     static readonly shareMenuClipboard = 'Copy to clipboard';
     static readonly shareMenuExport = 'Export for publishing';
 

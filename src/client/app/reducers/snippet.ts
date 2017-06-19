@@ -81,6 +81,17 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
         case SnippetActionTypes.STORE_UPDATED:
             return { ...state, loading: false };
 
+        case SnippetActionTypes.UPDATE_INFO: {
+            if (action.payload.gist !== null) {
+                state.lastOpened.gist = action.payload.gist;
+            }
+
+            if (action.payload.owned !== null) {
+                state.lastOpened.owned = action.payload.owned;
+            }
+            return state;
+        }
+
         default: return state;
     }
 }

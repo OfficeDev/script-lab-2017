@@ -6,6 +6,7 @@ interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     id?: string;
     gist?: string;
+    owned?: boolean;
     name?: string;
     description?: string;
     /** author: export-only */

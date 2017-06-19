@@ -18,8 +18,9 @@ import { Strings, environment } from '../helpers';
                     <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
-                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
-                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
+                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true, false)"></command>
+                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false, false)"></command>
+                    <command *ngIf="snippet?.owned" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(null, true)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
                     <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
                 </command>
@@ -144,7 +145,7 @@ export class AppComponent {
         this._store.dispatch(new UI.ToggleImportAction(true));
     }
 
-    shareGist(isPublic: boolean) {
+    shareGist(isPublic: boolean, update: boolean) {
         if (this.snippet == null) {
             return;
         }
@@ -156,7 +157,10 @@ export class AppComponent {
                     return;
                 }
 
-                if (isPublic) {
+                if (update) {
+                    this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
+                }
+                else if (isPublic) {
                     this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
                 }
                 else {
