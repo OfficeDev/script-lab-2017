@@ -18,9 +18,9 @@ import { Strings, environment } from '../helpers';
                     <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
+                    <command *ngIf="snippet?.owned" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(null, true)"></command>
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true, false)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false, false)"></command>
-                    <command *ngIf="snippet?.owned" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(null, true)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
                     <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
                 </command>
