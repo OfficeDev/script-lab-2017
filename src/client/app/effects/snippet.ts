@@ -304,7 +304,7 @@ export class SnippetEffects {
             snippet.description = '';
         }
 
-        snippet.id = snippet.id === '' ? cuid() : snippet.id;;
+        snippet.id = snippet.id === '' ? cuid() : snippet.id;
         snippet.gist = rawSnippet.gist;
         snippet.owned = rawSnippet.owned;
 
