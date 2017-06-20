@@ -144,6 +144,29 @@ export class SnippetEffects {
             return Observable.of(new Snippet.LoadTemplatesSuccessAction([]));
         });
 
+    @Effect()
+    updateInfo$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
+        .map(( { payload } ) => {
+            let { id, name, description, gist, owned } = payload;
+            let snippet: ISnippet = storage.lastOpened;
+            if (storage.snippets.contains(id)) {
+                snippet = storage.snippets.get(id);
+
+                /* check if fields are undefined or null */
+                name != null ? snippet.name = name : snippet.name = snippet.name;
+                description != null ? description = payload.description : snippet.description = snippet.description;
+                gist != null ? snippet.gist = gist : snippet.gist = snippet.gist;
+                owned != null ? snippet.owned = owned : snippet.owned = snippet.owned;
+
+                storage.snippets.insert(id, snippet);
+            }
+            return snippet;
+
+        })
+        .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetUpdateError, exception)));
+
     private _exists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }

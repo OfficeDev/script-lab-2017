@@ -29,6 +29,7 @@ export class Strings {
     static readonly snippetDeleteAllError = 'Failed to delete all the local snippets';
     static readonly snippetLoadAllError = 'Failed to load the local snippets';
     static readonly snippetRunError = 'Failed to run the snippet';
+    static readonly snippetUpdateError = 'Failed to update the snippet';
     static readonly snippetLoadDefaultsError = 'Failed to load the default samples';
 
     static readonly snippetValidationEmpty = `Your snippet can't be empty`;
@@ -76,6 +77,7 @@ export class Strings {
     //snippet.info.ts
     static readonly nameLabel = 'Name';
     static readonly descriptionLabel = 'Description';
+    static readonly urlLabel = 'Gist URL';
 
     // Containers strings
     //app.ts

@@ -82,14 +82,8 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             return { ...state, loading: false };
 
         case SnippetActionTypes.UPDATE_INFO: {
-            if (action.payload.gist !== null) {
-                state.lastOpened.gist = action.payload.gist;
-            }
-
-            if (action.payload.owned !== null) {
-                state.lastOpened.owned = action.payload.owned;
-            }
-            return state;
+            AI.trackEvent(action.type);
+            return { ...state, loading: false };
         }
 
         default: return state;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings, getShareableYaml, environment } from '../helpers';
+import { AI, Strings, getShareableYaml, environment, storage } from '../helpers';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
 import { UI, GitHub, Snippet } from '../actions';
@@ -130,7 +130,7 @@ ${Strings.gistSharedDialogEnd}
         .mergeMap((gist) => Observable.from([
                 new GitHub.LoadGistsAction(),
                 new GitHub.ShareSuccessAction(gist),
-                new Snippet.UpdateInfoAction({ gist: gist.id, owned: true })])
+                new Snippet.UpdateInfoAction({ id: storage.lastOpened.id, gist: gist.id, owned: true })])
         )
         .catch(exception => {
             this._uiEffects.alert(
@@ -140,7 +140,7 @@ ${Strings.gistSharedDialogEnd}
             .then(() => window.location.reload());
             return Observable.from([
                 new GitHub.ShareFailedAction(),
-                new Snippet.UpdateInfoAction({ gist: '', owned: false })]);
+                new Snippet.UpdateInfoAction({ id: storage.lastOpened.id, gist: '', owned: false })]);
         });
 
     @Effect({ dispatch: false })
