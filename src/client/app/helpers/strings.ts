@@ -77,7 +77,6 @@ export class Strings {
     //snippet.info.ts
     static readonly nameLabel = 'Name';
     static readonly descriptionLabel = 'Description';
-    static readonly urlLabel = 'Gist URL';
 
     // Containers strings
     //app.ts
