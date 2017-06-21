@@ -16,6 +16,11 @@ import { Strings } from '../helpers';
                     <label class="ms-Label">${Strings.descriptionLabel}</label>
                     <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="Description of the snippet"></textarea>
                 </div>
+
+                <div *ngIf="url" class="ms-TextField ms-TextField--multiline">
+                    <label class="ms-Label">${Strings.urlLabel}</label>
+                    <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="url" disabled="true"></textarea>
+                </div>
             </div>
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
@@ -35,4 +40,11 @@ export class SnippetInfo {
     @Input() snippet: ISnippet;
     @Input() show: boolean;
     @Output() dismiss = new EventEmitter<ISnippet>();
+
+    get url() {
+        if (!this.snippet.gist) {
+            return null;
+        }
+        return `https://gist.github.com/${this.snippet.gist}`;
+    }
 }

@@ -1,6 +1,7 @@
 # Manual-testing scenarios
 
 * Create a snippet -- both "new" and from a sample
+  * There should be no URL field when viewing the snippet's information
 * Import someone else's snippet
   * From YAML
   * From Gist (incl. old-style)
@@ -22,3 +23,4 @@
   * Update option should not appear in share menu after importing a gist that you do not own
   * Update option appears in share menu after initial publish of a new gist or a gist that you did not previously own
   * Deleting a gist and then trying to update it via local copy should prompt full refresh, after which update option should be gone
+  * URL field under snippet's information should be updated when publishing a gist
