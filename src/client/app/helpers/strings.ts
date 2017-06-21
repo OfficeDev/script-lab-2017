@@ -81,6 +81,7 @@ export class Strings {
     //snippet.info.ts
     static readonly nameLabel = 'Name';
     static readonly descriptionLabel = 'Description';
+    static readonly urlLabel = 'Gist URL';
 
     // Containers strings
     //app.ts
@@ -99,6 +100,8 @@ export class Strings {
     static readonly darkTheme = 'Dark';
 
     static readonly deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
+    static readonly sharePublicSnippetConfirm = 'Are you sure you want to share this snippet as a new public gist?';
+    static readonly sharePrivateSnippetConfirm = 'Are you sure you want to share this snippet as a new secret gist?';
 
     static readonly tabDisplayNames = {
         'script': 'Script',

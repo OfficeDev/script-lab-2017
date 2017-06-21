@@ -175,10 +175,26 @@ export class AppComponent {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    let sharePublicGist = async() => {
+                        let result = await this._effects.alert(Strings.sharePublicSnippetConfirm, `${Strings.share} ${this.snippet.name}`, `${Strings.share}`, `${Strings.cancelButtonLabel}`);
+                        return result;
+                    };
+                    sharePublicGist().then((result: string) => {
+                        if (result !== Strings.cancelButtonLabel) {
+                            this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                        }
+                    });
                 }
                 else {
-                    this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    let sharePrivateGist = async() => {
+                        let result = await this._effects.alert(Strings.sharePrivateSnippetConfirm, `${Strings.share} ${this.snippet.name}`, `${Strings.share}`, `${Strings.cancelButtonLabel}`);
+                        return result;
+                    };
+                    sharePrivateGist().then((result: string) => {
+                        if (result !== Strings.cancelButtonLabel) {
+                            this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                        }
+                    });
                 }
 
                 if (sub && !sub.closed) {

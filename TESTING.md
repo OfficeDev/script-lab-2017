@@ -1,6 +1,7 @@
 # Manual-testing scenarios
 
 * Create a snippet -- both "new" and from a sample
+  * There should be no URL field when viewing the snippet's information
 * Import someone else's snippet
   * From YAML
   * From Gist (incl. old-style)
