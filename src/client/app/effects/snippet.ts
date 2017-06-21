@@ -148,16 +148,24 @@ export class SnippetEffects {
     updateInfo$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
         .map(( { payload } ) => {
-            let { id, name, description, gist, owned } = payload;
+            let { id, name, description, gist, isOwned } = payload;
             let snippet: ISnippet = storage.lastOpened;
             if (storage.snippets.contains(id)) {
                 snippet = storage.snippets.get(id);
 
                 /* check if fields are undefined or null */
-                name != null ? snippet.name = name : snippet.name = snippet.name;
-                description != null ? description = payload.description : snippet.description = snippet.description;
-                gist != null ? snippet.gist = gist : snippet.gist = snippet.gist;
-                owned != null ? snippet.owned = owned : snippet.owned = snippet.owned;
+                if (name != null) {
+                    snippet.name = name;
+                }
+                if (description != null) {
+                    snippet.description = description;
+                }
+                if (gist != null) {
+                    snippet.gist = gist;
+                }
+                if (isOwned != null) {
+                    snippet.isOwned = isOwned;
+                }
 
                 storage.snippets.insert(id, snippet);
             }
@@ -292,7 +300,7 @@ export class SnippetEffects {
                             output.gist = gist.id;
                         }
 
-                        profile.login === gist.owner.login ? output.owned = true : output.owned = false;
+                        profile.login === gist.owner.login ? output.isOwned = true : output.isOwned = false;
 
                         return output;
                     });
@@ -329,7 +337,7 @@ export class SnippetEffects {
 
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
         snippet.gist = rawSnippet.gist;
-        snippet.owned = rawSnippet.owned;
+        snippet.isOwned = rawSnippet.isOwned;
 
         /**
          * If the action here involves true importing rather than re-opening,

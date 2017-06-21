@@ -101,7 +101,7 @@ export class GitHubEffects {
             description.replace(Strings.gistDescriptionAppendage, ''); // shouldn't be necessary
             description += Strings.gistDescriptionAppendage;
 
-            if (type === GitHub.GitHubActionTypes.UPDATE_GIST && payload.owned) {
+            if (type === GitHub.GitHubActionTypes.UPDATE_GIST && payload.isOwned) {
                 id = payload.gist;
             }
 
@@ -130,7 +130,7 @@ ${Strings.gistSharedDialogEnd}
         .mergeMap((gist) => Observable.from([
                 new GitHub.LoadGistsAction(),
                 new GitHub.ShareSuccessAction(gist),
-                new Snippet.UpdateInfoAction({ id: storage.lastOpened.id, gist: gist.id, owned: true })])
+                new Snippet.UpdateInfoAction({ id: storage.lastOpened.id, gist: gist.id, isOwned: true })])
         )
         .catch(exception => {
             this._uiEffects.alert(
@@ -140,7 +140,7 @@ ${Strings.gistSharedDialogEnd}
             .then(() => window.location.reload());
             return Observable.from([
                 new GitHub.ShareFailedAction(),
-                new Snippet.UpdateInfoAction({ id: storage.lastOpened.id, gist: '', owned: false })]);
+                new Snippet.UpdateInfoAction({ id: storage.lastOpened.id, gist: '', isOwned: false })]);
         });
 
     @Effect({ dispatch: false })

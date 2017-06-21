@@ -18,7 +18,7 @@ import { Strings, environment } from '../helpers';
                     <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
-                    <command *ngIf="snippet?.owned" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(null, true)"></command>
+                    <command *ngIf="snippet?.isOwned" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(null, true)"></command>
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true, false)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false, false)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
@@ -145,7 +145,7 @@ export class AppComponent {
         this._store.dispatch(new UI.ToggleImportAction(true));
     }
 
-    shareGist(isPublic: boolean, update: boolean) {
+    shareGist(isPublic: boolean, isUpdate: boolean) {
         if (this.snippet == null) {
             return;
         }
@@ -157,7 +157,7 @@ export class AppComponent {
                     return;
                 }
 
-                if (update) {
+                if (isUpdate) {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
