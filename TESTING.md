@@ -22,5 +22,5 @@
   * Can update existing gist
   * Update option should not appear in share menu after importing a gist that you do not own
   * Update option appears in share menu after initial publish of a new gist or a gist that you did not previously own
-  * Deleting a gist and then trying to update it via local copy should prompt full refresh, after which update option should be gone
+  * Deleting a gist and then trying to update it via local copy should prompt full refresh
   * URL field under snippet's information should be updated when publishing a gist

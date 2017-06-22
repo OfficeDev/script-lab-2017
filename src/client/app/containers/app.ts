@@ -4,6 +4,7 @@ import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { Strings, environment } from '../helpers';
+import { isNil } from 'lodash';
 
 @Component({
     selector: 'app',
@@ -18,7 +19,7 @@ import { Strings, environment } from '../helpers';
                     <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
-                    <command *ngIf="snippet?.isOwned" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(null, true)"></command>
+                    <command *ngIf="isOwned|async" icon="Save" title="${Strings.updateMenu}" (click)="shareGist(false, true)"></command>
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true, false)"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false, false)"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
@@ -63,6 +64,18 @@ export class AppComponent {
 
     get isAddinCommands() {
         return /commands=1/ig.test(location.search);
+    }
+
+    get isOwned() {
+        return this.profile$
+            .filter(profile => profile != null)
+            .map(profile => {
+                    if (!isNil(this.snippet.gistOwnerId)) {
+                        return this.snippet.gistOwnerId === profile.login;
+                    }
+                    return false;
+                }
+            );
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

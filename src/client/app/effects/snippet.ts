@@ -148,29 +148,30 @@ export class SnippetEffects {
     updateInfo$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
         .map(( { payload } ) => {
-            let { id, name, description, gist, isOwned } = payload;
+            let { id, name, description, gist, gistOwnerId } = payload;
             let snippet: ISnippet = storage.lastOpened;
             if (storage.snippets.contains(id)) {
                 snippet = storage.snippets.get(id);
 
                 /* check if fields are undefined or null */
-                if (name != null) {
+                if (!isNil(name)) {
                     snippet.name = name;
                 }
-                if (description != null) {
+                if (!isNil(description)) {
                     snippet.description = description;
                 }
-                if (gist != null) {
+                if (!isNil(gist)) {
                     snippet.gist = gist;
                 }
-                if (isOwned != null) {
-                    snippet.isOwned = isOwned;
+                if (!isNil(gistOwnerId)) {
+                    snippet.gistOwnerId = gistOwnerId;
                 }
 
+                /* updates snippet */
                 storage.snippets.insert(id, snippet);
             }
-            return snippet;
 
+            return snippet;
         })
         .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetUpdateError, exception)));
@@ -287,7 +288,6 @@ export class SnippetEffects {
                         /* Try to find a yaml file */
                         let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
                         let output: ISnippet = null;
-                        let profile: IBasicProfile = this._github.profile;
 
                         /* Try to upgrade the gist if there was no yaml file in it */
                         if (snippet == null) {
@@ -300,7 +300,7 @@ export class SnippetEffects {
                             output.gist = gist.id;
                         }
 
-                        profile.login === gist.owner.login ? output.isOwned = true : output.isOwned = false;
+                        output.gistOwnerId = gist.owner.login;
 
                         return output;
                     });
@@ -337,7 +337,7 @@ export class SnippetEffects {
 
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
         snippet.gist = rawSnippet.gist;
-        snippet.isOwned = rawSnippet.isOwned;
+        snippet.gistOwnerId = rawSnippet.gistOwnerId;
 
         /**
          * If the action here involves true importing rather than re-opening,

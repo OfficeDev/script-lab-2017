@@ -28,7 +28,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_IN: {
-            AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()).toString() });
+            AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()) });
             return {
                 ...state,
                 loading: false,
@@ -60,6 +60,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.SHARE_FAILED: {
+            AI.trackEvent(action.type, { exception: action.payload });
             return { ...state, sharing: false };
         }
 
