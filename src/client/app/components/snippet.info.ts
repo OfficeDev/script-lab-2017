@@ -1,5 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Strings } from '../helpers';
+import { isNil } from 'lodash';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,9 +43,6 @@ export class SnippetInfo {
     @Output() dismiss = new EventEmitter<ISnippet>();
 
     get url() {
-        if (!this.snippet.gist) {
-            return null;
-        }
-        return `https://gist.github.com/${this.snippet.gist}`;
+        return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
     }
 }

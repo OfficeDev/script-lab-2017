@@ -81,6 +81,8 @@ export class Strings {
     //snippet.info.ts
     static readonly nameLabel = 'Name';
     static readonly descriptionLabel = 'Description';
+
+    /** NEEDS STRING REVIEW */
     static readonly urlLabel = 'Gist URL';
 
     // Containers strings
