@@ -29,7 +29,7 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     /* ITemplate base class */
     id: SnippetFieldType.INTERNAL,
     gist: SnippetFieldType.INTERNAL,
-    isOwned: SnippetFieldType.INTERNAL,
+    gistOwnerId: SnippetFieldType.INTERNAL,
     name: SnippetFieldType.PUBLIC,
     description: SnippetFieldType.PUBLIC,
     // author: export-only, always want to generate on the fly, so skip altogether
@@ -73,6 +73,7 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
 export function getSnippetDefaults(): ISnippet {
     return {
         id: '',
+        gist: '',
         name: Strings.defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
         description: '',
         // author: export-only, always want to generate on the fly, so skip altogether
