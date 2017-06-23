@@ -108,22 +108,18 @@ export class GitHubEffects {
             }
 
             return this._github.createOrUpdateGist(
-                `${description}`,
-                files,
-                gistId,
-                type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST).map((gist: IGist) => {
-                    return { gist: gist, snippetId: id };
-                }
-            );
+                description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
+            )
+            .map((gist: IGist) => ({ gist: gist, snippetId: id }));
         })
         .mergeMap(async ({ gist, snippetId }) => {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
             let result = await this._uiEffects.alert(`${Strings.gistSharedDialogStart}
-
+            
             ${temp}
 
-${Strings.gistSharedDialogEnd}
-`, Strings.gistSharedDialogTitle, Strings.gistSharedDialogViewButton, Strings.okButtonLabel); // the URL should be a hyperlink and the text should wrap
+            ${Strings.gistSharedDialogEnd}`,
+            Strings.gistSharedDialogTitle, Strings.gistSharedDialogViewButton, Strings.okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
             if (result === Strings.gistSharedDialogViewButton) {
                 window.open(temp);
