@@ -29,6 +29,7 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     /* ITemplate base class */
     id: SnippetFieldType.INTERNAL,
     gist: SnippetFieldType.INTERNAL,
+    gistOwnerId: SnippetFieldType.INTERNAL,
     name: SnippetFieldType.PUBLIC,
     description: SnippetFieldType.PUBLIC,
     // author: export-only, always want to generate on the fly, so skip altogether

@@ -4,6 +4,7 @@ import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { Strings, environment } from '../helpers';
+import { isNil } from 'lodash';
 
 @Component({
     selector: 'app',
@@ -18,8 +19,9 @@ import { Strings, environment } from '../helpers';
                     <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
-                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist(true)"></command>
-                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist(false)"></command>
+                    <command *ngIf="isGistOwned|async" icon="Save" title="${Strings.updateMenu}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
+                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
+                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
                     <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
                 </command>
@@ -62,6 +64,18 @@ export class AppComponent {
 
     get isAddinCommands() {
         return /commands=1/ig.test(location.search);
+    }
+
+    get isGistOwned() {
+        return this.profile$
+            .filter(profile => profile != null)
+            .map(profile => {
+                    if (!isNil(this.snippet.gistOwnerId)) {
+                        return this.snippet.gistOwnerId === profile.login;
+                    }
+                    return false;
+                }
+            );
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
@@ -144,7 +158,7 @@ export class AppComponent {
         this._store.dispatch(new UI.ToggleImportAction(true));
     }
 
-    shareGist(isPublic: boolean) {
+    shareGist(values) {
         if (this.snippet == null) {
             return;
         }
@@ -156,7 +170,11 @@ export class AppComponent {
                     return;
                 }
 
-                if (isPublic) {
+                let { isPublic, isUpdate } = values;
+                if (isUpdate) {
+                    this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
+                }
+                else if (isPublic) {
                     this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
                 }
                 else {

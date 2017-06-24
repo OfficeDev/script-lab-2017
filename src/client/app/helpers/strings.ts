@@ -31,6 +31,9 @@ export class Strings {
     static readonly snippetRunError = 'Failed to run the snippet';
     static readonly snippetLoadDefaultsError = 'Failed to load the default samples';
 
+    /** NEEDS STRING REVIEW */
+    static readonly snippetUpdateError = 'Failed to update the snippet';
+
     static readonly snippetValidationEmpty = `Your snippet can't be empty`;
     static readonly snippetValidationNoTitle = 'Your snippet needs a title';
 
@@ -52,8 +55,11 @@ export class Strings {
     static readonly githubLogoutFailed = 'Failed to sign out of GitHub';
     static readonly profileCheckFailed = 'Failed to get the GitHub profile';
     static readonly gistRetrieveFailed = 'Failed to retrieve GitHub gists';
-    static readonly gistShareFailed = 'Failed to share the GitHub gist';
     static readonly gistDescriptionAppendage = `Shared with ${Strings.PlaygroundName}`;
+
+    /** NEEDS STRING REVIEW */
+    static readonly gistShareFailedBody = 'Failed to share the GitHub gist';
+    static readonly gistShareFailedTitle = 'Sharing failed';
 
     static readonly gistSharedDialogStart = 'The URL of your GitHub gist is:';
     static readonly gistSharedDialogEnd = `To import your snippet, select the Import button in ${Strings.PlaygroundName} and enter this URL.`;
@@ -79,8 +85,11 @@ export class Strings {
     // Containers strings
     //app.ts
 
-    static readonly shareMenuPublic = 'Public gist';
-    static readonly shareMenuPrivate = 'Secret gist';
+    /** NEEDS STRING REVIEW */
+    static readonly shareMenuPublic = 'New Public Gist';
+    static readonly shareMenuPrivate = 'New Secret Gist';
+    static readonly updateMenu = 'Update Existing Gist';
+
     static readonly shareMenuClipboard = 'Copy to clipboard';
     static readonly shareMenuExport = 'Export for publishing';
 

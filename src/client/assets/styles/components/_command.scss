@@ -135,6 +135,9 @@ footer.command__bar--condensed {
             &__icon {
                 height: auto;
                 width: 100%;
+                display: flex;
+                justify-content: left;
+                padding-left: 40px;
 
                 span {
                     display: block !important;

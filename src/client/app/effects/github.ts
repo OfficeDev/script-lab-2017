@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { AI, Strings, getShareableYaml, environment } from '../helpers';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
-import { UI, GitHub } from '../actions';
+import { UI, GitHub, Snippet } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import { Http, ResponseContentType } from '@angular/http';
 import * as clipboard from 'clipboard';
@@ -84,10 +84,15 @@ export class GitHubEffects {
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$
-        .ofType(GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST, GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST)
+        .ofType(
+            GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST,
+            GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST,
+            GitHub.GitHubActionTypes.UPDATE_GIST
+        )
         .mergeMap(({ payload, type }) => {
-            let { name, description } = payload;
+            let { id, name, description, gist } = payload;
             let files: IGistFiles = {};
+            let gistId = null;
 
             files[`${name}.yaml`] = {
                 content: this._getShareableYaml(payload),
@@ -98,36 +103,43 @@ export class GitHubEffects {
             description.replace(Strings.gistDescriptionAppendage, ''); // shouldn't be necessary
             description += Strings.gistDescriptionAppendage;
 
+            if (type === GitHub.GitHubActionTypes.UPDATE_GIST) {
+                gistId = gist;
+            }
+
             return this._github.createOrUpdateGist(
-                `${description}`,
-                files,
-                null,
-                type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
-            );
+                description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
+            )
+            .map((gist: IGist) => ({ gist: gist, snippetId: id }));
         })
-        .mergeMap(async (gist: IGist) => {
+        .mergeMap(async ({ gist, snippetId }) => {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
             let result = await this._uiEffects.alert(`${Strings.gistSharedDialogStart}
-
+            
             ${temp}
 
-${Strings.gistSharedDialogEnd}
-`, Strings.gistSharedDialogTitle, Strings.gistSharedDialogViewButton, Strings.okButtonLabel); // the URL should be a hyperlink and the text should wrap
+            ${Strings.gistSharedDialogEnd}`,
+            Strings.gistSharedDialogTitle, Strings.gistSharedDialogViewButton, Strings.okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
             if (result === Strings.gistSharedDialogViewButton) {
                 window.open(temp);
             }
 
-            return gist;
+            return { gist: gist, snippetId: snippetId };
         })
-        .mergeMap(gist => Observable.from([
-            new GitHub.LoadGistsAction(),
-            new GitHub.ShareSuccessAction(gist)
-        ]))
-        .catch(exception => Observable.from([
-            new UI.ReportErrorAction(Strings.gistShareFailed, exception),
-            new GitHub.ShareFailedAction()
-        ]));
+        .mergeMap(({ gist, snippetId }) => Observable.from([
+                new GitHub.LoadGistsAction(),
+                new GitHub.ShareSuccessAction(gist),
+                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+        )
+        .catch(exception => {
+            this._uiEffects.alert(
+                Strings.gistShareFailedBody + '\n\n' + Strings.reloadPrompt,
+                Strings.gistShareFailedTitle,
+                Strings.okButtonLabel)
+            .then(() => window.location.reload());
+            return Observable.of(new GitHub.ShareFailedAction(exception));
+        });
 
     @Effect({ dispatch: false })
     shareCopy$: Observable<Action> = this.actions$

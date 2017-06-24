@@ -144,6 +144,38 @@ export class SnippetEffects {
             return Observable.of(new Snippet.LoadTemplatesSuccessAction([]));
         });
 
+    @Effect()
+    updateInfo$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
+        .map(( { payload } ) => {
+            let { id, name, description, gist, gistOwnerId } = payload;
+            let snippet: ISnippet = storage.lastOpened;
+            if (storage.snippets.contains(id)) {
+                snippet = storage.snippets.get(id);
+
+                /* check if fields are undefined or null */
+                if (!isNil(name)) {
+                    snippet.name = name;
+                }
+                if (!isNil(description)) {
+                    snippet.description = description;
+                }
+                if (!isNil(gist)) {
+                    snippet.gist = gist;
+                }
+                if (!isNil(gistOwnerId)) {
+                    snippet.gistOwnerId = gistOwnerId;
+                }
+
+                /* updates snippet */
+                storage.snippets.insert(id, snippet);
+            }
+
+            return snippet;
+        })
+        .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetUpdateError, exception)));
+
     private _exists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }
@@ -255,17 +287,22 @@ export class SnippetEffects {
                     .map(gist => {
                         /* Try to find a yaml file */
                         let snippet = find(gist.files, (value, key) => value ? /\.ya?ml$/gi.test(key) : false);
+                        let output: ISnippet = null;
 
                         /* Try to upgrade the gist if there was no yaml file in it */
                         if (snippet == null) {
-                            let output = this._upgrade(gist.files);
+                            output = this._upgrade(gist.files);
                             output.description = '';
                             output.gist = data;
-                            return output;
                         }
                         else {
-                            return jsyaml.load(snippet.content);
+                            output = jsyaml.load(snippet.content);
+                            output.gist = gist.id;
                         }
+
+                        output.gistOwnerId = gist.owner.login;
+
+                        return output;
                     });
 
             /* If import type is YAML, then simply load */
@@ -299,6 +336,8 @@ export class SnippetEffects {
         }
 
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
+        snippet.gist = rawSnippet.gist;
+        snippet.gistOwnerId = rawSnippet.gistOwnerId;
 
         /**
          * If the action here involves true importing rather than re-opening,
