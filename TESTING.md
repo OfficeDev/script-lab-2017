@@ -1,7 +1,7 @@
 # Manual-testing scenarios
 
 * Create a snippet -- both "new" and from a sample
-  * There should be no URL field when viewing the snippet's information
+  * There should be no Gist URL field when viewing the snippet's information
 * Import someone else's snippet
   * From YAML
   * From Gist (incl. old-style)
@@ -19,7 +19,9 @@
 * Sharing:
   * Copying to clipboard works
   * Can share as gist, public and private
+    * Gist URL should be updated in snippet information
   * Can update existing gist
   * Update option should not appear in share menu after importing a gist that you do not own
   * Update option appears in share menu after initial publish of a new gist or a gist that you did not previously own
   * Deleting a gist and then trying to update it via local copy should prompt full refresh
+  
