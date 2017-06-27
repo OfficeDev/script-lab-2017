@@ -83,7 +83,7 @@ export class Strings {
     static readonly descriptionLabel = 'Description';
 
     /** NEEDS STRING REVIEW */
-    static readonly urlLabel = 'Gist URL';
+    static readonly gistUrlLabel = 'Gist URL';
 
     // Containers strings
     //app.ts

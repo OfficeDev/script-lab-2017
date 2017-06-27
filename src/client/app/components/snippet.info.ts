@@ -19,8 +19,8 @@ import { isNil } from 'lodash';
                 </div>
 
                 <div *ngIf="!!url" class="ms-TextField">
-                    <label class="ms-Label">${Strings.urlLabel}</label>
-                    <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="" disabled />
+                    <label class="ms-Label">${Strings.gistUrlLabel}</label>
+                    <a href="{{url}}" target="_blank">Open in browser</a>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
