@@ -18,9 +18,9 @@ import { isNil } from 'lodash';
                     <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="Description of the snippet"></textarea>
                 </div>
 
-                <div *ngIf="url" class="ms-TextField ms-TextField--multiline">
+                <div *ngIf="!!url" class="ms-TextField">
                     <label class="ms-Label">${Strings.urlLabel}</label>
-                    <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="url" disabled="true"></textarea>
+                    <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="" disabled />
                 </div>
             </div>
             <div class="ms-Dialog-actions">

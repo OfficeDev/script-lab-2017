@@ -175,10 +175,7 @@ export class AppComponent {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    let sharePublicGist = async() => {
-                        let result = await this._effects.alert(Strings.sharePublicSnippetConfirm, `${Strings.share} ${this.snippet.name}`, `${Strings.share}`, `${Strings.cancelButtonLabel}`);
-                        return result;
-                    };
+                    let sharePublicGist = () => (this._effects.alert(Strings.sharePublicSnippetConfirm, `${Strings.share} ${this.snippet.name}`, Strings.share, Strings.cancelButtonLabel));
                     sharePublicGist().then((result: string) => {
                         if (result !== Strings.cancelButtonLabel) {
                             this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
@@ -186,10 +183,7 @@ export class AppComponent {
                     });
                 }
                 else {
-                    let sharePrivateGist = async() => {
-                        let result = await this._effects.alert(Strings.sharePrivateSnippetConfirm, `${Strings.share} ${this.snippet.name}`, `${Strings.share}`, `${Strings.cancelButtonLabel}`);
-                        return result;
-                    };
+                    let sharePrivateGist = () => (this._effects.alert(Strings.sharePrivateSnippetConfirm, `${Strings.share} ${this.snippet.name}`, Strings.share, Strings.cancelButtonLabel));
                     sharePrivateGist().then((result: string) => {
                         if (result !== Strings.cancelButtonLabel) {
                             this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
