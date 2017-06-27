@@ -176,21 +176,21 @@ export class AppComponent {
                 }
                 else if (isPublic) {
                     this._effects.alert(Strings.sharePublicSnippetConfirm, `${Strings.share} ${this.snippet.name}`, Strings.share, Strings.cancelButtonLabel)
-                    .then((result: string) => {
-                            if (result !== Strings.cancelButtonLabel) {
-                                this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                        .then((result: string) => {
+                                if (result !== Strings.cancelButtonLabel) {
+                                    this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                                }
                             }
-                        }
-                    );
+                        );
                 }
                 else {
                     this._effects.alert(Strings.sharePrivateSnippetConfirm, `${Strings.share} ${this.snippet.name}`, Strings.share, Strings.cancelButtonLabel)
-                    .then((result: string) => {
-                            if (result !== Strings.cancelButtonLabel) {
-                                this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                        .then((result: string) => {
+                                if (result !== Strings.cancelButtonLabel) {
+                                    this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                                }
                             }
-                        }
-                    );
+                        );
                 }
 
                 if (sub && !sub.closed) {

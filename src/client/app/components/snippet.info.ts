@@ -20,7 +20,7 @@ import { isNil } from 'lodash';
 
                 <div *ngIf="!!url" class="ms-TextField">
                     <label class="ms-Label">${Strings.gistUrlLabel}</label>
-                    <a href="{{url}}" target="_blank">Open in browser</a>
+                    <a href="{{url}}" target="_blank">${Strings.gistUrlLinkLabel}</a>
                 </div>
             </div>
             <div class="ms-Dialog-actions">

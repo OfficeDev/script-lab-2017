@@ -84,6 +84,7 @@ export class Strings {
 
     /** NEEDS STRING REVIEW */
     static readonly gistUrlLabel = 'Gist URL';
+    static readonly gistUrlLinkLabel = 'Open in browser';
 
     // Containers strings
     //app.ts
