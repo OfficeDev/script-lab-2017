@@ -1,5 +1,7 @@
-import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, OnInit } from '@angular/core';
 import { environment, storageSize, Strings, storage } from '../helpers';
+
+declare const fabric: any;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,7 +15,13 @@ import { environment, storageSize, Strings, storage } from '../helpers';
                     <div class="profile__tertiary-text ms-font-m">User ID: ${storage.user}</div>
                     <div class="about__secondary-text ms-font-l">Version: {{config?.build?.version}}
                     <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadableTimestamp}})</span>
-                    <br/><span class="ms-font-m">{{config?.editorUrl}}</span>
+                    <div class="ms-Dropdown" tabindex="0">
+                    <label class="ms-Label">Environment</label>
+                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+                    <select class="ms-Dropdown-select">
+                        <option>test</option>
+                    </select>
+                    </div>
                     </div>
                     <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
                 </div>
@@ -29,7 +37,7 @@ import { environment, storageSize, Strings, storage } from '../helpers';
     `
 })
 
-export class About {
+export class About implements OnInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
     config = {
@@ -42,4 +50,12 @@ export class About {
     ${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings.aboutSnippets)}
     ${storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)}
     `;
+
+    ngOnInit() {
+        let dropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
+        for (let i = 0; i < dropdownHTMLElements.length; ++i) {
+            // tslint:disable-next-line:no-unused-expression
+            new fabric['Dropdown'](dropdownHTMLElements[i]);
+        }
+    }
 }
