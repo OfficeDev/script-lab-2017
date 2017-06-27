@@ -1,5 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Strings } from '../helpers';
+import { isNil } from 'lodash';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,6 +16,11 @@ import { Strings } from '../helpers';
                 <div class="ms-TextField ms-TextField--multiline">
                     <label class="ms-Label">${Strings.descriptionLabel}</label>
                     <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="Description of the snippet"></textarea>
+                </div>
+
+                <div *ngIf="!!url" class="ms-TextField">
+                    <label class="ms-Label">${Strings.gistUrlLabel}</label>
+                    <a href="{{url}}" target="_blank">${Strings.gistUrlLinkLabel}</a>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
@@ -35,4 +41,8 @@ export class SnippetInfo {
     @Input() snippet: ISnippet;
     @Input() show: boolean;
     @Output() dismiss = new EventEmitter<ISnippet>();
+
+    get url() {
+        return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
+    }
 }
