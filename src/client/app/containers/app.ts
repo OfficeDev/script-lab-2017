@@ -103,8 +103,15 @@ export class AppComponent {
         if (this.snippet == null) {
             return;
         }
-
-        this._store.dispatch(new Snippet.RunAction(this.snippet));
+        if (Office && Office.context && Office.context.requirements) {
+            this._store.dispatch(new Snippet.RunAction(this.snippet));
+        } else {
+            this._store.dispatch(new UI.ShowAlertAction({
+                actions: [ Strings.okButtonLabel ],
+                title: Strings.snippetRunError,
+                message: Strings.snippetNoOfficeMessage
+            }));
+        }
     }
 
     runSideBySide() {
