@@ -31,12 +31,12 @@ export class Strings {
     static readonly snippetRunError = 'Failed to run the snippet';
     static readonly snippetLoadDefaultsError = 'Failed to load the default samples';
 
-    
+
     /** NEEDS STRING REVIEW */
     static readonly snippetNoOfficeTitle = 'Cannot run this snippet';
 
     /** NEEDS STRING REVIEW */
-    static readonly snippetNoOfficeMessage = 'You can only run Office snippets inside of an Office Add-in. Get your copy today at https://aka.ms/getscriptlab.'
+    static readonly snippetNoOfficeMessage = 'You can only run Office snippets inside of an Office Add-in. Get your copy today at https://aka.ms/getscriptlab.';
 
 
     /** NEEDS STRING REVIEW */
