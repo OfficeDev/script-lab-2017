@@ -47,11 +47,13 @@ Note: the installation of Node JS and Yarn add paths to your operating system's 
  --------------------------------------
 ~~~
 
-6.	Trust the certificates for both <https://localhost:3000> and <https://localhost:3100>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
+6. **Importantly**, *once the `npm start` has completed and you see the message above*, **start the runner (server) by pressing `F5` within VS Code**.  Failure to do this will cause the "run" button to lead to an error (since the server, which is where the "run" code is running, is offline).  Ditto for auth, export, and other scenarios.
+
+>>> NOTE: If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.  
+
+7.	Trust the certificates for both <https://localhost:3000>, <https://localhost:3100>, and <https://localhost:3200>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
 
 ![](.github/images/trust-ssl-internet-explorer.gif).
-
-7.  Start the runner (server) by pressing `F5` within VS Code.  If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.
 
 The website is now running.  To try it out in an Add-in, see the next section.
 
