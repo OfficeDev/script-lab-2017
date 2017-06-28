@@ -13,7 +13,7 @@ There are several ways in which you can contribute to the project:
 
 * Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
   * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
-* Download & install Node, version 6.9+.  <https://nodejs.org/en>.
+* Download & install Node, version 6.9+.  In our experience, the LTS version of 6.10 and 6.11 works, whereas 8.1.2 did not, so mileage may vary. <https://nodejs.org/en>.
 * Download & install Yarn, for use as an alternative for `npm install`.  Download from  <https://yarnpkg.com/en/docs/install>.  The documentation also describes why Yarn is preferable to `npm install`.
 * Install `nodemon` for global use, using
 ~~~
