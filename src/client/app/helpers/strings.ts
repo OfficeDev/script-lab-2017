@@ -78,6 +78,9 @@ export class Strings {
     static readonly aboutSnippets = 'Local snippets';
     static readonly aboutIntellisense = 'IntelliSense';
 
+    /** NEEDS STRING REVIEW */
+    static readonly aboutChangeEnvironment = 'Change Environment:';
+
     //snippet.info.ts
     static readonly nameLabel = 'Name';
     static readonly descriptionLabel = 'Description';
@@ -107,6 +110,7 @@ export class Strings {
     /** NEEDS STRING REVIEW */
     static readonly sharePublicSnippetConfirm = 'Are you sure you want to share this snippet as a new public gist?';
     static readonly sharePrivateSnippetConfirm = 'Are you sure you want to share this snippet as a new secret gist?';
+    static readonly changeEnvironmentConfirm = 'You are about to change your Script Lab environment and will not have access to your saved snippets until you return to this environment. Are you sure you want to proceed?';
 
     static readonly tabDisplayNames = {
         'script': 'Script',

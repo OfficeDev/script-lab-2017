@@ -55,5 +55,25 @@ const config = {
     }
 };
 
+const redirect = function(options) { 
+    this.apply = function(compiler) {
+        compiler.plugin('compilation', function(compilation) {
+            compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
+                let htmlHead = htmlPluginData.html.match('<head>').index;
+                htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + '<head>' +
+                    `<script>
+                        var newUrl = window.localStorage.getItem('environmentConfig');
+                        if (newUrl && !window.location.href.match(newUrl)) {
+                            window.location.href = newUrl + window.location.pathname;
+                        }
+                    </script>`
+                    + htmlPluginData.html.slice(htmlHead + 6);
+                callback(null, htmlPluginData);
+            });
+        });
+    };
+};
+
 exports.build = build;
 exports.config = config;
+exports.redirect = redirect;

@@ -36,4 +36,33 @@
         color: $foreground-lighter;
         white-space: pre-line;
     }
+
+    &__dropdown {
+        padding-top: 5px;
+
+        select::-ms-expand {
+            display: none;
+        }
+    }
+
+    &__dropdown-label {
+        color: $foreground-light;
+    }
+
+    &__dropdown-select {
+        display: block;
+        margin: auto;
+        margin-top: 5px;
+        padding: 5px;
+        width: 50%;
+        outline: 0;
+        border: 1px solid grey;
+
+        /* arrow styling */
+        -webkit-appearance: none;
+        appearance: none;
+        background: linear-gradient(grey, grey) no-repeat, linear-gradient(-135deg, rgba(255, 255, 255, 0) 50%, white 50%) no-repeat, linear-gradient(-225deg, rgba(255, 255, 255, 0) 50%, white 50%) no-repeat, linear-gradient(black,grey) no-repeat;
+        background-size: 1px 100%, 20px 20px, 20px 20px, 20px 60%;
+        background-position: right 20px center, right bottom,  right bottom, right bottom;
+    }
 }

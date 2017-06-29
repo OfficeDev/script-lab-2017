@@ -6,7 +6,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config } = require('./env.config');
+const { build, config, redirect } = require('./env.config');
 const { GH_SECRETS } = process.env;
 
 module.exports = (prodMode) =>
@@ -155,6 +155,11 @@ module.exports = (prodMode) =>
                 filename: 'heartbeat.html',
                 template: './views/heartbeat.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
-            })
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'tutorial.html',
+                template: './views/tutorial.html',
+            }),
+            new redirect({ options: '' })
         ]
     });
