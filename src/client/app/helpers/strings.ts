@@ -104,6 +104,11 @@ export class Strings {
 
     static readonly deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
 
+    static readonly triggerActionId = 'trigger-suggest';
+    static readonly triggerActionLabel = 'Trigger Suggest';
+    static readonly monacoTriggerAction = 'editor.action.triggerSuggest';
+    static readonly contextMenuNavigationGroup = 'navigation';
+
     /** NEEDS STRING REVIEW */
     static readonly sharePublicSnippetConfirm = 'Are you sure you want to share this snippet as a new public gist?';
     static readonly sharePrivateSnippetConfirm = 'Are you sure you want to share this snippet as a new secret gist?';
