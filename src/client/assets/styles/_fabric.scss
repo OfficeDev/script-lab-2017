@@ -10,6 +10,10 @@
             margin-bottom: 0;
         }
     }
+
+    .ms-Button-label {
+        width: 100%;
+    }
 }
 
 dialog.panel {
@@ -116,6 +120,11 @@ dialog.panel {
             padding: 0 $default-spacing;
         }
     }
+}
+
+.ms-Progress {
+    @include center-flex();
+    width: 100%;
 }
 
 textarea.ms-TextField-field {
