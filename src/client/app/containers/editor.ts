@@ -46,7 +46,8 @@ export class Editor implements AfterViewInit {
             keybindings: [monaco.KeyCode.F2],
             keybindingContext: null,
             contextMenuGroupId: 'navigation',
-            contextMenuOrder: 0,
+            // Put action at top of context menu
+            contextMenuOrder: 0, 
             run: () => editor.trigger('ngAfterViewInit', 'editor.action.triggerSuggest', {})
         });
         this._createTabs();
