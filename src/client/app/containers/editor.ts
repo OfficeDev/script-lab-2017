@@ -47,7 +47,7 @@ export class Editor implements AfterViewInit {
             keybindingContext: null,
             contextMenuGroupId: 'navigation',
             // Put action at top of context menu
-            contextMenuOrder: 0, 
+            contextMenuOrder: 0,
             run: () => editor.trigger('ngAfterViewInit', 'editor.action.triggerSuggest', {})
         });
         this._createTabs();
