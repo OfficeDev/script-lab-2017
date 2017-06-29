@@ -122,11 +122,6 @@ dialog.panel {
     }
 }
 
-.ms-Progress {
-    @include center-flex();
-    width: 100%;
-}
-
 textarea.ms-TextField-field {
     min-height: 125px;
 }
