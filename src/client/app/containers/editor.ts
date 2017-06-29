@@ -52,7 +52,6 @@ export class Editor implements AfterViewInit {
         this._monacoEditor = editor;
         this._createTabs();
         this._subscribeToState();
-
     }
 
     changeTab = (name: string = 'script') => {
