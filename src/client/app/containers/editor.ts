@@ -41,6 +41,7 @@ export class Editor implements AfterViewInit {
         this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
         let editor = this._monacoEditor;
         editor.addAction({
+            // Unique id for action
             id: 'trigger-suggest',
             label: Strings.triggerActionLabel,
             keybindings: [monaco.KeyCode.F2],
