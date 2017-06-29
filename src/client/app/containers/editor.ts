@@ -38,8 +38,7 @@ export class Editor implements AfterViewInit {
      * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
-        let editor = this._monacoEditor;
+        const editor = await this._monaco.create(this._editor, { theme: 'vs' });
         editor.addAction({
             id: Strings.triggerActionId,
             label: Strings.triggerActionLabel,
@@ -50,8 +49,10 @@ export class Editor implements AfterViewInit {
             contextMenuOrder: 0,
             run: () => editor.trigger('ngAfterViewInit', Strings.monacoTriggerAction, {})
         });
+        this._monacoEditor = editor;
         this._createTabs();
         this._subscribeToState();
+
     }
 
     changeTab = (name: string = 'script') => {
