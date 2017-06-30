@@ -42,7 +42,7 @@ export class Editor implements AfterViewInit {
         let editor = this._monacoEditor;
         editor.addAction({
             id: 'trigger-suggest', /* Unique id for action */
-            label: Strings.triggerActionLabel,
+            label: Strings.editorTriggerSuggestContextMenuLabel,
             keybindings: [monaco.KeyCode.F2],
             keybindingContext: null,
             contextMenuGroupId: 'navigation',
