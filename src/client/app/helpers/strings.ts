@@ -112,7 +112,7 @@ export class Strings {
 
     static readonly deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
 
-    static readonly triggerActionLabel = 'Trigger Suggest';
+    static readonly editorTriggerSuggestContextMenuLabel = 'Trigger Suggest';
 
     /** NEEDS STRING REVIEW */
     static readonly sharePublicSnippetConfirm = 'Are you sure you want to share this snippet as a new public gist?';
