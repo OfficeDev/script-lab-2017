@@ -15,15 +15,15 @@ let { config } = PLAYGROUND;
                     <div class="profile__tertiary-text ms-font-m">User ID: ${storage.user}</div>
                     <div class="about__secondary-text ms-font-l">Version: {{config?.build?.version}}
                         <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadableTimestamp}})</span>
-                        <br/><span class="ms-font-m">{{config?.editorUrl}}</span>
                     </div>
-                    <div class="about__dropdown">
-                        <label class="ms-font-m about__dropdown-label">${Strings.aboutChangeEnvironment}</label>
-                        <select class="about__dropdown-select ms-font-m" [(ngModel)]="selectedConfig" (change)="changeConfig($event.target.value)">
+                    <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
+                    <div class="about__environment">
+                        <span class="ms-font-m about__environment-text">{{config?.editorUrl}}</span>
+                        <br/><label class="ms-font-m about__environment-text">${Strings.aboutSwitchEnvironment}</label>
+                        <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig" (change)="changeConfig($event.target.value)">
                             <option *ngFor="let c of configs" [value]="c.name">{{c.value}}</option>
                         </select>
                     </div>
-                    <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
@@ -41,6 +41,21 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
+    cache = `
+    ${Strings.aboutStorage}
+    ${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings.aboutSnippets)}
+    ${storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)}
+    `;
+
+    config = {
+        build: environment.current.build,
+        editorUrl: environment.current.config.editorUrl,
+    };
+
+    configs = [];
+
+    selectedConfig = '';
+
     constructor(
         private _effects: UIEffects,
         private _changeDetector: ChangeDetectorRef
@@ -48,38 +63,23 @@ export class About implements AfterViewInit {
 
     ngAfterViewInit() {
         if (environment.current.config.name === config['local'].name) {
-            this.configs.push({ name: 'local', value: 'Localhost' });
+            this.configs.push({ name: 'local', value: config['local'].editorUrl });
         }
         this.configs.push(
             { name: 'production', value: 'Production' },
-            { name: 'edge', value: 'Beta' },
-            { name: 'insiders', value: 'Alpha' },
+            { name: 'edge', value: 'Alpha' },
+            { name: 'insiders', value: 'Beta' },
         );
 
         this.selectedConfig = this.configs.find(c => c.name.toUpperCase() === environment.current.config.name).name;
     }
-
-    config = {
-        build: environment.current.build,
-        editorUrl: environment.current.config.editorUrl,
-    };
-
-    cache = `
-    ${Strings.aboutStorage}
-    ${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings.aboutSnippets)}
-    ${storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)}
-    `;
-
-    configs = [];
-
-    selectedConfig = '';
 
     async changeConfig(newConfig: string) {
         if (config[newConfig] && config[newConfig].name !== environment.current.config.name) {
             let currentConfigName = environment.current.config.name.toLowerCase();
             let result = await this._effects.alert(
                 Strings.changeEnvironmentConfirm,
-                `${Strings.aboutChangeEnvironment} ${this.configs.find(c => c.name === currentConfigName).value } to ${this.configs.find(c => c.name === this.selectedConfig).value }`,
+                `${Strings.aboutSwitchEnvironment} ${this.configs.find(c => c.name === currentConfigName).value } to ${this.configs.find(c => c.name === this.selectedConfig).value }`,
                 Strings.okButtonLabel,
                 Strings.cancelButtonLabel
             );
@@ -92,7 +92,7 @@ export class About implements AfterViewInit {
 
             let newUrl = config[newConfig].editorUrl;
             window.localStorage.setItem('environmentConfig', newUrl);
-            window.location.reload();
+            window.location.href = newUrl + '?originEnvironment=' + encodeURIComponent(window.location.origin);
         }
     }
 }

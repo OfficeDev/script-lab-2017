@@ -55,19 +55,40 @@ const config = {
     }
 };
 
-const redirect = function(options) { 
+const RedirectPlugin = function(options) { 
     this.apply = function(compiler) {
         compiler.plugin('compilation', function(compilation) {
             compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
                 let htmlHead = htmlPluginData.html.match('<head>').index;
                 htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + '<head>' +
                     `<script>
-                        var newUrl = window.localStorage.getItem('environmentConfig');
-                        if (newUrl && !window.location.href.match(newUrl)) {
-                            window.location.href = newUrl + window.location.pathname;
+                        var getParameterByName = function(name) {
+                            var url = window.location.search;
+                            var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
+                            var match = queryExp.exec(url);
+                            if (match && match.length > 1) {
+                                return match[1];
+                            }
+                            return "";
+                        };
+                        var originUrl = decodeURIComponent(getParameterByName("originEnvironment"));
+                        var newUrl = window.localStorage.getItem("environmentConfig");
+                        if (newUrl && !window.location.href.match(newUrl) && originUrl !== newUrl) {
+                            var originParam = "" + 
+                            (window.location.search ? "&" : "?") + 
+                            "originEnvironment=" + 
+                            encodeURIComponent(window.location.origin);
+
+                            window.location.href = newUrl +
+                            window.location.pathname +
+                            window.location.search + 
+                            originParam + 
+                            window.location.hash;
+                        } else {
+                            window.localStorage.removeItem("environmentConfig");
                         }
-                    </script>`
-                    + htmlPluginData.html.slice(htmlHead + 6);
+                    </script>` + 
+                    htmlPluginData.html.slice(htmlHead + '<head>'.length);
                 callback(null, htmlPluginData);
             });
         });
@@ -76,4 +97,4 @@ const redirect = function(options) {
 
 exports.build = build;
 exports.config = config;
-exports.redirect = redirect;
+exports.RedirectPlugin = RedirectPlugin;

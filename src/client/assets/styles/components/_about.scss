@@ -37,24 +37,20 @@
         white-space: pre-line;
     }
 
-    &__dropdown {
-        padding-top: 5px;
-
+    &__environment {
         select::-ms-expand {
             display: none;
         }
     }
 
-    &__dropdown-label {
+    &__environment-text {
         color: $foreground-light;
     }
 
-    &__dropdown-select {
-        display: block;
-        margin: auto;
+    &__environment-select {
         margin-top: 5px;
         padding: 5px;
-        width: 50%;
+        width: 60%;
         outline: 0;
         border: 1px solid grey;
 

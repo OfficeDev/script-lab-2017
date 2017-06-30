@@ -19,6 +19,7 @@
     <AppDomain>https://dev.office.com</AppDomain>
     <AppDomain>https://script-lab.azureedge.net</AppDomain>
     <AppDomain>https://script-lab-runner.azureedge.net</AppDomain>
+    <AppDomain>https://bornholm-edge.azurewebsites.net</AppDomain>
     <AppDomain>https://bornholm-runner-edge.azurewebsites.net</AppDomain>
     <AppDomain>https://bornholm-insiders.azurewebsites.net</AppDomain>
     <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
