@@ -41,11 +41,11 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
-    cache = `
-    ${Strings.aboutStorage}
-    ${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings.aboutSnippets)}
-    ${storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)}
-    `;
+    cache = [
+        Strings.aboutStorage,
+        storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings.aboutSnippets),
+        storageSize(sessionStorage, 'playground_intellisense', Strings.aboutIntellisense)
+    ].join('\n');
 
     config = {
         build: environment.current.build,
@@ -62,14 +62,14 @@ export class About implements AfterViewInit {
     ) { }
 
     ngAfterViewInit() {
+        this.configs.push(
+            { name: 'production', value: 'Production' },
+            { name: 'insiders', value: 'Beta' },
+            { name: 'edge', value: 'Alpha' },
+        );
         if (environment.current.config.name === config['local'].name) {
             this.configs.push({ name: 'local', value: config['local'].editorUrl });
         }
-        this.configs.push(
-            { name: 'production', value: 'Production' },
-            { name: 'edge', value: 'Alpha' },
-            { name: 'insiders', value: 'Beta' },
-        );
 
         this.selectedConfig = this.configs.find(c => c.name.toUpperCase() === environment.current.config.name).name;
     }
