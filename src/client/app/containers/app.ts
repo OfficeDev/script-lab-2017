@@ -3,7 +3,8 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { Strings, environment } from '../helpers';
+import { environment } from '../helpers';
+import { Strings } from '../strings';
 import { isNil } from 'lodash';
 
 @Component({
@@ -13,25 +14,25 @@ import { isNil } from 'lodash';
             <header class="command__bar">
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
-                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="${Strings.run}">
-                    <command icon="Play" title="${Strings.runInThisPane}" [async]="running$|async" (click)="run()"></command>
-                    <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
+                <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="{{strings.run}}">
+                    <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
+                    <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
-                    <command *ngIf="isGistOwned|async" icon="Save" title="${Strings.updateMenu}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
-                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
-                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
-                    <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
-                    <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
+                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
+                    <command *ngIf="isGistOwned|async" icon="Save" title="{{strings.updateMenu}}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
+                    <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
+                    <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
+                    <command id="CopyToClipboard" icon="Copy" title="{{strings.shareMenuClipboard}}" (click)="shareCopy()"></command>
+                    <command icon="Download" title="{{strings.shareMenuExport}}" (click)="shareExport()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
-                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
+                <command [hidden]="isEmpty" icon="Delete" title="{{strings.delete}}" (click)="delete()"></command>
+                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="{{strings.loginGithub}}" (click)="login()"></command>
                 <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
             <editor></editor>
             <footer class="command__bar command__bar--condensed">
-                <command icon="Info" title="About" (click)="showAbout=true"></command>
+                <command icon="Info" title="{{strings.about}}" (click)="showAbout=true"></command>
                 <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
                 <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
@@ -49,6 +50,8 @@ import { isNil } from 'lodash';
 export class AppComponent {
     snippet: ISnippet;
     isEmpty: boolean;
+
+    strings = Strings();
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -81,7 +84,7 @@ export class AppComponent {
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
     theme$ = this._store.select(fromRoot.getTheme)
-        .map(isLight => isLight ? Strings.lightTheme : Strings.darkTheme);
+        .map(isLight => isLight ? Strings().lightTheme : Strings().darkTheme);
 
     language$ = this._store.select(fromRoot.getLanguage);
 
@@ -116,9 +119,9 @@ export class AppComponent {
 
     runSideBySide() {
         this._store.dispatch(new UI.ShowAlertAction({
-            actions: [ Strings.SideBySideInstructions.gotIt ],
-            title: Strings.SideBySideInstructions.title,
-            message: Strings.SideBySideInstructions.message
+            actions: [ Strings().SideBySideInstructions.gotIt ],
+            title: Strings().SideBySideInstructions.title,
+            message: Strings().SideBySideInstructions.message
         }));
     }
 
@@ -127,8 +130,8 @@ export class AppComponent {
             return;
         }
 
-        let result = await this._effects.alert(Strings.deleteSnippetConfirm, `${Strings.delete} ${this.snippet.name}`, Strings.delete, Strings.cancelButtonLabel);
-        if (result === Strings.cancelButtonLabel) {
+        let result = await this._effects.alert(Strings().deleteSnippetConfirm, `${Strings().delete} ${this.snippet.name}`, Strings().delete, Strings().cancelButtonLabel);
+        if (result === Strings().cancelButtonLabel) {
             return;
         }
 

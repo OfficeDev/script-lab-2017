@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
-import { Strings } from '../helpers';
+import { Strings } from '../strings';
 import { isNil } from 'lodash';
 
 @Component({
@@ -9,27 +9,27 @@ import { isNil } from 'lodash';
         <dialog title="Info" *ngIf="!(snippet==null)" [show]="show">
             <div class="ms-Dialog-content">
                 <div class="ms-TextField">
-                    <label class="ms-Label">${Strings.nameLabel}</label>
+                    <label class="ms-Label">{{strings.nameLabel}}</label>
                     <input class="ms-TextField-field ms-font-m" type="text" [(ngModel)]="snippet.name" placeholder="Name of the snippet" />
                 </div>
 
                 <div class="ms-TextField ms-TextField--multiline">
-                    <label class="ms-Label">${Strings.descriptionLabel}</label>
+                    <label class="ms-Label">{{strings.descriptionLabel}}</label>
                     <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="Description of the snippet"></textarea>
                 </div>
 
                 <div *ngIf="!!url" class="ms-TextField">
-                    <label class="ms-Label">${Strings.gistUrlLabel}</label>
-                    <a href="{{url}}" target="_blank">${Strings.gistUrlLinkLabel}</a>
+                    <label class="ms-Label">{{strings.gistUrlLabel}}</label>
+                    <a href="{{url}}" target="_blank">{{strings.gistUrlLinkLabel}}</a>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
-                        <span class="ms-Button-label">${Strings.saveButtonLabel}</span>
+                        <span class="ms-Button-label">{{strings.saveButtonLabel}}</span>
                     </button>
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
-                        <span class="ms-Button-label">${Strings.cancelButtonLabel}</span>
+                        <span class="ms-Button-label">{{strings.cancelButtonLabel}}</span>
                     </button>
                 </div>
             </div>
@@ -41,6 +41,8 @@ export class SnippetInfo {
     @Input() snippet: ISnippet;
     @Input() show: boolean;
     @Output() dismiss = new EventEmitter<ISnippet>();
+
+    strings = Strings();
 
     get url() {
         return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;

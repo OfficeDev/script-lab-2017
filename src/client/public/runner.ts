@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { toNumber, assign } from 'lodash';
 import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
-import { Strings } from '../app/helpers';
+import { Strings } from '../app/strings';
 import { Messenger, MessageType } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
@@ -164,7 +164,7 @@ interface InitializationParams {
     function handleError(error: Error) {
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
-            candidateErrorString = Strings.Runner.unexpectedError;
+            candidateErrorString = Strings().Runner.unexpectedError;
         }
 
         $('#header-text').text('');
@@ -331,7 +331,7 @@ interface InitializationParams {
 
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
-            toggleProgress(true, Strings.Runner.reloadingOfficeJs);
+            toggleProgress(true, Strings().Runner.reloadingOfficeJs);
             window.location.href = refreshUrl;
             return;
         }
@@ -356,7 +356,7 @@ interface InitializationParams {
         $('.runner-overlay').hide();
         $('.runner-notification').hide();
 
-        toggleProgress(true, Strings.Runner.getLoadingSnippetSubtitle(name));
+        toggleProgress(true, Strings().Runner.getLoadingSnippetSubtitle(name));
 
         // Remove the frame (in case had a timer or anything else that may as well get destroyed...)
         $('.snippet-frame').remove();

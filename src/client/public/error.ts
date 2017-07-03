@@ -1,11 +1,11 @@
 import '../assets/styles/error.scss';
-import { Strings } from '../app/helpers';
+import { Strings } from '../app/strings';
 
 (window as any).initializeErrorView = (expandDetailsByDefault: boolean) => {
     const detailsElement = document.getElementById('details');
     const moreDetailsLink = document.getElementById('more-details-link');
 
-    const moreDetailsDefaultText = Strings.ServerError.moreDetails;
+    const moreDetailsDefaultText = Strings().ServerError.moreDetails;
     moreDetailsLink.textContent = moreDetailsDefaultText;
 
     moreDetailsLink.onclick = () => toggleShowDetails(detailsElement.style.display === 'none' /*show*/);

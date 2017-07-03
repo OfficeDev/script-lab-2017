@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, Strings, storage } from '../helpers';
+import { AI, storage } from '../helpers';
+import { Strings } from '../strings';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
@@ -53,14 +54,14 @@ export class MonacoEffects {
             return { files: filesToAdd as string[], language };
         })
         .mergeMap(({ files, language }) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction({ url: file, language })))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseUpdateError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseUpdateError, exception)));
 
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
         .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload))
         .map(() => new Monaco.UpdateIntellisenseSuccessAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseClearError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
 
 
     private _addIntellisense(payload: { url: string; language: string; }) {
@@ -75,7 +76,7 @@ export class MonacoEffects {
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;
             })
-            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseLoadError, exception)));
+            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseLoadError, exception)));
     }
 
     private _parse(libraries: string[]) {

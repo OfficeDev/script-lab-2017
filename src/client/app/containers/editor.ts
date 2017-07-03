@@ -2,7 +2,8 @@ import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI, Strings } from '../helpers';
+import { AI } from '../helpers';
+import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 import { debounce } from 'lodash';
@@ -74,7 +75,7 @@ export class Editor implements AfterViewInit {
 
     private _createTabs() {
         ['script', 'template', 'style', 'libraries'].forEach(name => {
-            const displayName = Strings.tabDisplayNames[name];
+            const displayName = Strings().tabDisplayNames[name];
             if (!displayName) {
                 throw new Error(`No display name for tab "${name}"`);
             }

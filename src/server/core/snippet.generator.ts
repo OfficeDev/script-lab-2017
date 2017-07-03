@@ -1,9 +1,11 @@
 import * as ts from 'typescript';
 import { BadRequestError } from './errors';
 import { processLibraries } from './libraries.processor';
-import { Strings } from './strings';
+import { Strings } from '../strings';
 
-class SnippetGenerator {
+export class SnippetGenerator {
+    constructor(private _displayLanguage: string) { }
+
     /**
      * Compiles the snippet, and returns it as a Promise (Promise<ICompiledSnippet>)
      * Using a Promise in case some future compilation does need to be promise-ful.
@@ -56,7 +58,8 @@ class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new BadRequestError(Strings.getSyntaxErrorsTitle(result.diagnostics.length),
+                    throw new BadRequestError(
+                        Strings(this._displayLanguage).getSyntaxErrorsTitle(result.diagnostics.length),
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);
                             let afterError = content.substr(item.start + 1);
@@ -78,5 +81,3 @@ class SnippetGenerator {
         }
     }
 }
-
-export const snippetGenerator = new SnippetGenerator();

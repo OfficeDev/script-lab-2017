@@ -9,9 +9,9 @@ import * as Archiver from 'archiver';
 import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
-import { Strings } from './core/strings';
+import { Strings, getDisplayLanguage } from './strings';
 import { loadTemplate } from './core/template.generator';
-import { snippetGenerator } from './core/snippet.generator';
+import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 
@@ -187,7 +187,7 @@ registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, tru
 
 registerRoute('post', '/export', (req, res) => {
     const data: IExportState = JSON.parse(req.body.data);
-    const { snippet, additionalFields, sanitizedFilenameBase } = data;
+    const { snippet, additionalFields, sanitizedFilenameBase, displayLanguage } = data;
 
     const filenames = {
         html: sanitizedFilenameBase + '.html',
@@ -199,9 +199,10 @@ registerRoute('post', '/export', (req, res) => {
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippet, true /*isExternalExport*/),
+        generateSnippetHtmlData(snippet, true /*isExternalExport*/, displayLanguage),
         generateReadme(snippet),
-        isOfficeHost(snippet.host) ? generateManifest(snippet, additionalFields, filenames.html) : null
+        isOfficeHost(snippet.host) ?
+            generateManifest(snippet, additionalFields, filenames.html, displayLanguage) : null
     ])
         .then(results => {
             const htmlData: { html: string, officeJS: string } = results[0];
@@ -227,7 +228,9 @@ registerRoute('post', '/export', (req, res) => {
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/', (req, res) => {
-    throw new InformationalError('Script Lab runner', Strings.getGoBackToEditor(currentConfig.editorUrl));
+    throw new InformationalError(
+        'Script Lab runner',
+        Strings(getDisplayLanguage(req)).getGoBackToEditor(currentConfig.editorUrl));
 });
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
@@ -245,7 +248,7 @@ registerRoute('get', '/version', (req, res) => {
 
 function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
-    const { snippet, returnUrl } = data;
+    const { snippet, returnUrl, displayLanguage } = data;
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
     // and so that refresh page could know where to return to if the snippet weren't found.
@@ -255,7 +258,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippet, false /*isExternalExport*/),
+        generateSnippetHtmlData(snippet, false /*isExternalExport*/, displayLanguage),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
         .then(values => {
@@ -275,7 +278,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     returnUrl: returnUrl,
                     origin: snippet.origin,
                     host: snippet.host,
-                    initialLoadSubtitle: Strings.getLoadingSnippetSubtitle(snippet.name),
+                    initialLoadSubtitle: Strings(displayLanguage).getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name
                 });
             }
@@ -285,13 +288,20 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
         });
 }
 
-function generateSnippetHtmlData(snippet: ISnippet, isExternalExport: boolean): Promise<{ html: string, officeJS: string }> {
+function generateSnippetHtmlData(
+    snippet: ISnippet,
+    isExternalExport: boolean,
+    displayLanguage: string
+): Promise<{ html: string, officeJS: string }> {
+
     if (snippet == null) {
         throw new BadRequestError('Received invalid snippet data.', null /*details*/);
     }
 
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
+    const snippetGenerator = new SnippetGenerator(displayLanguage);
+
     return snippetGenerator.compile(snippet).catch(e => e)
         .then(async (compiledSnippetOrError: ICompiledSnippet | Error) => {
             let officeJS = '';
@@ -299,7 +309,7 @@ function generateSnippetHtmlData(snippet: ISnippet, isExternalExport: boolean): 
 
             if (compiledSnippetOrError instanceof Error) {
                 ai.trackException(compiledSnippetOrError, 'Server - Compile error');
-                html = await generateErrorHtml(compiledSnippetOrError);
+                html = await generateErrorHtml(compiledSnippetOrError, displayLanguage);
             } else {
                 const snippetHandlebarsContext: ISnippetHandlebarsContext = {
                     ...compiledSnippetOrError,
@@ -316,7 +326,13 @@ function generateSnippetHtmlData(snippet: ISnippet, isExternalExport: boolean): 
         });
 }
 
-async function generateManifest(snippet: ISnippet, additionalFields: ISnippet, htmlFilename: string): Promise<string> {
+async function generateManifest(
+    snippet: ISnippet,
+    additionalFields: ISnippet,
+    htmlFilename: string,
+    displayLanguage: string
+): Promise<string> {
+
     const manifestGenerator = await loadTemplate<IManifestHandlebarsContext>('manifest');
 
     const hostType = officeHostToManifestTypeMap[snippet.host];
@@ -324,8 +340,8 @@ async function generateManifest(snippet: ISnippet, additionalFields: ISnippet, h
         throw new BadRequestError(`Cannot find matching Office host type for snippet host "${snippet.host}"`);
     }
 
-    const snippetNameMax125 = clipText(snippet.name, 125) || Strings.manifestDefaults.nameIfEmpty;
-    const snippetDescriptionMax250 = clipText(snippet.description, 250) || Strings.manifestDefaults.descriptionIfEmpty;
+    const snippetNameMax125 = clipText(snippet.name, 125) || Strings(displayLanguage).manifestDefaults.nameIfEmpty;
+    const snippetDescriptionMax250 = clipText(snippet.description, 250) || Strings(displayLanguage).manifestDefaults.descriptionIfEmpty;
 
     return manifestGenerator({
         name: snippetNameMax125,
@@ -333,7 +349,7 @@ async function generateManifest(snippet: ISnippet, additionalFields: ISnippet, h
         snippetNameMax125,
         snippetDescriptionMax250,
         htmlFilename,
-        providerName: snippet.author || additionalFields.author || Strings.createdWithScriptLab ,
+        providerName: snippet.author || additionalFields.author || Strings(displayLanguage).createdWithScriptLab,
         hostType,
         supportsAddinCommands: supportsAddinCommands(snippet.host),
         guid: uuidV4()
@@ -367,24 +383,25 @@ function registerRoute(
         try {
             return await action(req, res);
         } catch (e) {
-            return await errorHandler(res, e);
+            return await errorHandler(res, e, getDisplayLanguage(req));
         }
     }));
 }
 
-async function errorHandler(res: express.Response, error: Error) {
+async function errorHandler(res: express.Response, error: Error, displayLanguage: string) {
     if (!(error instanceof InformationalError)) {
         ai.trackException(error, 'Server - Per-route handler');
     }
 
-    const html = await generateErrorHtml(error);
+    const html = await generateErrorHtml(error, displayLanguage);
     return res.contentType('text/html').status(200).send(html);
 }
 
-async function generateErrorHtml(error: Error): Promise<string> {
+async function generateErrorHtml(error: Error, displayLanguage: string): Promise<string> {
     const errorHtmlGenerator = await loadTemplate<IErrorHandlebarsContext>('error');
 
-    const title = error instanceof InformationalError ? error.message : Strings.error;
+    const title = error instanceof InformationalError ?
+        error.message : Strings(displayLanguage).error;
     let message;
     let expandDetailsByDefault: boolean;
     let details: string;
@@ -395,7 +412,7 @@ async function generateErrorHtml(error: Error): Promise<string> {
     } else {
         message = error.message || error.toString();
         if (message === '[object Object]') {
-            message = Strings.unexpectedError;
+            message = Strings(displayLanguage).unexpectedError;
         }
 
         const hasDetails =

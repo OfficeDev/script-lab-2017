@@ -10,7 +10,7 @@ interface ITemplate {
     name?: string;
     description?: string;
     /** author: export-only */
-    author?: string; 
+    author?: string;
     host: string;
     /** api_set: export-only (+ check at first level of import) */
     api_set?: {
@@ -96,12 +96,15 @@ interface IRunnerState {
 
     /** URL to return to (editor, or gallery view). More than just origin domain */
     returnUrl: string;
+
+    displayLanguage: string;
 }
 
 interface IExportState {
     snippet: ISnippet;
     additionalFields: ISnippet;
     sanitizedFilenameBase: string;
+    displayLanguage: string;
 }
 
 interface IErrorHandlebarsContext {
