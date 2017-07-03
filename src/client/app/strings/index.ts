@@ -67,6 +67,7 @@ function getRawDisplayLanguage() {
 
 export interface ClientStrings {
     playgroundName: string;
+    playgroundTagline: string;
 
     userId: string;
 
@@ -146,6 +147,8 @@ export interface ClientStrings {
     //snippet.info.ts
     nameLabel: string;
     descriptionLabel: string;
+    namePlaceholder: string;
+    descriptionPlaceholder: string;
 
     // Containers strings
     //app.ts
@@ -216,7 +219,7 @@ export interface ClientStrings {
         /** Appends one of the following -- "returning" or "close this window and try again" -- to the error message
          * (navigating back after a couple of seconds, if there is a return URL) */
         getTextToAppendToErrorMessage: (returnUrl: string) => string;
-    },
+    };
 
     Runner: {
         snippetNoLongerExists: string;
@@ -227,13 +230,13 @@ export interface ClientStrings {
         noSnippetIsCurrentlyOpened: string;
 
         getLoadingSnippetSubtitle(snippetName?: string): string;
-    },
+    };
 
     /** Error strings served by the server and displayed in the Error page */
     ServerError: {
         moreDetails: string;
         hideDetails: string;
-    },
+    };
 
     SideBySideInstructions: {
         title: string;
@@ -242,5 +245,10 @@ export interface ClientStrings {
         message: string;
 
         gotIt: string;
-    }
+    };
+
+    IndexPageStrings: {
+        localStorageUnavailableMessage: string;
+        chooseYourHost: string;
+    };
 }

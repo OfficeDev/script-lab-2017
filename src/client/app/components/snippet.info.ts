@@ -10,12 +10,12 @@ import { isNil } from 'lodash';
             <div class="ms-Dialog-content">
                 <div class="ms-TextField">
                     <label class="ms-Label">{{strings.nameLabel}}</label>
-                    <input class="ms-TextField-field ms-font-m" type="text" [(ngModel)]="snippet.name" placeholder="Name of the snippet" />
+                    <input class="ms-TextField-field ms-font-m" type="text" [(ngModel)]="snippet.name" placeholder="{{strings.namePlaceholder}}" />
                 </div>
 
                 <div class="ms-TextField ms-TextField--multiline">
                     <label class="ms-Label">{{strings.descriptionLabel}}</label>
-                    <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="Description of the snippet"></textarea>
+                    <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="{{strings.descriptionPlaceholder}}"></textarea>
                 </div>
 
                 <div *ngIf="!!url" class="ms-TextField">

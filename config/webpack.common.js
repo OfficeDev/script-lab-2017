@@ -14,6 +14,8 @@ module.exports = (prodMode) =>
         context: path.resolve('./src/client'),
 
         entry: {
+            indexScript: './public/index.script.ts',
+
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
             main: './main.ts',
@@ -21,7 +23,7 @@ module.exports = (prodMode) =>
             gallery: './public/gallery.ts',
             heartbeat: './public/heartbeat.ts',
             runner: './public/runner.ts',
-            error: './public/error.ts'
+            error: './public/error.ts',
         },
 
         resolve: {
@@ -139,7 +141,7 @@ module.exports = (prodMode) =>
             new HtmlWebpackPlugin({
                 filename: 'index.html',
                 template: './views/index.html',
-                chunks: ['polyfills', 'vendor', 'main']
+                chunks: ['indexScript', 'polyfills', 'vendor', 'main']
             }),
             new HtmlWebpackPlugin({
                 filename: 'functions.html',

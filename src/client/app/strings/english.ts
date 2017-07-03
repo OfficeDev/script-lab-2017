@@ -2,6 +2,7 @@ import { ClientStrings } from './index';
 
 export class EnglishStrings implements ClientStrings {
     playgroundName = 'Script Lab';
+    playgroundTagline = 'Code ● Run ● Share';
 
     userId = 'User ID';
 
@@ -81,6 +82,8 @@ export class EnglishStrings implements ClientStrings {
     //snippet.info.ts
     nameLabel = 'Name';
     descriptionLabel = 'Description';
+    namePlaceholder = 'Snippet name';
+    descriptionPlaceholder: 'Snippet description';
 
     // Containers strings
     //app.ts
@@ -185,4 +188,13 @@ export class EnglishStrings implements ClientStrings {
 
         gotIt: /** NEEDS STRING REVIEW */ 'Got it'
     };
+
+    IndexPageStrings = {
+        localStorageUnavailableMessage:
+            'Cannot initialize Script Lab because the browser\'s Local Storage is disabled. ' +
+            ' Please try on a different browser or computer, or check your internet settings.',
+
+        chooseYourHost: 'Choose your host:'
+    };
+
 };
