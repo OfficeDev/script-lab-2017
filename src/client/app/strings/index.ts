@@ -247,8 +247,22 @@ export interface ClientStrings {
         gotIt: string;
     };
 
-    IndexPageStrings: {
-        localStorageUnavailableMessage: string;
+    HtmlPageStrings: {
+        PageTitles: {
+            code: string;
+            run: string;
+        }
+
         chooseYourHost: string;
+        localStorageUnavailableMessage: string;
+
+        loadingRunnerDotDotDot: string;
+        running: string;
+        lastOpenedSnippet: string;
+        noLastOpenedSnippets: string;
+        toGetStartedCreateOrImportSnippet: string;
+        mySavedSnippets: string;
+        noLocalSnippets: string;
+        lastUpdated: string;
     };
 }

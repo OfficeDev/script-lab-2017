@@ -180,7 +180,7 @@ export class EnglishStrings implements ClientStrings {
     SideBySideInstructions = {
         title: /** NEEDS STRING REVIEW */ 'Run side-by-side with editor',
 
-        message: /** NEEDS STRING REVIEW */ [
+        message: /** NEEDS STRING REVIEW */[
             'To run the snippet side-by-side with the editor, choose "Run" in the Ribbon.',
             '',
             'Running side-by-side offers both a quicker refresh, and the added advantage of keeping your position and undo-history in the editor.'
@@ -189,12 +189,26 @@ export class EnglishStrings implements ClientStrings {
         gotIt: /** NEEDS STRING REVIEW */ 'Got it'
     };
 
-    IndexPageStrings = {
-        localStorageUnavailableMessage:
-            'Cannot initialize Script Lab because the browser\'s Local Storage is disabled. ' +
-            ' Please try on a different browser or computer, or check your internet settings.',
+    HtmlPageStrings = {
+        PageTitles: {
+            code: 'Code',
+            run: 'Run'
+        },
 
-        chooseYourHost: 'Choose your host:'
+        chooseYourHost: 'Choose your host:',
+
+        localStorageUnavailableMessage:
+        'Cannot initialize Script Lab because the browser\'s Local Storage is disabled. ' +
+        ' Please try on a different browser or computer, or check your internet settings.',
+
+        loadingRunnerDotDotDot: 'Loading runner...',
+        running: 'Running',
+        lastOpenedSnippet: 'Last opened snippet',
+        noLastOpenedSnippets: 'You have no last opened snippet.',
+        toGetStartedCreateOrImportSnippet: 'To get started, create or import a snippet via the "Code" button.',
+        mySavedSnippets: 'My saved snippets',
+        noLocalSnippets: 'You have no local snippets.',
+        lastUpdated: 'Last updated'
     };
 
 };

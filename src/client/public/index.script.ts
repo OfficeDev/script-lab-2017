@@ -3,10 +3,12 @@ import { Strings } from '../app/strings';
 (() => {
     const strings = Strings();
 
+    document.title = strings.HtmlPageStrings.PageTitles.code;
+
     document.getElementById('subtitle').textContent = strings.playgroundTagline;
     document.getElementById('subtitle').style.visibility = 'visible';
 
-    document.getElementById('choose-your-host').textContent = strings.IndexPageStrings.chooseYourHost;
+    document.getElementById('choose-your-host').textContent = strings.HtmlPageStrings.chooseYourHost;
     document.getElementById('choose-your-host').style.visibility = 'visible';
 
 
@@ -17,7 +19,7 @@ import { Strings } from '../app/strings';
         window.localStorage.setItem(key, '');
         window.localStorage.removeItem(key);
     } catch (e) {
-        let errorText = strings.IndexPageStrings.localStorageUnavailableMessage;
+        let errorText = strings.HtmlPageStrings.localStorageUnavailableMessage;
         console.log(errorText);
 
         document.getElementsByClassName('ms-progress-component__sub-title')[0].textContent = errorText;
