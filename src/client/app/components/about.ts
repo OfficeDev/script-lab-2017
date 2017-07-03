@@ -18,7 +18,7 @@ import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage }
                     </div>
                     <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
                     <div class="about__language">
-                        <select class="about__language-select ms-font-m" [(ngModel)]="currentLanguage" (change)="changeLanguage($event.target.value)">
+                        <select class="about__language-select ms-font-m" [(ngModel)]="currentChosenLanguage" (change)="setLanguage($event.target.value)">
                             <option *ngFor="let l of availableLanguages" [value]="l.value">{{l.name}}</option>
                         </select>
                     </div>
@@ -26,7 +26,7 @@ import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage }
             </div>
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
-                    <button class="ms-Dialog-action ms-Button" (click)="showChange.emit(false)">
+                    <button class="ms-Dialog-action ms-Button" (click)="okClicked()">
                         <span class="ms-Button-label">{{strings.okButtonLabel}}</span>
                     </button>
                 </div>
@@ -47,11 +47,22 @@ export class About implements AfterViewInit {
     strings = Strings();
 
     availableLanguages = [] as { name: string, value: string }[];
-    currentLanguage = '';
+    currentChosenLanguage = '';
+    originalLanguage = '';
 
     ngAfterViewInit() {
         this.availableLanguages = getAvailableLanguages();
-        this.currentLanguage = getDisplayLanguage();
+        this.currentChosenLanguage = getDisplayLanguage();
+        this.originalLanguage = this.currentChosenLanguage;
+    }
+
+    okClicked() {
+        if (this.currentChosenLanguage !== this.originalLanguage) {
+            setDisplayLanguage(this.currentChosenLanguage);
+            window.location.reload();
+        }
+
+        this.showChange.emit(false);
     }
 
     cache = `
@@ -60,9 +71,7 @@ export class About implements AfterViewInit {
     ${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}
     `;
 
-    changeLanguage(languageCode: string) {
-        setDisplayLanguage(languageCode);
-
-        window.location.reload();
+    setLanguage(languageCode: string) {
+        this.currentChosenLanguage = languageCode;
     }
 }
