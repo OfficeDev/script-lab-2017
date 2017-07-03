@@ -5,6 +5,7 @@ import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { Strings, environment } from '../helpers';
 import { isNil } from 'lodash';
+import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 
 @Component({
     selector: 'app',
@@ -23,7 +24,7 @@ import { isNil } from 'lodash';
                     <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
                     <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
                     <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
-                    <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
+                    <command [hidden]="!isDownloadZipSupported" icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
                 </command>
                 <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
                 <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
@@ -76,6 +77,10 @@ export class AppComponent {
                     return false;
                 }
             );
+    }
+
+    get isDownloadZipSupported() {
+        return Utilities.platform !== PlatformType.MAC;
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
