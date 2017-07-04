@@ -1,10 +1,10 @@
 import * as ts from 'typescript';
 import { BadRequestError } from './errors';
 import { processLibraries } from './libraries.processor';
-import { Strings } from '../strings';
+import { ServerStrings } from '../strings';
 
 export class SnippetGenerator {
-    constructor(private _displayLanguage: string) { }
+    constructor(private _strings: ServerStrings) { }
 
     /**
      * Compiles the snippet, and returns it as a Promise (Promise<ICompiledSnippet>)
@@ -59,7 +59,7 @@ export class SnippetGenerator {
 
                 if (result.diagnostics.length) {
                     throw new BadRequestError(
-                        Strings(this._displayLanguage).getSyntaxErrorsTitle(result.diagnostics.length),
+                        this._strings.getSyntaxErrorsTitle(result.diagnostics.length),
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);
                             let afterError = content.substr(item.start + 1);

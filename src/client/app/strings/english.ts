@@ -173,8 +173,8 @@ export class EnglishStrings implements ClientStrings {
 
     /** Error strings served by the server and displayed in the Error page */
     ServerError = {
-        moreDetails: '(More details...)',
-        hideDetails: '(Hide details...)'
+        moreDetails: 'More details...',
+        hideDetails: 'Hide details...'
     };
 
     SideBySideInstructions = {

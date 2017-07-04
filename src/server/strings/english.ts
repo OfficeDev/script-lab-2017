@@ -19,8 +19,21 @@ export class EnglishStrings implements ServerStrings {
 
     createdWithScriptLab = 'Created with Script Lab';
 
+    scriptLabRunner: 'Script Lab runner';
+    versionInfo: 'Version info';
+
     manifestDefaults = {
         nameIfEmpty: 'Snippet',
         descriptionIfEmpty: 'Created with Script Lab'
     };
+
+    runPageTitle = 'Run snippet';
+    back = 'Back';
+    switchToSnippet = `Switch to the snippet that you're editing.`;
+    snippetCodeChanged = 'You changed the code in this snippet. Refresh this pane to run the new version.';
+    refresh = 'Refresh';
+    dismiss = 'Dismiss';
+    editingDifferentSnippet1 = `You're now editing a different snippet`;
+    editingDifferentSnippet2 = `Refresh this pane to run it`;
+    loadLatestSnippet = 'Load the latest snippet';
 }

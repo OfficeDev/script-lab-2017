@@ -60,36 +60,6 @@ interface ICompiledSnippet extends ITemplate {
     typings?: string[];
 }
 
-interface ISnippetHandlebarsContext extends ICompiledSnippet {
-    isOfficeSnippet: boolean;
-    isExternalExport: boolean;
-}
-
-interface IRunnerHandlebarsContext {
-    /** Snippet info (or null, to signify "opportunistic" runner that attaches to anything open) */
-    snippet: {
-        id: string,
-
-        /** Last modified (or 0, if want to load from scratch) */
-        lastModified?: number
-
-        /** Snippet contents (or empty, if want to read it off of the ID using the heartbeat) */
-        content?: string;
-    }
-
-    origin: string;
-    host: string;
-
-    initialLoadSubtitle: string;
-    headerTitle: string;
-
-    /** Office.js URL, or empty */
-    officeJS: string;
-
-    /** return url (for back button / errors), or empty */
-    returnUrl: string;
-}
-
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
@@ -105,34 +75,6 @@ interface IExportState {
     additionalFields: ISnippet;
     sanitizedFilenameBase: string;
     displayLanguage: string;
-}
-
-interface IErrorHandlebarsContext {
-    origin: string;
-    title: string;
-    message: string;
-    details: string;
-    expandDetailsByDefault: boolean;
-}
-
-interface IManifestHandlebarsContext {
-    name: string;
-    description: string;
-    hostType: string;
-    htmlFilename: string;
-    supportsAddinCommands: boolean;
-    snippetNameMax125: string;
-    snippetDescriptionMax250: string;
-    providerName: string;
-    guid: string;
-}
-
-interface IReadmeHandlebarsContext {
-    name: string;
-    description: string;
-    exportedOn: string;
-    isAddin: boolean;
-    addinOrWebpage: 'Add-in' | 'webpage';
 }
 
 interface IMonacoEditorState {

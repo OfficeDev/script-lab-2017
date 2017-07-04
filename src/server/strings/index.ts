@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { keys } from 'lodash';
+import { keys, isString } from 'lodash';
 import { createFakeStrings, getStrings } from './common';
 
 import { EnglishStrings } from './english';
@@ -9,11 +9,17 @@ const languageGenerator: { [key: string]: () => ServerStrings } = {
     '??': () => createFakeStrings(() => new EnglishStrings())
 };
 
-export function Strings(language: string): ServerStrings {
+export function Strings(language: string): ServerStrings;
+export function Strings(req: express.Request): ServerStrings;
+export function Strings(param: any): ServerStrings {
+    let language: string = param;
+    if (!isString(param)) {
+        language = getDisplayLanguage(param);
+    }
     return getStrings(language, languageGenerator, () => new EnglishStrings());
 }
 
-export function getDisplayLanguage(req: express.Request): string {
+function getDisplayLanguage(req: express.Request): string {
     try {
         return JSON.parse(req.body.data).displayLanguage;
     } catch (e) {
@@ -32,8 +38,21 @@ export interface ServerStrings {
 
     createdWithScriptLab: string;
 
+    scriptLabRunner: string;
+    versionInfo: string;
+
     manifestDefaults: {
         nameIfEmpty: string;
         descriptionIfEmpty: string;
     };
+
+    runPageTitle: string;
+    back: string;
+    switchToSnippet: string;
+    snippetCodeChanged: string;
+    refresh: string;
+    dismiss: string;
+    editingDifferentSnippet1: string;
+    editingDifferentSnippet2: string;
+    loadLatestSnippet: string;
 }
