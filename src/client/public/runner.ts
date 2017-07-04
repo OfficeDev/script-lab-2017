@@ -420,7 +420,7 @@ interface InitializationParams {
         function refreshLastUpdatedText() {
             const strings = Strings();
             const momentText = moment(currentSnippet.lastModified).locale(getDisplayLanguageOrFake()).fromNow();
-            $headerTitle.attr('title', `${strings.HtmlPageStrings.lastUpdated} ${momentText}. ${strings.HtmlPageStrings.clickToRefresh}`);
+            $headerTitle.attr('title', `${strings.HtmlPageStrings.lastUpdated} ${momentText}. ${strings.HtmlPageStrings.clickToRefresh}.`);
         }
     }
 

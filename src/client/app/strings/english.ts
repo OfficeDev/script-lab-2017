@@ -1,219 +1,223 @@
 import { ClientStrings } from './index';
 
-export class EnglishStrings implements ClientStrings {
-    playgroundName = 'Script Lab';
-    playgroundTagline = 'Code ● Run ● Share';
+export function getEnglishStrings(): ClientStrings {
+    const playgroundName = 'Script Lab';
 
-    userId = 'User ID';
+    return {
+        playgroundName: playgroundName,
+        playgroundTagline: 'Code ● Run ● Share',
 
-    run = 'Run';
-    runInThisPane = 'Run in this pane';
-    runSideBySide = 'Run side-by-side';
-    share = 'Share';
-    delete = 'Delete';
-    close = 'Close';
-    about = 'About';
-    feedback = 'Feedback';
+        userId: 'User ID',
 
-    okButtonLabel = 'OK';
-    logoutButtonLabel = 'Sign out';
-    cancelButtonLabel = 'Cancel';
-    saveButtonLabel = 'Save';
-    moreInfoButtonLabel = 'More info';
-    importButtonLabel = 'Import';
+        run: 'Run',
+        runInThisPane: 'Run in this pane',
+        runSideBySide: 'Run side-by-side',
+        share: 'Share',
+        delete: 'Delete',
+        close: 'Close',
+        about: 'About',
+        feedback: 'Feedback',
 
-    snippetImportError = 'Failed to import snippet';
-    snippetImportErrorTitle = 'Import failed';
-    snippetImportErrorBody = `We couldn't import the snippet.`;
-    reloadPrompt = 'Reload this task pane and then try another URL or ID.';
+        okButtonLabel: 'OK',
+        logoutButtonLabel: 'Sign out',
+        cancelButtonLabel: 'Cancel',
+        saveButtonLabel: 'Save',
+        moreInfoButtonLabel: 'More info',
+        importButtonLabel: 'Import',
 
-    snippetSaveError = 'Failed to save the current snippet';
-    snippetDupeError = 'Failed to duplicate the current snippet';
-    snippetDeleteError = 'Failed to delete the current snippet';
-    snippetDeleteAllError = 'Failed to delete all the local snippets';
-    snippetLoadAllError = 'Failed to load the local snippets';
-    snippetRunError = 'Failed to run the snippet';
-    snippetLoadDefaultsError = 'Failed to load the default samples';
+        snippetImportError: 'Failed to import snippet',
+        snippetImportErrorTitle: 'Import failed',
+        snippetImportErrorBody: `We couldn't import the snippet.`,
+        reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
-    snippetUpdateError = /** NEEDS STRING REVIEW */ 'Failed to update the snippet';
+        snippetSaveError: 'Failed to save the current snippet',
+        snippetDupeError: 'Failed to duplicate the current snippet',
+        snippetDeleteError: 'Failed to delete the current snippet',
+        snippetDeleteAllError: 'Failed to delete all the local snippets',
+        snippetLoadAllError: 'Failed to load the local snippets',
+        snippetRunError: 'Failed to run the snippet',
+        snippetLoadDefaultsError: 'Failed to load the default samples',
 
-    snippetValidationEmpty = `Your snippet can't be empty`;
-    snippetValidationNoTitle = 'Your snippet needs a title';
+        snippetUpdateError: /** NEEDS STRING REVIEW */ 'Failed to update the snippet',
 
-    defaultSnippetTitle = 'New Snippet';
-    newSnippetTitle = 'Blank Snippet' /* string gets modified at runtime */;
+        snippetValidationEmpty: `Your snippet can't be empty`,
+        snippetValidationNoTitle: 'Your snippet needs a title',
 
-    //ui.ts strings:
-    dialogError = 'An error occurred in the dialog';
-    dialogOpenError = 'A dialog is already open';
+        defaultSnippetTitle: 'New Snippet',
+        newSnippetTitle: 'Blank Snippet' /* string gets modified at runtime */,
 
-    //monaco.ts strings:
-    intellisenseUpdateError = 'Failed to update IntelliSense';
-    intellisenseClearError = 'Failed to clear IntelliSense';
-    intellisenseLoadError = 'Failed to load the IntelliSense file';
+        //ui.ts strings:
+        dialogError: 'An error occurred in the dialog',
+        dialogOpenError: 'A dialog is already open',
 
-    //github.ts strings:
-    githubLoginFailed = 'Failed to sign in to GitHub';
-    githubLogoutFailed = 'Failed to sign out of GitHub';
-    profileCheckFailed = 'Failed to get the GitHub profile';
-    gistRetrieveFailed = 'Failed to retrieve GitHub gists';
-    gistDescriptionAppendage = `Shared with ${this.playgroundName}`;
+        //monaco.ts strings:
+        intellisenseUpdateError: 'Failed to update IntelliSense',
+        intellisenseClearError: 'Failed to clear IntelliSense',
+        intellisenseLoadError: 'Failed to load the IntelliSense file',
 
-    gistShareFailedBody = /** NEEDS STRING REVIEW */ 'Failed to share the GitHub gist';
-    gistShareFailedTitle = 'Sharing failed';
+        //github.ts strings:
+        githubLoginFailed: 'Failed to sign in to GitHub',
+        githubLogoutFailed: 'Failed to sign out of GitHub',
+        profileCheckFailed: 'Failed to get the GitHub profile',
+        gistRetrieveFailed: 'Failed to retrieve GitHub gists',
+        gistDescriptionAppendage: `Shared with ${playgroundName}`,
 
-    gistSharedDialogStart = 'The URL of your GitHub gist is:';
-    gistSharedDialogEnd = `To import your snippet, select the Import button in ${this.playgroundName} and enter this URL.`;
-    gistSharedDialogTitle = 'Share your snippet';
-    gistSharedDialogViewButton = 'View on GitHub';
+        gistShareFailedBody: /** NEEDS STRING REVIEW */ 'Failed to share the GitHub gist',
+        gistShareFailedTitle: 'Sharing failed',
 
-    snippetCopiedConfirmation = `The snippet is copied to your clipboard`;
-    snippetCopiedFailed = 'Failed to copy the snippet to your clipboard';
+        gistSharedDialogStart: 'The URL of your GitHub gist is:',
+        gistSharedDialogEnd: `To import your snippet, select the Import button in ${playgroundName} and enter this URL.`,
+        gistSharedDialogTitle: 'Share your snippet',
+        gistSharedDialogViewButton: 'View on GitHub',
 
-    snippetExportFailed = 'Failed to export the snippet';
+        snippetCopiedConfirmation: `The snippet is copied to your clipboard`,
+        snippetCopiedFailed: 'Failed to copy the snippet to your clipboard',
 
-    // Components strings
-    // about.ts
-    aboutUpdated = 'Last updated:';
-    aboutStorage = 'Storage:';
-    aboutSnippets = 'Local snippets';
-    aboutIntellisense = 'IntelliSense';
+        snippetExportFailed: 'Failed to export the snippet',
 
-    //snippet.info.ts
-    nameLabel = 'Name';
-    descriptionLabel = 'Description';
-    namePlaceholder = 'Snippet name';
-    descriptionPlaceholder: 'Snippet description';
+        // Components strings
+        // about.ts
+        aboutUpdated: 'Last updated:',
+        aboutStorage: 'Storage:',
+        aboutSnippets: 'Local snippets',
+        aboutIntellisense: 'IntelliSense',
 
-    // Containers strings
-    //app.ts
+        //snippet.info.ts
+        nameLabel: 'Name',
+        descriptionLabel: 'Description',
+        namePlaceholder: 'Snippet name',
+        descriptionPlaceholder: 'Snippet description',
 
-    shareMenuPublic = /** NEEDS STRING REVIEW */ 'New Public Gist';
-    shareMenuPrivate = /** NEEDS STRING REVIEW */ 'New Secret Gist';
-    updateMenu = /** NEEDS STRING REVIEW */ 'Update Existing Gist';
+        // Containers strings
+        //app.ts
 
-    shareMenuClipboard = 'Copy to clipboard';
-    shareMenuExport = 'Export for publishing';
+        shareMenuPublic: /** NEEDS STRING REVIEW */ 'New Public Gist',
+        shareMenuPrivate: /** NEEDS STRING REVIEW */ 'New Secret Gist',
+        updateMenu: /** NEEDS STRING REVIEW */ 'Update Existing Gist',
 
-    loginGithub = 'Sign in to GitHub';
+        shareMenuClipboard: 'Copy to clipboard',
+        shareMenuExport: 'Export for publishing',
 
-    lightTheme = 'Light';
-    darkTheme = 'Dark';
+        loginGithub: 'Sign in to GitHub',
 
-    deleteSnippetConfirm = 'Are you sure you want to delete this snippet?';
+        lightTheme: 'Light',
+        darkTheme: 'Dark',
 
-    tabDisplayNames = {
-        'script': 'Script',
-        'template': 'Template',
-        'style': 'Style',
-        'libraries': 'Libraries'
-    };
+        deleteSnippetConfirm: 'Are you sure you want to delete this snippet?',
 
-    // Gallery.view strings
-
-    snippetsTab = 'Snippets';
-    samplesTab = 'Samples';
-
-    noSnippetsMessage = 'You have no local snippets. You can create a new one, pick one of the samples, or import one from somewhere else.';
-    noGistsMessage = `You haven't uploaded snippet to a gist yet. After you create or modify a snippet, you can choose Share to upload it.`;
-
-    newSnippetDescription = 'Create a new snippet';
-    importDescription = 'Create a snippet from YAML or a GitHub gist';
-
-    // import.ts strings
-
-    newSnippetLabel = 'New snippet';
-    mySnippetsLabel = 'My snippets';
-    samplesLabel = 'Samples';
-    importLabel = 'Import snippet';
-    mySnippetsDescription = 'Choose a snippet that you saved.';
-    localSnippetsLabel = 'My snippets on this computer';
-    noLocalSnippets = `You haven't saved snippets on this computer. To get started, create a new snippet or import one.`;
-    sharedGistsLabel = 'My shared gists on GitHub';
-    sharedGistsSignIn = 'Sign in to get any snippets you shared via GitHub gists.';
-    samplesDescription = 'Choose one of the samples below to get started.';
-    noSamplesMessage = `There aren't any samples available for this host yet.`;
-    importWarning = `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`;
-    importWarningAction = `Don't show this warning again.`;
-
-    localStorageWarning = `Snippets you create get erased if you clear your browser cache. ` +
-    `To save snippets permanently, export them as gists from the Share menu.`;
-    localStorageWarningAction = `Don't show this warning again.`;
-
-    importInstructions = `Enter the snippet's URL or paste the YAML below, then choose`;
-    importUrlLabel = `Snippet URL or GitHub gist ID`;
-    importUrlPlaceholder = `eg. https://gist.github.com/sampleGistId`;
-    importYamlLabel = `Snippet YAML`;
-
-    Refresh = {
-        /** Error if refresh URL is somehow misformed (should essentially never happen) */
-        missingSnippetParameters: `A configuration problem prevented the snippet from loading.`,
-
-        /** Error if snippet no longer exists */
-        couldNotFindTheSnippet: `Couldn't find the snippet. It might have been deleted.`,
-
-        /** Appends one of the following to the error message
-         * (navigating back after a couple of seconds, if there is a return URL) */
-        getTextToAppendToErrorMessage: (returnUrl: string) =>
-            returnUrl ? 'Returning...' : 'Close this window and try again.'
-    };
-
-    Runner = {
-        snippetNoLongerExists: 'That snippet no longer exists. Reload this page, or return to the previous one.',
-        unexpectedError: 'An unexpected error occurred',
-
-        reloadingOfficeJs: 'Reloading Office.js',
-
-        noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`,
-
-        getLoadingSnippetSubtitle(snippetName?: string) {
-            return 'Loading ' + (snippetName ? `"${snippetName}"` : 'snippet');
-        }
-    };
-
-    /** Error strings served by the server and displayed in the Error page */
-    ServerError = {
-        moreDetails: 'More details...',
-        hideDetails: 'Hide details...'
-    };
-
-    SideBySideInstructions = {
-        title: /** NEEDS STRING REVIEW */ 'Run side-by-side with editor',
-
-        message: /** NEEDS STRING REVIEW */[
-            'To run the snippet side-by-side with the editor, choose "Run" in the Ribbon.',
-            '',
-            'Running side-by-side offers both a quicker refresh, and the added advantage of keeping your position and undo-history in the editor.'
-        ].join('\n'),
-
-        gotIt: /** NEEDS STRING REVIEW */ 'Got it'
-    };
-
-    HtmlPageStrings = {
-        PageTitles: {
-            code: 'Code',
-            run: 'Run',
-            tutorial: 'Tutorial'
+        tabDisplayNames: {
+            'script': 'Script',
+            'template': 'Template',
+            'style': 'Style',
+            'libraries': 'Libraries'
         },
 
-        chooseYourHost: 'Choose your host:',
+        // Gallery.view strings
 
-        localStorageUnavailableMessage:
-        'Cannot initialize Script Lab because the browser\'s Local Storage is disabled. ' +
-        ' Please try on a different browser or computer, or check your internet settings.',
+        snippetsTab: 'Snippets',
+        samplesTab: 'Samples',
 
-        loadingRunnerDotDotDot: 'Loading runner...',
-        running: 'Running',
-        lastOpenedSnippet: 'Last opened snippet',
-        noLastOpenedSnippets: 'You have no last opened snippet.',
-        toGetStartedCreateOrImportSnippet: 'To get started, create or import a snippet via the "Code" button.',
-        mySavedSnippets: 'My saved snippets',
-        noLocalSnippets: 'You have no local snippets.',
-        lastUpdated: 'Last updated',
-        clickToRefresh: 'Click to refresh',
+        noSnippetsMessage: 'You have no local snippets. You can create a new one, pick one of the samples, or import one from somewhere else.',
+        noGistsMessage: `You haven't uploaded snippet to a gist yet. After you create or modify a snippet, you can choose Share to upload it.`,
 
-        tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
-        download: 'Download'
+        newSnippetDescription: 'Create a new snippet',
+        importDescription: 'Create a snippet from YAML or a GitHub gist',
+
+        // import.ts strings
+
+        newSnippetLabel: 'New snippet',
+        mySnippetsLabel: 'My snippets',
+        samplesLabel: 'Samples',
+        importLabel: 'Import snippet',
+        mySnippetsDescription: 'Choose a snippet that you saved.',
+        localSnippetsLabel: 'My snippets on this computer',
+        noLocalSnippets: `You haven't saved snippets on this computer. To get started, create a new snippet or import one.`,
+        sharedGistsLabel: 'My shared gists on GitHub',
+        sharedGistsSignIn: 'Sign in to get any snippets you shared via GitHub gists.',
+        samplesDescription: 'Choose one of the samples below to get started.',
+        noSamplesMessage: `There aren't any samples available for this host yet.`,
+        importWarning: `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`,
+        importWarningAction: `Don't show this warning again.`,
+
+        localStorageWarning: `Snippets you create get erased if you clear your browser cache. ` +
+        `To save snippets permanently, export them as gists from the Share menu.`,
+        localStorageWarningAction: `Don't show this warning again.`,
+
+        importInstructions: `Enter the snippet's URL or paste the YAML below, then choose`,
+        importUrlLabel: `Snippet URL or GitHub gist ID`,
+        importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
+        importYamlLabel: `Snippet YAML`,
+
+        Refresh: {
+            /** Error if refresh URL is somehow misformed (should essentially never happen) */
+            missingSnippetParameters: `A configuration problem prevented the snippet from loading.`,
+
+            /** Error if snippet no longer exists */
+            couldNotFindTheSnippet: `Couldn't find the snippet. It might have been deleted.`,
+
+            /** Appends one of the following to the error message
+             * (navigating back after a couple of seconds, if there is a return URL) */
+            getTextToAppendToErrorMessage: (returnUrl: string) =>
+                returnUrl ? 'Returning...' : 'Close this window and try again.'
+        },
+
+        Runner: {
+            snippetNoLongerExists: 'That snippet no longer exists. Reload this page, or return to the previous one.',
+            unexpectedError: 'An unexpected error occurred',
+
+            reloadingOfficeJs: 'Reloading Office.js',
+
+            noSnippetIsCurrentlyOpened: `There isn't an open snippet in the Edit pane.`,
+
+            getLoadingSnippetSubtitle: (snippetName?: string) => {
+                return 'Loading ' + (snippetName ? `"${snippetName}"` : 'snippet');
+            }
+        },
+
+        /** Error strings served by the server and displayed in the Error page */
+        ServerError: {
+            moreDetails: 'More details...',
+            hideDetails: 'Hide details...'
+        },
+
+        SideBySideInstructions: {
+            title: /** NEEDS STRING REVIEW */ 'Run side-by-side with editor',
+
+            message: /** NEEDS STRING REVIEW */[
+                'To run the snippet side-by-side with the editor, choose "Run" in the Ribbon.',
+                '',
+                'Running side-by-side offers both a quicker refresh, and the added advantage of keeping your position and undo-history in the editor.'
+            ].join('\n'),
+
+            gotIt: /** NEEDS STRING REVIEW */ 'Got it'
+        },
+
+        HtmlPageStrings: {
+            PageTitles: {
+                code: 'Code',
+                run: 'Run',
+                tutorial: 'Tutorial'
+            },
+
+            chooseYourHost: 'Choose your host:',
+
+            localStorageUnavailableMessage:
+            'Cannot initialize Script Lab because the browser\'s Local Storage is disabled. ' +
+            ' Please try on a different browser or computer, or check your internet settings.',
+
+            loadingRunnerDotDotDot: 'Loading runner...',
+            running: 'Running',
+            lastOpenedSnippet: 'Last opened snippet',
+            noLastOpenedSnippets: 'You have no last opened snippet.',
+            toGetStartedCreateOrImportSnippet: 'To get started, create or import a snippet via the "Code" button.',
+            mySavedSnippets: 'My saved snippets',
+            noLocalSnippets: 'You have no local snippets.',
+            lastUpdated: 'Last updated',
+            clickToRefresh: 'Click to refresh',
+
+            tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
+            download: 'Download'
+        }
+
     };
-
-};
+}

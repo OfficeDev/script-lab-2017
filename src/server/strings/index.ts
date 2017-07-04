@@ -9,11 +9,11 @@ import { createFakeStrings, getStrings } from './common';
 //// Note that you will also need separate strings for CLIENT vs SERVER ////
 ////////////////////////////////////////////////////////////////////////////
 
-import { EnglishStrings } from './english';
+import { getEnglishStrings } from './english';
 
 const languageGenerator: { [key: string]: () => ServerStrings } = {
-    'en': () => new EnglishStrings(),
-    '??': () => createFakeStrings(() => new EnglishStrings())
+    'en': () => getEnglishStrings(),
+    '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -27,18 +27,28 @@ export function Strings(param: any): ServerStrings {
     if (!isString(param)) {
         language = getDisplayLanguage(param);
     }
-    return getStrings(language, languageGenerator, () => new EnglishStrings());
+    return getStrings(language, languageGenerator, () => getEnglishStrings());
 }
 
 export function getExplicitlySetDisplayLanguageOrNull(req: express.Request): string {
-    try {
-        return JSON.parse(req.body.data).displayLanguage;
-    } catch (e) {
-        if (req.cookies && req.cookies['displayLanguage']) {
-            return req.cookies['displayLanguage'];
-        }
+    const requestBodyLanguage = getRequestBodyLanguage();
+    if (requestBodyLanguage) {
+        return requestBodyLanguage;
+    }
 
-        return null;
+    if (req.cookies && req.cookies['displayLanguage']) {
+        return req.cookies['displayLanguage'];
+    }
+
+    return null;
+
+
+    function getRequestBodyLanguage() {
+        try {
+            return JSON.parse(req.body.data).displayLanguage;
+        } catch (e) {
+            return null;
+        }
     }
 }
 

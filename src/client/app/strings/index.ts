@@ -12,15 +12,15 @@ const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 //// Note that you will also need separate strings for CLIENT vs SERVER ////
 ////////////////////////////////////////////////////////////////////////////
 
-import { EnglishStrings } from './english';
+import { getEnglishStrings } from './english';
 
 let availableLanguages = [
     { name: 'English', value: 'en' }
 ];
 
 const languageGenerator: { [key: string]: () => ClientStrings } = {
-    'en': () => new EnglishStrings(),
-    '??': () => createFakeStrings(() => new EnglishStrings())
+    'en': () => getEnglishStrings(),
+    '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
 
@@ -37,7 +37,7 @@ export function getAvailableLanguages(): { name: string, value: string }[] {
 }
 
 export function Strings(): ClientStrings {
-    return getStrings(getRawDisplayLanguage(), languageGenerator, () => new EnglishStrings());
+    return getStrings(getRawDisplayLanguage(), languageGenerator, () => getEnglishStrings());
 }
 
 export function getDisplayLanguage() {

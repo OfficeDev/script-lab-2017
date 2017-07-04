@@ -36,7 +36,8 @@ function substituteWithReverse(obj: {[key: string]: string | any}) {
             obj[key] = reverseAndLowercase(value);
         } else if (isFunction(value)) {
             obj[key] = /* tslint:disable */ function() { /* tslint:enable */
-                return value(arguments).reverse();
+                let text: string = (value as Function)(arguments);
+                return reverseAndLowercase(text);
             };
         } else {
             substituteWithReverse(value);
