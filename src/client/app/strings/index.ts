@@ -251,6 +251,7 @@ export interface ClientStrings {
         PageTitles: {
             code: string;
             run: string;
+            tutorial: string;
         }
 
         chooseYourHost: string;
@@ -264,5 +265,8 @@ export interface ClientStrings {
         mySavedSnippets: string;
         noLocalSnippets: string;
         lastUpdated: string;
+
+        tutorialDescription: string;
+        download: string;
     };
 }

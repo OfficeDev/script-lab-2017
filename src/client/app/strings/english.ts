@@ -192,7 +192,8 @@ export class EnglishStrings implements ClientStrings {
     HtmlPageStrings = {
         PageTitles: {
             code: 'Code',
-            run: 'Run'
+            run: 'Run',
+            tutorial: 'Tutorial'
         },
 
         chooseYourHost: 'Choose your host:',
@@ -208,7 +209,10 @@ export class EnglishStrings implements ClientStrings {
         toGetStartedCreateOrImportSnippet: 'To get started, create or import a snippet via the "Code" button.',
         mySavedSnippets: 'My saved snippets',
         noLocalSnippets: 'You have no local snippets.',
-        lastUpdated: 'Last updated'
+        lastUpdated: 'Last updated',
+
+        tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
+        download: 'Download'
     };
 
 };

@@ -15,6 +15,7 @@ module.exports = (prodMode) =>
 
         entry: {
             indexScript: './public/index.script.ts',
+            tutorialScript: './public/tutorial.script.ts',
 
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
@@ -100,10 +101,6 @@ module.exports = (prodMode) =>
                     ignore: ['*.ts']
                 },
                 {
-                    from: './views/tutorial.html',
-                    to: 'tutorial.html',
-                },
-                {
                     from: './views/external-page.html',
                     to: 'external-page.html',
                 },
@@ -157,6 +154,11 @@ module.exports = (prodMode) =>
                 filename: 'heartbeat.html',
                 template: './views/heartbeat.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'tutorial.html',
+                template: './views/tutorial.html',
+                chunks: ['polyfills', 'vendor', 'tutorialScript'],
             })
         ]
     });
