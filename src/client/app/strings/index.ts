@@ -104,6 +104,7 @@ export interface ClientStrings {
     saveButtonLabel: string;
     moreInfoButtonLabel: string;
     importButtonLabel: string;
+    editorTriggerSuggestContextMenuLabel: string;
 
     snippetImportError: string;
     snippetImportErrorTitle: string;
@@ -117,6 +118,9 @@ export interface ClientStrings {
     snippetLoadAllError: string;
     snippetRunError: string;
     snippetLoadDefaultsError: string;
+
+    snippetNoOfficeTitle: string;
+    snippetNoOfficeMessage: string;
 
     snippetUpdateError: string;
 
@@ -167,6 +171,8 @@ export interface ClientStrings {
     descriptionLabel: string;
     namePlaceholder: string;
     descriptionPlaceholder: string;
+    gistUrlLabel: string;
+    gistUrlLinkLabel: string;
 
     // Containers strings
     //app.ts
@@ -174,6 +180,8 @@ export interface ClientStrings {
     shareMenuPublic: string;
     shareMenuPrivate: string;
     updateMenu: string;
+    sharePublicSnippetConfirm: string;
+    sharePrivateSnippetConfirm: string;
 
     shareMenuClipboard: string;
     shareMenuExport: string;

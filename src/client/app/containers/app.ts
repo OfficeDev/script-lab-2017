@@ -110,9 +110,9 @@ export class AppComponent {
             this._store.dispatch(new Snippet.RunAction(this.snippet));
         } else {
             this._store.dispatch(new UI.ShowAlertAction({
-                actions: [ Strings.okButtonLabel ],
-                title: Strings.snippetRunError,
-                message: Strings.snippetNoOfficeMessage
+                actions: [ this.strings.okButtonLabel ],
+                title: this.strings.snippetNoOfficeTitle,
+                message: this.strings.snippetNoOfficeMessage
             }));
         }
     }
@@ -185,18 +185,18 @@ export class AppComponent {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    this._effects.alert(Strings.sharePublicSnippetConfirm, `${Strings.share} ${this.snippet.name}`, Strings.share, Strings.cancelButtonLabel)
+                    this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
                         .then((result: string) => {
-                                if (result !== Strings.cancelButtonLabel) {
+                                if (result !== this.strings.cancelButtonLabel) {
                                     this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
                                 }
                             }
                         );
                 }
                 else {
-                    this._effects.alert(Strings.sharePrivateSnippetConfirm, `${Strings.share} ${this.snippet.name}`, Strings.share, Strings.cancelButtonLabel)
+                    this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
                         .then((result: string) => {
-                                if (result !== Strings.cancelButtonLabel) {
+                                if (result !== this.strings.cancelButtonLabel) {
                                     this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
                                 }
                             }

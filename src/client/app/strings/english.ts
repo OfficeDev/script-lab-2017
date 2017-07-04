@@ -26,6 +26,7 @@ export function getEnglishStrings(): ClientStrings {
         saveButtonLabel: 'Save',
         moreInfoButtonLabel: 'More info',
         importButtonLabel: 'Import',
+        editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
@@ -39,6 +40,9 @@ export function getEnglishStrings(): ClientStrings {
         snippetLoadAllError: 'Failed to load the local snippets',
         snippetRunError: 'Failed to run the snippet',
         snippetLoadDefaultsError: 'Failed to load the default samples',
+
+        snippetNoOfficeTitle: /** NEEDS STRING REVIEW */ 'Cannot run this snippet',
+        snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Get your copy today at https://aka.ms/getscriptlab.',
 
         snippetUpdateError: /** NEEDS STRING REVIEW */ 'Failed to update the snippet',
 
@@ -89,6 +93,8 @@ export function getEnglishStrings(): ClientStrings {
         descriptionLabel: 'Description',
         namePlaceholder: 'Snippet name',
         descriptionPlaceholder: 'Snippet description',
+        gistUrlLabel: /** NEEDS STRING REVIEW */ 'Gist URL',
+        gistUrlLinkLabel: /** NEEDS STRING REVIEW */ 'Open in browser',
 
         // Containers strings
         //app.ts
@@ -96,6 +102,8 @@ export function getEnglishStrings(): ClientStrings {
         shareMenuPublic: /** NEEDS STRING REVIEW */ 'New Public Gist',
         shareMenuPrivate: /** NEEDS STRING REVIEW */ 'New Secret Gist',
         updateMenu: /** NEEDS STRING REVIEW */ 'Update Existing Gist',
+        sharePublicSnippetConfirm: /** NEEDS STRING REVIEW */ 'Are you sure you want to share this snippet as a new public gist?',
+        sharePrivateSnippetConfirm: /** NEEDS STRING REVIEW */ 'Are you sure you want to share this snippet as a new secret gist?',
 
         shareMenuClipboard: 'Copy to clipboard',
         shareMenuExport: 'Export for publishing',
