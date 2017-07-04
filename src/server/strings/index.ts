@@ -19,6 +19,7 @@ const languageGenerator: { [key: string]: () => ServerStrings } = {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+
 export function Strings(language: string): ServerStrings;
 export function Strings(req: express.Request): ServerStrings;
 export function Strings(param: any): ServerStrings {
@@ -26,7 +27,6 @@ export function Strings(param: any): ServerStrings {
     if (!isString(param)) {
         language = getDisplayLanguage(param);
     }
-
     return getStrings(language, languageGenerator, () => new EnglishStrings());
 }
 
