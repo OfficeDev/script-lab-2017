@@ -84,7 +84,7 @@ export class AppComponent {
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
     theme$ = this._store.select(fromRoot.getTheme)
-        .map(isLight => isLight ? Strings().lightTheme : Strings().darkTheme);
+        .map(isLight => isLight ? this.strings.lightTheme : this.strings.darkTheme);
 
     language$ = this._store.select(fromRoot.getLanguage);
 
@@ -119,9 +119,9 @@ export class AppComponent {
 
     runSideBySide() {
         this._store.dispatch(new UI.ShowAlertAction({
-            actions: [ Strings().SideBySideInstructions.gotIt ],
-            title: Strings().SideBySideInstructions.title,
-            message: Strings().SideBySideInstructions.message
+            actions: [ this.strings.SideBySideInstructions.gotIt ],
+            title: this.strings.SideBySideInstructions.title,
+            message: this.strings.SideBySideInstructions.message
         }));
     }
 
@@ -130,8 +130,8 @@ export class AppComponent {
             return;
         }
 
-        let result = await this._effects.alert(Strings().deleteSnippetConfirm, `${Strings().delete} ${this.snippet.name}`, Strings().delete, Strings().cancelButtonLabel);
-        if (result === Strings().cancelButtonLabel) {
+        let result = await this._effects.alert(this.strings.deleteSnippetConfirm, `${this.strings.delete} ${this.snippet.name}`, this.strings.delete, this.strings.cancelButtonLabel);
+        if (result === this.strings.cancelButtonLabel) {
             return;
         }
 
@@ -230,7 +230,7 @@ export class AppComponent {
             .filter(errors => errors && errors.length > 0)
             .subscribe(errors => {
                 let data = errors.map(error => error.message).join('\n\n');
-                this._effects.alert(data, 'Errors', 'Dismiss')
+                this._effects.alert(data, this.strings.errors, this.strings.dismiss)
                     .then(() => this._store.dispatch(new UI.DismissAllErrorsAction()));
             });
     }

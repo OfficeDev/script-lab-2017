@@ -14,6 +14,7 @@ export class SnippetGenerator {
         return Promise.resolve()
             .then(() => {
                 if (snippet == null) {
+                    // OK to be English-only, internal error that should never happen.
                     throw new BadRequestError('Snippet is null');
                 }
 
@@ -66,7 +67,7 @@ export class SnippetGenerator {
                             let lineNumber = upThroughError.split('\n').length;
                             let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
                             let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
-                            return `Line #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
+                            return `${this._strings.line} #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
                         }).join('\n\n')
                     );
                 }
@@ -77,7 +78,7 @@ export class SnippetGenerator {
                 return content;
 
             default:
-                throw new BadRequestError(`Unrecognized script language ${language}`);
+                throw new BadRequestError(`${this._strings.unrecognizedScriptLanguage} ${language}`);
         }
     }
 }

@@ -66,7 +66,8 @@ export interface ServerStrings {
     receivedInvalidAuthCode: string;
     failedToAuthenticateUser: string;
     receivedInvalidSnippetData: string;
-    cannotFindMatchingOfficeHost: string;
+    unrecognizedScriptLanguage: string;
+    line: string;
 
     getLoadingSnippetSubtitle(snippetName: string): string;
     loadingSnippetDotDotDot: string;

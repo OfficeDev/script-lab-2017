@@ -13,6 +13,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
+import { Strings } from './app/strings';
 import { COMPONENT_DECLARATIONS } from './components';
 import { AppComponent } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
@@ -31,6 +32,8 @@ let imports = [
 ];
 
 (async function start() {
+    const strings = Strings();
+
     try {
         await Promise.all([
             environment.initialize(),
@@ -56,7 +59,7 @@ let imports = [
         }
     }
     catch (e) {
-        $('.ms-progress-component__sub-title').text('Error initializing Script Lab.')
+        $('.ms-progress-component__sub-title').text(strings.HtmlPageStrings.errorInitializingScriptLab)
             .click(() => {
                 $('.ms-progress-component__sub-title').text(JSON.stringify(e, null, 4));
             });

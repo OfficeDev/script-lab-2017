@@ -9,7 +9,8 @@ export function getEnglishStrings(): ServerStrings {
         receivedInvalidAuthCode: 'Received invalid auth code',
         failedToAuthenticateUser: 'Failed to authenticate user',
         receivedInvalidSnippetData: 'Received invalid snippet data',
-        cannotFindMatchingOfficeHost: 'Cannot find matching Office host type for snippet host',
+        unrecognizedScriptLanguage: 'Unrecognized script language',
+        line: 'Line',
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Loading "${snippetName}"`,
 

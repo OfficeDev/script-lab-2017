@@ -95,6 +95,8 @@ export interface ClientStrings {
     close: string;
     about: string;
     feedback: string;
+    errors: string;
+    dismiss: string;
 
     okButtonLabel: string;
     logoutButtonLabel: string;
@@ -285,5 +287,6 @@ export interface ClientStrings {
 
         tutorialDescription: string;
         download: string;
+        errorInitializingScriptLab: string;
     };
 }

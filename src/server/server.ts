@@ -357,7 +357,8 @@ async function generateManifest(
 
     const hostType = officeHostToManifestTypeMap[snippet.host];
     if (!hostType) {
-        throw new BadRequestError(`${strings.cannotFindMatchingOfficeHost} "${snippet.host}"`);
+        // OK to be English-only, internal error that should never happen.
+        throw new BadRequestError(`Cannot find matching Office host type for snippet host "${snippet.host}"`);
     }
 
     const snippetNameMax125 = clipText(snippet.name, 125) || strings.manifestDefaults.nameIfEmpty;

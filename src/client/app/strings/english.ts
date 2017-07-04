@@ -17,6 +17,8 @@ export function getEnglishStrings(): ClientStrings {
         close: 'Close',
         about: 'About',
         feedback: 'Feedback',
+        errors: 'Errors',
+        dismiss: 'Dismiss',
 
         okButtonLabel: 'OK',
         logoutButtonLabel: 'Sign out',
@@ -216,8 +218,8 @@ export function getEnglishStrings(): ClientStrings {
             clickToRefresh: 'Click to refresh',
 
             tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
-            download: 'Download'
+            download: 'Download',
+            errorInitializingScriptLab: 'Error initializing Script Lab.'
         }
-
     };
 }
