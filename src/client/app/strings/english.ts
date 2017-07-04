@@ -210,6 +210,7 @@ export class EnglishStrings implements ClientStrings {
         mySavedSnippets: 'My saved snippets',
         noLocalSnippets: 'You have no local snippets.',
         lastUpdated: 'Last updated',
+        clickToRefresh: 'Click to refresh',
 
         tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
         download: 'Download'

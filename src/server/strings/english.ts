@@ -9,6 +9,8 @@ export class EnglishStrings implements ServerStrings {
         return `Loading "${snippetName}"`;
     }
 
+    loadingSnippetDotDotDot = 'Loading snippet...';
+
     getSyntaxErrorsTitle(count: number) {
         return count === 1 ? 'Syntax error' : 'Syntax errors';
     }

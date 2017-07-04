@@ -166,7 +166,8 @@
                 {{/if}}
                 id: '{{{snippet.id}}}',
                 host: '{{{host}}}'
-            }
+            },
+            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
         });
     </script>
 </body>

@@ -3,13 +3,14 @@ import * as https from 'https';
 import * as path from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
 import * as Archiver from 'archiver';
 import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
-import { Strings, ServerStrings } from './strings';
+import { Strings, ServerStrings, getExplicitlySetDisplayLanguageOrNull } from './strings';
 import { loadTemplate } from './core/template.generator';
 import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
@@ -58,6 +59,7 @@ else {
     https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 }
 
+app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors());
@@ -78,6 +80,7 @@ app.use('/favicon', express.static('favicon'));
 registerRoute('get', '/run/:host/:id', (req, res) => {
     const host = (req.params.host as string).toUpperCase();
     const id = (req.params.id as string || '').toLowerCase();
+    const strings = Strings(req);
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
         throw new BadRequestError(`Invalid host "${host}"`);
@@ -98,9 +101,10 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 returnUrl: '',
                 origin: currentConfig.editorUrl,
                 host: host,
-                initialLoadSubtitle: 'Loading snippet...',
+                initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
-                strings: Strings(req)
+                strings,
+                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
             });
 
             return res.contentType('text/html').status(200).send(html);
@@ -234,15 +238,17 @@ registerRoute('post', '/export', (req, res) => {
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/', (req, res) => {
+    const strings = Strings(req);
     throw new InformationalError(
-        Strings(req).scriptLabRunner,
-        Strings(req).getGoBackToEditor(currentConfig.editorUrl));
+        strings.scriptLabRunner,
+        strings.getGoBackToEditor(currentConfig.editorUrl));
 });
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/version', (req, res) => {
+    const strings = Strings(req);
     throw new InformationalError(
-        Strings(req).versionInfo,
+        strings.versionInfo,
         JSON.stringify({
             build: build,
             editorUrl: currentConfig.editorUrl,
@@ -273,7 +279,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
     ])
         .then(values => {
             const snippetHtmlData: { html: string, officeJS: string } = values[0];
-            const runnerHtmlGenerator: (IRunnerHandlebarsContext) => string = values[1];
+            const runnerHtmlGenerator: (context: IRunnerHandlebarsContext) => string = values[1];
 
             let html = snippetHtmlData.html;
 
@@ -289,7 +295,9 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     origin: snippet.origin,
                     host: snippet.host,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
-                    headerTitle: snippet.name
+                    headerTitle: snippet.name,
+                    strings,
+                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
                 });
             }
 
@@ -393,17 +401,18 @@ function registerRoute(
         try {
             return await action(req, res);
         } catch (e) {
-            return await errorHandler(req, res, e);
+            const strings = Strings(req);
+            return await errorHandler(res, e, strings);
         }
     }));
 }
 
-async function errorHandler(req: express.Request, res: express.Response, error: Error) {
+async function errorHandler(res: express.Response, error: Error, strings: ServerStrings) {
     if (!(error instanceof InformationalError)) {
         ai.trackException(error, 'Server - Per-route handler');
     }
 
-    const html = await generateErrorHtml(error, Strings(req));
+    const html = await generateErrorHtml(error, strings);
     return res.contentType('text/html').status(200).send(html);
 }
 

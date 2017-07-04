@@ -1,5 +1,8 @@
 import { environment } from '../helpers';
 import { createFakeStrings, getStrings } from './common';
+
+/** Localstorage key for playground language. Will get set both on the client domain
+  * (as expected), and also on the runner domain (due to its use in runner.ts) */
 const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 
 
@@ -41,6 +44,18 @@ export function getDisplayLanguage() {
     return (getRawDisplayLanguage() || 'en').toLowerCase().substr(0, 2);
 }
 
+export function getDisplayLanguageOrFake() {
+    const displayLang = getDisplayLanguage();
+
+    if (displayLang === '??') {
+        // If localstorage is already set to the fake locale, return a different language
+        // (e.g., Russian), just to see that it's not English strings anymore
+        return 'ru';
+    }
+
+    return displayLang;
+}
+
 export function setDisplayLanguage(language) {
     window.localStorage[LANGUAGE_LOCALSTORAGE_KEY] = language;
 }
@@ -54,6 +69,7 @@ function getRawDisplayLanguage() {
         return window.localStorage[LANGUAGE_LOCALSTORAGE_KEY];
     }
 
+    const Office = (window as any).Office;
     if (Office && Office.context && Office.context.displayLanguage) {
         return Office.context.displayLanguage;
     }
@@ -265,6 +281,7 @@ export interface ClientStrings {
         mySavedSnippets: string;
         noLocalSnippets: string;
         lastUpdated: string;
+        clickToRefresh: string;
 
         tutorialDescription: string;
         download: string;

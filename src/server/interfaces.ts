@@ -30,6 +30,7 @@ export interface IRunnerHandlebarsContext {
     returnUrl: string;
 
     strings: ServerStrings;
+    explicitlySetDisplayLanguageOrNull: string;
 }
 
 export interface IErrorHandlebarsContext {

@@ -30,12 +30,22 @@ export function Strings(param: any): ServerStrings {
     return getStrings(language, languageGenerator, () => new EnglishStrings());
 }
 
-function getDisplayLanguage(req: express.Request): string {
+export function getExplicitlySetDisplayLanguageOrNull(req: express.Request): string {
     try {
         return JSON.parse(req.body.data).displayLanguage;
     } catch (e) {
-        return req.acceptsLanguages(keys(languageGenerator)) as string || 'en';
+        if (req.cookies && req.cookies['displayLanguage']) {
+            return req.cookies['displayLanguage'];
+        }
+
+        return null;
     }
+}
+
+function getDisplayLanguage(req: express.Request): string {
+    return getExplicitlySetDisplayLanguageOrNull(req) ||
+        req.acceptsLanguages(keys(languageGenerator)) as string ||
+        'en';
 }
 
 export interface ServerStrings {
@@ -43,6 +53,7 @@ export interface ServerStrings {
     unexpectedError: string;
 
     getLoadingSnippetSubtitle(snippetName: string): string;
+    loadingSnippetDotDotDot: string;
     getSyntaxErrorsTitle(count: number): string
 
     getGoBackToEditor(editorUrl: string): string
