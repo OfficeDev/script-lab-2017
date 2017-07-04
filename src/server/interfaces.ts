@@ -3,6 +3,7 @@ import {ServerStrings} from './strings';
 export interface ISnippetHandlebarsContext extends ICompiledSnippet {
     isOfficeSnippet: boolean;
     isExternalExport: boolean;
+    strings: ServerStrings;
 }
 
 export interface IRunnerHandlebarsContext {

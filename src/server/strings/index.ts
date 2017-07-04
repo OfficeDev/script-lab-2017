@@ -61,6 +61,12 @@ function getDisplayLanguage(req: express.Request): string {
 export interface ServerStrings {
     error: string;
     unexpectedError: string;
+    invalidHost: string;
+    invalidId: string;
+    receivedInvalidAuthCode: string;
+    failedToAuthenticateUser: string;
+    receivedInvalidSnippetData: string;
+    cannotFindMatchingOfficeHost: string;
 
     getLoadingSnippetSubtitle(snippetName: string): string;
     loadingSnippetDotDotDot: string;
@@ -78,6 +84,7 @@ export interface ServerStrings {
         descriptionIfEmpty: string;
     };
 
+    run: string;
     runPageTitle: string;
     back: string;
     switchToSnippet: string;

@@ -83,10 +83,10 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
     const strings = Strings(req);
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
-        throw new BadRequestError(`Invalid host "${host}"`);
+        throw new BadRequestError(`${strings.invalidHost} "${host}"`);
     }
     if (isNil(id)) {
-        throw new BadRequestError(`Invalid id "${id}"`);
+        throw new BadRequestError(`${strings.invalidId} "${id}"`);
     }
 
     // NOTE: using Promise-based code instead of async/await
@@ -142,9 +142,10 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
 registerRoute('post', '/auth/:user', (req, res) => {
     const { code, state } = req.body;
     const { user } = req.params;
+    const strings = Strings(req);
 
     if (code == null) {
-        throw new BadRequestError('Received invalid code.', code);
+        throw new BadRequestError(strings.receivedInvalidAuthCode, code);
     }
 
     const { clientId, editorUrl } = currentConfig;
@@ -169,7 +170,7 @@ registerRoute('post', '/auth/:user', (req, res) => {
             timer.stop();
             if (error) {
                 ai.trackEvent('[Github] Login failed', { user });
-                return reject(new UnauthorizedError('Failed to authenticate user.', error));
+                return reject(new UnauthorizedError(strings.failedToAuthenticateUser, error));
             }
             else {
                 ai.trackEvent('[Github] Login succeeded', { user });
@@ -313,7 +314,7 @@ function generateSnippetHtmlData(
 ): Promise<{ html: string, officeJS: string }> {
 
     if (snippet == null) {
-        throw new BadRequestError('Received invalid snippet data.', null /*details*/);
+        throw new BadRequestError(strings.receivedInvalidSnippetData, null /*details*/);
     }
 
     // NOTE: using Promise-based code instead of async/await
@@ -332,7 +333,8 @@ function generateSnippetHtmlData(
                 const snippetHandlebarsContext: ISnippetHandlebarsContext = {
                     ...compiledSnippetOrError,
                     isOfficeSnippet: isOfficeHost(snippet.host),
-                    isExternalExport: isExternalExport
+                    isExternalExport: isExternalExport,
+                    strings
                 };
 
                 const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
@@ -355,7 +357,7 @@ async function generateManifest(
 
     const hostType = officeHostToManifestTypeMap[snippet.host];
     if (!hostType) {
-        throw new BadRequestError(`Cannot find matching Office host type for snippet host "${snippet.host}"`);
+        throw new BadRequestError(`${strings.cannotFindMatchingOfficeHost} "${snippet.host}"`);
     }
 
     const snippetNameMax125 = clipText(snippet.name, 125) || strings.manifestDefaults.nameIfEmpty;
@@ -375,6 +377,8 @@ async function generateManifest(
 }
 
 async function generateReadme(snippet: ISnippet): Promise<string> {
+    // Keeping README as English-only, too many strings in that page to localize otherwise
+
     const readmeGenerator = await loadTemplate<IReadmeHandlebarsContext>('readme');
     const isAddin = isOfficeHost(snippet.host);
 

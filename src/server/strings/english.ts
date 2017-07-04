@@ -3,8 +3,13 @@ import { ServerStrings } from './index';
 export function getEnglishStrings(): ServerStrings {
     return {
         error: 'Error',
-
         unexpectedError: 'An unexpected error occurred',
+        invalidHost: 'Invalid host',
+        invalidId: 'Invalid ID',
+        receivedInvalidAuthCode: 'Received invalid auth code',
+        failedToAuthenticateUser: 'Failed to authenticate user',
+        receivedInvalidSnippetData: 'Received invalid snippet data',
+        cannotFindMatchingOfficeHost: 'Cannot find matching Office host type for snippet host',
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Loading "${snippetName}"`,
 
@@ -25,6 +30,7 @@ export function getEnglishStrings(): ServerStrings {
             descriptionIfEmpty: 'Created with Script Lab'
         },
 
+        run: 'Run',
         runPageTitle: 'Run snippet',
         back: 'Back',
         switchToSnippet: `Switch to the snippet that you're editing.`,
