@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, Strings, getShareableYaml, environment } from '../helpers';
+import { AI, getShareableYaml, environment } from '../helpers';
+import { Strings, getDisplayLanguage } from '../strings';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
 import { UI, GitHub, Snippet } from '../actions';
@@ -31,7 +32,7 @@ export class GitHubEffects {
         .mergeMap(() => this._github.login())
         .map(profile => new GitHub.LoggedInAction(profile))
         .catch(exception => Observable.from([
-            new UI.ReportErrorAction(Strings.githubLoginFailed, exception),
+            new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
             new GitHub.LoginFailedAction()
         ]));
 
@@ -39,7 +40,7 @@ export class GitHubEffects {
     logout$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
         .map(() => this._github.logout())
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.githubLogoutFailed, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().githubLogoutFailed, exception)));
 
     @Effect()
     loggedIn$: Observable<Action> = this.actions$
@@ -52,7 +53,7 @@ export class GitHubEffects {
         .map(() => this._github.profile)
         .filter(profile => !(profile == null))
         .mergeMap(profile => Observable.from([new GitHub.LoggedInAction(profile)]))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.profileCheckFailed, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().profileCheckFailed, exception)));
 
     @Effect()
     loadGists$: Observable<Action> = this.actions$
@@ -80,7 +81,7 @@ export class GitHubEffects {
                 .filter(snippet => !(snippet == null));
         })
         .map(snippets => new GitHub.LoadGistsSuccessAction(snippets))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.gistRetrieveFailed, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().gistRetrieveFailed, exception)));
 
     @Effect()
     shareGist$: Observable<Action> = this.actions$
@@ -100,8 +101,8 @@ export class GitHubEffects {
             };
 
             description = (description && description.trim() !== '') ? description + ' - ' : '';
-            description.replace(Strings.gistDescriptionAppendage, ''); // shouldn't be necessary
-            description += Strings.gistDescriptionAppendage;
+            description.replace(Strings().gistDescriptionAppendage, ''); // shouldn't be necessary
+            description += Strings().gistDescriptionAppendage;
 
             if (type === GitHub.GitHubActionTypes.UPDATE_GIST) {
                 gistId = gist;
@@ -114,14 +115,14 @@ export class GitHubEffects {
         })
         .mergeMap(async ({ gist, snippetId }) => {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-            let result = await this._uiEffects.alert(`${Strings.gistSharedDialogStart}
+            let result = await this._uiEffects.alert(`${Strings().gistSharedDialogStart}
             
             ${temp}
 
-            ${Strings.gistSharedDialogEnd}`,
-            Strings.gistSharedDialogTitle, Strings.gistSharedDialogViewButton, Strings.okButtonLabel); // the URL should be a hyperlink and the text should wrap
+            ${Strings().gistSharedDialogEnd}`,
+            Strings().gistSharedDialogTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
-            if (result === Strings.gistSharedDialogViewButton) {
+            if (result === Strings().gistSharedDialogViewButton) {
                 window.open(temp);
             }
 
@@ -134,9 +135,9 @@ export class GitHubEffects {
         )
         .catch(exception => {
             this._uiEffects.alert(
-                Strings.gistShareFailedBody + '\n\n' + Strings.reloadPrompt,
-                Strings.gistShareFailedTitle,
-                Strings.okButtonLabel)
+                Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
+                Strings().gistShareFailedTitle,
+                Strings().okButtonLabel)
             .then(() => window.location.reload());
             return Observable.of(new GitHub.ShareFailedAction(exception));
         });
@@ -151,12 +152,12 @@ export class GitHubEffects {
             AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: rawSnippet.id });
             new clipboard('#CopyToClipboard', {
                 text: () => {
-                    this._uiEffects.alert(Strings.snippetCopiedConfirmation, null, Strings.okButtonLabel);
+                    this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().okButtonLabel);
                     return yaml;
                 }
             });
         })
-        .catch(exception => Observable.of(this._createShowErrorAction(Strings.snippetCopiedFailed, exception)));
+        .catch(exception => Observable.of(this._createShowErrorAction(Strings().snippetCopiedFailed, exception)));
 
 
     @Effect({ dispatch: false })
@@ -176,7 +177,12 @@ export class GitHubEffects {
                     .replace(/^-(.*)/, '$1')
                 ) || 'snippet';
 
-            const exportData: IExportState = { snippet, additionalFields, sanitizedFilenameBase };
+            const exportData: IExportState = {
+                snippet,
+                additionalFields,
+                sanitizedFilenameBase,
+                displayLanguage: getDisplayLanguage()
+            };
 
             this._http.post(
                 environment.current.config.runnerUrl + '/export',
@@ -194,11 +200,11 @@ export class GitHubEffects {
                 })
                 .catch(exception => {
                     this._store.dispatch(
-                        this._createShowErrorAction(Strings.snippetExportFailed, exception));
+                        this._createShowErrorAction(Strings().snippetExportFailed, exception));
                 });
         })
         .catch(exception => {
-            this._store.dispatch(this._createShowErrorAction(Strings.snippetExportFailed, exception));
+            this._store.dispatch(this._createShowErrorAction(Strings().snippetExportFailed, exception));
             return null;
         });
 

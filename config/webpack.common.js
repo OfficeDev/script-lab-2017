@@ -14,6 +14,9 @@ module.exports = (prodMode) =>
         context: path.resolve('./src/client'),
 
         entry: {
+            indexScript: './public/index.script.ts',
+            tutorialScript: './public/tutorial.script.ts',
+
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
             main: './main.ts',
@@ -21,7 +24,7 @@ module.exports = (prodMode) =>
             gallery: './public/gallery.ts',
             heartbeat: './public/heartbeat.ts',
             runner: './public/runner.ts',
-            error: './public/error.ts'
+            error: './public/error.ts',
         },
 
         resolve: {
@@ -98,10 +101,6 @@ module.exports = (prodMode) =>
                     ignore: ['*.ts']
                 },
                 {
-                    from: './views/tutorial.html',
-                    to: 'tutorial.html',
-                },
-                {
                     from: './views/external-page.html',
                     to: 'external-page.html',
                 },
@@ -139,7 +138,7 @@ module.exports = (prodMode) =>
             new HtmlWebpackPlugin({
                 filename: 'index.html',
                 template: './views/index.html',
-                chunks: ['polyfills', 'vendor', 'main']
+                chunks: ['indexScript', 'polyfills', 'vendor', 'main']
             }),
             new HtmlWebpackPlugin({
                 filename: 'functions.html',
@@ -155,6 +154,11 @@ module.exports = (prodMode) =>
                 filename: 'heartbeat.html',
                 template: './views/heartbeat.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'tutorial.html',
+                template: './views/tutorial.html',
+                chunks: ['polyfills', 'vendor', 'tutorialScript'],
             })
         ]
     });

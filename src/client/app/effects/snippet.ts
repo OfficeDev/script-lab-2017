@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, Strings, environment, storage,
+import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
     SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
+import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
 import { Action } from '@ngrx/store';
@@ -31,11 +32,11 @@ export class SnippetEffects {
         .filter(({ snippet }) => !(snippet == null))
         .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
         .catch((exception: Error) => {
-            const message = (exception instanceof PlaygroundError) ? exception.message : Strings.snippetImportErrorBody;
+            const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
             this._uiEffects.alert(
-                message + '\n\n' + Strings.reloadPrompt,
-                Strings.snippetImportErrorTitle,
-                Strings.okButtonLabel)
+                message + '\n\n' + Strings().reloadPrompt,
+                Strings().snippetImportErrorTitle,
+                Strings().okButtonLabel)
                 .then(() => window.location.reload());
             return Observable.from([]);
         });
@@ -68,7 +69,7 @@ export class SnippetEffects {
             storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
             return new Snippet.StoreUpdatedAction();
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetSaveError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetSaveError, exception)));
 
     @Effect()
     duplicate$: Observable<Action> = this.actions$
@@ -82,7 +83,7 @@ export class SnippetEffects {
             copy.name = this._generateName(copy.name, 'copy');
             return new Snippet.ImportSuccessAction(copy);
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDupeError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetDupeError, exception)));
 
     @Effect()
     delete$: Observable<Action> = this.actions$
@@ -93,35 +94,37 @@ export class SnippetEffects {
             new Snippet.StoreUpdatedAction(),
             new UI.ToggleImportAction(true)
         ]))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDeleteError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetDeleteError, exception)));
 
     @Effect()
     deleteAll$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.DELETE_ALL)
         .map(() => storage.snippets.clear())
         .map(() => new Snippet.StoreUpdatedAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetDeleteAllError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetDeleteAllError, exception)));
 
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
         .map(() => new Snippet.LoadSnippetsSuccessAction(storage.snippets.values()))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetLoadAllError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })
     run$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            const data = JSON.stringify({
+            const state: IRunnerState = {
                 snippet: snippet,
-                returnUrl: window.location.href
-            });
+                returnUrl: window.location.href,
+                displayLanguage: getDisplayLanguage()
+            };
+            const data = JSON.stringify(state);
 
             AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
             post(environment.current.config.runnerUrl + '/compile/page', { data });
         })
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetRunError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetRunError, exception)));
 
     @Effect()
     loadTemplates$: Observable<Action> = this.actions$
@@ -140,7 +143,7 @@ export class SnippetEffects {
             return new Snippet.LoadTemplatesSuccessAction(data);
         })
         .catch(exception => {
-            console.log(Strings.snippetLoadDefaultsError, exception);
+            console.log(Strings().snippetLoadDefaultsError, exception);
             return Observable.of(new Snippet.LoadTemplatesSuccessAction([]));
         });
 
@@ -174,7 +177,7 @@ export class SnippetEffects {
             return snippet;
         })
         .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.snippetUpdateError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
     private _exists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
@@ -182,16 +185,16 @@ export class SnippetEffects {
 
     private _validate(snippet: ISnippet) {
         if (isEmpty(snippet)) {
-            throw new PlaygroundError(Strings.snippetValidationEmpty);
+            throw new PlaygroundError(Strings().snippetValidationEmpty);
         }
 
         if (isNil(snippet.name)) {
-            throw new PlaygroundError(Strings.snippetValidationNoTitle);
+            throw new PlaygroundError(Strings().snippetValidationNoTitle);
         }
     }
 
     private _generateName(name: string, suffix: string = ''): string {
-        let newName = isNil(name.trim()) ? Strings.newSnippetTitle : name.trim();
+        let newName = isNil(name.trim()) ? Strings().newSnippetTitle : name.trim();
         let regex = new RegExp(`^${name}`);
         let collisions = storage.snippets.values().filter(item => regex.test(item.name.trim()));
         let maxSuffixNumber = reduce(collisions, (max, item: any) => {
@@ -369,7 +372,7 @@ export class SnippetEffects {
         }
 
         // On the web, there is no "Office.context.requirements". So skip it.
-        if (!Office || !Office.context || !Office.context.requirements) {
+        if (!isInsideOfficeApp()) {
             return;
         }
 
