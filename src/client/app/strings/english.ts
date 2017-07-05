@@ -42,7 +42,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetLoadDefaultsError: 'Failed to load the default samples',
 
         snippetNoOfficeTitle: /** NEEDS STRING REVIEW */ 'Cannot run this snippet',
-        snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Get your copy today at https://aka.ms/getscriptlab.',
+        snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Acquire Script Lab for free today at https://aka.ms/getscriptlab.',
 
         snippetUpdateError: /** NEEDS STRING REVIEW */ 'Failed to update the snippet',
 

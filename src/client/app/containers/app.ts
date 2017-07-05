@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment } from '../helpers';
+import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
 
@@ -73,11 +73,11 @@ export class AppComponent {
         return this.profile$
             .filter(profile => profile != null)
             .map(profile => {
-                    if (!isNil(this.snippet.gistOwnerId)) {
-                        return this.snippet.gistOwnerId === profile.login;
-                    }
-                    return false;
+                if (!isNil(this.snippet.gistOwnerId)) {
+                    return this.snippet.gistOwnerId === profile.login;
                 }
+                return false;
+            }
             );
     }
 
@@ -106,20 +106,24 @@ export class AppComponent {
         if (this.snippet == null) {
             return;
         }
-        if (Office && Office.context && Office.context.requirements) {
-            this._store.dispatch(new Snippet.RunAction(this.snippet));
-        } else {
-            this._store.dispatch(new UI.ShowAlertAction({
-                actions: [ this.strings.okButtonLabel ],
-                title: this.strings.snippetNoOfficeTitle,
-                message: this.strings.snippetNoOfficeMessage
-            }));
+
+        if (isOfficeHost(this.snippet.host)) {
+            if (!isInsideOfficeApp()) {
+                this._store.dispatch(new UI.ShowAlertAction({
+                    actions: [this.strings.okButtonLabel],
+                    title: this.strings.snippetNoOfficeTitle,
+                    message: this.strings.snippetNoOfficeMessage
+                }));
+                return;
+            }
         }
+
+        this._store.dispatch(new Snippet.RunAction(this.snippet));
     }
 
     runSideBySide() {
         this._store.dispatch(new UI.ShowAlertAction({
-            actions: [ this.strings.SideBySideInstructions.gotIt ],
+            actions: [this.strings.SideBySideInstructions.gotIt],
             title: this.strings.SideBySideInstructions.title,
             message: this.strings.SideBySideInstructions.message
         }));
@@ -187,19 +191,19 @@ export class AppComponent {
                 else if (isPublic) {
                     this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
                         .then((result: string) => {
-                                if (result !== this.strings.cancelButtonLabel) {
-                                    this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
-                                }
+                            if (result !== this.strings.cancelButtonLabel) {
+                                this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
                             }
+                        }
                         );
                 }
                 else {
                     this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
                         .then((result: string) => {
-                                if (result !== this.strings.cancelButtonLabel) {
-                                    this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
-                                }
+                            if (result !== this.strings.cancelButtonLabel) {
+                                this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
                             }
+                        }
                         );
                 }
 

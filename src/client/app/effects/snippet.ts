@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, environment, storage,
+import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
     SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -372,7 +372,7 @@ export class SnippetEffects {
         }
 
         // On the web, there is no "Office.context.requirements". So skip it.
-        if (!Office || !Office.context || !Office.context.requirements) {
+        if (!isInsideOfficeApp()) {
             return;
         }
 

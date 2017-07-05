@@ -29,6 +29,9 @@ const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
+
+// Note: a similar mapping exists in the client Utilities as well:
+// src/client/app/helpers/utilities.ts
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
 const otherValidHosts = ['WEB'];
 const officeHostToManifestTypeMap = {
