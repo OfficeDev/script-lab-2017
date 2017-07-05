@@ -44,7 +44,6 @@ let { config } = PLAYGROUND;
 })
 
 export class About implements AfterViewInit {
-
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 

@@ -32,12 +32,14 @@
     }
 
     &__tertiary-text {
-        margin-bottom: $default-spacing * 2;
+        margin-bottom: $default-spacing;
         color: $foreground-lighter;
         white-space: pre-line;
     }
 
     &__environment {
+        margin-top: $default-spacing;
+
         select::-ms-expand {
             display: none;
         }
