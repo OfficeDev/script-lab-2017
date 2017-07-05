@@ -59,8 +59,10 @@ const RedirectPlugin = function(options) {
     this.apply = function(compiler) {
         compiler.plugin('compilation', function(compilation) {
             compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
-                let htmlHead = htmlPluginData.html.match('<head>').index;
-                htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + '<head>' +
+                let htmlHead = htmlPluginData.html.match('<head>');
+                if (htmlHead) {
+                    htmlHead = htmlHead.index;
+                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + '<head>' +
                     `<script>
                         var getParameterByName = function(name) {
                             var url = window.location.search;
@@ -69,26 +71,38 @@ const RedirectPlugin = function(options) {
                             if (match && match.length > 1) {
                                 return match[1];
                             }
-                            return "";
+                            return null;
                         };
-                        var originUrl = decodeURIComponent(getParameterByName("originEnvironment"));
-                        var newUrl = window.localStorage.getItem("environmentConfig");
-                        if (newUrl && !window.location.href.match(newUrl) && originUrl !== newUrl) {
+                        var originUrl = getParameterByName("originEnvironment");
+                        var newUrl = getParameterByName("newEnvironment");
+                        if (newUrl) {
+                            newUrl = decodeURIComponent(newUrl);
+                            if (window.location.href.match(newUrl)) {
+                                window.localStorage.removeItem("environmentConfig");
+                            } else {
+                                window.localStorage.setItem("environmentConfig", newUrl);
+                            }
+                        }
+
+                        if (window.localStorage.getItem("environmentConfig")) {
                             var originParam = "" + 
                             (window.location.search ? "&" : "?") + 
                             "originEnvironment=" + 
                             encodeURIComponent(window.location.origin);
 
-                            window.location.href = newUrl +
+                            window.location.href = window.localStorage.getItem("environmentConfig") +
                             window.location.pathname +
                             window.location.search + 
                             originParam + 
                             window.location.hash;
-                        } else {
-                            window.localStorage.removeItem("environmentConfig");
+                        }
+
+                        if (originUrl && !window.localStorage.getItem("originEnvironment")) {
+                            window.localStorage.setItem("originEnvironment", decodeURIComponent(originUrl));
                         }
                     </script>` + 
                     htmlPluginData.html.slice(htmlHead + '<head>'.length);
+                }
                 callback(null, htmlPluginData);
             });
         });

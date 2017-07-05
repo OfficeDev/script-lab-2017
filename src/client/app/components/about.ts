@@ -20,7 +20,7 @@ let { config } = PLAYGROUND;
                     <div class="about__environment">
                         <span class="ms-font-m about__environment-text">{{config?.editorUrl}}</span>
                         <br/><label class="ms-font-m about__environment-text">${Strings.aboutSwitchEnvironment}</label>
-                        <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig" (change)="changeConfig($event.target.value)">
+                        <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig" (ngModelChange)="changeConfig($event)">
                             <option *ngFor="let c of configs" [value]="c.name">{{c.value}}</option>
                         </select>
                     </div>
@@ -67,7 +67,10 @@ export class About implements AfterViewInit {
             { name: 'insiders', value: 'Beta' },
             { name: 'edge', value: 'Alpha' },
         );
-        if (environment.current.config.name === config['local'].name) {
+
+        // user can only navigate to localhost if they've sideloaded local manifest
+        if (environment.current.config.name === config['local'].name ||
+            environment.current.config.editorUrl === window.localStorage.getItem('originEnvironment')) {
             this.configs.push({ name: 'local', value: config['local'].editorUrl });
         }
 
@@ -90,9 +93,14 @@ export class About implements AfterViewInit {
                 return;
             }
 
-            let newUrl = config[newConfig].editorUrl;
-            window.localStorage.setItem('environmentConfig', newUrl);
-            window.location.href = newUrl + '?originEnvironment=' + encodeURIComponent(window.location.origin);
+            let originEnvironment = window.localStorage.getItem('originEnvironment');
+            let newEnvironment = config[newConfig].editorUrl;
+            if (originEnvironment) {
+                window.location.href = originEnvironment + '?newEnvironment=' + encodeURIComponent(newEnvironment);
+            } else {
+                window.localStorage.setItem('environmentConfig', newEnvironment);
+                window.location.href = newEnvironment + '?originEnvironment=' + encodeURIComponent(environment.current.config.editorUrl);
+            }
         }
     }
 }

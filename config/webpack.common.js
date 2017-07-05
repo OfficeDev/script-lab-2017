@@ -98,10 +98,6 @@ module.exports = (prodMode) =>
                     ignore: ['*.ts']
                 },
                 {
-                    from: './views/tutorial.html',
-                    to: 'tutorial.html',
-                },
-                {
                     from: './views/external-page.html',
                     to: 'external-page.html',
                 },
