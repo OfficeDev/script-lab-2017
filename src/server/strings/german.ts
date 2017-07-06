@@ -1,5 +1,12 @@
 import { ServerStrings } from './index';
 
+// Whenever there is no localized translation, use the English version.
+// Whenever these two lines are not commented out, it means that there are
+// still strings that need to be localized.
+// Just search for "englishSubstitutesForNotYetTranslated" in this file
+// import { getEnglishStrings } from './english';
+// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+
 export function getGermanStrings(): ServerStrings {
     return {
         error: 'Fehler',
