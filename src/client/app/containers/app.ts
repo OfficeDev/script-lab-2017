@@ -6,7 +6,6 @@ import { UIEffects } from '../effects/ui';
 import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
-import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 
 @Component({
     selector: 'app',
@@ -80,10 +79,6 @@ export class AppComponent {
                 return false;
             }
             );
-    }
-
-    get isDownloadZipSupported() {
-        return Utilities.platform !== PlatformType.MAC;
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
