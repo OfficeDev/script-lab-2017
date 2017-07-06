@@ -80,6 +80,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetCopiedFailed: 'Failed to copy the snippet to your clipboard',
 
         snippetExportFailed: 'Failed to export the snippet',
+        snippetExportNotSupported: 'Snippet export is not yet supported on this version of Office. Supported platforms include Windows and Office Online.',
 
         // Components strings
         // about.ts

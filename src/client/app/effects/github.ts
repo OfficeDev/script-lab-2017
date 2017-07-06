@@ -9,9 +9,10 @@ import { Effect, Actions } from '@ngrx/effects';
 import { Http, ResponseContentType } from '@angular/http';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
-import { find } from 'lodash';
+import { find, isNil } from 'lodash';
 import * as moment from 'moment';
 import * as fromRoot from '../reducers';
+import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 
 const FileSaver = require('file-saver');
 
@@ -166,6 +167,12 @@ export class GitHubEffects {
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((snippet: ISnippet) => {
+            if (Utilities.platform === PlatformType.MAC || Utilities.platform === PlatformType.IOS) {
+                AI.trackEvent('Unsupported share export', { id: snippet.id });
+                this._store.dispatch(this._createShowErrorAction(Strings().snippetExportNotSupported, null));
+                return;
+            }
+
             AI.trackEvent('Share export initiated', { id: snippet.id });
 
             const additionalFields = this._getAdditionalShareableSnippetFields();
@@ -224,7 +231,9 @@ export class GitHubEffects {
     }
 
     _createShowErrorAction(message: string, exception) {
-        console.log(exception);
+        if (!isNil(exception)) {
+            console.log(exception);
+        }
 
         return new UI.ShowAlertAction({
             title: 'Error',

@@ -158,6 +158,7 @@ export interface ClientStrings {
     snippetCopiedFailed: string;
 
     snippetExportFailed: string;
+    snippetExportNotSupported: string;
 
     // Components strings
     // about.ts
