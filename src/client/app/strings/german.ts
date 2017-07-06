@@ -18,7 +18,7 @@ export function getGermanStrings(): ClientStrings {
         about: 'Info',
         feedback: 'Feedback',
         errors: 'Fehler',
-        dismiss: 'Abbrechen',
+        dismiss: 'Schließen',
 
         okButtonLabel: 'OK',
         logoutButtonLabel: 'Abmelden',
@@ -42,7 +42,7 @@ export function getGermanStrings(): ClientStrings {
         snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
 
         snippetNoOfficeTitle: 'Dieses Schnipsel kann nicht ausgeführt werden.',
-        snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab: https://aka.ms/getscriptlab.',
+        snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab, welches Sie unter https://aka.ms/getscriptlab abrufen können.',
 
         snippetUpdateError: 'Das Schnipsel konnte nicht aktualisiert werden.',
 
@@ -117,7 +117,7 @@ export function getGermanStrings(): ClientStrings {
 
         tabDisplayNames: {
             'script': 'Script',
-            'template': 'Vorlage',
+            'template': 'HTML',
             'style': 'CSS',
             'libraries': 'Bibliotheken'
         },
@@ -143,17 +143,17 @@ export function getGermanStrings(): ClientStrings {
         localSnippetsLabel: 'Meine Schnipsel auf diesem Computer',
         noLocalSnippets: `Sie haben auf diesem Computer noch keine Schnipsel gespeichert. Erstellen Sie ein neues Schnipsel oder importieren Sie eines, um zu starten.`,
         sharedGistsLabel: 'Meine in GitHub-Gists gespeicherten Schnipsel',
-        sharedGistsSignIn: 'Melden Sie sich bei GitHub an, um eines Ihrer in dortigen Gists abgelegten Schnipsel abzurufen.',
+        sharedGistsSignIn: 'Melden Sie sich bei GitHub an, um eines Ihrer dort abgelegten Schnipsel abzurufen.',
         samplesDescription: 'Wählen Sie eines der nachfolgenden Beispiele aus, um zu starten.',
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
-        importWarning: `Importierte Code-Schnipsel können schädlichen Code enthalten. Führen Sie nur Code-Schnipsel aus, deren Quelle Sie vertrauen.`,
+        importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
         importWarningAction: `Diese Meldung nicht mehr anzeigen.`,
 
         localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser Cache löschen. ` +
         `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
         localStorageWarningAction: `Diese Meldung nicht mehr anzeigen.`,
 
-        importInstructions: `Geben Sie die URL zum Schnipsel an oder fügen Sie den YAML-Code in das entsprechende Feld ein und klicken Sie anschließend auf`,
+        importInstructions: `Geben Sie die URL zum Schnipsel an oder fügen Sie den YAML-Code in das entsprechende Feld ein. Klicken Sie anschließend auf`,
         importUrlLabel: `URL oder GitHub-Gist-ID zum Code-Schnipsel`,
         importUrlPlaceholder: `z.B. https://gist.github.com/Schnipsel-ID`,
         importYamlLabel: `YAML-Code des Schnipsels`,
@@ -196,7 +196,7 @@ export function getGermanStrings(): ClientStrings {
             message: [
                 'Wählen Sie im Menüband den Befehl "Ausführen", um das Schnipsel in einem eigenen Fenster auszuführen.',
                 '',
-                'Diese Art der Ausführung bewirkt eine schnellere Aktualisierung Ihres Schnipsels und bietet Ihnen zudem die Möglichkeit, Ihre aktuelle Position im Quelltext sowie die Historie Ihrer Änderungen beizubehalten.'
+                'Diese Art der Ausführung bewirkt eine schnellere Aktualisierung Ihres Schnipsels und bietet Ihnen zudem die Möglichkeit, Ihre aktuelle Position im Quelltext sowie den Bearbeitungsverlauf beizubehalten.'
             ].join('\n'),
 
             gotIt: 'Verstanden'
