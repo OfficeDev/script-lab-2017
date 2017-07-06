@@ -1,6 +1,17 @@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
 
+// Note: a similar mapping exists in server.ts as well
+const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
+export function isOfficeHost(host: string) {
+    return officeHosts.indexOf(host) >= 0;
+}
+
+export function isInsideOfficeApp() {
+    const Office = (window as any).Office;
+    return Office && Office.context && Office.context.requirements;
+}
+
 let typeCache = new Dictionary<boolean>();
 
 /**
