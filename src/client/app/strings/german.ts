@@ -94,6 +94,9 @@ export function getGermanStrings(): ClientStrings {
         aboutStorage: 'Speicher:',
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
+        aboutCurrentEnvironment: englishSubstitutesForNotYetTranslated.aboutCurrentEnvironment,
+        aboutSwitchEnvironment: englishSubstitutesForNotYetTranslated.aboutSwitchEnvironment,
+        changeEnvironmentConfirm: englishSubstitutesForNotYetTranslated.changeEnvironmentConfirm,
 
         //snippet.info.ts
         snippetInfoDialogTitle: englishSubstitutesForNotYetTranslated.snippetInfoDialogTitle,

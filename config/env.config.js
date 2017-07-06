@@ -116,7 +116,7 @@ const RedirectPlugin = function(options) {
                             window.localStorage.setItem("${PLAYGROUND_ORIGIN}", decodeURIComponent(originUrl).toLowerCase());
                         }
 
-                        // Environment is already configured
+                        // If reached here, environment is already configured
                     })();
                     </script>
                     ` + 
