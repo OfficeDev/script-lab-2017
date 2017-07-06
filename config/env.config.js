@@ -63,10 +63,11 @@ const RedirectPlugin = function(options) {
     this.apply = function(compiler) {
         compiler.plugin('compilation', function(compilation) {
             compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
-                let htmlHead = htmlPluginData.html.match('<head>');
+                let headOpeningTag = '<head>'; 
+                let htmlHead = htmlPluginData.html.match(headOpeningTag);
                 if (htmlHead) {
                     htmlHead = htmlHead.index;
-                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + '<head>' +
+                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + headOpeningTag +
                     `
                     <script>
                     (function() {
@@ -95,7 +96,8 @@ const RedirectPlugin = function(options) {
                         }
 
                         // Redirect origin environment to target
-                        if (window.localStorage.getItem("${PLAYGROUND_REDIRECT}")) {
+                        var redirectUrl = window.localStorage.getItem("${PLAYGROUND_REDIRECT}");
+                        if (redirectUrl) {
                             var originParam = [
                                 (window.location.search ? "&" : "?"), 
                                 "originEnvironment=",
@@ -103,7 +105,7 @@ const RedirectPlugin = function(options) {
                             ].join("");
 
                             window.location.href = [
-                                window.localStorage.getItem("${PLAYGROUND_REDIRECT}"),
+                                redirectUrl,
                                 window.location.pathname,
                                 window.location.search,
                                 originParam,
@@ -120,7 +122,7 @@ const RedirectPlugin = function(options) {
                     })();
                     </script>
                     ` + 
-                    htmlPluginData.html.slice(htmlHead + '<head>'.length);
+                    htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
                 }
                 callback(null, htmlPluginData);
             });
