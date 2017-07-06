@@ -14,7 +14,7 @@ import * as moment from 'moment';
 import * as fromRoot from '../reducers';
 
 const FileSaver = require('file-saver');
-const UNKNOWN_GIST_OWNER_ID = '<unknown'; // GitHub IDs can only have alphanumeric characters
+const UNKNOWN_GIST_OWNER_ID = '<unknown>'; // Intentional use of brackets tnat are not allowed in a GitHub ID (can only have alphanumeric characters)
 
 @Injectable()
 export class GitHubEffects {
@@ -92,7 +92,7 @@ export class GitHubEffects {
             GitHub.GitHubActionTypes.UPDATE_GIST
         )
         .mergeMap(({ payload, type }) => {
-            let { id, name, description, gist } = payload;
+            let { id, name, description, gist, gistOwnerId } = payload;
             let files: IGistFiles = {};
             let gistId = null;
 
@@ -110,14 +110,14 @@ export class GitHubEffects {
             }
 
             return this._github.createOrUpdateGist(
-                    description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
+                description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
             .map((gist: IGist) => ({ gist: gist, snippetId: id }))
             .catch(exception => {
-                if (exception.status === 404) {
-                    throw { id: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID};
+                if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
+                    throw new Error(JSON.stringify({ id: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
-                throw null;
+                throw exception;
             });
         })
         .mergeMap(async ({ gist, snippetId }) => {
@@ -141,10 +141,14 @@ export class GitHubEffects {
                 new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
         )
         .catch(exception => {
-            let { gistOwnerId, id } = exception;
-            let action = (gistOwnerId && id)
-            ? new Snippet.UpdateInfoAction({id: id, gistOwnerId: gistOwnerId})
-            : new GitHub.ShareFailedAction(exception);
+            if (exception instanceof Error) {
+                exception = JSON.parse(exception.message);
+            }
+            let { id, gistOwnerId } = exception;
+            let action =
+                (gistOwnerId && id) ?
+                    new Snippet.UpdateInfoAction({id: id, gistOwnerId: gistOwnerId}) :
+                    new GitHub.ShareFailedAction(exception);
 
             this._uiEffects.alert(
                 Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,

@@ -73,10 +73,12 @@ export class AppComponent {
         return this.profile$
             .filter(profile => profile != null)
             .map(profile => {
-                if (!isNil(this.snippet.gist)) {
-                    return !isNil(this.snippet.gistOwnerId) ? this.snippet.gistOwnerId === profile.login : true;
+                if (isNil(this.snippet.gist)) {
+                    return false;
                 }
-                return false;
+
+                // Assume that user owns gist, for back-compat
+                return isNil(this.snippet.gistOwnerId) ? true : this.snippet.gistOwnerId === profile.login;
             });
     }
 
