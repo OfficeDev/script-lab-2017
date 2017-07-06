@@ -170,6 +170,7 @@ export interface ClientStrings {
     aboutIntellisense: string;
 
     //snippet.info.ts
+    snippetInfoDialogTitle: string;
     nameLabel: string;
     descriptionLabel: string;
     namePlaceholder: string;

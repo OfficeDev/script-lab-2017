@@ -1,5 +1,12 @@
 import { ClientStrings } from './index';
 
+// Whenever there is no localized translation, use the English version.
+// Whenever these two lines are not commented out, it means that there are
+// still strings that need to be localized.
+// Just search for "englishSubstitutesForNotYetTranslated" in this file
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+
 export function getGermanStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
 
@@ -89,6 +96,7 @@ export function getGermanStrings(): ClientStrings {
         aboutIntellisense: 'IntelliSense',
 
         //snippet.info.ts
+        snippetInfoDialogTitle: englishSubstitutesForNotYetTranslated.snippetInfoDialogTitle,
         nameLabel: 'Name',
         descriptionLabel: 'Beschreibung',
         namePlaceholder: 'Name des Schipsels',
