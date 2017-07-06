@@ -73,12 +73,11 @@ export class AppComponent {
         return this.profile$
             .filter(profile => profile != null)
             .map(profile => {
-                if (!isNil(this.snippet.gistOwnerId)) {
-                    return this.snippet.gistOwnerId === profile.login;
+                if (!isNil(this.snippet.gist)) {
+                    return !isNil(this.snippet.gistOwnerId) ? this.snippet.gistOwnerId === profile.login : true;
                 }
                 return false;
-            }
-            );
+            });
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

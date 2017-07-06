@@ -14,6 +14,7 @@ import * as moment from 'moment';
 import * as fromRoot from '../reducers';
 
 const FileSaver = require('file-saver');
+const UNKNOWN_GIST_OWNER_ID = '<unknown'; // GitHub IDs can only have alphanumeric characters
 
 @Injectable()
 export class GitHubEffects {
@@ -109,9 +110,15 @@ export class GitHubEffects {
             }
 
             return this._github.createOrUpdateGist(
-                description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
+                    description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
-            .map((gist: IGist) => ({ gist: gist, snippetId: id }));
+            .map((gist: IGist) => ({ gist: gist, snippetId: id }))
+            .catch(exception => {
+                if (exception.status === 404) {
+                    throw { id: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID};
+                }
+                throw null;
+            });
         })
         .mergeMap(async ({ gist, snippetId }) => {
             let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
@@ -134,12 +141,17 @@ export class GitHubEffects {
                 new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
         )
         .catch(exception => {
+            let { gistOwnerId, id } = exception;
+            let action = (gistOwnerId && id)
+            ? new Snippet.UpdateInfoAction({id: id, gistOwnerId: gistOwnerId})
+            : new GitHub.ShareFailedAction(exception);
+
             this._uiEffects.alert(
                 Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
                 Strings().gistShareFailedTitle,
                 Strings().okButtonLabel)
             .then(() => window.location.reload());
-            return Observable.of(new GitHub.ShareFailedAction(exception));
+            return Observable.of(action);
         });
 
     @Effect({ dispatch: false })
