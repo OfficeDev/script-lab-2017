@@ -13,13 +13,16 @@ const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 ////////////////////////////////////////////////////////////////////////////
 
 import { getEnglishStrings } from './english';
+import { getGermanStrings } from './german';
 
 let availableLanguages = [
-    { name: 'English', value: 'en' }
+    { name: 'English', value: 'en' },
+    { name: 'Deutsch', value: 'de' }
 ];
 
 const languageGenerator: { [key: string]: () => ClientStrings } = {
     'en': () => getEnglishStrings(),
+    'de': () => getGermanStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
@@ -170,6 +173,7 @@ export interface ClientStrings {
     changeEnvironmentConfirm: string;
 
     //snippet.info.ts
+    snippetInfoDialogTitle: string;
     nameLabel: string;
     descriptionLabel: string;
     namePlaceholder: string;
