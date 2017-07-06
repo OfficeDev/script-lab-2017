@@ -84,7 +84,7 @@ module.exports = (prodMode) =>
                 }
             }),
             new CheckerPlugin(),
-            new ExtractTextPlugin('[name].bundle.css'),
+            new ExtractTextPlugin('[name].[chunkhash].bundle.css'),
             new webpack.optimize.CommonsChunkPlugin({
                 name: ['vendor', 'polyfills'],
                 minChunks: Infinity
