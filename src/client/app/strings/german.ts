@@ -225,8 +225,8 @@ export function getGermanStrings(): ClientStrings {
             lastUpdated: 'Letztes Update',
             clickToRefresh: 'Zum Aktualisieren hier klicken',
 
-            tutorialDescription: 'Diese Excel-Datei beinhaltet eine Anleitung, um Script Lab in wenigen Schritten kennenzulernen:',
-            download: 'Herunterladen',
+            tutorialDescription: 'Folgende Excel-Datei beinhaltet eine Anleitung, um Script Lab in',
+            download: 'wenigen Schritten kennenzulernen:',
             errorInitializingScriptLab: 'Es ist ein Fehler bei der Initialisierung von Script Lab aufgetreten.'
         }
     };
