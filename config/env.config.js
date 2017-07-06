@@ -55,6 +55,10 @@ const config = {
     }
 };
 
+const PLAYGROUND_ORIGIN = "playground_origin_environment_url";
+
+const PLAYGROUND_REDIRECT = "playground_redirect_environment_url";
+
 const RedirectPlugin = function(options) { 
     this.apply = function(compiler) {
         compiler.plugin('compilation', function(compilation) {
@@ -63,8 +67,10 @@ const RedirectPlugin = function(options) {
                 if (htmlHead) {
                     htmlHead = htmlHead.index;
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + '<head>' +
-                    `<script>
-                        var getParameterByName = function(name) {
+                    `
+                    <script>
+                    (function() {
+                        function getParameterByName(name) {
                             var url = window.location.search;
                             var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
                             var match = queryExp.exec(url);
@@ -73,34 +79,47 @@ const RedirectPlugin = function(options) {
                             }
                             return null;
                         };
-                        var originUrl = getParameterByName("originEnvironment");
-                        var newUrl = getParameterByName("newEnvironment");
-                        if (newUrl) {
-                            newUrl = decodeURIComponent(newUrl);
-                            if (window.location.href.match(newUrl)) {
-                                window.localStorage.removeItem("environmentConfig");
-                            } else {
-                                window.localStorage.setItem("environmentConfig", newUrl);
+                        var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
+                        var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
+
+                        // Set target environment for origin environment to redirect to
+                        if (targetUrl.length > 0) {
+                            targetUrl = decodeURIComponent(targetUrl)
+                            // Clear origin environment's local storage if target = origin
+                            if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
+                                window.localStorage.removeItem("${PLAYGROUND_REDIRECT}");
+                                return;
                             }
+
+                            window.localStorage.setItem("${PLAYGROUND_REDIRECT}", targetUrl);
                         }
 
-                        if (window.localStorage.getItem("environmentConfig")) {
-                            var originParam = "" + 
-                            (window.location.search ? "&" : "?") + 
-                            "originEnvironment=" + 
-                            encodeURIComponent(window.location.origin);
+                        // Redirect origin environment to target
+                        if (window.localStorage.getItem("${PLAYGROUND_REDIRECT}")) {
+                            var originParam = [
+                                (window.location.search ? "&" : "?"), 
+                                "originEnvironment=",
+                                encodeURIComponent(window.location.origin)
+                            ].join("");
 
-                            window.location.href = window.localStorage.getItem("environmentConfig") +
-                            window.location.pathname +
-                            window.location.search + 
-                            originParam + 
-                            window.location.hash;
+                            window.location.href = [
+                                window.localStorage.getItem("${PLAYGROUND_REDIRECT}"),
+                                window.location.pathname,
+                                window.location.search,
+                                originParam,
+                                window.location.hash
+                            ].join("");
                         }
 
-                        if (originUrl && !window.localStorage.getItem("originEnvironment")) {
-                            window.localStorage.setItem("originEnvironment", decodeURIComponent(originUrl));
+                        // Point app environment back to origin if user is not in origin
+                        if (originUrl.length > 0) {
+                            window.localStorage.setItem("${PLAYGROUND_ORIGIN}", decodeURIComponent(originUrl).toLowerCase());
                         }
-                    </script>` + 
+
+                        // Environment is already configured
+                    })();
+                    </script>
+                    ` + 
                     htmlPluginData.html.slice(htmlHead + '<head>'.length);
                 }
                 callback(null, htmlPluginData);
@@ -111,4 +130,6 @@ const RedirectPlugin = function(options) {
 
 exports.build = build;
 exports.config = config;
+exports.PLAYGROUND_ORIGIN = PLAYGROUND_ORIGIN;
+exports.PLAYGROUND_REDIRECT = PLAYGROUND_REDIRECT;
 exports.RedirectPlugin = RedirectPlugin;

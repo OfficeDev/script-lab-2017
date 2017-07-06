@@ -2,6 +2,7 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterV
 import { environment, storageSize, storage } from '../helpers';
 import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
+const { PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = require('../../../../config/env.config');
 let { config } = PLAYGROUND;
 
 @Component({
@@ -24,10 +25,9 @@ let { config } = PLAYGROUND;
                         </select>
                     </div>
                     <div class="about__environment">
-                        <span class="ms-font-m about__environment-text">{{config?.editorUrl}}</span>
-                        <br/><label class="ms-font-m about__environment-text">${Strings().aboutSwitchEnvironment}</label>
+                        <label class="ms-font-m about__environment-text">{{strings.aboutCurrentEnvironment}}</label>
                         <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig" (ngModelChange)="changeConfig($event)">
-                            <option *ngFor="let c of configs" [value]="c.name">{{c.value}}</option>
+                            <option *ngFor="let c of configs" [value]="c.value">{{c.name}}</option>
                         </select>
                     </div>
                 </div>
@@ -47,15 +47,14 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
-    cache = `
-    ${Strings().aboutStorage}
-    ${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings().aboutSnippets)}
-    ${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}
-    `;
+    cache = [
+        `${Strings().aboutStorage}`,
+        `${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings().aboutSnippets)}`,
+        `${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}`,
+    ].join('\n');
 
     config = {
         build: environment.current.build,
-        editorUrl: environment.current.config.editorUrl,
     };
 
     strings = Strings();
@@ -77,57 +76,62 @@ export class About implements AfterViewInit {
         this.currentChosenLanguage = getDisplayLanguage();
         this.originalLanguage = this.currentChosenLanguage;
         this.configs.push(
-            { name: 'production', value: 'Production' },
-            { name: 'insiders', value: 'Beta' },
-            { name: 'edge', value: 'Alpha' },
+            { name: 'Production', value: 'production' },
+            { name: 'Beta', value: 'insiders' },
+            { name: 'Alpha', value: 'edge' },
         );
 
-        // user can only navigate to localhost if they've sideloaded local manifest
-        if (environment.current.config.name === config['local'].name ||
-            environment.current.config.editorUrl === window.localStorage.getItem('originEnvironment')) {
-            this.configs.push({ name: 'local', value: config['local'].editorUrl });
+        // User can only navigate to localhost if they've sideloaded local manifest
+        let showLocalConfig = environment.current.config.name === config['local'].name || (window.localStorage.getItem(PLAYGROUND_ORIGIN) && window.localStorage.getItem(PLAYGROUND_ORIGIN).indexOf('localhost') !== -1);
+        if (showLocalConfig) {
+            this.configs.push({ name: config['local'].editorUrl, value: 'local' });
         }
 
-        this.selectedConfig = this.configs.find(c => c.name.toUpperCase() === environment.current.config.name).name;
+        this.selectedConfig = this.configs.find(c => c.value.toUpperCase() === environment.current.config.name).value;
     }
 
-    okClicked() {
+    async okClicked() {
         if (this.currentChosenLanguage !== this.originalLanguage) {
             setDisplayLanguage(this.currentChosenLanguage);
             window.location.reload();
         }
 
         this.showChange.emit(false);
+
+        let currentConfigName = environment.current.config.name.toLowerCase();
+        if (this.selectedConfig === currentConfigName) {
+            return;
+        }
+
+        let result = await this._effects.alert(
+            this.strings.changeEnvironmentConfirm,
+            `${this.strings.aboutSwitchEnvironment} ${this.configs.find(c => c.value === currentConfigName).name } to ${this.configs.find(c => c.value === this.selectedConfig).name }`,
+            this.strings.okButtonLabel,
+            this.strings.cancelButtonLabel
+        );
+        if (result === this.strings.cancelButtonLabel) {
+            this.selectedConfig = this.configs.find(c => c.value === currentConfigName).value;
+            this._changeDetector.detectChanges();
+            return;
+        }
+
+        let originEnvironment = window.localStorage.getItem(PLAYGROUND_ORIGIN);
+        let targetEnvironment = config[this.selectedConfig].editorUrl;
+
+        // Add query string parameters to default editor URL
+        if (originEnvironment) {
+            window.location.href = originEnvironment + '?targetEnvironment=' + encodeURIComponent(targetEnvironment);
+        } else {
+            window.localStorage.setItem(PLAYGROUND_REDIRECT, targetEnvironment);
+            window.location.href = targetEnvironment + '?originEnvironment=' + encodeURIComponent(environment.current.config.editorUrl);
+        }
     }
 
     setLanguage(languageCode: string) {
         this.currentChosenLanguage = languageCode;
     }
 
-    async changeConfig(newConfig: string) {
-        if (config[newConfig] && config[newConfig].name !== environment.current.config.name) {
-            let currentConfigName = environment.current.config.name.toLowerCase();
-            let result = await this._effects.alert(
-                this.strings.changeEnvironmentConfirm,
-                `${this.strings.aboutSwitchEnvironment} ${this.configs.find(c => c.name === currentConfigName).value } to ${this.configs.find(c => c.name === this.selectedConfig).value }`,
-                this.strings.okButtonLabel,
-                this.strings.cancelButtonLabel
-            );
-
-            if (result === this.strings.cancelButtonLabel) {
-                this.selectedConfig = this.configs.find(c => c.name === currentConfigName).name;
-                this._changeDetector.detectChanges();
-                return;
-            }
-
-            let originEnvironment = window.localStorage.getItem('originEnvironment');
-            let newEnvironment = config[newConfig].editorUrl;
-            if (originEnvironment) {
-                window.location.href = originEnvironment + '?newEnvironment=' + encodeURIComponent(newEnvironment);
-            } else {
-                window.localStorage.setItem('environmentConfig', newEnvironment);
-                window.location.href = newEnvironment + '?originEnvironment=' + encodeURIComponent(environment.current.config.editorUrl);
-            }
-        }
+    changeConfig(newConfig: string) {
+        this.selectedConfig = newConfig;
     }
 }
