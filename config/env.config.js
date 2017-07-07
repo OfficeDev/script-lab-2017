@@ -1,6 +1,8 @@
 const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
+const PLAYGROUND_ORIGIN = "playground_origin_environment_url";
+const PLAYGROUND_REDIRECT = "playground_redirect_environment_url";
 
 const build = (() => {
     return {
@@ -54,10 +56,6 @@ const config = {
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
     }
 };
-
-const PLAYGROUND_ORIGIN = "playground_origin_environment_url";
-
-const PLAYGROUND_REDIRECT = "playground_redirect_environment_url";
 
 const RedirectPlugin = function(options) { 
     this.apply = function(compiler) {
@@ -132,6 +130,4 @@ const RedirectPlugin = function(options) {
 
 exports.build = build;
 exports.config = config;
-exports.PLAYGROUND_ORIGIN = PLAYGROUND_ORIGIN;
-exports.PLAYGROUND_REDIRECT = PLAYGROUND_REDIRECT;
 exports.RedirectPlugin = RedirectPlugin;

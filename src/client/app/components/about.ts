@@ -2,7 +2,8 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterV
 import { environment, storageSize, storage } from '../helpers';
 import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
-const { PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = require('../../../../config/env.config');
+const PLAYGROUND_ORIGIN = 'playground_origin_environment_url';
+const PLAYGROUND_REDIRECT = 'playground_redirect_environment_url';
 let { config } = PLAYGROUND;
 
 @Component({
@@ -20,13 +21,13 @@ let { config } = PLAYGROUND;
                     </div>
                     <pre class="about__tertiary-text ms-font-m">{{cache}}</pre>
                     <div class="about__language">
-                        <select class="about__language-select ms-font-m" [(ngModel)]="currentChosenLanguage" (change)="setLanguage($event.target.value)">
+                        <select class="about__language-select ms-font-m" [(ngModel)]="currentChosenLanguage">
                             <option *ngFor="let l of availableLanguages" [value]="l.value">{{l.name}}</option>
                         </select>
                     </div>
                     <div class="about__environment">
                         <label class="ms-font-m about__environment-text">{{strings.aboutCurrentEnvironment}}</label>
-                        <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig" (ngModelChange)="changeConfig($event)">
+                        <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig">
                             <option *ngFor="let c of configs" [value]="c.value">{{c.name}}</option>
                         </select>
                     </div>
@@ -63,7 +64,11 @@ export class About implements AfterViewInit {
     currentChosenLanguage = '';
     originalLanguage = '';
 
-    configs = [];
+    configs = [
+        { name: 'Production', value: 'production' },
+        { name: 'Beta', value: 'insiders' },
+        { name: 'Alpha', value: 'edge' },
+    ];
     selectedConfig = '';
 
     constructor(
@@ -75,14 +80,9 @@ export class About implements AfterViewInit {
         this.availableLanguages = getAvailableLanguages();
         this.currentChosenLanguage = getDisplayLanguage();
         this.originalLanguage = this.currentChosenLanguage;
-        this.configs.push(
-            { name: 'Production', value: 'production' },
-            { name: 'Beta', value: 'insiders' },
-            { name: 'Alpha', value: 'edge' },
-        );
 
         // User can only navigate to localhost if they've sideloaded local manifest
-        let showLocalConfig = environment.current.config.name === config['local'].name || (window.localStorage.getItem(PLAYGROUND_ORIGIN) && window.localStorage.getItem(PLAYGROUND_ORIGIN).indexOf('localhost') !== -1);
+        let showLocalConfig = (environment.current.config.name === config['local'].name || /localhost/.test(window.localStorage.getItem(PLAYGROUND_ORIGIN)));
         if (showLocalConfig) {
             this.configs.push({ name: config['local'].editorUrl, value: 'local' });
         }
@@ -103,13 +103,13 @@ export class About implements AfterViewInit {
             return;
         }
 
-        let result = await this._effects.alert(
+        let changeEnvironmentResult = await this._effects.alert(
             this.strings.changeEnvironmentConfirm,
             `${this.strings.aboutSwitchEnvironment} ${this.configs.find(c => c.value === currentConfigName).name } to ${this.configs.find(c => c.value === this.selectedConfig).name }`,
             this.strings.okButtonLabel,
             this.strings.cancelButtonLabel
         );
-        if (result === this.strings.cancelButtonLabel) {
+        if (changeEnvironmentResult === this.strings.cancelButtonLabel) {
             this.selectedConfig = this.configs.find(c => c.value === currentConfigName).value;
             this._changeDetector.detectChanges();
             return;
@@ -125,13 +125,5 @@ export class About implements AfterViewInit {
             window.localStorage.setItem(PLAYGROUND_REDIRECT, targetEnvironment);
             window.location.href = targetEnvironment + '?originEnvironment=' + encodeURIComponent(environment.current.config.editorUrl);
         }
-    }
-
-    setLanguage(languageCode: string) {
-        this.currentChosenLanguage = languageCode;
-    }
-
-    changeConfig(newConfig: string) {
-        this.selectedConfig = newConfig;
     }
 }
