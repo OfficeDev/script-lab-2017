@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { AI, getShareableYaml, environment } from '../helpers';
+import { PlaygroundError, AI, getShareableYaml, environment } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
@@ -14,7 +14,7 @@ import * as moment from 'moment';
 import * as fromRoot from '../reducers';
 
 const FileSaver = require('file-saver');
-const UNKNOWN_GIST_OWNER_ID = '<unknown>'; // Intentional use of brackets tnat are not allowed in a GitHub ID (can only have alphanumeric characters)
+const UNKNOWN_GIST_OWNER_ID = '<unknown>'; // Intentional use of brackets that are not allowed in a GitHub ID (can only have alphanumeric characters)
 
 @Injectable()
 export class GitHubEffects {
@@ -115,7 +115,7 @@ export class GitHubEffects {
             .map((gist: IGist) => ({ gist: gist, snippetId: id }))
             .catch(exception => {
                 if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
-                    throw new Error(JSON.stringify({ id: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
+                    throw new PlaygroundError(JSON.stringify({ snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
                 throw exception;
             });
@@ -141,14 +141,13 @@ export class GitHubEffects {
                 new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
         )
         .catch(exception => {
-            if (exception instanceof Error) {
-                exception = JSON.parse(exception.message);
+            let action = null;
+            if (exception instanceof PlaygroundError) {
+                let { snippetId, gistOwnerId } = JSON.parse(exception.message);
+                action = new Snippet.UpdateInfoAction({id: snippetId, gistOwnerId: gistOwnerId});
+            } else {
+                action = new GitHub.ShareFailedAction(exception);
             }
-            let { id, gistOwnerId } = exception;
-            let action =
-                (gistOwnerId && id) ?
-                    new Snippet.UpdateInfoAction({id: id, gistOwnerId: gistOwnerId}) :
-                    new GitHub.ShareFailedAction(exception);
 
             this._uiEffects.alert(
                 Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
