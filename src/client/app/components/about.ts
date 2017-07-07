@@ -28,7 +28,7 @@ let { config } = PLAYGROUND;
                     <div class="about__environment">
                         <label class="ms-font-m about__environment-text">{{strings.aboutCurrentEnvironment}}</label>
                         <select class="about__environment-select ms-font-m" [(ngModel)]="selectedConfig">
-                            <option *ngFor="let c of configs" [value]="c.value">{{c.name}}</option>
+                            <option *ngFor="let conf of configs" [value]="conf.value">{{conf.name}}</option>
                         </select>
                     </div>
                 </div>
