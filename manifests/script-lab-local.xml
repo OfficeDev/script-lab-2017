@@ -9,7 +9,9 @@
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="[DEV] Script Lab" />
-  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." />
+  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
+    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Office-Add-In Code-Schnipsel erstellen, ausführen und teilen."/>
+  </Description>
   <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
   <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
