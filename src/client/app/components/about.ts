@@ -120,10 +120,10 @@ export class About implements AfterViewInit {
 
         // Add query string parameters to default editor URL
         if (originEnvironment) {
-            window.location.href = originEnvironment + '?targetEnvironment=' + encodeURIComponent(targetEnvironment);
+            window.location.href = `${originEnvironment}?targetEnvironment=${encodeURIComponent(targetEnvironment)}`;
         } else {
             window.localStorage.setItem(PLAYGROUND_REDIRECT, targetEnvironment);
-            window.location.href = targetEnvironment + '?originEnvironment=' + encodeURIComponent(environment.current.config.editorUrl);
+            window.location.href = `${targetEnvironment}?originEnvironment=${encodeURIComponent(environment.current.config.editorUrl)}`;
         }
     }
 }
