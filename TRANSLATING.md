@@ -13,7 +13,7 @@ This document describes how to create a new translation for Script Lab or improv
 <a id="prerequisites"></a>
 ## Prerequisites
 
-Fork this project into your GitHub account and use branches to update existing files or add new files. When you are ready, create a pull request. Please note that, if you are not employed by Microsoft and you have never contributed to a Microsoft Project, you will be asked to sign the Microsoft Contribution License Agreement before your pull request is accepted.
+Fork this project into your GitHub account and use branches to update existing files or add new files. When you are ready, send us a pull request. Please note, that if you are not employed by Microsoft and you have not already signed the Microsoft Contribution License Agreement, you will be asked to sign the agreement before your pull request is accepted.
 
 We recommend you to download and install Visual Studio Code from here <https://code.visualstudio.com/> and follow the instructions from here [CONTRIBUTING.md](CONTRIBUTING.md) how to run the playground from source and having a local copy of the project. 
 
@@ -22,7 +22,7 @@ We recommend you to download and install Visual Studio Code from here <https://c
 
 The Script Lab code is mainly composed of two parts: the server part and the client part. Each part has its own files to be modified and/or added for creating or improving a translation. Additionally, the project includes 4 manifest files which also include translatable strings.
 
-Basically, the structure is represented by the following table. For the server and client part, each translation is hold in separate files named as the correponding language. However, for each manifest file, then translations are included in different sections of the file.
+Basically, the structure is represented by the following table. For the server and client part, each translation is stored in separate files named to the corresponding language. For each manifest file, the translations are included in different sections of the file.
 
 | Part      | Folder                   | Filename                  | Description                                    |
 |:----------|:-------------------------|:--------------------------|:-----------------------------------------------|
@@ -42,7 +42,39 @@ Basically, the structure is represented by the following table. For the server a
 <a id="create"></a>
 ## Create a new translation
 
-### Server files
+When creating a new translation, some steps must be done, before you can start to translate. 
+
+The first step is to retrieve the official code for your language. You can refer to this list [Table of Language Culture Names](https://msdn.microsoft.com/de-de/library/ee825488(v=cs.20).aspx). You only need the first two letters of the mentionned codes. For example, for German the code is `de`, for French `fr` or for Spain `es`.
+
+### Server part
+
+Create a copy of the file `english.ts` from and to the folder `src/server/strings` and rename this copy to the language you are going to translate the strings. Please use the English name for your language. For example, if you are going to translate the strings into French, rename the file to `french.ts`. The filename must be in lower case letters.
+
+Open the new file and change the word `English` of the function name `getEnglishStrings()` to the name of your language, where the first letter must be upper case. If we keep the example of creating a french translation, the function name would now be `getFrenchStrings()`.
+
+Next step would be to tell the code, that a new language is available. For this open the file `index.ts` in the server part folder `src/server/strings`. You will have to add three lines to the code. If we keep our example for French again, the result will be similar to the code block shown below:
+
+```ts
+import { getEnglishStrings } from './english';
+import { getGermanStrings } from './german';
+import { getFrenchStrings } from './french';
+
+let availableLanguages = [
+    { name: 'English', value: 'en' },
+    { name: 'Deutsch', value: 'de' },
+    { name: 'Français', value: 'fr' }
+];
+
+const languageGenerator: { [key: string]: () => ClientStrings } = {
+    'en': () => getEnglishStrings(),
+    'de': () => getGermanStrings(),
+    'fr': () => getFrenchStrings(),
+    '??': () => createFakeStrings(() => getEnglishStrings())
+};
+```
+In the code above, the new line `import { getFrenchStrings } from './french';` has been added after the last line starting with `import`. The second new line `{ name: 'Français', value: 'fr' }` has been added after the last entry for the list of available languages. Please do not forget to add the comma at the end of previous line. Lastly, the new line `'fr': () => getFrenchStrings(),` has been added to the language generator. Also, do not forget the commas.
+
+That's all. Now you can start to translate your language file.
 
 ### Client files
 
@@ -51,14 +83,14 @@ Basically, the structure is represented by the following table. For the server a
 <a id="improve"></a>
 ## Improve an existing translation
 
-If you would like to improve an existing translation, e.g. correct a typing error or suggest a better wording, then just open the corresponding existing language files and do your changes. Please note, that if you would like to modify the manifest, you should do the change in all 4 files.
+If you would like to improve an existing translation, e.g. correct a typing error or suggest a better wording, then just open the corresponding existing language files and do your changes. Please note, that when modifying one of the manifest files, you should also do the change in the 3 other files.
 
 >Example: you discovered an error in the translation to *German* for the *client part*. Then open the file `german.ts` from the folder `src/client/app/strings` and do the change.
 
 <a id="testing"></a>
 ## Testing your translation
 
-
+You should test your translations locally before 
 <a id="translations"></a>
 ## Script Lab languages
 
