@@ -49,7 +49,7 @@ If you would like to improve an existing translation, e.g. correct a typing erro
 
 Script Lab is currently available or being translated into the following languages:
 
-| Language       | Code   | Status         | Production     | Notes              |
-|----------------|--------|----------------|----------------|--------------------|
-| English        | en     | Complete       | Yes            | Default language   |
-| German         | de     | Complete       | No             | -                  |
+| Language           | Code   | Status             | Production         | Notes              |
+|--------------------|--------|--------------------|--------------------|--------------------|
+| English            | en     | Complete           | Yes                | Default language   |
+| German             | de     | Complete           | No                 | -                  |
