@@ -1,3 +1,5 @@
+__WORK IN PROGRESS__
+
 # Translate Script Lab to other languages
 
 This document describes how to create a new translation for Script Lab or improve an existing translation.
@@ -97,19 +99,26 @@ const languageGenerator: { [key: string]: () => ClientStrings } = {
 };
 ```
 
-Like for the server part, the tow lines `import { getFrenchStrings } from './french';` and `'fr': () => getFrenchStrings(),` have been added to the code. Additionally add the new line  `{ name: 'Français', value: 'fr' }` after the last entry for the list of available languages. Please do not forget to add the comma at the end of previous line.
+Like for the server part, the two lines `import { getFrenchStrings } from './french';` and `'fr': () => getFrenchStrings(),` have been added to the code. Additionally add the new line  `{ name: 'Français', value: 'fr' }` after the last entry for the list of available languages. Please do not forget to add the comma at the end of previous line.
 
 ### Manifests
+
+The translations of strings within the manifest files are addressed by the XML-tag `override` and an indication of the country code. So, for translating just duplicate a line from another translation, set you country code and update the text.
+
+__MORE_LATER__
+
 
 <a id="improve"></a>
 ## Improve an existing translation
 
 If you would like to improve an existing translation, e.g. correct a typing error or suggest a better wording, then just open the corresponding existing language files and do your changes. Please note, that when modifying one of the manifest files, you should also do the change in the 3 other files.
 
->Example: you discovered an error in the translation to *German* for the *client part*. Then open the file `german.ts` from the folder `src/client/app/strings` and do the change.
+For example, if you discovered an error in the translation to *German* for the *client part*, then open the file `german.ts` from the folder `src/client/app/strings` and do the change.
 
 <a id="testing"></a>
 ## Testing your translation
+
+__MORE_LATER__
 
 You should test your translations locally before 
 <a id="translations"></a>
