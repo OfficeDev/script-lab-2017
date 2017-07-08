@@ -52,7 +52,31 @@ Create a copy of the file `english.ts` from and to the folder `src/server/string
 
 Open the new file and change the word `English` of the function name `getEnglishStrings()` to the name of your language, where the first letter must be upper case. If we keep the example of creating a french translation, the function name would now be `getFrenchStrings()`.
 
-Next step would be to tell the code, that a new language is available. For this open the file `index.ts` in the server part folder `src/server/strings`. You will have to add three lines to the code. If we keep our example for French again, the result will be similar to the code block shown below:
+Next step would be to tell the code, that a new language is available. For this open the file `index.ts` in the server part folder `src/server/strings`. You will have to add two lines to the code. If we keep our example for French again, the result will be similar to the code block shown below:
+
+```ts
+import { getEnglishStrings } from './english';
+import { getGermanStrings } from './german';
+import { getFrenchStrings } from './french';
+
+const languageGenerator: { [key: string]: () => ServerStrings } = {
+    'en': () => getEnglishStrings(),
+    'de': () => getGermanStrings(),
+    'fr': () => getFrenchStrings(),
+    '??': () => createFakeStrings(() => getEnglishStrings())
+};
+```
+In the code above, the new line `import { getFrenchStrings } from './french';` has been added after the last line starting with `import`. And the second new line `'fr': () => getFrenchStrings(),` has been added to the language generator.
+
+That's all. Now you can start to translate your language file. Some strings include variables in their text. These variables look like `${Variable}` and should not be translated and be preserved in your translation.
+
+### Client part
+
+Creating a translation for the client part is very similar to the translation for the server part. 
+
+Create a copy of the file `english.ts` from and to the folder `src/client/app/strings` and rename this copy to your language, like you did for the server part. Open the new file and rename the `getEnglishStrings()` to the same function name, you used in the server part. 
+
+Now, open the file `index.ts` in the client part folder `src/client/app/strings` and - in this case - add three lines of code. If we keep our example of adding a french translation, the code will look similar to the following code block:
 
 ```ts
 import { getEnglishStrings } from './english';
@@ -72,11 +96,8 @@ const languageGenerator: { [key: string]: () => ClientStrings } = {
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 ```
-In the code above, the new line `import { getFrenchStrings } from './french';` has been added after the last line starting with `import`. The second new line `{ name: 'Français', value: 'fr' }` has been added after the last entry for the list of available languages. Please do not forget to add the comma at the end of previous line. Lastly, the new line `'fr': () => getFrenchStrings(),` has been added to the language generator. Also, do not forget the commas.
 
-That's all. Now you can start to translate your language file.
-
-### Client files
+Like for the server part, the tow lines `import { getFrenchStrings } from './french';` and `'fr': () => getFrenchStrings(),` have been added to the code. Additionally add the new line  `{ name: 'Français', value: 'fr' }` after the last entry for the list of available languages. Please do not forget to add the comma at the end of previous line.
 
 ### Manifests
 
