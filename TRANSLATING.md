@@ -24,18 +24,18 @@ The Script Lab code is mainly composed of two parts: the server part and the cli
 
 Basically, the structure 
 
-| Part      | Folder                   | Filename                  | Description                                  |
-|:----------|:-------------------------|:--------------------------|:---------------------------------------------|
-| Server    | `src/server/strings`     | `index.ts`                | Contains code to load the strings.           |
-| Server    | `src/server/strings`     | `english.ts`              | Contains the original strings in English.    |
-| Server    | :                        | :                         | More files including the translations.       |
-| Client    | `src/client/app/strings` | `index.ts`                | Contains code to load the strings.           |
-| Client    | `src/client/app/strings` | `english.ts`              | Contains the original strings in English.    |
-| Client    | :                        | :                         | More files including the translations.       |
-| Manifest  | `manifests`              | `script-lab-edge.xml`     | Manifest for the edge version.               |
-| Manifest  | `manifests`              | `script-lab-insiders.xml` | Manifest for the insider version.            |
-| Manifest  | `manifests`              | `script-lab-local.xml`    | Manifest for the locally installed version.  |
-| Manifest  | `manifests`              | `script-lab-prod.xml`     | Manifest for the production version.         |
+| Part      | Folder                   | Filename                  | Description                                              |
+|:----------|:-------------------------|:--------------------------|:---------------------------------------------------------|
+| Server    | `src/server/strings`     | `index.ts`                | Contains code to load the strings.                       |
+| Server    | `src/server/strings`     | `english.ts`              | Contains the original strings in English.                |
+| Server    | :                        | :                         | More files, one per language, including the translations.|
+| Client    | `src/client/app/strings` | `index.ts`                | Contains code to load the strings.                       |
+| Client    | `src/client/app/strings` | `english.ts`              | Contains the original strings in English.                |
+| Client    | :                        | :                         | More files, one per language, including the translations.|
+| Manifest  | `manifests`              | `script-lab-edge.xml`     | Manifest for the edge version.                           |
+| Manifest  | `manifests`              | `script-lab-insiders.xml` | Manifest for the insider version.                        |
+| Manifest  | `manifests`              | `script-lab-local.xml`    | Manifest for the locally installed version.              |
+| Manifest  | `manifests`              | `script-lab-prod.xml`     | Manifest for the production version.                     |
 
 <a id="create"></a>
 ## Create a new translation
