@@ -1,5 +1,3 @@
-__WORK IN PROGRESS__
-
 # Translate Script Lab to other languages
 
 This document describes how to create a new translation for Script Lab or improve an existing translation.
@@ -126,9 +124,14 @@ For example, if you discovered an error in the translation to *German* for the *
 <a id="testing"></a>
 ## Testing your translation
 
-__MORE_LATER__
+You should test your translations locally before pulling it to the original repository. Testing helps you to validate your translation and see how it looks in the application. And, for example, see if texts are too long and should be shortened.
 
-You should test your translations locally before 
+For creating a testing environment, please refer to the instructions from here [CONTRIBUTING.md](CONTRIBUTING.md).
+
+It is possible to have installed/running both Script Lab versions from the store and from your dev environment, so that you can compare both versions. Additionally, the local version allows you to switch the language through the About dialogue.
+
+![About Script Lab in Dev Mode](.github/images/about-dev.png)
+
 <a id="translations"></a>
 ## Script Lab languages
 
