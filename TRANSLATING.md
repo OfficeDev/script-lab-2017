@@ -68,9 +68,9 @@ const languageGenerator: { [key: string]: () => ServerStrings } = {
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 ```
-In the code above, the new line `import { getFrenchStrings } from './french';` has been added after the last line starting with `import`. And the second new line `'fr': () => getFrenchStrings(),` has been added to the language generator.
+In the code above, the new line `import { getFrenchStrings } from './french';` has been added to the already existing imports for English and German. The second new code line is `'fr': () => getFrenchStrings(),` - which has been added to the language generator.
 
-That's all. Now you can start to translate your language file. Some strings include variables in their text. These variables look like `${Variable}` and should not be translated and be preserved in your translation.
+That's all. Now you can start to translate your language file. Please note, that some strings include variables in their text. These variables look like `${Variable}` and should not be translated and also be preserved in your translation.
 
 ### Client part
 
@@ -78,7 +78,7 @@ Creating a translation for the client part is very similar to the translation fo
 
 Create a copy of the file `english.ts` from and to the folder `src/client/app/strings` and rename this copy to your language, like you did for the server part. Open the new file and rename the `getEnglishStrings()` to the same function name, you used in the server part. 
 
-Now, open the file `index.ts` in the client part folder `src/client/app/strings` and - in this case - add three lines of code. If we keep our example of adding a french translation, the code will look similar to the following code block:
+Then open the file `index.ts` in the client part folder `src/client/app/strings` and - in this case - add three lines of code. If we keep our example of adding a french translation, the code will look similar to the following code block:
 
 ```ts
 import { getEnglishStrings } from './english';
@@ -103,10 +103,18 @@ Like for the server part, the two lines `import { getFrenchStrings } from './fre
 
 ### Manifests
 
-The translations of strings within the manifest files are addressed by the XML-tag `override` and an indication of the country code. So, for translating just duplicate a line from another translation, set you country code and update the text.
+The translations of strings within the manifest files are addressed by the XML tag `override` and an indication of the country code. So, for translating just duplicate a line from another translation, set your country code and update the text.
 
-__MORE_LATER__
+Most translatable strings are located at the bottom of the XML files. An exception is the description of Script Lab, located on top of the XML file.
 
+Here is an example, where the string *Help* has been translated to German and French.
+
+```xml
+  <bt:String id="PG.RunCommand.Title" DefaultValue="Help">
+    <Override Locale="de" Value="Hilfe"/>
+    <Override Locale="fr" Value="Aide"/>
+  </bt:String>
+```
 
 <a id="improve"></a>
 ## Improve an existing translation
