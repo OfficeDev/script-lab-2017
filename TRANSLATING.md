@@ -124,9 +124,7 @@ For example, if you discovered an error in the translation to *German* for the *
 <a id="testing"></a>
 ## Testing your translation
 
-You should test your translations locally before pulling it to the original repository. Testing helps you to validate your translation and see how it looks in the application. And, for example, see if texts are too long and should be shortened.
-
-For creating a testing environment, please refer to the instructions from here [CONTRIBUTING.md](CONTRIBUTING.md).
+You should test your translations locally before pulling it to the original repository. Testing helps you to validate your translation and see how it looks in the application. And, for example, see if texts are too long and should be shortened. For creating a testing environment, please refer to the instructions from here [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Script Lab recognizes the installed language of your Office App (Excel, Word, PowerPoint) and automatically selects a language. If this recognition fails, for what reason ever, Script Lab switches back to English. However, you can switch between languages by selecting the language in the About dialogue.
 
@@ -141,3 +139,4 @@ Script Lab is currently available or being translated into the following languag
 |:-------------------|:-------|:-------------------|:-------------------|:-------------------|
 | English            | en     | Complete           | Yes                | Default language   |
 | German             | de     | Complete           | No                 | -                  |
+
