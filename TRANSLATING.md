@@ -128,7 +128,7 @@ You should test your translations locally before pulling it to the original repo
 
 For creating a testing environment, please refer to the instructions from here [CONTRIBUTING.md](CONTRIBUTING.md).
 
-It is possible to have installed/running both Script Lab versions from the store and from your dev environment, so that you can compare both versions. Additionally, the local version allows you to switch the language through the About dialogue.
+Script Lab recognizes the installed language of your Office App (Excel, Word, PowerPoint) and automatically selects a language. If this recognition fails, for what reason ever, Script Lab switches back to English. However, you can switch between languages by selecting the language in the About dialogue.
 
 ![About Script Lab in Dev Mode](.github/images/about-dev.png)
 
