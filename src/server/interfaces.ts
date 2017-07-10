@@ -20,7 +20,7 @@ export interface IRunnerHandlebarsContext {
 
     origin: string;
     host: string;
-    assets: any;
+    assets: { [key: string]: string };
 
     initialLoadSubtitle: string;
     headerTitle: string;
@@ -37,7 +37,7 @@ export interface IRunnerHandlebarsContext {
 
 export interface IErrorHandlebarsContext {
     origin: string;
-    assets: any;
+    assets: { [key: string]: string };
     title: string;
     message: string;
     details: string;

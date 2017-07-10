@@ -47,9 +47,9 @@ function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
 }
 
-let assetPaths = null;
-function getAssetPaths() {
-    if (assetPaths === null) {
+let assetPaths;
+function getAssetPaths(): { [key: string]: string } {
+    if (!assetPaths) {
         let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
         assetPaths = JSON.parse(data.toString());
     }
@@ -101,7 +101,6 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
         throw new BadRequestError(`${strings.invalidId} "${id}"`);
     }
 
-    let assets = getAssetPaths();
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return loadTemplate<IRunnerHandlebarsContext>('runner')
@@ -114,7 +113,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 returnUrl: '',
                 origin: currentConfig.editorUrl,
                 host: host,
-                assets: assets,
+                assets: getAssetPaths(),
                 initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
                 strings,
@@ -292,12 +291,11 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
         generateSnippetHtmlData(snippet, false /*isExternalExport*/, strings),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
-        .then((values) => {
+        .then(values => {
             const snippetHtmlData: { html: string, officeJS: string } = values[0];
             const runnerHtmlGenerator: (context: IRunnerHandlebarsContext) => string = values[1];
 
             let html = snippetHtmlData.html;
-            let assets = getAssetPaths();
 
             if (wrapWithRunnerChrome) {
                 html = runnerHtmlGenerator({
@@ -310,7 +308,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     returnUrl: returnUrl,
                     origin: snippet.origin,
                     host: snippet.host,
-                    assets: assets,
+                    assets: getAssetPaths(),
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
@@ -471,11 +469,9 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
         }
     }
 
-    let assets = getAssetPaths();
-
     return errorHtmlGenerator({
         origin: currentConfig.editorUrl,
-        assets: assets,
+        assets: getAssetPaths(),
         title,
         message,
         details,
