@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.common.js');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;
@@ -14,6 +15,23 @@ module.exports = (env) =>
             filename: '[name].[chunkhash].bundle.js',
             chunkFilename: '[id].chunk.js'
         },
+
+        module: {
+            rules: [
+                {
+                    test: /\.scss$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: "style-loader",
+                        use: ['css-loader', 'postcss-loader', 'sass-loader']
+                    }),
+                    exclude: /theme/
+                }
+            ]
+        },
+
+        plugins: [
+            new ExtractTextPlugin('[name].[chunkhash].bundle.css'),
+        ],
 
         performance: {
             hints: "warning"
