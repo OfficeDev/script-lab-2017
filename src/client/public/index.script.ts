@@ -7,11 +7,13 @@ let { config } = PLAYGROUND;
 
     document.title = strings.HtmlPageStrings.PageTitles.code;
 
-    document.getElementById('subtitle').textContent = strings.playgroundTagline;
-    document.getElementById('subtitle').style.visibility = 'visible';
+    let subtitle = document.getElementById('subtitle');
+    subtitle.textContent = strings.playgroundTagline;
+    subtitle.style.visibility = 'visible';
 
-    document.getElementById('choose-your-host').textContent = strings.HtmlPageStrings.chooseYourHost;
-    document.getElementById('choose-your-host').style.visibility = 'visible';
+    let chooseHost = document.getElementById('choose-your-host');
+    chooseHost.textContent = strings.HtmlPageStrings.chooseYourHost;
+    chooseHost.style.visibility = 'visible';
 
     let ribbons = document.getElementsByClassName('ribbon');
     for (let i = 0; i < ribbons.length; i++) {

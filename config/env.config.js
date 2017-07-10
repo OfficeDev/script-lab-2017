@@ -57,13 +57,13 @@ const config = {
     }
 };
 
-const RedirectPlugin = function(options) { 
+const RedirectPlugin = (options) => { 
     this.apply = function(compiler) {
         compiler.plugin('compilation', function(compilation) {
             compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
                 let headOpeningTag = '<head>'; 
                 let htmlHead = htmlPluginData.html.match(headOpeningTag);
-                if (htmlHead) {
+                if (htmlHead && htmlHead.length > 0) {
                     htmlHead = htmlHead.index;
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + headOpeningTag +
                     `
@@ -102,13 +102,13 @@ const RedirectPlugin = function(options) {
                                 encodeURIComponent(window.location.origin)
                             ].join("");
 
-                            window.location.href = [
+                            window.location.replace([
                                 redirectUrl,
                                 window.location.pathname,
                                 window.location.search,
                                 originParam,
                                 window.location.hash
-                            ].join("");
+                            ].join(""));
                         }
 
                         // Point app environment back to origin if user is not in origin
@@ -131,3 +131,5 @@ const RedirectPlugin = function(options) {
 exports.build = build;
 exports.config = config;
 exports.RedirectPlugin = RedirectPlugin;
+exports.PLAYGROUND_ORIGIN = PLAYGROUND_ORIGIN;
+exports.PLAYGROUND_REDIRECT = PLAYGROUND_REDIRECT;

@@ -6,7 +6,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config, RedirectPlugin } = require('./env.config');
+const { build, config, RedirectPlugin, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = require('./env.config');
 const { GH_SECRETS } = process.env;
 
 module.exports = (prodMode) =>
@@ -70,7 +70,9 @@ module.exports = (prodMode) =>
                 PLAYGROUND: JSON.stringify({
                     devMode: !prodMode,
                     build: build,
-                    config: config
+                    config: config,
+                    PLAYGROUND_ORIGIN: PLAYGROUND_ORIGIN,
+                    PLAYGROUND_REDIRECT: PLAYGROUND_REDIRECT
                 })
             }),
             new webpack.LoaderOptionsPlugin({

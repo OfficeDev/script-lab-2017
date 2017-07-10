@@ -2,9 +2,7 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterV
 import { environment, storageSize, storage } from '../helpers';
 import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
-const PLAYGROUND_ORIGIN = 'playground_origin_environment_url';
-const PLAYGROUND_REDIRECT = 'playground_redirect_environment_url';
-let { config } = PLAYGROUND;
+let { config, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
