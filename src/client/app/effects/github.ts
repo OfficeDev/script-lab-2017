@@ -115,7 +115,7 @@ export class GitHubEffects {
             .map((gist: IGist) => ({ gist: gist, snippetId: id }))
             .catch(exception => {
                 if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
-                    throw new PlaygroundError(JSON.stringify({ snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
+                    throw new PlaygroundError(JSON.stringify({ type: 'UpdateGistFailed', snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
                 throw exception;
             });
@@ -141,12 +141,16 @@ export class GitHubEffects {
                 new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
         )
         .catch(exception => {
-            let action = null;
+            let action: Action = new GitHub.ShareFailedAction(exception);
             if (exception instanceof PlaygroundError) {
-                let { snippetId, gistOwnerId } = JSON.parse(exception.message);
-                action = new Snippet.UpdateInfoAction({id: snippetId, gistOwnerId: gistOwnerId});
-            } else {
-                action = new GitHub.ShareFailedAction(exception);
+                try {
+                    let message = JSON.parse(exception.message);
+                    if (message.hasOwnProperty('type') && message.type === 'UpdateGistFailed') {
+                        action = new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId});
+                    }
+                } catch (e) {
+                    return Observable.of(action);
+                }
             }
 
             this._uiEffects.alert(
