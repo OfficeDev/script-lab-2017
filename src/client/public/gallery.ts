@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import { storage, environment, applyTheme, post } from '../app/helpers';
-import { Strings } from '../app/strings';
+import { Strings, getDisplayLanguage } from '../app/strings';
 import '../assets/styles/extras.scss';
 
 (async () => {
@@ -153,11 +153,12 @@ export class Gallery {
             origin: environment.current.config.editorUrl,
         };
 
-        const data = JSON.stringify({
+        const state: IRunnerState = {
             snippet: { ...snippet, ...overrides },
-            showBackButton: true,
-            returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`
-        });
+            returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`,
+            displayLanguage: getDisplayLanguage()
+        };
+        const data = JSON.stringify(state);
 
         this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data });
