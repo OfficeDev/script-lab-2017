@@ -57,7 +57,7 @@ const config = {
     }
 };
 
-const RedirectPlugin = (options) => { 
+const RedirectPlugin = function(options) { 
     this.apply = function(compiler) {
         compiler.plugin('compilation', function(compilation) {
             compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
