@@ -29,10 +29,6 @@ module.exports = (env) =>
             ]
         },
 
-        plugins: [
-            new ExtractTextPlugin('[name].[chunkhash].bundle.css'),
-        ],
-
         performance: {
             hints: "warning"
         },
@@ -60,6 +56,7 @@ module.exports = (env) =>
         },
 
         plugins: [
+            new ExtractTextPlugin('[name].[chunkhash].bundle.css'),
             new webpack.optimize.UglifyJsPlugin({
                 sourceMap: true,
                 compress: true,
