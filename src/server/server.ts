@@ -89,7 +89,7 @@ app.use('/favicon', express.static('favicon'));
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-registerRoute('get', '/run/:host/:id', async (req, res) => {
+registerRoute('get', '/run/:host/:id', (req, res) => {
     const host = (req.params.host as string).toUpperCase();
     const id = (req.params.id as string || '').toLowerCase();
     const strings = Strings(req);
@@ -292,7 +292,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
         generateSnippetHtmlData(snippet, false /*isExternalExport*/, strings),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
-        .then(async (values) => {
+        .then((values) => {
             const snippetHtmlData: { html: string, officeJS: string } = values[0];
             const runnerHtmlGenerator: (context: IRunnerHandlebarsContext) => string = values[1];
 
