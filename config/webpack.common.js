@@ -163,6 +163,6 @@ module.exports = (prodMode) =>
                 template: './views/tutorial.html',
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
             }),
-            new RedirectPlugin({})
+            new RedirectPlugin()
         ]
     });

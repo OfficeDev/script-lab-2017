@@ -57,10 +57,10 @@ const config = {
     }
 };
 
-const RedirectPlugin = function(options) { 
-    this.apply = function(compiler) {
-        compiler.plugin('compilation', function(compilation) {
-            compilation.plugin('html-webpack-plugin-before-html-processing', function(htmlPluginData, callback) {
+class RedirectPlugin {
+    apply(compiler) {
+        compiler.plugin('compilation', (compilation) => {
+            compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
                 let headOpeningTag = '<head>'; 
                 let htmlHead = htmlPluginData.html.match(headOpeningTag);
                 if (htmlHead && htmlHead.length > 0) {
@@ -125,8 +125,9 @@ const RedirectPlugin = function(options) {
                 callback(null, htmlPluginData);
             });
         });
-    };
-};
+    }
+}
+
 
 exports.build = build;
 exports.config = config;
