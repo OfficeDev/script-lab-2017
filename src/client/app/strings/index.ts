@@ -169,6 +169,9 @@ export interface ClientStrings {
     aboutStorage: string;
     aboutSnippets: string;
     aboutIntellisense: string;
+    aboutCurrentEnvironment: string;
+    aboutSwitchEnvironment: string;
+    changeEnvironmentConfirm: string;
 
     //snippet.info.ts
     snippetInfoDialogTitle: string;
