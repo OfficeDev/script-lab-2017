@@ -6,7 +6,7 @@ import { isNil } from 'lodash';
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'snippet-info',
     template: `
-        <dialog title="Info" *ngIf="!(snippet==null)" [show]="show">
+        <dialog title="{{strings.snippetInfoDialogTitle}}" *ngIf="!(snippet==null)" [show]="show">
             <div class="ms-Dialog-content">
                 <div class="ms-TextField">
                     <label class="ms-Label">{{strings.nameLabel}}</label>

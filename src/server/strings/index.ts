@@ -10,9 +10,11 @@ import { createFakeStrings, getStrings } from './common';
 ////////////////////////////////////////////////////////////////////////////
 
 import { getEnglishStrings } from './english';
+import { getGermanStrings } from './german';
 
 const languageGenerator: { [key: string]: () => ServerStrings } = {
     'en': () => getEnglishStrings(),
+    'de': () => getGermanStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 

@@ -90,6 +90,7 @@ export function getEnglishStrings(): ClientStrings {
         aboutIntellisense: 'IntelliSense',
 
         //snippet.info.ts
+        snippetInfoDialogTitle: 'Info',
         nameLabel: 'Name',
         descriptionLabel: 'Description',
         namePlaceholder: 'Snippet name',
