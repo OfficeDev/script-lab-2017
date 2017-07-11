@@ -87,6 +87,7 @@ export function getGermanStrings(): ClientStrings {
         snippetCopiedFailed: 'Das Schnipsel konnte nicht in die Zwischenablage kopiert werden.',
 
         snippetExportFailed: 'Das Schnipsel konnte nicht exportiert werden.',
+        snippetExportNotSupported: englishSubstitutesForNotYetTranslated.snippetExportNotSupported,
 
         // Components strings
         // about.ts
