@@ -47,6 +47,15 @@ function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
 }
 
+let assetPaths;
+function getAssetPaths(): { [key: string]: string } {
+    if (!assetPaths) {
+        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
+        assetPaths = JSON.parse(data.toString());
+    }
+
+    return assetPaths;
+}
 
 /**
  * Server CERT and PORT configuration
@@ -104,6 +113,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 returnUrl: '',
                 origin: currentConfig.editorUrl,
                 host: host,
+                assets: getAssetPaths(),
                 initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
                 strings,
@@ -298,6 +308,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     returnUrl: returnUrl,
                     origin: snippet.origin,
                     host: snippet.host,
+                    assets: getAssetPaths(),
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
@@ -460,6 +471,7 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
 
     return errorHtmlGenerator({
         origin: currentConfig.editorUrl,
+        assets: getAssetPaths(),
         title,
         message,
         details,
