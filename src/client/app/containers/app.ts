@@ -3,8 +3,9 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { Strings, environment } from '../helpers';
-import { isNil } from 'lodash';
+import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
+import { Strings } from '../strings';
+import { isEmpty } from 'lodash';
 
 @Component({
     selector: 'app',
@@ -13,25 +14,25 @@ import { isNil } from 'lodash';
             <header class="command__bar">
                 <command icon="GlobalNavButton" (click)="showMenu()"></command>
                 <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="${Strings.run}" (click)="run()"></command>
-                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="${Strings.run}">
-                    <command icon="Play" title="${Strings.runInThisPane}" [async]="running$|async" (click)="run()"></command>
-                    <command icon="OpenPaneMirrored" title="${Strings.runSideBySide}" (click)="runSideBySide()"></command>
+                <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="{{strings.run}}">
+                    <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
+                    <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="${Strings.share}">
-                    <command *ngIf="isGistOwned|async" icon="Save" title="${Strings.updateMenu}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
-                    <command icon="PageCheckedin" title="${Strings.shareMenuPublic}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
-                    <command icon="ProtectedDocument" title="${Strings.shareMenuPrivate}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
-                    <command id="CopyToClipboard" icon="Copy" title="${Strings.shareMenuClipboard}" (click)="shareCopy()"></command>
-                    <command icon="Download" title="${Strings.shareMenuExport}" (click)="shareExport()"></command>
+                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
+                    <command *ngIf="isGistOwned|async" icon="Save" title="{{strings.updateMenu}}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
+                    <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
+                    <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
+                    <command id="CopyToClipboard" icon="Copy" title="{{strings.shareMenuClipboard}}" (click)="shareCopy()"></command>
+                    <command icon="Download" title="{{strings.shareMenuExport}}" (click)="shareExport()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Delete" title="${Strings.delete}" (click)="delete()"></command>
-                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="${Strings.loginGithub}" (click)="login()"></command>
+                <command [hidden]="isEmpty" icon="Delete" title="{{strings.delete}}" (click)="delete()"></command>
+                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="{{strings.loginGithub}}" (click)="login()"></command>
                 <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
             </header>
             <editor></editor>
             <footer class="command__bar command__bar--condensed">
-                <command icon="Info" title="About" (click)="showAbout=true"></command>
+                <command icon="Info" title="{{strings.about}}" (click)="showAbout=true"></command>
                 <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
                 <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
@@ -49,6 +50,8 @@ import { isNil } from 'lodash';
 export class AppComponent {
     snippet: ISnippet;
     isEmpty: boolean;
+
+    strings = Strings();
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -70,18 +73,19 @@ export class AppComponent {
         return this.profile$
             .filter(profile => profile != null)
             .map(profile => {
-                    if (!isNil(this.snippet.gistOwnerId)) {
-                        return this.snippet.gistOwnerId === profile.login;
-                    }
+                if (isEmpty(this.snippet.gist)) {
                     return false;
                 }
-            );
+
+                // Assume that user owns gist, for back-compat
+                return isEmpty(this.snippet.gistOwnerId) ? true : this.snippet.gistOwnerId === profile.login;
+            });
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);
 
     theme$ = this._store.select(fromRoot.getTheme)
-        .map(isLight => isLight ? Strings.lightTheme : Strings.darkTheme);
+        .map(isLight => isLight ? this.strings.lightTheme : this.strings.darkTheme);
 
     language$ = this._store.select(fromRoot.getLanguage);
 
@@ -104,14 +108,25 @@ export class AppComponent {
             return;
         }
 
+        if (isOfficeHost(this.snippet.host)) {
+            if (!isInsideOfficeApp()) {
+                this._store.dispatch(new UI.ShowAlertAction({
+                    actions: [this.strings.okButtonLabel],
+                    title: this.strings.snippetNoOfficeTitle,
+                    message: this.strings.snippetNoOfficeMessage
+                }));
+                return;
+            }
+        }
+
         this._store.dispatch(new Snippet.RunAction(this.snippet));
     }
 
     runSideBySide() {
         this._store.dispatch(new UI.ShowAlertAction({
-            actions: [ Strings.SideBySideInstructions.gotIt ],
-            title: Strings.SideBySideInstructions.title,
-            message: Strings.SideBySideInstructions.message
+            actions: [this.strings.SideBySideInstructions.gotIt],
+            title: this.strings.SideBySideInstructions.title,
+            message: this.strings.SideBySideInstructions.message
         }));
     }
 
@@ -120,8 +135,8 @@ export class AppComponent {
             return;
         }
 
-        let result = await this._effects.alert(Strings.deleteSnippetConfirm, `${Strings.delete} ${this.snippet.name}`, Strings.delete, Strings.cancelButtonLabel);
-        if (result === Strings.cancelButtonLabel) {
+        let result = await this._effects.alert(this.strings.deleteSnippetConfirm, `${this.strings.delete} ${this.snippet.name}`, this.strings.delete, this.strings.cancelButtonLabel);
+        if (result === this.strings.cancelButtonLabel) {
             return;
         }
 
@@ -175,10 +190,22 @@ export class AppComponent {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
+                        .then((result: string) => {
+                            if (result !== this.strings.cancelButtonLabel) {
+                                this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                            }
+                        }
+                        );
                 }
                 else {
-                    this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
+                        .then((result: string) => {
+                            if (result !== this.strings.cancelButtonLabel) {
+                                this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                            }
+                        }
+                        );
                 }
 
                 if (sub && !sub.closed) {
@@ -208,7 +235,7 @@ export class AppComponent {
             .filter(errors => errors && errors.length > 0)
             .subscribe(errors => {
                 let data = errors.map(error => error.message).join('\n\n');
-                this._effects.alert(data, 'Errors', 'Dismiss')
+                this._effects.alert(data, this.strings.errors, this.strings.dismiss)
                     .then(() => this._store.dispatch(new UI.DismissAllErrorsAction()));
             });
     }
