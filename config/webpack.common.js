@@ -1,8 +1,8 @@
 const webpack = require('webpack');
 const path = require('path');
+const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
@@ -43,14 +43,6 @@ module.exports = (prodMode) =>
                     exclude: /node_modules/
                 },
                 {
-                    test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
-                        use: ['css-loader', 'postcss-loader', 'sass-loader']
-                    }),
-                    exclude: /theme/
-                },
-                {
                     test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
                     use: {
                         loader: 'file-loader',
@@ -83,8 +75,11 @@ module.exports = (prodMode) =>
                     }
                 }
             }),
+            new AssetsWebpackPlugin({
+                filename: 'assets.json',
+                path: path.resolve('./dist/server')
+            }),
             new CheckerPlugin(),
-            new ExtractTextPlugin('[name].bundle.css'),
             new webpack.optimize.CommonsChunkPlugin({
                 name: ['vendor', 'polyfills'],
                 minChunks: Infinity
