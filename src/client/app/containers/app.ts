@@ -71,7 +71,7 @@ export class AppComponent {
 
     get isGistOwned() {
         return this.profile$
-            .filter(profile => profile != null)
+            .filter(profile => (profile != null && this.snippet != null))
             .map(profile => {
                 if (isEmpty(this.snippet.gist)) {
                     return false;
