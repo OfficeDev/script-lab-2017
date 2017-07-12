@@ -92,7 +92,8 @@ export class GitHubEffects {
             GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST,
             GitHub.GitHubActionTypes.UPDATE_GIST
         )
-        .mergeMap(({ payload, type }) => {
+        .switchMap(action =>  {
+            let { payload, type } = action;
             let { id, name, description, gist, gistOwnerId } = payload;
             let files: IGistFiles = {};
             let gistId = null;
@@ -110,7 +111,7 @@ export class GitHubEffects {
                 gistId = gist;
             }
 
-            return this._github.createOrUpdateGist(
+            return (this._github.createOrUpdateGist(
                 description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
             .map((gist: IGist) => ({ gist: gist, snippetId: id }))
@@ -119,47 +120,46 @@ export class GitHubEffects {
                     throw new PlaygroundError(JSON.stringify({ type: 'UpdateGistFailed', snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
                 throw exception;
-            });
-        })
-        .mergeMap(async ({ gist, snippetId }) => {
-            let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-            let result = await this._uiEffects.alert(`${Strings().gistSharedDialogStart}
-            
-            ${temp}
+            }))
+            .mergeMap(async ({ gist, snippetId }) => {
+                let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+                let result = await this._uiEffects.alert(`${Strings().gistSharedDialogStart}
+                
+                ${temp}
 
-            ${Strings().gistSharedDialogEnd}`,
-            Strings().gistSharedDialogTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
+                ${Strings().gistSharedDialogEnd}`,
+                Strings().gistSharedDialogTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
-            if (result === Strings().gistSharedDialogViewButton) {
-                window.open(temp);
-            }
-
-            return { gist: gist, snippetId: snippetId };
-        })
-        .mergeMap(({ gist, snippetId }) => Observable.from([
-                new GitHub.LoadGistsAction(),
-                new GitHub.ShareSuccessAction(gist),
-                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
-        )
-        .catch(exception => {
-            let action: Action = new GitHub.ShareFailedAction(exception);
-            if (exception instanceof PlaygroundError) {
-                try {
-                    let message = JSON.parse(exception.message);
-                    if (message.hasOwnProperty('type') && message.type === 'UpdateGistFailed') {
-                        action = new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId});
-                    }
-                } catch (e) {
-                    return Observable.of(action);
+                if (result === Strings().gistSharedDialogViewButton) {
+                    window.open(temp);
                 }
-            }
 
-            this._uiEffects.alert(
-                Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
-                Strings().gistShareFailedTitle,
-                Strings().okButtonLabel)
-            .then(() => window.location.reload());
-            return Observable.of(action);
+                return { gist: gist, snippetId: snippetId };
+            })
+            .mergeMap(({ gist, snippetId }) => Observable.from([
+                    new GitHub.LoadGistsAction(),
+                    new GitHub.ShareSuccessAction(gist),
+                    new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+            )
+            .catch(exception => {
+                let actions: Action[] = [new GitHub.ShareFailedAction(exception)];
+                if (exception instanceof PlaygroundError) {
+                    try {
+                        let message = JSON.parse(exception.message);
+                        if (message.hasOwnProperty('type') && message.type === 'UpdateGistFailed') {
+                            actions.push(new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId}));
+                        }
+                    } catch (e) {
+                        return Observable.from(actions);
+                    }
+                }
+
+                this._uiEffects.alert(
+                    Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
+                    Strings().gistShareFailedTitle,
+                    Strings().okButtonLabel);
+                return Observable.from(actions);
+            });
         });
 
     @Effect({ dispatch: false })
