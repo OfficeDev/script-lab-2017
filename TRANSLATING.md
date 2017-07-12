@@ -86,7 +86,11 @@ In the code above, the new line `import { getFrenchStrings } from './french';` h
 
 That's all. Now you can start to translate your language file. Please note, that while most strings are just strings, others are functions that accept some parameters, and those parameters often get inlined into the return string using TypeScript template strings such as double quotes `"`. For these variables, which look like `${parameterName}`, the name inside of `${parameterName}` should be preserved as is.
 
-The strings in the TypeScripe files are enclosed by single quotes or apostrophes `'`. If you need to use the single quote character inside a string, you need to escape this character by prepending a backslash. Example: the word `today` then translates in french to `aujourd\'hui`.
+The strings in the Script Lab TypeScript files are mostly enclosed by single quotes `'` or apostrophes. If you need to use the single quote character inside a string, you would normally have to escape this character. In TypeScript, there is an easy way to avoid the escaping problem by using the TypeScript template strings, even if you don't use any variables within them. Just replace the enclosing single quotes of the string by a backtick (or grave accent) character.
+
+```ts
+sampleString: `It's a wonderful "thing" that you don't have to escape anything anymore!`
+```
 
 ### Client part
 
