@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
-    <link rel="stylesheet" href="{{{origin}}}/error.bundle.css" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.error.css}}}" />
 </head>
 
 <body class="app error-page">
@@ -26,9 +26,9 @@
         </div>
     </div>
 
-    <script src="{{{origin}}}/polyfills.bundle.js"></script>
-    <script src="{{{origin}}}/vendor.bundle.js"></script>
-    <script src="{{{origin}}}/error.bundle.js"></script>
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.error.js}}}"></script>
 
     <script>
         window.initializeErrorView({{{expandDetailsByDefault}}});
