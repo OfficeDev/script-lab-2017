@@ -115,7 +115,9 @@ interface IEnvironment {
     },
     config?: IEnvironmentConfig
     host?: string,
-    platform?: string
+    platform?: string,
+    PLAYGROUND_ORIGIN?: string,
+    PLAYGROUND_REDIRECT?: string
 }
 
 interface IEnvironmentConfig {

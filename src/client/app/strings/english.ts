@@ -80,6 +80,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetCopiedFailed: 'Failed to copy the snippet to your clipboard',
 
         snippetExportFailed: 'Failed to export the snippet',
+        snippetExportNotSupported: 'Snippet export is not yet supported on this version of Office. Supported platforms include Windows and Office Online.',
 
         // Components strings
         // about.ts
@@ -87,6 +88,9 @@ export function getEnglishStrings(): ClientStrings {
         aboutStorage: 'Storage:',
         aboutSnippets: 'Local snippets',
         aboutIntellisense: 'IntelliSense',
+        aboutCurrentEnvironment: /** NEEDS STRING REVIEW */ 'Current Environment:',
+        aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Switch:',
+        changeEnvironmentConfirm: /** NEEDS STRING REVIEW */ 'You are about to change your Script Lab environment and will not have access to your saved local snippets until you return to this environment. Are you sure you want to proceed?',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Info',

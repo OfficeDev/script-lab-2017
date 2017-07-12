@@ -5,7 +5,7 @@ import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
 import { Strings } from '../strings';
-import { isNil } from 'lodash';
+import { isEmpty } from 'lodash';
 
 @Component({
     selector: 'app',
@@ -71,14 +71,15 @@ export class AppComponent {
 
     get isGistOwned() {
         return this.profile$
-            .filter(profile => profile != null)
+            .filter(profile => (profile != null && this.snippet != null))
             .map(profile => {
-                if (!isNil(this.snippet.gistOwnerId)) {
-                    return this.snippet.gistOwnerId === profile.login;
+                if (isEmpty(this.snippet.gist)) {
+                    return false;
                 }
-                return false;
-            }
-            );
+
+                // Assume that user owns gist, for back-compat
+                return isEmpty(this.snippet.gistOwnerId) ? true : this.snippet.gistOwnerId === profile.login;
+            });
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

@@ -1,15 +1,44 @@
 import { Strings } from '../app/strings';
+import { environment } from '../app/helpers';
+let { config } = PLAYGROUND;
 
 (() => {
     const strings = Strings();
 
     document.title = strings.HtmlPageStrings.PageTitles.code;
 
-    document.getElementById('subtitle').textContent = strings.playgroundTagline;
-    document.getElementById('subtitle').style.visibility = 'visible';
+    let subtitle = document.getElementById('subtitle');
+    subtitle.textContent = strings.playgroundTagline;
+    subtitle.style.visibility = 'visible';
 
-    document.getElementById('choose-your-host').textContent = strings.HtmlPageStrings.chooseYourHost;
-    document.getElementById('choose-your-host').style.visibility = 'visible';
+    let chooseHost = document.getElementById('choose-your-host');
+    chooseHost.textContent = strings.HtmlPageStrings.chooseYourHost;
+    chooseHost.style.visibility = 'visible';
+
+    let ribbons = document.getElementsByClassName('ribbon');
+    for (let i = 0; i < ribbons.length; i++) {
+        let ribbon = ribbons[i] as HTMLElement;
+        switch (environment.current.config.name) {
+            case config['insiders'].name:
+                ribbon.textContent = 'Beta';
+                ribbon.style.background = 'red';
+                break;
+            case config['edge'].name:
+                ribbon.textContent = 'Alpha';
+                ribbon.style.background = 'blue';
+                break;
+            case config['local'].name:
+                ribbon.textContent = config['local'].editorUrl;
+                ribbon.style.background = 'green';
+                break;
+            default:
+                break;
+        }
+
+        if (environment.current.config.name !== config['production'].name) {
+            ribbon.style.visibility = 'visible';
+        }
+    }
 
 
     // Note: inspired by Modernizr's check for localStorage existence:

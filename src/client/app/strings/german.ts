@@ -4,8 +4,8 @@ import { ClientStrings } from './index';
 // Whenever these two lines are not commented out, it means that there are
 // still strings that need to be localized.
 // Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getGermanStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -87,6 +87,7 @@ export function getGermanStrings(): ClientStrings {
         snippetCopiedFailed: 'Das Schnipsel konnte nicht in die Zwischenablage kopiert werden.',
 
         snippetExportFailed: 'Das Schnipsel konnte nicht exportiert werden.',
+        snippetExportNotSupported: englishSubstitutesForNotYetTranslated.snippetExportNotSupported,
 
         // Components strings
         // about.ts
@@ -94,6 +95,9 @@ export function getGermanStrings(): ClientStrings {
         aboutStorage: 'Speicher:',
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
+        aboutCurrentEnvironment: englishSubstitutesForNotYetTranslated.aboutCurrentEnvironment,
+        aboutSwitchEnvironment: englishSubstitutesForNotYetTranslated.aboutSwitchEnvironment,
+        changeEnvironmentConfirm: englishSubstitutesForNotYetTranslated.changeEnvironmentConfirm,
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Schnipsel-Info',
