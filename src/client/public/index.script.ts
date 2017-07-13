@@ -14,7 +14,7 @@ import { instantiateRibbon } from '../app/helpers';
     chooseHost.textContent = strings.HtmlPageStrings.chooseYourHost;
     chooseHost.style.visibility = 'visible';
 
-    instantiateRibbon();
+    instantiateRibbon('ribbon');
 
     // Note: inspired by Modernizr's check for localStorage existence:
     //   https://github.com/Modernizr/Modernizr

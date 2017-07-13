@@ -2,10 +2,12 @@ import { environment } from './environment';
 import { Strings } from '../strings';
 let { config } = PLAYGROUND;
 
-let strings = Strings();
-
-export function instantiateRibbon() {
-    let ribbon = document.getElementById('ribbon');
+export function instantiateRibbon(elementId: string) {
+    let ribbon = document.getElementById(elementId);
+    if (!ribbon) {
+        return;
+    }
+    let strings = Strings();
     switch (environment.current.config.name) {
         // Utilize Office pallet colors for ribbons
         case config['insiders'].name:

@@ -1,5 +1,5 @@
 import { instantiateRibbon } from '../app/helpers';
 
 (() => {
-    instantiateRibbon();
+    instantiateRibbon('ribbon');
 })();
