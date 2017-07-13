@@ -75,8 +75,8 @@ export function getEnglishStrings(): ClientStrings {
         gistSharedDialogEnd: `To import your snippet, select the Import button in ${playgroundName} and enter this URL.`,
         gistSharedDialogTitle: 'Share your snippet',
         gistSharedDialogViewButton: 'View on GitHub',
-        gistUpdatedDialog: /** NEEDS STRING REVIEW */ 'The URL of your updated gist is the same as before:',
-        gistUpdatedDialogTitle: /** NEEDS STRING REVIEW */ 'Snippet successfully updated',
+        gistUpdateUrlIsSameAsBefore: /** NEEDS STRING REVIEW */ 'The URL of your updated gist is the same as before:',
+        gistUpdateSuccess: /** NEEDS STRING REVIEW */ 'Snippet successfully updated',
 
         snippetCopiedConfirmation: `The snippet is copied to your clipboard`,
         snippetCopiedFailed: 'Failed to copy the snippet to your clipboard',

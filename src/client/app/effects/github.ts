@@ -122,17 +122,17 @@ export class GitHubEffects {
             });
         })
         .mergeMap(async ({ type, gist, snippetId }) => {
-            let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+            let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
             let messageBody =
                 type === GitHub.GitHubActionTypes.UPDATE_GIST ?
-                    `${Strings().gistUpdatedDialog}\n\n${temp}` :
-                    `${Strings().gistSharedDialogStart}\n\n${temp}\n\n${Strings().gistSharedDialogEnd}`;
-            let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdatedDialogTitle : Strings().gistSharedDialogTitle;
+                    `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
+                    `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
+            let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
 
             let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
             if (result === Strings().gistSharedDialogViewButton) {
-                window.open(temp);
+                window.open(gistUrl);
             }
 
             return { gist: gist, snippetId: snippetId };
@@ -147,7 +147,7 @@ export class GitHubEffects {
             if (exception instanceof PlaygroundError) {
                 try {
                     let message = JSON.parse(exception.message);
-                    if (message.hasOwnProperty('type') && message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
+                    if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
                         action = new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId});
                     }
                 } catch (e) {

@@ -101,9 +101,9 @@ export class About implements AfterViewInit {
             return;
         }
 
-        let changeEnvironmentMessage = this.strings.aboutSwitchEnvironment;
-        changeEnvironmentMessage = changeEnvironmentMessage.replace('{0}', this.configs.find(c => c.value === currentConfigName).name);
-        changeEnvironmentMessage = changeEnvironmentMessage.replace('{1}', this.configs.find(c => c.value === this.selectedConfig).name);
+        let changeEnvironmentMessage = this.strings.aboutSwitchEnvironment.replace(
+            '{0}', this.configs.find(c => c.value === currentConfigName).name).replace(
+            '{1}', this.configs.find(c => c.value === this.selectedConfig).name);
         let changeEnvironmentResult = await this._effects.alert(
             this.strings.changeEnvironmentConfirm,
             changeEnvironmentMessage,
