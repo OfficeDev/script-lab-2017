@@ -14,6 +14,10 @@ export function getGermanStrings(): ClientStrings {
         playgroundName: playgroundName,
         playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
 
+        alpha: 'Alpha',
+        beta: 'Beta',
+        production: 'Production',
+
         userId: 'Benutzer-ID',
 
         run: 'Ausführen',
@@ -82,12 +86,14 @@ export function getGermanStrings(): ClientStrings {
         gistSharedDialogEnd: `Klicken Sie auf den Befehl ${playgroundName}, um Ihr Schnipsel zu importieren und geben Sie folgende URL an.`,
         gistSharedDialogTitle: 'Teilen Sie Ihr Schnipsel',
         gistSharedDialogViewButton: 'Bei GitHub ansehen',
+        gistUpdateUrlIsSameAsBefore: englishSubstitutesForNotYetTranslated.gistUpdateUrlIsSameAsBefore,
+        gistUpdateSuccess: englishSubstitutesForNotYetTranslated.gistUpdateSuccess,
 
         snippetCopiedConfirmation: `Das Schnipsel wurde in die Zwischenablage kopiert`,
         snippetCopiedFailed: 'Das Schnipsel konnte nicht in die Zwischenablage kopiert werden.',
 
         snippetExportFailed: 'Das Schnipsel konnte nicht exportiert werden.',
-        snippetExportNotSupported: englishSubstitutesForNotYetTranslated.snippetExportNotSupported,
+        snippetExportNotSupported: 'Das Exportieren von Schnipseln wird in dieser Office-Version noch nicht unterstützt. Unterstützte Plattformen sind zurzeit Windows und Office-Online.',
 
         // Components strings
         // about.ts
@@ -95,9 +101,11 @@ export function getGermanStrings(): ClientStrings {
         aboutStorage: 'Speicher:',
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
-        aboutCurrentEnvironment: englishSubstitutesForNotYetTranslated.aboutCurrentEnvironment,
+        aboutCurrentEnvironment: 'Aktuelle Umgebung:',
+        // aboutSwitchEnvironment: 'Wechseln:' <-- OLD
+        // Change from 'Switch' (OLD) to 'Switch from {0} to {1}:', where {0} and {1} are params that are substituted with environment names
         aboutSwitchEnvironment: englishSubstitutesForNotYetTranslated.aboutSwitchEnvironment,
-        changeEnvironmentConfirm: englishSubstitutesForNotYetTranslated.changeEnvironmentConfirm,
+        changeEnvironmentConfirm: 'Sie sind dabei, zu einer anderen Umgebung von Script Lab zu wechseln und verlieren dadurch den Zugriff auf Ihre gespeicherten Schnipsel bis Sie wieder zu dieser Umgebung zurückkehren. Möchten Sie fortfahren?',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Schnipsel-Info',
@@ -114,8 +122,12 @@ export function getGermanStrings(): ClientStrings {
         shareMenuPublic: 'Neues öffentliches GitHub-Gist',
         shareMenuPrivate: 'Neues geheimes GitHub-Gist',
         updateMenu: 'Bestehendes GitHub-Gist aktualisieren',
-        sharePublicSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen öffentlichen GitHub-Gist geteilt werden soll?',
-        sharePrivateSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen geheimen GitHub-Gist geteilt werden soll?',
+        // sharePublicSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen öffentlichen GitHub-Gist geteilt werden soll?', <-- OLD
+        // Change from 'Are you sure you want to share this snippet as a new public gist?' to 'Are you sure you want to re-share this snippet as a brand new public gist?',
+        sharePublicSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm,
+        // sharePrivateSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen geheimen GitHub-Gist geteilt werden soll?', <-- OLD
+        // Change from 'Are you sure you want to share this snippet as a new private gist?' to 'Are you sure you want to re-share this snippet as a brand new private gist?',
+        sharePrivateSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePrivateSnippetConfirm,
 
         shareMenuClipboard: 'In die Zwischenablage kopieren',
         shareMenuExport: 'Zur Veröffentlichung exportieren',

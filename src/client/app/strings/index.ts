@@ -88,6 +88,11 @@ export interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
 
+    // Environment names
+    alpha: string,
+    beta: string,
+    production: string,
+
     userId: string;
 
     run: string;
@@ -156,6 +161,8 @@ export interface ClientStrings {
     gistSharedDialogEnd: string;
     gistSharedDialogTitle: string;
     gistSharedDialogViewButton: string;
+    gistUpdateUrlIsSameAsBefore: string,
+    gistUpdateSuccess: string,
 
     snippetCopiedConfirmation: string;
     snippetCopiedFailed: string;
