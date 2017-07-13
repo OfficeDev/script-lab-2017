@@ -186,28 +186,27 @@ export class AppComponent {
                 }
 
                 let { isPublic, isUpdate } = values;
+                let confirmationAlertIfAny = null;
                 if (isUpdate) {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
                     if (this.snippet.gist) {
-                        let result = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
-                        if (result === this.strings.cancelButtonLabel) {
-                            return;
-                        }
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
                     }
 
-                    this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                        this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    }
                 }
                 else {
                     if (this.snippet.gist) {
-                        let result = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
-                        if (result === this.strings.cancelButtonLabel) {
-                            return;
-                        }
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
                     }
 
-                    this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                        this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    }
                 }
 
                 if (sub && !sub.closed) {
