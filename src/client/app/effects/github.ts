@@ -121,7 +121,6 @@ export class GitHubEffects {
                 }
                 throw exception;
             }))
-<<<<<<< HEAD
             .mergeMap(async ({ type, gist, snippetId }) => {
                 let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
                 let messageBody =
@@ -134,19 +133,6 @@ export class GitHubEffects {
 
                 if (result === Strings().gistSharedDialogViewButton) {
                     window.open(gistUrl);
-=======
-            .mergeMap(async ({ gist, snippetId }) => {
-                let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-                let result = await this._uiEffects.alert(`${Strings().gistSharedDialogStart}
-                
-                ${temp}
-
-                ${Strings().gistSharedDialogEnd}`,
-                Strings().gistSharedDialogTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
-
-                if (result === Strings().gistSharedDialogViewButton) {
-                    window.open(temp);
->>>>>>> 79084c321fde1ead2b6e9d8897e978a83ea0789b
                 }
 
                 return { gist: gist, snippetId: snippetId };
@@ -161,11 +147,7 @@ export class GitHubEffects {
                 if (exception instanceof PlaygroundError) {
                     try {
                         let message = JSON.parse(exception.message);
-<<<<<<< HEAD
                         if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
-=======
-                        if (message.hasOwnProperty('type') && message.type === 'UpdateGistFailed') {
->>>>>>> 79084c321fde1ead2b6e9d8897e978a83ea0789b
                             actions.push(new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId}));
                         }
                     } catch (e) {
