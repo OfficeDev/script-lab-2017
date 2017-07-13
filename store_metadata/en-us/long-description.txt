@@ -1,0 +1,14 @@
+Experiment with the Office JavaScript API without ever leaving Excel, Word, or PowerPoint! You can use Script Lab to:
+• Create and edit code snippets that can include JavaScript, HTML, CSS, and references to libraries and data on the web
+• Run the snippets and instantly see the result in a task pane and in the Office document
+• Get started quickly with a selection of samples
+• Share and save your snippets with GitHub gists
+• Learn the JavaScript API with the help of IntelliSense while you edit
+• Try TypeScript: make use of arrow functions, template strings, or even the latest TypeScript 2.0+ features like async/await
+• Prototype an add-in you're planning to develop
+
+There's no need to install any other software or configure your environment: as long as you have Office, you can get started in seconds.
+
+Script Lab, a Microsoft Garage project, works in Excel, Word, and PowerPoint (Office 2013 and later, Office Online, and Office for Mac).
+
+The source code for Script Lab is open to the community at https://github.com/OfficeDev/script-lab. We welcome your contributions!
