@@ -62,7 +62,6 @@ The Office Store requires additional metadata to be submitted alongside the mani
 | Folder                   | Filename                  | Description                                    |
 |:-------------------------|:--------------------------|:-----------------------------------------------|
 | `store_metadata/en-us`              | `long-description.txt`     | Description on the Office Store page. Max length is 2000 characters.                |
-| `store_metadata/en-us`              | `short-description.txt` | Description on the Office Store Page. Max length is 99 characters.              |
 | `store_metadata/en-us`              | `screenshot1.png`    | Primary screenshot on the Office Store page. Dimension must be exactly 512 px by 384 px.    |
 | `store_metadata/en-us`              | screenshots 2-5     | (optional) Secondary screenshots on the Office Store page. Dimension must be exactly 512 px by 384 px.           |
 
@@ -150,7 +149,7 @@ The strings are enclosed by double quotes in the XML files. If you need to use t
 
 ### Store metadata part
 
-Under `store_metadata`, create your locale folder. Translate the descriptions from the `store_metadata/en-us` folder. Create at least one screenshot (512 px horizontal and 384 px vertical) that shows Script Lab being used inside Office in the new locale.
+Under `store_metadata`, create your locale folder. Translate the description from the `store_metadata/en-us` folder (the title and short description translations are also used for the submission, but they're already found in the manifest). Create at least one screenshot (512 px horizontal and 384 px vertical) that shows Script Lab being used inside Office in the new locale.
 
 <a id="improve"></a>
 ## Improve an existing translation
