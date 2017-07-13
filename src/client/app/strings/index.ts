@@ -88,6 +88,11 @@ export interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
 
+    // Environment names
+    alpha: string,
+    beta: string,
+    production: string,
+
     userId: string;
 
     run: string;

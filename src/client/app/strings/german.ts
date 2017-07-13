@@ -14,6 +14,10 @@ export function getGermanStrings(): ClientStrings {
         playgroundName: playgroundName,
         playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
 
+        alpha: 'Alpha',
+        beta: 'Beta',
+        production: 'Production',
+
         userId: 'Benutzer-ID',
 
         run: 'Ausführen',

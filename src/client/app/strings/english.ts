@@ -7,6 +7,11 @@ export function getEnglishStrings(): ClientStrings {
         playgroundName: playgroundName,
         playgroundTagline: 'Code ● Run ● Share',
 
+        // Environment names
+        alpha: 'Alpha',
+        beta: 'Beta',
+        production: 'Production',
+
         userId: 'User ID',
 
         run: 'Run',

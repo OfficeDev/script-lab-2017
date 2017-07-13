@@ -63,9 +63,9 @@ export class About implements AfterViewInit {
     originalLanguage = '';
 
     configs = [
-        { name: 'Production', value: 'production' },
-        { name: 'Beta', value: 'insiders' },
-        { name: 'Alpha', value: 'edge' },
+        { name: this.strings.production, value: 'production' },
+        { name: this.strings.beta, value: 'insiders' },
+        { name: this.strings.alpha, value: 'edge' },
     ];
     selectedConfig = '';
 
