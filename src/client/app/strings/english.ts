@@ -75,6 +75,8 @@ export function getEnglishStrings(): ClientStrings {
         gistSharedDialogEnd: `To import your snippet, select the Import button in ${playgroundName} and enter this URL.`,
         gistSharedDialogTitle: 'Share your snippet',
         gistSharedDialogViewButton: 'View on GitHub',
+        gistUpdatedDialog: /** NEEDS STRING REVIEW */ 'The URL of your updated gist is the same as before:',
+        gistUpdatedDialogTitle: /** NEEDS STRING REVIEW */ 'Snippet successfully updated',
 
         snippetCopiedConfirmation: `The snippet is copied to your clipboard`,
         snippetCopiedFailed: 'Failed to copy the snippet to your clipboard',
@@ -84,12 +86,13 @@ export function getEnglishStrings(): ClientStrings {
 
         // Components strings
         // about.ts
+        // Syntax of {0}, {1}... is used for placeholders and should not be localized
         aboutUpdated: 'Last updated:',
         aboutStorage: 'Storage:',
         aboutSnippets: 'Local snippets',
         aboutIntellisense: 'IntelliSense',
         aboutCurrentEnvironment: /** NEEDS STRING REVIEW */ 'Current Environment:',
-        aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Switch:',
+        aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Switch from {0} to {1}:',
         changeEnvironmentConfirm: /** NEEDS STRING REVIEW */ 'You are about to change your Script Lab environment and will not have access to your saved local snippets until you return to this environment. Are you sure you want to proceed?',
 
         //snippet.info.ts
@@ -104,11 +107,11 @@ export function getEnglishStrings(): ClientStrings {
         // Containers strings
         //app.ts
 
-        shareMenuPublic: /** NEEDS STRING REVIEW */ 'New Public Gist',
-        shareMenuPrivate: /** NEEDS STRING REVIEW */ 'New Secret Gist',
-        updateMenu: /** NEEDS STRING REVIEW */ 'Update Existing Gist',
-        sharePublicSnippetConfirm: /** NEEDS STRING REVIEW */ 'Are you sure you want to share this snippet as a new public gist?',
-        sharePrivateSnippetConfirm: /** NEEDS STRING REVIEW */ 'Are you sure you want to share this snippet as a new secret gist?',
+        shareMenuPublic: /** NEEDS STRING REVIEW */ 'New public gist',
+        shareMenuPrivate: /** NEEDS STRING REVIEW */ 'New secret gist',
+        updateMenu: /** NEEDS STRING REVIEW */ 'Update existing gist',
+        sharePublicSnippetConfirm: /** NEEDS STRING REVIEW */ 'Are you sure you want to re-share this snippet as a brand new public gist?',
+        sharePrivateSnippetConfirm: /** NEEDS STRING REVIEW */ 'Are you sure you want to re-share this snippet as a brand new secret gist?',
 
         shareMenuClipboard: 'Copy to clipboard',
         shareMenuExport: 'Export for publishing',

@@ -156,6 +156,8 @@ export interface ClientStrings {
     gistSharedDialogEnd: string;
     gistSharedDialogTitle: string;
     gistSharedDialogViewButton: string;
+    gistUpdatedDialog: string,
+    gistUpdatedDialogTitle: string,
 
     snippetCopiedConfirmation: string;
     snippetCopiedFailed: string;

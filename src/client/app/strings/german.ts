@@ -4,8 +4,8 @@ import { ClientStrings } from './index';
 // Whenever these two lines are not commented out, it means that there are
 // still strings that need to be localized.
 // Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getGermanStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -82,6 +82,8 @@ export function getGermanStrings(): ClientStrings {
         gistSharedDialogEnd: `Klicken Sie auf den Befehl ${playgroundName}, um Ihr Schnipsel zu importieren und geben Sie folgende URL an.`,
         gistSharedDialogTitle: 'Teilen Sie Ihr Schnipsel',
         gistSharedDialogViewButton: 'Bei GitHub ansehen',
+        gistUpdatedDialog: englishSubstitutesForNotYetTranslated.gistUpdatedDialog,
+        gistUpdatedDialogTitle: englishSubstitutesForNotYetTranslated.gistUpdatedDialogTitle,
 
         snippetCopiedConfirmation: `Das Schnipsel wurde in die Zwischenablage kopiert`,
         snippetCopiedFailed: 'Das Schnipsel konnte nicht in die Zwischenablage kopiert werden.',
@@ -96,7 +98,7 @@ export function getGermanStrings(): ClientStrings {
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
         aboutCurrentEnvironment: 'Aktuelle Umgebung:',
-        aboutSwitchEnvironment: 'Wechseln:',
+        aboutSwitchEnvironment: englishSubstitutesForNotYetTranslated.aboutSwitchEnvironment,
         changeEnvironmentConfirm: 'Sie sind dabei, zu einer anderen Umgebung von Script Lab zu wechseln und verlieren dadurch den Zugriff auf Ihre gespeicherten Schnipsel bis Sie wieder zu dieser Umgebung zurückkehren. Möchten Sie fortfahren?',
 
         //snippet.info.ts
@@ -114,8 +116,8 @@ export function getGermanStrings(): ClientStrings {
         shareMenuPublic: 'Neues öffentliches GitHub-Gist',
         shareMenuPrivate: 'Neues geheimes GitHub-Gist',
         updateMenu: 'Bestehendes GitHub-Gist aktualisieren',
-        sharePublicSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen öffentlichen GitHub-Gist geteilt werden soll?',
-        sharePrivateSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen geheimen GitHub-Gist geteilt werden soll?',
+        sharePublicSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm,
+        sharePrivateSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePrivateSnippetConfirm,
 
         shareMenuClipboard: 'In die Zwischenablage kopieren',
         shareMenuExport: 'Zur Veröffentlichung exportieren',
