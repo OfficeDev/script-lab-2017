@@ -55,6 +55,17 @@ The Script Lab Project includes 4 manifest files referencing to different server
 | `manifests`              | `script-lab-local.xml`    | Manifest for the locally installed version.    |
 | `manifests`              | `script-lab-prod.xml`     | Manifest for the production version.           |
 
+### Store metadata files
+
+The Office Store requires additional metadata to be submitted alongside the manifest. For localization, all the files in `store_metadata/en-us` should be reproduced in a new folder under `store_metadata` for the new language being added. For example, create `store_metadata/fr-fr` for the French (France) locale.
+
+| Folder                   | Filename                  | Description                                    |
+|:-------------------------|:--------------------------|:-----------------------------------------------|
+| `store_metadata/en-us`              | `long-description.txt`     | Description on the Office Store page. Max length is 2000 characters.                |
+| `store_metadata/en-us`              | `short-description.txt` | Description on the Office Store Page. Max length is 99 characters.              |
+| `store_metadata/en-us`              | `screenshot1.png`    | Primary screenshot on the Office Store page. Dimension must be exactly 512 px by 384 px.    |
+| `store_metadata/en-us`              | screenshots 2-5     | (optional) Secondary screenshots on the Office Store page. Dimension must be exactly 512 px by 384 px.           |
+
 <a id="create"></a>
 ## Create a new translation
 
@@ -121,7 +132,7 @@ const languageGenerator: { [key: string]: () => ClientStrings } = {
 
 Like for the server part, the two lines `import { getFrenchStrings } from './french';` and `'fr': () => getFrenchStrings(),` have been added to the code. Additionally, the new line  `{ name: 'Français', value: 'fr' }` has been added after the last entry for the list of available languages. When adding your language to this list, please do not forget to add the comma at the end of previous line.
 
-### Manifests
+### Manifest part
 
 The translations of strings within the manifest files are addressed by the XML tag `override` and an indication of the country code. So, for adding your translation, just duplicate a line from another translation, set your country code and update the text.
 
@@ -136,6 +147,10 @@ Here is an example, where the string *Help* has been translated to German and Fr
   </bt:String>
 ```
 The strings are enclosed by double quotes in the XML files. If you need to use the double quote character in your translation, please use the entity `&quot;` instead of the double quote character. If you need to use the ampersand character `&` in your translation, please use its entity `&amp;` instead.
+
+### Store metadata part
+
+Under `store_metadata`, create your locale folder. Translate the descriptions from the `store_metadata/en-us` folder. Create at least one screenshot (512 px horizontal and 384 px vertical) that shows Script Lab being used inside Office in the new locale.
 
 <a id="improve"></a>
 ## Improve an existing translation
