@@ -63,9 +63,9 @@ export class About implements AfterViewInit {
     originalLanguage = '';
 
     configs = [
-        { name: 'Production', value: 'production' },
-        { name: 'Beta', value: 'insiders' },
-        { name: 'Alpha', value: 'edge' },
+        { name: this.strings.production, value: 'production' },
+        { name: this.strings.beta, value: 'insiders' },
+        { name: this.strings.alpha, value: 'edge' },
     ];
     selectedConfig = '';
 
@@ -101,9 +101,12 @@ export class About implements AfterViewInit {
             return;
         }
 
+        let changeEnvironmentMessage = this.strings.aboutSwitchEnvironment
+            .replace('{0}', this.configs.find(c => c.value === currentConfigName).name)
+            .replace('{1}', this.configs.find(c => c.value === this.selectedConfig).name);
         let changeEnvironmentResult = await this._effects.alert(
             this.strings.changeEnvironmentConfirm,
-            `${this.strings.aboutSwitchEnvironment} ${this.configs.find(c => c.value === currentConfigName).name } to ${this.configs.find(c => c.value === this.selectedConfig).name }`,
+            changeEnvironmentMessage,
             this.strings.okButtonLabel,
             this.strings.cancelButtonLabel
         );

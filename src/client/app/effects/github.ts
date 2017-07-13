@@ -113,25 +113,26 @@ export class GitHubEffects {
             return this._github.createOrUpdateGist(
                 description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
-            .map((gist: IGist) => ({ gist: gist, snippetId: id }))
+            .map((gist: IGist) => ({ type: type, gist: gist, snippetId: id }))
             .catch(exception => {
                 if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
-                    throw new PlaygroundError(JSON.stringify({ type: 'UpdateGistFailed', snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
+                    throw new PlaygroundError(JSON.stringify({type: type, snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
                 throw exception;
             });
         })
-        .mergeMap(async ({ gist, snippetId }) => {
-            let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-            let result = await this._uiEffects.alert(`${Strings().gistSharedDialogStart}
-            
-            ${temp}
+        .mergeMap(async ({ type, gist, snippetId }) => {
+            let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+            let messageBody =
+                type === GitHub.GitHubActionTypes.UPDATE_GIST ?
+                    `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
+                    `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
+            let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
 
-            ${Strings().gistSharedDialogEnd}`,
-            Strings().gistSharedDialogTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
+            let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
             if (result === Strings().gistSharedDialogViewButton) {
-                window.open(temp);
+                window.open(gistUrl);
             }
 
             return { gist: gist, snippetId: snippetId };
@@ -146,7 +147,7 @@ export class GitHubEffects {
             if (exception instanceof PlaygroundError) {
                 try {
                     let message = JSON.parse(exception.message);
-                    if (message.hasOwnProperty('type') && message.type === 'UpdateGistFailed') {
+                    if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
                         action = new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId});
                     }
                 } catch (e) {
