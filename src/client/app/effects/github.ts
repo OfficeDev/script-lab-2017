@@ -177,7 +177,7 @@ export class GitHubEffects {
                 }
             }).on('success', async() => {
                 await this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().okButtonLabel);
-                this._store.dispatch(new GitHub.ShareSuccessAction(<IGist>{}));
+                this._store.dispatch(new GitHub.ShareSuccessAction(null));
             });
         })
         .catch(exception => Observable.from([

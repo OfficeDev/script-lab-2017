@@ -64,7 +64,7 @@ export class AppComponent {
         });
 
         this._store.select(fromRoot.getSharing).subscribe(sharing => {
-            sharing ? this.isDisabled = true : this.isDisabled = false;
+            this.isDisabled = sharing;
         });
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
