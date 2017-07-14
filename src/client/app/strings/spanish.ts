@@ -122,10 +122,10 @@ export function getSpanishStrings(): ClientStrings {
         shareMenuPublic: /** NEEDS STRING REVIEW */ 'Crear gist público',
         shareMenuPrivate: /** NEEDS STRING REVIEW */ 'Crear gist secreto',
         updateMenu: /** NEEDS STRING REVIEW */ 'Actualizar gist existente',
-        // OLD -> sharePublicSnippetConfirm: /** NEEDS STRING REVIEW */ '�Est� seguro de compartir este fragmento de c�digo en un nuevo gist publico?',
+        // OLD -> sharePublicSnippetConfirm: /** NEEDS STRING REVIEW */ '¿Está seguro de compartir este fragmento de código en un nuevo gist publico?',
         // Change to 'Are you sure you want to re-share this snippet as a brand new public gist?'
         sharePublicSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm,
-        // OLD -> sharePrivateSnippetConfirm: /** NEEDS STRING REVIEW */ '�Est� seguro de compartir este fragmento de c�digo en un nuevo gist publico?',
+        // OLD -> sharePrivateSnippetConfirm: /** NEEDS STRING REVIEW */ '¿Está seguro de compartir este fragmento de código en un nuevo gist secreto?',
         // Change to 'Are you sure you want to re-share this snippet as a brand new secret gist?'
         sharePrivateSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePrivateSnippetConfirm,
 
