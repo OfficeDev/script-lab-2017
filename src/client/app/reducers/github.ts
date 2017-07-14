@@ -47,6 +47,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
             };
         }
 
+        case GitHubActionTypes.SHARE_COPY:
         case GitHubActionTypes.SHARE_PRIVATE_GIST:
         case GitHubActionTypes.SHARE_PUBLIC_GIST:
         case GitHubActionTypes.UPDATE_GIST: {

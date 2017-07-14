@@ -10,6 +10,10 @@ command {
         display: block;
     }
 
+    &.disabled .command__dropdown {
+        display: none;
+    }
+
     &.title {
         .command {
             &__icon {

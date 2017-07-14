@@ -173,12 +173,17 @@ export class GitHubEffects {
             AI.trackEvent(GitHub.GitHubActionTypes.SHARE_COPY, { id: rawSnippet.id });
             new clipboard('#CopyToClipboard', {
                 text: () => {
-                    this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().okButtonLabel);
                     return yaml;
                 }
+            }).on('success', async() => {
+                await this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().okButtonLabel);
+                this._store.dispatch(new GitHub.ShareSuccessAction(<IGist>{}));
             });
         })
-        .catch(exception => Observable.of(this._createShowErrorAction(Strings().snippetCopiedFailed, exception)));
+        .catch(exception => Observable.from([
+            this._createShowErrorAction(Strings().snippetCopiedFailed, exception),
+            new GitHub.ShareFailedAction(exception)
+        ]));
 
 
     @Effect({ dispatch: false })
