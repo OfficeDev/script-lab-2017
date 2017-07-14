@@ -28,7 +28,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.LOGGED_IN: {
-            AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()).toString() });
+            AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()) });
             return {
                 ...state,
                 loading: false,
@@ -47,8 +47,10 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
             };
         }
 
+        case GitHubActionTypes.SHARE_COPY:
         case GitHubActionTypes.SHARE_PRIVATE_GIST:
-        case GitHubActionTypes.SHARE_PUBLIC_GIST: {
+        case GitHubActionTypes.SHARE_PUBLIC_GIST:
+        case GitHubActionTypes.UPDATE_GIST: {
             AI.trackEvent(action.type);
             return { ...state, sharing: true };
         }
@@ -59,6 +61,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.SHARE_FAILED: {
+            AI.trackEvent(action.type, { exception: action.payload });
             return { ...state, sharing: false };
         }
 

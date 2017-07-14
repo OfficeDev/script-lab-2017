@@ -6,10 +6,11 @@ interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     id?: string;
     gist?: string;
+    gistOwnerId?: string;
     name?: string;
     description?: string;
     /** author: export-only */
-    author?: string; 
+    author?: string;
     host: string;
     /** api_set: export-only (+ check at first level of import) */
     api_set?: {
@@ -59,81 +60,26 @@ interface ICompiledSnippet extends ITemplate {
     typings?: string[];
 }
 
-interface ISnippetHandlebarsContext extends ICompiledSnippet {
-    isOfficeSnippet: boolean;
-    isExternalExport: boolean;
-}
-
-interface IRunnerHandlebarsContext {
-    /** Snippet info (or null, to signify "opportunistic" runner that attaches to anything open) */
-    snippet: {
-        id: string,
-
-        /** Last modified (or 0, if want to load from scratch) */
-        lastModified?: number
-
-        /** Snippet contents (or empty, if want to read it off of the ID using the heartbeat) */
-        content?: string;
-    }
-
-    origin: string;
-    host: string;
-
-    initialLoadSubtitle: string;
-    headerTitle: string;
-
-    /** Office.js URL, or empty */
-    officeJS: string;
-
-    /** return url (for back button / errors), or empty */
-    returnUrl: string;
-}
-
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
 
     /** URL to return to (editor, or gallery view). More than just origin domain */
     returnUrl: string;
+
+    displayLanguage: string;
 }
 
 interface IExportState {
     snippet: ISnippet;
     additionalFields: ISnippet;
     sanitizedFilenameBase: string;
-}
-
-interface IErrorHandlebarsContext {
-    origin: string;
-    title: string;
-    message: string;
-    details: string;
-    expandDetailsByDefault: boolean;
-}
-
-interface IManifestHandlebarsContext {
-    name: string;
-    description: string;
-    hostType: string;
-    htmlFilename: string;
-    supportsAddinCommands: boolean;
-    snippetNameMax125: string;
-    snippetDescriptionMax250: string;
-    providerName: string;
-    guid: string;
-}
-
-interface IReadmeHandlebarsContext {
-    name: string;
-    description: string;
-    exportedOn: string;
-    isAddin: boolean;
-    addinOrWebpage: 'Add-in' | 'webpage';
+    displayLanguage: string;
 }
 
 interface IMonacoEditorState {
     name?: string;
-    view?: string;
+    displayName?: string;
     content?: string;
     language?: string;
     viewState?: monaco.editor.IEditorViewState;
@@ -169,7 +115,9 @@ interface IEnvironment {
     },
     config?: IEnvironmentConfig
     host?: string,
-    platform?: string
+    platform?: string,
+    PLAYGROUND_ORIGIN?: string,
+    PLAYGROUND_REDIRECT?: string
 }
 
 interface IEnvironmentConfig {
