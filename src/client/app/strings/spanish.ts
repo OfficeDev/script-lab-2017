@@ -52,10 +52,10 @@ export function getSpanishStrings(): ClientStrings {
         snippetRunError: 'Error al ejecutar el fragmento de código',
         snippetLoadDefaultsError: 'Error al cargar ejemplos',
 
-        snippetNoOfficeTitle: /** NEEDS STRING REVIEW */ 'No se puede ejecutar el fragmento de código',
-        snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'Sólo se pueden ejecutar fragmentos de código dentro de un Add-in para Office.  Adquiere gratuitamente Script Lab hoy en https://aka.ms/getscriptlab.',
+        snippetNoOfficeTitle:  'No se puede ejecutar el fragmento de código',
+        snippetNoOfficeMessage:  'Sólo se pueden ejecutar fragmentos de código dentro de un Add-in para Office.  Adquiere gratuitamente Script Lab hoy en https://aka.ms/getscriptlab.',
 
-        snippetUpdateError: /** NEEDS STRING REVIEW */ 'Error al actualizar el fragmento de código',
+        snippetUpdateError:  'Error al actualizar el fragmento de código',
 
         snippetValidationEmpty: `El fragmento de código no pude estar vacío`,
         snippetValidationNoTitle: 'El fragmento de código requiere un título',
@@ -79,7 +79,7 @@ export function getSpanishStrings(): ClientStrings {
         gistRetrieveFailed: 'Error al obtener gists de GitHub',
         gistDescriptionAppendage: `Compartido con ${playgroundName}`,
 
-        gistShareFailedBody: /** NEEDS STRING REVIEW */ 'Error al compartir gist de GitHub',
+        gistShareFailedBody:  'Error al compartir gist de GitHub',
         gistShareFailedTitle: 'Error al compartir',
 
         gistSharedDialogStart: 'El URL de tu gist de GitHub es:',
@@ -101,11 +101,11 @@ export function getSpanishStrings(): ClientStrings {
         aboutStorage: 'Almacenamiento:',
         aboutSnippets: 'Fragmentos de código locales',
         aboutIntellisense: 'IntelliSense',
-        aboutCurrentEnvironment: /** NEEDS STRING REVIEW */ 'Ambiente actual:',
-        // aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Cambiar:', <-- OLD
+        aboutCurrentEnvironment:  'Ambiente actual:',
+        // aboutSwitchEnvironment:  'Cambiar:', <-- OLD
         // aboutSwitchEnvironment: Change from 'Switch:' to 'Switch from {0} to {1}', where {0} and {1} are substituted params
         aboutSwitchEnvironment: englishSubstitutesForNotYetTranslated.aboutSwitchEnvironment,
-        changeEnvironmentConfirm: /** NEEDS STRING REVIEW */ 'Está por cambiar el ambiente de Script Lab y no tendrá acceso a los fragmentos de código guardados de manera local hasta que regrese al ambiente. ¿Está seguro de proceder?',
+        changeEnvironmentConfirm:  'Está por cambiar el ambiente de Script Lab y no tendrá acceso a los fragmentos de código guardados de manera local hasta que regrese al ambiente. ¿Está seguro de proceder?',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Información',
@@ -113,19 +113,19 @@ export function getSpanishStrings(): ClientStrings {
         descriptionLabel: 'Descripción',
         namePlaceholder: 'Nombre del fragmento de código',
         descriptionPlaceholder: 'Descripción del fragmento de código ',
-        gistUrlLabel: /** NEEDS STRING REVIEW */ 'URL del gist',
-        gistUrlLinkLabel: /** NEEDS STRING REVIEW */ 'Abrir en navegador',
+        gistUrlLabel:  'URL del gist',
+        gistUrlLinkLabel:  'Abrir en navegador',
 
         // Containers strings
         //app.ts
 
-        shareMenuPublic: /** NEEDS STRING REVIEW */ 'Crear gist público',
-        shareMenuPrivate: /** NEEDS STRING REVIEW */ 'Crear gist secreto',
-        updateMenu: /** NEEDS STRING REVIEW */ 'Actualizar gist existente',
-        // OLD -> sharePublicSnippetConfirm: /** NEEDS STRING REVIEW */ '¿Está seguro de compartir este fragmento de código en un nuevo gist publico?',
+        shareMenuPublic:  'Crear gist público',
+        shareMenuPrivate:  'Crear gist secreto',
+        updateMenu:  'Actualizar gist existente',
+        // OLD -> sharePublicSnippetConfirm:  '¿Está seguro de compartir este fragmento de código en un nuevo gist publico?',
         // Change to 'Are you sure you want to re-share this snippet as a brand new public gist?'
         sharePublicSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm,
-        // OLD -> sharePrivateSnippetConfirm: /** NEEDS STRING REVIEW */ '¿Está seguro de compartir este fragmento de código en un nuevo gist secreto?',
+        // OLD -> sharePrivateSnippetConfirm:  '¿Está seguro de compartir este fragmento de código en un nuevo gist secreto?',
         // Change to 'Are you sure you want to re-share this snippet as a brand new secret gist?'
         sharePrivateSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePrivateSnippetConfirm,
 
@@ -215,15 +215,15 @@ export function getSpanishStrings(): ClientStrings {
         },
 
         SideBySideInstructions: {
-            title: /** NEEDS STRING REVIEW */ 'Ejecuta el código en un panel adyacente al editor',
+            title:  'Ejecuta el código en un panel adyacente al editor',
 
-            message: /** NEEDS STRING REVIEW */[
+            message: [
                 'Para ejecutar el codigo en un panel adyacente al editor, selecciona "Ejecutar" en la barra de herraminetas.',
                 '',
                 'Ejecutar el código en un panel adyacente al editor ofrece mayor rapidez y la ventaja de mantener tu posición e historia de deshacer en el editor.'
             ].join('\n'),
 
-            gotIt: /** NEEDS STRING REVIEW */ 'Ok'
+            gotIt:  'Ok'
         },
 
         HtmlPageStrings: {
