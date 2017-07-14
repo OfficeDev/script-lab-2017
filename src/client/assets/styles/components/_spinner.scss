@@ -52,22 +52,11 @@
   text-align: center;
   line-height: 50px;
   color: #f0f0f0;
-  
-  &.left {
-    top: 25px;
-    left: -50px;
-    right: auto;
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-  }
-
-  &.right {
-    top: 25px;
-    left: auto;
-    right: -50px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-  }
+  top: 25px;
+  left: auto;
+  right: -50px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }
 
 

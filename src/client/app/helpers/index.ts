@@ -1,6 +1,7 @@
 export * from './utilities';
 export * from './exception.helper';
 export * from './theme';
+export * from './splash.screen';
 export * from './ai.helper';
 export * from './storage';
 export * from './environment';
