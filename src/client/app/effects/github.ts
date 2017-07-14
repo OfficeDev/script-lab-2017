@@ -9,9 +9,10 @@ import { Effect, Actions } from '@ngrx/effects';
 import { Http, ResponseContentType } from '@angular/http';
 import * as clipboard from 'clipboard';
 import { UIEffects } from './ui';
-import { find } from 'lodash';
+import { find, isNil } from 'lodash';
 import * as moment from 'moment';
 import * as fromRoot from '../reducers';
+import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 
 const FileSaver = require('file-saver');
 const UNKNOWN_GIST_OWNER_ID = '<unknown>'; // Intentional use of brackets that are not allowed in a GitHub ID (can only have alphanumeric characters)
@@ -112,25 +113,26 @@ export class GitHubEffects {
             return this._github.createOrUpdateGist(
                 description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
-            .map((gist: IGist) => ({ gist: gist, snippetId: id }))
+            .map((gist: IGist) => ({ type: type, gist: gist, snippetId: id }))
             .catch(exception => {
                 if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
-                    throw new PlaygroundError(JSON.stringify({ type: 'UpdateGistFailed', snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
+                    throw new PlaygroundError(JSON.stringify({type: type, snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
                 throw exception;
             });
         })
-        .mergeMap(async ({ gist, snippetId }) => {
-            let temp = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-            let result = await this._uiEffects.alert(`${Strings().gistSharedDialogStart}
-            
-            ${temp}
+        .mergeMap(async ({ type, gist, snippetId }) => {
+            let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+            let messageBody =
+                type === GitHub.GitHubActionTypes.UPDATE_GIST ?
+                    `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
+                    `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
+            let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
 
-            ${Strings().gistSharedDialogEnd}`,
-            Strings().gistSharedDialogTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
+            let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
             if (result === Strings().gistSharedDialogViewButton) {
-                window.open(temp);
+                window.open(gistUrl);
             }
 
             return { gist: gist, snippetId: snippetId };
@@ -145,7 +147,7 @@ export class GitHubEffects {
             if (exception instanceof PlaygroundError) {
                 try {
                     let message = JSON.parse(exception.message);
-                    if (message.hasOwnProperty('type') && message.type === 'UpdateGistFailed') {
+                    if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
                         action = new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId});
                     }
                 } catch (e) {
@@ -185,6 +187,12 @@ export class GitHubEffects {
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
         .map((snippet: ISnippet) => {
+            if (Utilities.platform === PlatformType.MAC || Utilities.platform === PlatformType.IOS) {
+                AI.trackEvent('Unsupported share export', { id: snippet.id });
+                this._store.dispatch(this._createShowErrorAction(Strings().snippetExportNotSupported, null));
+                return;
+            }
+
             AI.trackEvent('Share export initiated', { id: snippet.id });
 
             const additionalFields = this._getAdditionalShareableSnippetFields();
@@ -243,7 +251,9 @@ export class GitHubEffects {
     }
 
     _createShowErrorAction(message: string, exception) {
-        console.log(exception);
+        if (!isNil(exception)) {
+            console.log(exception);
+        }
 
         return new UI.ShowAlertAction({
             title: 'Error',

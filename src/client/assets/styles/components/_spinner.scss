@@ -43,7 +43,22 @@
 
 .ms-progress {
     @include center-flex();
+    width: 100%;
 }
+
+.ribbon {
+  width: 200px;
+  position: absolute;
+  text-align: center;
+  line-height: 50px;
+  color: #f0f0f0;
+  top: 25px;
+  left: auto;
+  right: -50px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
 
 
 /* loader by https://codepen.io/magnus16/pen/BKoRNw */

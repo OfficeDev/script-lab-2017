@@ -88,6 +88,11 @@ export interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
 
+    // Environment names
+    alpha: string,
+    beta: string,
+    production: string,
+
     userId: string;
 
     run: string;
@@ -156,11 +161,14 @@ export interface ClientStrings {
     gistSharedDialogEnd: string;
     gistSharedDialogTitle: string;
     gistSharedDialogViewButton: string;
+    gistUpdateUrlIsSameAsBefore: string,
+    gistUpdateSuccess: string,
 
     snippetCopiedConfirmation: string;
     snippetCopiedFailed: string;
 
     snippetExportFailed: string;
+    snippetExportNotSupported: string;
 
     // Components strings
     // about.ts
@@ -168,6 +176,9 @@ export interface ClientStrings {
     aboutStorage: string;
     aboutSnippets: string;
     aboutIntellisense: string;
+    aboutCurrentEnvironment: string;
+    aboutSwitchEnvironment: string;
+    changeEnvironmentConfirm: string;
 
     //snippet.info.ts
     snippetInfoDialogTitle: string;

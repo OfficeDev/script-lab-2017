@@ -71,7 +71,7 @@ export class AppComponent {
 
     get isGistOwned() {
         return this.profile$
-            .filter(profile => profile != null)
+            .filter(profile => (profile != null && this.snippet != null))
             .map(profile => {
                 if (isEmpty(this.snippet.gist)) {
                     return false;
@@ -179,33 +179,34 @@ export class AppComponent {
         }
 
         let sub = this.isLoggedIn$
-            .subscribe(isLoggedIn => {
+            .subscribe(async (isLoggedIn) => {
                 if (!isLoggedIn) {
                     this._store.dispatch(new GitHub.LoginAction());
                     return;
                 }
 
                 let { isPublic, isUpdate } = values;
+                let confirmationAlertIfAny = null;
                 if (isUpdate) {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
-                        .then((result: string) => {
-                            if (result !== this.strings.cancelButtonLabel) {
-                                this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
-                            }
-                        }
-                        );
+                    if (this.snippet.gist) {
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
+                    }
+
+                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                        this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    }
                 }
                 else {
-                    this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
-                        .then((result: string) => {
-                            if (result !== this.strings.cancelButtonLabel) {
-                                this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
-                            }
-                        }
-                        );
+                    if (this.snippet.gist) {
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
+                    }
+
+                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                        this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    }
                 }
 
                 if (sub && !sub.closed) {

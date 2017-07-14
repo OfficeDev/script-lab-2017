@@ -19,7 +19,14 @@
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://stackoverflow.com</AppDomain>
     <AppDomain>https://dev.office.com</AppDomain>
-    <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
+    <AppDomain>https://localhost:3000</AppDomain>
+    <AppDomain>https://localhost:3200</AppDomain>
+    <AppDomain>https://script-lab.azureedge.net</AppDomain>
+    <AppDomain>https://script-lab-runner.azureedge.net</AppDomain>
+    <AppDomain>https://bornholm-edge.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-edge.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-insiders.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
