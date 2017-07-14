@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { environment, storageSize, storage } from '../helpers';
 import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
@@ -70,8 +70,7 @@ export class About implements AfterViewInit {
     selectedConfig = '';
 
     constructor(
-        private _effects: UIEffects,
-        private _changeDetector: ChangeDetectorRef
+        private _effects: UIEffects
     ) {}
 
     ngAfterViewInit() {
@@ -112,7 +111,6 @@ export class About implements AfterViewInit {
         );
         if (changeEnvironmentResult === this.strings.cancelButtonLabel) {
             this.selectedConfig = this.configs.find(c => c.value === currentConfigName).value;
-            this._changeDetector.detectChanges();
             return;
         }
 
