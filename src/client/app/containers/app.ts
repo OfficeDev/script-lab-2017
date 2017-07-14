@@ -56,7 +56,7 @@ export class AppComponent {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _effects: UIEffects,
+        private _effects: UIEffects
     ) {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
