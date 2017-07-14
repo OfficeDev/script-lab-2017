@@ -19,7 +19,7 @@ import { isEmpty } from 'lodash';
                     <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                     <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
+                <command [ngClass]="{'disabled': isDisabled}" [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
                     <command *ngIf="isGistOwned|async" icon="Save" title="{{strings.updateMenu}}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
                     <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
                     <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
@@ -50,6 +50,7 @@ import { isEmpty } from 'lodash';
 export class AppComponent {
     snippet: ISnippet;
     isEmpty: boolean;
+    isDisabled: boolean;
 
     strings = Strings();
 
@@ -60,6 +61,10 @@ export class AppComponent {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
+        });
+
+        this._store.select(fromRoot.getSharing).subscribe(sharing => {
+            this.isDisabled = sharing;
         });
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
@@ -187,6 +192,8 @@ export class AppComponent {
 
                 let { isPublic, isUpdate } = values;
                 let confirmationAlertIfAny = null;
+                this.isDisabled = true;
+
                 if (isUpdate) {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
@@ -198,6 +205,8 @@ export class AppComponent {
                     if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
                         this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
                     }
+
+                    this.isDisabled = false;
                 }
                 else {
                     if (this.snippet.gist) {
@@ -207,6 +216,8 @@ export class AppComponent {
                     if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
                         this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
                     }
+
+                    this.isDisabled = false;
                 }
 
                 if (sub && !sub.closed) {

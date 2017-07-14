@@ -14,15 +14,18 @@ const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 
 import { getEnglishStrings } from './english';
 import { getGermanStrings } from './german';
+import { getSpanishStrings } from './spanish';
 
 let availableLanguages = [
     { name: 'English', value: 'en' },
-    { name: 'Deutsch', value: 'de' }
+    { name: 'Deutsch', value: 'de' },
+    { name: 'Español', value: 'es' }
 ];
 
 const languageGenerator: { [key: string]: () => ClientStrings } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
+    'es': () => getSpanishStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
