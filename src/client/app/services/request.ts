@@ -19,11 +19,7 @@ export class Request {
         return this._response(xhr, responseType);
     }
 
-    get<T>(url: string, responseType: ResponseTypes, headers?: Object, forceBypassCache?: boolean): Observable<T> {
-        if (forceBypassCache != null && forceBypassCache) {
-            url = url + ((url.indexOf('?') === -1) ? '?' : '&') + `timestamp=${(new Date).getTime()}`;
-        }
-
+    get<T>(url: string, responseType: ResponseTypes, headers?: Object): Observable<T> {
         let options = this._generateHeaders(headers);
         let xhr = this._http.get(url, options);
         return this._response(xhr, responseType);

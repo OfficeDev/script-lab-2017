@@ -1,13 +1,11 @@
 import '../assets/styles/error.scss';
-import { Strings } from '../app/strings';
+import { Strings } from '../app/helpers';
 
 (window as any).initializeErrorView = (expandDetailsByDefault: boolean) => {
-    const strings = Strings();
-
     const detailsElement = document.getElementById('details');
     const moreDetailsLink = document.getElementById('more-details-link');
 
-    const moreDetailsDefaultText = strings.ServerError.moreDetails;
+    const moreDetailsDefaultText = Strings.ServerError.moreDetails;
     moreDetailsLink.textContent = moreDetailsDefaultText;
 
     moreDetailsLink.onclick = () => toggleShowDetails(detailsElement.style.display === 'none' /*show*/);
@@ -33,9 +31,9 @@ import { Strings } from '../app/strings';
     function toggleShowDetails(show: boolean) {
         if (show) {
             detailsElement.style.display = 'block';
-            moreDetailsLink.innerText = '(' + strings.ServerError.hideDetails + ')';
+            moreDetailsLink.innerText = '(Hide details)';
         } else {
-            moreDetailsLink.innerText = '(' + strings.ServerError.moreDetails + ')';
+            moreDetailsLink.innerText = '(More details...)';
             detailsElement.style.display = 'none';
         }
     }

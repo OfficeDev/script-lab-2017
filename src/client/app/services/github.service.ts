@@ -96,7 +96,7 @@ export class GitHubService {
             return Observable.of([]);
         }
         let url = `${this._baseUrl}/users/${this.profile.login}/gists`;
-        return this._request.get<IGist[]>(url, ResponseTypes.JSON, this._headers, true /*force bypass of cache*/);
+        return this._request.get<IGist[]>(url, ResponseTypes.JSON, this._headers);
     }
 
     gist(id: string, sha?: string): Observable<IGist> {

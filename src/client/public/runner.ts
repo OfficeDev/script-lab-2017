@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { toNumber, assign } from 'lodash';
 import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
-import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
+import { Strings } from '../app/helpers';
 import { Messenger, MessageType } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
@@ -11,13 +11,12 @@ interface InitializationParams {
     origin: string;
     officeJS: string;
     returnUrl: string;
-    heartbeatParams: HeartbeatParams,
-    explicitlySetDisplayLanguageOrNull: string;
+    heartbeatParams: HeartbeatParams
 }
 
 (() => {
     /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
+    const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
 
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
@@ -55,11 +54,6 @@ interface InitializationParams {
         async function initializeRunnerHelper() {
             if (params.returnUrl) {
                 window.sessionStorage.playground_returnUrl = params.returnUrl;
-            }
-
-            if (params.explicitlySetDisplayLanguageOrNull) {
-                setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
-                document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
             }
 
             if (window.sessionStorage.playground_returnUrl) {
@@ -170,7 +164,7 @@ interface InitializationParams {
     function handleError(error: Error) {
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
-            candidateErrorString = Strings().Runner.unexpectedError;
+            candidateErrorString = Strings.Runner.unexpectedError;
         }
 
         $('#header-text').text('');
@@ -337,7 +331,7 @@ interface InitializationParams {
 
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
-            toggleProgress(true, Strings().Runner.reloadingOfficeJs);
+            toggleProgress(true, Strings.Runner.reloadingOfficeJs);
             window.location.href = refreshUrl;
             return;
         }
@@ -362,7 +356,7 @@ interface InitializationParams {
         $('.runner-overlay').hide();
         $('.runner-notification').hide();
 
-        toggleProgress(true, Strings().Runner.getLoadingSnippetSubtitle(name));
+        toggleProgress(true, Strings.Runner.getLoadingSnippetSubtitle(name));
 
         // Remove the frame (in case had a timer or anything else that may as well get destroyed...)
         $('.snippet-frame').remove();
@@ -418,9 +412,7 @@ interface InitializationParams {
         $headerTitle.on('mouseover', refreshLastUpdatedText);
 
         function refreshLastUpdatedText() {
-            const strings = Strings();
-            const momentText = moment(currentSnippet.lastModified).locale(getDisplayLanguageOrFake()).fromNow();
-            $headerTitle.attr('title', `${strings.HtmlPageStrings.lastUpdated} ${momentText}. ${strings.HtmlPageStrings.clickToRefresh}.`);
+            $headerTitle.attr('title', `Last updated ${moment(currentSnippet.lastModified).fromNow()}. Click to refresh`);
         }
     }
 

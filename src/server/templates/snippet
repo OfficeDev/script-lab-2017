@@ -3,7 +3,7 @@
 
 <head>
     <base href="/">
-    <title>{{strings.run}}: {{name}}</title>
+    <title>Run: {{name}}</title>
 
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />

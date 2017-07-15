@@ -4,8 +4,7 @@ There are several ways in which you can contribute to the project:
 
 1. **Log bugs or file feature suggestions**. To do this, simply file the bugs/suggestions in the Issues tab on GitHub for this project.
 2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/office-js-snippets>**.
-3. **Translations**.  In addition to English, we now support German, courtesy of a community member who liked Script Lab so much that he decided to translate it into his native language (and blazed the way for how to do translations in general)!  Translating to other languages should now be pretty simple.  Please see "[TRANSLATING.md](TRANSLATING.md)" for more details.
-4. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
+3. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
 
 
 # Running the playground from source
@@ -14,7 +13,7 @@ There are several ways in which you can contribute to the project:
 
 * Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
   * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
-* Download & install Node, version 6.9+.  In our experience, the LTS version of 6.10 and 6.11 works, whereas 8.1.2 did not, so mileage may vary. <https://nodejs.org/en>.
+* Download & install Node, version 6.9+.  <https://nodejs.org/en>.
 * Download & install Yarn, for use as an alternative for `npm install`.  Download from  <https://yarnpkg.com/en/docs/install>.  The documentation also describes why Yarn is preferable to `npm install`.
 * Install `nodemon` for global use, using
 ~~~
@@ -48,13 +47,11 @@ Note: the installation of Node JS and Yarn add paths to your operating system's 
  --------------------------------------
 ~~~
 
-6. **Importantly**, *once the `npm start` has completed and you see the message above*, **start the runner (server) by pressing `F5` within VS Code**.  Failure to do this will cause the "run" button to lead to an error (since the server, which is where the "run" code is running, is offline).  Ditto for auth, export, and other scenarios.
-
->>> NOTE: If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.  
-
-7.	Trust the certificates for both <https://localhost:3000>, <https://localhost:3100>, and <https://localhost:3200>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
+6.	Trust the certificates for both <https://localhost:3000> and <https://localhost:3100>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
 
 ![](.github/images/trust-ssl-internet-explorer.gif).
+
+7.  Start the runner (server) by pressing `F5` within VS Code.  If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.
 
 The website is now running.  To try it out in an Add-in, see the next section.
 
@@ -65,7 +62,7 @@ The website is now running.  To try it out in an Add-in, see the next section.
 
 1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `script-lab-local.xml`.
 
-2. Sideload the manifest into your office host application.  See <https://aka.ms/sideload-addins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
+2. Sideload the manifest into your office host application.  See <https://dev.office.com/docs/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
 
 
 ## General structure
@@ -96,7 +93,25 @@ There are also files related to Azure deployment, git ignores, a Travis configur
 
 # Manual-testing scenarios
 
-Please see "[TESTING.md](TESTING.md)".
+* Create a snippet -- both "new" and from a sample
+* Import someone else's snippet
+  * From YAML
+  * From Gist (incl. old-style)
+  * From Non-GitHub URL **[Currently doesn't work, [Issue #146](https://github.com/OfficeDev/script-lab/issues/146)]**.
+* Run snippet, in both in-editor runner (Office 2016 RTM and earlier, or online, or via tweaking the manifest to remove `command=true`) and via the "Run" button (`run.html`), testing that:
+  * Snippet renders correctly
+  * "Run" from editor or run gallery, in-place refresh, and full refresh all work correctly (render the snippet, don't double-refresh, etc.). The run (either type) doesn't show a "snippet needs reloading" message if the snippet is already fresh.
+  * Console log renders correctly (and scrolls correctly, if many lines)
+  * Erroneous code (e.g, syntax error) shows error correctly.
+  * Running deleted snippet has reasonable behavior.
+  * [Side-by-side runner]:
+    * Edit to code causes runner want to refresh.
+    * Whether starting from error or going to error state and back out, should act correctly.
+  * Note: when running a script on localhost, you may see two compiler warnings for a critical dependency in the console log. These two warnings always appear in debug mode and are normal.
+* Sharing:
+  * Copying to clipboard works
+  * Can share as gist
+
 
 # Tips & tricks
 
