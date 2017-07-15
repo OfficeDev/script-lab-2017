@@ -27,7 +27,7 @@ export class MonacoActionTypes {
 export class ChangeTabAction implements Action {
     readonly type = MonacoActionTypes.CHANGE_TAB;
 
-    constructor(public payload: { name: string, language: string }) {}
+    constructor(public payload: string, public language: string) { }
 }
 
 export class ResetAction implements Action {
@@ -39,13 +39,13 @@ export class ResetAction implements Action {
 export class UpdateIntellisenseAction implements Action {
     readonly type = MonacoActionTypes.UPDATE_INTELLISENSE;
 
-    constructor(public payload: { libraries: string[], language: string }) {}
+    constructor(public payload: string[], public language: string) { }
 }
 
 export class AddIntellisenseAction implements Action {
     readonly type = MonacoActionTypes.ADD_INTELLISENSE;
 
-    constructor(public payload: { url: string, language: string }) { }
+    constructor(public payload: string, public language: string) { }
 }
 
 export class UpdateIntellisenseSuccessAction implements Action {

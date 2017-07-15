@@ -1,11 +1,9 @@
 import * as ts from 'typescript';
 import { BadRequestError } from './errors';
 import { processLibraries } from './libraries.processor';
-import { ServerStrings } from '../strings';
+import { Strings } from './strings';
 
-export class SnippetGenerator {
-    constructor(private _strings: ServerStrings) { }
-
+class SnippetGenerator {
     /**
      * Compiles the snippet, and returns it as a Promise (Promise<ICompiledSnippet>)
      * Using a Promise in case some future compilation does need to be promise-ful.
@@ -14,7 +12,6 @@ export class SnippetGenerator {
         return Promise.resolve()
             .then(() => {
                 if (snippet == null) {
-                    // OK to be English-only, internal error that should never happen.
                     throw new BadRequestError('Snippet is null');
                 }
 
@@ -59,15 +56,14 @@ export class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new BadRequestError(
-                        this._strings.getSyntaxErrorsTitle(result.diagnostics.length),
+                    throw new BadRequestError(Strings.getSyntaxErrorsTitle(result.diagnostics.length),
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);
                             let afterError = content.substr(item.start + 1);
                             let lineNumber = upThroughError.split('\n').length;
                             let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
                             let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
-                            return `${this._strings.line} #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
+                            return `Line #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
                         }).join('\n\n')
                     );
                 }
@@ -78,7 +74,9 @@ export class SnippetGenerator {
                 return content;
 
             default:
-                throw new BadRequestError(`${this._strings.unrecognizedScriptLanguage} ${language}`);
+                throw new BadRequestError(`Unrecognized script language ${language}`);
         }
     }
 }
+
+export const snippetGenerator = new SnippetGenerator();

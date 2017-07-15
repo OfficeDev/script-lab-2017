@@ -108,7 +108,7 @@ export class ShareSuccessAction implements Action {
 export class ShareFailedAction implements Action {
     readonly type = GitHubActionTypes.SHARE_FAILED;
 
-    constructor(public payload: any) { }
+    constructor() { }
 }
 
 export class UpdateGistAction implements Action {

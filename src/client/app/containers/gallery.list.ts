@@ -2,8 +2,6 @@ import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from 
 import { groupBy, isEmpty } from 'lodash';
 import * as moment from 'moment';
 
-import { Strings, getDisplayLanguageOrFake } from '../strings';
-
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'gallery-list',
@@ -47,8 +45,7 @@ export class GalleryList {
     }
 
     setLastUpdatedText(item: ISnippet): void {
-        const momentText = moment(item.modified_at).locale(getDisplayLanguageOrFake()).fromNow();
-        (item as any).lastUpdatedText = item.modified_at ? `${Strings().HtmlPageStrings.lastUpdated} ${momentText}` : '';
+        (item as any).lastUpdatedText = item.modified_at ? `Last updated ${moment(item.modified_at).fromNow()}` : '';
     }
 
     static setUpMomentJsDurationDefaults() {
