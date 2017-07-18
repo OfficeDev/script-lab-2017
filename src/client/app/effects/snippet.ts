@@ -27,10 +27,8 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .switchMap(action => {
-            let data = action.payload;
-            let mode = action.mode;
-
+        .map(action => ({ data: action.payload, mode: action.mode }))
+        .switchMap(({ data, mode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
                 .filter(({ snippet }) => !(snippet == null))

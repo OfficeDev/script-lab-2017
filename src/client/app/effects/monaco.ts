@@ -59,26 +59,25 @@ export class MonacoEffects {
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
-        .switchMap(action => {
-            return this._addIntellisense(action.payload)
-                .map(() => new Monaco.UpdateIntellisenseSuccessAction())
-                .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
-
-        });
+        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload))
+        .map(() => new Monaco.UpdateIntellisenseSuccessAction())
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
 
     private _addIntellisense(payload: { url: string; language: string; }) {
         let { url, language } = payload;
         let source = this._determineSource(language);
         return Observable
             .fromPromise(MonacoService.current)
-            .mergeMap(() => this._get(url))
-            .map(file => {
-                AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha1(file.url).toString() });
-                let disposable = source.addExtraLib(file.content, file.url);
-                let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
-                return intellisense;
-            })
-            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseLoadError, exception)));
+            .switchMap(() => {
+                return this._get(url)
+                    .map(file => {
+                        AI.trackEvent(Monaco.MonacoActionTypes.ADD_INTELLISENSE, { library: sha1(file.url).toString() });
+                        let disposable = source.addExtraLib(file.content, file.url);
+                        let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
+                        return intellisense;
+                    })
+                    .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseLoadError, exception)));
+            });
     }
 
     private _parse(libraries: string[]) {
