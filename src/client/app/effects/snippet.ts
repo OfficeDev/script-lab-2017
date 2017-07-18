@@ -32,17 +32,17 @@ export class SnippetEffects {
             let mode = action.mode;
 
             return this._importRawFromSource(data, mode)
-            .map((snippet: ISnippet) => ({ snippet, mode }))
-            .filter(({ snippet }) => !(snippet == null))
-            .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
-            .catch((exception: Error) => {
-                const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
-                this._uiEffects.alert(
-                    message,
-                    Strings().snippetImportErrorTitle,
-                    Strings().okButtonLabel);
-                return Observable.from([]);
-            });
+                .map((snippet: ISnippet) => ({ snippet, mode }))
+                .filter(({ snippet }) => !(snippet == null))
+                .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+                .catch((exception: Error) => {
+                    const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
+                    this._uiEffects.alert(
+                        message,
+                        Strings().snippetImportErrorTitle,
+                        Strings().okButtonLabel);
+                    return Observable.from([]);
+                });
         });
 
     @Effect()

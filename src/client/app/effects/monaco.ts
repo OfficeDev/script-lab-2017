@@ -61,8 +61,8 @@ export class MonacoEffects {
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
         .switchMap(action => {
             return this._addIntellisense(action.payload)
-            .map(() => new Monaco.UpdateIntellisenseSuccessAction())
-            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
+                .map(() => new Monaco.UpdateIntellisenseSuccessAction())
+                .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
 
         });
 

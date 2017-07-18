@@ -32,12 +32,13 @@ export class GitHubEffects {
     login$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGIN)
         .switchMap(() => {
-            return Observable.fromPromise(this._github.login())
-            .map(profile => new GitHub.LoggedInAction(profile))
-            .catch(exception => Observable.from([
-                new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
-                new GitHub.LoginFailedAction()
-            ]));
+            return Observable
+                .fromPromise(this._github.login())
+                .map(profile => new GitHub.LoggedInAction(profile))
+                .catch(exception => Observable.from([
+                    new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
+                    new GitHub.LoginFailedAction()
+                ]));
         });
 
     @Effect({ dispatch: false })
