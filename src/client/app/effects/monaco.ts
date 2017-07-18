@@ -59,10 +59,12 @@ export class MonacoEffects {
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
-        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload))
-        .map(() => new Monaco.UpdateIntellisenseSuccessAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
+        .switchMap(action => {
+            return this._addIntellisense(action.payload)
+            .map(() => new Monaco.UpdateIntellisenseSuccessAction())
+            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
 
+        });
 
     private _addIntellisense(payload: { url: string; language: string; }) {
         let { url, language } = payload;

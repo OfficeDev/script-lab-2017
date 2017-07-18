@@ -32,8 +32,7 @@ export class GitHubEffects {
     login$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGIN)
         .switchMap(() => {
-            return Observable.of(this._github.login())
-            .mergeMap(profile => profile)
+            return Observable.fromPromise(this._github.login())
             .map(profile => new GitHub.LoggedInAction(profile))
             .catch(exception => Observable.from([
                 new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
