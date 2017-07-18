@@ -104,8 +104,8 @@ function deployBuild(url, folder) {
         // Copy previously bundled client resources to deploy along with newly generated resources
         if (url === EDITOR_URL) {
             shell.exec('git clone ' + url + ' current_build');
-            shell.exec('cp -f current_build/*.js current_build/*.css .');
-            shell.exec('cp -f current_build/bundles/*.js current_build/bundles/*.css ./bundles');
+            shell.exec('cp -n current_build/*.js current_build/*.css .');
+            shell.exec('cp -n current_build/bundles/*.js current_build/bundles/*.css ./bundles');
             shell.exec('rm -rf current_build');
         }
         shell.exec('git init');
