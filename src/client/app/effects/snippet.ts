@@ -27,18 +27,22 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map((action: Snippet.ImportAction) => ({ data: action.payload, mode: action.mode }))
-        .mergeMap(({ data, mode }) => this._importRawFromSource(data, mode), ({ mode }, snippet) => ({ mode, snippet }))
-        .filter(({ snippet }) => !(snippet == null))
-        .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
-        .catch((exception: Error) => {
-            const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
-            this._uiEffects.alert(
-                message + '\n\n' + Strings().reloadPrompt,
-                Strings().snippetImportErrorTitle,
-                Strings().okButtonLabel)
-                .then(() => window.location.reload());
-            return Observable.from([]);
+        .switchMap(action => {
+            let data = action.payload;
+            let mode = action.mode;
+
+            return this._importRawFromSource(data, mode)
+            .map((snippet: ISnippet) => ({ snippet, mode }))
+            .filter(({ snippet }) => !(snippet == null))
+            .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+            .catch((exception: Error) => {
+                const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
+                this._uiEffects.alert(
+                    message,
+                    Strings().snippetImportErrorTitle,
+                    Strings().okButtonLabel);
+                return Observable.from([]);
+            });
         });
 
     @Effect()

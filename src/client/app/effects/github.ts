@@ -31,12 +31,15 @@ export class GitHubEffects {
     @Effect()
     login$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGIN)
-        .mergeMap(() => this._github.login())
-        .map(profile => new GitHub.LoggedInAction(profile))
-        .catch(exception => Observable.from([
-            new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
-            new GitHub.LoginFailedAction()
-        ]));
+        .switchMap(() => {
+            return Observable.of(this._github.login())
+            .mergeMap(profile => profile)
+            .map(profile => new GitHub.LoggedInAction(profile))
+            .catch(exception => Observable.from([
+                new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
+                new GitHub.LoginFailedAction()
+            ]));
+        });
 
     @Effect({ dispatch: false })
     logout$: Observable<Action> = this.actions$
