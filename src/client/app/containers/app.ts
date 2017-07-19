@@ -44,6 +44,7 @@ import { isEmpty } from 'lodash';
         <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
         <import [hidden]="!(showImport$|async)"></import>
         <alert></alert>
+        <router-outlet></router-outlet>
     `
 })
 

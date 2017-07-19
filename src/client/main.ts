@@ -4,6 +4,7 @@ import { NgModule, enableProdMode } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule, Routes } from '@angular/router';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { Authenticator } from '@microsoft/office-js-helpers';
 import { StoreModule, Store } from '@ngrx/store';
@@ -15,15 +16,25 @@ import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { Strings } from './app/strings';
 import { COMPONENT_DECLARATIONS } from './components';
-import { AppComponent } from './app/containers';
+import { AppComponent, ViewComponent, PageNotFoundComponent } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
+
+let appRoutes: Routes = [
+    { path: 'view', component: ViewComponent },
+    { path: '',   redirectTo: '/', pathMatch: 'full' },
+    { path: '**', component: PageNotFoundComponent }
+];
 
 let imports = [
     BrowserModule,
     HttpModule,
     FormsModule,
+    RouterModule.forRoot(
+      appRoutes,
+      { enableTracing: true, useHash: true } // <-- debugging purposes only
+    ),
     StoreModule.provideStore(rootReducer),
     EffectsModule.run(SnippetEffects),
     EffectsModule.run(MonacoEffects),
@@ -70,7 +81,7 @@ let imports = [
 
 @NgModule({
     imports,
-    declarations: [AppComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
+    declarations: [AppComponent, ViewComponent, PageNotFoundComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
     bootstrap: [AppComponent],
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
