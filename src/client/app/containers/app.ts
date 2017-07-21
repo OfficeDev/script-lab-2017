@@ -192,7 +192,7 @@ export class AppComponent {
 
                 let { isPublic, isUpdate } = values;
                 let isGistOwned;
-                this.isGistOwned.subscribe(owned => {
+                this.isGistOwned.take(1).subscribe(owned => {
                     isGistOwned = owned;
                 });
                 let confirmationAlertIfAny = null;
