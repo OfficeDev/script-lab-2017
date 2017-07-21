@@ -95,7 +95,7 @@ export class GitHubEffects {
             GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST,
             GitHub.GitHubActionTypes.UPDATE_GIST
         )
-        .switchMap(action =>  {
+        .mergeMap(action =>  {
             let { payload, type } = action;
             let { id, name, description, gist, gistOwnerId } = payload;
             let files: IGistFiles = {};

@@ -63,6 +63,7 @@ export class MonacoEffects {
         .map(() => new Monaco.UpdateIntellisenseSuccessAction())
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
 
+
     private _addIntellisense(payload: { url: string; language: string; }) {
         let { url, language } = payload;
         let source = this._determineSource(language);

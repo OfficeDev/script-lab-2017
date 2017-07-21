@@ -28,7 +28,7 @@ export class SnippetEffects {
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
         .map(action => ({ data: action.payload, mode: action.mode }))
-        .switchMap(({ data, mode }) => {
+        .mergeMap(({ data, mode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
                 .filter(({ snippet }) => !(snippet == null))
@@ -283,7 +283,7 @@ export class SnippetEffects {
                     }
                     else {
                         /* Assume its a regular URL */
-                        return this._request.get<ISnippet>(data, ResponseTypes.YAML);
+                        return this._request.get<ISnippet>(data, ResponseTypes.YAML, true /*force bypass of cache*/);
                     }
                 }
 
