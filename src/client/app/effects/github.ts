@@ -31,12 +31,15 @@ export class GitHubEffects {
     @Effect()
     login$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGIN)
-        .mergeMap(() => this._github.login())
-        .map(profile => new GitHub.LoggedInAction(profile))
-        .catch(exception => Observable.from([
-            new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
-            new GitHub.LoginFailedAction()
-        ]));
+        .switchMap(() => {
+            return Observable
+                .fromPromise(this._github.login())
+                .map(profile => new GitHub.LoggedInAction(profile))
+                .catch(exception => Observable.from([
+                    new UI.ReportErrorAction(Strings().githubLoginFailed, exception),
+                    new GitHub.LoginFailedAction()
+                ]));
+        });
 
     @Effect({ dispatch: false })
     logout$: Observable<Action> = this.actions$
@@ -92,7 +95,8 @@ export class GitHubEffects {
             GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST,
             GitHub.GitHubActionTypes.UPDATE_GIST
         )
-        .mergeMap(({ payload, type }) => {
+        .mergeMap(action =>  {
+            let { payload, type } = action;
             let { id, name, description, gist, gistOwnerId } = payload;
             let files: IGistFiles = {};
             let gistId = null;
@@ -110,57 +114,56 @@ export class GitHubEffects {
                 gistId = gist;
             }
 
-            return this._github.createOrUpdateGist(
+            return (this._github.createOrUpdateGist(
                 description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
             .map((gist: IGist) => ({ type: type, gist: gist, snippetId: id }))
             .catch(exception => {
                 if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
-                    throw new PlaygroundError(JSON.stringify({type: type, snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
+                    throw new PlaygroundError(JSON.stringify({ type: type, snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                 }
                 throw exception;
-            });
-        })
-        .mergeMap(async ({ type, gist, snippetId }) => {
-            let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
-            let messageBody =
-                type === GitHub.GitHubActionTypes.UPDATE_GIST ?
-                    `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
-                    `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
-            let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
+            }))
+            .mergeMap(async ({ type, gist, snippetId }) => {
+                let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+                let messageBody =
+                    type === GitHub.GitHubActionTypes.UPDATE_GIST ?
+                        `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
+                        `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
+                let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
 
-            let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
+                let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
 
-            if (result === Strings().gistSharedDialogViewButton) {
-                window.open(gistUrl);
-            }
-
-            return { gist: gist, snippetId: snippetId };
-        })
-        .mergeMap(({ gist, snippetId }) => Observable.from([
-                new GitHub.LoadGistsAction(),
-                new GitHub.ShareSuccessAction(gist),
-                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
-        )
-        .catch(exception => {
-            let action: Action = new GitHub.ShareFailedAction(exception);
-            if (exception instanceof PlaygroundError) {
-                try {
-                    let message = JSON.parse(exception.message);
-                    if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
-                        action = new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId});
-                    }
-                } catch (e) {
-                    return Observable.of(action);
+                if (result === Strings().gistSharedDialogViewButton) {
+                    window.open(gistUrl);
                 }
-            }
 
-            this._uiEffects.alert(
-                Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
-                Strings().gistShareFailedTitle,
-                Strings().okButtonLabel)
-            .then(() => window.location.reload());
-            return Observable.of(action);
+                return { gist: gist, snippetId: snippetId };
+            })
+            .mergeMap(({ gist, snippetId }) => Observable.from([
+                    new GitHub.LoadGistsAction(),
+                    new GitHub.ShareSuccessAction(gist),
+                    new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+            )
+            .catch(exception => {
+                let actions: Action[] = [new GitHub.ShareFailedAction(exception)];
+                if (exception instanceof PlaygroundError) {
+                    try {
+                        let message = JSON.parse(exception.message);
+                        if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
+                            actions.push(new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId}));
+                        }
+                    } catch (e) {
+                        return Observable.from(actions);
+                    }
+                }
+
+                this._uiEffects.alert(
+                    Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
+                    Strings().gistShareFailedTitle,
+                    Strings().okButtonLabel);
+                return Observable.from(actions);
+            });
         });
 
     @Effect({ dispatch: false })
