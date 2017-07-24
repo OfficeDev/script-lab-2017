@@ -135,7 +135,7 @@ function deployBuild(url, folder) {
 
 function buildAssetHistory(url) {
     shell.exec('git clone ' + url + ' current_build');
-    shell.exec('cp -n current_build/*.js current_build/*.css .');
+    shell.cp('-n', ['current_build/*.js', 'current_build/*.css'], '.');
     let now = (new Date().getTime()) / 1000;
     let oldHistoryPath = path.resolve(__dirname, 'current_build/history.json');
     let newHistoryPath = path.resolve(__dirname, 'history.json');
