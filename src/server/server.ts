@@ -120,6 +120,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
             });
 
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
         });
 
@@ -317,6 +318,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
             }
 
             timer.stop();
+            res.setHeader('Cache-Control', 'no-cache, no-store');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
 }
@@ -432,6 +434,7 @@ async function errorHandler(res: express.Response, error: Error, strings: Server
     }
 
     const html = await generateErrorHtml(error, strings);
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     return res.contentType('text/html').status(200).send(html);
 }
 
