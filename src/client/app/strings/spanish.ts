@@ -4,21 +4,21 @@ import { ClientStrings } from './index';
 // Whenever these two lines are not commented out, it means that there are
 // still strings that need to be localized.
 // Just search for "englishSubstitutesForNotYetTranslated" in this file
-import { getEnglishStrings } from './english';
-const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// import { getEnglishStrings } from './english';
+// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getSpanishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
 
     return {
         playgroundName: playgroundName,
-        playgroundTagline: 'Codifica ? Ejecuta ? Comparte',
+        playgroundTagline: 'Codifica ● Ejecuta ● Comparte',
 
         userId: 'ID de usuario',
 
-        alpha: englishSubstitutesForNotYetTranslated.alpha,
-        beta: englishSubstitutesForNotYetTranslated.beta,
-        production: englishSubstitutesForNotYetTranslated.production,
+        alpha: 'Alfa',
+        beta: 'Beta',
+        production: 'Producción',
 
         run: 'Ejecutar',
         runInThisPane: 'Ejecuta el código en este panel',
@@ -86,8 +86,8 @@ export function getSpanishStrings(): ClientStrings {
         gistSharedDialogEnd: `Para importar tu fragmento de código, presiona el boton Importar en ${playgroundName} y proporciona este URL.`,
         gistSharedDialogTitle: 'Comparte tu fragmento de código',
         gistSharedDialogViewButton: 'Ver en GitHub',
-        gistUpdateUrlIsSameAsBefore: englishSubstitutesForNotYetTranslated.gistUpdateUrlIsSameAsBefore,
-        gistUpdateSuccess: englishSubstitutesForNotYetTranslated.gistUpdateSuccess,
+        gistUpdateUrlIsSameAsBefore: 'El URL de tu gist modificado no cambió',
+        gistUpdateSuccess: 'Fragmento de código modificado exitosamente',
 
         snippetCopiedConfirmation: `Tu fragmento de código esta copiado en el clipboard`,
         snippetCopiedFailed: 'Error al copiar el fragmento de código en el clipboard',
@@ -102,9 +102,7 @@ export function getSpanishStrings(): ClientStrings {
         aboutSnippets: 'Fragmentos de código locales',
         aboutIntellisense: 'IntelliSense',
         aboutCurrentEnvironment:  'Ambiente actual:',
-        // aboutSwitchEnvironment:  'Cambiar:', <-- OLD
-        // aboutSwitchEnvironment: Change from 'Switch:' to 'Switch from {0} to {1}', where {0} and {1} are substituted params
-        aboutSwitchEnvironment: englishSubstitutesForNotYetTranslated.aboutSwitchEnvironment,
+        aboutSwitchEnvironment: 'Cambiar de {0} a {1}:',
         changeEnvironmentConfirm:  'Está por cambiar el ambiente de Script Lab y no tendrá acceso a los fragmentos de código guardados de manera local hasta que regrese al ambiente. ¿Está seguro de proceder?',
 
         //snippet.info.ts
@@ -122,12 +120,8 @@ export function getSpanishStrings(): ClientStrings {
         shareMenuPublic:  'Crear gist público',
         shareMenuPrivate:  'Crear gist secreto',
         updateMenu:  'Actualizar gist existente',
-        // OLD -> sharePublicSnippetConfirm:  '¿Está seguro de compartir este fragmento de código en un nuevo gist publico?',
-        // Change to 'Are you sure you want to re-share this snippet as a brand new public gist?'
-        sharePublicSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm,
-        // OLD -> sharePrivateSnippetConfirm:  '¿Está seguro de compartir este fragmento de código en un nuevo gist secreto?',
-        // Change to 'Are you sure you want to re-share this snippet as a brand new secret gist?'
-        sharePrivateSnippetConfirm: englishSubstitutesForNotYetTranslated.sharePrivateSnippetConfirm,
+        sharePublicSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist público?englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm',
+        sharePrivateSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist secreto?',
 
         shareMenuClipboard: 'Copiar al clipboard',
         shareMenuExport: 'Exportar para publicación',
