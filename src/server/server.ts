@@ -434,6 +434,7 @@ async function errorHandler(res: express.Response, error: Error, strings: Server
     }
 
     const html = await generateErrorHtml(error, strings);
+    res.setHeader('Cache-Control', 'no-cache, no-store');
     return res.contentType('text/html').status(200).send(html);
 }
 
