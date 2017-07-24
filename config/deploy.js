@@ -1,6 +1,7 @@
 #!/usr/bin/env node --harmony
 
 let path = require('path');
+let fs = require('fs');
 let chalk = require('chalk');
 let _ = require('lodash');
 let { build, config } = require('./env.config');
@@ -101,6 +102,9 @@ function deployBuild(url, folder) {
         let next_path = path.resolve(folder);
         shell.cd(next_path);
         const start = Date.now();
+        if (url === EDITOR_URL) {
+            buildAssetHistory(url);
+        }
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
         shell.exec('git config --add user.email "travis.ci@microsoft.com"');
@@ -127,6 +131,42 @@ function deployBuild(url, folder) {
         log('Deployment failed...', 'red');
         console.log(error);
     }
+}
+
+function buildAssetHistory(url) {
+    shell.exec('git clone ' + url + ' current_build');
+    let now = (new Date().getTime()) / 1000;
+    let oldHistoryPath = path.resolve(__dirname, 'current_build/history.json');
+    let newHistoryPath = path.resolve(__dirname, 'history.json');
+    let oldAssetsPath = path.resolve(__dirname, 'current_build/bundles');
+    let newAssetsPath = path.resolve(__dirname, 'bundles');
+
+    // Parse old history file if it exists
+    let history = {};
+    try {
+        history = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
+    } catch (e) {}
+
+    // Add new asset files to history, with current timestamp
+    let newAssets = fs.readdirSync(newAssetsPath);
+    for (asset of newAssets) {
+        history[asset] = { time: now };
+    }
+
+    try {
+        fs.accessSync(oldAssetsPath);
+        let existingAssets = fs.readdirSync(oldAssetsPath);
+        for (asset of existingAssets) {
+            let assetPath = path.resolve(newAssetsPath, asset);
+            // Check if old assets don't name-conflict and are less than six months old
+            if (!fs.existsSync(assetPath) && (now - history[asset].time < 15768000)) {
+                fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
+            }
+        }
+    } catch (e) {}
+
+    fs.writeFileSync(newHistoryPath, JSON.stringify(history));
+    shell.exec('rm -rf current_build');
 }
 
 function log(message, color) {
