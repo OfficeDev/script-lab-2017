@@ -120,7 +120,7 @@ export function getSpanishStrings(): ClientStrings {
         shareMenuPublic:  'Crear gist público',
         shareMenuPrivate:  'Crear gist secreto',
         updateMenu:  'Actualizar gist existente',
-        sharePublicSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist público?englishSubstitutesForNotYetTranslated.sharePublicSnippetConfirm',
+        sharePublicSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist público?',
         sharePrivateSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist secreto?',
 
         shareMenuClipboard: 'Copiar al clipboard',
