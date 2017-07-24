@@ -103,7 +103,7 @@ function deployBuild(url, folder) {
         shell.cd(next_path);
         const start = Date.now();
         if (url === EDITOR_URL) {
-            buildAssetHistory(url);
+            buildAssetHistory(url, folder);
         }
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
