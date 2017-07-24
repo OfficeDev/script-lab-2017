@@ -192,6 +192,10 @@ export class AppComponent {
                 }
 
                 let { isPublic, isUpdate } = values;
+                let isGistOwned;
+                this.isGistOwned.take(1).subscribe(owned => {
+                    isGistOwned = owned;
+                });
                 let confirmationAlertIfAny = null;
                 this.isDisabled = true;
 
@@ -199,7 +203,7 @@ export class AppComponent {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    if (this.snippet.gist) {
+                    if (isGistOwned && this.snippet.gist) {
                         confirmationAlertIfAny = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
                     }
 
@@ -210,7 +214,7 @@ export class AppComponent {
                     this.isDisabled = false;
                 }
                 else {
-                    if (this.snippet.gist) {
+                    if (isGistOwned && this.snippet.gist) {
                         confirmationAlertIfAny = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
                     }
 
