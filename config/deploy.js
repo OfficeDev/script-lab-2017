@@ -137,10 +137,10 @@ function buildAssetHistory(url, folder) {
     shell.exec('git clone ' + url + ' current_build');
     shell.cp('-n', ['current_build/*.js', 'current_build/*.css'], '.');
     let now = (new Date().getTime()) / 1000;
-    let oldHistoryPath = path.resolve(folder, 'current_build/history.json');
-    let newHistoryPath = path.resolve(folder, 'history.json');
-    let oldAssetsPath = path.resolve(folder, 'current_build/bundles');
-    let newAssetsPath = path.resolve(folder, 'bundles');
+    let oldHistoryPath = path.resolve('current_build/history.json');
+    let newHistoryPath = path.resolve('history.json');
+    let oldAssetsPath = path.resolve('current_build/bundles');
+    let newAssetsPath = path.resolve('bundles');
 
     // Parse old history file if it exists
     let history = {};
@@ -148,10 +148,12 @@ function buildAssetHistory(url, folder) {
         history = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
     }
 
-    // Add new asset files to history, with current timestamp
+    // Add new asset files to history, with current timestamp; exclude chunk files
     let newAssets = fs.readdirSync(newAssetsPath);
     for (asset of newAssets) {
-        history[asset] = { time: now };
+        if (!(/chunk.js/i.test(asset))) {
+            history[asset] = { time: now };
+        }
     }
 
     let existingAssets = [];
@@ -163,13 +165,13 @@ function buildAssetHistory(url, folder) {
     for (asset of existingAssets) {
         let assetPath = path.resolve(newAssetsPath, asset);
         // Check if old assets don't name-conflict and are less than six months old
-        if (!fs.existsSync(assetPath) && (now - history[asset].time < 15768000)) {
+        if (history[asset] && !fs.existsSync(assetPath) && (now - history[asset].time < 15768000)) {
             fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
         }
     }
 
     fs.writeFileSync(newHistoryPath, JSON.stringify(history));
-    shell.exec('rm -rf current_build');
+    shell.rm('-rf', 'current_build');
 }
 
 function log(message, color) {
