@@ -103,7 +103,7 @@ function deployBuild(url, folder) {
         shell.cd(next_path);
         const start = Date.now();
         if (url === EDITOR_URL) {
-            buildAssetHistory(url);
+            buildAssetHistory(url, folder);
         }
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
@@ -133,14 +133,14 @@ function deployBuild(url, folder) {
     }
 }
 
-function buildAssetHistory(url) {
+function buildAssetHistory(url, folder) {
     shell.exec('git clone ' + url + ' current_build');
-    shell.exec('cp -n current_build/*.js current_build/*.css .');
+    shell.cp('-n', ['current_build/*.js', 'current_build/*.css'], '.');
     let now = (new Date().getTime()) / 1000;
-    let oldHistoryPath = path.resolve(__dirname, 'current_build/history.json');
-    let newHistoryPath = path.resolve(__dirname, 'history.json');
-    let oldAssetsPath = path.resolve(__dirname, 'current_build/bundles');
-    let newAssetsPath = path.resolve(__dirname, 'bundles');
+    let oldHistoryPath = path.resolve(folder, 'current_build/history.json');
+    let newHistoryPath = path.resolve(folder, 'history.json');
+    let oldAssetsPath = path.resolve(folder, 'current_build/bundles');
+    let newAssetsPath = path.resolve(folder, 'bundles');
 
     // Parse old history file if it exists
     let history = {};
