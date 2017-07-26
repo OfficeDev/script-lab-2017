@@ -65,7 +65,7 @@ export class ImportSuccessAction implements Action {
 export class UpdateInfoAction implements Action {
     readonly type = SnippetActionTypes.UPDATE_INFO;
 
-    constructor(public payload: { name: string, description: string }) { }
+    constructor(public payload: { id: string, name?: string, description?: string, gist?: string, gistOwnerId?: string }) { }
 }
 
 export class RunAction implements Action {
@@ -154,6 +154,7 @@ export type SnippetActions
     | DeleteAction
     | DeleteAllAction
     | StoreUpdatedAction
+    | UpdateInfoAction
     | LoadSnippetsAction
     | LoadSnippetsSuccessAction
     | LoadTemplatesAction

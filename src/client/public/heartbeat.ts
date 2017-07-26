@@ -1,5 +1,6 @@
 import { toNumber } from 'lodash';
-import { environment, storage, Strings, Messenger, MessageType } from '../app/helpers';
+import { environment, storage, Messenger, MessageType } from '../app/helpers';
+import { Strings } from '../app/strings';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
@@ -83,7 +84,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 trackingSnippet.id = storage.lastOpened.id;
                 snippet = storage.lastOpened;
             } else {
-                messenger.send(window.parent, MessageType.ERROR, Strings.Runner.noSnippetIsCurrentlyOpened);
+                messenger.send(window.parent, MessageType.ERROR, Strings().Runner.noSnippetIsCurrentlyOpened);
                 return;
             }
         }
@@ -94,7 +95,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 lastModified: 0
             };
 
-            messenger.send(window.parent, MessageType.ERROR, Strings.Runner.snippetNoLongerExists);
+            messenger.send(window.parent, MessageType.ERROR, Strings().Runner.snippetNoLongerExists);
             return;
         }
 

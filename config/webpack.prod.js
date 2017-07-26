@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.common.js');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;
@@ -11,8 +12,21 @@ module.exports = (env) =>
 
         output: {
             path: path.resolve('./dist/client'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[id].chunk.js'
+            filename: 'bundles/[name].[chunkhash].bundle.js',
+            chunkFilename: 'bundles/[id].chunk.js'
+        },
+
+        module: {
+            rules: [
+                {
+                    test: /\.scss$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: "style-loader",
+                        use: ['css-loader', 'postcss-loader', 'sass-loader']
+                    }),
+                    exclude: /theme/
+                }
+            ]
         },
 
         performance: {
@@ -42,6 +56,7 @@ module.exports = (env) =>
         },
 
         plugins: [
+            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css'),
             new webpack.optimize.UglifyJsPlugin({
                 sourceMap: true,
                 compress: true,

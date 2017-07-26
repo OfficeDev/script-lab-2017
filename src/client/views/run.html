@@ -3,6 +3,8 @@
 
 <head>
 	<base href="/">
+
+	<!--Note: title below will get localized at runtime-->
 	<title>Run</title>
 
 	<meta charset="UTF-8">
@@ -32,10 +34,13 @@
 	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 	<app class="app">
 		<div id="progress" class="ms-progress-component">
+			<div id="ribbon" class="ribbon"></div>
 			<main class="ms-progress-component__main">
 				<img class="ms-progress-component__logo" src="../assets/images/icon-large.svg" />
 				<h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
-				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Loading runner...</p>
+
+				<!--Note: text below will get localized at runtime, and is hidden (but still taking up screen layout space) until then:-->
+				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m" style="visibility:hidden">Loading runner...</p>
 			</main>
 			<footer class="ms-progress-component__footer">
 				<div class="ms-progress">
@@ -51,7 +56,10 @@
 				</div>
 			</footer>
 			<div id="hosts" class="ms-u-slideUpIn20">
-				<p>Choose your host:</p>
+
+				<!--Note: text below will get localized at runtime, and is hidden (but still taking up screen layout space) until then:-->
+				<p id="choose-your-host" style="visibility:hidden">Choose your host:</p>
+
 				<div class="buttons">
 					<div class="hostButton ms-Icon ms-Icon--Globe" data-host="WEB"></div>
 					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--excel" data-host="EXCEL"></div>
@@ -68,23 +76,23 @@
 				<section class="gallery-list">
 					<div id="last-opened-header" class="command__bar command--light">
 						<div class="command__title ms-u-slideLeftIn10">
-							<span class="ms-font-m ms-u-slideLeftIn10">Last opened snippet</span>
+							<span id="last-opened-header-text" class="ms-font-m ms-u-slideLeftIn10"><!--Last opened snippet--></span>
 						</div>
 					</div>
 					<section id="last-opened" class="gallery-list__group ms-u-slideUpIn10">
 					</section>
 					<div id="last-opened-empty" class="gallery-list__message ms-font-m ms-u-slideUpIn10">
-						You have no last opened snippet. To get started, create or import a snippet via the 'Code' button.
+						<!--You have no last opened snippet.--> <!--To get started, create or import a snippet via the "Code" button.-->
 					</div>
 					<div class="command__bar command--light" style="margin-top: 15px">
 						<div class="command__title ms-u-slideLeftIn10">
-							<span class="ms-font-m ms-u-slideLeftIn10">My saved snippets</span>
+							<span id="my-saved-snippets" class="ms-font-m ms-u-slideLeftIn10"><!--My saved snippets--></span>
 						</div>
 					</div>
 					<section id="snippet-list" class="gallery-list__group ms-u-slideUpIn10">
 					</section>
 					<div id="snippet-list-empty" class="gallery-list__message ms-font-m ms-u-slideUpIn10">
-						You have no local snippets. To get started, create or import a snippet via the 'Code' button.
+						<!--You have no local snippets.--> <!--To get started, create or import a snippet via the "Code" button.-->
 					</div>
 				</section>
 			</section>

@@ -2,14 +2,14 @@
 <html>
 
 <head>
-    <title>Run snippet</title>
+    <title>{{strings.runPageTitle}}</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
-    <link rel="stylesheet" href="{{{origin}}}/runner.bundle.css" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
     <style>
         /** On this particular page, adjust progress so that it keeps the header visible */
         #progress {
@@ -63,7 +63,7 @@
     </app>
 
     <header id="header" class="command__bar" style="visibility:hidden">
-        <a id="header-back" style="display:none" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="Back">
+        <a id="header-back" style="display:none" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="{{strings.back}}">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>
         <a id="header-refresh" class="command__icon command__center ms-u-slideLeftIn10" href="#">
@@ -71,7 +71,7 @@
             <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
         <!-- (tooltip (title attribute))-->
-        <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="Switch to the snippet that you're editing.">
+        <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="{{strings.switchToSnippet}}">
             <i class="ms-Icon ms-Icon--Switch"></i>
         </div>
         <div id="padding-for-personality-menu" style="width: 0px"></div>
@@ -80,15 +80,15 @@
     <div id="notify-current-snippet-changed" class="runner-notification ms-MessageBar ms-MessageBar--info" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
-                You changed the code in this snippet. Refresh this pane to run the new version.
+                {{strings.snippetCodeChanged}}
             </div>
 
             <div class="buttons" style="text-align: right;">
                 <button class="action-fast-reload ms-Button host-colored-button">
-                    <span class="ms-Button-label">Refresh</span>
+                    <span class="ms-Button-label">{{strings.refresh}}</span>
                 </button>
                 <button class="action-dismiss ms-Button host-colored-button">
-                    <span class="ms-Button-label">Dismiss</span>
+                    <span class="ms-Button-label">{{strings.dismiss}}</span>
                 </button>
             </div>
         </div>
@@ -97,7 +97,7 @@
     <div id="notify-another-snippet-selected" class="runner-notification ms-MessageBar ms-MessageBar--info" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
-                You're now editing a different snippet: "<span class="snippet-name"></span>". Refresh this pane to run it.
+                {{strings.editingDifferentSnippet1}}: "<span class="snippet-name"></span>". {{strings.editingDifferentSnippet2}}.
             </div>
 
             <div class="buttons" style="text-align: right;">
@@ -119,13 +119,13 @@
 
             <div class="buttons" style="text-align: right;">
                 <button class="action-back ms-Button host-colored-button">
-                    <span class="ms-Button-label">Back</span>
+                    <span class="ms-Button-label">{{strings.back}}</span>
                 </button>
                 <button class="action-fast-reload ms-Button host-colored-button">
-                    <span class="ms-Button-label">Load the latest snippet</span>
+                    <span class="ms-Button-label">{{strings.loadLatestSnippet}}</span>
                 </button>
                 <button class="action-dismiss ms-Button host-colored-button">
-                    <span class="ms-Button-label">Dismiss</span>
+                    <span class="ms-Button-label">{{strings.dismiss}}</span>
                 </button>
             </div>
         </div>
@@ -150,9 +150,9 @@
     {{!-- "position:absolute" FirebugUI element                                     --}}
     <div id="firebug-shadow"></div>
 
-    <script src="{{{origin}}}/polyfills.bundle.js"></script>
-    <script src="{{{origin}}}/vendor.bundle.js"></script>
-    <script src="{{{origin}}}/runner.bundle.js"></script>
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.runner.js}}}"></script>
 
     <script type="text/javascript">
         window.initializeRunner({
@@ -166,7 +166,8 @@
                 {{/if}}
                 id: '{{{snippet.id}}}',
                 host: '{{{host}}}'
-            }
+            },
+            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
         });
     </script>
 </body>

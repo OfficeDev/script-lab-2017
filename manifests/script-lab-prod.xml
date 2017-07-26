@@ -9,7 +9,10 @@
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
-  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." />
+  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
+    <Override Locale="de" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
+    <Override Locale="es" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+  </Description>
   <IconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-64.png" />
   <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
@@ -17,7 +20,14 @@
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://stackoverflow.com</AppDomain>
     <AppDomain>https://dev.office.com</AppDomain>
-    <AppDomain>https://script-lab-runner.azureedge.net</AppDomain>  
+    <AppDomain>https://localhost:3000</AppDomain>
+    <AppDomain>https://localhost:3200</AppDomain>
+    <AppDomain>https://script-lab.azureedge.net</AppDomain>
+    <AppDomain>https://script-lab-runner.azureedge.net</AppDomain>
+    <AppDomain>https://bornholm-edge.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-edge.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-insiders.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
@@ -450,31 +460,91 @@
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="Script Lab" />
         <bt:String id="PG.GroupLabel" DefaultValue="Script" />
-        <bt:String id="PG.AboutGroupLabel" DefaultValue="About Script Lab" />
-        <bt:String id="PG.ApiGroupLabel" DefaultValue="About the APIs" />
+        <bt:String id="PG.AboutGroupLabel" DefaultValue="About Script Lab">
+          <Override Locale="de" Value="Über Script Lab"/>
+	  <Override Locale="es" Value="Acerca de Script Lab"/>
+        </bt:String>
+        <bt:String id="PG.ApiGroupLabel" DefaultValue="About the APIs">
+          <Override Locale="de" Value="Über die APIs"/>
+	  <Override Locale="es" Value="Acerca de las APIs"/>
+        </bt:String>
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.Title" DefaultValue="Code" />
-        <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets" />
-        <bt:String id="PG.RunCommand.Label" DefaultValue="Run" />
-        <bt:String id="PG.RunCommand.Title" DefaultValue="Run" />
-        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet" />
+        <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets">
+          <Override Locale="de" Value="Erstellen oder Editieren von Code-Schnipseln"/>
+	  <Override Locale="es" Value="Crea o edita fragmentos de código"/>
+        </bt:String>
+        <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
+          <Override Locale="de" Value="Ausführen"/>
+	  <Override Locale="es" Value="Ejecutar"/>
+        </bt:String>
+        <bt:String id="PG.RunCommand.Title" DefaultValue="Run">
+          <Override Locale="de" Value="Ausführen"/>
+          <Override Locale="es" Value="Ejecutar"/>
+        </bt:String>
+        <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet">
+          <Override Locale="de" Value="Code-Schnipsel ausführen"/>
+          <Override Locale="es" Value="Ejecuta el fragmento de código"/>
+        </bt:String>
         <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
-        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial" />
-        <bt:String id="PG.HelpCommand.Label" DefaultValue="Help" />
-        <bt:String id="PG.HelpCommand.TipTitle" DefaultValue="Help for Script Lab" />
-        <bt:String id="PG.ApiDocsCommand.Label" DefaultValue="Reference Docs" />
-        <bt:String id="PG.ApiDocsCommand.TipTitle" DefaultValue="API Reference Documentation" />
-        <bt:String id="PG.AskCommand.Label" DefaultValue="Ask the Community" />
-        <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API help from the community" />
+        <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial">
+          <Override Locale="de" Value="Tutorial zu Script Lab"/>
+          <Override Locale="es" Value="Tutorial de Script Lab"/>
+        </bt:String>
+        <bt:String id="PG.HelpCommand.Label" DefaultValue="Help">
+          <Override Locale="de" Value="Hilfe"/>
+          <Override Locale="es" Value="Ayuda"/>
+        </bt:String>
+        <bt:String id="PG.HelpCommand.TipTitle" DefaultValue="Help for Script Lab">
+          <Override Locale="de" Value="Hilfe zu Script Lab"/>
+          <Override Locale="es" Value="Ayuda de Script Lab"/>
+        </bt:String>
+        <bt:String id="PG.ApiDocsCommand.Label" DefaultValue="Reference Docs">
+          <Override Locale="de" Value="Dokumentation"/>
+          <Override Locale="es" Value="Documentación"/>
+        </bt:String>
+        <bt:String id="PG.ApiDocsCommand.TipTitle" DefaultValue="API Reference Documentation">
+          <Override Locale="de" Value="API-Dokumentation"/>
+          <Override Locale="es" Value="Documentación de la API"/>
+        </bt:String>
+        <bt:String id="PG.AskCommand.Label" DefaultValue="Ask the Community">
+          <Override Locale="de" Value="Community"/>
+          <Override Locale="es" Value="Comunidad"/>
+        </bt:String>
+        <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API help from the community">
+          <Override Locale="de" Value="Unterstützung durch die Community"/>
+          <Override Locale="es" Value="Obtén ayuda de nuestra comunidad"/>
+        </bt:String>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor" />
-        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet" />
-        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial" />
-        <bt:String id="PG.HelpCommand.Desc" DefaultValue="Launches documentation on using Script Lab" />
-        <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running" />
-        <bt:String id="PG.AskCommand.Desc" DefaultValue="Launches a community forum for questions about the Office JavaScript APIs" />
-        <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office." />
+        <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor">
+          <Override Locale="de" Value="Den Script Lab Code-Editor aufrufen."/>
+          <Override Locale="es" Value="Abre el editor de código de Script Lab."/>
+        </bt:String>
+        <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
+          <Override Locale="de" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
+          <Override Locale="es" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+        </bt:String>
+        <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial">
+          <Override Locale="de" Value="Ein Tutorial zu Script Lab aufrufen."/>
+          <Override Locale="es" Value="Abre un breve tutorial de Script Lab."/>
+        </bt:String>
+        <bt:String id="PG.HelpCommand.Desc" DefaultValue="Launches documentation on using Script Lab">
+          <Override Locale="de" Value="Die Dokumentation zu Script Lab aufrufen."/>
+          <Override Locale="es" Value="Abre la documentación acerca del uso de Script Lab."/>
+        </bt:String>
+        <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running">
+          <Override Locale="de" Value="Die JavaScript API-Dokumentation (Englisch) für die aktuelle Office-Anwendung aufrufen."/>
+          <Override Locale="es" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+        </bt:String>
+        <bt:String id="PG.AskCommand.Desc" DefaultValue="Launches a community forum for questions about the Office JavaScript APIs">
+          <Override Locale="de" Value="Ein Community-Forum (Englisch) für Fragen und Antworten rund um das Office JavaScript API aufrufen."/>
+          <Override Locale="es" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+        </bt:String>
+        <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office.">
+          <Override Locale="de" Value="JavaScript-Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <Override Locale="es" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+        </bt:String>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

@@ -1,12 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
+const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config } = require('./env.config');
+const { build, config, RedirectPlugin, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = require('./env.config');
 const { GH_SECRETS } = process.env;
 
 module.exports = (prodMode) =>
@@ -14,6 +14,10 @@ module.exports = (prodMode) =>
         context: path.resolve('./src/client'),
 
         entry: {
+            indexScript: './public/index.script.ts',
+            runScript: './public/run.script.ts',
+            tutorialScript: './public/tutorial.script.ts',
+
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
             main: './main.ts',
@@ -21,7 +25,7 @@ module.exports = (prodMode) =>
             gallery: './public/gallery.ts',
             heartbeat: './public/heartbeat.ts',
             runner: './public/runner.ts',
-            error: './public/error.ts'
+            error: './public/error.ts',
         },
 
         resolve: {
@@ -38,14 +42,6 @@ module.exports = (prodMode) =>
                     test: /\.ts$/,
                     use: 'awesome-typescript-loader?configFileName=tsconfig.webpack.json',
                     exclude: /node_modules/
-                },
-                {
-                    test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
-                        use: ['css-loader', 'postcss-loader', 'sass-loader']
-                    }),
-                    exclude: /theme/
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
@@ -66,7 +62,9 @@ module.exports = (prodMode) =>
                 PLAYGROUND: JSON.stringify({
                     devMode: !prodMode,
                     build: build,
-                    config: config
+                    config: config,
+                    PLAYGROUND_ORIGIN: PLAYGROUND_ORIGIN,
+                    PLAYGROUND_REDIRECT: PLAYGROUND_REDIRECT
                 })
             }),
             new webpack.LoaderOptionsPlugin({
@@ -80,8 +78,11 @@ module.exports = (prodMode) =>
                     }
                 }
             }),
+            new AssetsWebpackPlugin({
+                filename: 'assets.json',
+                path: path.resolve('./dist/server')
+            }),
             new CheckerPlugin(),
-            new ExtractTextPlugin('[name].bundle.css'),
             new webpack.optimize.CommonsChunkPlugin({
                 name: ['vendor', 'polyfills'],
                 minChunks: Infinity
@@ -96,10 +97,6 @@ module.exports = (prodMode) =>
                     from: './public',
                     to: '',
                     ignore: ['*.ts']
-                },
-                {
-                    from: './views/tutorial.html',
-                    to: 'tutorial.html',
                 },
                 {
                     from: './views/external-page.html',
@@ -139,7 +136,7 @@ module.exports = (prodMode) =>
             new HtmlWebpackPlugin({
                 filename: 'index.html',
                 template: './views/index.html',
-                chunks: ['polyfills', 'vendor', 'main']
+                chunks: ['indexScript', 'polyfills', 'vendor', 'main']
             }),
             new HtmlWebpackPlugin({
                 filename: 'functions.html',
@@ -149,12 +146,18 @@ module.exports = (prodMode) =>
             new HtmlWebpackPlugin({
                 filename: 'run.html',
                 template: './views/run.html',
-                chunks: ['polyfills', 'vendor', 'gallery'],
+                chunks: ['runScript', 'polyfills', 'vendor', 'gallery'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'heartbeat.html',
                 template: './views/heartbeat.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
-            })
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'tutorial.html',
+                template: './views/tutorial.html',
+                chunks: ['polyfills', 'vendor', 'tutorialScript'],
+            }),
+            new RedirectPlugin()
         ]
     });
