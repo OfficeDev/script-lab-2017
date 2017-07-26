@@ -24,12 +24,6 @@ after_success:
 - npm run deploy
 
 notifications:
-  email:
-    recipients:
-      - t-shac@microsoft.com
-      - dasau@microsoft.com
-    on_success: always
-    on_failure: always
   webhooks:
     urls:
       - https://outlook.office.com/webhook/cd954b0a-08e5-4935-933b-a1cda4e6d5e9@72f988bf-86f1-41af-91ab-2d7cd011db47/TravisCI/de47dffaad604dfdaafbb6be2a414469/5bf9ad7e-4cad-45e8-9812-e553da1c05c6
