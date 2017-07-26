@@ -56,7 +56,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.SHARE_SUCCESS: {
-            AI.trackEvent(action.type, action.payload.public ? action.payload as any : null);
+            AI.trackEvent(action.type, action.payload && action.payload.public ? action.payload as any : null);
             return { ...state, sharing: false };
         }
 

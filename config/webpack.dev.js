@@ -11,8 +11,8 @@ module.exports = () =>
 
         output: {
             path: path.resolve('./dist/client'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
+            filename: 'bundles/[name].bundle.js',
+            chunkFilename: 'bundles/[name].chunk.js',
         },
 
         resolve: {
