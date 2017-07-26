@@ -17,7 +17,7 @@ export function loadTemplate<T>(templateName: string) {
             }
 
             let template = handlebars.compile(file);
-            return resolve((context: T) => template(context));
+            return resolve((context: T) => template(context, { strict: true }));
         });
     });
 }

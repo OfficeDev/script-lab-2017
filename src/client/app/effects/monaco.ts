@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, Strings, storage } from '../helpers';
+import { AI, storage } from '../helpers';
+import { Strings } from '../strings';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
@@ -33,9 +34,9 @@ export class MonacoEffects {
     @Effect()
     updateIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
-        .map((action: Monaco.UpdateIntellisenseAction) => ({ payload: action.payload, language: action.language }))
-        .map(({ payload, language }) => {
-            let filesToAdd = this._parse(payload)
+        .map((action: Monaco.UpdateIntellisenseAction) => action.payload)
+        .map(({ libraries, language }) => {
+            let filesToAdd = this._parse(libraries)
                 .filter(url => url && url.trim() !== '')
                 .map(file => {
                     let currentFile = this._current.get(file);
@@ -52,18 +53,19 @@ export class MonacoEffects {
 
             return { files: filesToAdd as string[], language };
         })
-        .mergeMap(({ files, language }) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction(file, language)))
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseUpdateError, exception)));
+        .mergeMap(({ files, language }) => Observable.from(files).map(file => new Monaco.AddIntellisenseAction({ url: file, language })))
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseUpdateError, exception)));
 
     @Effect()
     addIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.ADD_INTELLISENSE)
-        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload, action.language))
+        .mergeMap((action: Monaco.AddIntellisenseAction) => this._addIntellisense(action.payload))
         .map(() => new Monaco.UpdateIntellisenseSuccessAction())
-        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseClearError, exception)));
+        .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseClearError, exception)));
 
 
-    private _addIntellisense(url: string, language: string) {
+    private _addIntellisense(payload: { url: string; language: string; }) {
+        let { url, language } = payload;
         let source = this._determineSource(language);
         return Observable
             .fromPromise(MonacoService.current)
@@ -74,7 +76,7 @@ export class MonacoEffects {
                 let intellisense = this._current.add(file.url, { url: file.url, disposable, keep: false });
                 return intellisense;
             })
-            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings.intellisenseLoadError, exception)));
+            .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseLoadError, exception)));
     }
 
     private _parse(libraries: string[]) {

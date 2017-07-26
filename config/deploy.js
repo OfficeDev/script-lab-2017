@@ -1,6 +1,7 @@
 #!/usr/bin/env node --harmony
 
 let path = require('path');
+let fs = require('fs');
 let chalk = require('chalk');
 let _ = require('lodash');
 let { build, config } = require('./env.config');
@@ -101,6 +102,9 @@ function deployBuild(url, folder) {
         let next_path = path.resolve(folder);
         shell.cd(next_path);
         const start = Date.now();
+        if (url === EDITOR_URL) {
+            buildAssetHistory(url, next_path);
+        }
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
         shell.exec('git config --add user.email "travis.ci@microsoft.com"');
@@ -127,6 +131,47 @@ function deployBuild(url, folder) {
         log('Deployment failed...', 'red');
         console.log(error);
     }
+}
+
+function buildAssetHistory(url, folder) {
+    shell.exec('git clone ' + url + ' current_build');
+    shell.cp('-n', ['current_build/*.js', 'current_build/*.css'], '.');
+    let now = (new Date().getTime()) / 1000;
+    let oldHistoryPath = path.resolve(folder, 'current_build/history.json');
+    let newHistoryPath = path.resolve(folder, 'history.json');
+    let oldAssetsPath = path.resolve(folder, 'current_build/bundles');
+    let newAssetsPath = path.resolve(folder, 'bundles');
+
+    // Parse old history file if it exists
+    let history = {};
+    if (fs.existsSync(oldHistoryPath)) {
+        history = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
+    }
+
+    // Add new asset files to history, with current timestamp; exclude chunk files
+    let newAssets = fs.readdirSync(newAssetsPath);
+    for (asset of newAssets) {
+        if (!(/chunk.js/i.test(asset))) {
+            history[asset] = { time: now };
+        }
+    }
+
+    let existingAssets = [];
+    try {
+        fs.accessSync(oldAssetsPath);
+        existingAssets = fs.readdirSync(oldAssetsPath);
+    } catch(e) {}
+    
+    for (asset of existingAssets) {
+        let assetPath = path.resolve(newAssetsPath, asset);
+        // Check if old assets don't name-conflict and are less than six months old
+        if (history[asset] && !fs.existsSync(assetPath) && (now - history[asset].time < 15768000)) {
+            fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
+        }
+    }
+
+    fs.writeFileSync(newHistoryPath, JSON.stringify(history));
+    shell.rm('-rf', 'current_build');
 }
 
 function log(message, color) {

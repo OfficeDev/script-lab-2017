@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI, Strings, storage } from '../helpers';
+import { AI, storage } from '../helpers';
+import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
 //strings are specified inline (not imported) for performance reasons
@@ -116,6 +117,8 @@ export class Import {
     showImportWarning: boolean;
     activeSnippetId: string;
 
+    strings = Strings();
+
     constructor(private _store: Store<fromRoot.State>) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
@@ -130,7 +133,6 @@ export class Import {
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
     }
 
-    strings = Strings;
     show$ = this._store.select(fromRoot.getImportState);
     templates$ = this._store.select(fromRoot.getTemplates);
     gists$ = this._store.select(fromRoot.getGists);

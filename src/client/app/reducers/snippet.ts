@@ -1,6 +1,7 @@
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
 import { AI } from '../helpers';
+import * as sha1 from 'crypto-js/sha1';
 
 export interface SnippetState {
     lastOpened?: ISnippet;
@@ -80,6 +81,16 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.STORE_UPDATED:
             return { ...state, loading: false };
+
+        case SnippetActionTypes.UPDATE_INFO: {
+            let updatedInfo = { };
+            if (action.payload.gist != null) {
+                updatedInfo['gistHashedId'] = sha1(action.payload.gist.toString());
+            }
+
+            AI.trackEvent(action.type, updatedInfo);
+            return { ...state, loading: false };
+        }
 
         default: return state;
     }
