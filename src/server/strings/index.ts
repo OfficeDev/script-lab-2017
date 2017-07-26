@@ -11,10 +11,12 @@ import { createFakeStrings, getStrings } from './common';
 
 import { getEnglishStrings } from './english';
 import { getGermanStrings } from './german';
+import { getSpanishStrings } from './spanish';
 
 const languageGenerator: { [key: string]: () => ServerStrings } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
+    'es': () => getSpanishStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 

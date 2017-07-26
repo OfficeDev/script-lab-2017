@@ -14,15 +14,18 @@ const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 
 import { getEnglishStrings } from './english';
 import { getGermanStrings } from './german';
+import { getSpanishStrings } from './spanish';
 
 let availableLanguages = [
     { name: 'English', value: 'en' },
-    { name: 'Deutsch', value: 'de' }
+    { name: 'Deutsch', value: 'de' },
+    { name: 'Español', value: 'es' }
 ];
 
 const languageGenerator: { [key: string]: () => ClientStrings } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
+    'es': () => getSpanishStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
@@ -87,6 +90,11 @@ function getRawDisplayLanguage() {
 export interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
+
+    // Environment names
+    alpha: string,
+    beta: string,
+    production: string,
 
     userId: string;
 
@@ -156,6 +164,8 @@ export interface ClientStrings {
     gistSharedDialogEnd: string;
     gistSharedDialogTitle: string;
     gistSharedDialogViewButton: string;
+    gistUpdateUrlIsSameAsBefore: string,
+    gistUpdateSuccess: string,
 
     snippetCopiedConfirmation: string;
     snippetCopiedFailed: string;
@@ -169,6 +179,9 @@ export interface ClientStrings {
     aboutStorage: string;
     aboutSnippets: string;
     aboutIntellisense: string;
+    aboutCurrentEnvironment: string;
+    aboutSwitchEnvironment: string;
+    changeEnvironmentConfirm: string;
 
     //snippet.info.ts
     snippetInfoDialogTitle: string;

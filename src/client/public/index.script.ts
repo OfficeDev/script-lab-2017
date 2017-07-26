@@ -1,16 +1,20 @@
 import { Strings } from '../app/strings';
+import { instantiateRibbon } from '../app/helpers';
 
 (() => {
     const strings = Strings();
 
     document.title = strings.HtmlPageStrings.PageTitles.code;
 
-    document.getElementById('subtitle').textContent = strings.playgroundTagline;
-    document.getElementById('subtitle').style.visibility = 'visible';
+    let subtitle = document.getElementById('subtitle');
+    subtitle.textContent = strings.playgroundTagline;
+    subtitle.style.visibility = 'visible';
 
-    document.getElementById('choose-your-host').textContent = strings.HtmlPageStrings.chooseYourHost;
-    document.getElementById('choose-your-host').style.visibility = 'visible';
+    let chooseHost = document.getElementById('choose-your-host');
+    chooseHost.textContent = strings.HtmlPageStrings.chooseYourHost;
+    chooseHost.style.visibility = 'visible';
 
+    instantiateRibbon('ribbon');
 
     // Note: inspired by Modernizr's check for localStorage existence:
     //   https://github.com/Modernizr/Modernizr

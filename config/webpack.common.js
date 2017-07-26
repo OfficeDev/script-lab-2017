@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config } = require('./env.config');
+const { build, config, RedirectPlugin, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = require('./env.config');
 const { GH_SECRETS } = process.env;
 
 module.exports = (prodMode) =>
@@ -15,6 +15,7 @@ module.exports = (prodMode) =>
 
         entry: {
             indexScript: './public/index.script.ts',
+            runScript: './public/run.script.ts',
             tutorialScript: './public/tutorial.script.ts',
 
             polyfills: './polyfills.ts',
@@ -61,7 +62,9 @@ module.exports = (prodMode) =>
                 PLAYGROUND: JSON.stringify({
                     devMode: !prodMode,
                     build: build,
-                    config: config
+                    config: config,
+                    PLAYGROUND_ORIGIN: PLAYGROUND_ORIGIN,
+                    PLAYGROUND_REDIRECT: PLAYGROUND_REDIRECT
                 })
             }),
             new webpack.LoaderOptionsPlugin({
@@ -143,7 +146,7 @@ module.exports = (prodMode) =>
             new HtmlWebpackPlugin({
                 filename: 'run.html',
                 template: './views/run.html',
-                chunks: ['polyfills', 'vendor', 'gallery'],
+                chunks: ['runScript', 'polyfills', 'vendor', 'gallery'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'heartbeat.html',
@@ -154,6 +157,7 @@ module.exports = (prodMode) =>
                 filename: 'tutorial.html',
                 template: './views/tutorial.html',
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
-            })
+            }),
+            new RedirectPlugin()
         ]
     });

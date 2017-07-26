@@ -105,7 +105,7 @@ export class GitHubService {
             url += `/${sha}`;
         }
 
-        return this._request.get<IGist>(url, ResponseTypes.JSON, this._headers);
+        return this._request.get<IGist>(url, ResponseTypes.JSON, this._headers, true /*force bypass of cache*/);
     }
 
     createOrUpdateGist(description: string, files: IGistFiles, id?: string, isPublic: boolean = true): Observable<IGist> {

@@ -19,7 +19,7 @@ import { isEmpty } from 'lodash';
                     <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                     <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
                 </command>
-                <command [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
+                <command [ngClass]="{'disabled': isDisabled}" [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
                     <command *ngIf="isGistOwned|async" icon="Save" title="{{strings.updateMenu}}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
                     <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
                     <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
@@ -50,6 +50,7 @@ import { isEmpty } from 'lodash';
 export class AppComponent {
     snippet: ISnippet;
     isEmpty: boolean;
+    isDisabled: boolean;
 
     strings = Strings();
 
@@ -62,6 +63,10 @@ export class AppComponent {
             this.snippet = snippet;
         });
 
+        this._store.select(fromRoot.getSharing).subscribe(sharing => {
+            this.isDisabled = sharing;
+        });
+
         this._store.dispatch(new GitHub.IsLoggedInAction());
     }
 
@@ -71,7 +76,7 @@ export class AppComponent {
 
     get isGistOwned() {
         return this.profile$
-            .filter(profile => profile != null)
+            .filter(profile => (profile != null && this.snippet != null))
             .map(profile => {
                 if (isEmpty(this.snippet.gist)) {
                     return false;
@@ -179,33 +184,44 @@ export class AppComponent {
         }
 
         let sub = this.isLoggedIn$
-            .subscribe(isLoggedIn => {
+            .subscribe(async (isLoggedIn) => {
                 if (!isLoggedIn) {
                     this._store.dispatch(new GitHub.LoginAction());
                     return;
                 }
 
                 let { isPublic, isUpdate } = values;
+                let isGistOwned;
+                this.isGistOwned.take(1).subscribe(owned => {
+                    isGistOwned = owned;
+                });
+                let confirmationAlertIfAny = null;
+                this.isDisabled = true;
+
                 if (isUpdate) {
                     this._store.dispatch(new GitHub.UpdateGistAction(this.snippet));
                 }
                 else if (isPublic) {
-                    this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
-                        .then((result: string) => {
-                            if (result !== this.strings.cancelButtonLabel) {
-                                this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
-                            }
-                        }
-                        );
+                    if (isGistOwned && this.snippet.gist) {
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
+                    }
+
+                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                        this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    }
+
+                    this.isDisabled = false;
                 }
                 else {
-                    this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel)
-                        .then((result: string) => {
-                            if (result !== this.strings.cancelButtonLabel) {
-                                this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
-                            }
-                        }
-                        );
+                    if (isGistOwned && this.snippet.gist) {
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
+                    }
+
+                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                        this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    }
+
+                    this.isDisabled = false;
                 }
 
                 if (sub && !sub.closed) {

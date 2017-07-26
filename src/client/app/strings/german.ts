@@ -14,6 +14,10 @@ export function getGermanStrings(): ClientStrings {
         playgroundName: playgroundName,
         playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
 
+        alpha: 'Alpha',
+        beta: 'Beta',
+        production: 'Produktiv',
+
         userId: 'Benutzer-ID',
 
         run: 'Ausführen',
@@ -82,19 +86,25 @@ export function getGermanStrings(): ClientStrings {
         gistSharedDialogEnd: `Klicken Sie auf den Befehl ${playgroundName}, um Ihr Schnipsel zu importieren und geben Sie folgende URL an.`,
         gistSharedDialogTitle: 'Teilen Sie Ihr Schnipsel',
         gistSharedDialogViewButton: 'Bei GitHub ansehen',
+        gistUpdateUrlIsSameAsBefore: 'Die URL Ihres aktualisierten GitHub-Gists ist dieselbe wie zuvor:',
+        gistUpdateSuccess: 'Das Schnipsel wurde erfolgreich aktualisiert.',
 
         snippetCopiedConfirmation: `Das Schnipsel wurde in die Zwischenablage kopiert`,
         snippetCopiedFailed: 'Das Schnipsel konnte nicht in die Zwischenablage kopiert werden.',
 
         snippetExportFailed: 'Das Schnipsel konnte nicht exportiert werden.',
-        snippetExportNotSupported: englishSubstitutesForNotYetTranslated.snippetExportNotSupported,
+        snippetExportNotSupported: 'Das Exportieren von Schnipseln wird in dieser Office-Version noch nicht unterstützt. Unterstützte Plattformen sind zurzeit Windows und Office-Online.',
 
         // Components strings
         // about.ts
+        // Syntax of {0}, {1}... is used for placeholders and should not be localized
         aboutUpdated: 'Letztes Update:',
         aboutStorage: 'Speicher:',
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
+        aboutCurrentEnvironment: 'Aktuelle Umgebung:',
+        aboutSwitchEnvironment: 'Wechseln von {0} zu {1}',
+        changeEnvironmentConfirm: 'Sie sind dabei, zu einer anderen Umgebung von Script Lab zu wechseln und verlieren dadurch den Zugriff auf Ihre gespeicherten Schnipsel bis Sie wieder zu dieser Umgebung zurückkehren. Möchten Sie fortfahren?',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Schnipsel-Info',
@@ -111,8 +121,8 @@ export function getGermanStrings(): ClientStrings {
         shareMenuPublic: 'Neues öffentliches GitHub-Gist',
         shareMenuPrivate: 'Neues geheimes GitHub-Gist',
         updateMenu: 'Bestehendes GitHub-Gist aktualisieren',
-        sharePublicSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen öffentlichen GitHub-Gist geteilt werden soll?',
-        sharePrivateSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel in einem neuen geheimen GitHub-Gist geteilt werden soll?',
+        sharePublicSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel erneut in einem neuen öffentlichen GitHub-Gist geteilt werden soll?',
+        sharePrivateSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel erneut in einem neuen geheimen GitHub-Gist geteilt werden soll?',
 
         shareMenuClipboard: 'In die Zwischenablage kopieren',
         shareMenuExport: 'Zur Veröffentlichung exportieren',

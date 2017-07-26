@@ -4,7 +4,8 @@ There are several ways in which you can contribute to the project:
 
 1. **Log bugs or file feature suggestions**. To do this, simply file the bugs/suggestions in the Issues tab on GitHub for this project.
 2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/office-js-snippets>**.
-3. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
+3. **Translations**.  In addition to English, we now support German, courtesy of a community member who liked Script Lab so much that he decided to translate it into his native language (and blazed the way for how to do translations in general)!  Translating to other languages should now be pretty simple.  Please see "[TRANSLATING.md](TRANSLATING.md)" for more details.
+4. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
 
 
 # Running the playground from source

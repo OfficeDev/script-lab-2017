@@ -47,6 +47,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
             };
         }
 
+        case GitHubActionTypes.SHARE_COPY:
         case GitHubActionTypes.SHARE_PRIVATE_GIST:
         case GitHubActionTypes.SHARE_PUBLIC_GIST:
         case GitHubActionTypes.UPDATE_GIST: {
@@ -55,7 +56,7 @@ export function reducer(state = initialState, action: GitHubActions): GitHubStat
         }
 
         case GitHubActionTypes.SHARE_SUCCESS: {
-            AI.trackEvent(action.type, action.payload.public ? action.payload as any : null);
+            AI.trackEvent(action.type, action.payload && action.payload.public ? action.payload as any : null);
             return { ...state, sharing: false };
         }
 

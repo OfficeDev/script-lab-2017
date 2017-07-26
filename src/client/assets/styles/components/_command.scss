@@ -10,6 +10,10 @@ command {
         display: block;
     }
 
+    &.disabled .command__dropdown {
+        display: none;
+    }
+
     &.title {
         .command {
             &__icon {
@@ -136,7 +140,7 @@ footer.command__bar--condensed {
                 height: auto;
                 width: 100%;
                 display: flex;
-                justify-content: left;
+                justify-content: flex-start;
                 padding-left: 40px;
 
                 span {

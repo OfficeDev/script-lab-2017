@@ -1,6 +1,8 @@
 const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
+const PLAYGROUND_ORIGIN = "playground_origin_environment_url";
+const PLAYGROUND_REDIRECT = "playground_redirect_environment_url";
 
 const build = (() => {
     return {
@@ -55,5 +57,80 @@ const config = {
     }
 };
 
+class RedirectPlugin {
+    apply(compiler) {
+        compiler.plugin('compilation', (compilation) => {
+            compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
+                let headOpeningTag = '<head>'; 
+                let htmlHead = htmlPluginData.html.match(headOpeningTag);
+                if (htmlHead && htmlHead.length > 0) {
+                    htmlHead = htmlHead.index;
+                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + headOpeningTag +
+                    `
+                    <script>
+                    (function() {
+                        function getParameterByName(name) {
+                            var url = window.location.search;
+                            var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
+                            var match = queryExp.exec(url);
+                            if (match && match.length > 1) {
+                                return match[1];
+                            }
+                            return null;
+                        };
+                        var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
+                        var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
+
+                        // Set target environment for origin environment to redirect to
+                        if (targetUrl.length > 0) {
+                            targetUrl = decodeURIComponent(targetUrl)
+                            // Clear origin environment's local storage if target = origin
+                            if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
+                                window.localStorage.removeItem("${PLAYGROUND_REDIRECT}");
+                                return;
+                            }
+
+                            window.localStorage.setItem("${PLAYGROUND_REDIRECT}", targetUrl);
+                        }
+
+                        // Redirect origin environment to target
+                        var redirectUrl = window.localStorage.getItem("${PLAYGROUND_REDIRECT}");
+                        if (redirectUrl) {
+                            var originParam = [
+                                (window.location.search ? "&" : "?"), 
+                                "originEnvironment=",
+                                encodeURIComponent(window.location.origin)
+                            ].join("");
+
+                            window.location.replace([
+                                redirectUrl,
+                                window.location.pathname,
+                                window.location.search,
+                                originParam,
+                                window.location.hash
+                            ].join(""));
+                        }
+
+                        // Point app environment back to origin if user is not in origin
+                        if (originUrl.length > 0) {
+                            window.localStorage.setItem("${PLAYGROUND_ORIGIN}", decodeURIComponent(originUrl).toLowerCase());
+                        }
+
+                        // If reached here, environment is already configured
+                    })();
+                    </script>
+                    ` + 
+                    htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
+                }
+                callback(null, htmlPluginData);
+            });
+        });
+    }
+}
+
+
 exports.build = build;
 exports.config = config;
+exports.RedirectPlugin = RedirectPlugin;
+exports.PLAYGROUND_ORIGIN = PLAYGROUND_ORIGIN;
+exports.PLAYGROUND_REDIRECT = PLAYGROUND_REDIRECT;
