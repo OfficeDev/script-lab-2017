@@ -5,6 +5,10 @@
 @import 'containers';
 
 .app {
+    view {
+        width: 100%;
+    }
+
     home, dialog, editor {
         flex: 1 1 100%;
         @include flex();

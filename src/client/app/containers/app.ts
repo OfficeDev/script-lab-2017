@@ -10,41 +10,43 @@ import { isEmpty } from 'lodash';
 @Component({
     selector: 'app',
     template: `
-        <main [ngClass]="theme$|async">
-            <header class="command__bar">
-                <command icon="GlobalNavButton" (click)="showMenu()"></command>
-                <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-                <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
-                <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="{{strings.run}}">
-                    <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
-                    <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
-                </command>
-                <command [ngClass]="{'disabled': isDisabled}" [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
-                    <command *ngIf="isGistOwned|async" icon="Save" title="{{strings.updateMenu}}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
-                    <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
-                    <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
-                    <command id="CopyToClipboard" icon="Copy" title="{{strings.shareMenuClipboard}}" (click)="shareCopy()"></command>
-                    <command icon="Download" title="{{strings.shareMenuExport}}" (click)="shareExport()"></command>
-                </command>
-                <command [hidden]="isEmpty" icon="Delete" title="{{strings.delete}}" (click)="delete()"></command>
-                <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="{{strings.loginGithub}}" (click)="login()"></command>
-                <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
-            </header>
-            <editor></editor>
-            <footer class="command__bar command__bar--condensed">
-                <command icon="Info" title="{{strings.about}}" (click)="showAbout=true"></command>
-                <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
-                <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
-                <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
-                <command class="language" [title]="language$|async"></command>
-            </footer>
-        </main>
+    <main *ngIf="!isViewMode" [ngClass]="theme$|async">
+        <header class="command__bar">
+            <command icon="GlobalNavButton" (click)="showMenu()"></command>
+            <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
+            <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+            <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="{{strings.run}}">
+                <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
+                <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
+            </command>
+            <command [ngClass]="{'disabled': isDisabled}" [hidden]="isEmpty" icon="Share" [async]="sharing$|async" title="{{strings.share}}">
+                <command *ngIf="isGistOwned|async" icon="Save" title="{{strings.updateMenu}}" (click)="shareGist({isPublic: false, isUpdate: true})"></command>
+                <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
+                <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
+                <command id="CopyToClipboard" icon="Copy" title="{{strings.shareMenuClipboard}}" (click)="shareCopy()"></command>
+                <command icon="Download" title="{{strings.shareMenuExport}}" (click)="shareExport()"></command>
+            </command>
+            <command [hidden]="isEmpty" icon="Delete" title="{{strings.delete}}" (click)="delete()"></command>
+            <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="{{strings.loginGithub}}" (click)="login()"></command>
+            <command [hidden]="!(isLoggedIn$|async)" [title]="(profile$|async)?.login" [image]="(profile$|async)?.avatar_url" (click)="showProfile=true"></command>
+        </header>
+        <editor></editor>
+        <footer class="command__bar command__bar--condensed">
+            <command icon="Info" title="{{strings.about}}" (click)="showAbout=true"></command>
+            <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
+            <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
+            <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
+            <command class="language" [title]="language$|async"></command>
+        </footer>
+    </main>
+    <div *ngIf="!isViewMode">
         <about [(show)]="showAbout"></about>
         <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
         <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
         <import [hidden]="!(showImport$|async)"></import>
         <alert></alert>
-        <router-outlet></router-outlet>
+    </div>
+    <router-outlet></router-outlet>
     `
 })
 
@@ -86,6 +88,10 @@ export class AppComponent {
                 // Assume that user owns gist, for back-compat
                 return isEmpty(this.snippet.gistOwnerId) ? true : this.snippet.gistOwnerId === profile.login;
             });
+    }
+
+    get isViewMode() {
+        return /#\/view/.test(location.hash);
     }
 
     menuOpened$ = this._store.select(fromRoot.getMenu);

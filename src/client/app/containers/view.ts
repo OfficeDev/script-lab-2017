@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+// import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { UI } from '../actions';
-import { environment } from '../helpers';
+import { Request, ResponseTypes } from '../services';
+import { UI, Snippet } from '../actions';
+import { environment, applyTheme } from '../helpers';
 import { Strings } from '../strings';
 
 @Component({
@@ -15,23 +18,34 @@ import { Strings } from '../strings';
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
             </footer>
         </main>
-        <import></import>
-        <alert></alert>
     `
 })
 
 
-export class ViewComponent {
+export class ViewComponent implements OnInit {
     strings = Strings();
 
     constructor(
         private _store: Store<fromRoot.State>,
-    ) {
-        console.log('Shashwat + host: ' + environment.current.host);
-    }
+        private _route: ActivatedRoute,
+        private _request: Request,
+    ) {}
 
-    get isAddinCommands() {
-        return /commands=1/ig.test(location.search);
+    ngOnInit() {
+        let sub = this._route.params
+            .subscribe(async(params) => {
+                let rawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                return this._request.get<ISnippet>(rawUrl, ResponseTypes.YAML, true /*force bypass of cache*/)
+                    .subscribe(snippet => {
+                        this._store.dispatch(new Snippet.ImportSuccessAction(snippet));
+
+                        if (environment.current.host !== params.host.toUpperCase()) {
+                            environment.current.host = params.host;
+                            applyTheme(environment.current.host);
+                        }
+                    });
+            });
+        sub.unsubscribe();
     }
 
     theme$ = this._store.select(fromRoot.getTheme)

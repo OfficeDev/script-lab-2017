@@ -16,15 +16,14 @@ import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { Strings } from './app/strings';
 import { COMPONENT_DECLARATIONS } from './components';
-import { AppComponent, ViewComponent, PageNotFoundComponent } from './app/containers';
+import { AppComponent, ViewComponent } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view', component: ViewComponent },
-    { path: '',   redirectTo: '/', pathMatch: 'full' },
-    { path: '**', component: PageNotFoundComponent }
+    { path: 'view/samples/:host/:segment/:name', component: ViewComponent },
+    { path: '',   redirectTo: '/', pathMatch: 'full' }
 ];
 
 let imports = [
@@ -81,7 +80,7 @@ let imports = [
 
 @NgModule({
     imports,
-    declarations: [AppComponent, ViewComponent, PageNotFoundComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
+    declarations: [AppComponent, ViewComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
     bootstrap: [AppComponent],
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })
