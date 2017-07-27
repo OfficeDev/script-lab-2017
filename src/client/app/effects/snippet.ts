@@ -268,6 +268,7 @@ export class SnippetEffects {
             case Snippet.ImportType.SAMPLE:
             case Snippet.ImportType.URL:
             case Snippet.ImportType.GIST:
+            case Snippet.ImportType.GIST_VIEW:
                 let id = null;
 
                 const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
@@ -360,7 +361,7 @@ export class SnippetEffects {
          * If a imported snippet is a SAMPLE, then skip the save (simply to avoid clutter).
          * The snippet will get saved as soon as the user makes any changes.
          */
-        if (mode !== Snippet.ImportType.SAMPLE) {
+        if (mode !== Snippet.ImportType.SAMPLE && mode !== Snippet.ImportType.GIST_VIEW) {
             actions.push(new Snippet.SaveAction(snippet));
         }
 

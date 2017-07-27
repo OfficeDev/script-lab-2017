@@ -71,7 +71,7 @@ class Environment {
             } else if (/#\/view/.test(location.hash)) {
                 const [view, type, host] = location.hash.toLowerCase().replace('#/', '').split('/');
                 if (view && type && host) {
-                    return resolve({ host: host, platform: null });
+                    return resolve({ host: host.toUpperCase(), platform: null });
                 }
                 return resolve({ host: null, platform: null });
             }

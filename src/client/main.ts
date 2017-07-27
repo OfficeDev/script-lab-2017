@@ -22,6 +22,7 @@ import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/e
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
+    { path: 'view/gist/:host/:id', component: ViewComponent },
     { path: 'view/samples/:host/:segment/:name', component: ViewComponent },
     { path: '',   redirectTo: '/', pathMatch: 'full' }
 ];
