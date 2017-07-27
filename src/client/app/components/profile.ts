@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
-import { Strings } from '../strings';
+import { Strings } from '../helpers';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,10 +17,10 @@ import { Strings } from '../strings';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
-                        <span class="ms-Button-label">{{strings.cancelButtonLabel}}</span>
+                        <span class="ms-Button-label">${Strings.cancelButtonLabel}</span>
                     </button>
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
-                        <span class="ms-Button-label">{{strings.logoutButtonLabel}}</span>
+                        <span class="ms-Button-label">${Strings.logoutButtonLabel}</span>
                     </button>
                 </div>
             </div>
@@ -34,5 +34,6 @@ export class Profile {
     @Input() show: boolean;
     @Output() dismiss = new EventEmitter<ISnippet>();
 
-    strings = Strings();
+    constructor() {
+    }
 }

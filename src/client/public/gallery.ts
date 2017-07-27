@@ -1,33 +1,11 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import { storage, environment, applyTheme, post } from '../app/helpers';
-import { Strings, getDisplayLanguage } from '../app/strings';
 import '../assets/styles/extras.scss';
 
 (async () => {
     await environment.initialize();
     await applyTheme(environment.current.host);
-
-
-    const strings = Strings();
-
-    document.title = strings.HtmlPageStrings.PageTitles.run;
-
-    document.getElementById('subtitle').textContent = strings.HtmlPageStrings.loadingRunnerDotDotDot;
-    document.getElementById('subtitle').style.visibility = 'visible';
-
-    document.getElementById('choose-your-host').textContent = strings.HtmlPageStrings.chooseYourHost;
-    document.getElementById('choose-your-host').style.visibility = 'visible';
-
-    document.getElementById('last-opened-header-text').textContent = strings.HtmlPageStrings.lastOpenedSnippet;
-    document.getElementById('last-opened-empty').textContent =
-        strings.HtmlPageStrings.noLastOpenedSnippets + ' ' +
-        strings.HtmlPageStrings.toGetStartedCreateOrImportSnippet;
-    document.getElementById('my-saved-snippets').textContent = strings.HtmlPageStrings.mySavedSnippets;
-    document.getElementById('snippet-list-empty').textContent =
-        strings.HtmlPageStrings.noLocalSnippets + ' ' +
-        strings.HtmlPageStrings.toGetStartedCreateOrImportSnippet;
-
 
     new Gallery();
 })();
@@ -116,7 +94,7 @@ export class Gallery {
         });
 
         $item.on('mouseover', () => $item.attr(
-            'title', `${Strings().HtmlPageStrings.lastUpdated} ${moment(modified_at).fromNow()}`));
+            'title', `Last updated ${moment(modified_at).fromNow()}`));
 
         $item.appendTo(location);
     }
@@ -153,14 +131,13 @@ export class Gallery {
             origin: environment.current.config.editorUrl,
         };
 
-        const state: IRunnerState = {
+        const data = JSON.stringify({
             snippet: { ...snippet, ...overrides },
-            returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`,
-            displayLanguage: getDisplayLanguage()
-        };
-        const data = JSON.stringify(state);
+            showBackButton: true,
+            returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`
+        });
 
-        this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
+        this.showProgress(`Running "${snippet.name}"`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data });
     }
 

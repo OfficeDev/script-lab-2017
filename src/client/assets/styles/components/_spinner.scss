@@ -43,22 +43,7 @@
 
 .ms-progress {
     @include center-flex();
-    width: 100%;
 }
-
-.ribbon {
-  width: 200px;
-  position: absolute;
-  text-align: center;
-  line-height: 50px;
-  color: #f0f0f0;
-  top: 25px;
-  left: auto;
-  right: -50px;
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
-
 
 
 /* loader by https://codepen.io/magnus16/pen/BKoRNw */
@@ -69,7 +54,9 @@
 
 .cs-loader-inner {
   transform: translateY(-50%);
+  width: calc(100% - 200px);
   color: #f96618;
+  padding: 0 100px;
   text-align: center;
 }
 
