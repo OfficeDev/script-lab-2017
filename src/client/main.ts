@@ -15,15 +15,18 @@ import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { Strings } from './app/strings';
+import { ViewMode, ViewModeError } from './app/components';
 import { COMPONENT_DECLARATIONS } from './components';
-import { AppComponent, ViewComponent } from './app/containers';
+import { AppComponent } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view/gist/:host/:id', component: ViewComponent },
-    { path: 'view/samples/:host/:segment/:name', component: ViewComponent },
+    { path: 'view/error', component: ViewModeError  },
+    { path: 'view/gist/:host/:id', component: ViewMode  },
+    { path: 'view/private-samples/:host/:segment/:name', component: ViewMode },
+    { path: 'view/samples/:host/:segment/:name', component: ViewMode },
     { path: '',   redirectTo: '/', pathMatch: 'full' }
 ];
 
@@ -81,7 +84,7 @@ let imports = [
 
 @NgModule({
     imports,
-    declarations: [AppComponent, ViewComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
+    declarations: [AppComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
     bootstrap: [AppComponent],
     providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
 })

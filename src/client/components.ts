@@ -1,4 +1,4 @@
-import { Collapse, Command, Alert, About, Dialog, SnippetInfo, Profile } from './app/components';
+import { Collapse, Command, Alert, About, Dialog, SnippetInfo, Profile, ViewMode, ViewModeError  } from './app/components';
 import { Editor, GalleryList, Import } from './app/containers';
 
 export const COMPONENT_DECLARATIONS = [
@@ -11,5 +11,7 @@ export const COMPONENT_DECLARATIONS = [
     Dialog,
     SnippetInfo,
     About,
-    Command
+    Command,
+    ViewMode,
+    ViewModeError
 ];

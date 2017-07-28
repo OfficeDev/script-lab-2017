@@ -5,3 +5,5 @@ export * from './command';
 export * from './snippet.info';
 export * from './profile';
 export * from './about';
+export * from './view';
+export * from './view.error';

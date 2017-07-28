@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-// import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-// import { Request, ResponseTypes } from '../services';
 import { UI, Snippet } from '../actions';
 import { environment, applyTheme } from '../helpers';
 import { Strings } from '../strings';
@@ -25,7 +23,7 @@ import { Strings } from '../strings';
 })
 
 
-export class ViewComponent implements OnInit {
+export class ViewMode implements OnInit {
     strings = Strings();
     snippet: ISnippet;
     showInfo: boolean;
@@ -42,17 +40,21 @@ export class ViewComponent implements OnInit {
     ngOnInit() {
         let sub = this._route.params
             .subscribe(async(params) => {
-                if (/samples/.test(location.hash)) {
-                    if (environment.current.host !== params.host.toUpperCase()) {
-                        environment.current.host = params.host.toUpperCase();
-                        await applyTheme(environment.current.host);
-                    }
+                if (environment.current.host !== params.host.toUpperCase()) {
+                    environment.current.host = params.host.toUpperCase();
+                    await applyTheme(environment.current.host);
+                }
 
-                    let rawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                if (/private-samples/.test(location.hash)) {
+                    let rawUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
                     this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
                 } else if (/gist/.test(location.hash)) {
                     this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST_VIEW, params.id));
+                } else {
+                    let rawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
                 }
+
             });
         sub.unsubscribe();
     }
