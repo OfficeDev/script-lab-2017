@@ -13,7 +13,7 @@ import { Strings } from '../strings';
     template: `
         <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
+                <command class="title view-mode" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
             </header>
             <editor readonly></editor>
             <footer class="command__bar command__bar--condensed">

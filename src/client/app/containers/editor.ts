@@ -39,7 +39,11 @@ export class Editor implements AfterViewInit {
      * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
+        let _overrides = { theme: 'vs' };
+        if (/#\/view/.test(location.hash)) {
+            _overrides['readOnly'] = true;
+        }
+        this._monacoEditor = await this._monaco.create(this._editor, _overrides);
         let editor = this._monacoEditor;
         editor.addAction({
             id: 'trigger-suggest', /* Unique id for action */
