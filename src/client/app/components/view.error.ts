@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { Strings } from '../strings';
 
 @Component({
     selector: 'view-error',
     template: `
-        <main>Resource could not be loaded.</main>
+        <main>strings.viewModeError</main>
     `
 })
 
-export class ViewModeError {}
+export class ViewModeError {
+    strings = Strings();
+}

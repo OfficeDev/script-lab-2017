@@ -33,6 +33,8 @@ export function getEnglishStrings(): ClientStrings {
         importButtonLabel: 'Import',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
+        viewModeError: 'Failed to load code snippet.',
+
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
