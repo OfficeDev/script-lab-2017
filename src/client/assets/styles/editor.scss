@@ -9,44 +9,46 @@
         width: 100%;
     }
 
-    home, dialog, editor {
-        flex: 1 1 100%;
-        @include flex();
-        height: 100%;
-    }
+    editor-mode {
+         home, dialog, editor {
+            flex: 1 1 100%;
+            @include flex();
+            height: 100%;
+        }
 
-    dialog {
-        height: auto;
-        background: transparent;
-        border: none;
-    }
+        dialog {
+            height: auto;
+            background: transparent;
+            border: none;
+        }
 
-    main {
-        @include flex();
-        height: 100vh;
-        width: 100%;
-    }
+        main {
+            @include flex();
+            height: 100vh;
+            width: 100%;
+        }
 
-    editor-view {
-        flex-direction: row;
-    }
+        editor-view {
+            flex-direction: row;
+        }
 
-    monaco-editor {
-        overflow: hidden;
-    }
+        monaco-editor {
+            overflow: hidden;
+        }
 
-    tab {
-        display: none;
-        height: 100% !important;
-    }    
+        tab {
+            display: none;
+            height: 100% !important;
+        }    
 
-    .collapse {
-        &__info {
-            background: rgba(#FFF100, 0.6);
-            padding: $default-spacing;
+        .collapse {
+            &__info {
+                background: rgba(#FFF100, 0.6);
+                padding: $default-spacing;
 
-            & .ms-Button {
-                margin-top: $default-spacing/2;
+                & .ms-Button {
+                    margin-top: $default-spacing/2;
+                }
             }
         }
     }
