@@ -4,7 +4,9 @@ import { Strings } from '../strings';
 @Component({
     selector: 'view-mode-error',
     template: `
-        <main>strings.viewModeError</main>
+    <div>
+        <h1 class="ms-font-xxl">{{strings.viewModeError}}</h1>
+    </div>
     `
 })
 

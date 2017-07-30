@@ -9,6 +9,14 @@
         width: 100%;
     }
 
+    view-mode-error {
+        > div > h1 {
+            margin-top: auto; /* to push to very bottom */
+            margin-bottom: 10px;
+            text-align: center;
+        }
+    }
+
     editor-mode {
          home, dialog, editor {
             flex: 1 1 100%;
