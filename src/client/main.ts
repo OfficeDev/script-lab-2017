@@ -15,19 +15,18 @@ import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { Strings } from './app/strings';
-import { ViewMode, ViewModeError } from './app/components';
 import { COMPONENT_DECLARATIONS } from './components';
-import { AppComponent } from './app/containers';
+import { AppComponent, EditorMode, ViewMode, ViewModeError } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view/error', component: ViewModeError  },
     { path: 'view/gist/:host/:id', component: ViewMode  },
     { path: 'view/private-samples/:host/:segment/:name', component: ViewMode },
     { path: 'view/samples/:host/:segment/:name', component: ViewMode },
-    { path: '',   redirectTo: '/', pathMatch: 'full' }
+    { path: 'view/error', component: ViewModeError  },
+    { path: '',  component: EditorMode }
 ];
 
 let imports = [

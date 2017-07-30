@@ -34,7 +34,7 @@ export class SnippetEffects {
                 .filter(({ snippet }) => !(snippet == null))
                 .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
                 .catch((exception: Error) => {
-                    if (/view/.test(location.hash)) {
+                    if (/#\/view/.test(location.hash)) {
                         window.localStorage.clear();
                         location.hash = '/view/error';
                     }

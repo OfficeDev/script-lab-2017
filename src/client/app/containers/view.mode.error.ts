@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Strings } from '../strings';
 
 @Component({
-    selector: 'view-error',
+    selector: 'view-mode-error',
     template: `
         <main>strings.viewModeError</main>
     `

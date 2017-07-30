@@ -7,13 +7,13 @@ import { environment, applyTheme } from '../helpers';
 import { Strings } from '../strings';
 
 @Component({
-    selector: 'view',
+    selector: 'view-mode',
     template: `
         <main [ngClass]="theme$|async">
             <header class="command__bar">
                 <command class="title view-mode" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
             </header>
-            <editor readonly></editor>
+            <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
                 <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
@@ -40,8 +40,10 @@ export class ViewMode implements OnInit {
     ngOnInit() {
         let sub = this._route.params
             .subscribe(async(params) => {
-                if (environment.current.host !== params.host.toUpperCase()) {
+                if (environment.current.host.toUpperCase() !== params.host.toUpperCase()) {
                     environment.current.host = params.host.toUpperCase();
+                    // Update environment in cache
+                    environment.current = environment.current;
                     await applyTheme(environment.current.host);
                 }
 

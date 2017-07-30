@@ -43,9 +43,6 @@ export class SnippetInfo {
     @Output() dismiss = new EventEmitter<ISnippet>();
 
     strings = Strings();
-    constructor() {
-        console.log(this.snippet);
-    }
 
     get url() {
         return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
