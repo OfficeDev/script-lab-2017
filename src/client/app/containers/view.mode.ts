@@ -50,17 +50,21 @@ export class ViewMode implements OnInit, OnDestroy {
                 }
 
                 let urlSegments = this._route.snapshot.url;
-                urlSegments.map(segment => {
-                    if (segment.path === 'private-samples') {
-                        let rawUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
-                    } else if (segment.path === 'gist') {
+                switch (urlSegments[1].path) {
+                    case 'private-samples':
+                        let rawPrivateSamplesUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawPrivateSamplesUrl));
+                        break;
+                    case 'gist':
                         this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST_VIEW, params.id));
-                    } else {
-                        let rawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
-                    }
-                });
+                        break;
+                    case 'samples':
+                        let rawSamplesUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawSamplesUrl));
+                        break;
+                    default:
+                        break;
+                }
             });
     }
 
