@@ -12,7 +12,7 @@ import { Strings } from '../strings';
     template: `
         <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command class="title view-mode" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name"></command>
+                <command class="view-mode" [hidden]="isEmpty" [title]="snippet?.name"></command>
             </header>
             <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
@@ -53,14 +53,14 @@ export class ViewMode implements OnInit, OnDestroy {
                 switch (urlSegments[1].path) {
                     case 'private-samples':
                         let rawPrivateSamplesUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawPrivateSamplesUrl));
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawPrivateSamplesUrl, true));
                         break;
                     case 'gist':
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST_VIEW, params.id));
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, params.id, true));
                         break;
                     case 'samples':
                         let rawSamplesUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawSamplesUrl));
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawSamplesUrl, true));
                         break;
                     default:
                         break;

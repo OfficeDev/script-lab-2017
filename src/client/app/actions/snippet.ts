@@ -32,7 +32,6 @@ export class ImportType {
     static readonly DEFAULT = type('[Import] Load blank snippet');
     static readonly OPEN = type('[Import] Open an existing snippet');
     static readonly GIST = type('[Import] Import from a gist');
-    static readonly GIST_VIEW = type('[Import] Import from a gist for view mode');
     static readonly YAML = type('[Import] Import from yaml');
     static readonly URL = type('[Import] Import from url');
     static readonly SAMPLE = type('[Import] Import from sample');
@@ -54,7 +53,7 @@ export class ViewAction implements Action {
 export class ImportAction implements Action {
     readonly type = SnippetActionTypes.IMPORT;
 
-    constructor(public mode: string, public payload?: string) { }
+    constructor(public mode: string, public payload?: string, public isViewMode?: boolean) { }
 }
 
 export class ImportSuccessAction implements Action {
