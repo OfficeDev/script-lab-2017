@@ -5,10 +5,6 @@
 @import 'containers';
 
 .app {
-    view-mode {
-        width: 100%;
-    }
-
     view-mode-error {
         > div > h1 {
             margin-top: auto; /* to push to very bottom */
@@ -17,7 +13,7 @@
         }
     }
 
-    editor-mode {
+    editor-mode, view-mode {
          home, dialog, editor {
             flex: 1 1 100%;
             @include flex();

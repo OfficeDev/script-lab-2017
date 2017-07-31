@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs/Subscription';
 import * as fromRoot from '../reducers';
 import { UI, Snippet } from '../actions';
 import { environment, applyTheme } from '../helpers';
@@ -23,10 +24,11 @@ import { Strings } from '../strings';
 })
 
 
-export class ViewMode implements OnInit {
+export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
     showInfo: boolean;
+    paramsSub: Subscription;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -38,7 +40,7 @@ export class ViewMode implements OnInit {
     }
 
     ngOnInit() {
-        let sub = this._route.params
+        this.paramsSub = this._route.params
             .subscribe(async(params) => {
                 if (environment.current.host.toUpperCase() !== params.host.toUpperCase()) {
                     environment.current.host = params.host.toUpperCase();
@@ -47,18 +49,23 @@ export class ViewMode implements OnInit {
                     await applyTheme(environment.current.host);
                 }
 
-                if (/private-samples/.test(location.hash)) {
-                    let rawUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
-                } else if (/gist/.test(location.hash)) {
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST_VIEW, params.id));
-                } else {
-                    let rawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
-                }
-
+                let urlSegments = this._route.snapshot.url;
+                urlSegments.map(segment => {
+                    if (segment.path === 'private-samples') {
+                        let rawUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
+                    } else if (segment.path === 'gist') {
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST_VIEW, params.id));
+                    } else {
+                        let rawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl));
+                    }
+                });
             });
-        sub.unsubscribe();
+    }
+
+    ngOnDestroy() {
+        this.paramsSub.unsubscribe();
     }
 
     theme$ = this._store.select(fromRoot.getTheme)
