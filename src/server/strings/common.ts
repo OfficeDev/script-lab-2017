@@ -17,17 +17,25 @@ export function getStrings<T>(
     languageGenerator: { [key: string]: () => T },
     defaultLanguageGenerator: () => T
 ): T {
-    language = (language || 'en').toLowerCase().substr(0, 2);
+    let fullLanguageCode = (language || 'en').toLowerCase();
+    let primaryLanguageCode = fullLanguageCode.substr(0, 2);
 
-    if (languageCache[language]) {
-        return languageCache[language];
+    // Try to lookup strings for primary locale and region first if they exist
+    if (languageCache[fullLanguageCode]) {
+        return languageCache[fullLanguageCode];
     }
 
-    languageCache[language] = languageGenerator[language] ?
-        languageGenerator[language]() : defaultLanguageGenerator();
+    // Try just the primary language without region
+    if (languageCache[primaryLanguageCode]) {
+        return languageCache[primaryLanguageCode];
+    }
+
+    let languageToGenerate = languageGenerator[fullLanguageCode] ? fullLanguageCode : primaryLanguageCode;
+    languageCache[languageToGenerate] = languageGenerator[languageToGenerate] ?
+        languageGenerator[languageToGenerate]() : defaultLanguageGenerator();
 
     // Having done the switch statement above, language cache is now guaranteed to contain the language:
-    return languageCache[language];
+    return languageCache[languageToGenerate];
 }
 
 function substituteWithReverse(obj: {[key: string]: string | any}) {
