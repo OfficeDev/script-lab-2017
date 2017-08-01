@@ -364,12 +364,12 @@ export class SnippetEffects {
 
         let properties = {};
         if (mode === Snippet.ImportType.GIST) {
-            properties = { ...properties, hashedGistId: sha1(snippet.gist)};
+            properties['hashedGistId'] = sha1(snippet.gist);
         }
-        if (mode === Snippet.ImportType.SAMPLE) {
-            properties = { ...properties, sampleName: snippet.name};
+        else if (mode === Snippet.ImportType.SAMPLE) {
+            properties['sampleName'] = snippet.name;
         }
-        properties = isViewMode ? { ...properties, mode: 'view'} : { ...properties, mode: 'editor'};
+        properties['mode'] = isViewMode ? 'view' : 'editor';
         AI.trackEvent(mode, properties);
 
         /*
