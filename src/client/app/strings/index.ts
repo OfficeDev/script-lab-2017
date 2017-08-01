@@ -117,6 +117,8 @@ export interface ClientStrings {
     importButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
+    viewModeError: string,
+
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;

@@ -68,6 +68,12 @@ class Environment {
             if (window.location.search.toLowerCase().indexOf('mode') > 0) {
                 let { mode } = Authenticator.getUrlParams(window.location.search, '', '?') as any;
                 return resolve({ host: mode.toUpperCase(), platform: null });
+            } else if (/#\/view/.test(location.hash)) {
+                const [view, type, host] = location.hash.toLowerCase().replace('#/', '').split('/');
+                if (view && type && host) {
+                    return resolve({ host: host.toUpperCase(), platform: null });
+                }
+                return resolve({ host: null, platform: null });
             }
             else {
                 let hostButtonsTimeout = setTimeout(() => {

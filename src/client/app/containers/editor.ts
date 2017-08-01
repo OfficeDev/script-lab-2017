@@ -1,4 +1,4 @@
-import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
@@ -21,9 +21,9 @@ import { debounce } from 'lodash';
     `
 })
 export class Editor implements AfterViewInit {
-    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     @ViewChild('editor') private _editor: ElementRef;
-    private _readonly: boolean;
+    @Input() isViewMode: boolean;
+    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
 
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
@@ -39,7 +39,11 @@ export class Editor implements AfterViewInit {
      * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
+        let _overrides = { theme: 'vs' };
+        if (this.isViewMode) {
+            _overrides['readOnly'] = true;
+        }
+        this._monacoEditor = await this._monaco.create(this._editor, _overrides);
         let editor = this._monacoEditor;
         editor.addAction({
             id: 'trigger-suggest', /* Unique id for action */
@@ -175,7 +179,7 @@ export class Editor implements AfterViewInit {
      * The same update happens even on tab switch.
      */
     private _debouncedInput = debounce(() => {
-        if (!this._readonly) {
+        if (!this.isViewMode) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
         }
