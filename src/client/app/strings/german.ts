@@ -116,6 +116,7 @@ export function getGermanStrings(): ClientStrings {
         descriptionPlaceholder: 'Beschreibung des Schipsels',
         gistUrlLabel: 'GitHub-Gist-URL',
         gistUrlLinkLabel: 'Im Browser öffnen',
+        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
