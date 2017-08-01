@@ -373,8 +373,8 @@ export class SnippetEffects {
         AI.trackEvent(mode, properties);
 
         /*
-         * If a imported snippet is a SAMPLE, then skip the save (simply to avoid clutter).
-         * The snippet will get saved as soon as the user makes any changes.
+         * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
+         * The snippet will get saved as soon as the user makes any changes (if in editor mode).
          */
         if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
             actions.push(new Snippet.SaveAction(snippet));
