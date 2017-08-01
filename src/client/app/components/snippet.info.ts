@@ -1,6 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
+let { config } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +56,6 @@ export class SnippetInfo {
 
     get viewModeGistUrl() {
         let host = this.snippet.host.toLowerCase();
-        return `https://script-lab.azureedge.net/#/view/gist/${host}/${this.snippet.gist}`;
+        return `${config['production'].editorUrl}/${host}/${this.snippet.gist}`;
     }
 }
