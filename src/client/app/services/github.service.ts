@@ -30,7 +30,7 @@ export class GitHubService {
 
     get profile(): IBasicProfile {
         return storage.current.profile;
-    };
+    }
 
     user(): Observable<IBasicProfile> {
         return this._request.get<IBasicProfile>(`${this._baseUrl}/user`, ResponseTypes.JSON, this._headers);
@@ -84,6 +84,7 @@ export class GitHubService {
         this._token = await this._authenticator.authenticate('GitHub', environment.current.host === 'TEAMS');
         this._setDefaultHeaders(this._token);
         const profile = await this.user().toPromise();
+        storage.current = { profile: profile } as any;
         return profile;
     }
 
