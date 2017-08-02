@@ -41,10 +41,13 @@ export class GitHubEffects {
                 ]));
         });
 
-    @Effect({ dispatch: false })
+    @Effect()
     logout$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
-        .map(() => this._github.logout())
+        .map(() => {
+            this._github.logout();
+            return new GitHub.LoadGistsSuccessAction(null);
+        })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().githubLogoutFailed, exception)));
 
     @Effect()
