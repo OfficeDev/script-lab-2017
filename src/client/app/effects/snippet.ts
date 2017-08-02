@@ -187,6 +187,60 @@ export class SnippetEffects {
         .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
+    // @Effect({ dispatch: false })
+    // openInPlaygroundExcel$: Observable<Action> = this.actions$
+    //     .ofType(Snippet.SnippetActionTypes.OPEN_IN_PLAYGROUND_EXCEL)
+    //     .map(action => action.payload)
+    //     .filter(snippet => !(snippet == null))
+    //     .map((snippet: ISnippet) => {
+    //         if (Utilities.platform === PlatformType.MAC || Utilities.platform === PlatformType.IOS) {
+    //             AI.trackEvent('Unsupported share export', { id: snippet.id });
+    //             this._store.dispatch(this._createShowErrorAction(Strings().snippetExportNotSupported, null));
+    //             return;
+    //         }
+
+    //         AI.trackEvent('Share export initiated', { id: snippet.id });
+
+    //         const additionalFields = this._getAdditionalShareableSnippetFields();
+    //         const sanitizedFilenameBase =
+    //             (snippet.name.toLowerCase()
+    //                 .replace(/([^a-z0-9_]+)/gi, '-')
+    //                 .replace(/-{2,}/g, '-') /* remove multiple consecutive dashes */
+    //                 .replace(/(.*)-$/, '$1')
+    //                 .replace(/^-(.*)/, '$1')
+    //             ) || 'snippet';
+
+    //         const exportData: IExportState = {
+    //             snippet,
+    //             additionalFields,
+    //             sanitizedFilenameBase,
+    //             displayLanguage: getDisplayLanguage()
+    //         };
+
+    //         this._http.post(
+    //             environment.current.config.runnerUrl + '/export',
+    //             { data: JSON.stringify(exportData) },
+    //             { responseType: ResponseContentType.ArrayBuffer }
+    //         ).toPromise()
+    //             .then(res => {
+    //                 const zipFilename = sanitizedFilenameBase +
+    //                     '--' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip';
+
+    //                 let blob = new Blob([res.arrayBuffer()], { type: 'application/zip' });
+    //                 FileSaver.saveAs(blob, zipFilename);
+
+    //                 AI.trackEvent('Share export succeeded', { id: snippet.id });
+    //             })
+    //             .catch(exception => {
+    //                 this._store.dispatch(
+    //                     this._createShowErrorAction(Strings().snippetExportFailed, exception));
+    //             });
+    //     })
+    //     .catch(exception => {
+    //         this._store.dispatch(this._createShowErrorAction(Strings().snippetExportFailed, exception));
+    //         return null;
+    //     });
+
     private _exists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }

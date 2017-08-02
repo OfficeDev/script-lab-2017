@@ -175,7 +175,7 @@ registerRoute('post', '/auth/:user', (req, res) => {
             },
             json: {
                 client_id: clientId,
-                client_secret: secrets ? secrets[env] : '',
+                client_secret: secrets ? secrets[env] : 'e16c7ec18ce70498abf9531298d82f6e1896ecd0',
                 redirect_uri: editorUrl,
                 code,
                 state
@@ -208,6 +208,47 @@ registerRoute('post', '/compile/snippet', compileCommon);
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
+
+// registerRoute('post', '/open-in-excel', (req, res) => {
+//     const data = JSON.parse(req.body.data);
+//     const { rawUrl, type } = data;
+//     let xmlParser = new DOMParser();
+
+//     const filenames = {
+//         html: sanitizedFilenameBase + '.html',
+//         yaml: sanitizedFilenameBase + '--snippet-data.yaml',
+//         manifest: sanitizedFilenameBase + '--manifest.xml',
+//         readme: 'README.md'
+//     };
+
+//     // NOTE: using Promise-based code instead of async/await
+//     // to avoid unhandled exception-pausing on debugging.
+//     return Promise.all([
+//         generateSnippetHtmlData(snippet, true /*isExternalExport*/, strings),
+//         generateReadme(snippet),
+//         isOfficeHost(snippet.host) ?
+//             generateManifest(snippet, additionalFields, filenames.html, strings) : null
+//     ])
+//         .then(results => {
+//             const htmlData: { html: string, officeJS: string } = results[0];
+//             const readme = results[1];
+//             const manifestIfAny: string = results[2];
+
+//             res.set('Content-Type', 'application/zip');
+
+//             const zip = Archiver('zip')
+//                 .append(htmlData.html, { name: filenames.html })
+//                 .append(getShareableYaml(snippet, additionalFields), { name: filenames.yaml })
+//                 .append(readme, { name: filenames.readme });
+
+//             if (manifestIfAny) {
+//                 zip.append(manifestIfAny, { name: filenames.manifest });
+//             }
+
+//             zip.finalize();
+//             zip.pipe(res);
+//         });
+// });
 
 registerRoute('post', '/export', (req, res) => {
     const data: IExportState = JSON.parse(req.body.data);

@@ -26,6 +26,7 @@ export class SnippetActionTypes {
     static readonly LOAD_SNIPPETS_SUCCESS = type('[Snippet] Load Snippets Success');
     static readonly LOAD_TEMPLATES = type('[Snippet] Load Templates');
     static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
+    static readonly OPEN_IN_PLAYGROUND_EXCEL = type('[Snippet] Open In Plaground Excel');
 };
 
 export class ImportType {
@@ -140,6 +141,12 @@ export class LoadTemplatesSuccessAction implements Action {
     constructor(public payload: ITemplate[]) { }
 }
 
+export class OpenInPlaygrounExcelAction implements Action {
+    readonly type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
+
+    constructor() { }
+}
+
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
@@ -159,4 +166,5 @@ export type SnippetActions
     | LoadSnippetsSuccessAction
     | LoadTemplatesAction
     | LoadTemplatesSuccessAction
-    | CreateAction;
+    | CreateAction
+    | OpenInPlaygrounExcelAction;

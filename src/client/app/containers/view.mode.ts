@@ -13,6 +13,7 @@ import { Strings } from '../strings';
         <main [ngClass]="theme$|async">
             <header class="command__bar">
                 <command class="view-mode" [hidden]="isEmpty" [title]="snippet?.name"></command>
+                <command [hidden]="isEmpty" [title]="Open In Playground"></command>
             </header>
             <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
