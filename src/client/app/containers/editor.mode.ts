@@ -209,9 +209,9 @@ export class EditorMode {
 
                     if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
                         this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
+                    } else {
+                        this.isDisabled = false;
                     }
-
-                    this.isDisabled = false;
                 }
                 else {
                     if (isGistOwned && this.snippet.gist) {
@@ -220,9 +220,9 @@ export class EditorMode {
 
                     if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
                         this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
+                    } else {
+                        this.isDisabled = false;
                     }
-
-                    this.isDisabled = false;
                 }
 
                 if (sub && !sub.closed) {
