@@ -50,7 +50,17 @@ export function Strings(): ClientStrings {
 }
 
 export function getDisplayLanguage() {
-    return (getRawDisplayLanguage() || 'en').toLowerCase();
+    let rawDisplayLanguage = getRawDisplayLanguage();
+    if (rawDisplayLanguage) {
+        rawDisplayLanguage = rawDisplayLanguage.toLowerCase();
+        for (let language of availableLanguages) {
+            if (rawDisplayLanguage === language.value) {
+                return rawDisplayLanguage;
+            }
+        }
+    }
+
+    return (rawDisplayLanguage || 'en').substr(0, 2);
 }
 
 export function getDisplayLanguageOrFake() {
