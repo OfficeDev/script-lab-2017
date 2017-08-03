@@ -40,6 +40,8 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         importButtonLabel: '输入',
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
+        viewModeError: '导入代码段失败。',
+
         snippetImportError: '导入代码失败',
         snippetImportErrorTitle: '导入失败',
         snippetImportErrorBody: `我们不能导入代码。`,
@@ -115,6 +117,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         descriptionPlaceholder: '代码段简介',
         gistUrlLabel: 'Gist URL',
         gistUrlLinkLabel: '在游览器中打开',
+        viewModeGistUrlLabel: '仅供游览的Script-Lab URL',
 
         // Containers strings
         //app.ts

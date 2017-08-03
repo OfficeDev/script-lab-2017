@@ -31,6 +31,17 @@ command {
             }
         }
     }
+
+    &.view-mode {
+        pointer-events: none;
+       
+        .command {
+            &__icon > span {
+                display: block;
+                margin-left: 0;
+            }
+        }
+    }
 }
 
 footer.command__bar--condensed {

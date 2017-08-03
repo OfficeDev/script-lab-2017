@@ -120,6 +120,8 @@ export interface ClientStrings {
     importButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
+    viewModeError: string,
+
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;
@@ -194,6 +196,7 @@ export interface ClientStrings {
     descriptionPlaceholder: string;
     gistUrlLabel: string;
     gistUrlLinkLabel: string;
+    viewModeGistUrlLabel: string;
 
     // Containers strings
     //app.ts

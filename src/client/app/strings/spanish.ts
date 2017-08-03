@@ -4,8 +4,8 @@ import { ClientStrings } from './index';
 // Whenever these two lines are not commented out, it means that there are
 // still strings that need to be localized.
 // Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getSpanishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -38,6 +38,8 @@ export function getSpanishStrings(): ClientStrings {
         moreInfoButtonLabel: 'Más información',
         importButtonLabel: 'Importar',
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
+
+        viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
 
         snippetImportError: 'Error al importar fragmento de código',
         snippetImportErrorTitle: 'Error en importación',
@@ -113,6 +115,7 @@ export function getSpanishStrings(): ClientStrings {
         descriptionPlaceholder: 'Descripción del fragmento de código ',
         gistUrlLabel:  'URL del gist',
         gistUrlLinkLabel:  'Abrir en navegador',
+        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts

@@ -13,6 +13,7 @@ import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
+import * as sha1 from 'crypto-js/sha1';
 
 @Injectable()
 export class SnippetEffects {
@@ -27,18 +28,23 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload, mode: action.mode }))
-        .mergeMap(({ data, mode }) => {
+        .map(action => ({ data: action.payload, mode: action.mode, isViewMode: action.isViewMode }))
+        .mergeMap(({ data, mode, isViewMode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
                 .filter(({ snippet }) => !(snippet == null))
-                .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode))
+                .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode, isViewMode))
                 .catch((exception: Error) => {
-                    const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
-                    this._uiEffects.alert(
-                        message,
-                        Strings().snippetImportErrorTitle,
-                        Strings().okButtonLabel);
+                    if (isViewMode) {
+                        window.localStorage.clear();
+                        location.hash = '/view/error';
+                    } else {
+                        const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
+                        this._uiEffects.alert(
+                            message,
+                            Strings().snippetImportErrorTitle,
+                            Strings().okButtonLabel);
+                    }
                     return Observable.from([]);
                 });
         });
@@ -319,7 +325,7 @@ export class SnippetEffects {
         }
     }
 
-    private _massageSnippet(rawSnippet: ISnippet, mode: string): Observable<Action> {
+    private _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Observable<Action> {
         if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
             throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
         }
@@ -356,11 +362,21 @@ export class SnippetEffects {
             new Snippet.ImportSuccessAction(snippet)
         ];
 
+        let properties = {};
+        if (mode === Snippet.ImportType.GIST) {
+            properties['hashedGistId'] = sha1(snippet.gist);
+        }
+        else if (mode === Snippet.ImportType.SAMPLE) {
+            properties['sampleName'] = snippet.name;
+        }
+        properties['mode'] = isViewMode ? 'view' : 'editor';
+        AI.trackEvent(mode, properties);
+
         /*
-         * If a imported snippet is a SAMPLE, then skip the save (simply to avoid clutter).
-         * The snippet will get saved as soon as the user makes any changes.
+         * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
+         * The snippet will get saved as soon as the user makes any changes (if in editor mode).
          */
-        if (mode !== Snippet.ImportType.SAMPLE) {
+        if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
             actions.push(new Snippet.SaveAction(snippet));
         }
 

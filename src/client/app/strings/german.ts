@@ -4,8 +4,8 @@ import { ClientStrings } from './index';
 // Whenever these two lines are not commented out, it means that there are
 // still strings that need to be localized.
 // Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getGermanStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -43,6 +43,8 @@ export function getGermanStrings(): ClientStrings {
         snippetImportErrorTitle: 'Importfehler.',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
+
+        viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
 
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
@@ -114,6 +116,7 @@ export function getGermanStrings(): ClientStrings {
         descriptionPlaceholder: 'Beschreibung des Schipsels',
         gistUrlLabel: 'GitHub-Gist-URL',
         gistUrlLinkLabel: 'Im Browser öffnen',
+        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
