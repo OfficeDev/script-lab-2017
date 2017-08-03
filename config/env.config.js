@@ -27,7 +27,7 @@ const config = {
     },
     edge: {
         name: 'EDGE',
-        clientId: '95435036e70d23b8549f',
+        clientId: 'fb706d86cd846cea7baf',
         instrumentationKey: '07a066dc-d67f-44af-8f77-59cb6ee246a8',
         editorUrl: 'https://bornholm-edge.azurewebsites.net',
         tokenUrl: 'https://bornholm-runner-edge.azurewebsites.net/auth',
@@ -37,7 +37,7 @@ const config = {
     },
     insiders: {
         name: 'INSIDERS',
-        clientId: '31ba59b73d83195e58dc',
+        clientId: '786ba422740568d98ce3',
         instrumentationKey: 'b3f1f065-02a9-49d3-b75c-4586659f51ef',
         editorUrl: 'https://bornholm-insiders.azurewebsites.net',
         tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
