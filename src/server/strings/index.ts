@@ -12,11 +12,13 @@ import { createFakeStrings, getStrings } from './common';
 import { getEnglishStrings } from './english';
 import { getGermanStrings } from './german';
 import { getSpanishStrings } from './spanish';
+import { getChineseSimplifiedStrings } from './chinese-simplified';
 
 const languageGenerator: { [key: string]: () => ServerStrings } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
     'es': () => getSpanishStrings(),
+    'zh-cn': () => getChineseSimplifiedStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
