@@ -158,6 +158,10 @@ module.exports = (prodMode) =>
                 template: './views/tutorial.html',
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
             }),
+            new HtmlWebpackPlugin({
+                filename: 'test-view-iframe.html',
+                template: './views/test-view-iframe.html'
+            }),
             new RedirectPlugin()
         ]
     });

@@ -33,6 +33,8 @@ export function getEnglishStrings(): ClientStrings {
         importButtonLabel: 'Import',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
+        viewModeError: /** NEEDS STRING REVIEW */ 'Failed to load code snippet.',
+
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
@@ -108,6 +110,7 @@ export function getEnglishStrings(): ClientStrings {
         descriptionPlaceholder: 'Snippet description',
         gistUrlLabel: /** NEEDS STRING REVIEW */ 'Gist URL',
         gistUrlLinkLabel: /** NEEDS STRING REVIEW */ 'Open in browser',
+        viewModeGistUrlLabel: /** NEEDS STRING REVIEW */ 'Script-Lab view-only URL',
 
         // Containers strings
         //app.ts

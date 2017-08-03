@@ -15,17 +15,20 @@ const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 import { getEnglishStrings } from './english';
 import { getGermanStrings } from './german';
 import { getSpanishStrings } from './spanish';
+import { getChineseSimplifiedStrings } from './chinese-simplified';
 
 let availableLanguages = [
     { name: 'English', value: 'en' },
     { name: 'Deutsch', value: 'de' },
-    { name: 'Español', value: 'es' }
+    { name: 'Español', value: 'es' },
+    { name: '中文', value: 'zh-cn' }
 ];
 
 const languageGenerator: { [key: string]: () => ClientStrings } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
     'es': () => getSpanishStrings(),
+    'zh-cn': () => getChineseSimplifiedStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
@@ -47,7 +50,7 @@ export function Strings(): ClientStrings {
 }
 
 export function getDisplayLanguage() {
-    return (getRawDisplayLanguage() || 'en').toLowerCase().substr(0, 2);
+    return (getRawDisplayLanguage() || 'en').toLowerCase();
 }
 
 export function getDisplayLanguageOrFake() {
@@ -116,6 +119,8 @@ export interface ClientStrings {
     moreInfoButtonLabel: string;
     importButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
+
+    viewModeError: string,
 
     snippetImportError: string;
     snippetImportErrorTitle: string;
@@ -191,6 +196,7 @@ export interface ClientStrings {
     descriptionPlaceholder: string;
     gistUrlLabel: string;
     gistUrlLinkLabel: string;
+    viewModeGistUrlLabel: string;
 
     // Containers strings
     //app.ts

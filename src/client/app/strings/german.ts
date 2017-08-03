@@ -44,6 +44,8 @@ export function getGermanStrings(): ClientStrings {
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
+        viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
+
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
         snippetDeleteError: 'Das aktuelle Schnipsel konnte nicht gelöscht werden.',
@@ -114,6 +116,7 @@ export function getGermanStrings(): ClientStrings {
         descriptionPlaceholder: 'Beschreibung des Schipsels',
         gistUrlLabel: 'GitHub-Gist-URL',
         gistUrlLinkLabel: 'Im Browser öffnen',
+        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts

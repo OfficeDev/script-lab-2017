@@ -122,7 +122,6 @@ export class Import {
     constructor(private _store: Store<fromRoot.State>) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
-        this._store.dispatch(new GitHub.LoadGistsAction());
 
         this._store.select(fromRoot.getCurrent)
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)

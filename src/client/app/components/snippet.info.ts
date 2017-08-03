@@ -1,6 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
+let { config } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,9 +19,14 @@ import { isNil } from 'lodash';
                     <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="{{strings.descriptionPlaceholder}}"></textarea>
                 </div>
 
-                <div *ngIf="!!url" class="ms-TextField">
+                <div *ngIf="!!gistUrl" class="ms-TextField">
                     <label class="ms-Label">{{strings.gistUrlLabel}}</label>
-                    <a href="{{url}}" target="_blank">{{strings.gistUrlLinkLabel}}</a>
+                    <a href="{{gistUrl}}" target="_blank">{{strings.gistUrlLinkLabel}}</a>
+                </div>
+
+                <div *ngIf="!!gistUrl" class="ms-TextField ms-TextField--multiline">
+                    <label class="ms-Label">{{strings.viewModeGistUrlLabel}}</label>
+                    <textarea readonly class="ms-TextField-field ms-font-m" [(ngModel)]="viewModeGistUrl"></textarea>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
@@ -44,7 +50,12 @@ export class SnippetInfo {
 
     strings = Strings();
 
-    get url() {
+    get gistUrl() {
         return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
+    }
+
+    get viewModeGistUrl() {
+        let host = this.snippet.host.toLowerCase();
+        return `${config['production'].editorUrl}/#/view/gist/${host}/${this.snippet.gist}`;
     }
 }
