@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as unzip from 'unzip';
 import * as https from 'https';
 import * as path from 'path';
 import * as express from 'express';
@@ -209,46 +210,29 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-// registerRoute('post', '/open-in-excel', (req, res) => {
-//     const data = JSON.parse(req.body.data);
-//     const { rawUrl, type } = data;
-//     let xmlParser = new DOMParser();
+registerRoute('post', '/open-in-playground-excel', async (req, res) => {
+    const data = JSON.parse(req.body.data);
+    const { viewData, type } = data;
+    console.log(viewData + ' : ' + type);
 
-//     const filenames = {
-//         html: sanitizedFilenameBase + '.html',
-//         yaml: sanitizedFilenameBase + '--snippet-data.yaml',
-//         manifest: sanitizedFilenameBase + '--manifest.xml',
-//         readme: 'README.md'
-//     };
+    return Promise.resolve().then(() => {
+        let dirName = path.resolve(__dirname, 'test' + (new Date()).getTime());
+        let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: dirName }));
+        zip.on('close', () => {
+            let fileName = dirName + '/xl/webextensions/webextension1.xml';
+            let data = fs.readFileSync(fileName, 'utf-8').toString();
+            data = data.replace('%placeholder_value%', viewData).replace('%placeholder_type%', type);
+            fs.writeFileSync(fileName, data);
 
-//     // NOTE: using Promise-based code instead of async/await
-//     // to avoid unhandled exception-pausing on debugging.
-//     return Promise.all([
-//         generateSnippetHtmlData(snippet, true /*isExternalExport*/, strings),
-//         generateReadme(snippet),
-//         isOfficeHost(snippet.host) ?
-//             generateManifest(snippet, additionalFields, filenames.html, strings) : null
-//     ])
-//         .then(results => {
-//             const htmlData: { html: string, officeJS: string } = results[0];
-//             const readme = results[1];
-//             const manifestIfAny: string = results[2];
+            res.set('Content-Type', 'application/zip');
 
-//             res.set('Content-Type', 'application/zip');
-
-//             const zip = Archiver('zip')
-//                 .append(htmlData.html, { name: filenames.html })
-//                 .append(getShareableYaml(snippet, additionalFields), { name: filenames.yaml })
-//                 .append(readme, { name: filenames.readme });
-
-//             if (manifestIfAny) {
-//                 zip.append(manifestIfAny, { name: filenames.manifest });
-//             }
-
-//             zip.finalize();
-//             zip.pipe(res);
-//         });
-// });
+            const archiver = Archiver('zip');
+            archiver.pipe(res);
+            archiver.directory(dirName, '');
+            archiver.finalize();
+        });
+    });
+});
 
 registerRoute('post', '/export', (req, res) => {
     const data: IExportState = JSON.parse(req.body.data);

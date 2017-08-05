@@ -26,7 +26,7 @@ export class SnippetActionTypes {
     static readonly LOAD_SNIPPETS_SUCCESS = type('[Snippet] Load Snippets Success');
     static readonly LOAD_TEMPLATES = type('[Snippet] Load Templates');
     static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
-    static readonly OPEN_IN_PLAYGROUND_EXCEL = type('[Snippet] Open In Plaground Excel');
+    static readonly OPEN_IN_PLAYGROUND_EXCEL = type('[Snippet] Open In Playground Excel');
 };
 
 export class ImportType {
@@ -141,10 +141,10 @@ export class LoadTemplatesSuccessAction implements Action {
     constructor(public payload: ITemplate[]) { }
 }
 
-export class OpenInPlaygrounExcelAction implements Action {
-    readonly type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
+export class OpenInPlaygroundExcelAction implements Action {
+    readonly type = SnippetActionTypes.OPEN_IN_PLAYGROUND_EXCEL;
 
-    constructor() { }
+    constructor(public payload: { type: string, viewData: string }) { }
 }
 
 /**
@@ -167,4 +167,4 @@ export type SnippetActions
     | LoadTemplatesAction
     | LoadTemplatesSuccessAction
     | CreateAction
-    | OpenInPlaygrounExcelAction;
+    | OpenInPlaygroundExcelAction;

@@ -12,8 +12,8 @@ import { Strings } from '../strings';
     template: `
         <main [ngClass]="theme$|async">
             <header class="command__bar">
-                <command class="view-mode" [hidden]="isEmpty" [title]="snippet?.name"></command>
-                <command [hidden]="isEmpty" [title]="Open In Playground"></command>
+                <command class="view-mode" [title]="snippet?.name"></command>
+                <command [title]="Open" (click)="openInPlaygroundExcel()"></command>
             </header>
             <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
@@ -28,8 +28,10 @@ import { Strings } from '../strings';
 export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
-    showInfo: boolean;
     paramsSub: Subscription;
+
+    viewData: string;
+    type: string;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -51,17 +53,19 @@ export class ViewMode implements OnInit, OnDestroy {
                 }
 
                 let urlSegments = this._route.snapshot.url;
-                switch (urlSegments[1].path) {
+                this.type = urlSegments[1].path;
+                switch (this.type) {
                     case 'private-samples':
-                        let rawPrivateSamplesUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawPrivateSamplesUrl, true));
+                        this.viewData = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, this.viewData, true));
                         break;
                     case 'gist':
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, params.id, true));
+                        this.viewData = params.id;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, this.viewData, true));
                         break;
                     case 'samples':
-                        let rawSamplesUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawSamplesUrl, true));
+                        this.viewData = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, this.viewData, true));
                         break;
                     default:
                         break;
@@ -82,5 +86,9 @@ export class ViewMode implements OnInit, OnDestroy {
 
     feedback() {
         window.open(environment.current.config.feedbackUrl);
+    }
+
+    openInPlaygroundExcel() {
+        this._store.dispatch(new Snippet.OpenInPlaygroundExcelAction({ type: this.type, viewData: this.viewData }));
     }
 }
