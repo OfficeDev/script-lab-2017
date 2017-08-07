@@ -210,10 +210,9 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('post', '/open-in-playground-excel', async (req, res) => {
-    const data = JSON.parse(req.body.data);
-    const { viewData, type } = data;
-    console.log(viewData + ' : ' + type);
+registerRoute('get', '/open-in-playground-excel/:type/:viewData', async (req, res) => {
+    const type = req.params.type;
+    const viewData = req.params.viewData;
 
     return Promise.resolve().then(() => {
         let dirName = path.resolve(__dirname, 'test' + (new Date()).getTime());
@@ -225,6 +224,7 @@ registerRoute('post', '/open-in-playground-excel', async (req, res) => {
             fs.writeFileSync(fileName, data);
 
             res.set('Content-Type', 'application/zip');
+            res.attachment(viewData + '.xlsx');
 
             const archiver = Archiver('zip');
             archiver.pipe(res);

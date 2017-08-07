@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, ResponseContentType } from '@angular/http';
+// import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
@@ -17,13 +17,13 @@ import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 
-const FileSaver = require('file-saver');
+// const FileSaver = require('file-saver');
 
 @Injectable()
 export class SnippetEffects {
     constructor(
         private actions$: Actions,
-        private _http: Http,
+        // private _http: Http,
         private _request: Request,
         private _github: GitHubService,
         private _uiEffects: UIEffects,
@@ -201,20 +201,21 @@ export class SnippetEffects {
                 AI.trackEvent('Unsupported open in playground excel');
                 return;
             }
-
+            let { type, viewData } = payload;
             AI.trackEvent('Open in playground excel initiated');
+            let url = environment.current.config.runnerUrl + `/open-in-playground-excel/${type}/${viewData}`;
+            console.log(url);
+            window.location.href = 'ms-excel:ofe|u|' + url + '.xlsx';
+            // this._http.get(
+            //     url,
+            //     { responseType: ResponseContentType.ArrayBuffer }
+            // ).toPromise()
+            //     .then(res => {
+            //         const filename = 'test.xlsx';
 
-            this._http.post(
-                environment.current.config.runnerUrl + '/open-in-playground-excel',
-                { data: JSON.stringify(payload) },
-                { responseType: ResponseContentType.ArrayBuffer }
-            ).toPromise()
-                .then(res => {
-                    const filename = 'test.xlsx';
-
-                    let blob = new Blob([res.arrayBuffer()], { type: 'application/zip' });
-                    FileSaver.saveAs(blob, filename);
-                });
+            //         let blob = new Blob([res.arrayBuffer()], { type: 'application/zip' });
+            //         FileSaver.saveAs(blob, filename);
+            //     });
         })
         .catch(exception => {
             console.log('Exception ' + exception);

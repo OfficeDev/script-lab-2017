@@ -56,16 +56,18 @@ export class ViewMode implements OnInit, OnDestroy {
                 this.type = urlSegments[1].path;
                 switch (this.type) {
                     case 'private-samples':
-                        this.viewData = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, this.viewData, true));
+                        this.viewData = params.name;
+                        let rawUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl, true));
                         break;
                     case 'gist':
                         this.viewData = params.id;
                         this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, this.viewData, true));
                         break;
                     case 'samples':
-                        this.viewData = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, this.viewData, true));
+                        this.viewData = params.name;
+                        let otherRawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, otherRawUrl, true));
                         break;
                     default:
                         break;
