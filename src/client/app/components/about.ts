@@ -10,7 +10,6 @@ let { config, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = PLAYGROUND;
     template: `
         <dialog [show]="show">
             <div class="about">
-                <div class="about__image"></div>
                 <div class="about__details">
                     <div class="about__primary-text ms-font-xxl">{{config?.build?.name}}</div>
                     <div class="profile__tertiary-text ms-font-m">{{strings.userId}}: ${storage.user}</div>
