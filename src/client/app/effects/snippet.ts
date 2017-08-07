@@ -14,6 +14,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
+import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 @Injectable()
 export class SnippetEffects {
@@ -22,7 +23,7 @@ export class SnippetEffects {
         private _request: Request,
         private _github: GitHubService,
         private _uiEffects: UIEffects,
-        reduxStore: Store<fromRoot.State>,
+        private _store: Store<fromRoot.State>,
     ) { }
 
     @Effect()
@@ -122,15 +123,24 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            const state: IRunnerState = {
-                snippet: snippet,
-                returnUrl: window.location.href,
-                displayLanguage: getDisplayLanguage()
-            };
-            const data = JSON.stringify(state);
+            if (Utilities.host === HostType.OUTLOOK) {
+                this._store.dispatch(new UI.ShowAlertAction({
+                    actions: [Strings().okButtonLabel],
+                    title: Strings().snippetRunError,
+                    message: Strings().noRunInOutlook
+                }));
+                this._store.dispatch(new Snippet.RunFailedAction());
+            } else {
+                const state: IRunnerState = {
+                    snippet: snippet,
+                    returnUrl: window.location.href,
+                    displayLanguage: getDisplayLanguage()
+                };
+                const data = JSON.stringify(state);
 
-            AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
-            post(environment.current.config.runnerUrl + '/compile/page', { data });
+                AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
+                post(environment.current.config.runnerUrl + '/compile/page', { data });
+            }
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetRunError, exception)));
 

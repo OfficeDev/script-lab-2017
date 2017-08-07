@@ -14,6 +14,7 @@ export class SnippetActionTypes {
     static readonly IMPORT = type('[Snippet] Import');
     static readonly IMPORT_SUCCESS = type('[Snippet] Import Successful');
     static readonly RUN = type('[Snippet] Run');
+    static readonly RUN_FAILED = type('[Snippet] Run Failed');
     static readonly CREATE = type('[Snippet] Create');
     static readonly UPDATE_INFO = type('[Snippet] Update Info');
     static readonly DUPLICATE = type('[Snippet] Duplicate');
@@ -72,6 +73,12 @@ export class RunAction implements Action {
     readonly type = SnippetActionTypes.RUN;
 
     constructor(public payload: ISnippet) { }
+}
+
+export class RunFailedAction implements Action {
+    readonly type = SnippetActionTypes.RUN_FAILED;
+
+    constructor() { }
 }
 
 export class CreateAction implements Action {
@@ -149,6 +156,7 @@ export type SnippetActions
     | ImportAction
     | ImportSuccessAction
     | RunAction
+    | RunFailedAction
     | SaveAction
     | ShareAction
     | DeleteAction

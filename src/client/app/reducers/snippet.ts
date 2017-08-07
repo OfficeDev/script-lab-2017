@@ -74,6 +74,11 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             return { ...state, running: true };
         }
 
+        case SnippetActionTypes.RUN_FAILED: {
+            AI.trackEvent(action.type);
+            return { ...state, running: false };
+        }
+
         case SnippetActionTypes.VIEW: {
             AI.trackEvent(action.type, { id: action.payload.id });
             return { ...state, loading: false };

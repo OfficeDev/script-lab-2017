@@ -51,6 +51,14 @@ export function applyTheme(host: string): Promise<boolean> {
                 });
                 break;
 
+            case HostType.OUTLOOK:
+                (require as any).ensure([], (require) => {
+                    require(['style-loader!raw-loader!postcss-loader!sass-loader!../../assets/styles/themes/outlook.scss'], () => {
+                        resolve(true);
+                    });
+                });
+                break;
+
             case HostType.WEB:
             default:
                 (require as any).ensure([], (require) => {
