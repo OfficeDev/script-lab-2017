@@ -10,13 +10,39 @@
 	.command {
 		&__title,
 		&__icon {
+			min-width: 0; /* Necessary so that long text still lets flex shrink.
+				See https://www.w3.org/TR/css-flexbox-1/, and search for
+				"By default, flex items won't shrink below their minimum content size" ...
+				"To change this, set the min-width or min-height property" */
 			padding: 0 12px;
+		}
+
+		&__icon {
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			-webkit-box-flex: 0;
+			-ms-flex: 0 0 40px;
+			flex: 0 0 40px;
+			max-width: 40px; /* Necessary because IE doesn't respect flex + box sizing combined */
 		}
 
 		&__center {
 			flex: 1 1 auto;
+			max-width: 100%;
 		}
 	}
+}
+
+.flex-fixed-width-twenty-px {
+	-webkit-box-flex: 0;
+	-ms-flex: 0 0 20px;
+	flex: 0 0 20px;
+}
+
+.flex-fixed-width-forty-px {
+	-webkit-box-flex: 0;
+	-ms-flex: 0 0 40px;
+	flex: 0 0 40px;
 }
 
 @media (min-width: 0px) and (max-width: 900px) {

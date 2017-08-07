@@ -12,6 +12,7 @@
   <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
     <Override Locale="de" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
     <Override Locale="es" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+    <Override Locale="zh-cn" Value="在Excel,Word和PowerPoint中创建、运行和共享您的Office添加代码片段。"/>
   </Description>
   <IconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-64.png" />
@@ -462,88 +463,108 @@
         <bt:String id="PG.GroupLabel" DefaultValue="Script" />
         <bt:String id="PG.AboutGroupLabel" DefaultValue="About Script Lab">
           <Override Locale="de" Value="Über Script Lab"/>
-	  <Override Locale="es" Value="Acerca de Script Lab"/>
+          <Override Locale="es" Value="Acerca de Script Lab"/>
+          <Override Locale="zh-cn" Value="关于Script Lab"/>
         </bt:String>
         <bt:String id="PG.ApiGroupLabel" DefaultValue="About the APIs">
           <Override Locale="de" Value="Über die APIs"/>
-	  <Override Locale="es" Value="Acerca de las APIs"/>
+          <Override Locale="es" Value="Acerca de las APIs"/>
+          <Override Locale="zh-cn" Value="关于APIs"/>
         </bt:String>
         <bt:String id="PG.CodeCommand.Label" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.Title" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets">
           <Override Locale="de" Value="Erstellen oder Editieren von Code-Schnipseln"/>
-	  <Override Locale="es" Value="Crea o edita fragmentos de código"/>
+          <Override Locale="es" Value="Crea o edita fragmentos de código"/>
+          <Override Locale="zh-cn" Value="创建或编辑代码段"/>
         </bt:String>
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
           <Override Locale="de" Value="Ausführen"/>
-	  <Override Locale="es" Value="Ejecutar"/>
+          <Override Locale="es" Value="Ejecutar"/>
+          <Override Locale="zh-cn" Value="运行"/>
         </bt:String>
         <bt:String id="PG.RunCommand.Title" DefaultValue="Run">
           <Override Locale="de" Value="Ausführen"/>
           <Override Locale="es" Value="Ejecutar"/>
+          <Override Locale="zh-cn" Value="运行"/>
         </bt:String>
         <bt:String id="PG.RunCommand.TipTitle" DefaultValue="Run the code snippet">
           <Override Locale="de" Value="Code-Schnipsel ausführen"/>
           <Override Locale="es" Value="Ejecuta el fragmento de código"/>
+          <Override Locale="zh-cn" Value="运行代码片段"/>
         </bt:String>
         <bt:String id="PG.TutorialCommand.Label" DefaultValue="Tutorial" />
         <bt:String id="PG.TutorialCommand.TipTitle" DefaultValue="Script Lab tutorial">
           <Override Locale="de" Value="Tutorial zu Script Lab"/>
           <Override Locale="es" Value="Tutorial de Script Lab"/>
+          <Override Locale="zh-cn" Value="Script Lab教程"/>
         </bt:String>
         <bt:String id="PG.HelpCommand.Label" DefaultValue="Help">
           <Override Locale="de" Value="Hilfe"/>
           <Override Locale="es" Value="Ayuda"/>
+          <Override Locale="zh-cn" Value="帮助"/>
         </bt:String>
         <bt:String id="PG.HelpCommand.TipTitle" DefaultValue="Help for Script Lab">
           <Override Locale="de" Value="Hilfe zu Script Lab"/>
           <Override Locale="es" Value="Ayuda de Script Lab"/>
+          <Override Locale="zh-cn" Value="帮助Script Lab"/>
         </bt:String>
         <bt:String id="PG.ApiDocsCommand.Label" DefaultValue="Reference Docs">
           <Override Locale="de" Value="Dokumentation"/>
           <Override Locale="es" Value="Documentación"/>
+          <Override Locale="zh-cn" Value="参考文档"/>
         </bt:String>
         <bt:String id="PG.ApiDocsCommand.TipTitle" DefaultValue="API Reference Documentation">
           <Override Locale="de" Value="API-Dokumentation"/>
           <Override Locale="es" Value="Documentación de la API"/>
+          <Override Locale="zh-cn" Value="API参考文案"/>
         </bt:String>
         <bt:String id="PG.AskCommand.Label" DefaultValue="Ask the Community">
           <Override Locale="de" Value="Community"/>
           <Override Locale="es" Value="Comunidad"/>
+          <Override Locale="zh-cn" Value="问社区"/>
         </bt:String>
         <bt:String id="PG.AskCommand.TipTitle" DefaultValue="Get API help from the community">
           <Override Locale="de" Value="Unterstützung durch die Community"/>
           <Override Locale="es" Value="Obtén ayuda de nuestra comunidad"/>
+          <Override Locale="zh-cn" Value="从社区获取API帮助"/>
         </bt:String>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor">
           <Override Locale="de" Value="Den Script Lab Code-Editor aufrufen."/>
           <Override Locale="es" Value="Abre el editor de código de Script Lab."/>
+          <Override Locale="zh-cn" Value="打开Script Lab代码编辑器"/>
         </bt:String>
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
           <Override Locale="de" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
           <Override Locale="es" Value="Abre el panel que ejecuta el fragmento de código actual."/>
+          <Override Locale="zh-cn" Value="打开运行当前代码段的任务窗格"/>
         </bt:String>
         <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial">
           <Override Locale="de" Value="Ein Tutorial zu Script Lab aufrufen."/>
           <Override Locale="es" Value="Abre un breve tutorial de Script Lab."/>
+          <Override Locale="zh-cn" Value="快速启动Script Lab教程"/>
         </bt:String>
         <bt:String id="PG.HelpCommand.Desc" DefaultValue="Launches documentation on using Script Lab">
           <Override Locale="de" Value="Die Dokumentation zu Script Lab aufrufen."/>
           <Override Locale="es" Value="Abre la documentación acerca del uso de Script Lab."/>
+          <Override Locale="zh-cn" Value="使用Script Lab发布文档"/>
         </bt:String>
         <bt:String id="PG.ApiDocsCommand.Desc" DefaultValue="Opens the API documentation for the Office application that you are running">
           <Override Locale="de" Value="Die JavaScript API-Dokumentation (Englisch) für die aktuelle Office-Anwendung aufrufen."/>
           <Override Locale="es" Value="Abre la documentación del API asociado con la aplicación de Office que estas corriendo."/>
+          <Override Locale="zh-cn" Value="打开正在运行的Office应用程序的API文档"/>
         </bt:String>
         <bt:String id="PG.AskCommand.Desc" DefaultValue="Launches a community forum for questions about the Office JavaScript APIs">
           <Override Locale="de" Value="Ein Community-Forum (Englisch) für Fragen und Antworten rund um das Office JavaScript API aufrufen."/>
           <Override Locale="es" Value="Abre un foro dentro de nuestra comunidad para preguntas asociadas con la JavaScript API de Office."/>
+          <Override Locale="zh-cn" Value="启动一个社区论坛，讨论有关Office JavaScript API的问题"/>
         </bt:String>
         <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office.">
           <Override Locale="de" Value="JavaScript-Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
           <Override Locale="es" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
+          <Override Locale="zh-cn" Value="直接从Office中编码、运行和共享附加代码片段。"/>
         </bt:String>
       </bt:LongStrings>
     </Resources>

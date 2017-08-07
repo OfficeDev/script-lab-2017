@@ -65,7 +65,7 @@
                     <!-- PrimaryCommandSurface is the main Office Ribbon. -->
                     <ExtensionPoint xsi:type="PrimaryCommandSurface">
                         <!-- Use OfficeTab to extend an existing Tab. Use CustomTab to create a new tab. -->
-                        <OfficeTab id="TabHome">
+                        <OfficeTab id="TabAddIns">
                             <!-- Ensure you provide a unique id for the group. Recommendation for any IDs is to namespace using your company name. -->
                             <Group id="Contoso.Group1">
                                 <!-- Label for your group. resid must point to a ShortString resource. -->
