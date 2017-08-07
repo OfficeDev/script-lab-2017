@@ -83,9 +83,9 @@ interface InitializationParams {
 
             $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
             if (Utilities.platform === PlatformType.PC) {
-                $('#padding-for-personality-menu').width('20px');
+                $('#padding-for-personality-menu').addClass('flex-fixed-width-twenty-px');
             } else if (Utilities.platform === PlatformType.MAC) {
-                $('#padding-for-personality-menu').width('40px');
+                $('#padding-for-personality-menu').addClass('flex-fixed-width-forty-px');
             }
 
             $snippetContent = $('#snippet-code-content');
