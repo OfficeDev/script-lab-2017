@@ -1,5 +1,5 @@
 import * as $ from 'jquery';
-import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Authenticator, Utilities, Storage, StorageType, HostType } from '@microsoft/office-js-helpers';
 let { devMode, build, config } = PLAYGROUND;
 
 class Environment {
@@ -73,7 +73,8 @@ class Environment {
                 if (view && type && host) {
                     return resolve({ host: host.toUpperCase(), platform: null });
                 }
-                return resolve({ host: null, platform: null });
+                // Default to WEB if no host specified
+                return resolve({ host: HostType.WEB, platform: null });
             }
             else {
                 let hostButtonsTimeout = setTimeout(() => {

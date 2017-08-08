@@ -56,23 +56,22 @@ export class ViewMode implements OnInit, OnDestroy {
                 }
 
                 switch (type) {
-                    case 'private-samples':
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
                         return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
-                            .map(data => ({ data: data, id: id }))
+                            .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
                         );
                     case 'gist':
-                        return Observable.of({ data: null, id: id});
+                        return Observable.of({ lookupTable: null, id: id});
                     default:
-                        return Observable.of({ data: null, id: null});
+                        return Observable.of({ lookupTable: null, id: null});
                 }
             })
-            .subscribe(({ data, id }) => {
-                if (data && data[id]) {
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, data[id], true));
+            .subscribe(({ lookupTable, id }) => {
+                if (lookupTable && lookupTable[id]) {
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, lookupTable[id], true /*isViewMode*/));
                 } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, id, true));
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, id, true /*isViewMode*/));
                 } else {
                     // Redirect to error page
                     location.hash = '/view/error';

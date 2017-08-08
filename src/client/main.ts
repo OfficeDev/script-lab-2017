@@ -61,9 +61,7 @@ let imports = [
             imports.push(StoreDevtoolsModule.instrumentOnlyWithExtension());
         }
 
-        if (environment.current.host) {
-            await applyTheme(environment.current.host);
-        }
+        await applyTheme(environment.current.host);
 
         if (!Authenticator.isAuthDialog(environment.current.host === 'TEAMS')) {
             AI.trackEvent(`[Perf] Playground ready`);
