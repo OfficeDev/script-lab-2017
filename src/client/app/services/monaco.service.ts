@@ -16,6 +16,9 @@ export class MonacoService {
         value: '',
         language: 'text',
         lineNumbers: true as any,
+        minimap: {
+            enabled: false
+        },
         roundedSelection: false,
         scrollBeyondLastLine: false,
         formatOnType: true,
