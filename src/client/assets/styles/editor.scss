@@ -7,10 +7,12 @@
 
 .app {
     view-mode-error {
-        > div > h1 {
-            margin-top: auto; /* to push to very bottom */
-            margin-bottom: 10px;
-            text-align: center;
+        > div {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 
