@@ -1,16 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import * as fromRoot from '../reducers';
 import { UI, Snippet } from '../actions';
-import { environment, applyTheme } from '../helpers';
+import { environment } from '../helpers';
+import * as fromRoot from '../reducers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 
 @Component({
     selector: 'view-mode',
     template: `
-        <main [ngClass]="theme$|async">
+        <main ngClass="{{theme$|async}} {{host}}">
             <header class="command__bar">
                 <command class="view-mode" [hidden]="isEmpty" [title]="snippet?.name"></command>
             </header>
@@ -27,11 +29,11 @@ import { Strings } from '../strings';
 export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
-    showInfo: boolean;
     paramsSub: Subscription;
 
     constructor(
         private _store: Store<fromRoot.State>,
+        private _request: Request,
         private _route: ActivatedRoute
     ) {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
@@ -39,31 +41,42 @@ export class ViewMode implements OnInit, OnDestroy {
         });
     }
 
+    get host() {
+        return environment.current.host.toLowerCase();
+    }
+
     ngOnInit() {
         this.paramsSub = this._route.params
-            .subscribe(async(params) => {
-                if (environment.current.host.toUpperCase() !== params.host.toUpperCase()) {
-                    environment.current.host = params.host.toUpperCase();
+            .map(params => ({ type: params.type, host: params.host, id: params.id }))
+            .mergeMap(({ type, host, id }) => {
+                if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
+                    environment.current.host = host.toUpperCase();
                     // Update environment in cache
                     environment.current = environment.current;
-                    await applyTheme(environment.current.host);
                 }
 
-                let urlSegments = this._route.snapshot.url;
-                switch (urlSegments[1].path) {
+                switch (type) {
                     case 'private-samples':
-                        let rawPrivateSamplesUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawPrivateSamplesUrl, true));
-                        break;
-                    case 'gist':
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, params.id, true));
-                        break;
                     case 'samples':
-                        let rawSamplesUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawSamplesUrl, true));
-                        break;
+                        let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                            .map(data => ({ data: data, id: id }))
+                        );
+                    case 'gist':
+                        return Observable.of({ data: null, id: id});
                     default:
-                        break;
+                        return Observable.of({ data: null, id: null});
+                }
+            })
+            .subscribe(({ data, id }) => {
+                if (data && data[id]) {
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, data[id], true));
+                } else if (id) {
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, id, true));
+                } else {
+                    // Redirect to error page
+                    window.localStorage.clear();
+                    location.hash = '/view/error';
                 }
             });
     }

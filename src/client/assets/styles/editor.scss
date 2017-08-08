@@ -3,6 +3,7 @@
 @import 'fabric';
 @import 'components';
 @import 'containers';
+@import 'theme';
 
 .app {
     view-mode-error {
@@ -10,6 +11,36 @@
             margin-top: auto; /* to push to very bottom */
             margin-bottom: 10px;
             text-align: center;
+        }
+    }
+
+    view-mode {
+        .excel {
+            @include theme($excel);
+        }
+
+        .word {
+            @include theme($word);
+        }
+
+        .powerpoint {
+            @include theme($powerpoint);
+        }
+
+        .onenote {
+            @include theme($onenote);
+        }
+
+        .project {
+            @include theme($project);
+        }
+
+        .teams {
+            @include theme($teams);
+        }
+
+        .web {
+            @include theme($web);
         }
     }
 
