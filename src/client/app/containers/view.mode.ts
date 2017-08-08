@@ -75,7 +75,6 @@ export class ViewMode implements OnInit, OnDestroy {
                     this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, id, true));
                 } else {
                     // Redirect to error page
-                    window.localStorage.clear();
                     location.hash = '/view/error';
                 }
             });
