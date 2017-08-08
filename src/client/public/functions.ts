@@ -37,7 +37,7 @@ Office.initialize = () => {
             }
         });
         if (event && Utilities.host !== HostType.OUTLOOK) {
-            //event.completed();
+            event.completed();
         }
     };
 
