@@ -155,7 +155,7 @@ export function getGermanStrings(): ClientStrings {
         newSnippetDescription: 'Neues Schnipsel erstellen',
         importDescription: 'Schnipsel aus einem GitHub-Gist abrufen oder anhand von YAML-Code erstellen.',
 
-        // Outlook only strings
+        // Outlook-only strings
 
         noRunInOutlook: englishSubstitutesForNotYetTranslated.noRunInOutlook,
 

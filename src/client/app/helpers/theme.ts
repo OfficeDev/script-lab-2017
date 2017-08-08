@@ -1,5 +1,7 @@
 import { HostType } from '@microsoft/office-js-helpers';
 
+// This case statement is by design. require.ensure does not function with string composition,
+// or variable names, so there is no other way to do this as of now.
 export function applyTheme(host: string): Promise<boolean> {
     return new Promise(resolve => {
         switch (host.toUpperCase()) {

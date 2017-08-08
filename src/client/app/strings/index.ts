@@ -242,7 +242,7 @@ export interface ClientStrings {
     newSnippetDescription: string;
     importDescription: string;
 
-    // Outlook only strings
+    // Outlook-only strings
 
     noRunInOutlook: string;
 
