@@ -134,7 +134,7 @@ export class Editor implements AfterViewInit {
                         this.updateIntellisense();
                     }
                     this._monacoEditor.setModel(this.currentState.model);
-                    this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState())
+                    this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();
                     this._resize();
                     timer.stop();
