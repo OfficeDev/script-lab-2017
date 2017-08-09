@@ -22,9 +22,7 @@ import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/e
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view/gist/:host/:id', component: ViewMode  },
-    { path: 'view/private-samples/:host/:segment/:name', component: ViewMode },
-    { path: 'view/samples/:host/:segment/:name', component: ViewMode },
+    { path: 'view/:type/:host/:id', component: ViewMode  },
     { path: 'view/error', component: ViewModeError  },
     { path: '',  component: EditorMode }
 ];
