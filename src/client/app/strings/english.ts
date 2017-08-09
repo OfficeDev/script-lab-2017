@@ -151,7 +151,7 @@ export function getEnglishStrings(): ClientStrings {
 
         // Outlook-only strings
 
-        noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" add-in in Outlook to run your snippet.`,
+        noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" pane in Outlook to run your snippet.`,
 
         // import.ts strings
 

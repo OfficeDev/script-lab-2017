@@ -20,7 +20,7 @@ We recommend you to download and install Visual Studio Code from here <https://c
 <a id="structure"></a>
 ## Understanding the Script Lab structure for translating
 
-The Script Lab code is mainly composed of two parts: the server part and the client part. Each part has its own files to be modified and/or added for creating or improving a translation. Additionally, the project includes 4 manifest files which also include translatable strings.
+The Script Lab code is mainly composed of two parts: the server part and the client part. Each part has its own files to be modified and/or added for creating or improving a translation. Additionally, the project includes 6 manifest files which also include translatable strings.
 
 ### Server part files
 
@@ -46,14 +46,16 @@ The structure for the client files is similar to the structure for the server fi
 
 ### Manifest files
 
-The Script Lab Project includes 4 manifest files referencing to different servers, e.g. for testing purposes. For each manifest file, the translations are included in different sections of the file. Adding or changing a translation implies to do this in all 4 files.
+The Script Lab Project includes 6 manifest files referencing to different servers, e.g. for testing purposes. For each manifest file, the translations are included in different sections of the file. Adding or changing a translation implies to do this in all 6 files.
 
-| Folder                   | Filename                  | Description                                    |
-|:-------------------------|:--------------------------|:-----------------------------------------------|
-| `manifests`              | `script-lab-edge.xml`     | Manifest for the edge version.                 |
-| `manifests`              | `script-lab-insiders.xml` | Manifest for the insider version.              |
-| `manifests`              | `script-lab-local.xml`    | Manifest for the locally installed version.    |
-| `manifests`              | `script-lab-prod.xml`     | Manifest for the production version.           |
+| Folder                   | Filename                       | Description                                    |
+|:-------------------------|:-------------------------------|:-----------------------------------------------|
+| `manifests`              | `script-lab-edge.xml`          | Manifest for the edge version.                 |
+| `manifests`              | `script-lab-insiders.xml`      | Manifest for the insider version.              |
+| `manifests`              | `script-lab-local.xml`         | Manifest for the locally installed version.    |
+| `manifests`              | `script-lab-local.outlook.xml` | Manifest for the locally installed version.    |
+| `manifests`              | `script-lab-prod.xml`          | Manifest for the production version.           |
+| `manifests`              | `script-lab-prod.outlook.xml`  | Manifest for the production version.           |
 
 ### Store metadata files
 

@@ -74,7 +74,7 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             return { ...state, running: true };
         }
 
-        case SnippetActionTypes.RUN_FAILED: {
+        case SnippetActionTypes.CANCEL_RUN: {
             AI.trackEvent(action.type);
             return { ...state, running: false };
         }

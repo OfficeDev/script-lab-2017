@@ -129,7 +129,7 @@ export class SnippetEffects {
                     title: Strings().snippetRunError,
                     message: Strings().noRunInOutlook
                 }));
-                this._store.dispatch(new Snippet.RunFailedAction());
+                this._store.dispatch(new Snippet.CancelRunAction());
             } else {
                 const state: IRunnerState = {
                     snippet: snippet,
