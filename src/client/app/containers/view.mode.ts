@@ -59,25 +59,6 @@ export class ViewMode implements OnInit, OnDestroy {
                     environment.current = environment.current;
                 }
 
-<<<<<<< HEAD
-                let urlSegments = this._route.snapshot.url;
-                this.type = urlSegments[1].path;
-                switch (this.type) {
-                    case 'private-samples':
-                        this.viewData = params.name;
-                        let rawUrl = `${environment.current.config.samplesUrl}/private-samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, rawUrl, true));
-                        break;
-                    case 'gist':
-                        this.viewData = params.id;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, this.viewData, true));
-                        break;
-                    case 'samples':
-                        this.viewData = params.name;
-                        let otherRawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, otherRawUrl, true));
-                        break;
-=======
                 switch (type) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
@@ -86,7 +67,6 @@ export class ViewMode implements OnInit, OnDestroy {
                         );
                     case 'gist':
                         return Observable.of({ lookupTable: null, id: id});
->>>>>>> master
                     default:
                         return Observable.of({ lookupTable: null, id: null});
                 }
