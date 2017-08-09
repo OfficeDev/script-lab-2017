@@ -1,16 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import * as fromRoot from '../reducers';
 import { UI, Snippet } from '../actions';
-import { environment, applyTheme } from '../helpers';
+import { environment } from '../helpers';
+import * as fromRoot from '../reducers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 
 @Component({
     selector: 'view-mode',
     template: `
-        <main [ngClass]="theme$|async">
+        <main ngClass="{{theme$|async}} {{host}}">
             <header class="command__bar">
                 <command class="view-mode" [title]="snippet?.name"></command>
                 <command [title]="Open" (click)="openInPlaygroundExcel()"></command>
@@ -35,6 +37,7 @@ export class ViewMode implements OnInit, OnDestroy {
 
     constructor(
         private _store: Store<fromRoot.State>,
+        private _request: Request,
         private _route: ActivatedRoute
     ) {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
@@ -42,16 +45,21 @@ export class ViewMode implements OnInit, OnDestroy {
         });
     }
 
+    get host() {
+        return environment.current.host.toLowerCase();
+    }
+
     ngOnInit() {
         this.paramsSub = this._route.params
-            .subscribe(async(params) => {
-                if (environment.current.host.toUpperCase() !== params.host.toUpperCase()) {
-                    environment.current.host = params.host.toUpperCase();
+            .map(params => ({ type: params.type, host: params.host, id: params.id }))
+            .mergeMap(({ type, host, id }) => {
+                if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
+                    environment.current.host = host.toUpperCase();
                     // Update environment in cache
                     environment.current = environment.current;
-                    await applyTheme(environment.current.host);
                 }
 
+<<<<<<< HEAD
                 let urlSegments = this._route.snapshot.url;
                 this.type = urlSegments[1].path;
                 switch (this.type) {
@@ -69,8 +77,28 @@ export class ViewMode implements OnInit, OnDestroy {
                         let otherRawUrl = `${environment.current.config.samplesUrl}/samples/${params.host}/${params.segment}/${params.name}.yaml`;
                         this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, otherRawUrl, true));
                         break;
+=======
+                switch (type) {
+                    case 'samples':
+                        let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                            .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
+                        );
+                    case 'gist':
+                        return Observable.of({ lookupTable: null, id: id});
+>>>>>>> master
                     default:
-                        break;
+                        return Observable.of({ lookupTable: null, id: null});
+                }
+            })
+            .subscribe(({ lookupTable, id }) => {
+                if (lookupTable && lookupTable[id]) {
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, lookupTable[id], true /*isViewMode*/));
+                } else if (id) {
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, id, true /*isViewMode*/));
+                } else {
+                    // Redirect to error page
+                    location.hash = '/view/error';
                 }
             });
     }

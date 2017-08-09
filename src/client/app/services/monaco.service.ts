@@ -16,12 +16,15 @@ export class MonacoService {
         value: '',
         language: 'text',
         lineNumbers: true as any,
+        minimap: {
+            enabled: false
+        },
         roundedSelection: false,
         scrollBeyondLastLine: false,
         formatOnType: true,
         formatOnPaste: true,
         fontSize: 14,
-        wrappingColumn: 0,
+        wordWrap: 'on',
         folding: true,
         theme: 'vs',
         wrappingIndent: 'indent',
@@ -85,15 +88,6 @@ export class MonacoService {
         return monaco.editor.create(element.nativeElement, options);
     }
 
-    updateOptions(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
-        if (editor == null || overrides == null) {
-            return;
-        }
-
-        let options = { ...this._defaults, ...overrides };
-        editor.updateOptions(options);
-    }
-
     static initialize() {
         if (MonacoService.current == null) {
             MonacoService.current = MonacoService._loadMonaco();
@@ -103,7 +97,7 @@ export class MonacoService {
     }
 
     static _loadMonaco() {
-        return new Promise((resolve, reject) => {
+        return new Promise<typeof monaco>((resolve, reject) => {
             try {
                 let event = AI.trackTimedEvent('[Perf] Monaco loaded');
                 let require = (<any>window).require;
@@ -132,7 +126,7 @@ export class MonacoService {
     private async _registerLanguageServices() {
         let monaco = await MonacoService.current;
         monaco.languages.register({ id: 'libraries' });
-        monaco.languages.setMonarchTokensProvider('libraries', {
+        monaco.languages.setMonarchTokensProvider('libraries', <monaco.languages.IMonarchLanguage>{
             tokenizer: {
                 root: [
                     [Regex.STARTS_WITH_COMMENT, 'comment'],
