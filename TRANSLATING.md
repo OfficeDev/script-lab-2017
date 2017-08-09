@@ -48,14 +48,14 @@ The structure for the client files is similar to the structure for the server fi
 
 The Script Lab Project includes 6 manifest files referencing to different servers, e.g. for testing purposes. For each manifest file, the translations are included in different sections of the file. Adding or changing a translation implies to do this in all 6 files.
 
-| Folder                   | Filename                       | Description                                    |
-|:-------------------------|:-------------------------------|:-----------------------------------------------|
-| `manifests`              | `script-lab-edge.xml`          | Manifest for the edge version.                 |
-| `manifests`              | `script-lab-insiders.xml`      | Manifest for the insider version.              |
-| `manifests`              | `script-lab-local.xml`         | Manifest for the locally installed version.    |
-| `manifests`              | `script-lab-local.outlook.xml` | Manifest for the locally installed version.    |
-| `manifests`              | `script-lab-prod.xml`          | Manifest for the production version.           |
-| `manifests`              | `script-lab-prod.outlook.xml`  | Manifest for the production version.           |
+| Folder                   | Filename                       | Description                                             |
+|:-------------------------|:-------------------------------|:--------------------------------------------------------|
+| `manifests`              | `script-lab-edge.xml`          | Manifest for the edge version.                          |
+| `manifests`              | `script-lab-insiders.xml`      | Manifest for the insider version.                       |
+| `manifests`              | `script-lab-local.xml`         | Manifest for the locally installed version.             |
+| `manifests`              | `script-lab-local.outlook.xml` | Manifest for the locally installed version for outlook. |
+| `manifests`              | `script-lab-prod.xml`          | Manifest for the production version.                    |
+| `manifests`              | `script-lab-prod.outlook.xml`  | Manifest for the production version for outlook.        |
 
 ### Store metadata files
 
