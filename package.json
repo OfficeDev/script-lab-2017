@@ -68,7 +68,7 @@
     "js-yaml": "3.8.2",
     "lodash": "4.17.4",
     "moment": "2.18.1",
-    "monaco-editor": "0.8.3",
+    "monaco-editor": "0.9.0",
     "office-ui-fabric-core": "6.0.1",
     "office-ui-fabric-js": "1.4.0",
     "reflect-metadata": "0.1.10",

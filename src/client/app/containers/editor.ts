@@ -99,7 +99,7 @@ export class Editor implements AfterViewInit {
             .subscribe(() => this._resize());
 
         this._store.select(fromRoot.getTheme)
-            .subscribe(theme => this._monaco.updateOptions(this._monacoEditor, { theme: theme ? 'vs' : 'vs-dark' }));
+            .subscribe(theme => monaco.editor.setTheme(theme ? 'vs' : 'vs-dark'));
 
         this._store.select(fromRoot.getCurrent)
             .filter(data => {
@@ -134,7 +134,7 @@ export class Editor implements AfterViewInit {
                         this.updateIntellisense();
                     }
                     this._monacoEditor.setModel(this.currentState.model);
-                    this._monacoEditor.restoreViewState(this.currentState.viewState);
+                    this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();
                     this._resize();
                     timer.stop();
