@@ -17,7 +17,7 @@ const build = (() => {
 const config = {
     local: {
         name: 'LOCAL',
-        clientId: '03f969bca21781aa2ad0',
+        clientId: '',
         instrumentationKey: null,
         editorUrl: 'https://localhost:3000',
         tokenUrl: 'https://localhost:3200/auth',
