@@ -32,9 +32,21 @@ command {
         }
     }
 
-    &.view-mode {
+    &.view-title {
         pointer-events: none;
        
+        .command {
+            &__icon > span {
+                display: block;
+                margin-left: 0;
+            }
+        }
+    }
+
+    &.view-playground {
+        width: 100%;
+        align-items: flex-end;
+
         .command {
             &__icon > span {
                 display: block;

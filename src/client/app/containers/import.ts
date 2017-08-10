@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI, storage } from '../helpers';
+import { environment, AI, storage } from '../helpers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
@@ -119,17 +120,22 @@ export class Import {
 
     strings = Strings();
 
-    constructor(private _store: Store<fromRoot.State>) {
+    constructor(private _store: Store<fromRoot.State>, private _request: Request) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
         this._store.select(fromRoot.getCurrent)
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
-            .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
+            .subscribe(() => {
+                if (!this.hasViewSettings()) {
+                    this._store.dispatch(new UI.ToggleImportAction(true));
+                }
+            });
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
+        this.checkForViewSnippet();
     }
 
     show$ = this._store.select(fromRoot.getImportState);
@@ -138,7 +144,7 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets)) {
+            if (isEmpty(snippets) && !this.hasViewSettings()) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
@@ -212,5 +218,33 @@ export class Import {
 
     cancel() {
         this._store.dispatch(new UI.ToggleImportAction(false));
+    }
+
+    checkForViewSnippet() {
+        if (!this.hasViewSettings()) {
+            return;
+        }
+
+        let viewData = Office.context.document.settings.get('VIEW_URL_SETTINGS');
+        if (viewData.type === 'samples') {
+            let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+            let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                .subscribe(lookupTable => {
+                    if (lookupTable && lookupTable[viewData.id]) {
+                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, lookupTable[viewData.id]));
+                    }
+
+                    if (sub && !sub.closed) {
+                        sub.unsubscribe();
+                    }
+                });
+
+        } else {
+            this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, viewData.id));
+        }
+    }
+
+    hasViewSettings() {
+        return Office.context.document && Office.context.document.settings.get('VIEW_URL_SETTINGS');
     }
 }

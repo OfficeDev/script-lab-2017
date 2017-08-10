@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as unzip from 'unzip';
+import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
 import * as path from 'path';
 import * as express from 'express';
@@ -210,25 +211,41 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('get', '/open-in-playground-excel/:type/:viewData', async (req, res) => {
+registerRoute('get', '/open-in-playground/:host/:type/:id/:filename', async (req, res) => {
+    let relativePath, extension;
+    const host = req.params.host;
+    switch (host.toUpperCase()) {
+        case 'EXCEL':
+            relativePath = 'xl';
+            extension = '.xlsx';
+            break;
+        case 'WORD':
+            relativePath = 'word';
+            extension = '.docx';
+            break;
+        case 'POWERPOINT':
+            relativePath = 'ppt';
+            extension = '.pptx';
+            break;
+        default:
+            return;
+    }
     const type = req.params.type;
-    const viewData = req.params.viewData;
+    const id = req.params.id;
 
-    return Promise.resolve().then(() => {
-        let dirName = path.resolve(__dirname, 'test' + (new Date()).getTime());
-        let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: dirName }));
+    return Promise.resolve(getVersionNumber()).then(versionNumber => {
+        let extractDirName = path.resolve(__dirname, `test${(new Date()).getTime()}`);
+        let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: extractDirName }));
         zip.on('close', () => {
-            let fileName = dirName + '/xl/webextensions/webextension1.xml';
-            let data = fs.readFileSync(fileName, 'utf-8').toString();
-            data = data.replace('%placeholder_value%', viewData).replace('%placeholder_type%', type);
-            fs.writeFileSync(fileName, data);
+            let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
+            let xmlStringData = fs.readFileSync(xmlFileName, 'utf-8').toString();
+            xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', type).replace('%placeholder_id%', id);
+            fs.writeFileSync(xmlFileName, xmlStringData);
 
-            res.set('Content-Type', 'application/zip');
-            res.attachment(viewData + '.xlsx');
-
+            res.type(extension);
             const archiver = Archiver('zip');
             archiver.pipe(res);
-            archiver.directory(dirName, '');
+            archiver.directory(extractDirName, '');
             archiver.finalize();
         });
     });
@@ -346,6 +363,38 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
             res.setHeader('Cache-Control', 'no-cache, no-store');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
+}
+
+const parseXmlString = (xml) => {
+    return new Promise((resolve, reject) => {
+        xml2js.parseString(xml, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+function getVersionNumber(): Promise<any> {
+     return new Promise((resolve, reject) => {
+        return Request.post({
+            url: 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml',
+            body: 'wa104380862', /* Script Lab ID */
+        }, (error, httpResponse, body) => {
+            if (error) {
+                ai.trackEvent('[Snippet] Open in playground failed', { error });
+                return reject('Failure');
+            }
+            else {
+                ai.trackEvent('[Snippet] Open in playground succeeded', { body });
+                return resolve(body);
+            }
+        });
+    })
+    .then(xml => (parseXmlString(xml)))
+    .then(xmlJson => (xmlJson['o:results']['o:wainfo'][0]['$']['o:ver']));
 }
 
 function generateSnippetHtmlData(

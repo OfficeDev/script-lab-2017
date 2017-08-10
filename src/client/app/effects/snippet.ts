@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
@@ -15,15 +14,12 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
-import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
-
-// const FileSaver = require('file-saver');
+import { Utilities, PlatformType, HostType } from '@microsoft/office-js-helpers';
 
 @Injectable()
 export class SnippetEffects {
     constructor(
         private actions$: Actions,
-        // private _http: Http,
         private _request: Request,
         private _github: GitHubService,
         private _uiEffects: UIEffects,
@@ -193,29 +189,37 @@ export class SnippetEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
     @Effect({ dispatch: false })
-    openInPlaygroundExcel$: Observable<Action> = this.actions$
-        .ofType(Snippet.SnippetActionTypes.OPEN_IN_PLAYGROUND_EXCEL)
+    openInPlayground$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.OPEN_IN_PLAYGROUND)
         .map(action => action.payload)
         .map(payload => {
-            if (Utilities.platform === PlatformType.MAC || Utilities.platform === PlatformType.IOS) {
-                AI.trackEvent('Unsupported open in playground excel');
+            if (Utilities.platform === PlatformType.IOS) {
+                AI.trackEvent('Unsupported open in playground');
                 return;
             }
-            let { type, viewData } = payload;
-            AI.trackEvent('Open in playground excel initiated');
-            let url = environment.current.config.runnerUrl + `/open-in-playground-excel/${type}/${viewData}`;
-            console.log(url);
-            window.location.href = 'ms-excel:ofe|u|' + url + '.xlsx';
-            // this._http.get(
-            //     url,
-            //     { responseType: ResponseContentType.ArrayBuffer }
-            // ).toPromise()
-            //     .then(res => {
-            //         const filename = 'test.xlsx';
-
-            //         let blob = new Blob([res.arrayBuffer()], { type: 'application/zip' });
-            //         FileSaver.saveAs(blob, filename);
-            //     });
+            let { type, id } = payload;
+            let handler, extension;
+            switch(environment.current.host.toUpperCase()) {
+                case HostType.EXCEL:
+                    handler = 'ms-excel:ofe|u|';
+                    extension = '.xlsx';
+                    break;
+                case HostType.WORD:
+                    handler = 'ms-word:ofe|u|';
+                    extension = '.docx';
+                    break;
+                case HostType.POWERPOINT:
+                    case HostType.WORD:
+                    handler = 'ms-powerpoint:ofe|u|';
+                    extension = '.pptx';
+                    break;
+                default:
+                    return;
+            }
+            AI.trackEvent('Open in playground initiated');
+            let filename = `script-lab-playground-${environment.current.host}${extension}`;
+            let url = environment.current.config.runnerUrl + `/open-in-playground/${environment.current.host}/${type}/${id}/${filename}`;
+            window.location.href = `${handler}${url}`;
         })
         .catch(exception => {
             console.log('Exception ' + exception);

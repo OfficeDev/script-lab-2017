@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { UI, Snippet } from '../actions';
@@ -14,12 +15,11 @@ import { Strings } from '../strings';
     template: `
         <main ngClass="{{theme$|async}} {{host}}">
             <header class="command__bar">
-                <command class="view-mode" [title]="snippet?.name"></command>
-                <command [title]="Open" (click)="openInPlaygroundExcel()"></command>
+                <command class="view-title" [title]="snippet?.name"></command>
+                <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="name" (click)="openInPlayground()"></command>
             </header>
             <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
-                <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
             </footer>
         </main>
@@ -32,8 +32,8 @@ export class ViewMode implements OnInit, OnDestroy {
     snippet: ISnippet;
     paramsSub: Subscription;
 
-    viewData: string;
-    type: string;
+    viewType: string;
+    viewId: string;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -49,6 +49,15 @@ export class ViewMode implements OnInit, OnDestroy {
         return environment.current.host.toLowerCase();
     }
 
+    get openInPlaygroundSupported() {
+        let host = environment.current.host.toUpperCase();
+        return host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT;
+    }
+
+    get name() {
+        return 'Open in Script Lab';
+    }
+
     ngOnInit() {
         this.paramsSub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
@@ -58,6 +67,9 @@ export class ViewMode implements OnInit, OnDestroy {
                     // Update environment in cache
                     environment.current = environment.current;
                 }
+
+                this.viewType = type;
+                this.viewId = id;
 
                 switch (type) {
                     case 'samples':
@@ -98,7 +110,7 @@ export class ViewMode implements OnInit, OnDestroy {
         window.open(environment.current.config.feedbackUrl);
     }
 
-    openInPlaygroundExcel() {
-        this._store.dispatch(new Snippet.OpenInPlaygroundExcelAction({ type: this.type, viewData: this.viewData }));
+    openInPlayground() {
+        this._store.dispatch(new Snippet.OpenInPlaygroundAction({ type: this.viewType, id: this.viewId }));
     }
 }
