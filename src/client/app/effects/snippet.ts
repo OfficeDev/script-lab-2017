@@ -382,7 +382,7 @@ export class SnippetEffects {
                     break;
                 }
             }
-        } else {
+        } else if (importResult !== Strings().cancelButtonLabel) {
             if (importResult === Strings().defaultSnippetTitle) {
                 snippet.name = this._generateName(snippet.name, '');
             }
