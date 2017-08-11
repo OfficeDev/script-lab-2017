@@ -149,6 +149,13 @@ export function getEnglishStrings(): ClientStrings {
         newSnippetDescription: 'Create a new snippet',
         importDescription: 'Create a snippet from YAML or a GitHub gist',
 
+        // view.mode.ts strings
+
+        openInPlayground: /** NEEDS STRING REVIEW */ 'Open in Script Lab',
+        openInHost: /** NEEDS STRING REVIEW */ 'Open in {0}',
+        openInGithub: /** NEEDS STRING REVIEW */ 'Open in GitHub',
+        downloadAsHostFile: /** NEEDS STRING REVIEW */ 'Download {0} file',
+
         // import.ts strings
 
         newSnippetLabel: 'New snippet',

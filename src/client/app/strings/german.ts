@@ -155,6 +155,13 @@ export function getGermanStrings(): ClientStrings {
         newSnippetDescription: 'Neues Schnipsel erstellen',
         importDescription: 'Schnipsel aus einem GitHub-Gist abrufen oder anhand von YAML-Code erstellen.',
 
+        // view.mode.ts strings
+
+        openInPlayground: englishSubstitutesForNotYetTranslated.openInPlayground,
+        openInHost: englishSubstitutesForNotYetTranslated.openInHost,
+        openInGithub: englishSubstitutesForNotYetTranslated.openInGithub,
+        downloadAsHostFile: englishSubstitutesForNotYetTranslated.downloadAsHostFile,
+
         // import.ts strings
 
         newSnippetLabel: 'Neues Schnipsel',

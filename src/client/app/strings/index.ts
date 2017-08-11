@@ -242,6 +242,13 @@ export interface ClientStrings {
     newSnippetDescription: string;
     importDescription: string;
 
+    // view.mode.ts strings
+
+    openInPlayground: string;
+    openInHost: string;
+    openInGithub: string;
+    downloadAsHostFile: string;
+
     // import.ts strings
 
     newSnippetLabel: string;

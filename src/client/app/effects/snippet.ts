@@ -197,9 +197,9 @@ export class SnippetEffects {
                 AI.trackEvent('Unsupported open in playground');
                 return;
             }
-            let { type, id } = payload;
+            let { type, id, isDownload } = payload;
             let handler, extension;
-            switch(environment.current.host.toUpperCase()) {
+            switch (environment.current.host.toUpperCase()) {
                 case HostType.EXCEL:
                     handler = 'ms-excel:ofe|u|';
                     extension = '.xlsx';
@@ -219,7 +219,11 @@ export class SnippetEffects {
             AI.trackEvent('Open in playground initiated');
             let filename = `script-lab-playground-${environment.current.host}${extension}`;
             let url = environment.current.config.runnerUrl + `/open-in-playground/${environment.current.host}/${type}/${id}/${filename}`;
-            window.location.href = `${handler}${url}`;
+            if (isDownload) {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = `${handler}${url}`;
+            }
         })
         .catch(exception => {
             console.log('Exception ' + exception);

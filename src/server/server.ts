@@ -212,37 +212,31 @@ registerRoute('post', '/compile/snippet', compileCommon);
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
 registerRoute('get', '/open-in-playground/:host/:type/:id/:filename', async (req, res) => {
-    let relativePath, extension;
-    const host = req.params.host;
-    switch (host.toUpperCase()) {
+    let relativePath;
+    switch (req.params.host.toUpperCase()) {
         case 'EXCEL':
             relativePath = 'xl';
-            extension = '.xlsx';
             break;
         case 'WORD':
             relativePath = 'word';
-            extension = '.docx';
             break;
         case 'POWERPOINT':
             relativePath = 'ppt';
-            extension = '.pptx';
             break;
         default:
             return;
     }
-    const type = req.params.type;
-    const id = req.params.id;
 
     return Promise.resolve(getVersionNumber()).then(versionNumber => {
         let extractDirName = path.resolve(__dirname, `test${(new Date()).getTime()}`);
-        let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: extractDirName }));
+        let zip = fs.createReadStream(path.resolve(__dirname, 'Doc1.zip')).pipe(unzip.Extract({ path: extractDirName }));
         zip.on('close', () => {
             let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
             let xmlStringData = fs.readFileSync(xmlFileName, 'utf-8').toString();
-            xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', type).replace('%placeholder_id%', id);
+            xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', req.params.type).replace('%placeholder_id%', req.params.id);
             fs.writeFileSync(xmlFileName, xmlStringData);
 
-            res.type(extension);
+            res.attachment(req.params.filename);
             const archiver = Archiver('zip');
             archiver.pipe(res);
             archiver.directory(extractDirName, '');

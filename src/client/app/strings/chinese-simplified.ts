@@ -4,8 +4,8 @@ import { ClientStrings } from './index';
 // Whenever these two lines are not commented out, it means that there are
 // still strings that need to be localized.
 // Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getChineseSimplifiedStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -155,6 +155,13 @@ export function getChineseSimplifiedStrings(): ClientStrings {
 
         newSnippetDescription: '创建新代码段',
         importDescription: '创建YAML或GitHub gist的要点摘要代码段',
+
+        // view.mode.ts strings
+
+        openInPlayground: englishSubstitutesForNotYetTranslated.openInPlayground,
+        openInHost: englishSubstitutesForNotYetTranslated.openInHost,
+        openInGithub: englishSubstitutesForNotYetTranslated.openInGithub,
+        downloadAsHostFile: englishSubstitutesForNotYetTranslated.downloadAsHostFile,
 
         // import.ts strings
 

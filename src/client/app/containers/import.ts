@@ -240,8 +240,12 @@ export class Import {
                 });
 
         } else {
-            this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, viewData.id));
+            // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
+            this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, viewData.id, true /*isViewMode*/));
         }
+
+        Office.context.document.settings.remove('VIEW_URL_SETTINGS');
+        Office.context.document.settings.saveAsync();
     }
 
     hasViewSettings() {

@@ -144,7 +144,7 @@ export class LoadTemplatesSuccessAction implements Action {
 export class OpenInPlaygroundAction implements Action {
     readonly type = SnippetActionTypes.OPEN_IN_PLAYGROUND;
 
-    constructor(public payload: { type: string, id: string }) { }
+    constructor(public payload: { type: string, id: string, isDownload: boolean }) { }
 }
 
 /**

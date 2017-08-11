@@ -15,12 +15,17 @@ import { Strings } from '../strings';
     template: `
         <main ngClass="{{theme$|async}} {{host}}">
             <header class="command__bar">
-                <command class="view-title" [title]="snippet?.name"></command>
-                <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="name" (click)="openInPlayground()"></command>
+                <command class="view-disable" [title]="snippet?.name"></command>
+                <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
+                    <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
+                    <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
+                </command>
             </header>
             <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
+                <command class="view-disable" [title]="urlString"></command>
+                <command *ngIf="isGist" [title]="strings.openInGithub" (click)="openInGithub()"></command>
             </footer>
         </main>
     `
@@ -31,7 +36,6 @@ export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
     paramsSub: Subscription;
-
     viewType: string;
     viewId: string;
 
@@ -49,13 +53,25 @@ export class ViewMode implements OnInit, OnDestroy {
         return environment.current.host.toLowerCase();
     }
 
+    get isGist() {
+        return this.snippet && this.snippet.gist;
+    }
+
     get openInPlaygroundSupported() {
         let host = environment.current.host.toUpperCase();
         return host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT;
     }
 
-    get name() {
-        return 'Open in Script Lab';
+    get openInHostString() {
+        return this.strings.openInHost.replace('{0}', environment.current.host);
+    }
+
+    get downloadAsHostFileString() {
+        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host);
+    }
+
+    get urlString() {
+        return `URL: ${window.location.href}`;
     }
 
     ngOnInit() {
@@ -110,7 +126,11 @@ export class ViewMode implements OnInit, OnDestroy {
         window.open(environment.current.config.feedbackUrl);
     }
 
-    openInPlayground() {
-        this._store.dispatch(new Snippet.OpenInPlaygroundAction({ type: this.viewType, id: this.viewId }));
+    openInPlayground(isDownload: boolean) {
+        this._store.dispatch(new Snippet.OpenInPlaygroundAction({ type: this.viewType, id: this.viewId, isDownload: isDownload }));
+    }
+
+    openInGithub() {
+        window.open(`https://gist.github.com/${this.snippet.gist}`);
     }
 }
