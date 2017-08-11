@@ -37,7 +37,6 @@ export class SnippetEffects {
                 .mergeMap(actions => (actions))
                 .catch((exception: Error) => {
                     if (isViewMode) {
-                        window.localStorage.clear();
                         location.hash = '/view/error';
                     } else {
                         const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
@@ -376,16 +375,13 @@ export class SnippetEffects {
         }
 
         let actions: Action[] = [];
-        if (importResult === Strings().cancelButtonLabel) {
-            return Observable.from([]);
-        } else if (importResult === Strings().snippetImportExistingButtonLabel) {
-            storage.snippets.values().some(item => {
+        if (importResult === Strings().snippetImportExistingButtonLabel) {
+            for (let item of storage.snippets.values()) {
                 if (item.name.trim() === snippet.name.trim()) {
                     actions.push(new Snippet.ImportSuccessAction(item));
+                    break;
                 }
-                return item.name.trim() === snippet.name.trim();
-            });
-            return Observable.from(actions);
+            }
         } else {
             if (importResult === Strings().defaultSnippetTitle) {
                 snippet.name = this._generateName(snippet.name, '');
@@ -398,8 +394,8 @@ export class SnippetEffects {
             if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
                 actions.push(new Snippet.SaveAction(snippet));
             }
-            return Observable.from(actions);
         }
+        return Observable.from(actions);
     }
 
     private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {

@@ -120,7 +120,7 @@ export class GitHubService {
         if (!(id == null)) {
             url += `/${id}`;
             return this.gist(id)
-                .flatMap(gist => {
+                .mergeMap(gist => {
                     let oldFilename = Object.keys(gist.files)[0];
                     let newFilename = Object.keys(files)[0];
                     body.files = {};
