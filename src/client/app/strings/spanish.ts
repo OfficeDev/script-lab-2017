@@ -37,6 +37,7 @@ export function getSpanishStrings(): ClientStrings {
         saveButtonLabel: 'Guardar',
         moreInfoButtonLabel: 'Más información',
         importButtonLabel: 'Importar',
+        snippetImportExistingButtonLabel: englishSubstitutesForNotYetTranslated.snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
         viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
@@ -46,6 +47,7 @@ export function getSpanishStrings(): ClientStrings {
         snippetImportErrorBody: 'No pudimos importar el fragmento de código.',
         reloadPrompt: 'Vuelve a cargar este panel e intenta otro URL o ID.',
 
+        snippetNameDuplicationError: englishSubstitutesForNotYetTranslated.snippetNameDuplicationError,
         snippetSaveError: 'Error al guardar el fragmento de código',
         snippetDupeError: 'Error al duplicar el fragmento de código',
         snippetDeleteError: 'Error al borrar el fragmento de código',

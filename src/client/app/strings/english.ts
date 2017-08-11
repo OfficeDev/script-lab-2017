@@ -31,6 +31,7 @@ export function getEnglishStrings(): ClientStrings {
         saveButtonLabel: 'Save',
         moreInfoButtonLabel: 'More info',
         importButtonLabel: 'Import',
+        snippetImportExistingButtonLabel: 'Go to existing snippet',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
         viewModeError: /** NEEDS STRING REVIEW */ 'Failed to load code snippet.',
@@ -40,6 +41,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetImportErrorBody: `We couldn't import the snippet.`,
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
+        snippetNameDuplicationError: 'There is an existing snippet with this name. Do you want to go to this snippet or create a new one with a different name?',
         snippetSaveError: 'Failed to save the current snippet',
         snippetDupeError: 'Failed to duplicate the current snippet',
         snippetDeleteError: 'Failed to delete the current snippet',

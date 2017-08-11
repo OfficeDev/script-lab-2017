@@ -34,6 +34,7 @@ export class SnippetEffects {
                 .map((snippet: ISnippet) => ({ snippet, mode }))
                 .filter(({ snippet }) => !(snippet == null))
                 .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode, isViewMode))
+                .mergeMap(actions => (actions))
                 .catch((exception: Error) => {
                     if (isViewMode) {
                         window.localStorage.clear();
@@ -325,7 +326,7 @@ export class SnippetEffects {
         }
     }
 
-    private _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Observable<Action> {
+    private async _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Promise<Observable<Action>> {
         if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
             throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
         }
@@ -350,18 +351,6 @@ export class SnippetEffects {
         snippet.gist = rawSnippet.gist;
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
 
-        /**
-         * If the action here involves true importing rather than re-opening,
-         * and if the name is already taken by a local snippet, generate a new name.
-         */
-        if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
-            snippet.name = this._generateName(snippet.name, '');
-        }
-
-        const actions: Action[] = [
-            new Snippet.ImportSuccessAction(snippet)
-        ];
-
         let properties = {};
         if (mode === Snippet.ImportType.GIST) {
             properties['hashedGistId'] = sha1(snippet.gist);
@@ -372,15 +361,45 @@ export class SnippetEffects {
         properties['mode'] = isViewMode ? 'view' : 'editor';
         AI.trackEvent(mode, properties);
 
-        /*
-         * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
-         * The snippet will get saved as soon as the user makes any changes (if in editor mode).
+        /**
+         * If the action here involves true importing rather than re-opening,
+         * and if the name is already taken by a local snippet, ask the user if they want to:
+         * import the snippet with a new name, go to the already existing snippet, or cancel the import
          */
-        if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
-            actions.push(new Snippet.SaveAction(snippet));
+        let importResult = null;
+        if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
+            importResult = await this._uiEffects.alert(
+                Strings().snippetNameDuplicationError,
+                `${Strings().importButtonLabel} ${snippet.name}`,
+                Strings().snippetImportExistingButtonLabel, Strings().defaultSnippetTitle, Strings().cancelButtonLabel /* user options */
+            );
         }
 
-        return Observable.from(actions);
+        let actions: Action[] = [];
+        if (importResult === Strings().cancelButtonLabel) {
+            return Observable.from([]);
+        } else if (importResult === Strings().snippetImportExistingButtonLabel) {
+            storage.snippets.values().some(item => {
+                if (item.name.trim() === snippet.name.trim()) {
+                    actions.push(new Snippet.ImportSuccessAction(item));
+                }
+                return item.name.trim() === snippet.name.trim();
+            });
+            return Observable.from(actions);
+        } else {
+            if (importResult === Strings().defaultSnippetTitle) {
+                snippet.name = this._generateName(snippet.name, '');
+            }
+            actions.push(new Snippet.ImportSuccessAction(snippet));
+            /*
+            * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
+            * The snippet will get saved as soon as the user makes any changes (if in editor mode).
+            */
+            if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
+                actions.push(new Snippet.SaveAction(snippet));
+            }
+            return Observable.from(actions);
+        }
     }
 
     private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {

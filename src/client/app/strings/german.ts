@@ -37,6 +37,7 @@ export function getGermanStrings(): ClientStrings {
         saveButtonLabel: 'Speichern',
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
+        snippetImportExistingButtonLabel: englishSubstitutesForNotYetTranslated.snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
@@ -46,6 +47,7 @@ export function getGermanStrings(): ClientStrings {
 
         viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
 
+        snippetNameDuplicationError: englishSubstitutesForNotYetTranslated.snippetNameDuplicationError,
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
         snippetDeleteError: 'Das aktuelle Schnipsel konnte nicht gelöscht werden.',

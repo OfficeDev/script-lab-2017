@@ -125,6 +125,7 @@ export interface ClientStrings {
     saveButtonLabel: string;
     moreInfoButtonLabel: string;
     importButtonLabel: string;
+    snippetImportExistingButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
     viewModeError: string,
@@ -134,6 +135,7 @@ export interface ClientStrings {
     snippetImportErrorBody: string;
     reloadPrompt: string;
 
+    snippetNameDuplicationError: string;
     snippetSaveError: string;
     snippetDupeError: string;
     snippetDeleteError: string;

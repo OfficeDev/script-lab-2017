@@ -119,10 +119,21 @@ export class GitHubService {
         let url = `${this._baseUrl}/gists`;
         if (!(id == null)) {
             url += `/${id}`;
-            return this._request.patch<IGist>(url, body, ResponseTypes.JSON, this._headers);
+            return this.gist(id)
+                .flatMap(gist => {
+                    let oldFilename = Object.keys(gist.files)[0];
+                    let newFilename = Object.keys(files)[0];
+                    body.files = {};
+                    body.files[oldFilename] = {
+                        filename: newFilename,
+                        content: files[newFilename].content,
+                        language: files[newFilename].language
+                    };
+                    return this._request.patch<IGist>(url, body, ResponseTypes.JSON, this._headers);
+                });
+        } else {
+            return this._request.post<IGist>(url, body, ResponseTypes.JSON, this._headers);
         }
-
-        return this._request.post<IGist>(url, body, ResponseTypes.JSON, this._headers);
     }
 
     forkGist(id: string): Observable<IGist> {
