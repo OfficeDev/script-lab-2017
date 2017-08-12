@@ -9,6 +9,7 @@ This document describes how to create a new translation for Script Lab or improv
 * [Improve an existing translation](TRANSLATING.md#improve)
 * [Testing your translation](TRANSLATING.md#testing)
 * [Script Lab languages](TRANSLATING.md/#translations)
+* [Tracking bugs for incremental translations](TRANSLATING.md/#incremental)
 
 <a id="prerequisites"></a>
 ## Prerequisites
@@ -174,8 +175,19 @@ Script Lab recognizes the installed language of your Office App (Excel, Word, Po
 
 Script Lab is currently available or being translated into the following languages:
 
-| Language           | Code   | Status             | Production         | Notes              |
-|:-------------------|:-------|:-------------------|:-------------------|:-------------------|
-| English            | en     | Complete           | Yes                | Default language   |
-| German             | de     | Complete           | No                 | -                  |
+| Language             | Code   | Status             | Production         |
+|:---------------------|:-------|:-------------------|:-------------------|
+| English              | en     | Complete           | Yes                |
+| German               | de     | Complete           | Yes                |
+| Spanish              | de     | Complete           | Yes                |
+| Chinese (Simplified) | zh-CN  | Complete           | No                 |
 
+
+<a id="incremental"></a>
+## Tracking bugs for incremental translations
+
+| Language             | Filename                | URL for tracking issue                                 |
+|:---------------------|:------------------------|:-------------------------------------------------------|
+| German               | german.ts               | https://github.com/OfficeDev/script-lab/issues/472     |
+| Spanish              | spanish.ts              | https://github.com/OfficeDev/script-lab/issues/510     |
+| Chinese (Simplified) | chinese-simplified.ts   | https://github.com/OfficeDev/script-lab/issues/557     |
