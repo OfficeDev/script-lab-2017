@@ -34,7 +34,7 @@ export class SnippetEffects {
                 .map((snippet: ISnippet) => ({ snippet, mode }))
                 .filter(({ snippet }) => !(snippet == null))
                 .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode, isViewMode))
-                .mergeMap(actions => (actions))
+                .mergeMap(actions => actions) /* resolve Promise */
                 .catch((exception: Error) => {
                     if (isViewMode) {
                         location.hash = '/view/error';
