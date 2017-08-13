@@ -1,4 +1,4 @@
-import {ServerStrings} from './strings';
+import { ServerStrings } from './strings/server-strings';
 
 export interface ISnippetHandlebarsContext extends ICompiledSnippet {
     isOfficeSnippet: boolean;
