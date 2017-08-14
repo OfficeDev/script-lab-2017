@@ -178,7 +178,7 @@ registerRoute('post', '/auth/:user', (req, res) => {
             },
             json: {
                 client_id: clientId,
-                client_secret: secrets ? secrets[env] : 'e16c7ec18ce70498abf9531298d82f6e1896ecd0',
+                client_secret: secrets ? secrets[env] : '',
                 redirect_uri: editorUrl,
                 code,
                 state
