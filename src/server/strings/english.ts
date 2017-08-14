@@ -1,4 +1,4 @@
-import { ServerStrings } from './index';
+import { ServerStrings} from './server-strings';
 
 export function getEnglishStrings(): ServerStrings {
     return {

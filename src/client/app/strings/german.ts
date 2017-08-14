@@ -1,11 +1,9 @@
-import { ClientStrings } from './index';
+import { ClientStrings } from './client-strings';
 
 // Whenever there is no localized translation, use the English version.
-// Whenever these two lines are not commented out, it means that there are
-// still strings that need to be localized.
-// Just search for "englishSubstitutesForNotYetTranslated" in this file
-import { getEnglishStrings } from './english';
-const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -44,7 +42,10 @@ export function getGermanStrings(): ClientStrings {
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
-        viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
+        cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
+        currentHostDoesNotSupportRequiredApiSet: getEnglishSubstitutesForNotYetTranslated().currentHostDoesNotSupportRequiredApiSet,
+
+        viewModeError: getEnglishSubstitutesForNotYetTranslated().viewModeError,
 
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
@@ -116,7 +117,7 @@ export function getGermanStrings(): ClientStrings {
         descriptionPlaceholder: 'Beschreibung des Schipsels',
         gistUrlLabel: 'GitHub-Gist-URL',
         gistUrlLinkLabel: 'Im Browser öffnen',
-        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
+        viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
@@ -157,7 +158,7 @@ export function getGermanStrings(): ClientStrings {
 
         // Outlook-only strings
 
-        noRunInOutlook: englishSubstitutesForNotYetTranslated.noRunInOutlook,
+        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
 
         // import.ts strings
 

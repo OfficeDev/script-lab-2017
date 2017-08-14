@@ -337,7 +337,8 @@ export class SnippetEffects {
 
     private _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Observable<Action> {
         if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
-            throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
+            throw new PlaygroundError(Strings().cannotImportSnippetCreatedForDifferentHost(
+                rawSnippet.host, environment.current.host));
         }
 
         this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
@@ -415,7 +416,8 @@ export class SnippetEffects {
         });
 
         if (unsupportedApiSet) {
-            throw new PlaygroundError(`${environment.current.host} does not support the required API Set ${unsupportedApiSet.api} @ ${unsupportedApiSet.version}.`);
+            throw new PlaygroundError(Strings().currentHostDoesNotSupportRequiredApiSet(
+                environment.current.host, unsupportedApiSet.api, unsupportedApiSet.version.toString()));
         }
     }
 }

@@ -1,4 +1,4 @@
-import { ClientStrings } from './index';
+import { ClientStrings } from './client-strings';
 
 export function getEnglishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -39,6 +39,13 @@ export function getEnglishStrings(): ClientStrings {
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
+
+        cannotImportSnippetCreatedForDifferentHost:
+            (snippetHost: string, currentHost: string) =>
+                `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
+        currentHostDoesNotSupportRequiredApiSet:
+            (currentHost: string, setName: string, setVersion: string) =>
+                `${currentHost} does not support the required API Set ${setName} @ ${setVersion}`,
 
         snippetSaveError: 'Failed to save the current snippet',
         snippetDupeError: 'Failed to duplicate the current snippet',
