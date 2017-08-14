@@ -158,10 +158,10 @@ export function getGermanStrings(): ClientStrings {
 
         // view.mode.ts strings
 
-        openInPlayground: englishSubstitutesForNotYetTranslated.openInPlayground,
-        openInHost: englishSubstitutesForNotYetTranslated.openInHost,
-        openInGithub: englishSubstitutesForNotYetTranslated.openInGithub,
-        downloadAsHostFile: englishSubstitutesForNotYetTranslated.downloadAsHostFile,
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
 
         // import.ts strings
 

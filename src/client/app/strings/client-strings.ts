@@ -135,6 +135,13 @@ export interface ClientStrings {
         'libraries': string;
     },
 
+    // view.mode.ts strings
+
+    openInPlayground: string;
+    openInHost: string;
+    openInGithub: string;
+    downloadAsHostFile: string;
+
     // Gallery.view strings
 
     snippetsTab: string;
