@@ -1,11 +1,9 @@
-import { ClientStrings } from './index';
+import { ClientStrings } from './client-strings';
 
 // Whenever there is no localized translation, use the English version.
-// Whenever these two lines are not commented out, it means that there are
-// still strings that need to be localized.
-// Just search for "englishSubstitutesForNotYetTranslated" in this file
-import { getEnglishStrings } from './english';
-const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -46,6 +44,9 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         snippetImportErrorTitle: '导入失败',
         snippetImportErrorBody: `我们不能导入代码。`,
         reloadPrompt: '再次导入任务窗口，然后尝试其他URL或者ID。',
+
+        cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
+        currentHostDoesNotSupportRequiredApiSet: getEnglishSubstitutesForNotYetTranslated().currentHostDoesNotSupportRequiredApiSet,
 
         snippetSaveError: '保存代码失败',
         snippetDupeError: '复制代码失败',
