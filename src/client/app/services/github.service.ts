@@ -124,6 +124,7 @@ export class GitHubService {
                     let oldFilename = Object.keys(gist.files)[0];
                     let newFilename = Object.keys(files)[0];
                     body.files = {};
+                    /* Rename file when updating; if name has not changed, equivalent of no-op */
                     body.files[oldFilename] = {
                         filename: newFilename,
                         content: files[newFilename].content,

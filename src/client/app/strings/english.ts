@@ -1,4 +1,4 @@
-import { ClientStrings } from './index';
+import { ClientStrings } from './client-strings';
 
 export function getEnglishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -36,12 +36,19 @@ export function getEnglishStrings(): ClientStrings {
 
         viewModeError: /** NEEDS STRING REVIEW */ 'Failed to load code snippet.',
 
+        snippetGistIdDuplicationError: 'There is an existing snippet that was imported from the same Gist ID. Do you want to switch to this snippet or create a new copy?',
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
-        snippetNameDuplicationError: 'There is an existing snippet with this name. Do you want to go to this snippet or create a new one with a different name?',
+        cannotImportSnippetCreatedForDifferentHost:
+            (snippetHost: string, currentHost: string) =>
+                `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
+        currentHostDoesNotSupportRequiredApiSet:
+            (currentHost: string, setName: string, setVersion: string) =>
+                `${currentHost} does not support the required API Set ${setName} @ ${setVersion}`,
+
         snippetSaveError: 'Failed to save the current snippet',
         snippetDupeError: 'Failed to duplicate the current snippet',
         snippetDeleteError: 'Failed to delete the current snippet',

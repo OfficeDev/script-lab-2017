@@ -187,6 +187,10 @@ export class SnippetEffects {
         .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
+    private _gistIdExists(id: string) {
+        return storage.snippets.values().some(item => item.gist.trim() === id.trim());
+    }
+
     private _exists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }
@@ -327,7 +331,8 @@ export class SnippetEffects {
 
     private async _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Promise<Observable<Action>> {
         if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
-            throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
+            throw new PlaygroundError(Strings().cannotImportSnippetCreatedForDifferentHost(
+                rawSnippet.host, environment.current.host));
         }
 
         this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
@@ -361,14 +366,13 @@ export class SnippetEffects {
         AI.trackEvent(mode, properties);
 
         /**
-         * If the action here involves true importing rather than re-opening,
-         * and if the name is already taken by a local snippet, ask the user if they want to:
-         * import the snippet with a new name, go to the already existing snippet, or cancel the import
+         * If the user is importing a gist that already exists, ask the user if they want
+         * to navigate to the existing one or create a new one in their local storage.
          */
-        let importResult = null;
-        if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
+        let importResult: string = null;
+        if (snippet.gist && this._gistIdExists(snippet.gist)) {
             importResult = await this._uiEffects.alert(
-                Strings().snippetNameDuplicationError,
+                Strings().snippetGistIdDuplicationError,
                 `${Strings().importButtonLabel} ${snippet.name}`,
                 Strings().snippetImportExistingButtonLabel, Strings().defaultSnippetTitle, Strings().cancelButtonLabel /* user options */
             );
@@ -377,13 +381,17 @@ export class SnippetEffects {
         let actions: Action[] = [];
         if (importResult === Strings().snippetImportExistingButtonLabel) {
             for (let item of storage.snippets.values()) {
-                if (item.name.trim() === snippet.name.trim()) {
+                if (item.gist.trim() === snippet.gist.trim()) {
                     actions.push(new Snippet.ImportSuccessAction(item));
                     break;
                 }
             }
         } else if (importResult !== Strings().cancelButtonLabel) {
-            if (importResult === Strings().defaultSnippetTitle) {
+            /**
+             * If the action here involves true importing rather than re-opening,
+             * and if the name is already taken by a local snippet, generate a new name.
+             */
+            if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
                 snippet.name = this._generateName(snippet.name, '');
             }
             actions.push(new Snippet.ImportSuccessAction(snippet));
@@ -420,7 +428,8 @@ export class SnippetEffects {
         });
 
         if (unsupportedApiSet) {
-            throw new PlaygroundError(`${environment.current.host} does not support the required API Set ${unsupportedApiSet.api} @ ${unsupportedApiSet.version}.`);
+            throw new PlaygroundError(Strings().currentHostDoesNotSupportRequiredApiSet(
+                environment.current.host, unsupportedApiSet.api, unsupportedApiSet.version.toString()));
         }
     }
 }

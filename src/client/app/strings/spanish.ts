@@ -1,11 +1,9 @@
-import { ClientStrings } from './index';
+import { ClientStrings } from './client-strings';
 
 // Whenever there is no localized translation, use the English version.
-// Whenever these two lines are not commented out, it means that there are
-// still strings that need to be localized.
-// Just search for "englishSubstitutesForNotYetTranslated" in this file
-import { getEnglishStrings } from './english';
-const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -37,17 +35,20 @@ export function getSpanishStrings(): ClientStrings {
         saveButtonLabel: 'Guardar',
         moreInfoButtonLabel: 'Más información',
         importButtonLabel: 'Importar',
-        snippetImportExistingButtonLabel: englishSubstitutesForNotYetTranslated.snippetImportExistingButtonLabel,
+        snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
-        viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
+        viewModeError: getEnglishSubstitutesForNotYetTranslated().viewModeError,
 
+        snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: 'Error al importar fragmento de código',
         snippetImportErrorTitle: 'Error en importación',
         snippetImportErrorBody: 'No pudimos importar el fragmento de código.',
         reloadPrompt: 'Vuelve a cargar este panel e intenta otro URL o ID.',
 
-        snippetNameDuplicationError: englishSubstitutesForNotYetTranslated.snippetNameDuplicationError,
+        cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
+        currentHostDoesNotSupportRequiredApiSet: getEnglishSubstitutesForNotYetTranslated().currentHostDoesNotSupportRequiredApiSet,
+
         snippetSaveError: 'Error al guardar el fragmento de código',
         snippetDupeError: 'Error al duplicar el fragmento de código',
         snippetDeleteError: 'Error al borrar el fragmento de código',
@@ -117,7 +118,7 @@ export function getSpanishStrings(): ClientStrings {
         descriptionPlaceholder: 'Descripción del fragmento de código ',
         gistUrlLabel:  'URL del gist',
         gistUrlLinkLabel:  'Abrir en navegador',
-        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
+        viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
