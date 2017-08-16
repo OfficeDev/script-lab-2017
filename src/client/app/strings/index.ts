@@ -6,7 +6,6 @@ import { ClientStrings } from './client-strings';
   * (as expected), and also on the runner domain (due to its use in runner.ts) */
 const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 
-
 ////////////////////////////////////////////////////////////////////////////
 //// To add a new language, just fill in this section and also create   ////
 //// a corresponding language file modeled after the English one.       ////
@@ -33,10 +32,8 @@ const languageGenerator: { [key: string]: () => ClientStrings } = {
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
-
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-
 
 export function getAvailableLanguages(): { name: string, value: string }[] {
     let langs = availableLanguages.slice();

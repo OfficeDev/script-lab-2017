@@ -155,6 +155,10 @@ export function getSpanishStrings(): ClientStrings {
         newSnippetDescription: 'Crear un fragmento de código',
         importDescription: 'Crear un fragmento de código importando YAML o un gist de GitHub',
 
+        // Outlook-only strings
+
+        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
+
         // import.ts strings
 
         newSnippetLabel: 'Crear',
@@ -253,4 +257,3 @@ export function getSpanishStrings(): ClientStrings {
         }
     };
 }
-

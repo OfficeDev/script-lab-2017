@@ -145,6 +145,10 @@ body.TEAMS {
 	@include theme-min($teams);
 }
 
+body.OUTLOOK {
+	@include theme-min($outlook);
+}
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
