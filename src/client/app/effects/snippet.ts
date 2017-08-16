@@ -201,7 +201,7 @@ export class SnippetEffects {
         return storage.snippets.values().some(item => item.gist.trim() === id.trim());
     }
 
-    private _exists(name: string) {
+    private _nameExists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }
 
@@ -401,7 +401,7 @@ export class SnippetEffects {
              * If the action here involves true importing rather than re-opening,
              * and if the name is already taken by a local snippet, generate a new name.
              */
-            if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
+            if (mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
                 snippet.name = this._generateName(snippet.name, '');
             }
             actions.push(new Snippet.ImportSuccessAction(snippet));

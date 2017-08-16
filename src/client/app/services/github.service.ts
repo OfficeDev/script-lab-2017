@@ -113,8 +113,7 @@ export class GitHubService {
         let body = {
             description: description,
             public: isPublic,
-            files: files
-        };
+        } as { description: string, public: boolean, files: IGistFiles };
 
         let url = `${this._baseUrl}/gists`;
         if (!(id == null)) {
@@ -133,6 +132,7 @@ export class GitHubService {
                     return this._request.patch<IGist>(url, body, ResponseTypes.JSON, this._headers);
                 });
         } else {
+            body.files = files;
             return this._request.post<IGist>(url, body, ResponseTypes.JSON, this._headers);
         }
     }
