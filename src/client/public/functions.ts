@@ -4,11 +4,13 @@ Office.initialize = () => {
     const urls = {
         //tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
         tutorial: `${window.location.origin}/tutorial.html`,
+        code: `${window.location.origin}/?mode=${Utilities.host}`,
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
         ask: 'https://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
         word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
         onenote_api: 'https://dev.office.com/docs/add-ins/onenote/onenote-add-ins-programming-overview',
+        outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/',
         powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
         generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
@@ -21,10 +23,20 @@ Office.initialize = () => {
         if (typeof options.displayInIframe === 'undefined') {
             options.displayInIframe = true;
         }
-
-        Office.context.ui.displayDialogAsync(url, options, null);
-
-        if (event) {
+        Office.context.ui.displayDialogAsync(url, options, (result) => {
+            if (Utilities.host === HostType.OUTLOOK) {
+                if (result.status === Office.AsyncResultStatus.Failed) {
+                    event.completed();
+                }
+                let dialog = result.value as Office.DialogHandler;
+                dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
+                    if (event) {
+                        event.completed();
+                    }
+                });
+            }
+        });
+        if (event && Utilities.host !== HostType.OUTLOOK) {
             event.completed();
         }
     };
@@ -32,6 +44,8 @@ Office.initialize = () => {
     const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
         launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
     };
+
+    (window as any).launchCode = (event) => launchInDialog(urls.code, event, { width: 75, height: 75, displayInIframe: false });
 
     (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, { width: 35, height: 45 });
 
@@ -55,6 +69,9 @@ Office.initialize = () => {
             }
             else if (Utilities.host === HostType.PROJECT) {
                 return launchDialogNavigation(urls.project_api, event);
+            }
+            else if (Utilities.host === HostType.OUTLOOK) {
+                return launchDialogNavigation(urls.outlook_api, event);
             }
             else {
                 return launchDialogNavigation(urls.generic_api, event);

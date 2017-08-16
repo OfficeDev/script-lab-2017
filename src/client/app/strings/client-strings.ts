@@ -148,6 +148,10 @@ export interface ClientStrings {
     newSnippetDescription: string;
     importDescription: string;
 
+    // Outlook-only strings
+
+    noRunInOutlook: string;
+
     // import.ts strings
 
     newSnippetLabel: string;

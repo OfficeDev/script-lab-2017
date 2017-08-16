@@ -158,6 +158,10 @@ export function getEnglishStrings(): ClientStrings {
         newSnippetDescription: 'Create a new snippet',
         importDescription: 'Create a snippet from YAML or a GitHub gist',
 
+        // Outlook-only strings
+
+        noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" pane in Outlook to run your snippet.`,
+
         // import.ts strings
 
         newSnippetLabel: 'New snippet',

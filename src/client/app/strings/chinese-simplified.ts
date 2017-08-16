@@ -159,6 +159,10 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         newSnippetDescription: '创建新代码段',
         importDescription: '创建YAML或GitHub gist的要点摘要代码段',
 
+        // Outlook-only strings
+
+        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
+
         // import.ts strings
 
         newSnippetLabel: '新的代码段',
