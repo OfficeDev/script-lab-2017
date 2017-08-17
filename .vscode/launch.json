@@ -11,7 +11,7 @@
             "cwd": "${workspaceRoot}",
             "runtimeExecutable": "nodemon",
             "runtimeArgs": [
-                "--debug=5858"
+                "--inspect=5858"
             ],
             "program": "${workspaceRoot}/dist/server/server.js",
             "outFiles": [
