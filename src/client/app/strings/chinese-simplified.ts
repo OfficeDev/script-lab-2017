@@ -36,10 +36,12 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         saveButtonLabel: '保存',
         moreInfoButtonLabel: '更多信息',
         importButtonLabel: '输入',
+        snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
         viewModeError: '导入代码段失败。',
 
+        snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: '导入代码失败',
         snippetImportErrorTitle: '导入失败',
         snippetImportErrorBody: `我们不能导入代码。`,
@@ -163,6 +165,10 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
         openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
         downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
+        // Outlook-only strings
+
+        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
 
         // import.ts strings
 

@@ -26,10 +26,12 @@ export interface ClientStrings {
     saveButtonLabel: string;
     moreInfoButtonLabel: string;
     importButtonLabel: string;
+    snippetImportExistingButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
     viewModeError: string,
 
+    snippetGistIdDuplicationError: string;
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;
@@ -152,6 +154,10 @@ export interface ClientStrings {
 
     newSnippetDescription: string;
     importDescription: string;
+
+    // Outlook-only strings
+
+    noRunInOutlook: string;
 
     // import.ts strings
 

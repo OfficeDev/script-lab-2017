@@ -35,8 +35,10 @@ export function getGermanStrings(): ClientStrings {
         saveButtonLabel: 'Speichern',
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
+        snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
+        snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
         snippetImportErrorTitle: 'Importfehler.',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
@@ -162,6 +164,10 @@ export function getGermanStrings(): ClientStrings {
         openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
         openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
         downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
+        // Outlook-only strings
+
+        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
 
         // import.ts strings
 

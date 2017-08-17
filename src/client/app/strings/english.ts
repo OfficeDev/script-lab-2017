@@ -31,10 +31,12 @@ export function getEnglishStrings(): ClientStrings {
         saveButtonLabel: 'Save',
         moreInfoButtonLabel: 'More info',
         importButtonLabel: 'Import',
+        snippetImportExistingButtonLabel: 'Go to existing snippet',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
         viewModeError: /** NEEDS STRING REVIEW */ 'Failed to load code snippet.',
 
+        snippetGistIdDuplicationError: 'There is an existing snippet that was imported from the same Gist ID. Do you want to switch to this snippet or create a new copy?',
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
@@ -162,6 +164,10 @@ export function getEnglishStrings(): ClientStrings {
         openInHost: /** NEEDS STRING REVIEW */ 'Open in {0}',
         openInGithub: /** NEEDS STRING REVIEW */ 'Open in GitHub',
         downloadAsHostFile: /** NEEDS STRING REVIEW */ 'Download {0} file',
+
+        // Outlook-only strings
+
+        noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" pane in Outlook to run your snippet.`,
 
         // import.ts strings
 
