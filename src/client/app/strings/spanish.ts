@@ -35,10 +35,12 @@ export function getSpanishStrings(): ClientStrings {
         saveButtonLabel: 'Guardar',
         moreInfoButtonLabel: 'Más información',
         importButtonLabel: 'Importar',
+        snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
         viewModeError: getEnglishSubstitutesForNotYetTranslated().viewModeError,
 
+        snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: 'Error al importar fragmento de código',
         snippetImportErrorTitle: 'Error en importación',
         snippetImportErrorBody: 'No pudimos importar el fragmento de código.',

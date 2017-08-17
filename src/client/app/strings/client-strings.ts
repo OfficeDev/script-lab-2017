@@ -26,10 +26,12 @@ export interface ClientStrings {
     saveButtonLabel: string;
     moreInfoButtonLabel: string;
     importButtonLabel: string;
+    snippetImportExistingButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
     viewModeError: string,
 
+    snippetGistIdDuplicationError: string;
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;
