@@ -422,7 +422,7 @@ export class SnippetEffects {
          * to navigate to the existing one or create a new one in their local storage.
          */
         let importResult: string = null;
-        if (snippet.gist && this._gistIdExists(snippet.gist)) {
+        if (mode !== Snippet.ImportType.OPEN && snippet.gist && this._gistIdExists(snippet.gist)) {
             importResult = await this._uiEffects.alert(
                 Strings().snippetGistIdDuplicationError,
                 `${Strings().importButtonLabel} ${snippet.name}`,
