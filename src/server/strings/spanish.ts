@@ -3,7 +3,8 @@ import { ServerStrings } from './server-strings';
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
-//import { getEnglishSubstitutesForNotYetTranslated } from './index';
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getSpanishStrings(): ServerStrings {
     return {
@@ -39,6 +40,9 @@ export function getSpanishStrings(): ServerStrings {
         run: 'Ejecutar',
         runPageTitle: 'Ejecutar código',
         back: 'Regresar',
+        snippetNotTrusted: englishSubstitutesForNotYetTranslated.snippetNotTrusted,
+        trust: englishSubstitutesForNotYetTranslated.trust,
+        cancel: englishSubstitutesForNotYetTranslated.cancel,
         switchToSnippet: `Regresar al código que estas editando.`,
         snippetCodeChanged: 'Cambiaste el código en este fragmento de código. Actualiza este panel para ejecutar la nueva versión.',
         refresh: 'Actualizar',

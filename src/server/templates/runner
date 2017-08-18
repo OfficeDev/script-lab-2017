@@ -111,6 +111,23 @@
         </div>
     </div>
 
+    <div id="notify-snippet-not-trusted" class="runner-notification ms-MessageBar ms-MessageBar--info ms-MessageBar--severeWarning" style="display:none">
+        <div class="ms-MessageBar-content">
+            <div class="ms-MessageBar-text">
+                {{strings.snippetNotTrusted}}
+            </div>
+
+            <div class="buttons" style="text-align: right;">
+                <button class="action-fast-reload ms-Button host-colored-button">
+                    <span class="ms-Button-label">{{strings.trust}}</span>
+                </button>
+                <button class="action-dismiss ms-Button host-colored-button">
+                    <span class="ms-Button-label">{{strings.cancel}}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="notify-error" class="runner-notification ms-MessageBar ms-MessageBar--error" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
@@ -160,6 +177,7 @@
             officeJS: '{{{officeJS}}}',
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
+            isTrustedSnippet: {{{isTrustedSnippet}}},
             heartbeatParams: {
                 {{#if snippet.lastModified}}
                 lastModified: {{snippet.lastModified}},

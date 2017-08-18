@@ -2,10 +2,13 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
+import { UIEffects } from '../effects/ui';
 import { environment, AI, storage } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
+
+const viewUrlSettings = 'VIEW_URL_SETTINGS';
 
 //strings are specified inline (not imported) for performance reasons
 
@@ -120,7 +123,11 @@ export class Import {
 
     strings = Strings();
 
-    constructor(private _store: Store<fromRoot.State>, private _request: Request) {
+    constructor(
+        private _effects: UIEffects,
+        private _request: Request,
+        private _store: Store<fromRoot.State>
+    ) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
@@ -135,7 +142,11 @@ export class Import {
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
-        this.checkForViewSnippet();
+        this.importViewSnippet()
+            .then(() => {
+                Office.context.document.settings.remove('VIEW_URL_SETTINGS');
+                Office.context.document.settings.saveAsync();
+            });
     }
 
     show$ = this._store.select(fromRoot.getImportState);
@@ -220,12 +231,29 @@ export class Import {
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
-    checkForViewSnippet() {
+    hasViewSettings() {
+        return Office.context.document && Office.context.document.settings.get(viewUrlSettings);
+    }
+
+    async importViewSnippet() {
+        // Do not import if there are no view settings
         if (!this.hasViewSettings()) {
             return;
         }
 
-        let viewData = Office.context.document.settings.get('VIEW_URL_SETTINGS');
+        let importResult = await this._effects.alert(
+            this.strings.importConfirm,
+            this.strings.importLabel,
+            this.strings.importButtonLabel, this.strings.cancelButtonLabel
+        );
+
+        if (importResult === this.strings.cancelButtonLabel) {
+            this.switch();
+            this._store.dispatch(new UI.ToggleImportAction(true));
+            return;
+        }
+
+        let viewData = Office.context.document.settings.get(viewUrlSettings);
         if (viewData.type === 'samples') {
             let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
             let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
@@ -243,12 +271,5 @@ export class Import {
             // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
             this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, viewData.id, true /*isViewMode*/));
         }
-
-        Office.context.document.settings.remove('VIEW_URL_SETTINGS');
-        Office.context.document.settings.saveAsync();
-    }
-
-    hasViewSettings() {
-        return Office.context.document && Office.context.document.settings.get('VIEW_URL_SETTINGS');
     }
 }

@@ -165,6 +165,19 @@ export function processLibraries(snippet: ISnippet) {
     }
 }
 
+export const trustedSnippetsKey = 'trusted_snippets';
+export function isSnippetTrusted(snippetId: string, gistId: string): boolean {
+    let trustedSnippets = JSON.parse(window.localStorage.getItem(trustedSnippetsKey));
+    if (!trustedSnippets) {
+        trustedSnippets = {};
+    }
+    /* Samples are automatically trusted. Check local storage for gists. */
+    if (!gistId || trustedSnippets[snippetId]) {
+        return true;
+    }
+    return false;
+}
+
 export function stripSpaces(text: string) {
     let lines: string[] = text.split('\n');
 

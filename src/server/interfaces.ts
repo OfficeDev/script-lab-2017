@@ -21,6 +21,7 @@ export interface IRunnerHandlebarsContext {
     origin: string;
     host: string;
     assets: { [key: string]: any };
+    isTrustedSnippet: boolean;
 
     initialLoadSubtitle: string;
     headerTitle: string;

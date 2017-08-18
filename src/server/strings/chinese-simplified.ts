@@ -3,7 +3,8 @@ import { ServerStrings} from './server-strings';
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
-//import { getEnglishSubstitutesForNotYetTranslated } from './index';
+import { getEnglishStrings } from './english';
+const englishSubstitutesForNotYetTranslated = getEnglishStrings();
 
 export function getChineseSimplifiedStrings(): ServerStrings {
   return {
@@ -39,6 +40,9 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         run: '运行',
         runPageTitle: '运行代码片段',
         back: '返回',
+        snippetNotTrusted: englishSubstitutesForNotYetTranslated.snippetNotTrusted,
+        trust: englishSubstitutesForNotYetTranslated.trust,
+        cancel: englishSubstitutesForNotYetTranslated.cancel,
         switchToSnippet: `切换到您正在编辑的代码段。`,
         snippetCodeChanged: '你改变在这段代码段。刷新此窗格运行新版本。',
         refresh: '刷新',

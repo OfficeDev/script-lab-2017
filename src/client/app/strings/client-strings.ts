@@ -174,6 +174,7 @@ export interface ClientStrings {
     noSamplesMessage: string;
     importWarning: string;
     importWarningAction: string;
+    importConfirm: string;
 
     localStorageWarning: string;
     localStorageWarningAction: string;

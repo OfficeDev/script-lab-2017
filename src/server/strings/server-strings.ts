@@ -28,6 +28,9 @@ export interface ServerStrings {
     run: string;
     runPageTitle: string;
     back: string;
+    snippetNotTrusted: string;
+    trust: string;
+    cancel: string;
     switchToSnippet: string;
     snippetCodeChanged: string;
     refresh: string;

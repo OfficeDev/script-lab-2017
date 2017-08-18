@@ -117,6 +117,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 origin: currentConfig.editorUrl,
                 host: host,
                 assets: getAssetPaths(),
+                isTrustedSnippet: true, /* only called when snippet is already trusted */
                 initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
                 strings,
@@ -230,7 +231,7 @@ registerRoute('get', '/open-in-playground/:host/:type/:id/:filename', async (req
 
     return Promise.resolve(getVersionNumber()).then(versionNumber => {
         let extractDirName = path.resolve(__dirname, `test${(new Date()).getTime()}`);
-        let zip = fs.createReadStream(path.resolve(__dirname, 'Doc1.zip')).pipe(unzip.Extract({ path: extractDirName }));
+        let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: extractDirName }));
         zip.on('close', () => {
             let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
             let xmlStringData = fs.readFileSync(xmlFileName, 'utf-8').toString();
@@ -316,6 +317,10 @@ registerRoute('get', '/version', (req, res) => {
 function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
+    let isTrustedSnippet = req.body.isTrustedSnippet;
+    if (isNil(isTrustedSnippet)) {
+        isTrustedSnippet = false;
+    }
     const strings = Strings(req);
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
@@ -347,6 +352,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     origin: snippet.origin,
                     host: snippet.host,
                     assets: getAssetPaths(),
+                    isTrustedSnippet: isTrustedSnippet,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,

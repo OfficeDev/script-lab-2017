@@ -183,6 +183,7 @@ export function getSpanishStrings(): ClientStrings {
         noSamplesMessage: `No hay ejemplos aún para esta Aplicación.`,
         importWarning: `Precaución: los ejemplos importados pueden contener código maligno. Ejecuta código sólo de fuentes confiables.`,
         importWarningAction: `No mostrar esta advertencia otra vez.`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `Los fragmentos de código creados localmente serán borrados si se limpia el cache del navegador. ` +
         `Para guardar fragmentos permanentemente, expórtalos como gists on el menú de Compartir.`,
