@@ -198,7 +198,7 @@ export class SnippetEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
     private _gistIdExists(id: string) {
-        return storage.snippets.values().some(item => item.gist.trim() === id.trim());
+        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
     }
 
     private _nameExists(name: string) {
@@ -288,6 +288,12 @@ export class SnippetEffects {
             case Snippet.ImportType.SAMPLE:
             case Snippet.ImportType.URL:
             case Snippet.ImportType.GIST:
+                if (type === Snippet.ImportType.URL && /#\/view/.test(data)) {
+                    /* If importing from a view-mode URL, simply redirect the user */
+                    window.location.href = data;
+                }
+
+
                 let id = null;
 
                 const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
