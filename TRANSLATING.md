@@ -144,8 +144,8 @@ Here is an example, where the string *Help* has been translated to German and Fr
 
 ```xml
   <bt:String id="PG.RunCommand.Title" DefaultValue="Help">
-    <Override Locale="de" Value="Hilfe"/>
-    <Override Locale="fr" Value="Aide"/>
+    <Override Locale="de-de" Value="Hilfe"/>
+    <Override Locale="fr-fr" Value="Aide"/>
   </bt:String>
 ```
 The strings are enclosed by double quotes in the XML files. If you need to use the double quote character in your translation, please use the entity `&quot;` instead of the double quote character. If you need to use the ampersand character `&` in your translation, please use its entity `&amp;` instead.
