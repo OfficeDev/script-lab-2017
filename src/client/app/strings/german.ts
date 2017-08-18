@@ -35,17 +35,23 @@ export function getGermanStrings(): ClientStrings {
         saveButtonLabel: 'Speichern',
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
+        snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
+        viewModeError: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
+
+        snippetGistIdDuplicationError: 'Es existiert bereits ein Schnipsel, das aus dem gleichen GitHub-Gist importiert wurde. Möchten Sie zu diesem Schnipsel wechseln oder eine neue Kopie erstellen?',
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
-        snippetImportErrorTitle: 'Importfehler.',
+        snippetImportErrorTitle: 'Importfehler',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
-        cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
-        currentHostDoesNotSupportRequiredApiSet: getEnglishSubstitutesForNotYetTranslated().currentHostDoesNotSupportRequiredApiSet,
-
-        viewModeError: getEnglishSubstitutesForNotYetTranslated().viewModeError,
+        cannotImportSnippetCreatedForDifferentHost:
+        (snippetHost: string, currentHost: string) =>
+            `Ein für ${snippetHost} erstelltes Code-Schnipsel kann nicht in ${currentHost} importiert werden.`,
+        currentHostDoesNotSupportRequiredApiSet:
+        (currentHost: string, setName: string, setVersion: string) =>
+            `${currentHost} unterstützt nicht die erforderliche API-Version ${setName} @ ${setVersion}`,
 
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
@@ -83,7 +89,7 @@ export function getGermanStrings(): ClientStrings {
         gistDescriptionAppendage: `Geteilt mit ${playgroundName}.`,
 
         gistShareFailedBody: 'Das Teilen des GitHub-Gists ist fehlgeschlagen.',
-        gistShareFailedTitle: 'Das Teilen ist fehlgeschlagen.',
+        gistShareFailedTitle: 'Das Teilen ist fehlgeschlagen',
 
         gistSharedDialogStart: 'Die URL von Ihrem GitHub-Gist ist:',
         gistSharedDialogEnd: `Klicken Sie auf den Befehl ${playgroundName}, um Ihr Schnipsel zu importieren und geben Sie folgende URL an.`,
@@ -151,14 +157,14 @@ export function getGermanStrings(): ClientStrings {
         samplesTab: 'Beispiele',
 
         noSnippetsMessage: 'Es wurden auf diesem Computer noch keine Schnipsel gespeichert. Sie können ein neues Schnipsel erstellen, ein Schnipsel aus den Beispielen auswählen oder ein Schnipsel importieren.',
-        noGistsMessage: `Es wurde noch kein Schnipsel in ein GitHub-Gist hochgeladen. Nach dem Erstellen oder Ändern eines Schnipsels können Sie dieses anhand der Teilen-Funktion hochladen.`,
+        noGistsMessage: `Es wurde noch kein Schnipsel in einem GitHub-Gist abgelegt. Nach dem Erstellen oder Ändern eines Schnipsels lässt sich dieses anhand der Teilen-Funktion hochladen.`,
 
         newSnippetDescription: 'Neues Schnipsel erstellen',
         importDescription: 'Schnipsel aus einem GitHub-Gist abrufen oder anhand von YAML-Code erstellen.',
 
         // Outlook-only strings
 
-        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
+        noRunInOutlook: 'Das Code-Schnipsel kann in Outlook nicht aus dem Code-Fenster heraus ausgeführt werden. Bitte öffnen Sie den Aufgabenbereich zur Code-Ausführung und rufen Sie das Schnipsel von dort aus auf.',
 
         // import.ts strings
 
@@ -170,7 +176,7 @@ export function getGermanStrings(): ClientStrings {
         localSnippetsLabel: 'Meine Schnipsel auf diesem Computer',
         noLocalSnippets: `Sie haben auf diesem Computer noch keine Schnipsel gespeichert. Erstellen Sie ein neues Schnipsel oder importieren Sie eines, um zu starten.`,
         sharedGistsLabel: 'Meine in GitHub-Gists gespeicherten Schnipsel',
-        sharedGistsSignIn: 'Melden Sie sich bei GitHub an, um eines Ihrer dort abgelegten Schnipsel abzurufen.',
+        sharedGistsSignIn: 'Melden Sie sich bei GitHub an, um eines Ihrer in dortigen Gists abgelegten Schnipsel abzurufen.',
         samplesDescription: 'Wählen Sie eines der nachfolgenden Beispiele aus, um zu starten.',
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
         importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
