@@ -10,7 +10,7 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
   <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
-    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
+    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="es-es" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="zh-cn" Value="在Excel,Word和PowerPoint中创建、运行和共享您的Office添加代码片段。"/>
   </Description>
@@ -562,7 +562,7 @@
           <Override Locale="zh-cn" Value="启动一个社区论坛，讨论有关Office JavaScript API的问题"/>
         </bt:String>
         <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office.">
-          <Override Locale="de-de" Value="JavaScript-Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <Override Locale="de-de" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
           <Override Locale="es-es" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
           <Override Locale="zh-cn" Value="直接从Office中编码、运行和共享附加代码片段。"/>
         </bt:String>
