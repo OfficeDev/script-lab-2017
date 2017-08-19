@@ -219,6 +219,7 @@ export interface ClientStrings {
             code: string;
             run: string;
             tutorial: string;
+            authenticationRedirect: string;
         }
 
         chooseYourHost: string;
@@ -237,5 +238,7 @@ export interface ClientStrings {
         tutorialDescription: string;
         download: string;
         errorInitializingScriptLab: string;
+
+        authenticatingOnBehalfOfSnippet: string;
     };
 }

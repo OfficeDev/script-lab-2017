@@ -236,7 +236,8 @@ export function getChineseSimplifiedStrings(): ClientStrings {
             PageTitles: {
                 code: '代码',
                 run: '运作',
-                tutorial: '教程'
+                tutorial: '教程',
+                authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.PageTitles.authenticationRedirect
             },
 
             chooseYourHost: '选择你的主机:',
@@ -257,7 +258,9 @@ export function getChineseSimplifiedStrings(): ClientStrings {
 
             tutorialDescription: '这个Excel文件向您展示了如何在几个简单的步骤中使用Script Lab:',
             download: '下载',
-            errorInitializingScriptLab: '初始化Script Lab时出错。'
+            errorInitializingScriptLab: '初始化Script Lab时出错。',
+
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.authenticatingOnBehalfOfSnippet
         }
     };
 }

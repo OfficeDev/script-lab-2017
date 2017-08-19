@@ -235,7 +235,8 @@ export function getEnglishStrings(): ClientStrings {
             PageTitles: {
                 code: 'Code',
                 run: 'Run',
-                tutorial: 'Tutorial'
+                tutorial: 'Tutorial',
+                authenticationRedirect: 'Authentication redirect'
             },
 
             chooseYourHost: 'Choose your host:',
@@ -256,7 +257,9 @@ export function getEnglishStrings(): ClientStrings {
 
             tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
             download: 'Download',
-            errorInitializingScriptLab: 'Error initializing Script Lab.'
+            errorInitializingScriptLab: 'Error initializing Script Lab.',
+
+            authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...'
         }
     };
 }

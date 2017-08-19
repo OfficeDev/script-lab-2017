@@ -234,7 +234,8 @@ export function getSpanishStrings(): ClientStrings {
             PageTitles: {
                 code: 'Código',
                 run: 'Ejecutar',
-                tutorial: 'Tutorial'
+                tutorial: 'Tutorial',
+                authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.PageTitles.authenticationRedirect
             },
 
             chooseYourHost: 'Selecciona tu host:',
@@ -255,7 +256,9 @@ export function getSpanishStrings(): ClientStrings {
 
             tutorialDescription: 'Este archivo de Excel te muestra como utilizar Script Lab en sencillos pasos:',
             download: 'Descargar',
-            errorInitializingScriptLab: 'Error al iniciar Script Lab.'
+            errorInitializingScriptLab: 'Error al iniciar Script Lab.',
+
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.authenticatingOnBehalfOfSnippet
         }
     };
 }

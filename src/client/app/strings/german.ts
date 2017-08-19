@@ -239,7 +239,8 @@ export function getGermanStrings(): ClientStrings {
             PageTitles: {
                 code: 'Code',
                 run: 'Ausführen',
-                tutorial: 'Tutorial'
+                tutorial: 'Tutorial',
+                authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.PageTitles.authenticationRedirect
             },
 
             chooseYourHost: 'Wählen Sie Ihre Host-Anwendung:',
@@ -260,7 +261,9 @@ export function getGermanStrings(): ClientStrings {
 
             tutorialDescription: 'Folgende Excel-Datei beinhaltet eine Anleitung, um Script Lab in',
             download: 'wenigen Schritten kennenzulernen:',
-            errorInitializingScriptLab: 'Es ist ein Fehler bei der Initialisierung von Script Lab aufgetreten.'
+            errorInitializingScriptLab: 'Es ist ein Fehler bei der Initialisierung von Script Lab aufgetreten.',
+
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.authenticatingOnBehalfOfSnippet
         }
     };
 }
