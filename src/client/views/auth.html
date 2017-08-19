@@ -41,6 +41,7 @@
 
 				<!--Note: text below will get localized at runtime, and is hidden (but still taking up screen layout space) until then:-->
 				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m" style="visibility:hidden">Authenticating on behalf of the snippet...</p>
+				<input id="access-token-if-no-redirect" type="text" style="width: calc(100% - 20px); box-sizing: border-box; visibility:hidden"></input>
 			</main>
 			<footer class="ms-progress-component__footer">
 				<div class="ms-progress">
@@ -55,19 +56,6 @@
 					</div>
 				</div>
 			</footer>
-			<div id="hosts" class="ms-u-slideUpIn20">
-				<!--Note: text below will get localized at runtime, and is hidden (but still taking up screen layout space) until then:-->
-				<p id="choose-your-host" style="visibility:hidden">Choose your host:</p>
-
-				<div class="buttons">
-					<div class="hostButton ms-Icon ms-Icon--Globe" data-host="WEB"></div>
-					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--excel" data-host="EXCEL"></div>
-					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--word" data-host="WORD"></div>
-					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--powerpoint" data-host="POWERPOINT"></div>
-					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--project" data-host="PROJECT"></div>
-					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--outlook" data-host="OUTLOOK"></div>
-				</div>
-			</div>
 		</div>
 	</app>
 </body>

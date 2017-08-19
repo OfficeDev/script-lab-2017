@@ -188,6 +188,8 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
         importYamlLabel: `代码段 YAML`,
 
+        unexpectedError: '出现意外错误',
+
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `配置问题阻止了代码段加载。`,
@@ -203,7 +205,6 @@ export function getChineseSimplifiedStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: '该代码段不再存在。重新加载此页，或返回到以前的代码段。',
-            unexpectedError: '出现意外错误',
 
             reloadingOfficeJs: '重新加载 Office.js',
 
@@ -236,8 +237,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
             PageTitles: {
                 code: '代码',
                 run: '运作',
-                tutorial: '教程',
-                authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.PageTitles.authenticationRedirect
+                tutorial: '教程'
             },
 
             chooseYourHost: '选择你的主机:',
@@ -258,9 +258,17 @@ export function getChineseSimplifiedStrings(): ClientStrings {
 
             tutorialDescription: '这个Excel文件向您展示了如何在几个简单的步骤中使用Script Lab:',
             download: '下载',
-            errorInitializingScriptLab: '初始化Script Lab时出错。',
+            errorInitializingScriptLab: '初始化Script Lab时出错。'
+        },
 
-            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().HtmlPageStrings.authenticatingOnBehalfOfSnippet
+        Auth: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
+            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
+            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
+            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
         }
     };
 }

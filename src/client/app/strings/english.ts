@@ -43,11 +43,11 @@ export function getEnglishStrings(): ClientStrings {
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
         cannotImportSnippetCreatedForDifferentHost:
-            (snippetHost: string, currentHost: string) =>
-                `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
+        (snippetHost: string, currentHost: string) =>
+            `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
         currentHostDoesNotSupportRequiredApiSet:
-            (currentHost: string, setName: string, setVersion: string) =>
-                `${currentHost} does not support the required API Set ${setName} @ ${setVersion}`,
+        (currentHost: string, setName: string, setVersion: string) =>
+            `${currentHost} does not support the required API Set ${setName} @ ${setVersion}`,
 
         snippetSaveError: 'Failed to save the current snippet',
         snippetDupeError: 'Failed to duplicate the current snippet',
@@ -187,6 +187,8 @@ export function getEnglishStrings(): ClientStrings {
         importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
         importYamlLabel: `Snippet YAML`,
 
+        unexpectedError: 'An unexpected error has occurred',
+
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `A configuration problem prevented the snippet from loading.`,
@@ -202,7 +204,6 @@ export function getEnglishStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: 'That snippet no longer exists. Reload this page, or return to the previous one.',
-            unexpectedError: 'An unexpected error occurred',
 
             reloadingOfficeJs: 'Reloading Office.js',
 
@@ -235,8 +236,7 @@ export function getEnglishStrings(): ClientStrings {
             PageTitles: {
                 code: 'Code',
                 run: 'Run',
-                tutorial: 'Tutorial',
-                authenticationRedirect: 'Authentication redirect'
+                tutorial: 'Tutorial'
             },
 
             chooseYourHost: 'Choose your host:',
@@ -258,8 +258,16 @@ export function getEnglishStrings(): ClientStrings {
             tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
             download: 'Download',
             errorInitializingScriptLab: 'Error initializing Script Lab.',
+        },
 
-            authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...'
+        Auth: {
+            authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...',
+            authenticationRedirect: 'Authentication redirect',
+            authenticationError: 'Authentication error',
+            unrecognizedService: 'Unrecognized service',
+            invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
+            invalidAuthResponseReceived: 'Invalid response received from the authentication service',
+            yourAccessTokenIs: 'Your access token is'
         }
     };
 }

@@ -153,3 +153,9 @@ interface HeartbeatParams {
     */
     lastModified: string;
 }
+
+interface AuthRequestParamData {
+    is_office_host: boolean,
+    client_id: string,
+    service: 'graph'
+}
