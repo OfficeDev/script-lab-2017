@@ -53,6 +53,8 @@ function getAssetPaths(): { [key: string]: string } {
     if (!assetPaths) {
         let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
         assetPaths = JSON.parse(data.toString());
+
+        //FIXME assetPaths.runtime_helpers.js = assetPaths['main']
     }
 
     return assetPaths;
