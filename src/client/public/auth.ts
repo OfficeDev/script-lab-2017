@@ -36,6 +36,8 @@ tryCatch(() => {
         throw new Error(strings.Auth.invalidParametersPassedInForAuth);
     }
 
+    setupBeforeWindowCloseHandler(authRequestParams);
+
     if (authRequestParams.is_office_host) {
         // Wait for Office.initialize before proceeding with the flow
         Office.initialize = () => proceedWithAuthInit(authRequestParams);
@@ -43,6 +45,24 @@ tryCatch(() => {
         proceedWithAuthInit(authRequestParams);
     }
 });
+
+function setupBeforeWindowCloseHandler(authRequestParams: AuthRequestParamData) {
+    window.addEventListener('beforeunload', (event: BeforeUnloadEvent) => {
+        if (authRequestParams.is_office_host) {
+            // FIXME
+        }
+        else if (window.opener) {
+            window.opener.postMessage('AUTH:error=' + strings.Auth.authenticationWasCancelledByTheUser);
+            window.close();
+        }
+        else {
+            // That's fine, close it.
+        }
+
+        event.returnValue = null;
+        return null;
+    });
+}
 
 function proceedWithAuthInit(authRequest: AuthRequestParamData) {
     tryCatch(() => {
@@ -63,7 +83,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                     // FIXME
                 } else {
                     if (window.opener) {
-                        window.opener.postMessage('access_token=' + accessToken, environment.current.config.runnerUrl);
+                        window.opener.postMessage('AUTH:access_token=' + accessToken, environment.current.config.runnerUrl);
                         window.close();
                     } else {
                         setSubtitleText(strings.Auth.yourAccessTokenIs);

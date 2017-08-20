@@ -268,7 +268,8 @@ export function getChineseSimplifiedStrings(): ClientStrings {
             unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
-            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs,
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationWasCancelledByTheUser
         }
     };
 }

@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "none",
+        "removeComments": false,
+        "noEmitOnError": true,
+        "outDir": "../../dist",
+        "allowUnusedLabels": false,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "pretty": true,
+        "strictNullChecks": false,
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "lib": [
+            "es2015",
+            "dom"
+        ]
+    },
+    "compileOnSave": false,
+    "buildOnSave": false
+}

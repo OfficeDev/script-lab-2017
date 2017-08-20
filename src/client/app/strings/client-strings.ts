@@ -249,5 +249,6 @@ export interface ClientStrings {
         invalidParametersPassedInForAuth: string;
         invalidAuthResponseReceived: string;
         yourAccessTokenIs: string;
+        authenticationWasCancelledByTheUser: string;
     }
 }

@@ -154,6 +154,13 @@
     <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
     <script src="{{{origin}}}/{{{assets.runner.js}}}"></script>
 
+    <script src="{{{origin}}}/{{{assets.user-script-helpers.js}}}"></script>
+    {{#if officeJS}}
+    <script>
+        window.ScriptLab._editorUrl = "{{{origin}}}";
+    </script>
+    {{/if}}
+
     <script type="text/javascript">
         window.initializeRunner({
             origin: '{{{origin}}}',
