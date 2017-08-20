@@ -25,7 +25,6 @@ module.exports = (prodMode) =>
             gallery: './public/gallery.ts',
             heartbeat: './public/heartbeat.ts',
             runner: './public/runner.ts',
-            "user-script-helpers": './public/user-script-helpers.ts',
             error: './public/error.ts',
             auth: './public/auth.ts'
         },
