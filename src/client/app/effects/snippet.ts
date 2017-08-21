@@ -205,6 +205,7 @@ export class SnippetEffects {
         .map(payload => {
             let { type, id, isDownload } = payload;
             let handler, extension;
+            let correlationId = cuid();
             switch (environment.current.host.toUpperCase()) {
                 case HostType.EXCEL:
                     handler = 'ms-excel:ofe|u|';
@@ -221,9 +222,9 @@ export class SnippetEffects {
                 default:
                     return;
             }
-            AI.trackEvent('Open in playground initiated');
+            AI.trackEvent('Open in playground initiated', { id: correlationId });
             let filename = `script-lab-playground-${environment.current.host}${extension}`;
-            let url = environment.current.config.runnerUrl + `/open-in-playground/${environment.current.host}/${type}/${id}/${filename}`;
+            let url = environment.current.config.runnerUrl + `/open-in-playground/${correlationId}/${environment.current.host}/${type}/${id}/${filename}`;
             if (isDownload) {
                 window.open(url, '_blank');
             } else {

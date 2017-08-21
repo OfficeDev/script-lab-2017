@@ -3,6 +3,7 @@ import * as unzip from 'unzip';
 import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
 import * as path from 'path';
+import * as rimraf from 'rimraf';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
@@ -61,6 +62,56 @@ function getAssetPaths(): { [key: string]: string } {
 
     return assetPaths;
 }
+
+let generatedDirectories = {};
+/* Cleans up generated template directories */
+setInterval(() => {
+    let ids = Object.keys(generatedDirectories);
+    for (let id of ids) {
+        let directoryInfo = generatedDirectories[id];
+        let now = (new Date()).getTime();
+        // If generated file is more than an hour old and isn't being read, delete it from both server and map to clean up clutter
+        if (directoryInfo && !directoryInfo.isBeingRead && (now - directoryInfo.timestamp) > 3600000) {
+            delete generatedDirectories[id];
+            fs.unlink(directoryInfo.name, (err) => {
+                if (err) {
+                    ai.trackEvent('File deletion failed', { name: directoryInfo.name });
+                    return;
+                }
+            });
+        }
+    }
+}, 3600000);
+
+/* Cleans up lurker template directories that may not have been deleted by above function (perhaps due to server restart) */
+setInterval(() => {
+    let filenames: string[] = [];
+    for (let id of Object.keys(generatedDirectories)) {
+        filenames.push(generatedDirectories[id].relativeFilePath);
+    }
+
+    fs.readdir(path.resolve(__dirname, 'working'), (err, files) => {
+        if (err) {
+            ai.trackEvent('Error reading directory');
+            return;
+        }
+
+        files.forEach(file => {
+            let relativePath = `working/${file}`;
+            let absolutePath = path.resolve(__dirname, relativePath);
+            fs.stat(absolutePath, (err, stat) => {
+                let now = (new Date()).getTime();
+
+                // Delete all directories older than three hours and all files that are not in map
+                if (stat.isDirectory() && (now - stat.mtime.getMilliseconds()) > 10800000) {
+                    rimraf(absolutePath, () => {});
+                } else if (filenames.indexOf(relativePath) < 0 && (now - stat.mtime.getMilliseconds()) > 10800000) {
+                    fs.unlink(absolutePath);
+                }
+            });
+        });
+    });
+}, 10800000);
 
 /**
  * Server CERT and PORT configuration
@@ -215,54 +266,82 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('get', '/open-in-playground/:host/:type/:id/:filename', async (req, res) => {
-    let relativePath;
+registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filename', async (req, res) => {
+    let relativePath, templateName;
     switch (req.params.host.toUpperCase()) {
         case 'EXCEL':
             relativePath = 'xl';
+            templateName = 'excel-template';
             break;
         case 'WORD':
             relativePath = 'word';
+            templateName = 'word-template';
             break;
         case 'POWERPOINT':
             relativePath = 'ppt';
+            templateName = 'powerpoint-template';
             break;
         default:
-            return;
+            throw('Office Host not supported');
     }
 
-    return getVersionNumber()
-        .then(versionNumber => {
-            let extractDirName = path.resolve(__dirname, `test${(new Date()).getTime()}`);
-            let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: extractDirName }));
-            zip.on('close', () => {
-                let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
-                (new Promise<string>((resolve, reject) => {
-                    fs.readFile(xmlFileName, (err, data) => {
-                        if (err) {
-                            return reject(err);
-                        } else {
-                            let xmlStringData = data.toString();
-                            xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', req.params.type).replace('%placeholder_id%', req.params.id);
-                            return resolve(xmlStringData);
-                        }
-                    });
-                }))
-                .then(xmlStringData => {
-                    fs.writeFile(xmlFileName, xmlStringData, (err) => {
-                        if (err) {
-                            throw err;
-                        }
+    const correlationId = req.params.correlationId;
+    let directoryInfo = generatedDirectories[correlationId];
+    // Check if file already exists on server for correlation id
+    if (directoryInfo) {
+        directoryInfo.isBeingRead = true;
+        fs.createReadStream(directoryInfo.name).pipe(res);
+        res.attachment(req.params.filename);
+        res.on('finish', () => {
+            directoryInfo.isBeingRead = false;
+        });
+    } else {
+        return getVersionNumber()
+            .then(versionNumber => {
+                let timestamp = (new Date()).getTime();
+                let relativeFilePath = `working/${templateName}${timestamp}`;
+                let extractDirName = path.resolve(__dirname, relativeFilePath);
+                let zip = fs.createReadStream(path.resolve(__dirname, templateName)).pipe(unzip.Extract({ path: extractDirName }));
 
-                        res.attachment(req.params.filename);
-                        const archiver = Archiver('zip');
-                        archiver.pipe(res);
-                        archiver.directory(extractDirName, '');
-                        archiver.finalize();
+                zip.on('close', () => {
+                    let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
+                    (new Promise<string>((resolve, reject) => {
+                        fs.readFile(xmlFileName, (err, data) => {
+                            if (err) {
+                                return reject(err);
+                            } else {
+                                let xmlStringData = data.toString();
+                                xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', req.params.type).replace('%placeholder_id%', req.params.id);
+                                return resolve(xmlStringData);
+                            }
+                        });
+                    }))
+                    .then(xmlStringData => {
+                        fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                            if (err) {
+                                throw err;
+                            }
+
+                            let zipFileName = `${extractDirName}.zip`;
+                            let writeZipFile = fs.createWriteStream(zipFileName);
+                            writeZipFile.on('finish', () => {
+                                rimraf(extractDirName, () => {});
+                                res.attachment(req.params.filename);
+                                fs.createReadStream(zipFileName).pipe(res);
+                                res.on('finish', () => {
+                                    generatedDirectories[correlationId] = { name: zipFileName, relativeFilePath: `${relativeFilePath}.zip`, isBeingRead: false, timestamp: timestamp };
+                                });
+                            });
+
+                            const archiver = Archiver('zip');
+                            archiver.pipe(writeZipFile);
+                            archiver.directory(extractDirName, '');
+                            archiver.finalize();
+                        });
                     });
                 });
             });
-        });
+    }
 });
 
 registerRoute('post', '/export', (req, res) => {
