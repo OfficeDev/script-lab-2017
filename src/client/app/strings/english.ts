@@ -1,5 +1,3 @@
-import { ClientStrings } from './client-strings';
-
 export function getEnglishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
 
@@ -262,13 +260,15 @@ export function getEnglishStrings(): ClientStrings {
 
         Auth: {
             authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...',
+            loggingOutOnBehalfOfSnippet: 'Logging out on behalf of the snippet...',
             authenticationRedirect: 'Authentication redirect',
             authenticationError: 'Authentication error',
             unrecognizedService: 'Unrecognized service',
             invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
             invalidAuthResponseReceived: 'Invalid response received from the authentication service',
             yourAccessTokenIs: 'Your access token is',
-            authenticationWasCancelledByTheUser: 'Authentication was cancelled by the user'
+            authenticationWasCancelledByTheUser: 'Authentication was cancelled by the user',
+            logoutWasCancelledByTheUser: 'Logout was cancelled by the user'
         }
     };
 }

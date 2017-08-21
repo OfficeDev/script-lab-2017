@@ -1,5 +1,3 @@
-import { ClientStrings } from './client-strings';
-
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
@@ -263,13 +261,15 @@ export function getChineseSimplifiedStrings(): ClientStrings {
 
         Auth: {
             authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
             authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
             authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
             unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs,
-            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationWasCancelledByTheUser
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationWasCancelledByTheUser,
+            logoutWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().Auth.logoutWasCancelledByTheUser
         }
     };
 }

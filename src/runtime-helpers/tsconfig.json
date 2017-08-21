@@ -8,12 +8,10 @@
         "outDir": "../../dist/client" /*output into same folder as where editor is served from*/,
         "allowUnusedLabels": false,
         "noImplicitReturns": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false /* setting to false so that can have a module with an exported (but without "export" keyword) function name */,
         "pretty": true,
         "strictNullChecks": false,
-        "typeRoots": [
-            "node_modules/@types"
-        ],
+        "allowSyntheticDefaultImports": true,
         "lib": [
             "es2015",
             "dom"

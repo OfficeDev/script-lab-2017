@@ -1,4 +1,4 @@
-export interface ClientStrings {
+interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
 
@@ -243,6 +243,7 @@ export interface ClientStrings {
 
     Auth: {
         authenticatingOnBehalfOfSnippet: string;
+        loggingOutOnBehalfOfSnippet: string;
         authenticationRedirect: string;
         authenticationError: string;
         unrecognizedService: string;
@@ -250,5 +251,6 @@ export interface ClientStrings {
         invalidAuthResponseReceived: string;
         yourAccessTokenIs: string;
         authenticationWasCancelledByTheUser: string;
+        logoutWasCancelledByTheUser: string;
     }
 }

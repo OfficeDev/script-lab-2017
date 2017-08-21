@@ -11,7 +11,6 @@ import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
 import { Strings, getExplicitlySetDisplayLanguageOrNull } from './strings';
-import { ServerStrings } from './strings/server-strings';
 import { loadTemplate } from './core/template.generator';
 import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
@@ -54,7 +53,19 @@ function getAssetPaths(): { [key: string]: string } {
         let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
         assetPaths = JSON.parse(data.toString());
 
-        //FIXME assetPaths.runtime_helpers.js = assetPaths['main']
+        // Some assets, like the runtime helpers, are not compiled with webpack.
+        // Instead, they are manually copied, and end up with no hash.
+        // So, to guarantee their freshness, use the runner hash (once per deployment)
+        // as a good approximation for when it's time to get a new version.
+        let runnerHashIfAny: string;
+        let runnerHashPattern = /^bundles\/runner\.(\w*)\.bundle.js/;
+        let runnerHashMatch = runnerHashPattern.exec(assetPaths.runner.js);
+        if (runnerHashMatch && runnerHashIfAny.length === 2) {
+            runnerHashIfAny = runnerHashMatch[1];
+        }
+
+        assetPaths['runtime-helpers'].js = 'runtime-helpers.js' &&
+            (runnerHashIfAny ? '' : ('?hash=' + runnerHashIfAny));
     }
 
     return assetPaths;

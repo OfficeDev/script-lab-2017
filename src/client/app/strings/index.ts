@@ -1,8 +1,5 @@
 import { environment } from '../helpers';
 import { createFakeStrings, getStrings } from './common';
-import { ClientStrings } from './client-strings';
-
-export { ClientStrings } from './client-strings';
 
 /** Localstorage key for playground language. Will get set both on the client domain
   * (as expected), and also on the runner domain (due to its use in runner.ts) */

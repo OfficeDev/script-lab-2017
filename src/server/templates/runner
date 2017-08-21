@@ -154,7 +154,7 @@
     <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
     <script src="{{{origin}}}/{{{assets.runner.js}}}"></script>
 
-    <script src="{{{origin}}}/{{{assets.runtime_helpers.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets['runtime-helpers'].js}}}"></script>
     {{#if officeJS}}
     <script>
         ScriptLab._editorUrl = "{{{origin}}}";

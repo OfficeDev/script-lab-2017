@@ -1,4 +1,4 @@
-export interface ServerStrings {
+interface ServerStrings {
     error: string;
     unexpectedError: string;
     invalidHost: string;

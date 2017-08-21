@@ -155,7 +155,8 @@ interface HeartbeatParams {
 }
 
 interface AuthRequestParamData {
-    is_office_host: boolean,
-    client_id: string,
-    service: 'graph'
+    action: 'login' | 'logout';
+    service: 'graph';
+    client_id: string;
+    is_office_host: boolean;
 }
