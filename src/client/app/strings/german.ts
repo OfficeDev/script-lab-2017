@@ -60,6 +60,7 @@ export function getGermanStrings(): ClientStrings {
         snippetLoadAllError: 'Die lokal gespeicherten Schnipsel konnten nicht geladen werden.',
         snippetRunError: 'Die Ausführung des Schnipsels ist fehlgeschlagen.',
         snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: 'Dieses Schnipsel kann nicht ausgeführt werden.',
         snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab, welches Sie unter https://aka.ms/getscriptlab abrufen können.',

@@ -47,6 +47,7 @@ export interface ClientStrings {
     snippetLoadAllError: string;
     snippetRunError: string;
     snippetLoadDefaultsError: string;
+    snippetOpenInPlaygroundError: string;
 
     snippetNoOfficeTitle: string;
     snippetNoOfficeMessage: string;

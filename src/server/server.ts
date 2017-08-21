@@ -32,6 +32,8 @@ const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
+const SCRIPT_LAB_STORE_URL = 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml';
+const SCRIPT_LAB_STORE_ID = 'wa104380862';
 
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
@@ -229,22 +231,38 @@ registerRoute('get', '/open-in-playground/:host/:type/:id/:filename', async (req
             return;
     }
 
-    return Promise.resolve(getVersionNumber()).then(versionNumber => {
-        let extractDirName = path.resolve(__dirname, `test${(new Date()).getTime()}`);
-        let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: extractDirName }));
-        zip.on('close', () => {
-            let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
-            let xmlStringData = fs.readFileSync(xmlFileName, 'utf-8').toString();
-            xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', req.params.type).replace('%placeholder_id%', req.params.id);
-            fs.writeFileSync(xmlFileName, xmlStringData);
+    return getVersionNumber()
+        .then(versionNumber => {
+            let extractDirName = path.resolve(__dirname, `test${(new Date()).getTime()}`);
+            let zip = fs.createReadStream(path.resolve(__dirname, 'test.zip')).pipe(unzip.Extract({ path: extractDirName }));
+            zip.on('close', () => {
+                let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
+                (new Promise<string>((resolve, reject) => {
+                    fs.readFile(xmlFileName, (err, data) => {
+                        if (err) {
+                            return reject(err);
+                        } else {
+                            let xmlStringData = data.toString();
+                            xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', req.params.type).replace('%placeholder_id%', req.params.id);
+                            return resolve(xmlStringData);
+                        }
+                    });
+                }))
+                .then(xmlStringData => {
+                    fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                        if (err) {
+                            throw err;
+                        }
 
-            res.attachment(req.params.filename);
-            const archiver = Archiver('zip');
-            archiver.pipe(res);
-            archiver.directory(extractDirName, '');
-            archiver.finalize();
+                        res.attachment(req.params.filename);
+                        const archiver = Archiver('zip');
+                        archiver.pipe(res);
+                        archiver.directory(extractDirName, '');
+                        archiver.finalize();
+                    });
+                });
+            });
         });
-    });
 });
 
 registerRoute('post', '/export', (req, res) => {
@@ -366,7 +384,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
         });
 }
 
-const parseXmlString = (xml) => {
+function parseXmlString(xml): Promise<JSON> {
     return new Promise((resolve, reject) => {
         xml2js.parseString(xml, (err, result) => {
             if (err) {
@@ -378,18 +396,18 @@ const parseXmlString = (xml) => {
     });
 };
 
-function getVersionNumber(): Promise<any> {
+function getVersionNumber(): Promise<string> {
      return new Promise((resolve, reject) => {
         return Request.post({
-            url: 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml',
-            body: 'wa104380862', /* Script Lab ID */
+            url: SCRIPT_LAB_STORE_URL,
+            body: SCRIPT_LAB_STORE_ID,
         }, (error, httpResponse, body) => {
             if (error) {
-                ai.trackEvent('[Snippet] Open in playground failed', { error });
-                return reject('Failure');
+                ai.trackEvent('[Snippet] Get version number failed', { error });
+                return reject(error);
             }
             else {
-                ai.trackEvent('[Snippet] Open in playground succeeded', { body });
+                ai.trackEvent('[Snippet] Get version number succeeded', { body });
                 return resolve(body);
             }
         });

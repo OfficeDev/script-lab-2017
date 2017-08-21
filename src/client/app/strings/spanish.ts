@@ -56,6 +56,7 @@ export function getSpanishStrings(): ClientStrings {
         snippetLoadAllError: 'Error al cargar fragmentos de código locales',
         snippetRunError: 'Error al ejecutar el fragmento de código',
         snippetLoadDefaultsError: 'Error al cargar ejemplos',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle:  'No se puede ejecutar el fragmento de código',
         snippetNoOfficeMessage:  'Sólo se pueden ejecutar fragmentos de código dentro de un Add-in para Office.  Adquiere gratuitamente Script Lab hoy en https://aka.ms/getscriptlab.',

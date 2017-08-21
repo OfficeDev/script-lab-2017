@@ -56,6 +56,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetLoadAllError: 'Failed to load the local snippets',
         snippetRunError: 'Failed to run the snippet',
         snippetLoadDefaultsError: 'Failed to load the default samples',
+        snippetOpenInPlaygroundError: /** NEEDS STRING REVIEW */ 'Failed to open in playground',
 
         snippetNoOfficeTitle: /** NEEDS STRING REVIEW */ 'Cannot run this snippet',
         snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Acquire Script Lab for free today at https://aka.ms/getscriptlab.',
@@ -160,10 +161,10 @@ export function getEnglishStrings(): ClientStrings {
 
         // view.mode.ts strings
 
-        openInPlayground: /** NEEDS STRING REVIEW */ 'Open in Script Lab',
-        openInHost: /** NEEDS STRING REVIEW */ 'Open in {0}',
-        openInGithub: /** NEEDS STRING REVIEW */ 'Open in GitHub',
-        downloadAsHostFile: /** NEEDS STRING REVIEW */ 'Download {0} file',
+        openInPlayground: 'Open in Script Lab',
+        openInHost: 'Open in {0}',
+        openInGithub: 'Open in GitHub',
+        downloadAsHostFile: 'Download {0} file',
 
         // Outlook-only strings
 

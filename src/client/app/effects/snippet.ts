@@ -14,7 +14,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
-import { Utilities, PlatformType, HostType } from '@microsoft/office-js-helpers';
+import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 @Injectable()
 export class SnippetEffects {
@@ -203,10 +203,6 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.OPEN_IN_PLAYGROUND)
         .map(action => action.payload)
         .map(payload => {
-            if (Utilities.platform === PlatformType.IOS) {
-                AI.trackEvent('Unsupported open in playground');
-                return;
-            }
             let { type, id, isDownload } = payload;
             let handler, extension;
             switch (environment.current.host.toUpperCase()) {
@@ -219,7 +215,6 @@ export class SnippetEffects {
                     extension = '.docx';
                     break;
                 case HostType.POWERPOINT:
-                    case HostType.WORD:
                     handler = 'ms-powerpoint:ofe|u|';
                     extension = '.pptx';
                     break;
@@ -236,8 +231,7 @@ export class SnippetEffects {
             }
         })
         .catch(exception => {
-            console.log('Exception ' + exception);
-            return null;
+            return Observable.of(new UI.ReportErrorAction(Strings().snippetOpenInPlaygroundError, exception));
         });
 
     private _gistIdExists(id: string) {

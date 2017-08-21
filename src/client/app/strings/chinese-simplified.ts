@@ -57,6 +57,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         snippetLoadAllError: '导入本地代码段失败',
         snippetRunError: '运行代码段失败',
         snippetLoadDefaultsError: '加载默认样本失败',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: '代码段不能正常运行',
         snippetNoOfficeMessage: '只能在Office插件中运行office代码段。获取脚本。 现在免费获取 Script Lab 请登入网站 https://aka.ms/getscriptlab。',

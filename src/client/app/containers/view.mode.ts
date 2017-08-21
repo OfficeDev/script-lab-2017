@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { HostType } from '@microsoft/office-js-helpers';
+import { Utilities, PlatformType, HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { UI, Snippet } from '../actions';
-import { environment } from '../helpers';
+import { environment, getGistUrl } from '../helpers';
 import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
@@ -59,7 +59,7 @@ export class ViewMode implements OnInit, OnDestroy {
 
     get openInPlaygroundSupported() {
         let host = environment.current.host.toUpperCase();
-        return host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT;
+        return Utilities.platform !== PlatformType.IOS && host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT;
     }
 
     get openInHostString() {
@@ -90,7 +90,7 @@ export class ViewMode implements OnInit, OnDestroy {
                 switch (type) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
                             .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
                         );
                     case 'gist':
@@ -131,6 +131,6 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     openInGithub() {
-        window.open(`https://gist.github.com/${this.snippet.gist}`);
+        window.open(getGistUrl(this.snippet.gist));
     }
 }
