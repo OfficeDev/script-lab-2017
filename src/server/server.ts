@@ -499,7 +499,7 @@ function getRuntimeHelpersUrl() {
         let runnerHashIfAny: string;
         let runnerHashPattern = /^bundles\/runner\.(\w*)\.bundle.js/;
         let runnerHashMatch = runnerHashPattern.exec(assetPaths.runner.js);
-        if (runnerHashMatch && runnerHashIfAny.length === 2) {
+        if (runnerHashMatch && runnerHashMatch.length === 2) {
             runnerHashIfAny = runnerHashMatch[1];
         }
 
