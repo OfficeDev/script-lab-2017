@@ -150,6 +150,10 @@ function getCurrentPageBaseUrl() {
         }
     });
 
+    if (currentPageUrl.substr(currentPageUrl.length - 1 - 1) !== '/') {
+        currentPageUrl += '/';
+    }
+
     return currentPageUrl;
 }
 
