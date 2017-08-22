@@ -17,7 +17,6 @@ interface ITemplate {
         [index: string]: number
     },
     platform: string;
-    origin: string;
     created_at: number;
     modified_at: number;
 }

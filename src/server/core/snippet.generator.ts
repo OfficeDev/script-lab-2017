@@ -24,7 +24,6 @@ export class SnippetGenerator {
                     description: snippet.description,
                     host: snippet.host,
                     platform: snippet.platform,
-                    origin: snippet.origin,
                     created_at: snippet.created_at,
                     modified_at: snippet.modified_at,
                     style: snippet.style.content,

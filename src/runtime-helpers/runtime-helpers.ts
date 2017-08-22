@@ -4,6 +4,7 @@
 //       to be passed in a "._editorUrl" and "._strings" object
 //       It is not listed on the namespace, however, to avoid polluting generated d.ts
 
+
 /** A collection of ScriptLab-specific helper functions (e.g., for authentication) for use by snippets,
  * necessary because some APIs (such as displayDialogAsync) cannot be used directly within Script Lab.
  */
@@ -17,15 +18,15 @@ module ScriptLab {
                 service = 'graph';
             }
 
-            let authDialog = window.open((ScriptLab as any)._editorUrl + `/auth?client_id=${encodeURIComponent(clientId)}&service=${service}`);
-            let hasReceivedMessage: boolean;
+            let authDialog = window.open((ScriptLab as any)._editorUrl +
+                `/auth?action=login&client_id=${encodeURIComponent(clientId)}&service=${service}`);
             window.addEventListener('message', accessTokenMessageListener);
 
             // FIXME: probably only for browser?
             const dialogCloseWatcher = setInterval(() => {
                 if (authDialog.closed) {
                     clearInterval(dialogCloseWatcher);
-                    reject((ScriptLab as any)._strings.Auth.authenticationWasCancelledByTheUser);
+                    reject((ScriptLab as any)._strings.authenticationWasCancelledByTheUser);
                 }
             }, 1000);
 
@@ -40,13 +41,13 @@ module ScriptLab {
                 if (event.data.indexOf('AUTH:access_token=') === 0) {
                     window.removeEventListener('message', accessTokenMessageListener);
                     resolve(event.data.substr('AUTH:access_token='.length));
-                    hasReceivedMessage = true;
+                    authDialog.close();
                     return;
                 }
                 if (event.data.indexOf('AUTH:error=') === 0) {
                     window.removeEventListener('message', accessTokenMessageListener);
                     reject(event.data.substr('AUTH:error='.length));
-                    hasReceivedMessage = true;
+                    authDialog.close();
                     return;
                 }
             }

@@ -2,7 +2,7 @@
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
 
-// import { getEnglishSubstitutesForNotYetTranslated } from './index';
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ServerStrings {
     return {
@@ -44,7 +44,11 @@ export function getSpanishStrings(): ServerStrings {
         dismiss: 'Ignorar',
         editingDifferentSnippet1: `Ahora estas editando un fragmento de código diferente.`,
         editingDifferentSnippet2: `Actualiza este panel para ejecutarlo`,
-        loadLatestSnippet: 'Cargar el último fragmento de codigo'
+        loadLatestSnippet: 'Cargar el último fragmento de codigo',
+
+        RuntimeHelpers: {
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser
+        }
     };
 }
 

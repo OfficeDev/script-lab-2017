@@ -25,6 +25,13 @@ const languageGenerator: { [key: string]: () => ServerStrings } = {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+/** Function for use in non-English files, acting as a marker for text that still needs to be translated.
+ * We are not using "getEnglishStrings()" directly to avoid an extra import in the other files,
+ * and so that it's semantically clear that there are missing translations left.
+ */
+export function getEnglishSubstitutesForNotYetTranslated() {
+    return getEnglishStrings();
+}
 
 export function Strings(language: string): ServerStrings;
 export function Strings(req: express.Request): ServerStrings;

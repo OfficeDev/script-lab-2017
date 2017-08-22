@@ -2,7 +2,7 @@
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
 
-// import { getEnglishSubstitutesForNotYetTranslated } from './index';
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ServerStrings {
   return {
@@ -44,6 +44,10 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         dismiss: '解散',
         editingDifferentSnippet1: `您现在正在编辑一个不同的代码段`,
         editingDifferentSnippet2: `刷新此窗格以运行它`,
-        loadLatestSnippet: '下载最新代码段'
+        loadLatestSnippet: '下载最新代码段',
+
+        RuntimeHelpers: {
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser
+        }
     };
 }

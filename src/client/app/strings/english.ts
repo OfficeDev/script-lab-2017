@@ -266,9 +266,7 @@ export function getEnglishStrings(): ClientStrings {
             unrecognizedService: 'Unrecognized service',
             invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
             invalidAuthResponseReceived: 'Invalid response received from the authentication service',
-            yourAccessTokenIs: 'Your access token is',
-            authenticationWasCancelledByTheUser: 'Authentication was cancelled by the user',
-            logoutWasCancelledByTheUser: 'Logout was cancelled by the user'
+            yourAccessTokenIs: 'Your access token is'
         }
     };
 }

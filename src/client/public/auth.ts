@@ -81,7 +81,6 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                     } else {
                         if (window.opener) {
                             window.opener.postMessage('AUTH:access_token=' + accessToken, environment.current.config.runnerUrl);
-                            window.close();
                         } else {
                             setSubtitleText(strings.Auth.yourAccessTokenIs);
                             const accessTokenInputBox = (document.getElementById('access-token-if-no-redirect') as HTMLInputElement);
