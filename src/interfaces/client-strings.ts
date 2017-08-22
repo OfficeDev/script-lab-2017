@@ -1,4 +1,4 @@
-export interface ClientStrings {
+interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
 
@@ -185,6 +185,9 @@ export interface ClientStrings {
     importUrlPlaceholder: string;
     importYamlLabel: string;
 
+
+    unexpectedError: string;
+
     Refresh: {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */
         missingSnippetParameters: string;
@@ -199,7 +202,6 @@ export interface ClientStrings {
 
     Runner: {
         snippetNoLongerExists: string;
-        unexpectedError: string;
 
         reloadingOfficeJs: string;
 
@@ -247,4 +249,15 @@ export interface ClientStrings {
         download: string;
         errorInitializingScriptLab: string;
     };
+
+    Auth: {
+        authenticatingOnBehalfOfSnippet: string;
+        loggingOutOnBehalfOfSnippet: string;
+        authenticationRedirect: string;
+        authenticationError: string;
+        unrecognizedService: string;
+        invalidParametersPassedInForAuth: string;
+        invalidAuthResponseReceived: string;
+        yourAccessTokenIs: string;
+    }
 }

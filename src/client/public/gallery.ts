@@ -150,7 +150,6 @@ export class Gallery {
         const overrides = <ISnippet>{
             host: environment.current.host,
             platform: environment.current.platform,
-            origin: environment.current.config.editorUrl,
         };
 
         const state: IRunnerState = {

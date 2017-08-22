@@ -14,7 +14,6 @@ import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
 import { Strings, getExplicitlySetDisplayLanguageOrNull } from './strings';
-import { ServerStrings } from './strings/server-strings';
 import { loadTemplate } from './core/template.generator';
 import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
@@ -53,15 +52,6 @@ function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
 }
 
-let assetPaths;
-function getAssetPaths(): { [key: string]: string } {
-    if (!assetPaths) {
-        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
-        assetPaths = JSON.parse(data.toString());
-    }
-
-    return assetPaths;
-}
 
 let generatedDirectories = {};
 /* Cleans up generated template directories */
@@ -446,7 +436,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
-                    origin: snippet.origin,
+                    origin: currentConfig.editorUrl,
                     host: snippet.host,
                     assets: getAssetPaths(),
                     isTrustedSnippet: isTrustedSnippet,
@@ -522,7 +512,11 @@ function generateSnippetHtmlData(
                     ...compiledSnippetOrError,
                     isOfficeSnippet: isOfficeHost(snippet.host),
                     isExternalExport: isExternalExport,
-                    strings
+                    strings,
+                    runtimeHelpersUrl: getRuntimeHelpersUrl(),
+                    editorUrl: currentConfig.editorUrl,
+                    runtimeHelperStringifiedStrings: JSON.stringify(
+                        strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
                 };
 
                 const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
@@ -652,4 +646,37 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
         details,
         expandDetailsByDefault
     });
+}
+
+
+let _assetPaths;
+function getAssetPaths(): { [key: string]: any } {
+    if (!_assetPaths) {
+        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
+        _assetPaths = JSON.parse(data.toString());
+    }
+
+    return _assetPaths;
+}
+
+let _runtimeHelpersUrl;
+function getRuntimeHelpersUrl() {
+    if (!_runtimeHelpersUrl) {
+        let assetPaths = getAssetPaths();
+        // Some assets, like the runtime helpers, are not compiled with webpack.
+        // Instead, they are manually copied, and end up with no hash.
+        // So, to guarantee their freshness, use the runner hash (once per deployment)
+        // as a good approximation for when it's time to get a new version.
+        let runnerHashIfAny: string;
+        let runnerHashPattern = /^bundles\/runner\.(\w*)\.bundle.js/;
+        let runnerHashMatch = runnerHashPattern.exec(assetPaths.runner.js);
+        if (runnerHashMatch && runnerHashMatch.length === 2) {
+            runnerHashIfAny = runnerHashMatch[1];
+        }
+
+        _runtimeHelpersUrl = currentConfig.editorUrl + '/runtime-helpers.js' +
+            (runnerHashIfAny ? ('?hash=' + runnerHashIfAny) : '');
+    }
+
+    return _runtimeHelpersUrl;
 }

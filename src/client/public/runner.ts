@@ -180,7 +180,7 @@ interface InitializationParams {
     function handleError(error: Error) {
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
-            candidateErrorString = Strings().Runner.unexpectedError;
+            candidateErrorString = Strings().unexpectedError;
         }
 
         $('#header-text').text('');

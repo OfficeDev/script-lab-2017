@@ -1,5 +1,3 @@
-import { ClientStrings } from './client-strings';
-
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
@@ -58,10 +56,10 @@ export function getSpanishStrings(): ClientStrings {
         snippetLoadDefaultsError: 'Error al cargar ejemplos',
         snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
-        snippetNoOfficeTitle:  'No se puede ejecutar el fragmento de código',
-        snippetNoOfficeMessage:  'Sólo se pueden ejecutar fragmentos de código dentro de un Add-in para Office.  Adquiere gratuitamente Script Lab hoy en https://aka.ms/getscriptlab.',
+        snippetNoOfficeTitle: 'No se puede ejecutar el fragmento de código',
+        snippetNoOfficeMessage: 'Sólo se pueden ejecutar fragmentos de código dentro de un Add-in para Office.  Adquiere gratuitamente Script Lab hoy en https://aka.ms/getscriptlab.',
 
-        snippetUpdateError:  'Error al actualizar el fragmento de código',
+        snippetUpdateError: 'Error al actualizar el fragmento de código',
 
         snippetValidationEmpty: `El fragmento de código no pude estar vacío`,
         snippetValidationNoTitle: 'El fragmento de código requiere un título',
@@ -85,7 +83,7 @@ export function getSpanishStrings(): ClientStrings {
         gistRetrieveFailed: 'Error al obtener gists de GitHub',
         gistDescriptionAppendage: `Compartido con ${playgroundName}`,
 
-        gistShareFailedBody:  'Error al compartir gist de GitHub',
+        gistShareFailedBody: 'Error al compartir gist de GitHub',
         gistShareFailedTitle: 'Error al compartir',
 
         gistSharedDialogStart: 'El URL de tu gist de GitHub es:',
@@ -107,9 +105,9 @@ export function getSpanishStrings(): ClientStrings {
         aboutStorage: 'Almacenamiento:',
         aboutSnippets: 'Fragmentos de código locales',
         aboutIntellisense: 'IntelliSense',
-        aboutCurrentEnvironment:  'Ambiente actual:',
+        aboutCurrentEnvironment: 'Ambiente actual:',
         aboutSwitchEnvironment: 'Cambiar de {0} a {1}:',
-        changeEnvironmentConfirm:  'Está por cambiar el ambiente de Script Lab y no tendrá acceso a los fragmentos de código guardados de manera local hasta que regrese al ambiente. ¿Está seguro de proceder?',
+        changeEnvironmentConfirm: 'Está por cambiar el ambiente de Script Lab y no tendrá acceso a los fragmentos de código guardados de manera local hasta que regrese al ambiente. ¿Está seguro de proceder?',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Información',
@@ -117,16 +115,16 @@ export function getSpanishStrings(): ClientStrings {
         descriptionLabel: 'Descripción',
         namePlaceholder: 'Nombre del fragmento de código',
         descriptionPlaceholder: 'Descripción del fragmento de código ',
-        gistUrlLabel:  'URL del gist',
-        gistUrlLinkLabel:  'Abrir en navegador',
+        gistUrlLabel: 'URL del gist',
+        gistUrlLinkLabel: 'Abrir en navegador',
         viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
 
-        shareMenuPublic:  'Crear gist público',
-        shareMenuPrivate:  'Crear gist secreto',
-        updateMenu:  'Actualizar gist existente',
+        shareMenuPublic: 'Crear gist público',
+        shareMenuPrivate: 'Crear gist secreto',
+        updateMenu: 'Actualizar gist existente',
         sharePublicSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist público?',
         sharePrivateSnippetConfirm: '¿Estás seguro de compartir nuevamente este fragmento como un nuevo gist secreto?',
 
@@ -195,6 +193,8 @@ export function getSpanishStrings(): ClientStrings {
         importUrlPlaceholder: `ejemplo. https://gist.github.com/sampleGistId`,
         importYamlLabel: `YAML del fragmento de código`,
 
+        unexpectedError: 'Ocurrió un error inesperado',
+
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `Un problema de configuración previno evitó que se cargue el fragmento de código.`,
@@ -210,7 +210,6 @@ export function getSpanishStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: 'El fragmento de código ya no existe. Recarga esta página or regresa a la anterior.',
-            unexpectedError: 'Ocurrió un error inesperado',
 
             reloadingOfficeJs: 'Recargando Office.js',
 
@@ -228,7 +227,7 @@ export function getSpanishStrings(): ClientStrings {
         },
 
         SideBySideInstructions: {
-            title:  'Ejecuta el código en un panel adyacente al editor',
+            title: 'Ejecuta el código en un panel adyacente al editor',
 
             message: [
                 'Para ejecutar el codigo en un panel adyacente al editor, selecciona "Ejecutar" en la barra de herraminetas.',
@@ -236,7 +235,7 @@ export function getSpanishStrings(): ClientStrings {
                 'Ejecutar el código en un panel adyacente al editor ofrece mayor rapidez y la ventaja de mantener tu posición e historia de deshacer en el editor.'
             ].join('\n'),
 
-            gotIt:  'Ok'
+            gotIt: 'Ok'
         },
 
         HtmlPageStrings: {
@@ -264,7 +263,18 @@ export function getSpanishStrings(): ClientStrings {
 
             tutorialDescription: 'Este archivo de Excel te muestra como utilizar Script Lab en sencillos pasos:',
             download: 'Descargar',
-            errorInitializingScriptLab: 'Error al iniciar Script Lab.'
+            errorInitializingScriptLab: 'Error al iniciar Script Lab.',
+        },
+
+        Auth: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
+            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
+            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
+            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
+            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
         }
     };
 }
