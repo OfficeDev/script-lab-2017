@@ -54,7 +54,7 @@ export class ViewAction implements Action {
 export class ImportAction implements Action {
     readonly type = SnippetActionTypes.IMPORT;
 
-    constructor(public mode: string, public payload?: { data: string, isViewMode: boolean }) { }
+    constructor(public mode: string, public payload: { data: string, isViewMode: boolean }) { }
 }
 
 export class ImportSuccessAction implements Action {
