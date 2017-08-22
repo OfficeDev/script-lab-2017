@@ -10,13 +10,13 @@
 // - String localizations
 
 
-/** [PREVIEW/ALPHA] A collection of ScriptLab-specific helper functions (e.g., for authentication) for use by snippets,
+/** [PREVIEW] A collection of ScriptLab-specific helper functions (e.g., for authentication) for use by snippets,
  * necessary because some APIs (such as displayDialogAsync) cannot be used directly within Script Lab.
  */
 module ScriptLab {
     const CODE_DIALOG_CLOSED_BY_USER = 12006;
 
-    /** [PREVIEW/ALPHA] Gets an access token on behalf of the user for a particular service
+    /** [PREVIEW] Gets an access token on behalf of the user for a particular service
      * @param service: The service provider (default: 'graph' = Microsoft Graph)
     */
     export function getAccessToken(clientId: string, service: 'graph' = 'graph'): Promise<string> {
@@ -29,7 +29,7 @@ module ScriptLab {
         }
     }
 
-    /** [PREVIEW/ALPHA] Log the user out of a service
+    /** [PREVIEW] Log the user out of a service
      * @param service: The service provider (default: 'graph' = Microsoft Graph)
     */
     export function logout(clientId: string, service: 'graph' = 'graph'): Promise<any> {
@@ -212,5 +212,21 @@ module ScriptLab {
 
     function _isDialogApiSupported() {
         return (window as any).Office.context.requirements.isSetSupported('DialogApi');
+    }
+}
+
+module Experimental {
+    /** [PREVIEW] Creates an Excel.Session object for working with a remote workbook */
+    export function setupRemoteWorkbookSession(url: string, accessToken: string) {
+        const headers = {
+            'Authorization': 'Bearer ' + accessToken
+        };
+
+        if (url.substr(url.length - 1) === '/') {
+            url = url.substr(0, url.length - 1);
+        }
+        url += '/workbook';
+
+        return new Excel.Session(url, headers, true /* persisted session */);
     }
 }
