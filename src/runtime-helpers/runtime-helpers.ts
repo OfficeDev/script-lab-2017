@@ -18,13 +18,14 @@ module ScriptLab {
                 service = 'graph';
             }
 
-            let authDialog = window.open((ScriptLab as any)._editorUrl +
-                `/auth?action=login&client_id=${encodeURIComponent(clientId)}&service=${service}`);
+            let authDialog = window.open(
+                _generateAuthUrl('login', clientId, service)
+            );
             window.addEventListener('message', accessTokenMessageListener);
 
             // FIXME: probably only for browser?
             const dialogCloseWatcher = setInterval(() => {
-                if (authDialog.closed) {
+                if (!authDialog || authDialog.closed) {
                     clearInterval(dialogCloseWatcher);
                     reject((ScriptLab as any)._strings.authenticationWasCancelledByTheUser);
                 }
@@ -52,5 +53,33 @@ module ScriptLab {
                 }
             }
         });
+    }
+
+    /** Log the user out of a service
+     * @param service: The service provider (default: 'graph' = Microsoft Graph)
+    */
+    export function logout(clientId: string, service?: 'graph'): Promise<string> {
+        return new Promise((resolve, reject) => {
+            if (!service) {
+                service = 'graph';
+            }
+
+            let authDialog = window.open(
+                _generateAuthUrl('logout', clientId, service)
+            );
+
+            // FIXME: probably only for browser?
+            const dialogCloseWatcher = setInterval(() => {
+                if (!authDialog || authDialog.closed) {
+                    clearInterval(dialogCloseWatcher);
+                    resolve();
+                }
+            }, 1000);
+        });
+    }
+
+    function _generateAuthUrl(action: 'login' | 'logout', clientId: string, service: string): string {
+        return (ScriptLab as any)._editorUrl +
+            `/auth?action=${action}&client_id=${encodeURIComponent(clientId)}&service=${service}`;
     }
 }

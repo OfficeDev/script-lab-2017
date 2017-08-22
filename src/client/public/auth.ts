@@ -129,8 +129,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
 
                 window.sessionStorage[AuthRequestSessionStorageKey] = JSON.stringify(authRequest);
                 const url = generateUrl(logoutUrl, {
-                    'client_id': authRequest.client_id,
-                    'redirect_uri': getCurrentPageBaseUrl()
+                    'client_id': authRequest.client_id
                 });
                 window.location.assign(url);
 
