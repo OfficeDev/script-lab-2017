@@ -197,7 +197,7 @@ export class Import {
 
         data = data.trim();
 
-        this._store.dispatch(new Snippet.ImportAction(mode, data));
+        this._store.dispatch(new Snippet.ImportAction(mode, { data: data, isViewMode: false }));
         this.cancel();
     }
 

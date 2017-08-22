@@ -69,9 +69,9 @@ export class ViewMode implements OnInit, OnDestroy {
             })
             .subscribe(({ lookupTable, id }) => {
                 if (lookupTable && lookupTable[id]) {
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, lookupTable[id], true /*isViewMode*/));
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, { data: lookupTable[id], isViewMode: true }));
                 } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, id, true /*isViewMode*/));
+                    this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, { data: id, isViewMode: true }));
                 } else {
                     // Redirect to error page
                     location.hash = '/view/error';

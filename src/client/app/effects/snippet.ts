@@ -29,7 +29,7 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload, mode: action.mode, isViewMode: action.isViewMode }))
+        .map(action => ({ data: action.payload.data, mode: action.mode, isViewMode: action.payload.isViewMode }))
         .mergeMap(({ data, mode, isViewMode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
