@@ -7,7 +7,9 @@
     "exclude": [
         "node_modules",
         "compiled",
-        "src/server/**/*.ts"
+        "src/server/**/*.ts",
+        "src/runtime-helpers/**/*.ts",
+        "dist/**/*.ts"
     ],
     "awesomeTypescriptLoaderOptions": {
         "useWebpackText": true,

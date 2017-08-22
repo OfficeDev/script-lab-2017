@@ -1,9 +1,12 @@
-import { ServerStrings } from './strings/server-strings';
-
 export interface ISnippetHandlebarsContext extends ICompiledSnippet {
     isOfficeSnippet: boolean;
     isExternalExport: boolean;
     strings: ServerStrings;
+
+    // For the runtime helpers, need both their URL, and the origin editor URL
+    runtimeHelpersUrl: string;
+    editorUrl: string;
+    runtimeHelperStringifiedStrings: string;
 }
 
 export interface IRunnerHandlebarsContext {

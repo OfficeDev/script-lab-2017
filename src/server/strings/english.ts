@@ -1,5 +1,3 @@
-import { ServerStrings} from './server-strings';
-
 export function getEnglishStrings(): ServerStrings {
     return {
         error: 'Error',
@@ -40,6 +38,10 @@ export function getEnglishStrings(): ServerStrings {
         dismiss: 'Dismiss',
         editingDifferentSnippet1: `You're now editing a different snippet`,
         editingDifferentSnippet2: `Refresh this pane to run it`,
-        loadLatestSnippet: 'Load the latest snippet'
+        loadLatestSnippet: 'Load the latest snippet',
+
+        RuntimeHelpers: {
+            authenticationWasCancelledByTheUser: 'Authentication was cancelled by the user'
+        }
     };
 }

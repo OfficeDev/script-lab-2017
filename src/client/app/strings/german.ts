@@ -1,5 +1,3 @@
-import { ClientStrings } from './client-strings';
-
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
@@ -191,6 +189,8 @@ export function getGermanStrings(): ClientStrings {
         importUrlPlaceholder: `z.B. https://gist.github.com/Schnipsel-ID`,
         importYamlLabel: `YAML-Code des Schnipsels`,
 
+        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
+
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `Ein Konfigurationsproblem hat das Laden des Schnipsels verhindert.`,
@@ -206,7 +206,6 @@ export function getGermanStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: 'Das Schnipsel ist nicht mehr verfügbar. Laden Sie diese Seite neu oder kehren Sie zu der vorherigen Seite zurück.',
-            unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
             reloadingOfficeJs: 'Office.js wird neu geladen.',
 
@@ -261,6 +260,17 @@ export function getGermanStrings(): ClientStrings {
             tutorialDescription: 'Folgende Excel-Datei beinhaltet eine Anleitung, um Script Lab in',
             download: 'wenigen Schritten kennenzulernen:',
             errorInitializingScriptLab: 'Es ist ein Fehler bei der Initialisierung von Script Lab aufgetreten.'
+        },
+
+        Auth: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
+            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
+            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
+            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
+            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
         }
     };
 }
