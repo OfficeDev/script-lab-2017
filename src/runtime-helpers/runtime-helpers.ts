@@ -95,13 +95,13 @@ module ScriptLab {
                     }
 
                     let dialog: Office.DialogHandler = result.value;
-                    dialog.addEventHandler(Office.EventType.DialogEventReceived, result => {
-                        switch (result.error.code) {
+                    dialog.addEventHandler(Office.EventType.DialogEventReceived, event => {
+                        switch (event.error) {
                             case CODE_DIALOG_CLOSED_BY_USER:
                                 reject(new Error((ScriptLab as any)._strings.authenticationWasCancelledByTheUser));
                                 return;
                             default:
-                                reject(new Error(result.error.message));
+                                reject(new Error(event.message));
                                 return;
                         }
                     });
@@ -144,7 +144,7 @@ module ScriptLab {
             const dialogCloseWatcher = setInterval(() => {
                 if (!authDialog || authDialog.closed) {
                     clearInterval(dialogCloseWatcher);
-                    resolve(void 0);
+                    resolve();
                 }
             }, 1000);
 
@@ -165,14 +165,14 @@ module ScriptLab {
                     }
 
                     let dialog: Office.DialogHandler = result.value;
-                    dialog.addEventHandler(Office.EventType.DialogEventReceived, result => {
-                        switch (result.error.code) {
+                    dialog.addEventHandler(Office.EventType.DialogEventReceived, event => {
+                        switch (event.error) {
                             case CODE_DIALOG_CLOSED_BY_USER:
                                 // In case of logout, closing by user is fine, so treat it as a resolve instead of a reject
-                                resolve(void 0);
+                                resolve();
                                 return;
                             default:
-                                reject(new Error(result.error.message));
+                                reject(new Error(event.message));
                                 return;
                         }
                     });
