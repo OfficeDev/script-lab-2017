@@ -5,9 +5,11 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ServerStrings {
-  return {
+    const unexpectedError = '出现意外错误';
+
+    return {
         error: '错误',
-        unexpectedError: '出现意外错误',
+        unexpectedError: unexpectedError,
         invalidHost: '无效的主机',
         invalidId: '无效的ID',
         receivedInvalidAuthCode: '收到验证码无效',
@@ -47,7 +49,9 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         loadLatestSnippet: '下载最新代码段',
 
         RuntimeHelpers: {
-            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser
+            unexpectedError: unexpectedError,
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
+            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
         }
     };
 }
