@@ -1,7 +1,9 @@
 export function getEnglishStrings(): ServerStrings {
+    const unexpectedError = 'An unexpected error occurred';
+
     return {
         error: 'Error',
-        unexpectedError: 'An unexpected error occurred',
+        unexpectedError: unexpectedError,
         invalidHost: 'Invalid host',
         invalidId: 'Invalid ID',
         receivedInvalidAuthCode: 'Received invalid auth code',
@@ -41,7 +43,10 @@ export function getEnglishStrings(): ServerStrings {
         loadLatestSnippet: 'Load the latest snippet',
 
         RuntimeHelpers: {
-            authenticationWasCancelledByTheUser: 'Authentication was cancelled by the user'
+            unexpectedError: unexpectedError,
+            authenticationWasCancelledByTheUser: 'Authentication was cancelled by the user',
+            officeVersionDoesNotSupportAuthentication:
+                'Your current version of Office does not support displaying an authentication dialog. Please update to a newer version, or try Office Online, if you would like to run this snippet.'
         }
     };
 }

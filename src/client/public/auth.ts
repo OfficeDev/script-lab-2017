@@ -77,7 +77,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 const accessToken = authResponseKeyValues['access_token'];
                 if (accessToken) {
                     if (authRequest.is_office_host) {
-                        // FIXME
+                        Office.context.ui.messageParent('AUTH:access_token=' + accessToken);
                     } else {
                         if (window.opener) {
                             window.opener.postMessage('AUTH:access_token=' + accessToken, environment.current.config.runnerUrl);

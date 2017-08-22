@@ -153,6 +153,7 @@ interface HeartbeatParams {
     lastModified: string;
 }
 
+// NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
 interface AuthRequestParamData {
     action: 'login' | 'logout';
     service: 'graph';

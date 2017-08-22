@@ -46,9 +46,6 @@
     <script>
         ScriptLab._editorUrl = "{{{editorUrl}}}";
         ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
-        {{#if officeJS}}
-        // FIXME
-        {{/if}}
     </script>
     
     <!-- JS Libraries -->

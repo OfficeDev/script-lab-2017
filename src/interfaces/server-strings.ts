@@ -37,6 +37,8 @@ interface ServerStrings {
     loadLatestSnippet: string;
 
     RuntimeHelpers: {
+        unexpectedError: string;
         authenticationWasCancelledByTheUser: string;
+        officeVersionDoesNotSupportAuthentication: string;
     };
 }

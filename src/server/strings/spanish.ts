@@ -5,9 +5,11 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ServerStrings {
+    const unexpectedError = 'Se produjo un error inesperado';
+
     return {
         error: 'Error',
-        unexpectedError: 'Se produjo un error inesperado',
+        unexpectedError: unexpectedError,
         invalidHost: 'Host inválido',
         invalidId: 'ID inválido',
         receivedInvalidAuthCode: 'Se recibió un código de autenticación inválido',
@@ -47,7 +49,9 @@ export function getSpanishStrings(): ServerStrings {
         loadLatestSnippet: 'Cargar el último fragmento de codigo',
 
         RuntimeHelpers: {
-            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser
+            unexpectedError: unexpectedError,
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
+            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
         }
     };
 }
