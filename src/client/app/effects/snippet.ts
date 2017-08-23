@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, processLibraries } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
@@ -345,7 +345,7 @@ export class SnippetEffects {
                 rawSnippet.host, environment.current.host));
         }
 
-        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
+        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set, rawSnippet);
         // Note that need to do the unsupported-api check before anything else, and before scrubbing --
         // because api_set will get erased as part of scrubbing (it's only for pre-import and export)
 
@@ -416,7 +416,7 @@ export class SnippetEffects {
         return Observable.from(actions);
     }
 
-    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {
+    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }, snippet: ISnippet) {
         let unsupportedApiSet: { api: string, version: number } = null;
         if (api_set == null) {
             return;
@@ -424,6 +424,13 @@ export class SnippetEffects {
 
         // On the web, there is no "Office.context.requirements". So skip it.
         if (!isInsideOfficeApp()) {
+            return;
+        }
+
+        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
+            // Snippets using production Office.js should be checked for API set support.
+            // Snippets using the beta endpoint or an NPM package don't need to.
             return;
         }
 
