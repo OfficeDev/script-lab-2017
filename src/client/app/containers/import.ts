@@ -206,7 +206,7 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction( { mode: Snippet.ImportType.DEFAULT, data: null, isViewMode: false}));
+        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.DEFAULT, data: null, isViewMode: false}));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
