@@ -214,7 +214,7 @@ export class Import {
 
         data = data.trim();
 
-        this._store.dispatch(new Snippet.ImportAction(mode, data));
+        this._store.dispatch(new Snippet.ImportAction({ mode: mode, data: data, isViewMode: false }));
         this.cancel();
     }
 
@@ -223,7 +223,7 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.DEFAULT));
+        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.DEFAULT, data: null, isViewMode: false}));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
@@ -259,7 +259,7 @@ export class Import {
             let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
                 .subscribe(lookupTable => {
                     if (lookupTable && lookupTable[viewData.id]) {
-                        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.SAMPLE, lookupTable[viewData.id]));
+                        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[viewData.id], isViewMode: false }));
                     }
 
                     if (sub && !sub.closed) {
@@ -269,7 +269,7 @@ export class Import {
 
         } else {
             // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
-            this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.GIST, viewData.id, true /*isViewMode*/));
+            this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: viewData.id, isViewMode: true }));
         }
     }
 }

@@ -104,7 +104,7 @@
     "@types/lodash": "4.14.58",
     "@types/mime": "0.0.29",
     "@types/node": "7.0.12",
-    "@types/office-js": "0.0.39",
+    "@types/office-js": "0.0.47",
     "@types/request": "0.0.42",
     "@types/serve-static": "1.7.31",
     "@types/shelljs": "0.7.0",

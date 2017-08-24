@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
+import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
     SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, isSnippetTrusted, trustedSnippetsKey } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -29,7 +29,7 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload, mode: action.mode, isViewMode: action.isViewMode }))
+        .map(action => ({ data: action.payload.data, mode: action.payload.mode, isViewMode: action.payload.isViewMode }))
         .mergeMap(({ data, mode, isViewMode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
@@ -383,7 +383,7 @@ export class SnippetEffects {
                 rawSnippet.host, environment.current.host));
         }
 
-        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
+        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set, rawSnippet);
         // Note that need to do the unsupported-api check before anything else, and before scrubbing --
         // because api_set will get erased as part of scrubbing (it's only for pre-import and export)
 
@@ -448,7 +448,7 @@ export class SnippetEffects {
              * If the action here involves true importing rather than re-opening,
              * and if the name is already taken by a local snippet, generate a new name.
              */
-            if (mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
+            if (!isViewMode && mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
                 snippet.name = this._generateName(snippet.name, '');
             }
             actions.push(new Snippet.ImportSuccessAction(snippet));
@@ -463,7 +463,7 @@ export class SnippetEffects {
         return Observable.from(actions);
     }
 
-    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {
+    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }, snippet: ISnippet) {
         let unsupportedApiSet: { api: string, version: number } = null;
         if (api_set == null) {
             return;
@@ -471,6 +471,13 @@ export class SnippetEffects {
 
         // On the web, there is no "Office.context.requirements". So skip it.
         if (!isInsideOfficeApp()) {
+            return;
+        }
+
+        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
+            // Snippets using production Office.js should be checked for API set support.
+            // Snippets using the beta endpoint or an NPM package don't need to.
             return;
         }
 
