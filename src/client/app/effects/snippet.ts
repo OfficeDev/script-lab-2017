@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, isSnippetTrusted, trustedSnippetsKey } from '../helpers';
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippet } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
@@ -137,7 +137,7 @@ export class SnippetEffects {
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
-                const isTrustedSnippet = isSnippetTrusted(snippet.id, snippet.gist);
+                const isTrustedSnippet = trustedSnippet.isSnippetTrusted(snippet.id, snippet.gist);
 
                 AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
                 post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
@@ -404,12 +404,7 @@ export class SnippetEffects {
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
 
         if (snippet.gist && this._github.profile && this._github.profile.login === snippet.gistOwnerId) {
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(trustedSnippetsKey));
-            if (!trustedSnippets) {
-                trustedSnippets = {};
-            }
-            trustedSnippets[snippet.id] = true;
-            window.localStorage.setItem(trustedSnippetsKey, JSON.stringify(trustedSnippets));
+            trustedSnippet.updateTrustedSnippets(snippet.id);
         }
 
         let properties = {};

@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { storage, environment, applyTheme, post, isSnippetTrusted } from '../app/helpers';
+import { storage, environment, applyTheme, post, trustedSnippet } from '../app/helpers';
 import { Strings, getDisplayLanguage } from '../app/strings';
 import '../assets/styles/extras.scss';
 
@@ -158,7 +158,7 @@ export class Gallery {
             displayLanguage: getDisplayLanguage()
         };
         const data = JSON.stringify(state);
-        const isTrustedSnippet = isSnippetTrusted(snippet.id, snippet.gist);
+        const isTrustedSnippet = trustedSnippet.isSnippetTrusted(snippet.id, snippet.gist);
 
         this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });

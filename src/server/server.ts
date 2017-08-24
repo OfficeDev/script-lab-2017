@@ -481,7 +481,7 @@ function getVersionNumber(): Promise<string> {
             body: SCRIPT_LAB_STORE_ID,
         }, (error, httpResponse, body) => {
             if (error) {
-                ai.trackEvent('[Snippet] Get version number failed', { error });
+                ai.trackException('[Snippet] Get version number failed', error);
                 return reject(error);
             }
             else {
