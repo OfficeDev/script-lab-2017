@@ -11,8 +11,6 @@ import { isEmpty } from 'lodash';
 const viewUrlSettingsPropertyName = 'SnippetToImport';
 const correlationIdPropertyName = 'CorrelationId';
 
-//strings are specified inline (not imported) for performance reasons
-
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'import',
