@@ -181,9 +181,9 @@
   version "7.0.12"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.12.tgz#ae5f67a19c15f752148004db07cbbb372e69efc9"
 
-"@types/office-js@0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.39.tgz#a1e5d8d49e57ec2421a4aaa5f39195bf7b74046e"
+"@types/office-js@0.0.47":
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.47.tgz#ffb4ae21cf41e43ded5ddde596181c610e021562"
 
 "@types/request@0.0.42":
   version "0.0.42"

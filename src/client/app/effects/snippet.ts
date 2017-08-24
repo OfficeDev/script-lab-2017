@@ -29,7 +29,7 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload.data, mode: action.mode, isViewMode: action.payload.isViewMode }))
+        .map(action => ({ data: action.payload.data, mode: action.payload.mode, isViewMode: action.payload.isViewMode }))
         .mergeMap(({ data, mode, isViewMode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
@@ -198,7 +198,7 @@ export class SnippetEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
     private _gistIdExists(id: string) {
-        return storage.snippets.values().some(item => item.gist.trim() === id.trim());
+        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
     }
 
     private _nameExists(name: string) {
@@ -401,7 +401,7 @@ export class SnippetEffects {
              * If the action here involves true importing rather than re-opening,
              * and if the name is already taken by a local snippet, generate a new name.
              */
-            if (mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
+            if (!isViewMode && mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
                 snippet.name = this._generateName(snippet.name, '');
             }
             actions.push(new Snippet.ImportSuccessAction(snippet));

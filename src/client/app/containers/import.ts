@@ -197,7 +197,7 @@ export class Import {
 
         data = data.trim();
 
-        this._store.dispatch(new Snippet.ImportAction(mode, { data: data, isViewMode: false }));
+        this._store.dispatch(new Snippet.ImportAction({ mode: mode, data: data, isViewMode: false }));
         this.cancel();
     }
 
@@ -206,7 +206,7 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.DEFAULT, { data: null, isViewMode: false}));
+        this._store.dispatch(new Snippet.ImportAction( { mode: Snippet.ImportType.DEFAULT, data: null, isViewMode: false}));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
