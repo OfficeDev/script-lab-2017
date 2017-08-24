@@ -35,6 +35,9 @@ const app = express();
 const SCRIPT_LAB_STORE_URL = 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml';
 const SCRIPT_LAB_STORE_ID = 'wa104380862';
 
+const ONE_HOUR_MS = 3600000;
+const THREE_HOUR_MS = 10800000;
+
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
@@ -61,7 +64,7 @@ setInterval(() => {
         let directoryInfo = generatedDirectories[id];
         let now = (new Date()).getTime();
         // If generated file is more than an hour old and isn't being read, delete it from both server and map to clean up clutter
-        if (directoryInfo && !directoryInfo.isBeingRead && (now - directoryInfo.timestamp) > 3600000) {
+        if (directoryInfo && !directoryInfo.isBeingRead && (now - directoryInfo.timestamp) > ONE_HOUR_MS) {
             delete generatedDirectories[id];
             fs.unlink(directoryInfo.name, (err) => {
                 if (err) {
@@ -71,7 +74,7 @@ setInterval(() => {
             });
         }
     }
-}, 3600000);
+}, ONE_HOUR_MS);
 
 /* Cleans up lurker template directories that may not have been deleted by above function (perhaps due to server restart) */
 setInterval(() => {
@@ -93,15 +96,15 @@ setInterval(() => {
                 let now = (new Date()).getTime();
 
                 // Delete all directories older than three hours and all files that are not in map
-                if (stat.isDirectory() && (now - stat.mtime.getMilliseconds()) > 10800000) {
+                if (stat.isDirectory() && (now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
                     rimraf(absolutePath, () => {});
-                } else if (filenames.indexOf(relativePath) < 0 && (now - stat.mtime.getMilliseconds()) > 10800000) {
+                } else if (filenames.indexOf(relativePath) < 0 && (now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
                     fs.unlink(absolutePath);
                 }
             });
         });
     });
-}, 10800000);
+}, THREE_HOUR_MS);
 
 /**
  * Server CERT and PORT configuration
@@ -160,7 +163,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 origin: currentConfig.editorUrl,
                 host: host,
                 assets: getAssetPaths(),
-                isTrustedSnippet: true, /* only called when snippet is already trusted */
+                isTrustedSnippet: false, /* Default to snippet not being trusted */
                 initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
                 strings,
@@ -272,7 +275,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
             templateName = 'powerpoint-template';
             break;
         default:
-            throw('Office Host not supported');
+            throw new Error(`Unsupported host: ${req.params.host}`);
     }
 
     const correlationId = req.params.correlationId;
@@ -291,7 +294,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                 let timestamp = (new Date()).getTime();
                 let relativeFilePath = `working/${templateName}${timestamp}`;
                 let extractDirName = path.resolve(__dirname, relativeFilePath);
-                let zip = fs.createReadStream(path.resolve(__dirname, templateName)).pipe(unzip.Extract({ path: extractDirName }));
+                let zip = fs.createReadStream(path.resolve(__dirname, `${templateName}.zip`)).pipe(unzip.Extract({ path: extractDirName }));
 
                 zip.on('close', () => {
                     let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
@@ -301,7 +304,11 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                                 return reject(err);
                             } else {
                                 let xmlStringData = data.toString();
-                                xmlStringData = xmlStringData.replace('%placeholder_version%', versionNumber).replace('%placeholder_type%', req.params.type).replace('%placeholder_id%', req.params.id);
+                                xmlStringData = xmlStringData
+                                    .replace('%placeholder_version%', versionNumber)
+                                    .replace('%placeholder_type%', req.params.type)
+                                    .replace('%placeholder_id%', req.params.id)
+                                    .replace('%placeholder_correlation_id%', correlationId);
                                 return resolve(xmlStringData);
                             }
                         });
@@ -319,7 +326,12 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                                 res.attachment(req.params.filename);
                                 fs.createReadStream(zipFileName).pipe(res);
                                 res.on('finish', () => {
-                                    generatedDirectories[correlationId] = { name: zipFileName, relativeFilePath: `${relativeFilePath}.zip`, isBeingRead: false, timestamp: timestamp };
+                                    generatedDirectories[correlationId] = {
+                                        name: zipFileName,
+                                        relativeFilePath: `${relativeFilePath}.zip`,
+                                        isBeingRead: false,
+                                        timestamp
+                                    };
                                 });
                             });
 
@@ -404,10 +416,7 @@ registerRoute('get', '/version', (req, res) => {
 function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
-    let isTrustedSnippet = req.body.isTrustedSnippet;
-    if (isNil(isTrustedSnippet)) {
-        isTrustedSnippet = false;
-    }
+    let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
     const strings = Strings(req);
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
@@ -439,7 +448,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     origin: currentConfig.editorUrl,
                     host: snippet.host,
                     assets: getAssetPaths(),
-                    isTrustedSnippet: isTrustedSnippet,
+                    isTrustedSnippet,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,

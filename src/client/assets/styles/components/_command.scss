@@ -53,6 +53,11 @@ command {
                 margin-left: 0;
             }
         }
+
+        .command__dropdown {
+            left: auto;
+            right: 0px;
+        }
     }
 }
 

@@ -127,7 +127,7 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     openInPlayground(isDownload: boolean) {
-        this._store.dispatch(new Snippet.OpenInPlaygroundAction({ type: this.viewType, id: this.viewId, isDownload: isDownload }));
+        this._store.dispatch(new Snippet.OpenInPlaygroundAction({ type: this.viewType, id: this.viewId, isDownload }));
     }
 
     openInGithub() {

@@ -220,7 +220,7 @@ export class SnippetEffects {
                     extension = '.pptx';
                     break;
                 default:
-                    return;
+                    throw new Error(`Unsupported host: ${environment.current.host}`);
             }
             AI.trackEvent('Open in playground initiated', { id: correlationId });
             let filename = `script-lab-playground-${environment.current.host}${extension}`;
@@ -438,7 +438,7 @@ export class SnippetEffects {
         let actions: Action[] = [];
         if (importResult === Strings().snippetImportExistingButtonLabel) {
             for (let item of storage.snippets.values()) {
-                if (item.gist.trim() === snippet.gist.trim()) {
+                if (item.gist && item.gist.trim() === snippet.gist.trim()) {
                     actions.push(new Snippet.ImportSuccessAction(item));
                     break;
                 }

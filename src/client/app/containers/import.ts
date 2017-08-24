@@ -3,12 +3,13 @@ import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment, AI, storage } from '../helpers';
+import { environment, AI, storage, isInsideOfficeApp } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
-const viewUrlSettings = 'VIEW_URL_SETTINGS';
+const viewUrlSettingsPropertyName = 'SnippetToImport';
+const correlationIdPropertyName = 'CorrelationId';
 
 //strings are specified inline (not imported) for performance reasons
 
@@ -135,7 +136,7 @@ export class Import {
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
             .subscribe(() => {
-                if (!this.hasViewSettings()) {
+                if (!this.hasViewUrlSetting()) {
                     this._store.dispatch(new UI.ToggleImportAction(true));
                 }
             });
@@ -144,7 +145,8 @@ export class Import {
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
         this.importViewSnippet()
             .then(() => {
-                Office.context.document.settings.remove('VIEW_URL_SETTINGS');
+                Office.context.document.settings.remove(correlationIdPropertyName);
+                Office.context.document.settings.remove(viewUrlSettingsPropertyName);
                 Office.context.document.settings.saveAsync();
             });
     }
@@ -155,7 +157,7 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets) && !this.hasViewSettings()) {
+            if (isEmpty(snippets) && !this.hasViewUrlSetting()) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
@@ -231,13 +233,13 @@ export class Import {
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
-    hasViewSettings() {
-        return Office.context.document && Office.context.document.settings.get(viewUrlSettings);
+    hasViewUrlSetting() {
+        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(viewUrlSettingsPropertyName);
     }
 
     async importViewSnippet() {
         // Do not import if there are no view settings
-        if (!this.hasViewSettings()) {
+        if (!this.hasViewUrlSetting()) {
             return;
         }
 
@@ -253,7 +255,8 @@ export class Import {
             return;
         }
 
-        let viewData = Office.context.document.settings.get(viewUrlSettings);
+        let correlationId = Office.context.document.settings.get(correlationIdPropertyName);
+        let viewData = Office.context.document.settings.get(viewUrlSettingsPropertyName);
         if (viewData.type === 'samples') {
             let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
             let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
@@ -271,5 +274,7 @@ export class Import {
             // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
             this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: viewData.id, isViewMode: true }));
         }
+
+        AI.trackEvent('Open in playground completed', { id: correlationId });
     }
 }
