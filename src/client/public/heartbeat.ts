@@ -1,5 +1,5 @@
 import { toNumber } from 'lodash';
-import { environment, storage, Messenger, MessageType, trustedSnippet } from '../app/helpers';
+import { environment, storage, Messenger, MessageType, trustedSnippetManager } from '../app/helpers';
 import { Strings } from '../app/strings';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
@@ -101,7 +101,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         // Upon user trusting snippet, update in local storage
         if (isTrustedSnippet) {
-            trustedSnippet.updateTrustedSnippets(snippet.id);
+            trustedSnippetManager.updateTrustedSnippets(snippet.id);
         }
 
         if (snippet.modified_at !== trackingSnippet.lastModified) {
@@ -111,7 +111,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             const sendImmediately = trackingSnippet.lastModified < 1;
             if (sendImmediately) {
                 trackingSnippet.lastModified = snippet.modified_at;
-                isTrustedSnippet = trustedSnippet.isSnippetTrusted(snippet.id, snippet.gist);
+                isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, { snippet: snippet, isTrustedSnippet: isTrustedSnippet });
             } else {
                 messenger.send<{name: string}>(window.parent, MessageType.INFORM_STALE, {

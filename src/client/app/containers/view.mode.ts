@@ -59,7 +59,7 @@ export class ViewMode implements OnInit, OnDestroy {
 
     get openInPlaygroundSupported() {
         let host = environment.current.host.toUpperCase();
-        return Utilities.platform !== PlatformType.IOS && host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT;
+        return Utilities.platform !== PlatformType.IOS && (host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT);
     }
 
     get openInHostString() {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippet } from '../helpers';
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
@@ -137,7 +137,7 @@ export class SnippetEffects {
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
-                const isTrustedSnippet = trustedSnippet.isSnippetTrusted(snippet.id, snippet.gist);
+                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
 
                 AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
                 post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
@@ -232,7 +232,8 @@ export class SnippetEffects {
             }
         })
         .catch(exception => {
-            return Observable.of(new UI.ReportErrorAction(Strings().snippetOpenInPlaygroundError, exception));
+            AI.trackException(Strings().snippetOpenInPlaygroundError, exception);
+            return Observable.from([]);
         });
 
     private _gistIdExists(id: string) {
@@ -404,7 +405,7 @@ export class SnippetEffects {
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
 
         if (snippet.gist && this._github.profile && this._github.profile.login === snippet.gistOwnerId) {
-            trustedSnippet.updateTrustedSnippets(snippet.id);
+            trustedSnippetManager.updateTrustedSnippets(snippet.id);
         }
 
         let properties = {};

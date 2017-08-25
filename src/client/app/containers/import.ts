@@ -8,8 +8,8 @@ import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
-const viewUrlSettingsPropertyName = 'SnippetToImport';
-const correlationIdPropertyName = 'CorrelationId';
+const VIEW_URL_SETTING_PROPERTY_NAME = 'SnippetToImport';
+const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -142,10 +142,11 @@ export class Import {
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
         this.importViewSnippet()
-            .then(() => {
-                Office.context.document.settings.remove(correlationIdPropertyName);
-                Office.context.document.settings.remove(viewUrlSettingsPropertyName);
-                Office.context.document.settings.saveAsync();
+            .then(deleteSettings => {
+                if (deleteSettings) {
+                    Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
+                    Office.context.document.settings.saveAsync();
+                }
             });
     }
 
@@ -232,13 +233,13 @@ export class Import {
     }
 
     hasViewUrlSetting() {
-        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(viewUrlSettingsPropertyName);
+        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(VIEW_URL_SETTING_PROPERTY_NAME);
     }
 
-    async importViewSnippet() {
+    async importViewSnippet(): Promise<boolean> {
         // Do not import if there are no view settings
         if (!this.hasViewUrlSetting()) {
-            return;
+            return Promise.resolve(false);
         }
 
         let importResult = await this._effects.alert(
@@ -250,11 +251,11 @@ export class Import {
         if (importResult === this.strings.cancelButtonLabel) {
             this.switch();
             this._store.dispatch(new UI.ToggleImportAction(true));
-            return;
+            return Promise.resolve(true);
         }
 
-        let correlationId = Office.context.document.settings.get(correlationIdPropertyName);
-        let viewData = Office.context.document.settings.get(viewUrlSettingsPropertyName);
+        let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);
+        let viewData = Office.context.document.settings.get(VIEW_URL_SETTING_PROPERTY_NAME);
         if (viewData.type === 'samples') {
             let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
             let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
@@ -274,5 +275,6 @@ export class Import {
         }
 
         AI.trackEvent('Open in playground completed', { id: correlationId });
+        return Promise.resolve(true);
     }
 }

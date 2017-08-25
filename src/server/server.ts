@@ -32,6 +32,7 @@ const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
+let scriptLabVersionNumber;
 const SCRIPT_LAB_STORE_URL = 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml';
 const SCRIPT_LAB_STORE_ID = 'wa104380862';
 
@@ -68,8 +69,7 @@ setInterval(() => {
             delete generatedDirectories[id];
             fs.unlink(directoryInfo.name, (err) => {
                 if (err) {
-                    ai.trackEvent('File deletion failed', { name: directoryInfo.name });
-                    return;
+                    ai.trackException('File deletion failed', { name: directoryInfo.name });
                 }
             });
         }
@@ -85,26 +85,32 @@ setInterval(() => {
 
     fs.readdir(path.resolve(__dirname, 'working'), (err, files) => {
         if (err) {
-            ai.trackEvent('Error reading directory');
+            ai.trackException('Error reading directory', err);
             return;
         }
+        ai.trackEvent('Number of generated files left to be deleted', { numFiles: `${files.length}` });
 
         files.forEach(file => {
             let relativePath = `working/${file}`;
             let absolutePath = path.resolve(__dirname, relativePath);
-            fs.stat(absolutePath, (err, stat) => {
-                let now = (new Date()).getTime();
-
-                // Delete all directories older than three hours and all files that are not in map
-                if (stat.isDirectory() && (now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
-                    rimraf(absolutePath, () => {});
-                } else if (filenames.indexOf(relativePath) < 0 && (now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
-                    fs.unlink(absolutePath);
-                }
-            });
+            if (filenames.indexOf(relativePath) < 0) {
+                fs.stat(absolutePath, (err, stat) => {
+                    let now = (new Date()).getTime();
+                    // Delete all directories older than three hours and all files older than three hours that are not in map
+                    if ((now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
+                        if (stat.isDirectory()) {
+                            rimraf(absolutePath, () => {});
+                        } else {
+                            fs.unlink(absolutePath, (err) => {
+                                ai.trackException('File deletion failed', { name: absolutePath });
+                            });
+                        }
+                    }
+                });
+            }
         });
     });
-}, THREE_HOUR_MS);
+}, 12540000); /* 209 minutes in ms; chosen to avoid clash with above interval*/
 
 /**
  * Server CERT and PORT configuration
@@ -301,7 +307,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                     (new Promise<string>((resolve, reject) => {
                         fs.readFile(xmlFileName, (err, data) => {
                             if (err) {
-                                return reject(err);
+                                throw(err);
                             } else {
                                 let xmlStringData = data.toString();
                                 xmlStringData = xmlStringData
@@ -491,7 +497,17 @@ function getVersionNumber(): Promise<string> {
         });
     })
     .then(xml => (parseXmlString(xml)))
-    .then(xmlJson => (xmlJson['o:results']['o:wainfo'][0]['$']['o:ver']));
+    .then(xmlJson => {
+        scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
+        return scriptLabVersionNumber;
+    })
+    .catch(e => {
+        if (!isNil(scriptLabVersionNumber)) {
+            /* return previously retrieved version if web request fails */
+            return scriptLabVersionNumber;
+        }
+        throw(e);
+    });
 }
 
 function generateSnippetHtmlData(

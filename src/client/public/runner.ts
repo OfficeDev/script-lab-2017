@@ -130,9 +130,17 @@ interface InitializationParams {
             .insertAfter($snippetContent);
 
         if (!isTrustedSnippet) {
+            notifySnippetNotTrustedDisplayed = true;
             showReloadNotification($('#notify-snippet-not-trusted'),
-                () => clearAndRefresh(currentSnippet.id, '', true /*isTrustedSnippet*/),
-                () => window.location.href = returnUrl);
+                () => {
+                    notifySnippetNotTrustedDisplayed = false;
+                    clearAndRefresh(currentSnippet.id, '', true /*isTrustedSnippet*/);
+                },
+                () => {
+                    notifySnippetNotTrustedDisplayed = false;
+                    window.location.href = returnUrl;
+                }
+            );
             return;
         }
 
@@ -321,29 +329,22 @@ interface InitializationParams {
     }
 
     function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void) {
-        /* Do not display other messages while the trust message is displayed */
+        /* Do not display other messages while the trust snippet message is displayed */
         if (notifySnippetNotTrustedDisplayed && $notificationContainer.attr('id') !== 'notify-snippet-not-trusted') {
             return;
         }
 
         $notificationContainer.find('.action-fast-reload').off('click').click(() => {
-            if ($notificationContainer.attr('id') === 'notify-snippet-not-trusted') {
-                notifySnippetNotTrustedDisplayed = false;
-            }
             reloadAction();
         });
 
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
             $('.runner-overlay').hide();
             $notificationContainer.hide();
-            if ($notificationContainer.attr('id') === 'notify-snippet-not-trusted') {
-                notifySnippetNotTrustedDisplayed = false;
-            }
             dismissAction();
         });
 
-        if ($notificationContainer.attr('id') === 'notify-snippet-not-trusted') {
-            notifySnippetNotTrustedDisplayed = true;
+        if (notifySnippetNotTrustedDisplayed) {
             /* Hide loading dots */
             $('.cs-loader').css('visibility', 'hidden');
         }
