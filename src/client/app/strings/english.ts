@@ -54,6 +54,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetLoadAllError: 'Failed to load the local snippets',
         snippetRunError: 'Failed to run the snippet',
         snippetLoadDefaultsError: 'Failed to load the default samples',
+        snippetOpenInPlaygroundError: /** NEEDS STRING REVIEW */ 'Failed to open in playground',
 
         snippetNoOfficeTitle: /** NEEDS STRING REVIEW */ 'Cannot run this snippet',
         snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Acquire Script Lab for free today at https://aka.ms/getscriptlab.',
@@ -156,6 +157,13 @@ export function getEnglishStrings(): ClientStrings {
         newSnippetDescription: 'Create a new snippet',
         importDescription: 'Create a snippet from YAML or a GitHub gist',
 
+        // view.mode.ts strings
+
+        openInPlayground: 'Open in Script Lab',
+        openInHost: 'Open in {0}',
+        openInGithub: 'Open in GitHub',
+        downloadAsHostFile: 'Download {0} file',
+
         // Outlook-only strings
 
         noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" pane in Outlook to run your snippet.`,
@@ -175,6 +183,7 @@ export function getEnglishStrings(): ClientStrings {
         noSamplesMessage: `There aren't any samples available for this host yet.`,
         importWarning: `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`,
         importWarningAction: `Don't show this warning again.`,
+        importConfirm: 'Are you sure you want to import this snippet?', /** NEEDS STRING REVIEW **/
 
         localStorageWarning: `Snippets you create get erased if you clear your browser cache. ` +
         `To save snippets permanently, export them as gists from the Share menu.`,

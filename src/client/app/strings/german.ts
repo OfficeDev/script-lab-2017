@@ -58,6 +58,7 @@ export function getGermanStrings(): ClientStrings {
         snippetLoadAllError: 'Die lokal gespeicherten Schnipsel konnten nicht geladen werden.',
         snippetRunError: 'Die Ausführung des Schnipsels ist fehlgeschlagen.',
         snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: 'Dieses Schnipsel kann nicht ausgeführt werden.',
         snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab, welches Sie unter https://aka.ms/getscriptlab abrufen können.',
@@ -160,6 +161,13 @@ export function getGermanStrings(): ClientStrings {
         newSnippetDescription: 'Neues Schnipsel erstellen',
         importDescription: 'Schnipsel aus einem GitHub-Gist abrufen oder anhand von YAML-Code erstellen.',
 
+        // view.mode.ts strings
+
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
         // Outlook-only strings
 
         noRunInOutlook: 'Das Code-Schnipsel kann in Outlook nicht aus dem Code-Fenster heraus ausgeführt werden. Bitte öffnen Sie den Aufgabenbereich zur Code-Ausführung und rufen Sie das Schnipsel von dort aus auf.',
@@ -179,6 +187,7 @@ export function getGermanStrings(): ClientStrings {
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
         importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
         importWarningAction: `Diese Meldung nicht mehr anzeigen.`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser Cache löschen. ` +
         `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,

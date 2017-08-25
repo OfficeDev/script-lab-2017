@@ -77,6 +77,10 @@ export function post(path: string, params: any) {
     form.submit();
 }
 
+export function getGistUrl(id: string): string {
+    return `https://gist.github.com/${id}`;
+}
+
 export function stringOrEmpty(text: string): string {
     if (text === null || text === undefined) {
         return '';

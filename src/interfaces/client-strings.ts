@@ -47,6 +47,7 @@ interface ClientStrings {
     snippetLoadAllError: string;
     snippetRunError: string;
     snippetLoadDefaultsError: string;
+    snippetOpenInPlaygroundError: string;
 
     snippetNoOfficeTitle: string;
     snippetNoOfficeMessage: string;
@@ -137,6 +138,13 @@ interface ClientStrings {
         'libraries': string;
     },
 
+    // view.mode.ts strings
+
+    openInPlayground: string;
+    openInHost: string;
+    openInGithub: string;
+    downloadAsHostFile: string;
+
     // Gallery.view strings
 
     snippetsTab: string;
@@ -167,6 +175,7 @@ interface ClientStrings {
     noSamplesMessage: string;
     importWarning: string;
     importWarningAction: string;
+    importConfirm: string;
 
     localStorageWarning: string;
     localStorageWarningAction: string;

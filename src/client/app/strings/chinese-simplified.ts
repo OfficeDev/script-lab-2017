@@ -55,6 +55,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         snippetLoadAllError: '导入本地代码段失败',
         snippetRunError: '运行代码段失败',
         snippetLoadDefaultsError: '加载默认样本失败',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: '代码段不能正常运行',
         snippetNoOfficeMessage: '只能在Office插件中运行office代码段。获取脚本。 现在免费获取 Script Lab 请登入网站 https://aka.ms/getscriptlab。',
@@ -157,6 +158,13 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         newSnippetDescription: '创建新代码段',
         importDescription: '创建YAML或GitHub gist的要点摘要代码段',
 
+        // view.mode.ts strings
+
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
         // Outlook-only strings
 
         noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
@@ -176,6 +184,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         noSamplesMessage: `这个主机还没有样品可供使用。`,
         importWarning: `导入的代码段可能包含恶意代码。除非您信任这些资源，否则不要运行代码段。`,
         importWarningAction: `不要再显示这个警告了。`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `如果您清除浏览器缓存，则创建的代码片段将被删除。 ` +
         `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,

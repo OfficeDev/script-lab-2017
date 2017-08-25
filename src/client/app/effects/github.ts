@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { PlaygroundError, AI, getShareableYaml, environment } from '../helpers';
+import { PlaygroundError, AI, getShareableYaml, environment, getGistUrl } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
@@ -128,7 +128,7 @@ export class GitHubEffects {
                 throw exception;
             }))
             .mergeMap(async ({ type, gist, snippetId }) => {
-                let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+                let gistUrl = getGistUrl(gist.id);
                 let messageBody =
                     type === GitHub.GitHubActionTypes.UPDATE_GIST ?
                         `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :

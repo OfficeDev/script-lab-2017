@@ -54,6 +54,7 @@ export function getSpanishStrings(): ClientStrings {
         snippetLoadAllError: 'Error al cargar fragmentos de código locales',
         snippetRunError: 'Error al ejecutar el fragmento de código',
         snippetLoadDefaultsError: 'Error al cargar ejemplos',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: 'No se puede ejecutar el fragmento de código',
         snippetNoOfficeMessage: 'Sólo se pueden ejecutar fragmentos de código dentro de un Add-in para Office.  Adquiere gratuitamente Script Lab hoy en https://aka.ms/getscriptlab.',
@@ -155,6 +156,13 @@ export function getSpanishStrings(): ClientStrings {
         newSnippetDescription: 'Crear un fragmento de código',
         importDescription: 'Crear un fragmento de código importando YAML o un gist de GitHub',
 
+        // view.mode.ts strings
+
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
         // Outlook-only strings
 
         noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
@@ -174,6 +182,7 @@ export function getSpanishStrings(): ClientStrings {
         noSamplesMessage: `No hay ejemplos aún para esta Aplicación.`,
         importWarning: `Precaución: los ejemplos importados pueden contener código maligno. Ejecuta código sólo de fuentes confiables.`,
         importWarningAction: `No mostrar esta advertencia otra vez.`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `Los fragmentos de código creados localmente serán borrados si se limpia el cache del navegador. ` +
         `Para guardar fragmentos permanentemente, expórtalos como gists on el menú de Compartir.`,

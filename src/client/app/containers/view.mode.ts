@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Utilities, PlatformType, HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { UI, Snippet } from '../actions';
-import { environment } from '../helpers';
+import { environment, getGistUrl } from '../helpers';
 import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
@@ -14,12 +15,17 @@ import { Strings } from '../strings';
     template: `
         <main ngClass="{{theme$|async}} {{host}}">
             <header class="command__bar">
-                <command class="view-mode" [hidden]="isEmpty" [title]="snippet?.name"></command>
+                <command class="view-disable" [title]="snippet?.name"></command>
+                <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
+                    <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
+                    <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
+                </command>
             </header>
             <editor [isViewMode]="true"></editor>
             <footer class="command__bar command__bar--condensed">
-                <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
                 <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
+                <command class="view-disable" [title]="urlString"></command>
+                <command *ngIf="isGist" [title]="strings.openInGithub" (click)="openInGithub()"></command>
             </footer>
         </main>
     `
@@ -30,6 +36,8 @@ export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
     paramsSub: Subscription;
+    viewType: string;
+    viewId: string;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -45,6 +53,27 @@ export class ViewMode implements OnInit, OnDestroy {
         return environment.current.host.toLowerCase();
     }
 
+    get isGist() {
+        return this.snippet && this.snippet.gist;
+    }
+
+    get openInPlaygroundSupported() {
+        let host = environment.current.host.toUpperCase();
+        return Utilities.platform !== PlatformType.IOS && (host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT);
+    }
+
+    get openInHostString() {
+        return this.strings.openInHost.replace('{0}', environment.current.host);
+    }
+
+    get downloadAsHostFileString() {
+        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host);
+    }
+
+    get urlString() {
+        return `URL: ${window.location.href}`;
+    }
+
     ngOnInit() {
         this.paramsSub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
@@ -55,10 +84,13 @@ export class ViewMode implements OnInit, OnDestroy {
                     environment.current = environment.current;
                 }
 
+                this.viewType = type;
+                this.viewId = id;
+
                 switch (type) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
                             .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
                         );
                     case 'gist':
@@ -92,5 +124,13 @@ export class ViewMode implements OnInit, OnDestroy {
 
     feedback() {
         window.open(environment.current.config.feedbackUrl);
+    }
+
+    openInPlayground(isDownload: boolean) {
+        this._store.dispatch(new Snippet.OpenInPlaygroundAction({ type: this.viewType, id: this.viewId, isDownload }));
+    }
+
+    openInGithub() {
+        window.open(getGistUrl(this.snippet.gist));
     }
 }
