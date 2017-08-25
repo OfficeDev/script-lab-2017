@@ -144,7 +144,7 @@ export class Import {
         this.importViewSnippet()
             .then(deleteSettings => {
                 if (deleteSettings) {
-                    // Keep correlation id
+                    // Keep correlation id in document settings
                     Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
                     Office.context.document.settings.saveAsync();
                 }
