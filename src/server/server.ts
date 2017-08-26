@@ -1,6 +1,9 @@
 import * as fs from 'fs';
+import * as unzip from 'unzip';
+import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
 import * as path from 'path';
+import * as rimraf from 'rimraf';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
@@ -11,7 +14,6 @@ import { isString, forIn, isNil } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
 import { Strings, getExplicitlySetDisplayLanguageOrNull } from './strings';
-import { ServerStrings } from './strings/server-strings';
 import { loadTemplate } from './core/template.generator';
 import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
@@ -30,6 +32,12 @@ const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
+let scriptLabVersionNumber;
+const SCRIPT_LAB_STORE_URL = 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml';
+const SCRIPT_LAB_STORE_ID = 'wa104380862';
+
+const ONE_HOUR_MS = 3600000;
+const THREE_HOUR_MS = 10800000;
 
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
@@ -48,15 +56,61 @@ function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
 }
 
-let assetPaths;
-function getAssetPaths(): { [key: string]: string } {
-    if (!assetPaths) {
-        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
-        assetPaths = JSON.parse(data.toString());
+
+let generatedDirectories = {};
+/* Cleans up generated template directories */
+setInterval(() => {
+    let ids = Object.keys(generatedDirectories);
+    for (let id of ids) {
+        let directoryInfo = generatedDirectories[id];
+        let now = (new Date()).getTime();
+        // If generated file is more than an hour old and isn't being read, delete it from both server and map to clean up clutter
+        if (directoryInfo && !directoryInfo.isBeingRead && (now - directoryInfo.timestamp) > ONE_HOUR_MS) {
+            delete generatedDirectories[id];
+            fs.unlink(directoryInfo.name, (err) => {
+                if (err) {
+                    ai.trackException('File deletion failed', { name: directoryInfo.name });
+                }
+            });
+        }
+    }
+}, ONE_HOUR_MS);
+
+/* Cleans up lurker template directories that may not have been deleted by above function (perhaps due to server restart) */
+setInterval(() => {
+    let filenames: string[] = [];
+    for (let id of Object.keys(generatedDirectories)) {
+        filenames.push(generatedDirectories[id].relativeFilePath);
     }
 
-    return assetPaths;
-}
+    fs.readdir(path.resolve(__dirname, 'working'), (err, files) => {
+        if (err) {
+            ai.trackException('Error reading directory', err);
+            return;
+        }
+        ai.trackEvent('Number of generated files left to be deleted', { numFiles: `${files.length}` });
+
+        files.forEach(file => {
+            let relativePath = `working/${file}`;
+            let absolutePath = path.resolve(__dirname, relativePath);
+            if (filenames.indexOf(relativePath) < 0) {
+                fs.stat(absolutePath, (err, stat) => {
+                    let now = (new Date()).getTime();
+                    // Delete all directories older than three hours and all files older than three hours that are not in map
+                    if ((now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
+                        if (stat.isDirectory()) {
+                            rimraf(absolutePath, () => {});
+                        } else {
+                            fs.unlink(absolutePath, (err) => {
+                                ai.trackException('File deletion failed', { name: absolutePath });
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+}, 12540000); /* 209 minutes in ms; chosen to avoid clash with above interval*/
 
 /**
  * Server CERT and PORT configuration
@@ -115,6 +169,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 origin: currentConfig.editorUrl,
                 host: host,
                 assets: getAssetPaths(),
+                isTrustedSnippet: false, /* Default to snippet not being trusted */
                 initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
                 strings,
@@ -210,6 +265,93 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
+registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filename', async (req, res) => {
+    let relativePath, templateName;
+    switch (req.params.host.toUpperCase()) {
+        case 'EXCEL':
+            relativePath = 'xl';
+            templateName = 'excel-template';
+            break;
+        case 'WORD':
+            relativePath = 'word';
+            templateName = 'word-template';
+            break;
+        case 'POWERPOINT':
+            relativePath = 'ppt';
+            templateName = 'powerpoint-template';
+            break;
+        default:
+            throw new Error(`Unsupported host: ${req.params.host}`);
+    }
+
+    const correlationId = req.params.correlationId;
+    let directoryInfo = generatedDirectories[correlationId];
+    // Check if file already exists on server for correlation id
+    if (directoryInfo) {
+        directoryInfo.isBeingRead = true;
+        fs.createReadStream(directoryInfo.name).pipe(res);
+        res.attachment(req.params.filename);
+        res.on('finish', () => {
+            directoryInfo.isBeingRead = false;
+        });
+    } else {
+        return getVersionNumber()
+            .then(versionNumber => {
+                let timestamp = (new Date()).getTime();
+                let relativeFilePath = `working/${templateName}${timestamp}`;
+                let extractDirName = path.resolve(__dirname, relativeFilePath);
+                let zip = fs.createReadStream(path.resolve(__dirname, `${templateName}.zip`)).pipe(unzip.Extract({ path: extractDirName }));
+
+                zip.on('close', () => {
+                    let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
+                    (new Promise<string>((resolve, reject) => {
+                        fs.readFile(xmlFileName, (err, data) => {
+                            if (err) {
+                                throw(err);
+                            } else {
+                                let xmlStringData = data.toString();
+                                xmlStringData = xmlStringData
+                                    .replace('%placeholder_version%', versionNumber)
+                                    .replace('%placeholder_type%', req.params.type)
+                                    .replace('%placeholder_id%', req.params.id)
+                                    .replace('%placeholder_correlation_id%', correlationId);
+                                return resolve(xmlStringData);
+                            }
+                        });
+                    }))
+                    .then(xmlStringData => {
+                        fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                            if (err) {
+                                throw err;
+                            }
+
+                            let zipFileName = `${extractDirName}.zip`;
+                            let writeZipFile = fs.createWriteStream(zipFileName);
+                            writeZipFile.on('finish', () => {
+                                rimraf(extractDirName, () => {});
+                                res.attachment(req.params.filename);
+                                fs.createReadStream(zipFileName).pipe(res);
+                                res.on('finish', () => {
+                                    generatedDirectories[correlationId] = {
+                                        name: zipFileName,
+                                        relativeFilePath: `${relativeFilePath}.zip`,
+                                        isBeingRead: false,
+                                        timestamp
+                                    };
+                                });
+                            });
+
+                            const archiver = Archiver('zip');
+                            archiver.pipe(writeZipFile);
+                            archiver.directory(extractDirName, '');
+                            archiver.finalize();
+                        });
+                    });
+                });
+            });
+    }
+});
+
 registerRoute('post', '/export', (req, res) => {
     const data: IExportState = JSON.parse(req.body.data);
     const { snippet, additionalFields, sanitizedFilenameBase } = data;
@@ -280,6 +422,7 @@ registerRoute('get', '/version', (req, res) => {
 function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
+    let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
     const strings = Strings(req);
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
@@ -308,9 +451,10 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
-                    origin: snippet.origin,
+                    origin: currentConfig.editorUrl,
                     host: snippet.host,
                     assets: getAssetPaths(),
+                    isTrustedSnippet,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
@@ -322,6 +466,48 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
             res.setHeader('Cache-Control', 'no-cache, no-store');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
+}
+
+function parseXmlString(xml): Promise<JSON> {
+    return new Promise((resolve, reject) => {
+        xml2js.parseString(xml, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+function getVersionNumber(): Promise<string> {
+     return new Promise((resolve, reject) => {
+        return Request.post({
+            url: SCRIPT_LAB_STORE_URL,
+            body: SCRIPT_LAB_STORE_ID,
+        }, (error, httpResponse, body) => {
+            if (error) {
+                ai.trackException('[Snippet] Get version number failed', error);
+                return reject(error);
+            }
+            else {
+                ai.trackEvent('[Snippet] Get version number succeeded', { body });
+                return resolve(body);
+            }
+        });
+    })
+    .then(xml => (parseXmlString(xml)))
+    .then(xmlJson => {
+        scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
+        return scriptLabVersionNumber;
+    })
+    .catch(e => {
+        if (!isNil(scriptLabVersionNumber)) {
+            /* return previously retrieved version if web request fails */
+            return scriptLabVersionNumber;
+        }
+        throw(e);
+    });
 }
 
 function generateSnippetHtmlData(
@@ -351,7 +537,11 @@ function generateSnippetHtmlData(
                     ...compiledSnippetOrError,
                     isOfficeSnippet: isOfficeHost(snippet.host),
                     isExternalExport: isExternalExport,
-                    strings
+                    strings,
+                    runtimeHelpersUrl: getRuntimeHelpersUrl(),
+                    editorUrl: currentConfig.editorUrl,
+                    runtimeHelperStringifiedStrings: JSON.stringify(
+                        strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
                 };
 
                 const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
@@ -481,4 +671,37 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
         details,
         expandDetailsByDefault
     });
+}
+
+
+let _assetPaths;
+function getAssetPaths(): { [key: string]: any } {
+    if (!_assetPaths) {
+        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
+        _assetPaths = JSON.parse(data.toString());
+    }
+
+    return _assetPaths;
+}
+
+let _runtimeHelpersUrl;
+function getRuntimeHelpersUrl() {
+    if (!_runtimeHelpersUrl) {
+        let assetPaths = getAssetPaths();
+        // Some assets, like the runtime helpers, are not compiled with webpack.
+        // Instead, they are manually copied, and end up with no hash.
+        // So, to guarantee their freshness, use the runner hash (once per deployment)
+        // as a good approximation for when it's time to get a new version.
+        let runnerHashIfAny: string;
+        let runnerHashPattern = /^bundles\/runner\.(\w*)\.bundle.js/;
+        let runnerHashMatch = runnerHashPattern.exec(assetPaths.runner.js);
+        if (runnerHashMatch && runnerHashMatch.length === 2) {
+            runnerHashIfAny = runnerHashMatch[1];
+        }
+
+        _runtimeHelpersUrl = currentConfig.editorUrl + '/runtime-helpers.js' +
+            (runnerHashIfAny ? ('?hash=' + runnerHashIfAny) : '');
+    }
+
+    return _runtimeHelpersUrl;
 }

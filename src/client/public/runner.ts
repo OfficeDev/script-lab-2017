@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber, assign } from 'lodash';
+import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
@@ -11,6 +11,7 @@ interface InitializationParams {
     origin: string;
     officeJS: string;
     returnUrl: string;
+    isTrustedSnippet: boolean;
     heartbeatParams: HeartbeatParams,
     explicitlySetDisplayLanguageOrNull: string;
 }
@@ -29,6 +30,7 @@ interface InitializationParams {
     let host: string;
 
     let currentSnippet: { id: string, lastModified: number, officeJS: string };
+    let notifySnippetNotTrustedDisplayed: boolean;
 
     const defaultIsListeningTo = {
         snippetSwitching: true,
@@ -93,17 +95,18 @@ interface InitializationParams {
             // Because it's a multiline text inside of a "pre" tag, trim it:
             const snippetHtml = $snippetContent.text().trim();
 
+            let isTrustedSnippet = isNil(params.isTrustedSnippet) ? false : params.isTrustedSnippet;
             if (snippetHtml.length > 0) {
                 // Clear the text, but keep the placeholder in the DOM,
                 // so that can keep adding the snippet frame relative to its position
                 $snippetContent.text('');
 
-                replaceSnippetIframe(snippetHtml, params.officeJS);
+                replaceSnippetIframe(snippetHtml, params.officeJS, isTrustedSnippet);
             }
 
             establishHeartbeat(params.origin, params.heartbeatParams);
 
-            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/));
+            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/));
 
             initializeTooltipUpdater();
 
@@ -117,7 +120,7 @@ interface InitializationParams {
 
 
     /** Creates a snippet iframe and returns it (still hidden) */
-    function replaceSnippetIframe(html: string, officeJS: string): void {
+    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): void {
         showHeader();
 
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
@@ -125,6 +128,21 @@ interface InitializationParams {
 
         const $emptySnippetPlaceholder = $('<div class="snippet-frame"></div>')
             .insertAfter($snippetContent);
+
+        if (!isTrustedSnippet) {
+            notifySnippetNotTrustedDisplayed = true;
+            showReloadNotification($('#notify-snippet-not-trusted'),
+                () => {
+                    notifySnippetNotTrustedDisplayed = false;
+                    clearAndRefresh(currentSnippet.id, '', true /*isTrustedSnippet*/);
+                },
+                () => {
+                    notifySnippetNotTrustedDisplayed = false;
+                    window.location.href = returnUrl;
+                }
+            );
+            return;
+        }
 
         const $iframe =
             $('<iframe class="snippet-frame" style="display:none" src="about:blank"></iframe>')
@@ -170,7 +188,7 @@ interface InitializationParams {
     function handleError(error: Error) {
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
-            candidateErrorString = Strings().Runner.unexpectedError;
+            candidateErrorString = Strings().unexpectedError;
         }
 
         $('#header-text').text('');
@@ -189,7 +207,7 @@ interface InitializationParams {
         }
 
         $error.find('.action-fast-reload').off('click').click(() => {
-            clearAndRefresh(null /*id*/, null /*name*/);
+            clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/);
             $error.hide();
         });
 
@@ -263,7 +281,7 @@ interface InitializationParams {
             .subscribe(input => {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
-                        () => clearAndRefresh(currentSnippet.id, input.message.name),
+                        () => clearAndRefresh(currentSnippet.id, input.message.name, false /*isTrustedSnippet*/),
                         () => isListeningTo.currentSnippetContentChange = false);
                 }
             });
@@ -281,16 +299,16 @@ interface InitializationParams {
                     if (isListeningTo.snippetSwitching) {
                         $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                         showReloadNotification($anotherSnippetSelected,
-                            () => clearAndRefresh(input.message.id, input.message.name),
+                            () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
                             () => isListeningTo.snippetSwitching = false);
                     }
                 }
             });
 
-        heartbeat.messenger.listen<ISnippet>()
+        heartbeat.messenger.listen<{ snippet: ISnippet, isTrustedSnippet: boolean }>()
             .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
             .subscribe(input => {
-                const snippet = input.message;
+                const snippet = input.message.snippet;
                 const data = JSON.stringify({
                     snippet: snippet,
                     returnUrl: returnUrl
@@ -298,18 +316,27 @@ interface InitializationParams {
 
                 // Use jQuery post rather than the Utilities post here
                 // (don't want to navigate, just to do an AJAX call)
-                $.post(window.location.origin + '/compile/snippet', { data: data })
-                    .then(html => processSnippetReload(html, snippet))
+                $.post(window.location.origin + '/compile/snippet', { data: data, isTrustedSnippet: input.message.isTrustedSnippet })
+                    .then(html => processSnippetReload(html, snippet, input.message.isTrustedSnippet))
                     .fail(handleError)
                     .always(() => {
-                        $('.runner-overlay').hide();
-                        $('.runner-notification').not('#notify-error').hide();
+                        if (!notifySnippetNotTrustedDisplayed) {
+                            $('.runner-overlay').hide();
+                            $('.runner-notification').not('#notify-error').hide();
+                        }
                     });
             });
     }
 
     function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void) {
-        $notificationContainer.find('.action-fast-reload').off('click').click(reloadAction);
+        /* Do not display other messages while the trust snippet message is displayed */
+        if (notifySnippetNotTrustedDisplayed && $notificationContainer.attr('id') !== 'notify-snippet-not-trusted') {
+            return;
+        }
+
+        $notificationContainer.find('.action-fast-reload').off('click').click(() => {
+            reloadAction();
+        });
 
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
             $('.runner-overlay').hide();
@@ -317,13 +344,18 @@ interface InitializationParams {
             dismissAction();
         });
 
+        if (notifySnippetNotTrustedDisplayed) {
+            /* Hide loading dots */
+            $('.cs-loader').css('visibility', 'hidden');
+        }
+
         // Show the current notification (and hide any others)
         $('.runner-notification').hide();
         $('.runner-overlay').show();
         $notificationContainer.show();
     }
 
-    function processSnippetReload(html: string, snippet: ISnippet) {
+    function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
         const desiredOfficeJS = processLibraries(snippet).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
@@ -346,7 +378,7 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        replaceSnippetIframe(html, processLibraries(snippet).officeJS);
+        replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
@@ -358,7 +390,7 @@ interface InitializationParams {
      * @param id: id of snippet, or null to fetch the last-opened
      * @param name: name of the snippet, or null to use a generic "loading snippet" text
      */
-    function clearAndRefresh(id: string, name: string) {
+    function clearAndRefresh(id: string, name: string, isTrustedSnippet: boolean) {
         $('.runner-overlay').hide();
         $('.runner-notification').hide();
 
@@ -371,7 +403,7 @@ interface InitializationParams {
             assign(isListeningTo, defaultIsListeningTo);
         }
 
-        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, id);
+        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
     }
 
     function generateRefreshUrl(desiredOfficeJS: string) {

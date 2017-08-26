@@ -1,4 +1,4 @@
-export interface ClientStrings {
+interface ClientStrings {
     playgroundName: string;
     playgroundTagline: string;
 
@@ -47,6 +47,7 @@ export interface ClientStrings {
     snippetLoadAllError: string;
     snippetRunError: string;
     snippetLoadDefaultsError: string;
+    snippetOpenInPlaygroundError: string;
 
     snippetNoOfficeTitle: string;
     snippetNoOfficeMessage: string;
@@ -137,6 +138,13 @@ export interface ClientStrings {
         'libraries': string;
     },
 
+    // view.mode.ts strings
+
+    openInPlayground: string;
+    openInHost: string;
+    openInGithub: string;
+    downloadAsHostFile: string;
+
     // Gallery.view strings
 
     snippetsTab: string;
@@ -167,6 +175,7 @@ export interface ClientStrings {
     noSamplesMessage: string;
     importWarning: string;
     importWarningAction: string;
+    importConfirm: string;
 
     localStorageWarning: string;
     localStorageWarningAction: string;
@@ -175,6 +184,9 @@ export interface ClientStrings {
     importUrlLabel: string;
     importUrlPlaceholder: string;
     importYamlLabel: string;
+
+
+    unexpectedError: string;
 
     Refresh: {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -190,7 +202,6 @@ export interface ClientStrings {
 
     Runner: {
         snippetNoLongerExists: string;
-        unexpectedError: string;
 
         reloadingOfficeJs: string;
 
@@ -238,4 +249,15 @@ export interface ClientStrings {
         download: string;
         errorInitializingScriptLab: string;
     };
+
+    Auth: {
+        authenticatingOnBehalfOfSnippet: string;
+        loggingOutOnBehalfOfSnippet: string;
+        authenticationRedirect: string;
+        authenticationError: string;
+        unrecognizedService: string;
+        invalidParametersPassedInForAuth: string;
+        invalidAuthResponseReceived: string;
+        yourAccessTokenIs: string;
+    }
 }

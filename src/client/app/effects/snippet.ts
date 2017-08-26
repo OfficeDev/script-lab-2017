@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
+import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
@@ -29,7 +29,7 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload, mode: action.mode, isViewMode: action.isViewMode }))
+        .map(action => ({ data: action.payload.data, mode: action.payload.mode, isViewMode: action.payload.isViewMode }))
         .mergeMap(({ data, mode, isViewMode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
@@ -137,9 +137,10 @@ export class SnippetEffects {
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
+                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
 
                 AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
-                post(environment.current.config.runnerUrl + '/compile/page', { data });
+                post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
             }
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetRunError, exception)));
@@ -197,8 +198,46 @@ export class SnippetEffects {
         .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
+    @Effect({ dispatch: false })
+    openInPlayground$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.OPEN_IN_PLAYGROUND)
+        .map(action => action.payload)
+        .map(payload => {
+            let { type, id, isDownload } = payload;
+            let handler, extension;
+            let correlationId = cuid();
+            switch (environment.current.host.toUpperCase()) {
+                case HostType.EXCEL:
+                    handler = 'ms-excel:ofe|u|';
+                    extension = '.xlsx';
+                    break;
+                case HostType.WORD:
+                    handler = 'ms-word:ofe|u|';
+                    extension = '.docx';
+                    break;
+                case HostType.POWERPOINT:
+                    handler = 'ms-powerpoint:ofe|u|';
+                    extension = '.pptx';
+                    break;
+                default:
+                    throw new Error(`Unsupported host: ${environment.current.host}`);
+            }
+            AI.trackEvent('Open in playground initiated', { id: correlationId });
+            let filename = `script-lab-playground-${environment.current.host}${extension}`;
+            let url = environment.current.config.runnerUrl + `/open-in-playground/${correlationId}/${environment.current.host}/${type}/${id}/${filename}`;
+            if (isDownload) {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = `${handler}${url}`;
+            }
+        })
+        .catch(exception => {
+            AI.trackException(Strings().snippetOpenInPlaygroundError, exception);
+            return Observable.from([]);
+        });
+
     private _gistIdExists(id: string) {
-        return storage.snippets.values().some(item => item.gist.trim() === id.trim());
+        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
     }
 
     private _nameExists(name: string) {
@@ -345,7 +384,7 @@ export class SnippetEffects {
                 rawSnippet.host, environment.current.host));
         }
 
-        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
+        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set, rawSnippet);
         // Note that need to do the unsupported-api check before anything else, and before scrubbing --
         // because api_set will get erased as part of scrubbing (it's only for pre-import and export)
 
@@ -364,6 +403,10 @@ export class SnippetEffects {
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
         snippet.gist = rawSnippet.gist;
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
+
+        if (snippet.gist && this._github.profile && this._github.profile.login === snippet.gistOwnerId) {
+            trustedSnippetManager.updateTrustedSnippets(snippet.id);
+        }
 
         let properties = {};
         if (mode === Snippet.ImportType.GIST) {
@@ -391,7 +434,7 @@ export class SnippetEffects {
         let actions: Action[] = [];
         if (importResult === Strings().snippetImportExistingButtonLabel) {
             for (let item of storage.snippets.values()) {
-                if (item.gist.trim() === snippet.gist.trim()) {
+                if (item.gist && item.gist.trim() === snippet.gist.trim()) {
                     actions.push(new Snippet.ImportSuccessAction(item));
                     break;
                 }
@@ -401,7 +444,7 @@ export class SnippetEffects {
              * If the action here involves true importing rather than re-opening,
              * and if the name is already taken by a local snippet, generate a new name.
              */
-            if (mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
+            if (!isViewMode && mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
                 snippet.name = this._generateName(snippet.name, '');
             }
             actions.push(new Snippet.ImportSuccessAction(snippet));
@@ -416,7 +459,7 @@ export class SnippetEffects {
         return Observable.from(actions);
     }
 
-    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {
+    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }, snippet: ISnippet) {
         let unsupportedApiSet: { api: string, version: number } = null;
         if (api_set == null) {
             return;
@@ -424,6 +467,13 @@ export class SnippetEffects {
 
         // On the web, there is no "Office.context.requirements". So skip it.
         if (!isInsideOfficeApp()) {
+            return;
+        }
+
+        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
+            // Snippets using production Office.js should be checked for API set support.
+            // Snippets using the beta endpoint or an NPM package don't need to.
             return;
         }
 

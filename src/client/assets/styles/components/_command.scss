@@ -32,7 +32,7 @@ command {
         }
     }
 
-    &.view-mode {
+    &.view-disable {
         pointer-events: none;
        
         .command {
@@ -40,6 +40,23 @@ command {
                 display: block;
                 margin-left: 0;
             }
+        }
+    }
+
+    &.view-playground {
+        width: 100%;
+        align-items: flex-end;
+
+        .command {
+            &__icon > span {
+                display: block;
+                margin-left: 0;
+            }
+        }
+
+        .command__dropdown {
+            left: auto;
+            right: 0px;
         }
     }
 }

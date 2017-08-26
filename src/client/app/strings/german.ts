@@ -1,5 +1,3 @@
-import { ClientStrings } from './client-strings';
-
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
@@ -60,6 +58,7 @@ export function getGermanStrings(): ClientStrings {
         snippetLoadAllError: 'Die lokal gespeicherten Schnipsel konnten nicht geladen werden.',
         snippetRunError: 'Die Ausführung des Schnipsels ist fehlgeschlagen.',
         snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: 'Dieses Schnipsel kann nicht ausgeführt werden.',
         snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab, welches Sie unter https://aka.ms/getscriptlab abrufen können.',
@@ -162,6 +161,13 @@ export function getGermanStrings(): ClientStrings {
         newSnippetDescription: 'Neues Schnipsel erstellen',
         importDescription: 'Schnipsel aus einem GitHub-Gist abrufen oder anhand von YAML-Code erstellen.',
 
+        // view.mode.ts strings
+
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
         // Outlook-only strings
 
         noRunInOutlook: 'Das Code-Schnipsel kann in Outlook nicht aus dem Code-Fenster heraus ausgeführt werden. Bitte öffnen Sie den Aufgabenbereich zur Code-Ausführung und rufen Sie das Schnipsel von dort aus auf.',
@@ -181,6 +187,7 @@ export function getGermanStrings(): ClientStrings {
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
         importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
         importWarningAction: `Diese Meldung nicht mehr anzeigen.`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser Cache löschen. ` +
         `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
@@ -190,6 +197,8 @@ export function getGermanStrings(): ClientStrings {
         importUrlLabel: `URL oder GitHub-Gist-ID zum Code-Schnipsel`,
         importUrlPlaceholder: `z.B. https://gist.github.com/Schnipsel-ID`,
         importYamlLabel: `YAML-Code des Schnipsels`,
+
+        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -206,7 +215,6 @@ export function getGermanStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: 'Das Schnipsel ist nicht mehr verfügbar. Laden Sie diese Seite neu oder kehren Sie zu der vorherigen Seite zurück.',
-            unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
             reloadingOfficeJs: 'Office.js wird neu geladen.',
 
@@ -261,6 +269,17 @@ export function getGermanStrings(): ClientStrings {
             tutorialDescription: 'Folgende Excel-Datei beinhaltet eine Anleitung, um Script Lab in',
             download: 'wenigen Schritten kennenzulernen:',
             errorInitializingScriptLab: 'Es ist ein Fehler bei der Initialisierung von Script Lab aufgetreten.'
+        },
+
+        Auth: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
+            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
+            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
+            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
+            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
         }
     };
 }

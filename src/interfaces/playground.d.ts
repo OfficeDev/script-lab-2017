@@ -17,7 +17,6 @@ interface ITemplate {
         [index: string]: number
     },
     platform: string;
-    origin: string;
     created_at: number;
     modified_at: number;
 }
@@ -152,4 +151,12 @@ interface HeartbeatParams {
      * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
     */
     lastModified: string;
+}
+
+// NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
+interface AuthRequestParamData {
+    action: 'login' | 'logout';
+    service: 'graph';
+    client_id: string;
+    is_office_host: boolean;
 }

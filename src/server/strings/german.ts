@@ -1,14 +1,15 @@
-import { ServerStrings} from './server-strings';
-
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
-//import { getEnglishSubstitutesForNotYetTranslated } from './index';
+
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ServerStrings {
+    const unexpectedError = 'Es ist ein unerwarteter Fehler aufgetreten.';
+
     return {
         error: 'Fehler',
-        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
+        unexpectedError: unexpectedError,
         invalidHost: 'Ungültiger Host',
         invalidId: 'Ungültige ID',
         receivedInvalidAuthCode: 'Ungültiger Authentifizerungscode.',
@@ -39,12 +40,21 @@ export function getGermanStrings(): ServerStrings {
         run: 'Ausführen',
         runPageTitle: 'Schnipsel ausführen',
         back: 'Zurück',
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+        cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
         switchToSnippet: `Zu dem Schnipsel wechseln, welches Sie gerade editieren.`,
         snippetCodeChanged: 'Sie haben den Code zu diesem Schnipsel verändert. Aktualisieren Sie diese Seite, um die neue Version auszuführen.',
         refresh: 'Aktualisieren',
         dismiss: 'Abbrechen',
         editingDifferentSnippet1: `Sie editieren zurzeit ein anderes Schnipsel`,
         editingDifferentSnippet2: `Aktualisieren Sie diese Seite, um das Schnipsel auszuführen`,
-        loadLatestSnippet: 'Das zuletzt verwendete Schnipsel laden.'
+        loadLatestSnippet: 'Das zuletzt verwendete Schnipsel laden.',
+
+        RuntimeHelpers: {
+            unexpectedError: unexpectedError,
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
+            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
+        }
     };
 }

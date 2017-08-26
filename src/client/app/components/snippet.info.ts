@@ -1,4 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { getGistUrl } from '../helpers';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
 let { config } = PLAYGROUND;
@@ -51,7 +52,7 @@ export class SnippetInfo {
     strings = Strings();
 
     get gistUrl() {
-        return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
+        return isNil(this.snippet.gist) ? null : getGistUrl(this.snippet.gist);
     }
 
     get viewModeGistUrl() {

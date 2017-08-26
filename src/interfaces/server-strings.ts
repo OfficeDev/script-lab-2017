@@ -1,4 +1,4 @@
-export interface ServerStrings {
+interface ServerStrings {
     error: string;
     unexpectedError: string;
     invalidHost: string;
@@ -28,6 +28,9 @@ export interface ServerStrings {
     run: string;
     runPageTitle: string;
     back: string;
+    snippetNotTrusted: string;
+    trust: string;
+    cancel: string;
     switchToSnippet: string;
     snippetCodeChanged: string;
     refresh: string;
@@ -35,4 +38,10 @@ export interface ServerStrings {
     editingDifferentSnippet1: string;
     editingDifferentSnippet2: string;
     loadLatestSnippet: string;
+
+    RuntimeHelpers: {
+        unexpectedError: string;
+        authenticationWasCancelledByTheUser: string;
+        officeVersionDoesNotSupportAuthentication: string;
+    };
 }
