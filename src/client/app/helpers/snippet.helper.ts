@@ -80,7 +80,6 @@ export function getSnippetDefaults(): ISnippet {
         host: environment.current.host,
         // api_set: export-only, always want to generate on the fly, so skip altogether
         platform: environment.current.platform,
-        origin: environment.current.config.editorUrl,
         created_at: Date.now(),
         modified_at: Date.now(),
 

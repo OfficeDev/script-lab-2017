@@ -2,11 +2,14 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI, storage } from '../helpers';
+import { UIEffects } from '../effects/ui';
+import { environment, AI, storage, isInsideOfficeApp } from '../helpers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
-//strings are specified inline (not imported) for performance reasons
+const VIEW_URL_SETTING_PROPERTY_NAME = 'SnippetToImport';
+const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -119,17 +122,33 @@ export class Import {
 
     strings = Strings();
 
-    constructor(private _store: Store<fromRoot.State>) {
+    constructor(
+        private _effects: UIEffects,
+        private _request: Request,
+        private _store: Store<fromRoot.State>
+    ) {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
         this._store.select(fromRoot.getCurrent)
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
-            .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
+            .subscribe(() => {
+                if (!this.hasViewUrlSetting()) {
+                    this._store.dispatch(new UI.ToggleImportAction(true));
+                }
+            });
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
         this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
+        this.importViewSnippet()
+            .then(deleteSettings => {
+                if (deleteSettings) {
+                    // Keep correlation id in document settings
+                    Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
+                    Office.context.document.settings.saveAsync();
+                }
+            });
     }
 
     show$ = this._store.select(fromRoot.getImportState);
@@ -138,7 +157,7 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets)) {
+            if (isEmpty(snippets) && !this.hasViewUrlSetting()) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
@@ -197,7 +216,7 @@ export class Import {
 
         data = data.trim();
 
-        this._store.dispatch(new Snippet.ImportAction(mode, data));
+        this._store.dispatch(new Snippet.ImportAction({ mode: mode, data: data, isViewMode: false }));
         this.cancel();
     }
 
@@ -206,11 +225,57 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.DEFAULT));
+        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.DEFAULT, data: null, isViewMode: false}));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
     cancel() {
         this._store.dispatch(new UI.ToggleImportAction(false));
+    }
+
+    hasViewUrlSetting() {
+        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(VIEW_URL_SETTING_PROPERTY_NAME);
+    }
+
+    async importViewSnippet(): Promise<boolean> {
+        // Do not import if there are no view settings
+        if (!this.hasViewUrlSetting()) {
+            return Promise.resolve(false);
+        }
+
+        let importResult = await this._effects.alert(
+            this.strings.importConfirm,
+            this.strings.importLabel,
+            this.strings.importButtonLabel, this.strings.cancelButtonLabel
+        );
+
+        if (importResult === this.strings.cancelButtonLabel) {
+            this.switch();
+            this._store.dispatch(new UI.ToggleImportAction(true));
+            return Promise.resolve(true);
+        }
+
+        let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);
+        let viewData = Office.context.document.settings.get(VIEW_URL_SETTING_PROPERTY_NAME);
+        if (viewData.type === 'samples') {
+            let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+            let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                .subscribe(lookupTable => {
+                    if (lookupTable && lookupTable[viewData.id]) {
+                        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[viewData.id], isViewMode: false }));
+                    }
+
+                    if (sub && !sub.closed) {
+                        sub.unsubscribe();
+                    }
+                });
+
+        } else {
+            // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
+            this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: viewData.id, isViewMode: true }));
+        }
+
+        AI.trackEvent('Open in playground completed', { id: correlationId });
+        return Promise.resolve(true);
     }
 }

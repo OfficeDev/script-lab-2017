@@ -1,11 +1,7 @@
-import { ClientStrings } from './index';
-
 // Whenever there is no localized translation, use the English version.
-// Whenever these two lines are not commented out, it means that there are
-// still strings that need to be localized.
-// Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -38,14 +34,19 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         saveButtonLabel: '保存',
         moreInfoButtonLabel: '更多信息',
         importButtonLabel: '输入',
+        snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
         viewModeError: '导入代码段失败。',
 
+        snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: '导入代码失败',
         snippetImportErrorTitle: '导入失败',
         snippetImportErrorBody: `我们不能导入代码。`,
         reloadPrompt: '再次导入任务窗口，然后尝试其他URL或者ID。',
+
+        cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
+        currentHostDoesNotSupportRequiredApiSet: getEnglishSubstitutesForNotYetTranslated().currentHostDoesNotSupportRequiredApiSet,
 
         snippetSaveError: '保存代码失败',
         snippetDupeError: '复制代码失败',
@@ -54,6 +55,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         snippetLoadAllError: '导入本地代码段失败',
         snippetRunError: '运行代码段失败',
         snippetLoadDefaultsError: '加载默认样本失败',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: '代码段不能正常运行',
         snippetNoOfficeMessage: '只能在Office插件中运行office代码段。获取脚本。 现在免费获取 Script Lab 请登入网站 https://aka.ms/getscriptlab。',
@@ -156,6 +158,17 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         newSnippetDescription: '创建新代码段',
         importDescription: '创建YAML或GitHub gist的要点摘要代码段',
 
+        // view.mode.ts strings
+
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
+        // Outlook-only strings
+
+        noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
+
         // import.ts strings
 
         newSnippetLabel: '新的代码段',
@@ -171,6 +184,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         noSamplesMessage: `这个主机还没有样品可供使用。`,
         importWarning: `导入的代码段可能包含恶意代码。除非您信任这些资源，否则不要运行代码段。`,
         importWarningAction: `不要再显示这个警告了。`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `如果您清除浏览器缓存，则创建的代码片段将被删除。 ` +
         `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,
@@ -180,6 +194,8 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         importUrlLabel: `代码段 URL or GitHub gist ID`,
         importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
         importYamlLabel: `代码段 YAML`,
+
+        unexpectedError: '出现意外错误',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -196,7 +212,6 @@ export function getChineseSimplifiedStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: '该代码段不再存在。重新加载此页，或返回到以前的代码段。',
-            unexpectedError: '出现意外错误',
 
             reloadingOfficeJs: '重新加载 Office.js',
 
@@ -251,6 +266,17 @@ export function getChineseSimplifiedStrings(): ClientStrings {
             tutorialDescription: '这个Excel文件向您展示了如何在几个简单的步骤中使用Script Lab:',
             download: '下载',
             errorInitializingScriptLab: '初始化Script Lab时出错。'
+        },
+
+        Auth: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
+            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
+            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
+            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
+            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
         }
     };
 }

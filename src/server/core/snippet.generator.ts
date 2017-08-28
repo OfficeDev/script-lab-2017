@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 import { BadRequestError } from './errors';
 import { processLibraries } from './libraries.processor';
-import { ServerStrings } from '../strings';
 
 export class SnippetGenerator {
     constructor(private _strings: ServerStrings) { }
@@ -25,7 +24,6 @@ export class SnippetGenerator {
                     description: snippet.description,
                     host: snippet.host,
                     platform: snippet.platform,
-                    origin: snippet.origin,
                     created_at: snippet.created_at,
                     modified_at: snippet.modified_at,
                     style: snippet.style.content,

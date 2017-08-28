@@ -14,6 +14,7 @@ export class SnippetActionTypes {
     static readonly IMPORT = type('[Snippet] Import');
     static readonly IMPORT_SUCCESS = type('[Snippet] Import Successful');
     static readonly RUN = type('[Snippet] Run');
+    static readonly CANCEL_RUN = type('[Snippet] Cancel Run');
     static readonly CREATE = type('[Snippet] Create');
     static readonly UPDATE_INFO = type('[Snippet] Update Info');
     static readonly DUPLICATE = type('[Snippet] Duplicate');
@@ -26,6 +27,7 @@ export class SnippetActionTypes {
     static readonly LOAD_SNIPPETS_SUCCESS = type('[Snippet] Load Snippets Success');
     static readonly LOAD_TEMPLATES = type('[Snippet] Load Templates');
     static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
+    static readonly OPEN_IN_PLAYGROUND = type('[Snippet] Open In Playground');
 };
 
 export class ImportType {
@@ -53,7 +55,7 @@ export class ViewAction implements Action {
 export class ImportAction implements Action {
     readonly type = SnippetActionTypes.IMPORT;
 
-    constructor(public mode: string, public payload?: string, public isViewMode?: boolean) { }
+    constructor(public payload: { mode: string, data: string, isViewMode: boolean }) { }
 }
 
 export class ImportSuccessAction implements Action {
@@ -72,6 +74,12 @@ export class RunAction implements Action {
     readonly type = SnippetActionTypes.RUN;
 
     constructor(public payload: ISnippet) { }
+}
+
+export class CancelRunAction implements Action {
+    readonly type = SnippetActionTypes.CANCEL_RUN;
+
+    constructor() { }
 }
 
 export class CreateAction implements Action {
@@ -140,6 +148,12 @@ export class LoadTemplatesSuccessAction implements Action {
     constructor(public payload: ITemplate[]) { }
 }
 
+export class OpenInPlaygroundAction implements Action {
+    readonly type = SnippetActionTypes.OPEN_IN_PLAYGROUND;
+
+    constructor(public payload: { type: string, id: string, isDownload: boolean }) { }
+}
+
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
@@ -149,6 +163,7 @@ export type SnippetActions
     | ImportAction
     | ImportSuccessAction
     | RunAction
+    | CancelRunAction
     | SaveAction
     | ShareAction
     | DeleteAction
@@ -159,4 +174,5 @@ export type SnippetActions
     | LoadSnippetsSuccessAction
     | LoadTemplatesAction
     | LoadTemplatesSuccessAction
-    | CreateAction;
+    | CreateAction
+    | OpenInPlaygroundAction;

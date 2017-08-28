@@ -1,16 +1,15 @@
-import { ServerStrings } from './index';
-
 // Whenever there is no localized translation, use the English version.
-// Whenever these two lines are not commented out, it means that there are
-// still strings that need to be localized.
-// Just search for "englishSubstitutesForNotYetTranslated" in this file
-// import { getEnglishStrings } from './english';
-// const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ServerStrings {
-  return {
+    const unexpectedError = '出现意外错误';
+
+    return {
         error: '错误',
-        unexpectedError: '出现意外错误',
+        unexpectedError: unexpectedError,
         invalidHost: '无效的主机',
         invalidId: '无效的ID',
         receivedInvalidAuthCode: '收到验证码无效',
@@ -41,12 +40,21 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         run: '运行',
         runPageTitle: '运行代码片段',
         back: '返回',
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+        cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
         switchToSnippet: `切换到您正在编辑的代码段。`,
         snippetCodeChanged: '你改变在这段代码段。刷新此窗格运行新版本。',
         refresh: '刷新',
         dismiss: '解散',
         editingDifferentSnippet1: `您现在正在编辑一个不同的代码段`,
         editingDifferentSnippet2: `刷新此窗格以运行它`,
-        loadLatestSnippet: '下载最新代码段'
+        loadLatestSnippet: '下载最新代码段',
+
+        RuntimeHelpers: {
+            unexpectedError: unexpectedError,
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
+            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
+        }
     };
 }

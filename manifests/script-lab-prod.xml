@@ -10,6 +10,7 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
   <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
+<<<<<<< HEAD
     <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
     <Override Locale="de-at" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
     <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
@@ -29,6 +30,9 @@
     <Override Locale="es-py" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="es-pe" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="es-pr" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
+=======
+    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+>>>>>>> c70d27f433e5d77740f7f7f0234ccc2ebdb0a122
     <Override Locale="es-es" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="es-uy" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="es-mx" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
@@ -961,9 +965,9 @@
           <Override Locale="zh-cn" Value="启动一个社区论坛，讨论有关Office JavaScript API的问题"/>
         </bt:String>
         <bt:String id="PG.Description" DefaultValue="Code, run, and share your Add-in snippets directly from Office.">
-          <Override Locale="de-de" Value="JavaScript-Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
-          <Override Locale="de-ch" Value="JavaScript-Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
-          <Override Locale="de-at" Value="JavaScript-Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <Override Locale="de-de" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <Override Locale="de-ch" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
+          <Override Locale="de-at" Value="Code-Schnipsel für Add-Ins direkt aus Office heraus erstellen, ausführen und teilen."/>
           <Override Locale="es-ar" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
           <Override Locale="es-bo" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>
           <Override Locale="es-cl" Value="Codifica, ejecuta y comparte tus fragmentos de codigo directamente desde Office."/>

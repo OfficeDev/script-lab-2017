@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults } from '../helpers';
+import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
@@ -14,6 +14,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
+import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
 @Injectable()
 export class SnippetEffects {
@@ -22,21 +23,21 @@ export class SnippetEffects {
         private _request: Request,
         private _github: GitHubService,
         private _uiEffects: UIEffects,
-        reduxStore: Store<fromRoot.State>,
+        private _store: Store<fromRoot.State>,
     ) { }
 
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload, mode: action.mode, isViewMode: action.isViewMode }))
+        .map(action => ({ data: action.payload.data, mode: action.payload.mode, isViewMode: action.payload.isViewMode }))
         .mergeMap(({ data, mode, isViewMode }) => {
             return this._importRawFromSource(data, mode)
                 .map((snippet: ISnippet) => ({ snippet, mode }))
                 .filter(({ snippet }) => !(snippet == null))
                 .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode, isViewMode))
+                .mergeMap(actions => actions) /* resolve Promise */
                 .catch((exception: Error) => {
                     if (isViewMode) {
-                        window.localStorage.clear();
                         location.hash = '/view/error';
                     } else {
                         const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
@@ -122,15 +123,25 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
-            const state: IRunnerState = {
-                snippet: snippet,
-                returnUrl: window.location.href,
-                displayLanguage: getDisplayLanguage()
-            };
-            const data = JSON.stringify(state);
+            if (Utilities.host === HostType.OUTLOOK) {
+                this._store.dispatch(new UI.ShowAlertAction({
+                    actions: [Strings().okButtonLabel],
+                    title: Strings().snippetRunError,
+                    message: Strings().noRunInOutlook
+                }));
+                this._store.dispatch(new Snippet.CancelRunAction());
+            } else {
+                const state: IRunnerState = {
+                    snippet: snippet,
+                    returnUrl: window.location.href,
+                    displayLanguage: getDisplayLanguage()
+                };
+                const data = JSON.stringify(state);
+                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
 
-            AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
-            post(environment.current.config.runnerUrl + '/compile/page', { data });
+                AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
+                post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
+            }
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetRunError, exception)));
 
@@ -187,7 +198,49 @@ export class SnippetEffects {
         .map((updatedSnippet) => new Snippet.SaveAction(updatedSnippet))
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception)));
 
-    private _exists(name: string) {
+    @Effect({ dispatch: false })
+    openInPlayground$: Observable<Action> = this.actions$
+        .ofType(Snippet.SnippetActionTypes.OPEN_IN_PLAYGROUND)
+        .map(action => action.payload)
+        .map(payload => {
+            let { type, id, isDownload } = payload;
+            let handler, extension;
+            let correlationId = cuid();
+            switch (environment.current.host.toUpperCase()) {
+                case HostType.EXCEL:
+                    handler = 'ms-excel:ofe|u|';
+                    extension = '.xlsx';
+                    break;
+                case HostType.WORD:
+                    handler = 'ms-word:ofe|u|';
+                    extension = '.docx';
+                    break;
+                case HostType.POWERPOINT:
+                    handler = 'ms-powerpoint:ofe|u|';
+                    extension = '.pptx';
+                    break;
+                default:
+                    throw new Error(`Unsupported host: ${environment.current.host}`);
+            }
+            AI.trackEvent('Open in playground initiated', { id: correlationId });
+            let filename = `script-lab-playground-${environment.current.host}${extension}`;
+            let url = environment.current.config.runnerUrl + `/open-in-playground/${correlationId}/${environment.current.host}/${type}/${id}/${filename}`;
+            if (isDownload) {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = `${handler}${url}`;
+            }
+        })
+        .catch(exception => {
+            AI.trackException(Strings().snippetOpenInPlaygroundError, exception);
+            return Observable.from([]);
+        });
+
+    private _gistIdExists(id: string) {
+        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
+    }
+
+    private _nameExists(name: string) {
         return storage.snippets.values().some(item => item.name.trim() === name.trim());
     }
 
@@ -325,12 +378,13 @@ export class SnippetEffects {
         }
     }
 
-    private _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Observable<Action> {
+    private async _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Promise<Observable<Action>> {
         if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
-            throw new PlaygroundError(`Cannot import a snippet created for ${rawSnippet.host} in ${environment.current.host}.`);
+            throw new PlaygroundError(Strings().cannotImportSnippetCreatedForDifferentHost(
+                rawSnippet.host, environment.current.host));
         }
 
-        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set);
+        this._checkForUnsupportedAPIsIfRelevant(rawSnippet.api_set, rawSnippet);
         // Note that need to do the unsupported-api check before anything else, and before scrubbing --
         // because api_set will get erased as part of scrubbing (it's only for pre-import and export)
 
@@ -350,17 +404,9 @@ export class SnippetEffects {
         snippet.gist = rawSnippet.gist;
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
 
-        /**
-         * If the action here involves true importing rather than re-opening,
-         * and if the name is already taken by a local snippet, generate a new name.
-         */
-        if (mode !== Snippet.ImportType.OPEN && this._exists(snippet.name)) {
-            snippet.name = this._generateName(snippet.name, '');
+        if (snippet.gist && this._github.profile && this._github.profile.login === snippet.gistOwnerId) {
+            trustedSnippetManager.updateTrustedSnippets(snippet.id);
         }
-
-        const actions: Action[] = [
-            new Snippet.ImportSuccessAction(snippet)
-        ];
 
         let properties = {};
         if (mode === Snippet.ImportType.GIST) {
@@ -372,18 +418,48 @@ export class SnippetEffects {
         properties['mode'] = isViewMode ? 'view' : 'editor';
         AI.trackEvent(mode, properties);
 
-        /*
-         * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
-         * The snippet will get saved as soon as the user makes any changes (if in editor mode).
+        /**
+         * If the user is importing a gist that already exists, ask the user if they want
+         * to navigate to the existing one or create a new one in their local storage.
          */
-        if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
-            actions.push(new Snippet.SaveAction(snippet));
+        let importResult: string = null;
+        if (mode !== Snippet.ImportType.OPEN && snippet.gist && this._gistIdExists(snippet.gist)) {
+            importResult = await this._uiEffects.alert(
+                Strings().snippetGistIdDuplicationError,
+                `${Strings().importButtonLabel} ${snippet.name}`,
+                Strings().snippetImportExistingButtonLabel, Strings().defaultSnippetTitle, Strings().cancelButtonLabel /* user options */
+            );
         }
 
+        let actions: Action[] = [];
+        if (importResult === Strings().snippetImportExistingButtonLabel) {
+            for (let item of storage.snippets.values()) {
+                if (item.gist && item.gist.trim() === snippet.gist.trim()) {
+                    actions.push(new Snippet.ImportSuccessAction(item));
+                    break;
+                }
+            }
+        } else if (importResult !== Strings().cancelButtonLabel) {
+            /**
+             * If the action here involves true importing rather than re-opening,
+             * and if the name is already taken by a local snippet, generate a new name.
+             */
+            if (!isViewMode && mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
+                snippet.name = this._generateName(snippet.name, '');
+            }
+            actions.push(new Snippet.ImportSuccessAction(snippet));
+            /*
+            * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
+            * The snippet will get saved as soon as the user makes any changes (if in editor mode).
+            */
+            if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
+                actions.push(new Snippet.SaveAction(snippet));
+            }
+        }
         return Observable.from(actions);
     }
 
-    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }) {
+    private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }, snippet: ISnippet) {
         let unsupportedApiSet: { api: string, version: number } = null;
         if (api_set == null) {
             return;
@@ -391,6 +467,13 @@ export class SnippetEffects {
 
         // On the web, there is no "Office.context.requirements". So skip it.
         if (!isInsideOfficeApp()) {
+            return;
+        }
+
+        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
+            // Snippets using production Office.js should be checked for API set support.
+            // Snippets using the beta endpoint or an NPM package don't need to.
             return;
         }
 
@@ -405,7 +488,8 @@ export class SnippetEffects {
         });
 
         if (unsupportedApiSet) {
-            throw new PlaygroundError(`${environment.current.host} does not support the required API Set ${unsupportedApiSet.api} @ ${unsupportedApiSet.version}.`);
+            throw new PlaygroundError(Strings().currentHostDoesNotSupportRequiredApiSet(
+                environment.current.host, unsupportedApiSet.api, unsupportedApiSet.version.toString()));
         }
     }
 }

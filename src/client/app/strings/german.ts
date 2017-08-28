@@ -1,11 +1,7 @@
-import { ClientStrings } from './index';
-
 // Whenever there is no localized translation, use the English version.
-// Whenever these two lines are not commented out, it means that there are
-// still strings that need to be localized.
-// Just search for "englishSubstitutesForNotYetTranslated" in this file
-import { getEnglishStrings } from './english';
-const englishSubstitutesForNotYetTranslated = getEnglishStrings();
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
@@ -37,14 +33,23 @@ export function getGermanStrings(): ClientStrings {
         saveButtonLabel: 'Speichern',
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
+        snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
+        viewModeError: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
+
+        snippetGistIdDuplicationError: 'Es existiert bereits ein Schnipsel, das aus dem gleichen GitHub-Gist importiert wurde. Möchten Sie zu diesem Schnipsel wechseln oder eine neue Kopie erstellen?',
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
-        snippetImportErrorTitle: 'Importfehler.',
+        snippetImportErrorTitle: 'Importfehler',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
-        viewModeError: englishSubstitutesForNotYetTranslated.viewModeError,
+        cannotImportSnippetCreatedForDifferentHost:
+        (snippetHost: string, currentHost: string) =>
+            `Ein für ${snippetHost} erstelltes Code-Schnipsel kann nicht in ${currentHost} importiert werden.`,
+        currentHostDoesNotSupportRequiredApiSet:
+        (currentHost: string, setName: string, setVersion: string) =>
+            `${currentHost} unterstützt nicht die erforderliche API-Version ${setName} @ ${setVersion}`,
 
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
@@ -53,6 +58,7 @@ export function getGermanStrings(): ClientStrings {
         snippetLoadAllError: 'Die lokal gespeicherten Schnipsel konnten nicht geladen werden.',
         snippetRunError: 'Die Ausführung des Schnipsels ist fehlgeschlagen.',
         snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
+        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
 
         snippetNoOfficeTitle: 'Dieses Schnipsel kann nicht ausgeführt werden.',
         snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab, welches Sie unter https://aka.ms/getscriptlab abrufen können.',
@@ -82,7 +88,7 @@ export function getGermanStrings(): ClientStrings {
         gistDescriptionAppendage: `Geteilt mit ${playgroundName}.`,
 
         gistShareFailedBody: 'Das Teilen des GitHub-Gists ist fehlgeschlagen.',
-        gistShareFailedTitle: 'Das Teilen ist fehlgeschlagen.',
+        gistShareFailedTitle: 'Das Teilen ist fehlgeschlagen',
 
         gistSharedDialogStart: 'Die URL von Ihrem GitHub-Gist ist:',
         gistSharedDialogEnd: `Klicken Sie auf den Befehl ${playgroundName}, um Ihr Schnipsel zu importieren und geben Sie folgende URL an.`,
@@ -116,7 +122,7 @@ export function getGermanStrings(): ClientStrings {
         descriptionPlaceholder: 'Beschreibung des Schipsels',
         gistUrlLabel: 'GitHub-Gist-URL',
         gistUrlLinkLabel: 'Im Browser öffnen',
-        viewModeGistUrlLabel: englishSubstitutesForNotYetTranslated.viewModeGistUrlLabel,
+        viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
@@ -150,10 +156,21 @@ export function getGermanStrings(): ClientStrings {
         samplesTab: 'Beispiele',
 
         noSnippetsMessage: 'Es wurden auf diesem Computer noch keine Schnipsel gespeichert. Sie können ein neues Schnipsel erstellen, ein Schnipsel aus den Beispielen auswählen oder ein Schnipsel importieren.',
-        noGistsMessage: `Es wurde noch kein Schnipsel in ein GitHub-Gist hochgeladen. Nach dem Erstellen oder Ändern eines Schnipsels können Sie dieses anhand der Teilen-Funktion hochladen.`,
+        noGistsMessage: `Es wurde noch kein Schnipsel in einem GitHub-Gist abgelegt. Nach dem Erstellen oder Ändern eines Schnipsels lässt sich dieses anhand der Teilen-Funktion hochladen.`,
 
         newSnippetDescription: 'Neues Schnipsel erstellen',
         importDescription: 'Schnipsel aus einem GitHub-Gist abrufen oder anhand von YAML-Code erstellen.',
+
+        // view.mode.ts strings
+
+        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
+        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
+        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
+        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+
+        // Outlook-only strings
+
+        noRunInOutlook: 'Das Code-Schnipsel kann in Outlook nicht aus dem Code-Fenster heraus ausgeführt werden. Bitte öffnen Sie den Aufgabenbereich zur Code-Ausführung und rufen Sie das Schnipsel von dort aus auf.',
 
         // import.ts strings
 
@@ -165,11 +182,12 @@ export function getGermanStrings(): ClientStrings {
         localSnippetsLabel: 'Meine Schnipsel auf diesem Computer',
         noLocalSnippets: `Sie haben auf diesem Computer noch keine Schnipsel gespeichert. Erstellen Sie ein neues Schnipsel oder importieren Sie eines, um zu starten.`,
         sharedGistsLabel: 'Meine in GitHub-Gists gespeicherten Schnipsel',
-        sharedGistsSignIn: 'Melden Sie sich bei GitHub an, um eines Ihrer dort abgelegten Schnipsel abzurufen.',
+        sharedGistsSignIn: 'Melden Sie sich bei GitHub an, um eines Ihrer in dortigen Gists abgelegten Schnipsel abzurufen.',
         samplesDescription: 'Wählen Sie eines der nachfolgenden Beispiele aus, um zu starten.',
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
         importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
         importWarningAction: `Diese Meldung nicht mehr anzeigen.`,
+        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
 
         localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser Cache löschen. ` +
         `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
@@ -179,6 +197,8 @@ export function getGermanStrings(): ClientStrings {
         importUrlLabel: `URL oder GitHub-Gist-ID zum Code-Schnipsel`,
         importUrlPlaceholder: `z.B. https://gist.github.com/Schnipsel-ID`,
         importYamlLabel: `YAML-Code des Schnipsels`,
+
+        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -195,7 +215,6 @@ export function getGermanStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: 'Das Schnipsel ist nicht mehr verfügbar. Laden Sie diese Seite neu oder kehren Sie zu der vorherigen Seite zurück.',
-            unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
             reloadingOfficeJs: 'Office.js wird neu geladen.',
 
@@ -250,6 +269,17 @@ export function getGermanStrings(): ClientStrings {
             tutorialDescription: 'Folgende Excel-Datei beinhaltet eine Anleitung, um Script Lab in',
             download: 'wenigen Schritten kennenzulernen:',
             errorInitializingScriptLab: 'Es ist ein Fehler bei der Initialisierung von Script Lab aufgetreten.'
+        },
+
+        Auth: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
+            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
+            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
+            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
+            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
+            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
+            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
         }
     };
 }

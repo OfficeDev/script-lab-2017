@@ -105,6 +105,11 @@ dialog.panel {
             margin-left: 0;
         }
     }
+
+    &-actionsRight.multiline > button {
+        display: block;
+        margin: 10px 0;
+    }
 }
 
 @media (max-width: 400px) {

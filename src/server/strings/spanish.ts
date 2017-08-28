@@ -1,9 +1,15 @@
-import { ServerStrings } from './index';
+// Whenever there is no localized translation, use the English version.
+// Whenever this lines is not commented out, it means that there are
+// still strings that need to be localized (just search for this function name).
+
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ServerStrings {
+    const unexpectedError = 'Se produjo un error inesperado';
+
     return {
         error: 'Error',
-        unexpectedError: 'Se produjo un error inesperado',
+        unexpectedError: unexpectedError,
         invalidHost: 'Host inválido',
         invalidId: 'ID inválido',
         receivedInvalidAuthCode: 'Se recibió un código de autenticación inválido',
@@ -34,13 +40,22 @@ export function getSpanishStrings(): ServerStrings {
         run: 'Ejecutar',
         runPageTitle: 'Ejecutar código',
         back: 'Regresar',
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+        cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
         switchToSnippet: `Regresar al código que estas editando.`,
         snippetCodeChanged: 'Cambiaste el código en este fragmento de código. Actualiza este panel para ejecutar la nueva versión.',
         refresh: 'Actualizar',
         dismiss: 'Ignorar',
         editingDifferentSnippet1: `Ahora estas editando un fragmento de código diferente.`,
         editingDifferentSnippet2: `Actualiza este panel para ejecutarlo`,
-        loadLatestSnippet: 'Cargar el último fragmento de codigo'
+        loadLatestSnippet: 'Cargar el último fragmento de codigo',
+
+        RuntimeHelpers: {
+            unexpectedError: unexpectedError,
+            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
+            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
+        }
     };
 }
 

@@ -9,6 +9,7 @@ This document describes how to create a new translation for Script Lab or improv
 * [Improve an existing translation](TRANSLATING.md#improve)
 * [Testing your translation](TRANSLATING.md#testing)
 * [Script Lab languages](TRANSLATING.md/#translations)
+* [Tracking bugs for incremental translations](TRANSLATING.md/#incremental)
 
 <a id="prerequisites"></a>
 ## Prerequisites
@@ -20,7 +21,7 @@ We recommend you to download and install Visual Studio Code from here <https://c
 <a id="structure"></a>
 ## Understanding the Script Lab structure for translating
 
-The Script Lab code is mainly composed of two parts: the server part and the client part. Each part has its own files to be modified and/or added for creating or improving a translation. Additionally, the project includes 4 manifest files which also include translatable strings.
+The Script Lab code is mainly composed of two parts: the server part and the client part. Each part has its own files to be modified and/or added for creating or improving a translation. Additionally, the project includes 6 manifest files which also include translatable strings.
 
 ### Server part files
 
@@ -46,14 +47,16 @@ The structure for the client files is similar to the structure for the server fi
 
 ### Manifest files
 
-The Script Lab Project includes 4 manifest files referencing to different servers, e.g. for testing purposes. For each manifest file, the translations are included in different sections of the file. Adding or changing a translation implies to do this in all 4 files.
+The Script Lab Project includes 6 manifest files referencing to different servers, e.g. for testing purposes. For each manifest file, the translations are included in different sections of the file. Adding or changing a translation implies to do this in all 6 files.
 
-| Folder                   | Filename                  | Description                                    |
-|:-------------------------|:--------------------------|:-----------------------------------------------|
-| `manifests`              | `script-lab-edge.xml`     | Manifest for the edge version.                 |
-| `manifests`              | `script-lab-insiders.xml` | Manifest for the insider version.              |
-| `manifests`              | `script-lab-local.xml`    | Manifest for the locally installed version.    |
-| `manifests`              | `script-lab-prod.xml`     | Manifest for the production version.           |
+| Folder                   | Filename                       | Description                                             |
+|:-------------------------|:-------------------------------|:--------------------------------------------------------|
+| `manifests`              | `script-lab-edge.xml`          | Manifest for the edge version.                          |
+| `manifests`              | `script-lab-insiders.xml`      | Manifest for the insider version.                       |
+| `manifests`              | `script-lab-local.xml`         | Manifest for the locally installed version.             |
+| `manifests`              | `script-lab-local.outlook.xml` | Manifest for the locally installed version for outlook. |
+| `manifests`              | `script-lab-prod.xml`          | Manifest for the production version.                    |
+| `manifests`              | `script-lab-prod.outlook.xml`  | Manifest for the production version for outlook.        |
 
 ### Store metadata files
 
@@ -141,8 +144,8 @@ Here is an example, where the string *Help* has been translated to German and Fr
 
 ```xml
   <bt:String id="PG.RunCommand.Title" DefaultValue="Help">
-    <Override Locale="de" Value="Hilfe"/>
-    <Override Locale="fr" Value="Aide"/>
+    <Override Locale="de-de" Value="Hilfe"/>
+    <Override Locale="fr-fr" Value="Aide"/>
   </bt:String>
 ```
 The strings are enclosed by double quotes in the XML files. If you need to use the double quote character in your translation, please use the entity `&quot;` instead of the double quote character. If you need to use the ampersand character `&` in your translation, please use its entity `&amp;` instead.
@@ -172,8 +175,19 @@ Script Lab recognizes the installed language of your Office App (Excel, Word, Po
 
 Script Lab is currently available or being translated into the following languages:
 
-| Language           | Code   | Status             | Production         | Notes              |
-|:-------------------|:-------|:-------------------|:-------------------|:-------------------|
-| English            | en     | Complete           | Yes                | Default language   |
-| German             | de     | Complete           | No                 | -                  |
+| Language             | Code   | Status             | Production         |
+|:---------------------|:-------|:-------------------|:-------------------|
+| English              | en     | Complete           | Yes                |
+| German               | de     | Complete           | Yes                |
+| Spanish              | de     | Complete           | Yes                |
+| Chinese (Simplified) | zh-CN  | Complete           | No                 |
 
+
+<a id="incremental"></a>
+## Tracking bugs for incremental translations
+
+| Language             | Filename                | URL for tracking issue                                 |
+|:---------------------|:------------------------|:-------------------------------------------------------|
+| German               | german.ts               | https://github.com/OfficeDev/script-lab/issues/472     |
+| Spanish              | spanish.ts              | https://github.com/OfficeDev/script-lab/issues/510     |
+| Chinese (Simplified) | chinese-simplified.ts   | https://github.com/OfficeDev/script-lab/issues/557     |
