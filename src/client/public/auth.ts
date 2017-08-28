@@ -38,6 +38,9 @@ tryCatch(() => {
         authRequestParams = JSON.parse(window.sessionStorage[AuthRequestSessionStorageKey]);
     }
 
+    authRequestParams.is_office_host = authRequestParams.is_office_host &&
+        ((authRequestParams.is_office_host as any) as string).toLowerCase() === 'true';
+
     // At this point, should have a client ID & service info
     if (!authRequestParams.action || !authRequestParams.client_id || !authRequestParams.service) {
         throw new Error(strings.Auth.invalidParametersPassedInForAuth);
