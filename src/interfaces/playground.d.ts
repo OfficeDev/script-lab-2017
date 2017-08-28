@@ -155,7 +155,7 @@ interface HeartbeatParams {
 
 // NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
 interface AuthRequestParamData {
-    action: 'login' | 'logout';
+    auth_action: 'login' | 'logout';
     service: 'graph';
     client_id: string;
     is_office_host: boolean;

@@ -46,7 +46,7 @@ module ScriptLab {
         return new Promise((resolve, reject) => {
 
             let authDialog = window.open(
-                _generateAuthUrl({ action: 'login', client_id: clientId, service: service as any, is_office_host: false }),
+                _generateAuthUrl({ auth_action: 'login', client_id: clientId, service: service as any, is_office_host: false }),
                 '_blank',
                 'width=1024,height=768'
             );
@@ -86,7 +86,7 @@ module ScriptLab {
     function _getAccessTokenViaDialogApi(clientId: string, service: string): Promise<string> {
         return new Promise((resolve, reject) => {
             Office.context.ui.displayDialogAsync(
-                _generateAuthUrl({ action: 'login', client_id: clientId, service: service as any, is_office_host: true }),
+                _generateAuthUrl({ auth_action: 'login', client_id: clientId, service: service as any, is_office_host: true }),
                 { height: 50, width: 50 },
                 result => {
                     if (result.status !== Office.AsyncResultStatus.Succeeded) {
@@ -134,7 +134,7 @@ module ScriptLab {
     function _logoutViaWindowOpen(clientId: string, service: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let authDialog = window.open(
-                _generateAuthUrl({ action: 'logout', client_id: clientId, service: service as any, is_office_host: false }),
+                _generateAuthUrl({ auth_action: 'logout', client_id: clientId, service: service as any, is_office_host: false }),
                 '_blank',
                 'width=1024,height=768'
             );
@@ -156,7 +156,7 @@ module ScriptLab {
     function _logoutViaDialogApi(clientId: string, service: string): Promise<any> {
         return new Promise((resolve, reject) => {
             Office.context.ui.displayDialogAsync(
-                _generateAuthUrl({ action: 'logout', client_id: clientId, service: service as any, is_office_host: true }),
+                _generateAuthUrl({ auth_action: 'logout', client_id: clientId, service: service as any, is_office_host: true }),
                 { height: 50, width: 50 },
                 result => {
                     if (result.status !== Office.AsyncResultStatus.Succeeded) {
@@ -185,13 +185,13 @@ module ScriptLab {
     }
 
     function _generateAuthUrl(params: {
-        action: 'login' | 'logout';
+        auth_action: 'login' | 'logout';
         service: 'graph';
         client_id: string;
         is_office_host: boolean;
     }): string {
         const queryParams = [
-            `action=${params.action}`,
+            `auth_action=${params.auth_action}`,
             `client_id=${encodeURIComponent(params.client_id)}`,
             `service=${params.service}`,
             `is_office_host=${params.is_office_host}`

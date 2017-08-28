@@ -16,7 +16,7 @@ const ResourceMap = {
     'graph': 'https://graph.microsoft.com'
 };
 
-const ActionParamName: keyof AuthRequestParamData = 'action';
+const ActionParamName: keyof AuthRequestParamData = 'auth_action';
 const ServiceParamName: keyof AuthRequestParamData = 'service';
 const ClientIdParamName: keyof AuthRequestParamData = 'client_id';
 
@@ -38,19 +38,21 @@ tryCatch(() => {
         authRequestParams = JSON.parse(window.sessionStorage[AuthRequestSessionStorageKey]);
     }
 
-    authRequestParams.is_office_host = authRequestParams.is_office_host &&
-        ((authRequestParams.is_office_host as any) as string).toLowerCase() === 'true';
+    if (typeof authRequestParams.is_office_host === 'string') {
+        authRequestParams.is_office_host = 
+            ((authRequestParams.is_office_host as any) as string).toLowerCase() === 'true';
+    }
 
     // At this point, should have a client ID & service info
-    if (!authRequestParams.action || !authRequestParams.client_id || !authRequestParams.service) {
+    if (!authRequestParams.auth_action || !authRequestParams.client_id || !authRequestParams.service) {
         throw new Error(strings.Auth.invalidParametersPassedInForAuth);
     }
 
 
-    if (authRequestParams.action === 'login') {
+    if (authRequestParams.auth_action === 'login') {
         setSubtitleText(strings.Auth.authenticatingOnBehalfOfSnippet);
     }
-    else if (authRequestParams.action === 'logout') {
+    else if (authRequestParams.auth_action === 'logout') {
         setSubtitleText(strings.Auth.loggingOutOnBehalfOfSnippet);
     }
 
@@ -73,7 +75,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
             throw new Error(strings.unexpectedError);
         }
 
-        if (authRequest.action === 'login') {
+        if (authRequest.auth_action === 'login') {
             const hash = window.location.hash.substr(1); // remove #
             if (hash) {
                 const authResponseKeyValues = Authenticator.extractParams(window.location.href.split('#')[1]);
@@ -122,7 +124,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 return;
             }
         }
-        else if (authRequest.action === 'logout') {
+        else if (authRequest.auth_action === 'logout') {
             if (authRequest[ServiceParamName] && authRequest[ClientIdParamName]) {
                 let logoutUrl = LogoutUrlMap[authRequest.service];
                 let resource = ResourceMap[authRequest.service];
