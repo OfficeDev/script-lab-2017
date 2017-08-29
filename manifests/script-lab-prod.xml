@@ -10,9 +10,9 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
   <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
-    <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
-    <Override Locale="de-at" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
-    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Office-Add-In-Code-Schnipsel erstellen, ausführen und teilen."/>
+    <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+    <Override Locale="de-at" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+    <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="es-ar" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="es-bo" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
     <Override Locale="es-cl" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
