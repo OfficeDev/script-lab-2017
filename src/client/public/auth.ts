@@ -39,7 +39,7 @@ tryCatch(() => {
     }
 
     if (typeof authRequestParams.is_office_host === 'string') {
-        authRequestParams.is_office_host = 
+        authRequestParams.is_office_host =
             ((authRequestParams.is_office_host as any) as string).toLowerCase() === 'true';
     }
 
