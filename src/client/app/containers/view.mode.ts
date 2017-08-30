@@ -19,6 +19,7 @@ import { Strings } from '../strings';
                 <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
                     <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
                     <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
+                    <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
                 </command>
             </header>
             <editor [isViewMode]="true"></editor>
@@ -68,6 +69,10 @@ export class ViewMode implements OnInit, OnDestroy {
 
     get downloadAsHostFileString() {
         return this.strings.downloadAsHostFile.replace('{0}', environment.current.host);
+    }
+
+    get tryItSupported() {
+        return environment.current.host.toUpperCase() === HostType.EXCEL;
     }
 
     get urlString() {
@@ -132,5 +137,11 @@ export class ViewMode implements OnInit, OnDestroy {
 
     openInGithub() {
         window.open(getGistUrl(this.snippet.gist));
+    }
+
+    openTryIt() {
+        let hash = location.hash;
+        hash = hash.replace('#/view/', '');
+        window.open(`${environment.current.config.runnerUrl}/try-it/${hash}`, '_blank');
     }
 }

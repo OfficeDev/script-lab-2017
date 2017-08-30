@@ -26,7 +26,8 @@ module.exports = (prodMode) =>
             heartbeat: './public/heartbeat.ts',
             runner: './public/runner.ts',
             error: './public/error.ts',
-            auth: './public/auth.ts'
+            auth: './public/auth.ts',
+            tryIt: './public/try.it.ts'
         },
 
         resolve: {
@@ -132,6 +133,14 @@ module.exports = (prodMode) =>
                 {
                     from: '../../node_modules/office-ui-fabric-js/dist/js',
                     to: './libs/office-ui-fabric-js/js'
+                },
+                {
+                    from: '../../node_modules/jquery/dist',
+                    to: './libs/jquery'
+                },
+                {
+                    from: '../../node_modules/jquery-resizable-dom/dist',
+                    to: './libs/jquery-resizable-dom'
                 }
             ]),
             new HtmlWebpackPlugin({

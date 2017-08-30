@@ -67,3 +67,11 @@ export interface IReadmeHandlebarsContext {
     isAddin: boolean;
     addinOrWebpage: 'Add-in' | 'webpage';
 }
+
+export interface ITryItHandlebarsContext {
+    title: string;
+    assets: { [key: string]: any };
+    origin: string;
+    editorTryItUrl: string;
+    runnerSnippetUrl: string;
+}

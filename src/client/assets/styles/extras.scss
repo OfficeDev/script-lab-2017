@@ -170,3 +170,73 @@ body.OUTLOOK {
             transform: rotate(360deg);
   }
 }
+
+/* Try It Panels */
+.panel-container {
+  display: flex;
+  overflow: hidden;
+  height: 100%;
+
+  &.horizontal {
+	  flex-direction: row;
+  }
+
+  &.vertical {
+	  flex-direction: column;
+	  border: 1px solid silver;
+  }
+}
+
+.panel {
+	&.left {
+		flex: 0 0 auto;
+		width: 50%;
+		min-height: 200px;
+		min-width: 200px;
+		white-space: nowrap;
+	}
+
+	&.right {
+		flex: 1 1 auto;
+		width: 50%;
+		min-height: 200px;
+		min-width: 200px;
+	}
+
+	&.top {
+		flex: 0 0 auto;
+		height: 50%;
+		width: 100%;
+		min-height: 200px;
+		white-space: nowrap;
+	}
+
+	&.bottom {
+		flex: 1 1 auto;
+		height: 50%;
+		width: 100%;
+		min-height: 200px;
+	}
+}
+
+.splitter {
+  flex: 0 0 auto;
+
+  &.vertical {
+	  background: url('../images/vsplitter.png') center center no-repeat $background-light;
+	  min-height: 200px;
+	  width: 18px;
+	  cursor: col-resize;
+  }
+
+  &.horizontal {
+      background: url('../images/hsplitter.png') center center no-repeat $background-light;
+	  height: 18px;
+	  cursor: row-resize;
+  }
+}
+
+#editor-frame, #runner-frame, #embed-frame {
+	height: 100% !important;
+	width: 100% !important;
+}

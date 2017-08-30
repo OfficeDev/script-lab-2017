@@ -160,6 +160,10 @@ interface InitializationParams {
                 officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
             }
 
+            if ((window.top as any).in_try_it_mode) {
+                officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window.top[namespace]);
+            }
+
             $emptySnippetPlaceholder.remove();
             $iframe.show();
             toggleProgress(false);
@@ -238,6 +242,24 @@ interface InitializationParams {
     }
 
     async function ensureHostInitialized(): Promise<any> {
+        if ((window.top as any).in_try_it_mode) {
+            (window as any).Office = {
+                initialize: () => { },
+
+                context: {
+                    requirements: {
+                        isSetSupported: (setName: string, versionNumber?: number) => {
+                            if (setName === 'ExcelApi' && versionNumber === 1.1) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                }
+            };
+            return Promise.resolve();
+        }
+
         // window.playground_host_ready is set within the runner template (embedded in html code)
         // when the host is ready (i.e., in Office.initialized callback, if Office host)
         if ((window as any).playground_host_ready) {

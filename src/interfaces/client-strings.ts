@@ -144,6 +144,7 @@ interface ClientStrings {
     openInHost: string;
     openInGithub: string;
     downloadAsHostFile: string;
+    openTryIt: string;
 
     // Gallery.view strings
 
@@ -175,7 +176,7 @@ interface ClientStrings {
     noSamplesMessage: string;
     importWarning: string;
     importWarningAction: string;
-    importConfirm: string;
+    importSucceed: string;
 
     localStorageWarning: string;
     localStorageWarningAction: string;

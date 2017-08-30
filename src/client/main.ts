@@ -24,6 +24,7 @@ import './assets/styles/editor.scss';
 let appRoutes: Routes = [
     { path: 'view/:type/:host/:id', component: ViewMode  },
     { path: 'view/error', component: ViewModeError  },
+    { path: 'edit/:type/:host/:id', component: EditorMode },
     { path: '',  component: EditorMode }
 ];
 

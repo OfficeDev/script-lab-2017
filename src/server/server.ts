@@ -20,7 +20,7 @@ import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
-    IRunnerHandlebarsContext, ISnippetHandlebarsContext
+    IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -265,7 +265,7 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filename', async (req, res) => {
+registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
     let relativePath, templateName;
     switch (req.params.host.toUpperCase()) {
         case 'EXCEL':
@@ -284,7 +284,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
             throw new Error(`Unsupported host: ${req.params.host}`);
     }
 
-    const correlationId = req.params.correlationId;
+    const correlationId = req.query.correlationId;
     let directoryInfo = generatedDirectories[correlationId];
     // Check if file already exists on server for correlation id
     if (directoryInfo) {
@@ -392,6 +392,22 @@ registerRoute('post', '/export', (req, res) => {
             zip.pipe(res);
         });
 });
+
+registerRoute('get', '/try-it/:type/:host/:id', (req, res) => {
+    return loadTemplate<ITryItHandlebarsContext>('try-it')
+        .then(tryItGenerator => {
+            const html = tryItGenerator({
+                title: 'Try It!',
+                assets: getAssetPaths(),
+                origin: currentConfig.editorUrl,
+                editorTryItUrl: `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}`,
+                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
+    });
 
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
