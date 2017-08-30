@@ -61,6 +61,7 @@ export class SnippetEffects {
             const scrubbedSnippet = getScrubbedSnippet(rawSnippet, publicOrInternal);
             delete scrubbedSnippet.modified_at;
 
+            storage.snippets.load();
             if (storage.snippets.contains(scrubbedSnippet.id)) {
                 const originalRawSnippet = storage.snippets.get(scrubbedSnippet.id);
                 const originalScrubbedSnippet = getScrubbedSnippet(originalRawSnippet, publicOrInternal);
@@ -115,7 +116,10 @@ export class SnippetEffects {
     @Effect()
     loadSnippets$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.STORE_UPDATED, Snippet.SnippetActionTypes.LOAD_SNIPPETS)
-        .map(() => new Snippet.LoadSnippetsSuccessAction(storage.snippets.values()))
+        .map(() => {
+            trustedSnippetManager.reloadTrustedSnippets();
+            return new Snippet.LoadSnippetsSuccessAction(storage.snippets.values());
+        })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })

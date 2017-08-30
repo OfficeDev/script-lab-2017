@@ -1,3 +1,5 @@
+import { storage } from '../helpers';
+
 class TrustedSnippet {
     private _trustedSnippetsKey = 'trusted_snippets';
 
@@ -16,6 +18,18 @@ class TrustedSnippet {
         } catch (e) {
             return false;
         }
+    }
+
+    reloadTrustedSnippets(): void {
+        try {
+            let trustedSnippets = JSON.parse(window.localStorage.getItem(this._trustedSnippetsKey));
+            for (let snippetId of Object.keys(trustedSnippets)) {
+                if (!storage.snippets.get(snippetId)) {
+                    delete trustedSnippets[snippetId];
+                }
+            }
+            window.localStorage.setItem(this._trustedSnippetsKey, JSON.stringify(trustedSnippets));
+        } catch (e) { }
     }
 
     updateTrustedSnippets(snippetId: string): void {
