@@ -319,34 +319,34 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
                             }
                         });
                     }))
-                        .then(xmlStringData => {
-                            fs.writeFile(xmlFileName, xmlStringData, (err) => {
-                                if (err) {
-                                    throw err;
-                                }
+                    .then(xmlStringData => {
+                        fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                            if (err) {
+                                throw err;
+                            }
 
-                                let zipFileName = `${extractDirName}.zip`;
-                                let writeZipFile = fs.createWriteStream(zipFileName);
-                                writeZipFile.on('finish', () => {
-                                    rimraf(extractDirName, () => { });
-                                    res.attachment(req.params.filename);
-                                    fs.createReadStream(zipFileName).pipe(res);
-                                    res.on('finish', () => {
-                                        generatedDirectories[correlationId] = {
-                                            name: zipFileName,
-                                            relativeFilePath: `${relativeFilePath}.zip`,
-                                            isBeingRead: false,
-                                            timestamp
-                                        };
-                                    });
+                            let zipFileName = `${extractDirName}.zip`;
+                            let writeZipFile = fs.createWriteStream(zipFileName);
+                            writeZipFile.on('finish', () => {
+                                rimraf(extractDirName, () => { });
+                                res.attachment(req.params.filename);
+                                fs.createReadStream(zipFileName).pipe(res);
+                                res.on('finish', () => {
+                                    generatedDirectories[correlationId] = {
+                                        name: zipFileName,
+                                        relativeFilePath: `${relativeFilePath}.zip`,
+                                        isBeingRead: false,
+                                        timestamp
+                                    };
                                 });
-
-                                const archiver = Archiver('zip');
-                                archiver.pipe(writeZipFile);
-                                archiver.directory(extractDirName, '');
-                                archiver.finalize();
                             });
+
+                            const archiver = Archiver('zip');
+                            archiver.pipe(writeZipFile);
+                            archiver.directory(extractDirName, '');
+                            archiver.finalize();
                         });
+                    });
                 });
             });
     }
@@ -520,18 +520,18 @@ function getVersionNumber(): Promise<string> {
             }
         });
     })
-        .then(xml => (parseXmlString(xml)))
-        .then(xmlJson => {
-            scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
+    .then(xml => (parseXmlString(xml)))
+    .then(xmlJson => {
+        scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
+        return scriptLabVersionNumber;
+    })
+    .catch(e => {
+        if (!isNil(scriptLabVersionNumber)) {
+            /* return previously retrieved version if web request fails */
             return scriptLabVersionNumber;
-        })
-        .catch(e => {
-            if (!isNil(scriptLabVersionNumber)) {
-                /* return previously retrieved version if web request fails */
-                return scriptLabVersionNumber;
-            }
-            throw (e);
-        });
+        }
+        throw(e);
+    });
 }
 
 function generateSnippetHtmlData(
