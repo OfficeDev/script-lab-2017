@@ -307,7 +307,7 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
                     (new Promise<string>((resolve, reject) => {
                         fs.readFile(xmlFileName, (err, data) => {
                             if (err) {
-                                throw (err);
+                                throw(err);
                             } else {
                                 let xmlStringData = data.toString();
                                 xmlStringData = xmlStringData
