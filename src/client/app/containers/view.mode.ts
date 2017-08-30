@@ -17,9 +17,9 @@ import { Strings } from '../strings';
             <header class="command__bar">
                 <command class="view-disable" [title]="snippet?.name"></command>
                 <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
+                    <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
                     <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
                     <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
-                    <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
                 </command>
             </header>
             <editor [isViewMode]="true"></editor>
@@ -64,15 +64,15 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     get openInHostString() {
-        return this.strings.openInHost.replace('{0}', environment.current.host);
+        return this.strings.openInHost.replace('{0}', environment.current.host.toLowerCase());
     }
 
     get downloadAsHostFileString() {
-        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host);
+        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host.toLowerCase());
     }
 
     get tryItSupported() {
-        return environment.current.host.toUpperCase() === HostType.EXCEL;
+        return window.localStorage.getItem('wacUrl') && environment.current.host.toUpperCase() === HostType.EXCEL;
     }
 
     get urlString() {
@@ -140,8 +140,9 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     openTryIt() {
+        let wacUrl = encodeURIComponent(window.localStorage.getItem('wacUrl'));
         let hash = location.hash;
         hash = hash.replace('#/view/', '');
-        window.open(`${environment.current.config.runnerUrl}/try-it/${hash}`, '_blank');
+        window.open(`${environment.current.config.runnerUrl}/try/${wacUrl}/${hash}`, '_blank');
     }
 }

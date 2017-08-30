@@ -99,7 +99,7 @@ setInterval(() => {
                     // Delete all directories older than three hours and all files older than three hours that are not in map
                     if ((now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
                         if (stat.isDirectory()) {
-                            rimraf(absolutePath, () => {});
+                            rimraf(absolutePath, () => { });
                         } else {
                             fs.unlink(absolutePath, (err) => {
                                 ai.trackException('File deletion failed', { name: absolutePath });
@@ -307,7 +307,7 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
                     (new Promise<string>((resolve, reject) => {
                         fs.readFile(xmlFileName, (err, data) => {
                             if (err) {
-                                throw(err);
+                                throw (err);
                             } else {
                                 let xmlStringData = data.toString();
                                 xmlStringData = xmlStringData
@@ -319,34 +319,34 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
                             }
                         });
                     }))
-                    .then(xmlStringData => {
-                        fs.writeFile(xmlFileName, xmlStringData, (err) => {
-                            if (err) {
-                                throw err;
-                            }
+                        .then(xmlStringData => {
+                            fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                                if (err) {
+                                    throw err;
+                                }
 
-                            let zipFileName = `${extractDirName}.zip`;
-                            let writeZipFile = fs.createWriteStream(zipFileName);
-                            writeZipFile.on('finish', () => {
-                                rimraf(extractDirName, () => {});
-                                res.attachment(req.params.filename);
-                                fs.createReadStream(zipFileName).pipe(res);
-                                res.on('finish', () => {
-                                    generatedDirectories[correlationId] = {
-                                        name: zipFileName,
-                                        relativeFilePath: `${relativeFilePath}.zip`,
-                                        isBeingRead: false,
-                                        timestamp
-                                    };
+                                let zipFileName = `${extractDirName}.zip`;
+                                let writeZipFile = fs.createWriteStream(zipFileName);
+                                writeZipFile.on('finish', () => {
+                                    rimraf(extractDirName, () => { });
+                                    res.attachment(req.params.filename);
+                                    fs.createReadStream(zipFileName).pipe(res);
+                                    res.on('finish', () => {
+                                        generatedDirectories[correlationId] = {
+                                            name: zipFileName,
+                                            relativeFilePath: `${relativeFilePath}.zip`,
+                                            isBeingRead: false,
+                                            timestamp
+                                        };
+                                    });
                                 });
-                            });
 
-                            const archiver = Archiver('zip');
-                            archiver.pipe(writeZipFile);
-                            archiver.directory(extractDirName, '');
-                            archiver.finalize();
+                                const archiver = Archiver('zip');
+                                archiver.pipe(writeZipFile);
+                                archiver.directory(extractDirName, '');
+                                archiver.finalize();
+                            });
                         });
-                    });
                 });
             });
     }
@@ -393,22 +393,30 @@ registerRoute('post', '/export', (req, res) => {
         });
 });
 
-registerRoute('get', '/try-it/:type/:host/:id', (req, res) => {
+registerRoute('get', ['/try/:wacUrl', '/try/:wacUrl/:host', '/try/:wacUrl/:type/:host/:id'], (req, res) => {
+    if (!req.params.host) {
+        req.params.host = 'EXCEL';
+    }
+    let editorTryItUrl =
+        req.params.type && req.params.id
+            ? `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}` 
+            : `${currentConfig.editorUrl}/#/edit/${req.params.host}`;
+
     return loadTemplate<ITryItHandlebarsContext>('try-it')
         .then(tryItGenerator => {
             const html = tryItGenerator({
                 title: 'Try It!',
                 assets: getAssetPaths(),
                 origin: currentConfig.editorUrl,
-                editorTryItUrl: `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}`,
-                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`
+                editorTryItUrl: editorTryItUrl,
+                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
+                wacUrl: decodeURIComponent(req.params.wacUrl)
             });
 
             res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
         });
-    });
-
+});
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/', (req, res) => {
@@ -497,7 +505,7 @@ function parseXmlString(xml): Promise<JSON> {
 };
 
 function getVersionNumber(): Promise<string> {
-     return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         return Request.post({
             url: SCRIPT_LAB_STORE_URL,
             body: SCRIPT_LAB_STORE_ID,
@@ -512,18 +520,18 @@ function getVersionNumber(): Promise<string> {
             }
         });
     })
-    .then(xml => (parseXmlString(xml)))
-    .then(xmlJson => {
-        scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
-        return scriptLabVersionNumber;
-    })
-    .catch(e => {
-        if (!isNil(scriptLabVersionNumber)) {
-            /* return previously retrieved version if web request fails */
+        .then(xml => (parseXmlString(xml)))
+        .then(xmlJson => {
+            scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
             return scriptLabVersionNumber;
-        }
-        throw(e);
-    });
+        })
+        .catch(e => {
+            if (!isNil(scriptLabVersionNumber)) {
+                /* return previously retrieved version if web request fails */
+                return scriptLabVersionNumber;
+            }
+            throw (e);
+        });
 }
 
 function generateSnippetHtmlData(

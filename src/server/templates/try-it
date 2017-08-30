@@ -45,7 +45,7 @@
                             </div>
                         </footer>
                     </div>
-                </footer>
+                </div>
             </div>
         </div>
         <div class="splitter horizontal"></div>
@@ -83,7 +83,8 @@
     <script type="text/javascript">
         window.initializeTryIt({
             origin: '{{{origin}}}',
-            runnerSnippetUrl: '{{{runnerSnippetUrl}}}'
+            runnerSnippetUrl: '{{{runnerSnippetUrl}}}',
+            wacUrl: '{{{wacUrl}}}'
         });
     </script>
 

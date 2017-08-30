@@ -291,6 +291,11 @@ export class EditorMode {
         let sub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
+                // Default to Excel
+                if (!host) {
+                    host = 'EXCEL';
+                }
+
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
                     environment.current.host = host.toUpperCase();
                     // Update environment in cache

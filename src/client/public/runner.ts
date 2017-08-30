@@ -248,11 +248,8 @@ interface InitializationParams {
 
                 context: {
                     requirements: {
-                        isSetSupported: (setName: string, versionNumber?: number) => {
-                            if (setName === 'ExcelApi' && versionNumber === 1.1) {
-                                return true;
-                            }
-                            return false;
+                        isSetSupported: (setName: string) => {
+                            return setName.toLowerCase().trim() === 'excelapi';
                         }
                     }
                 }

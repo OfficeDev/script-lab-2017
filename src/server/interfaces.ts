@@ -74,4 +74,5 @@ export interface ITryItHandlebarsContext {
     origin: string;
     editorTryItUrl: string;
     runnerSnippetUrl: string;
+    wacUrl: string;
 }
