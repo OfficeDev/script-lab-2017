@@ -164,6 +164,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
         openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
         downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+        openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
 
         // Outlook-only strings
 
@@ -184,7 +185,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         noSamplesMessage: `这个主机还没有样品可供使用。`,
         importWarning: `导入的代码段可能包含恶意代码。除非您信任这些资源，否则不要运行代码段。`,
         importWarningAction: `不要再显示这个警告了。`,
-        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
+        importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
 
         localStorageWarning: `如果您清除浏览器缓存，则创建的代码片段将被删除。 ` +
         `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
@@ -113,6 +113,8 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
     `
 })
 export class Import {
+    @Input() isEditorTryIt;
+
     view = 'snippets';
     url: string;
     snippet: string;
@@ -134,7 +136,7 @@ export class Import {
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
             .subscribe(() => {
-                if (!this.hasViewUrlSetting()) {
+                if (!this.hasViewUrlSetting() && !this.isEditorTryIt) {
                     this._store.dispatch(new UI.ToggleImportAction(true));
                 }
             });
@@ -144,7 +146,13 @@ export class Import {
         this.importViewSnippet()
             .then(deleteSettings => {
                 if (deleteSettings) {
-                    // Keep correlation id in document settings
+                    this._effects.alert(
+                        this.strings.importSucceed,
+                        this.strings.importButtonLabel,
+                        this.strings.okButtonLabel
+                    );
+
+                    Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
                     Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
                     Office.context.document.settings.saveAsync();
                 }
@@ -157,7 +165,7 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets) && !this.hasViewUrlSetting()) {
+            if (isEmpty(snippets) && !this.hasViewUrlSetting() && !this.isEditorTryIt) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
@@ -241,18 +249,6 @@ export class Import {
         // Do not import if there are no view settings
         if (!this.hasViewUrlSetting()) {
             return Promise.resolve(false);
-        }
-
-        let importResult = await this._effects.alert(
-            this.strings.importConfirm,
-            this.strings.importLabel,
-            this.strings.importButtonLabel, this.strings.cancelButtonLabel
-        );
-
-        if (importResult === this.strings.cancelButtonLabel) {
-            this.switch();
-            this._store.dispatch(new UI.ToggleImportAction(true));
-            return Promise.resolve(true);
         }
 
         let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);

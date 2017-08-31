@@ -20,7 +20,7 @@ import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
-    IRunnerHandlebarsContext, ISnippetHandlebarsContext
+    IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -99,7 +99,7 @@ setInterval(() => {
                     // Delete all directories older than three hours and all files older than three hours that are not in map
                     if ((now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
                         if (stat.isDirectory()) {
-                            rimraf(absolutePath, () => {});
+                            rimraf(absolutePath, () => { });
                         } else {
                             fs.unlink(absolutePath, (err) => {
                                 ai.trackException('File deletion failed', { name: absolutePath });
@@ -265,7 +265,7 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filename', async (req, res) => {
+registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
     let relativePath, templateName;
     switch (req.params.host.toUpperCase()) {
         case 'EXCEL':
@@ -284,7 +284,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
             throw new Error(`Unsupported host: ${req.params.host}`);
     }
 
-    const correlationId = req.params.correlationId;
+    const correlationId = req.query.correlationId;
     let directoryInfo = generatedDirectories[correlationId];
     // Check if file already exists on server for correlation id
     if (directoryInfo) {
@@ -328,7 +328,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                             let zipFileName = `${extractDirName}.zip`;
                             let writeZipFile = fs.createWriteStream(zipFileName);
                             writeZipFile.on('finish', () => {
-                                rimraf(extractDirName, () => {});
+                                rimraf(extractDirName, () => { });
                                 res.attachment(req.params.filename);
                                 fs.createReadStream(zipFileName).pipe(res);
                                 res.on('finish', () => {
@@ -393,6 +393,30 @@ registerRoute('post', '/export', (req, res) => {
         });
 });
 
+registerRoute('get', ['/try/:wacUrl', '/try/:wacUrl/:host', '/try/:wacUrl/:type/:host/:id'], (req, res) => {
+    if (!req.params.host) {
+        req.params.host = 'EXCEL';
+    }
+    let editorTryItUrl =
+        req.params.type && req.params.id
+            ? `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}`
+            : `${currentConfig.editorUrl}/#/edit/${req.params.host}`;
+
+    return loadTemplate<ITryItHandlebarsContext>('try-it')
+        .then(tryItGenerator => {
+            const html = tryItGenerator({
+                title: 'Try It!',
+                assets: getAssetPaths(),
+                origin: currentConfig.editorUrl,
+                editorTryItUrl: editorTryItUrl,
+                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
+                wacUrl: decodeURIComponent(req.params.wacUrl)
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
+});
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/', (req, res) => {
@@ -481,7 +505,7 @@ function parseXmlString(xml): Promise<JSON> {
 };
 
 function getVersionNumber(): Promise<string> {
-     return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         return Request.post({
             url: SCRIPT_LAB_STORE_URL,
             body: SCRIPT_LAB_STORE_ID,
