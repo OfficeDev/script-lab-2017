@@ -17,8 +17,8 @@ import { isEmpty } from 'lodash';
         <header class="command__bar">
             <command icon="GlobalNavButton" (click)="showMenu()"></command>
             <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-            <command [hidden]="(isAddinCommands||isEmpty)||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
-            <command [hidden]="(isEmpty||!isAddinCommands)||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}">
+            <command [hidden]="isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+            <command [hidden]="!isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}">
                 <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                 <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
             </command>
@@ -88,7 +88,7 @@ export class EditorMode {
     }
 
     get isEditorTryIt() {
-        return this._route.snapshot.url[0].path === 'edit';
+        return this._route.snapshot.url[0] && this._route.snapshot.url[0].path === 'edit';
     }
 
     get isGistOwned() {
