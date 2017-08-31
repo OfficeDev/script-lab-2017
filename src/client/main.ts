@@ -24,6 +24,8 @@ import './assets/styles/editor.scss';
 let appRoutes: Routes = [
     { path: 'view/:type/:host/:id', component: ViewMode  },
     { path: 'view/error', component: ViewModeError  },
+    { path: 'edit/:type/:host/:id', component: EditorMode },
+    { path: 'edit/:host', component: EditorMode },
     { path: '',  component: EditorMode }
 ];
 
@@ -50,6 +52,12 @@ let imports = [
             environment.initialize(),
             MonacoService.initialize()
         ]);
+
+        let pageParams = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
+        // wacUrl query string parameter must be encoded
+        if (pageParams.wacUrl) {
+            window.localStorage.setItem('wacUrl', pageParams.wacUrl);
+        }
 
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);

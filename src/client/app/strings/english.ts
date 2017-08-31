@@ -163,6 +163,7 @@ export function getEnglishStrings(): ClientStrings {
         openInHost: 'Open in {0}',
         openInGithub: 'Open in GitHub',
         downloadAsHostFile: 'Download {0} file',
+        openTryIt: 'Try it in browser', /** NEEDS STRING REVIEW **/
 
         // Outlook-only strings
 
@@ -183,7 +184,7 @@ export function getEnglishStrings(): ClientStrings {
         noSamplesMessage: `There aren't any samples available for this host yet.`,
         importWarning: `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`,
         importWarningAction: `Don't show this warning again.`,
-        importConfirm: 'Are you sure you want to import this snippet?', /** NEEDS STRING REVIEW **/
+        importSucceed: 'Snippet successfully imported', /** NEEDS STRING REVIEW **/
 
         localStorageWarning: `Snippets you create get erased if you clear your browser cache. ` +
         `To save snippets permanently, export them as gists from the Share menu.`,
