@@ -13,16 +13,14 @@ interface InitializationParams {
     let snippetId;
 
     function initializeTryIt(params: InitializationParams): void {
+        window.addEventListener('message', receiveMessage, false);
         $(document).ready(() => {
-            window.addEventListener('message', receiveMessage, false);
             let url = params.wacUrl;
-            let session = new (OfficeExtension as any).EmbeddedSession(url, { id: 'embed-frame', sessionKey: '1', container: document.getElementById('panel-bottom') });
+            let session = new (OfficeExtension as any).EmbeddedSession(url, { id: 'embed-frame', container: document.getElementById('panel-bottom') });
             session.init().then(() => {
                 $('.runner-frame').remove();
                 $('.panel.right').append(`<iframe class="runner-frame" id="runner-frame" src="${params.runnerSnippetUrl}${snippetId}"></iframe>`);
 
-                // We only need to call set _overrideSession in testing case
-                // because testing code has not been updated to use EmbeddedSession yet.
                 (OfficeExtension.ClientRequestContext as any)._overrideSession = session;
             });
         });
@@ -32,7 +30,7 @@ interface InitializationParams {
                 return;
             }
 
-            snippetId = event.data;
+            snippetId = event.data.id;
         }
     }
 })();

@@ -69,7 +69,7 @@ export class EditorMode {
             this.snippet = snippet;
 
             if (this.isEditorTryIt) {
-                window.parent.postMessage(this.snippet.id, environment.current.config.runnerUrl);
+                window.parent.postMessage({ type: 'import-complete', id: this.snippet.id }, environment.current.config.runnerUrl);
                 return;
             }
         });
@@ -131,7 +131,7 @@ export class EditorMode {
         }
 
         if (isOfficeHost(this.snippet.host)) {
-            if (!isInsideOfficeApp() && !this.isEditorTryIt) {
+            if (!isInsideOfficeApp()) {
                 this._store.dispatch(new UI.ShowAlertAction({
                     actions: [this.strings.okButtonLabel],
                     title: this.strings.snippetNoOfficeTitle,

@@ -46,6 +46,7 @@ let imports = [
 
 (async function start() {
     const strings = Strings();
+    const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 
     try {
         await Promise.all([
@@ -56,7 +57,7 @@ let imports = [
         let pageParams = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
         // wacUrl query string parameter must be encoded
         if (pageParams.wacUrl) {
-            window.localStorage.setItem('wacUrl', pageParams.wacUrl);
+            window.localStorage.setItem(WAC_URL_STORAGE_KEY, pageParams.wacUrl);
         }
 
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
