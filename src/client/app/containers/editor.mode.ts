@@ -88,7 +88,7 @@ export class EditorMode {
     }
 
     get isEditorTryIt() {
-        return /#\/edit\//.test(location.hash)
+        return this._route.snapshot.url[0].path === 'edit';
     }
 
     get isGistOwned() {
@@ -286,15 +286,10 @@ export class EditorMode {
             return;
         }
 
-
         // Mimic view mode code, except Script Lab contains all editor features
         let sub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
-                // Default to Excel
-                if (!host) {
-                    host = 'EXCEL';
-                }
 
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
                     environment.current.host = host.toUpperCase();
