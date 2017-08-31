@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { UIEffects } from '../effects/ui';
 import { environment, AI, storage, isInsideOfficeApp } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
@@ -125,7 +124,6 @@ export class Import {
     strings = Strings();
 
     constructor(
-        private _effects: UIEffects,
         private _request: Request,
         private _store: Store<fromRoot.State>
     ) {
@@ -146,11 +144,6 @@ export class Import {
         this.importViewSnippet()
             .then(deleteSettings => {
                 if (deleteSettings) {
-                    this._effects.alert(
-                        this.strings.importSucceed,
-                        this.strings.importButtonLabel,
-                        this.strings.okButtonLabel
-                    );
 
                     Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
                     Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
@@ -165,7 +158,8 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets) && !this.hasViewUrlSetting() && !this.isEditorTryIt) {
+            let showSampleView = isEmpty(snippets) && !this.hasViewUrlSetting() && !this.isEditorTryIt;
+            if (showSampleView) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
