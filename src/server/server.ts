@@ -399,7 +399,7 @@ registerRoute('get', ['/try/:wacUrl', '/try/:wacUrl/:host', '/try/:wacUrl/:type/
     }
     let editorTryItUrl =
         req.params.type && req.params.id
-            ? `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}` 
+            ? `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}`
             : `${currentConfig.editorUrl}/#/edit/${req.params.host}`;
 
     return loadTemplate<ITryItHandlebarsContext>('try-it')
