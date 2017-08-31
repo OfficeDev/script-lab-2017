@@ -76,8 +76,8 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
         }
 
         if (authRequest.auth_action === 'login') {
-            const hash = window.location.hash.substr(1); // remove #
-            if (hash) {
+            const hasHash = window.location.href.indexOf('#') > 0;
+            if (hasHash) {
                 const authResponseKeyValues = Authenticator.extractParams(window.location.href.split('#')[1]);
                 const accessToken = authResponseKeyValues['access_token'];
                 if (accessToken) {
