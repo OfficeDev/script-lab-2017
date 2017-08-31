@@ -56,7 +56,7 @@ let imports = [
 
         let pageParams = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
         // wacUrl query string parameter must be encoded
-        if (pageParams.wacUrl && !window.localStorage.getItem(WAC_URL_STORAGE_KEY)) {
+        if (pageParams.wacUrl) {
             window.localStorage.setItem(WAC_URL_STORAGE_KEY, pageParams.wacUrl);
         }
 
