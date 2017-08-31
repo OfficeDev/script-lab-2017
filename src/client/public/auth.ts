@@ -4,6 +4,7 @@ import { environment, generateUrl } from '../app/helpers/';
 
 import '../assets/styles/extras.scss';
 
+
 const AuthRequestSessionStorageKey = 'auth_request';
 const AuthorizeUrlMap = {
     'graph': 'https://login.windows.net/common/oauth2/authorize'
@@ -25,7 +26,7 @@ let strings: ClientStrings;
 tryCatch(() => {
     strings = Strings();
 
-    document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect + ' DEBUGGING';
+    document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect;
 
     let authRequestParams: AuthRequestParamData = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
     let hasActionAndServiceAndClientIdInfo =
@@ -75,7 +76,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
         }
 
         if (authRequest.auth_action === 'login') {
-            const hasHash = window.location.href.indexOf("#") > 0;
+            const hasHash = window.location.href.indexOf('#') > 0;
             if (hasHash) {
                 const authResponseKeyValues = Authenticator.extractParams(window.location.href.split('#')[1]);
                 const accessToken = authResponseKeyValues['access_token'];
