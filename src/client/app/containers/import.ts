@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { environment, AI, storage, isInsideOfficeApp } from '../helpers';
+import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
@@ -127,6 +127,7 @@ export class Import {
         private _request: Request,
         private _store: Store<fromRoot.State>
     ) {
+        trustedSnippetManager.cleanUpTrustedSnippets();
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { PlaygroundError, AI, getShareableYaml, environment, getGistUrl, trustedSnippetManager } from '../helpers';
+import { PlaygroundError, AI, getShareableYaml, environment, storage, getGistUrl, trustedSnippetManager } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
@@ -143,17 +143,18 @@ export class GitHubEffects {
 
                 return { gist: gist, snippetId: snippetId };
             })
-            .mergeMap(({ gist, snippetId }) => {
-                // Add snippet as trusted if it isn't already
-                if (!trustedSnippetManager.isSnippetTrusted(snippetId, gist.id)) {
+            .do(({ gist, snippetId }) => {
+                let snippet = storage.snippets.get(snippetId);
+                // If original snippet wasn't a gist and wasn't already trusted, trust it on share
+                if (snippet && !snippet.gist && !trustedSnippetManager.isSnippetTrusted(snippetId, gist.id)) {
                     trustedSnippetManager.updateTrustedSnippets(snippetId);
                 }
-
-                return Observable.from([
-                    new GitHub.LoadGistsAction(),
-                    new GitHub.ShareSuccessAction(gist),
-                    new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })]);
             })
+            .mergeMap(({ gist, snippetId }) => Observable.from([
+                new GitHub.LoadGistsAction(),
+                new GitHub.ShareSuccessAction(gist),
+                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+            )
             .catch(exception => {
                 let actions: Action[] = [new GitHub.ShareFailedAction(exception)];
                 if (exception instanceof PlaygroundError) {
