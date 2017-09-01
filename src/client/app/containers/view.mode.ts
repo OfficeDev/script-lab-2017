@@ -10,6 +10,8 @@ import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 
+const WAC_URL_STORAGE_KEY = 'playground_wac_url';
+
 @Component({
     selector: 'view-mode',
     template: `
@@ -39,6 +41,7 @@ export class ViewMode implements OnInit, OnDestroy {
     paramsSub: Subscription;
     viewType: string;
     viewId: string;
+    displayUrl: string;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -72,17 +75,18 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     get tryItSupported() {
-        return window.localStorage.getItem('wacUrl') && environment.current.host.toUpperCase() === HostType.EXCEL;
+        return window.localStorage.getItem(WAC_URL_STORAGE_KEY) && environment.current.host.toUpperCase() === HostType.EXCEL;
     }
 
     get urlString() {
-        return `URL: ${window.location.href}`;
+        return `URL: ${this.displayUrl}`;
     }
 
     ngOnInit() {
         this.paramsSub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
+                this.displayUrl = `${environment.current.config.editorUrl}/#/view/${type}/${host}/${id}`;
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
                     environment.current.host = host.toUpperCase();
                     // Update environment in cache
@@ -140,9 +144,7 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     openTryIt() {
-        let wacUrl = encodeURIComponent(window.localStorage.getItem('wacUrl'));
-        let hash = location.hash;
-        hash = hash.replace('#/view/', '');
-        window.open(`${environment.current.config.runnerUrl}/try/${wacUrl}/${hash}`, '_blank');
+        let wacUrl = encodeURIComponent(window.localStorage.getItem(WAC_URL_STORAGE_KEY));
+        window.open(`${environment.current.config.runnerUrl}/try/${wacUrl}/${this.viewType}/${environment.current.host}/${this.viewId}`, '_blank');
     }
 }

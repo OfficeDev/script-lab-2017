@@ -228,7 +228,7 @@ export class SnippetEffects {
             }
             AI.trackEvent('Open in playground initiated', { id: correlationId });
             let filename = `script-lab-playground-${environment.current.host}${extension}`;
-            let url = environment.current.config.runnerUrl + `/open/${type}/${environment.current.host}/${id}/${filename}?correlationId=${correlationId}`;
+            let url = `${environment.current.config.runnerUrl}/open/${type}/${environment.current.host}/${id}/${filename}?correlationId=${correlationId}`;
             if (isDownload) {
                 window.open(url, '_blank');
             } else {

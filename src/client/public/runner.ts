@@ -157,11 +157,11 @@ interface InitializationParams {
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
-                officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
-            }
-
-            if ((window.top as any).in_try_it_mode) {
-                officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window.top[namespace]);
+                if ((window.top as any).in_try_it_mode) {
+                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window.top[namespace]);
+                } else {
+                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
+                }
             }
 
             $emptySnippetPlaceholder.remove();
