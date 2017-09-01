@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { environment, AI, storage, isInsideOfficeApp } from '../helpers';
+import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
@@ -78,18 +78,6 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
-                        <div *ngIf="showImportWarning" class="ms-MessageBar ms-MessageBar--severeWarning">
-                            <div class="ms-MessageBar-content">
-                                <div class="ms-MessageBar-icon">
-                                    <i class="ms-Icon ms-Icon--Warning"></i>
-                                </div>
-                                <div class="ms-MessageBar-text">
-                                    {{strings.importWarning}}
-                                    <br />
-                                    <a href="javascript:void(0);" (click)="hideImportWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
-                                </div>
-                            </div>
-                        </div>
                         <div class="ms-TextField import__field">
                             <label class="ms-Label">{{strings.importUrlLabel}}</label>
                             <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
@@ -118,7 +106,6 @@ export class Import {
     url: string;
     snippet: string;
     showLocalStorageWarning: boolean;
-    showImportWarning: boolean;
     activeSnippetId: string;
 
     strings = Strings();
@@ -127,6 +114,7 @@ export class Import {
         private _request: Request,
         private _store: Store<fromRoot.State>
     ) {
+        trustedSnippetManager.cleanUpTrustedSnippets();
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
@@ -140,7 +128,6 @@ export class Import {
             });
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
-        this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
         this.importViewSnippet()
             .then(deleteSettings => {
                 if (deleteSettings) {
@@ -169,11 +156,6 @@ export class Import {
     hideLocalStorageWarning() {
         this.showLocalStorageWarning = false;
         storage.settings.insert('disableLocalStorageWarning', true as any);
-    }
-
-    hideImportWarning() {
-        this.showImportWarning = false;
-        storage.settings.insert('disableImportWarning', true as any);
     }
 
     switch(view = 'samples') {

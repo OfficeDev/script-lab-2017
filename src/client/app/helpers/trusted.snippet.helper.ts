@@ -1,5 +1,18 @@
+import { storage } from '../helpers';
+const TRUSTED_SNIPPETS_KEY = 'playground_trusted_snippets';
+
 class TrustedSnippet {
-    private _trustedSnippetsKey = 'trusted_snippets';
+    cleanUpTrustedSnippets(): void {
+        try {
+            let trustedSnippets = JSON.parse(window.localStorage.getItem(TRUSTED_SNIPPETS_KEY));
+            for (let snippetId of Object.keys(trustedSnippets)) {
+                if (!storage.snippets.get(snippetId)) {
+                    delete trustedSnippets[snippetId];
+                }
+            }
+            window.localStorage.setItem(TRUSTED_SNIPPETS_KEY, JSON.stringify(trustedSnippets));
+        } catch (e) { }
+    }
 
     isSnippetTrusted(snippetId: string, gistId: string): boolean {
         /* Samples are automatically trusted. Check local storage for gists. */
@@ -8,7 +21,7 @@ class TrustedSnippet {
         }
 
         try {
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(this._trustedSnippetsKey));
+            let trustedSnippets = JSON.parse(window.localStorage.getItem(TRUSTED_SNIPPETS_KEY));
             if (!trustedSnippets) {
                 trustedSnippets = {};
             }
@@ -20,12 +33,12 @@ class TrustedSnippet {
 
     updateTrustedSnippets(snippetId: string): void {
         try {
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(this._trustedSnippetsKey));
+            let trustedSnippets = JSON.parse(window.localStorage.getItem(TRUSTED_SNIPPETS_KEY));
             if (!trustedSnippets) {
                 trustedSnippets = {};
             }
             trustedSnippets[snippetId] = true;
-            window.localStorage.setItem(this._trustedSnippetsKey, JSON.stringify(trustedSnippets));
+            window.localStorage.setItem(TRUSTED_SNIPPETS_KEY, JSON.stringify(trustedSnippets));
         } catch (e) { }
     }
 }

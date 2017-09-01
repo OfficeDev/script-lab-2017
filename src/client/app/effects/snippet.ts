@@ -61,6 +61,8 @@ export class SnippetEffects {
             const scrubbedSnippet = getScrubbedSnippet(rawSnippet, publicOrInternal);
             delete scrubbedSnippet.modified_at;
 
+            // Bug #593, stopgap fix until more performant solution is implemented
+            storage.snippets.load();
             if (storage.snippets.contains(scrubbedSnippet.id)) {
                 const originalRawSnippet = storage.snippets.get(scrubbedSnippet.id);
                 const originalScrubbedSnippet = getScrubbedSnippet(originalRawSnippet, publicOrInternal);
