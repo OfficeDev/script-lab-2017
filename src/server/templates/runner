@@ -17,25 +17,6 @@
             height: calc(100vh - 40px);
         }
     </style>
-
-    {{#if officeJS}}
-    <script src="{{{officeJS}}}"></script>
-
-    <script>
-        Office.initialize = function() {
-            // Set initialize to an empty function -- that way, doesn't cause
-            // re-initialization of this page in case of a page like the error dialog,
-            // which doesn't defined (override) Office.initialize.
-            Office.initialize = function() { };
-
-            window.playground_host_ready = true;
-        };
-    </script>
-    {{else}}
-    <script>
-        window.playground_host_ready = true;
-    </script>
-    {{/if}}
 </head>
 
 <body class="{{{host}}}">

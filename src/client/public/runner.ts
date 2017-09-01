@@ -47,6 +47,22 @@ interface InitializationParams {
 
     function initializeRunner(params: InitializationParams): void {
         try {
+            if (!((window.top as any).in_try_it_mode) && params.officeJS) {
+                let script = document.createElement('script');
+                script.src = params.officeJS;
+                script.addEventListener('load', (event) => {
+                    Office.initialize = () => {
+                        // Set initialize to an empty function -- that way, doesn't cause
+                        // re-initialization of this page in case of a page like the error dialog,
+                        // which doesn't defined (override) Office.initialize.
+                        Office.initialize = () => { };
+                        (window as any).playground_host_ready = true;
+                    };
+                });
+                document.getElementsByTagName('head')[0].appendChild(script);
+            } else {
+                (window as any).playground_host_ready = true;
+            }
             initializeRunnerHelper();
         }
         catch (error) {
