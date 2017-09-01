@@ -393,7 +393,7 @@ registerRoute('post', '/export', (req, res) => {
         });
 });
 
-registerRoute('get', ['/try/:wacUrl', '/try/:wacUrl/:host', '/try/:wacUrl/:type/:host/:id'], (req, res) => {
+registerRoute('get', ['/try', '/try/:host', '/try/:type/:host/:id'], (req, res) => {
     if (!req.params.host) {
         req.params.host = 'EXCEL';
     }
@@ -410,7 +410,7 @@ registerRoute('get', ['/try/:wacUrl', '/try/:wacUrl/:host', '/try/:wacUrl/:type/
                 origin: currentConfig.editorUrl,
                 editorTryItUrl: editorTryItUrl,
                 runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
-                wacUrl: decodeURIComponent(req.params.wacUrl)
+                wacUrl: decodeURIComponent(req.query.wacUrl)
             });
 
             res.setHeader('Cache-Control', 'no-cache, no-store');

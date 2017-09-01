@@ -145,6 +145,6 @@ export class ViewMode implements OnInit, OnDestroy {
 
     openTryIt() {
         let wacUrl = encodeURIComponent(window.localStorage.getItem(WAC_URL_STORAGE_KEY));
-        window.open(`${environment.current.config.runnerUrl}/try/${wacUrl}/${this.viewType}/${environment.current.host}/${this.viewId}`, '_blank');
+        window.open(`${environment.current.config.runnerUrl}/try/${this.viewType}/${environment.current.host}/${this.viewId}?wacUrl=${wacUrl}`, '_blank');
     }
 }
