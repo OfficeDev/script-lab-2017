@@ -1,5 +1,3 @@
-import { ClientStrings } from './client-strings';
-
 export function getEnglishStrings(): ClientStrings {
     const playgroundName = 'Script Lab';
 
@@ -43,11 +41,11 @@ export function getEnglishStrings(): ClientStrings {
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
         cannotImportSnippetCreatedForDifferentHost:
-            (snippetHost: string, currentHost: string) =>
-                `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
+        (snippetHost: string, currentHost: string) =>
+            `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
         currentHostDoesNotSupportRequiredApiSet:
-            (currentHost: string, setName: string, setVersion: string) =>
-                `${currentHost} does not support the required API Set ${setName} @ ${setVersion}`,
+        (currentHost: string, setName: string, setVersion: string) =>
+            `${currentHost} does not support the required API Set ${setName} @ ${setVersion}`,
 
         snippetSaveError: 'Failed to save the current snippet',
         snippetDupeError: 'Failed to duplicate the current snippet',
@@ -56,6 +54,7 @@ export function getEnglishStrings(): ClientStrings {
         snippetLoadAllError: 'Failed to load the local snippets',
         snippetRunError: 'Failed to run the snippet',
         snippetLoadDefaultsError: 'Failed to load the default samples',
+        snippetOpenInPlaygroundError: /** NEEDS STRING REVIEW */ 'Failed to open in playground',
 
         snippetNoOfficeTitle: /** NEEDS STRING REVIEW */ 'Cannot run this snippet',
         snippetNoOfficeMessage: /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Acquire Script Lab for free today at https://aka.ms/getscriptlab.',
@@ -158,6 +157,14 @@ export function getEnglishStrings(): ClientStrings {
         newSnippetDescription: 'Create a new snippet',
         importDescription: 'Create a snippet from YAML or a GitHub gist',
 
+        // view.mode.ts strings
+
+        openInPlayground: 'Open in Script Lab',
+        openInHost: 'Open in {0}',
+        openInGithub: 'Open in GitHub',
+        downloadAsHostFile: 'Download {0} file',
+        openTryIt: 'Try it live in your browser', /** NEEDS STRING REVIEW **/
+
         // Outlook-only strings
 
         noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" pane in Outlook to run your snippet.`,
@@ -177,6 +184,7 @@ export function getEnglishStrings(): ClientStrings {
         noSamplesMessage: `There aren't any samples available for this host yet.`,
         importWarning: `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`,
         importWarningAction: `Don't show this warning again.`,
+        importSucceed: 'The snippet was imported successfully', /** NEEDS STRING REVIEW **/
 
         localStorageWarning: `Snippets you create get erased if you clear your browser cache. ` +
         `To save snippets permanently, export them as gists from the Share menu.`,
@@ -186,6 +194,8 @@ export function getEnglishStrings(): ClientStrings {
         importUrlLabel: `Snippet URL or GitHub gist ID`,
         importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
         importYamlLabel: `Snippet YAML`,
+
+        unexpectedError: 'An unexpected error has occurred',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -202,7 +212,6 @@ export function getEnglishStrings(): ClientStrings {
 
         Runner: {
             snippetNoLongerExists: 'That snippet no longer exists. Reload this page, or return to the previous one.',
-            unexpectedError: 'An unexpected error occurred',
 
             reloadingOfficeJs: 'Reloading Office.js',
 
@@ -256,7 +265,18 @@ export function getEnglishStrings(): ClientStrings {
 
             tutorialDescription: 'This Excel file shows you how to use Script Lab in a few easy steps:',
             download: 'Download',
-            errorInitializingScriptLab: 'Error initializing Script Lab.'
+            errorInitializingScriptLab: 'Error initializing Script Lab.',
+        },
+
+        Auth: {
+            authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...',
+            loggingOutOnBehalfOfSnippet: 'Logging out on behalf of the snippet...',
+            authenticationRedirect: 'Authentication redirect',
+            authenticationError: 'Authentication error',
+            unrecognizedService: 'Unrecognized service',
+            invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
+            invalidAuthResponseReceived: 'Invalid response received from the authentication service',
+            yourAccessTokenIs: 'Your access token is'
         }
     };
 }

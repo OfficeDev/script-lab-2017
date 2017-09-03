@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator } from '@microsoft/office-js-helpers';
+import { Authenticator, UI } from '@microsoft/office-js-helpers';
 import { StoreModule, Store } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
@@ -24,6 +24,8 @@ import './assets/styles/editor.scss';
 let appRoutes: Routes = [
     { path: 'view/:type/:host/:id', component: ViewMode  },
     { path: 'view/error', component: ViewModeError  },
+    { path: 'edit/:type/:host/:id', component: EditorMode },
+    { path: 'edit/:host', component: EditorMode },
     { path: '',  component: EditorMode }
 ];
 
@@ -44,12 +46,19 @@ let imports = [
 
 (async function start() {
     const strings = Strings();
+    const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 
     try {
         await Promise.all([
             environment.initialize(),
             MonacoService.initialize()
         ]);
+
+        let pageParams = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
+        // wacUrl query string parameter must be encoded
+        if (pageParams.wacUrl) {
+            window.localStorage.setItem(WAC_URL_STORAGE_KEY, pageParams.wacUrl);
+        }
 
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);
@@ -70,10 +79,10 @@ let imports = [
         }
     }
     catch (e) {
-        $('.ms-progress-component__sub-title').text(strings.HtmlPageStrings.errorInitializingScriptLab)
-            .click(() => {
-                $('.ms-progress-component__sub-title').text(JSON.stringify(e, null, 4));
-            });
+        $('.ms-progress-component__sub-title')
+            .text(strings.HtmlPageStrings.errorInitializingScriptLab)
+            .css('cursor', 'pointer')
+            .click(() => UI.notify(e));
         $('.ms-progress-component__footer').hide();
         AI.trackException(e, 'Playground Initialization');
     }

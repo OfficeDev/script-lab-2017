@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{title}}</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/excel-web-16.00.js"></script>
+    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.tryIt.css}}}" />
+</head>
+
+<body class="app">
+    <script src="{{{origin}}}/libs/jquery/jquery.min.js"></script>
+    <script src="{{{origin}}}/libs/jquery-resizable-dom/jquery-resizable.min.js"></script>
+
+    <div class="panel-container vertical">
+        <div class="panel top">
+            <div class="panel-container horizontal">
+                <div class="panel left">
+                    <iframe class="editor-frame" id="editor-frame" src="{{{editorTryItUrl}}}"></iframe>
+                </div>
+                <div class="splitter vertical"></div>
+                <div class="panel right">
+                    <div class="ms-progress-component runner-frame">
+                        <main class="ms-progress-component__main">
+                            <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.svg">
+                            <h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
+                        </main>
+                        <footer class="ms-progress-component__footer">
+                            <div class="ms-progress">
+                                <div class="cs-loader">
+                                    <div class="cs-loader-inner">
+                                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="splitter horizontal"></div>
+        <div id="panel-bottom" class="panel bottom"></div>
+    </div>
+    
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.tryIt.js}}}"></script>
+
+    <script type="text/javascript">
+        $('.panel.left').resizable({
+            handleSelector: '.splitter.vertical',
+            resizeHeight: false,
+            onDragStart: function() {
+                $('iframe').css('pointer-events', 'none');
+            },
+            onDragEnd: function() {
+                $('iframe').css('pointer-events', 'auto');
+            }
+        });
+
+        $('.panel.top').resizable({
+            handleSelector: '.splitter.horizontal',
+            resizeWidth: false,
+            onDragStart: function() {
+                $('iframe').css('pointer-events', 'none');
+            },
+            onDragEnd: function() {
+                $('iframe').css('pointer-events', 'auto');
+            }
+        });
+    </script>
+    
+    <script type="text/javascript">
+        window.initializeTryIt({
+            origin: '{{{origin}}}',
+            runnerSnippetUrl: '{{{runnerSnippetUrl}}}',
+            wacUrl: '{{{wacUrl}}}'
+        });
+    </script>
+
+</body>
+
+</html>

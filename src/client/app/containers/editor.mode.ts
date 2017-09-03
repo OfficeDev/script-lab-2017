@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
 import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
@@ -14,8 +17,8 @@ import { isEmpty } from 'lodash';
         <header class="command__bar">
             <command icon="GlobalNavButton" (click)="showMenu()"></command>
             <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-            <command [hidden]="isAddinCommands||isEmpty" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
-            <command [hidden]="isEmpty||!isAddinCommands" icon="Play" [async]="running$|async" title="{{strings.run}}">
+            <command [hidden]="isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+            <command [hidden]="!isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}">
                 <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                 <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
             </command>
@@ -42,7 +45,7 @@ import { isEmpty } from 'lodash';
     <about [(show)]="showAbout"></about>
     <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
     <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
-    <import [hidden]="!(showImport$|async)"></import>
+    <import [isEditorTryIt]="isEditorTryIt" [hidden]="!(showImport$|async)"></import>
     <alert></alert>
     <router-outlet></router-outlet>
     `
@@ -57,11 +60,18 @@ export class EditorMode {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _effects: UIEffects
+        private _effects: UIEffects,
+        private _request: Request,
+        private _route: ActivatedRoute
     ) {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
+
+            if (this.isEditorTryIt) {
+                window.parent.postMessage({ type: 'import-complete', id: this.snippet.id }, environment.current.config.runnerUrl);
+                return;
+            }
         });
 
         this._store.select(fromRoot.getSharing).subscribe(sharing => {
@@ -69,10 +79,16 @@ export class EditorMode {
         });
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
+
+        this.checkForEditorTryIt();
     }
 
     get isAddinCommands() {
         return /commands=1/ig.test(location.search);
+    }
+
+    get isEditorTryIt() {
+        return this._route.snapshot.url[0] && this._route.snapshot.url[0].path === 'edit';
     }
 
     get isGistOwned() {
@@ -263,5 +279,46 @@ export class EditorMode {
 
     noop() {
         // no-op
+    }
+
+    checkForEditorTryIt() {
+        if (!this.isEditorTryIt) {
+            return;
+        }
+
+        // Mimic view mode code, except Script Lab contains all editor features
+        let sub = this._route.params
+            .map(params => ({ type: params.type, host: params.host, id: params.id }))
+            .mergeMap(({ type, host, id }) => {
+
+                if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
+                    environment.current.host = host.toUpperCase();
+                    // Update environment in cache
+                    environment.current = environment.current;
+                }
+
+                switch (type) {
+                    case 'samples':
+                        let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
+                            .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
+                        );
+                    case 'gist':
+                        return Observable.of({ lookupTable: null, id: id });
+                    default:
+                        return Observable.of({ lookupTable: null, id: null });
+                }
+            })
+            .subscribe(({ lookupTable, id }) => {
+                if (lookupTable && lookupTable[id]) {
+                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isViewMode: false }));
+                } else if (id) {
+                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isViewMode: false }));
+                }
+
+                if (sub && !sub.closed) {
+                    sub.unsubscribe();
+                }
+            });
     }
 }

@@ -1,12 +1,14 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI, storage } from '../helpers';
+import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } from '../helpers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 
-//strings are specified inline (not imported) for performance reasons
+const VIEW_URL_SETTING_PROPERTY_NAME = 'SnippetToImport';
+const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,18 +78,6 @@ import { isEmpty } from 'lodash';
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
-                        <div *ngIf="showImportWarning" class="ms-MessageBar ms-MessageBar--severeWarning">
-                            <div class="ms-MessageBar-content">
-                                <div class="ms-MessageBar-icon">
-                                    <i class="ms-Icon ms-Icon--Warning"></i>
-                                </div>
-                                <div class="ms-MessageBar-text">
-                                    {{strings.importWarning}}
-                                    <br />
-                                    <a href="javascript:void(0);" (click)="hideImportWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
-                                </div>
-                            </div>
-                        </div>
                         <div class="ms-TextField import__field">
                             <label class="ms-Label">{{strings.importUrlLabel}}</label>
                             <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
@@ -110,26 +100,43 @@ import { isEmpty } from 'lodash';
     `
 })
 export class Import {
+    @Input() isEditorTryIt;
+
     view = 'snippets';
     url: string;
     snippet: string;
     showLocalStorageWarning: boolean;
-    showImportWarning: boolean;
     activeSnippetId: string;
 
     strings = Strings();
 
-    constructor(private _store: Store<fromRoot.State>) {
+    constructor(
+        private _request: Request,
+        private _store: Store<fromRoot.State>
+    ) {
+        trustedSnippetManager.cleanUpTrustedSnippets();
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
         this._store.select(fromRoot.getCurrent)
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
-            .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
+            .subscribe(() => {
+                if (!this.hasViewUrlSetting() && !this.isEditorTryIt) {
+                    this._store.dispatch(new UI.ToggleImportAction(true));
+                }
+            });
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
-        this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
+        this.importViewSnippet()
+            .then(deleteSettings => {
+                if (deleteSettings) {
+
+                    Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
+                    Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
+                    Office.context.document.settings.saveAsync();
+                }
+            });
     }
 
     show$ = this._store.select(fromRoot.getImportState);
@@ -138,7 +145,8 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets)) {
+            let showSampleView = isEmpty(snippets) && !this.hasViewUrlSetting() && !this.isEditorTryIt;
+            if (showSampleView) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
@@ -148,11 +156,6 @@ export class Import {
     hideLocalStorageWarning() {
         this.showLocalStorageWarning = false;
         storage.settings.insert('disableLocalStorageWarning', true as any);
-    }
-
-    hideImportWarning() {
-        this.showImportWarning = false;
-        storage.settings.insert('disableImportWarning', true as any);
     }
 
     switch(view = 'samples') {
@@ -197,7 +200,7 @@ export class Import {
 
         data = data.trim();
 
-        this._store.dispatch(new Snippet.ImportAction(mode, data));
+        this._store.dispatch(new Snippet.ImportAction({ mode: mode, data: data, isViewMode: false }));
         this.cancel();
     }
 
@@ -206,11 +209,45 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.DEFAULT));
+        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.DEFAULT, data: null, isViewMode: false}));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
     cancel() {
         this._store.dispatch(new UI.ToggleImportAction(false));
+    }
+
+    hasViewUrlSetting() {
+        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(VIEW_URL_SETTING_PROPERTY_NAME);
+    }
+
+    async importViewSnippet(): Promise<boolean> {
+        // Do not import if there are no view settings
+        if (!this.hasViewUrlSetting()) {
+            return Promise.resolve(false);
+        }
+
+        let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);
+        let viewData = Office.context.document.settings.get(VIEW_URL_SETTING_PROPERTY_NAME);
+        if (viewData.type === 'samples') {
+            let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+            let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                .subscribe(lookupTable => {
+                    if (lookupTable && lookupTable[viewData.id]) {
+                        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[viewData.id], isViewMode: false }));
+                    }
+
+                    if (sub && !sub.closed) {
+                        sub.unsubscribe();
+                    }
+                });
+
+        } else {
+            // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
+            this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: viewData.id, isViewMode: true }));
+        }
+
+        AI.trackEvent('Open in playground completed', { id: correlationId });
+        return Promise.resolve(true);
     }
 }

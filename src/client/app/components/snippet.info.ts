@@ -1,7 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { getGistUrl, environment } from '../helpers';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
-let { config } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,11 +51,11 @@ export class SnippetInfo {
     strings = Strings();
 
     get gistUrl() {
-        return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
+        return isNil(this.snippet.gist) ? null : getGistUrl(this.snippet.gist);
     }
 
     get viewModeGistUrl() {
         let host = this.snippet.host.toLowerCase();
-        return `${config['production'].editorUrl}/#/view/gist/${host}/${this.snippet.gist}`;
+        return `${environment.current.config.editorUrl}/#/view/gist/${host}/${this.snippet.gist}`;
     }
 }

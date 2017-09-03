@@ -17,7 +17,6 @@ interface ITemplate {
         [index: string]: number
     },
     platform: string;
-    origin: string;
     created_at: number;
     modified_at: number;
 }
@@ -104,20 +103,38 @@ interface IEvent<T> {
     data: T
 }
 
-interface IEnvironment {
-    devMode?: boolean;
-    build?: {
-        name: string;
-        version: string;
-        timestamp: string;
-        author: string;
-        humanReadableTimestamp: string;
-    },
-    config?: IEnvironmentConfig
-    host?: string,
-    platform?: string,
-    PLAYGROUND_ORIGIN?: string,
-    PLAYGROUND_REDIRECT?: string
+declare var PLAYGROUND: ICompiledPlaygroundInfo;
+
+interface ICompiledPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: {
+        local: IEnvironmentConfig,
+        edge: IEnvironmentConfig,
+        insiders: IEnvironmentConfig,
+        production: IEnvironmentConfig
+    };
+    localStorageKeys: {
+        originEnvironmentUrl: string;
+        redirectEnvironmentUrl: string;
+        playgroundCache: string;
+    };
+}
+
+interface ICurrentPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: IEnvironmentConfig;
+    host?: string;
+    platform?: string;
+}
+
+interface IBuildInfo {
+    name: string;
+    version: string;
+    timestamp: string;
+    author: string;
+    humanReadableTimestamp: string;
 }
 
 interface IEnvironmentConfig {
@@ -130,8 +147,6 @@ interface IEnvironmentConfig {
     feedbackUrl: string,
     samplesUrl: string
 }
-
-declare var PLAYGROUND: IEnvironment;
 
 interface ISettings {
     lastOpened: ISnippet,
@@ -152,4 +167,12 @@ interface HeartbeatParams {
      * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
     */
     lastModified: string;
+}
+
+// NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
+interface AuthRequestParamData {
+    auth_action: 'login' | 'logout';
+    service: 'graph';
+    client_id: string;
+    is_office_host: boolean;
 }

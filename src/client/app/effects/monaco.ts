@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, storage } from '../helpers';
+import { AI, storage, environment } from '../helpers';
 import { Strings } from '../strings';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
 import { UI, Monaco } from '../actions';
 import { Effect, Actions } from '@ngrx/effects';
 import * as sha1 from 'crypto-js/sha1';
+
+const DefaultLibraries = [
+    environment.current.config.editorUrl + '/runtime-helpers.d.ts'
+];
 
 export interface IIntellisenseFile {
     url: string;
@@ -36,7 +40,7 @@ export class MonacoEffects {
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
         .map((action: Monaco.UpdateIntellisenseAction) => action.payload)
         .map(({ libraries, language }) => {
-            let filesToAdd = this._parse(libraries)
+            let filesToAdd = this._parse(libraries).concat(DefaultLibraries)
                 .filter(url => url && url.trim() !== '')
                 .map(file => {
                     let currentFile = this._current.get(file);

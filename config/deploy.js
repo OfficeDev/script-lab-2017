@@ -31,17 +31,17 @@ if (slot == null) {
 let buildConfig;
 switch (slot) {
     case 'master':
-        buildConfig = config['edge'];
+        buildConfig = config.edge;
         slot = 'edge';
         break;
 
     case 'insiders':
-        buildConfig = config['insiders'];
+        buildConfig = config.insiders;
         slot = 'insiders';
         break;
 
     case 'production':
-        buildConfig = config['production'];
+        buildConfig = config.production;
         slot = 'staging';
         break;
 

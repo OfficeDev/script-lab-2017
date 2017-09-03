@@ -17,25 +17,6 @@
             height: calc(100vh - 40px);
         }
     </style>
-
-    {{#if officeJS}}
-    <script src="{{{officeJS}}}"></script>
-
-    <script>
-        Office.initialize = function() {
-            // Set initialize to an empty function -- that way, doesn't cause
-            // re-initialization of this page in case of a page like the error dialog,
-            // which doesn't defined (override) Office.initialize.
-            Office.initialize = function() { };
-
-            window.playground_host_ready = true;
-        };
-    </script>
-    {{else}}
-    <script>
-        window.playground_host_ready = true;
-    </script>
-    {{/if}}
 </head>
 
 <body class="{{{host}}}">
@@ -111,6 +92,23 @@
         </div>
     </div>
 
+    <div id="notify-snippet-not-trusted" class="runner-notification ms-MessageBar ms-MessageBar--info ms-MessageBar--severeWarning" style="display:none">
+        <div class="ms-MessageBar-content">
+            <div class="ms-MessageBar-text">
+                {{strings.snippetNotTrusted}}
+            </div>
+
+            <div class="buttons" style="text-align: right;">
+                <button class="action-fast-reload ms-Button host-colored-button">
+                    <span class="ms-Button-label">{{strings.trust}}</span>
+                </button>
+                <button class="action-dismiss ms-Button host-colored-button">
+                    <span class="ms-Button-label">{{strings.cancel}}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="notify-error" class="runner-notification ms-MessageBar ms-MessageBar--error" style="display:none">
         <div class="ms-MessageBar-content">
             <div class="ms-MessageBar-text">
@@ -160,6 +158,7 @@
             officeJS: '{{{officeJS}}}',
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
+            isTrustedSnippet: {{{isTrustedSnippet}}},
             heartbeatParams: {
                 {{#if snippet.lastModified}}
                 lastModified: {{snippet.lastModified}},

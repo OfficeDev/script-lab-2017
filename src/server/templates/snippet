@@ -41,6 +41,13 @@
     <!-- HTML -->
     {{{indent template 1}}}
 
+    <!-- ScriptLab-Specific Runtime Helpers -->
+    <script src="{{{runtimeHelpersUrl}}}"></script>
+    <script>
+        ScriptLab._editorUrl = "{{{editorUrl}}}";
+        ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
+    </script>
+    
     <!-- JS Libraries -->
     {{#each scriptReferences}}
     <script crossorigin="anonymous" src="{{this}}"></script>
