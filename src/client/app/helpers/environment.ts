@@ -4,60 +4,70 @@ let { devMode, build, config } = PLAYGROUND;
 
 class Environment {
     private _config: IEnvironmentConfig;
-    cache = new Storage<any>('playground_cache', StorageType.SessionStorage);
+    cache = new Storage<any>(PLAYGROUND.localStorageKeys.playgroundCache, StorageType.SessionStorage);
 
     constructor() {
         if (devMode) {
-            this._config = config['local'];
+            this._config = config.local;
         }
         else {
             let { origin } = location;
             if (/bornholm-insiders/.test(origin)) {
-                this._config = config['insiders'];
+                this._config = config.insiders;
             }
             else if (/bornholm-edge/.test(origin)) {
-                this._config = config['edge'];
+                this._config = config.edge;
             }
             else {
-                this._config = config['production'];
+                this._config = config.production;
             }
         }
     }
 
-    private _current: IEnvironment;
+    private _current: ICurrentPlaygroundInfo;
     private _setupCurrentDefaultsIfEmpty() {
         if (this._current == null) {
+            let host: string;
+            let platform: string;
+            let environment = this.cache.get('environment') as ICurrentPlaygroundInfo;
+            if (environment) {
+                host = environment.host;
+                platform = environment.platform;
+            }
+
             this._current = {
                 devMode,
                 build,
-                config: this._config
+                config: this._config,
+                host: host,
+                platform: platform
             };
-
-            let environment = this.cache.get('environment') as IEnvironment;
-            if (environment) {
-                this._current.host = environment.host;
-                this._current.platform = environment.platform;
-            }
 
             this.cache.insert('environment', this._current);
         }
     }
 
-    get current(): IEnvironment {
+    get current(): ICurrentPlaygroundInfo {
         this._setupCurrentDefaultsIfEmpty();
         return this._current;
     }
 
-    set current(value: IEnvironment) {
+    set current(value: ICurrentPlaygroundInfo) {
         this._setupCurrentDefaultsIfEmpty();
         let updatedEnv = { ...this._current, ...value };
         this._current = this.cache.insert('environment', updatedEnv);
     }
 
-    async initialize(currHost?: string, currPlatform?: string) {
+    async initialize(currHost?: string, currPlatform?: string): Promise<ICurrentPlaygroundInfo> {
         if (currHost) {
-            this.current = { host: currHost, platform: currPlatform };
-            return Promise.resolve({ currHost, currPlatform });
+            this.current = {
+                host: currHost,
+                platform: currPlatform,
+                build: null,
+                config: null,
+                devMode: null
+            };
+            return Promise.resolve(this._current);
         }
 
         if (this.current && this.current.host) {
@@ -94,7 +104,14 @@ class Environment {
             }
         });
 
-        this.current = { host, platform };
+        this.current = {
+            host,
+            platform,
+            build: null,
+            config: null,
+            devMode: null
+        };
+
         return this.current;
     }
 }

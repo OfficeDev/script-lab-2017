@@ -1,8 +1,11 @@
 const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
-const PLAYGROUND_ORIGIN = "playground_origin_environment_url";
-const PLAYGROUND_REDIRECT = "playground_redirect_environment_url";
+const localStorageKeys = {
+    originEnvironmentUrl: 'playground_origin_environment_url',
+    redirectEnvironmentUrl: 'playground_redirect_environment_url',
+    playgroundCache: 'playground_cache'
+};
 
 const build = (() => {
     return {
@@ -63,6 +66,9 @@ class RedirectPlugin {
             compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
                 let headOpeningTag = '<head>'; 
                 let htmlHead = htmlPluginData.html.match(headOpeningTag);
+
+                let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
+
                 if (htmlHead && htmlHead.length > 0) {
                     htmlHead = htmlHead.index;
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + headOpeningTag +
@@ -86,15 +92,15 @@ class RedirectPlugin {
                             targetUrl = decodeURIComponent(targetUrl)
                             // Clear origin environment's local storage if target = origin
                             if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
-                                window.localStorage.removeItem("${PLAYGROUND_REDIRECT}");
+                                window.localStorage.removeItem("${redirectEnvironmentUrl}");
                                 return;
                             }
 
-                            window.localStorage.setItem("${PLAYGROUND_REDIRECT}", targetUrl);
+                            window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
                         }
 
                         // Redirect origin environment to target
-                        var redirectUrl = window.localStorage.getItem("${PLAYGROUND_REDIRECT}");
+                        var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
                         if (redirectUrl) {
                             var originParam = [
                                 (window.location.search ? "&" : "?"), 
@@ -113,7 +119,8 @@ class RedirectPlugin {
 
                         // Point app environment back to origin if user is not in origin
                         if (originUrl.length > 0) {
-                            window.localStorage.setItem("${PLAYGROUND_ORIGIN}", decodeURIComponent(originUrl).toLowerCase());
+                            window.localStorage.setItem("${originEnvironmentUrl}",
+                                decodeURIComponent(originUrl).toLowerCase());
                         }
 
                         // If reached here, environment is already configured
@@ -131,6 +138,5 @@ class RedirectPlugin {
 
 exports.build = build;
 exports.config = config;
+exports.localStorageKeys = localStorageKeys;
 exports.RedirectPlugin = RedirectPlugin;
-exports.PLAYGROUND_ORIGIN = PLAYGROUND_ORIGIN;
-exports.PLAYGROUND_REDIRECT = PLAYGROUND_REDIRECT;
