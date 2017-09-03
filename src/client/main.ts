@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator } from '@microsoft/office-js-helpers';
+import { Authenticator, UI } from '@microsoft/office-js-helpers';
 import { StoreModule, Store } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
@@ -79,10 +79,10 @@ let imports = [
         }
     }
     catch (e) {
-        $('.ms-progress-component__sub-title').text(strings.HtmlPageStrings.errorInitializingScriptLab)
-            .click(() => {
-                $('.ms-progress-component__sub-title').text(JSON.stringify(e, null, 4));
-            });
+        $('.ms-progress-component__sub-title')
+            .text(strings.HtmlPageStrings.errorInitializingScriptLab)
+            .css('cursor', 'pointer')
+            .click(() => UI.notify(e));
         $('.ms-progress-component__footer').hide();
         AI.trackException(e, 'Playground Initialization');
     }

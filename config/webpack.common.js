@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config, RedirectPlugin, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = require('./env.config');
+const { build, config, RedirectPlugin, localStorageKeys } = require('./env.config');
 const { GH_SECRETS } = process.env;
 
 module.exports = (prodMode) =>
@@ -65,8 +65,7 @@ module.exports = (prodMode) =>
                     devMode: !prodMode,
                     build: build,
                     config: config,
-                    PLAYGROUND_ORIGIN: PLAYGROUND_ORIGIN,
-                    PLAYGROUND_REDIRECT: PLAYGROUND_REDIRECT
+                    localStorageKeys: localStorageKeys
                 })
             }),
             new webpack.LoaderOptionsPlugin({

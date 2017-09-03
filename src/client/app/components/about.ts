@@ -2,7 +2,7 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterV
 import { environment, storageSize, storage } from '../helpers';
 import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
-let { config, PLAYGROUND_ORIGIN, PLAYGROUND_REDIRECT } = PLAYGROUND;
+let { config, localStorageKeys } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -78,9 +78,10 @@ export class About implements AfterViewInit {
         this.originalLanguage = this.currentChosenLanguage;
 
         // User can only navigate to localhost if they've sideloaded local manifest
-        let showLocalConfig = (environment.current.config.name === config['local'].name || /localhost/.test(window.localStorage.getItem(PLAYGROUND_ORIGIN)));
+        let showLocalConfig = (environment.current.config.name === config.local.name ||
+            /localhost/.test(window.localStorage.getItem(localStorageKeys.originEnvironmentUrl)));
         if (showLocalConfig) {
-            this.configs.push({ name: config['local'].editorUrl, value: 'local' });
+            this.configs.push({ name: config.local.editorUrl, value: 'local' });
         }
 
         this.selectedConfig = this.configs.find(c => c.value.toUpperCase() === environment.current.config.name).value;
@@ -113,14 +114,14 @@ export class About implements AfterViewInit {
             return;
         }
 
-        let originEnvironment = window.localStorage.getItem(PLAYGROUND_ORIGIN);
+        let originEnvironment = window.localStorage.getItem(localStorageKeys.originEnvironmentUrl);
         let targetEnvironment = config[this.selectedConfig].editorUrl;
 
         // Add query string parameters to default editor URL
         if (originEnvironment) {
             window.location.href = `${originEnvironment}?targetEnvironment=${encodeURIComponent(targetEnvironment)}`;
         } else {
-            window.localStorage.setItem(PLAYGROUND_REDIRECT, targetEnvironment);
+            window.localStorage.setItem(localStorageKeys.redirectEnvironmentUrl, targetEnvironment);
             window.location.href = `${targetEnvironment}?originEnvironment=${encodeURIComponent(environment.current.config.editorUrl)}`;
         }
     }
