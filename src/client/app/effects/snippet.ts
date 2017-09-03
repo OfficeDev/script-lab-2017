@@ -329,6 +329,13 @@ export class SnippetEffects {
             case Snippet.ImportType.SAMPLE:
             case Snippet.ImportType.URL:
             case Snippet.ImportType.GIST:
+                let viewUrlMatch = new RegExp(`^${environment.current.config.editorUrl}\/#\/view`);
+                if (type === Snippet.ImportType.URL && viewUrlMatch.test(data)) {
+                    /* If importing from a view-mode URL, simply redirect the user */
+                    window.location.href = data;
+                }
+
+
                 let id = null;
 
                 const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
