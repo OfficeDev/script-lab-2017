@@ -3,7 +3,7 @@
 // still strings that need to be localized (just search for this function name).
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
-export function getGermanStrings(): ClientStrings {
+export function getGermanStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
 
     return {
@@ -195,10 +195,13 @@ export function getGermanStrings(): ClientStrings {
         localStorageWarningAction: `Diese Meldung nicht mehr anzeigen.`,
 
         importInstructions: `Geben Sie die URL zum Schnipsel an oder fügen Sie den YAML-Code in das entsprechende Feld ein. Klicken Sie anschließend auf`,
-        importUrlLabel: `URL oder GitHub-Gist-ID zum Code-Schnipsel`,
-        importUrlPlaceholder: `z.B. https://gist.github.com/Schnipsel-ID`,
-        importYamlLabel: `YAML-Code des Schnipsels`,
-
+        importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel
+            /* String has been tweaked from original.  It should now be roughly a shortened combination of
+               "URL oder GitHub-Gist-ID zum Code-Schnipsel"
+               and
+               "YAML-Code des Schnipsels"
+            */,
+        exampleAbbreviation: `z.B.`,
         unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
         Refresh: {

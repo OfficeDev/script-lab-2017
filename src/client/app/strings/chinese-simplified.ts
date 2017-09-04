@@ -3,7 +3,7 @@
 // still strings that need to be localized (just search for this function name).
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
-export function getChineseSimplifiedStrings(): ClientStrings {
+export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
 
     return {
@@ -192,9 +192,8 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         localStorageWarningAction: `不要再显示这个警告了。`,
 
         importInstructions: `进入代码段的URL或粘贴下面的YAML，然后选择`,
-        importUrlLabel: `代码段 URL or GitHub gist ID`,
-        importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
-        importYamlLabel: `代码段 YAML`,
+        importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel,
+        exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated().exampleAbbreviation,
 
         unexpectedError: '出现意外错误',
 

@@ -78,13 +78,9 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
-                        <div class="ms-TextField import__field">
-                            <label class="ms-Label">{{strings.importUrlLabel}}</label>
-                            <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
-                        </div>
                         <div class="ms-TextField ms-TextField--multiline import__field">
-                            <label class="ms-Label">{{strings.importYamlLabel}}</label>
-                            <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
+                            <label class="ms-Label">{{strings.importUrlOrYamlLabel}}</label>
+                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}" ></textarea>
                         </div>
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
@@ -103,8 +99,7 @@ export class Import {
     @Input() isEditorTryIt;
 
     view = 'snippets';
-    url: string;
-    snippet: string;
+    urlOrSnippet: string;
     showLocalStorageWarning: boolean;
     activeSnippetId: string;
 
@@ -179,13 +174,8 @@ export class Import {
                 break;
 
             case 'import':
-                if (this.url) {
-                    mode = Snippet.ImportType.URL;
-                }
-                else {
-                    mode = Snippet.ImportType.YAML;
-                }
-                data = this.url || this.snippet;
+                mode = Snippet.ImportType.URL_OR_YAML;
+                data = this.urlOrSnippet;
                 break;
 
             case 'samples':

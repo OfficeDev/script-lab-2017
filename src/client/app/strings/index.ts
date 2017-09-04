@@ -1,5 +1,6 @@
 import { environment } from '../helpers';
 import { createFakeStrings, getStrings } from './common';
+import { importUrlPlaceholder } from './language-agnostic';
 
 /** Localstorage key for playground language. Will get set both on the client domain
   * (as expected), and also on the runner domain (due to its use in runner.ts) */
@@ -23,7 +24,7 @@ let availableLanguages = [
     { name: '中文', value: 'zh-cn' }
 ];
 
-const languageGenerator: { [key: string]: () => ClientStrings } = {
+const languageGenerator: { [key: string]: () => ClientStringsPerLanguage } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
     'es': () => getSpanishStrings(),
@@ -43,7 +44,11 @@ export function getAvailableLanguages(): { name: string, value: string }[] {
 }
 
 export function Strings(): ClientStrings {
-    return getStrings(getRawDisplayLanguage(), languageGenerator, () => getEnglishStrings());
+    let strings = getStrings(getRawDisplayLanguage(), languageGenerator, () => getEnglishStrings());
+    return {
+        ...strings,
+        importUrlPlaceholder: importUrlPlaceholder(strings.exampleAbbreviation)
+    };
 }
 
 export function getDisplayLanguage() {

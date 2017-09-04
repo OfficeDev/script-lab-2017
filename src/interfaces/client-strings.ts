@@ -1,4 +1,4 @@
-interface ClientStrings {
+interface ClientStringsPerLanguage {
     playgroundName: string;
     playgroundTagline: string;
 
@@ -182,10 +182,8 @@ interface ClientStrings {
     localStorageWarningAction: string;
 
     importInstructions: string;
-    importUrlLabel: string;
-    importUrlPlaceholder: string;
-    importYamlLabel: string;
-
+    importUrlOrYamlLabel: string;
+    exampleAbbreviation: string;
 
     unexpectedError: string;
 
@@ -261,4 +259,8 @@ interface ClientStrings {
         invalidAuthResponseReceived: string;
         yourAccessTokenIs: string;
     }
+}
+
+interface ClientStrings extends ClientStringsPerLanguage {
+    importUrlPlaceholder: string;
 }

@@ -327,13 +327,24 @@ export class SnippetEffects {
 
             /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
             case Snippet.ImportType.SAMPLE:
-            case Snippet.ImportType.URL:
+            case Snippet.ImportType.URL_OR_YAML:
             case Snippet.ImportType.GIST:
+                // Try YAML first, as the easiest one to isolate.
+                try {
+                    let snippet = jsyaml.safeLoad(data) as ISnippet;
+                    if (snippet && snippet.script && snippet.libraries) {
+                        return Observable.of(snippet);
+                    }
+                } catch (e) {
+                    /* Intentionally blank. Must not have been a YAML file...
+                        so try as URL or something else instead. */
+                }
+
                 let id = null;
 
                 const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
 
-                if (match != null) {
+                if (match) {
                     /* If importing a gist, then extract the gist ID and use the apis to retrieve it */
                     id = match[1];
                 }
@@ -370,11 +381,6 @@ export class SnippetEffects {
 
                         return output;
                     });
-
-            /* If import type is YAML, then simply load */
-            case Snippet.ImportType.YAML:
-                let snippet = jsyaml.load(data);
-                return Observable.of(snippet);
 
             default: return Observable.of(null);
         }

@@ -1,4 +1,4 @@
-export function getEnglishStrings(): ClientStrings {
+export function getEnglishStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
 
     return {
@@ -191,9 +191,8 @@ export function getEnglishStrings(): ClientStrings {
         localStorageWarningAction: `Don't show this warning again.`,
 
         importInstructions: `Enter the snippet's URL or paste the YAML below, then choose`,
-        importUrlLabel: `Snippet URL or GitHub gist ID`,
-        importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
-        importYamlLabel: `Snippet YAML`,
+        importUrlOrYamlLabel: `Snippet URL or YAML`,
+        exampleAbbreviation: `e.g.:`,
 
         unexpectedError: 'An unexpected error has occurred',
 
