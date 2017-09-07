@@ -22,6 +22,7 @@
   "homepage": "https://github.com/officedev/script-lab#readme",
   "scripts": {
     "clean": "rimraf dist && rimraf .awcache",
+    "clean_node_modules": "rimraf node_modules",
     "lint": "tslint --project tsconfig.json",
     "dev:server": "tsc -p tsconfig.server.json --watch",
     "dev:copy": "cpx \"src/server/**/!(*.ts)\" \"dist/server\" --watch",

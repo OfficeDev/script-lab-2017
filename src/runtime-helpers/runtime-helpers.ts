@@ -1,7 +1,7 @@
 /* tslint:disable:no-namespace */
 
 // NOTE: At initialization, the ScriptLab namespace also expects
-//       to be passed in a "._editorUrl" and "._strings" object
+//       to be passed in a "._strings" object
 //       It is not listed on the namespace, however, to avoid polluting generated d.ts
 
 // TODO: switch to the dialog functionality of OfficeJsHelpers (which has benefits
@@ -60,7 +60,7 @@ module ScriptLab {
             }, 1000);
 
             function accessTokenMessageListener(event: MessageEvent) {
-                if (event.origin !== (ScriptLab as any)._editorUrl) {
+                if (event.origin !== window.location.origin) {
                     return;
                 }
                 if (typeof event.data !== 'string') {
@@ -197,7 +197,7 @@ module ScriptLab {
             `is_office_host=${params.is_office_host}`
         ].join('&');
 
-        return (ScriptLab as any)._editorUrl + '/auth?' + queryParams;
+        return window.location.origin + '/snippet/auth?' + queryParams;
     }
 
     function _isPlainWeb() {

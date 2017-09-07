@@ -4,7 +4,6 @@ import { environment, generateUrl } from '../app/helpers/';
 
 import '../assets/styles/extras.scss';
 
-
 const AuthRequestSessionStorageKey = 'auth_request';
 const AuthorizeUrlMap = {
     'graph': 'https://login.windows.net/common/oauth2/authorize'

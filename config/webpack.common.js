@@ -171,11 +171,6 @@ module.exports = (prodMode) =>
                 filename: 'test-view-iframe.html',
                 template: './views/test-view-iframe.html'
             }),
-            new HtmlWebpackPlugin({
-                filename: 'auth/index.html', /* copy within folder, so that URL "/auth" works with no .html suffix */
-                template: './views/auth.html',
-                chunks: ['polyfills', 'vendor', 'auth'],
-            }),
             
             new RedirectPlugin()
         ]
