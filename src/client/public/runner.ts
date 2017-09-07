@@ -117,7 +117,7 @@ interface InitializationParams {
                 // so that can keep adding the snippet frame relative to its position
                 $snippetContent.text('');
 
-                replaceSnippetIframe(snippetHtml, params.officeJS, isTrustedSnippet);
+                replaceSnippetIframe(atob(snippetHtml), params.officeJS, isTrustedSnippet);
             }
 
             establishHeartbeat(params.origin, params.heartbeatParams);

@@ -485,7 +485,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     snippet: {
                         id: snippet.id,
                         lastModified: snippet.modified_at,
-                        content: html
+                        content: Buffer.from(html).toString('base64')
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
