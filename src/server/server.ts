@@ -502,6 +502,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
 
             timer.stop();
             res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.setHeader('X-XSS-Protection', '0');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
 }
