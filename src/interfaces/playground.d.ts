@@ -109,7 +109,7 @@ interface ICompiledPlaygroundInfo {
     devMode: boolean;
     build: IBuildInfo;
     config: {
-        local: IEnvironmentConfig,
+        local: ILocalHostEnvironmentConfig,
         edge: IEnvironmentConfig,
         insiders: IEnvironmentConfig,
         production: IEnvironmentConfig
@@ -138,7 +138,7 @@ interface IBuildInfo {
 }
 
 interface IEnvironmentConfig {
-    name: string,
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,
@@ -148,9 +148,13 @@ interface IEnvironmentConfig {
     samplesUrl: string
 }
 
+interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
+    clientSecretLocalHost: string;
+}
+
 interface ISettings {
     lastOpened: ISnippet,
-    profile: IProfile,
+    profile: IBasicProfile,
     theme: boolean,
     language: string,
     env: string

@@ -101,7 +101,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         // Upon user trusting snippet, update in local storage
         if (isTrustedSnippet) {
-            trustedSnippetManager.updateTrustedSnippets(snippet.id);
+            trustedSnippetManager.trustSnippet(snippet.id);
         }
 
         if (snippet.modified_at !== trackingSnippet.lastModified) {
@@ -111,7 +111,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             const sendImmediately = trackingSnippet.lastModified < 1;
             if (sendImmediately) {
                 trackingSnippet.lastModified = snippet.modified_at;
-                isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
+                isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, { snippet: snippet, isTrustedSnippet: isTrustedSnippet });
             } else {
                 messenger.send<{name: string}>(window.parent, MessageType.INFORM_STALE, {
