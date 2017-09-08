@@ -254,7 +254,7 @@ interface ClientStringsPerLanguage {
         loggingOutOnBehalfOfSnippet: string;
         authenticationRedirect: string;
         authenticationError: string;
-        unrecognizedService: string;
+        unrecognizedResource: string;
         invalidParametersPassedInForAuth: string;
         invalidAuthResponseReceived: string;
         yourAccessTokenIs: string;

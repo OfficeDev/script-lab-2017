@@ -17,36 +17,36 @@ module ScriptLab {
     const CODE_DIALOG_CLOSED_BY_USER = 12006;
 
     /** [PREVIEW] Gets an access token on behalf of the user for a particular service
-     * @param service: The service provider (default: 'graph' = Microsoft Graph)
+     * @param resource: The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
     */
-    export function getAccessToken(clientId: string, service: 'graph' = 'graph'): Promise<string> {
+    export function getAccessToken(clientId: string, resource: string = 'graph'): Promise<string> {
         if (_isPlainWeb()) {
-            return _getAccessTokenViaWindowOpen(clientId, service);
+            return _getAccessTokenViaWindowOpen(clientId, resource);
         } else if (_isDialogApiSupported()) {
-            return _getAccessTokenViaDialogApi(clientId, service);
+            return _getAccessTokenViaDialogApi(clientId, resource);
         } else {
             throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
         }
     }
 
     /** [PREVIEW] Log the user out of a service
-     * @param service: The service provider (default: 'graph' = Microsoft Graph)
+     * @param resource: The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
     */
-    export function logout(clientId: string, service: 'graph' = 'graph'): Promise<any> {
+    export function logout(clientId: string, resource: string): Promise<any> {
         if (_isPlainWeb()) {
-            return _logoutViaWindowOpen(clientId, service);
+            return _logoutViaWindowOpen(clientId, resource);
         } else if (_isDialogApiSupported()) {
-            return _logoutViaDialogApi(clientId, service);
+            return _logoutViaDialogApi(clientId, resource);
         } else {
             throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
         }
     }
 
-    function _getAccessTokenViaWindowOpen(clientId: string, service: string): Promise<string> {
+    function _getAccessTokenViaWindowOpen(clientId: string, resource: string): Promise<string> {
         return new Promise((resolve, reject) => {
 
             let authDialog = window.open(
-                _generateAuthUrl({ auth_action: 'login', client_id: clientId, service: service as any, is_office_host: false }),
+                _generateAuthUrl({ auth_action: 'login', client_id: clientId, resource: resource, is_office_host: false }),
                 '_blank',
                 'width=1024,height=768'
             );
@@ -83,10 +83,10 @@ module ScriptLab {
         });
     }
 
-    function _getAccessTokenViaDialogApi(clientId: string, service: string): Promise<string> {
+    function _getAccessTokenViaDialogApi(clientId: string, resource: string): Promise<string> {
         return new Promise((resolve, reject) => {
             Office.context.ui.displayDialogAsync(
-                _generateAuthUrl({ auth_action: 'login', client_id: clientId, service: service as any, is_office_host: true }),
+                _generateAuthUrl({ auth_action: 'login', client_id: clientId, resource: resource, is_office_host: true }),
                 { height: 50, width: 50 },
                 result => {
                     if (result.status !== Office.AsyncResultStatus.Succeeded) {
@@ -131,10 +131,10 @@ module ScriptLab {
         });
     }
 
-    function _logoutViaWindowOpen(clientId: string, service: string): Promise<any> {
+    function _logoutViaWindowOpen(clientId: string, resource: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let authDialog = window.open(
-                _generateAuthUrl({ auth_action: 'logout', client_id: clientId, service: service as any, is_office_host: false }),
+                _generateAuthUrl({ auth_action: 'logout', client_id: clientId, resource: resource, is_office_host: false }),
                 '_blank',
                 'width=1024,height=768'
             );
@@ -153,10 +153,10 @@ module ScriptLab {
         });
     }
 
-    function _logoutViaDialogApi(clientId: string, service: string): Promise<any> {
+    function _logoutViaDialogApi(clientId: string, resource: string): Promise<any> {
         return new Promise((resolve, reject) => {
             Office.context.ui.displayDialogAsync(
-                _generateAuthUrl({ auth_action: 'logout', client_id: clientId, service: service as any, is_office_host: true }),
+                _generateAuthUrl({ auth_action: 'logout', client_id: clientId, resource: resource, is_office_host: true }),
                 { height: 50, width: 50 },
                 result => {
                     if (result.status !== Office.AsyncResultStatus.Succeeded) {
@@ -186,14 +186,14 @@ module ScriptLab {
 
     function _generateAuthUrl(params: {
         auth_action: 'login' | 'logout';
-        service: 'graph';
+        resource: string;
         client_id: string;
         is_office_host: boolean;
     }): string {
         const queryParams = [
             `auth_action=${params.auth_action}`,
             `client_id=${encodeURIComponent(params.client_id)}`,
-            `service=${params.service}`,
+            `resource=${params.resource}`,
             `is_office_host=${params.is_office_host}`
         ].join('&');
 
