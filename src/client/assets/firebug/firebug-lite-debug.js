@@ -26017,7 +26017,9 @@ var processStyleSheet = function(doc, styleSheet)
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     // CSS Parser
-    var shouldParseCSS = typeof CssParser != "undefined" && !Firebug.disableResourceFetching;
+    var shouldParseCSS = 
+        /* [BEGIN PLAYGROUND MODIFICATION]*/ false; /*[END PLAYGROUND MODIFICATION]*/
+        /* Formerly: typeof CssParser != "undefined" && !Firebug.disableResourceFetching;  */
     if (shouldParseCSS)
     {
         try
