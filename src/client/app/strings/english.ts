@@ -272,7 +272,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
             loggingOutOnBehalfOfSnippet: 'Logging out on behalf of the snippet...',
             authenticationRedirect: 'Authentication redirect',
             authenticationError: 'Authentication error',
-            unrecognizedService: 'Unrecognized service',
+            unrecognizedResource: 'Unrecognized resource',
             invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
             invalidAuthResponseReceived: 'Invalid response received from the authentication service',
             yourAccessTokenIs: 'Your access token is'

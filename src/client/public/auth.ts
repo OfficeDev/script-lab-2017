@@ -5,18 +5,15 @@ import { environment, generateUrl } from '../app/helpers/';
 import '../assets/styles/extras.scss';
 
 const AuthRequestSessionStorageKey = 'auth_request';
-const AuthorizeUrlMap = {
-    'graph': 'https://login.windows.net/common/oauth2/authorize'
-};
-const LogoutUrlMap = {
-    'graph': 'https://login.windows.net/common/oauth2/logout'
-};
-const ResourceMap = {
+const AzureADAuthorizeUrl = 'https://login.windows.net/common/oauth2/authorize';
+const AzureADLogoutUrl = 'https://login.windows.net/common/oauth2/logout';
+
+const DefaultResourceMap = {
     'graph': 'https://graph.microsoft.com'
 };
 
 const ActionParamName: keyof AuthRequestParamData = 'auth_action';
-const ServiceParamName: keyof AuthRequestParamData = 'service';
+const ResourceParamName: keyof AuthRequestParamData = 'resource';
 const ClientIdParamName: keyof AuthRequestParamData = 'client_id';
 
 
@@ -30,7 +27,7 @@ tryCatch(() => {
     let authRequestParams: AuthRequestParamData = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
     let hasActionAndServiceAndClientIdInfo =
         authRequestParams[ActionParamName] &&
-        authRequestParams[ServiceParamName] &&
+        authRequestParams[ResourceParamName] &&
         authRequestParams[ClientIdParamName];
 
     if (!hasActionAndServiceAndClientIdInfo && window.sessionStorage[AuthRequestSessionStorageKey]) {
@@ -43,7 +40,7 @@ tryCatch(() => {
     }
 
     // At this point, should have a client ID & service info
-    if (!authRequestParams.auth_action || !authRequestParams.client_id || !authRequestParams.service) {
+    if (!authRequestParams.auth_action || !authRequestParams.client_id || !authRequestParams.resource) {
         throw new Error(strings.Auth.invalidParametersPassedInForAuth);
     }
 
@@ -66,7 +63,7 @@ tryCatch(() => {
 
 function proceedWithAuthInit(authRequest: AuthRequestParamData) {
     tryCatch(() => {
-        // Expect to either have the original "action" and "service" and "client_id" parameters (start),
+        // Expect to either have the original "action" and "resource" and "client_id" parameters (start),
         // or an "access_token" or "error" parameter (for oauth completion; see below)
         // https://www.oauth.com/oauth2-servers/access-tokens/access-token-response/
 
@@ -104,15 +101,14 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 }
             }
 
-            if (authRequest[ServiceParamName] && authRequest[ClientIdParamName]) {
-                let authorizeUrl = AuthorizeUrlMap[authRequest.service];
-                let resource = ResourceMap[authRequest.service];
-                if (!authorizeUrl || !resource) {
-                    throw new Error(`${strings.Auth.unrecognizedService} "${authRequest.service}"`);
+            if (authRequest[ResourceParamName] && authRequest[ClientIdParamName]) {
+                let resource = DefaultResourceMap[authRequest.resource] || authRequest.resource;
+                if (!resource) {
+                    throw new Error(`${strings.Auth.unrecognizedResource} "${authRequest.resource}"`);
                 }
 
                 window.sessionStorage[AuthRequestSessionStorageKey] = JSON.stringify(authRequest);
-                const url = generateUrl(authorizeUrl, {
+                const url = generateUrl(AzureADAuthorizeUrl, {
                     'response_type': 'token',
                     'client_id': authRequest.client_id,
                     'resource': resource,
@@ -124,15 +120,14 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
             }
         }
         else if (authRequest.auth_action === 'logout') {
-            if (authRequest[ServiceParamName] && authRequest[ClientIdParamName]) {
-                let logoutUrl = LogoutUrlMap[authRequest.service];
-                let resource = ResourceMap[authRequest.service];
-                if (!logoutUrl || !resource) {
-                    throw new Error(`${strings.Auth.unrecognizedService} "${authRequest.service}"`);
+            if (authRequest[ResourceParamName] && authRequest[ClientIdParamName]) {
+                let resource = DefaultResourceMap[authRequest.resource] || authRequest.resource;
+                if (!resource) {
+                    throw new Error(`${strings.Auth.unrecognizedResource} "${authRequest.resource}"`);
                 }
 
                 window.sessionStorage[AuthRequestSessionStorageKey] = JSON.stringify(authRequest);
-                const url = generateUrl(logoutUrl, {
+                const url = generateUrl(AzureADLogoutUrl, {
                     'client_id': authRequest.client_id
                 });
                 window.location.assign(url);
