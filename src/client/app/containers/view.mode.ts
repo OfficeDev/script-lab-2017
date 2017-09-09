@@ -10,6 +10,8 @@ import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 
+const WAC_URL_STORAGE_KEY = 'playground_wac_url';
+
 @Component({
     selector: 'view-mode',
     template: `
@@ -17,6 +19,7 @@ import { Strings } from '../strings';
             <header class="command__bar">
                 <command class="view-disable" [title]="snippet?.name"></command>
                 <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
+                    <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
                     <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
                     <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
                 </command>
@@ -38,6 +41,7 @@ export class ViewMode implements OnInit, OnDestroy {
     paramsSub: Subscription;
     viewType: string;
     viewId: string;
+    displayUrl: string;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -63,21 +67,26 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     get openInHostString() {
-        return this.strings.openInHost.replace('{0}', environment.current.host);
+        return this.strings.openInHost.replace('{0}', environment.current.host.toLowerCase());
     }
 
     get downloadAsHostFileString() {
-        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host);
+        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host.toLowerCase());
+    }
+
+    get tryItSupported() {
+        return window.localStorage.getItem(WAC_URL_STORAGE_KEY) && environment.current.host.toUpperCase() === HostType.EXCEL;
     }
 
     get urlString() {
-        return `URL: ${window.location.href}`;
+        return `URL: ${this.displayUrl}`;
     }
 
     ngOnInit() {
         this.paramsSub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
+                this.displayUrl = `${environment.current.config.editorUrl}/#/view/${type}/${host}/${id}`;
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
                     environment.current.host = host.toUpperCase();
                     // Update environment in cache
@@ -132,5 +141,10 @@ export class ViewMode implements OnInit, OnDestroy {
 
     openInGithub() {
         window.open(getGistUrl(this.snippet.gist));
+    }
+
+    openTryIt() {
+        let wacUrl = encodeURIComponent(window.localStorage.getItem(WAC_URL_STORAGE_KEY));
+        window.open(`${environment.current.config.runnerUrl}/try/${this.viewType}/${environment.current.host}/${this.viewId}?wacUrl=${wacUrl}`, '_blank');
     }
 }

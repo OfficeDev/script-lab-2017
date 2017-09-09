@@ -61,6 +61,8 @@ export class SnippetEffects {
             const scrubbedSnippet = getScrubbedSnippet(rawSnippet, publicOrInternal);
             delete scrubbedSnippet.modified_at;
 
+            // Bug #593, stopgap fix until more performant solution is implemented
+            storage.snippets.load();
             if (storage.snippets.contains(scrubbedSnippet.id)) {
                 const originalRawSnippet = storage.snippets.get(scrubbedSnippet.id);
                 const originalScrubbedSnippet = getScrubbedSnippet(originalRawSnippet, publicOrInternal);
@@ -137,7 +139,7 @@ export class SnippetEffects {
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
-                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
+                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
 
                 AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
                 post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
@@ -224,7 +226,7 @@ export class SnippetEffects {
             }
             AI.trackEvent('Open in playground initiated', { id: correlationId });
             let filename = `script-lab-playground-${environment.current.host}${extension}`;
-            let url = environment.current.config.runnerUrl + `/open-in-playground/${correlationId}/${environment.current.host}/${type}/${id}/${filename}`;
+            let url = `${environment.current.config.runnerUrl}/open/${type}/${environment.current.host}/${id}/${filename}?correlationId=${correlationId}`;
             if (isDownload) {
                 window.open(url, '_blank');
             } else {
@@ -325,13 +327,24 @@ export class SnippetEffects {
 
             /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
             case Snippet.ImportType.SAMPLE:
-            case Snippet.ImportType.URL:
+            case Snippet.ImportType.URL_OR_YAML:
             case Snippet.ImportType.GIST:
+                // Try YAML first, as the easiest one to isolate.
+                try {
+                    let snippet = jsyaml.safeLoad(data) as ISnippet;
+                    if (snippet && snippet.script && snippet.libraries) {
+                        return Observable.of(snippet);
+                    }
+                } catch (e) {
+                    /* Intentionally blank. Must not have been a YAML file...
+                        so try as URL or something else instead. */
+                }
+
                 let id = null;
 
                 const match = /https:\/\/gist.github.com\/(?:.*?\/|.*?)([a-z0-9]{32})$/.exec(data);
 
-                if (match != null) {
+                if (match) {
                     /* If importing a gist, then extract the gist ID and use the apis to retrieve it */
                     id = match[1];
                 }
@@ -369,11 +382,6 @@ export class SnippetEffects {
                         return output;
                     });
 
-            /* If import type is YAML, then simply load */
-            case Snippet.ImportType.YAML:
-                let snippet = jsyaml.load(data);
-                return Observable.of(snippet);
-
             default: return Observable.of(null);
         }
     }
@@ -403,10 +411,6 @@ export class SnippetEffects {
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
         snippet.gist = rawSnippet.gist;
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
-
-        if (snippet.gist && this._github.profile && this._github.profile.login === snippet.gistOwnerId) {
-            trustedSnippetManager.updateTrustedSnippets(snippet.id);
-        }
 
         let properties = {};
         if (mode === Snippet.ImportType.GIST) {

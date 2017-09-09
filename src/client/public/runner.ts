@@ -30,7 +30,6 @@ interface InitializationParams {
     let host: string;
 
     let currentSnippet: { id: string, lastModified: number, officeJS: string };
-    let notifySnippetNotTrustedDisplayed: boolean;
 
     const defaultIsListeningTo = {
         snippetSwitching: true,
@@ -47,6 +46,22 @@ interface InitializationParams {
 
     function initializeRunner(params: InitializationParams): void {
         try {
+            if (!((window.top as any).in_try_it_mode) && params.officeJS) {
+                let script = document.createElement('script');
+                script.src = params.officeJS;
+                script.addEventListener('load', (event) => {
+                    Office.initialize = () => {
+                        // Set initialize to an empty function -- that way, doesn't cause
+                        // re-initialization of this page in case of a page like the error dialog,
+                        // which doesn't defined (override) Office.initialize.
+                        Office.initialize = () => { };
+                        (window as any).playground_host_ready = true;
+                    };
+                });
+                document.getElementsByTagName('head')[0].appendChild(script);
+            } else {
+                (window as any).playground_host_ready = true;
+            }
             initializeRunnerHelper();
         }
         catch (error) {
@@ -101,7 +116,7 @@ interface InitializationParams {
                 // so that can keep adding the snippet frame relative to its position
                 $snippetContent.text('');
 
-                replaceSnippetIframe(snippetHtml, params.officeJS, isTrustedSnippet);
+                replaceSnippetIframe(atob(snippetHtml), params.officeJS, isTrustedSnippet);
             }
 
             establishHeartbeat(params.origin, params.heartbeatParams);
@@ -119,8 +134,9 @@ interface InitializationParams {
     (window as any).initializeRunner = initializeRunner;
 
 
-    /** Creates a snippet iframe and returns it (still hidden) */
-    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): void {
+    /** Creates a snippet iframe and returns it (still hidden). Returns true on success
+     * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
+    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): boolean {
         showHeader();
 
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
@@ -130,18 +146,12 @@ interface InitializationParams {
             .insertAfter($snippetContent);
 
         if (!isTrustedSnippet) {
-            notifySnippetNotTrustedDisplayed = true;
             showReloadNotification($('#notify-snippet-not-trusted'),
-                () => {
-                    notifySnippetNotTrustedDisplayed = false;
-                    clearAndRefresh(currentSnippet.id, '', true /*isTrustedSnippet*/);
-                },
-                () => {
-                    notifySnippetNotTrustedDisplayed = false;
-                    window.location.href = returnUrl;
-                }
+                () => clearAndRefresh(currentSnippet.id, '', true /*isTrustedSnippet*/),
+                () => window.location.href = returnUrl,
+                false /*allowShowLoadingDots => not for trust dialog*/
             );
-            return;
+            return false;
         }
 
         const $iframe =
@@ -157,7 +167,11 @@ interface InitializationParams {
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
-                officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
+                if ((window.top as any).in_try_it_mode) {
+                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window.top[namespace]);
+                } else {
+                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
+                }
             }
 
             $emptySnippetPlaceholder.remove();
@@ -183,6 +197,8 @@ interface InitializationParams {
         (contentWindow as any).console = window.console;
         contentWindow.onerror = (...args) => console.error(args);
         contentWindow.document.close();
+
+        return true;
     }
 
     function handleError(error: Error) {
@@ -238,6 +254,21 @@ interface InitializationParams {
     }
 
     async function ensureHostInitialized(): Promise<any> {
+        if ((window.top as any).in_try_it_mode) {
+            (window as any).Office = {
+                initialize: () => { },
+
+                context: {
+                    requirements: {
+                        isSetSupported: (setName: string) => {
+                            return setName.toLowerCase().trim() === 'excelapi';
+                        }
+                    }
+                }
+            };
+            return Promise.resolve();
+        }
+
         // window.playground_host_ready is set within the runner template (embedded in html code)
         // when the host is ready (i.e., in Office.initialized callback, if Office host)
         if ((window as any).playground_host_ready) {
@@ -282,7 +313,9 @@ interface InitializationParams {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
                         () => clearAndRefresh(currentSnippet.id, input.message.name, false /*isTrustedSnippet*/),
-                        () => isListeningTo.currentSnippetContentChange = false);
+                        () => isListeningTo.currentSnippetContentChange = false,
+                        true, /*allowShowLoadingDots*/
+                    );
                 }
             });
 
@@ -300,7 +333,8 @@ interface InitializationParams {
                         $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                         showReloadNotification($anotherSnippetSelected,
                             () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
-                            () => isListeningTo.snippetSwitching = false);
+                            () => isListeningTo.snippetSwitching = false,
+                            true /*allowShowLoadingDots*/);
                     }
                 }
             });
@@ -318,22 +352,11 @@ interface InitializationParams {
                 // (don't want to navigate, just to do an AJAX call)
                 $.post(window.location.origin + '/compile/snippet', { data: data, isTrustedSnippet: input.message.isTrustedSnippet })
                     .then(html => processSnippetReload(html, snippet, input.message.isTrustedSnippet))
-                    .fail(handleError)
-                    .always(() => {
-                        if (!notifySnippetNotTrustedDisplayed) {
-                            $('.runner-overlay').hide();
-                            $('.runner-notification').not('#notify-error').hide();
-                        }
-                    });
+                    .fail(handleError);
             });
     }
 
-    function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void) {
-        /* Do not display other messages while the trust snippet message is displayed */
-        if (notifySnippetNotTrustedDisplayed && $notificationContainer.attr('id') !== 'notify-snippet-not-trusted') {
-            return;
-        }
-
+    function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void, allowShowLoadingDots: boolean) {
         $notificationContainer.find('.action-fast-reload').off('click').click(() => {
             reloadAction();
         });
@@ -344,10 +367,7 @@ interface InitializationParams {
             dismissAction();
         });
 
-        if (notifySnippetNotTrustedDisplayed) {
-            /* Hide loading dots */
-            $('.cs-loader').css('visibility', 'hidden');
-        }
+        $('.cs-loader').css('visibility', allowShowLoadingDots ? 'visible' : 'hidden');
 
         // Show the current notification (and hide any others)
         $('.runner-notification').hide();
@@ -378,12 +398,17 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
+        let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
 
         (window as any).Firebug.Console.clear();
+
+        if (replacedSuccessfully) {
+            $('.runner-overlay').hide();
+            $('.runner-notification').hide();
+        }
     }
 
     /** Clear current snippet frame and send a refresh REFRESH_REQUEST

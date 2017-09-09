@@ -128,7 +128,7 @@ export class GitHubEffects {
                 throw exception;
             }))
             .mergeMap(async ({ type, gist, snippetId }) => {
-                let gistUrl = getGistUrl(gist.id);
+                let gistUrl = getGistUrl((gist as IGist).id);
                 let messageBody =
                     type === GitHub.GitHubActionTypes.UPDATE_GIST ?
                         `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
@@ -141,12 +141,12 @@ export class GitHubEffects {
                     window.open(gistUrl);
                 }
 
-                return { gist: gist, snippetId: snippetId };
+                return { gist: gist as IGist, snippetId: snippetId };
             })
             .mergeMap(({ gist, snippetId }) => Observable.from([
-                    new GitHub.LoadGistsAction(),
-                    new GitHub.ShareSuccessAction(gist),
-                    new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+                new GitHub.LoadGistsAction(),
+                new GitHub.ShareSuccessAction(gist),
+                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
             )
             .catch(exception => {
                 let actions: Action[] = [new GitHub.ShareFailedAction(exception)];

@@ -3,7 +3,7 @@
 // still strings that need to be localized (just search for this function name).
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
-export function getGermanStrings(): ClientStrings {
+export function getGermanStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
 
     return {
@@ -167,6 +167,7 @@ export function getGermanStrings(): ClientStrings {
         openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
         openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
         downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+        openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
 
         // Outlook-only strings
 
@@ -187,17 +188,20 @@ export function getGermanStrings(): ClientStrings {
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
         importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
         importWarningAction: `Diese Meldung nicht mehr anzeigen.`,
-        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
+        importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
 
         localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser Cache löschen. ` +
         `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
         localStorageWarningAction: `Diese Meldung nicht mehr anzeigen.`,
 
         importInstructions: `Geben Sie die URL zum Schnipsel an oder fügen Sie den YAML-Code in das entsprechende Feld ein. Klicken Sie anschließend auf`,
-        importUrlLabel: `URL oder GitHub-Gist-ID zum Code-Schnipsel`,
-        importUrlPlaceholder: `z.B. https://gist.github.com/Schnipsel-ID`,
-        importYamlLabel: `YAML-Code des Schnipsels`,
-
+        importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel
+            /* String has been tweaked from original.  It should now be roughly a shortened combination of
+               "URL oder GitHub-Gist-ID zum Code-Schnipsel"
+               and
+               "YAML-Code des Schnipsels"
+            */,
+        exampleAbbreviation: `z.B.`,
         unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
         Refresh: {
@@ -276,7 +280,7 @@ export function getGermanStrings(): ClientStrings {
             loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
             authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
             authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
-            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedResource,
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs

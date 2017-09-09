@@ -20,7 +20,7 @@ import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
-    IRunnerHandlebarsContext, ISnippetHandlebarsContext
+    IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -99,7 +99,7 @@ setInterval(() => {
                     // Delete all directories older than three hours and all files older than three hours that are not in map
                     if ((now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
                         if (stat.isDirectory()) {
-                            rimraf(absolutePath, () => {});
+                            rimraf(absolutePath, () => { });
                         } else {
                             fs.unlink(absolutePath, (err) => {
                                 ai.trackException('File deletion failed', { name: absolutePath });
@@ -231,7 +231,7 @@ registerRoute('post', '/auth/:user', (req, res) => {
             },
             json: {
                 client_id: clientId,
-                client_secret: secrets ? secrets[env] : '',
+                client_secret: getClientSecret(),
                 redirect_uri: editorUrl,
                 code,
                 state
@@ -265,7 +265,7 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filename', async (req, res) => {
+registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
     let relativePath, templateName;
     switch (req.params.host.toUpperCase()) {
         case 'EXCEL':
@@ -284,7 +284,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
             throw new Error(`Unsupported host: ${req.params.host}`);
     }
 
-    const correlationId = req.params.correlationId;
+    const correlationId = req.query.correlationId;
     let directoryInfo = generatedDirectories[correlationId];
     // Check if file already exists on server for correlation id
     if (directoryInfo) {
@@ -307,7 +307,7 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                     (new Promise<string>((resolve, reject) => {
                         fs.readFile(xmlFileName, (err, data) => {
                             if (err) {
-                                throw(err);
+                                throw (err);
                             } else {
                                 let xmlStringData = data.toString();
                                 xmlStringData = xmlStringData
@@ -319,34 +319,34 @@ registerRoute('get', '/open-in-playground/:correlationId/:host/:type/:id/:filena
                             }
                         });
                     }))
-                    .then(xmlStringData => {
-                        fs.writeFile(xmlFileName, xmlStringData, (err) => {
-                            if (err) {
-                                throw err;
-                            }
+                        .then(xmlStringData => {
+                            fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                                if (err) {
+                                    throw err;
+                                }
 
-                            let zipFileName = `${extractDirName}.zip`;
-                            let writeZipFile = fs.createWriteStream(zipFileName);
-                            writeZipFile.on('finish', () => {
-                                rimraf(extractDirName, () => {});
-                                res.attachment(req.params.filename);
-                                fs.createReadStream(zipFileName).pipe(res);
-                                res.on('finish', () => {
-                                    generatedDirectories[correlationId] = {
-                                        name: zipFileName,
-                                        relativeFilePath: `${relativeFilePath}.zip`,
-                                        isBeingRead: false,
-                                        timestamp
-                                    };
+                                let zipFileName = `${extractDirName}.zip`;
+                                let writeZipFile = fs.createWriteStream(zipFileName);
+                                writeZipFile.on('finish', () => {
+                                    rimraf(extractDirName, () => { });
+                                    res.attachment(req.params.filename);
+                                    fs.createReadStream(zipFileName).pipe(res);
+                                    res.on('finish', () => {
+                                        generatedDirectories[correlationId] = {
+                                            name: zipFileName,
+                                            relativeFilePath: `${relativeFilePath}.zip`,
+                                            isBeingRead: false,
+                                            timestamp
+                                        };
+                                    });
                                 });
-                            });
 
-                            const archiver = Archiver('zip');
-                            archiver.pipe(writeZipFile);
-                            archiver.directory(extractDirName, '');
-                            archiver.finalize();
+                                const archiver = Archiver('zip');
+                                archiver.pipe(writeZipFile);
+                                archiver.directory(extractDirName, '');
+                                archiver.finalize();
+                            });
                         });
-                    });
                 });
             });
     }
@@ -393,6 +393,30 @@ registerRoute('post', '/export', (req, res) => {
         });
 });
 
+registerRoute('get', ['/try', '/try/:host', '/try/:type/:host/:id'], (req, res) => {
+    if (!req.params.host) {
+        req.params.host = 'EXCEL';
+    }
+    let editorTryItUrl =
+        req.params.type && req.params.id
+            ? `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}`
+            : `${currentConfig.editorUrl}/#/edit/${req.params.host}`;
+
+    return loadTemplate<ITryItHandlebarsContext>('try-it')
+        .then(tryItGenerator => {
+            const html = tryItGenerator({
+                title: 'Try It!',
+                assets: getAssetPaths(),
+                origin: currentConfig.editorUrl,
+                editorTryItUrl: editorTryItUrl,
+                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
+                wacUrl: decodeURIComponent(req.query.wacUrl)
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
+});
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/', (req, res) => {
@@ -414,6 +438,20 @@ registerRoute('get', '/version', (req, res) => {
             samplesUrl: currentConfig.samplesUrl
         }, null, 4)
     );
+});
+
+/** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
+registerRoute('get', '/snippet/auth', (req, res) => {
+    return loadTemplate<{ origin: string, assets: any }>('snippet-auth')
+        .then(authGenerator => {
+            const html = authGenerator({
+                origin: currentConfig.editorUrl,
+                assets: getAssetPaths()
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
 });
 
 
@@ -447,7 +485,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     snippet: {
                         id: snippet.id,
                         lastModified: snippet.modified_at,
-                        content: html
+                        content: Buffer.from(html).toString('base64')
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
@@ -464,6 +502,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
 
             timer.stop();
             res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.setHeader('X-XSS-Protection', '0');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
 }
@@ -481,7 +520,7 @@ function parseXmlString(xml): Promise<JSON> {
 };
 
 function getVersionNumber(): Promise<string> {
-     return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         return Request.post({
             url: SCRIPT_LAB_STORE_URL,
             body: SCRIPT_LAB_STORE_ID,
@@ -496,18 +535,18 @@ function getVersionNumber(): Promise<string> {
             }
         });
     })
-    .then(xml => (parseXmlString(xml)))
-    .then(xmlJson => {
-        scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
-        return scriptLabVersionNumber;
-    })
-    .catch(e => {
-        if (!isNil(scriptLabVersionNumber)) {
-            /* return previously retrieved version if web request fails */
+        .then(xml => (parseXmlString(xml)))
+        .then(xmlJson => {
+            scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
             return scriptLabVersionNumber;
-        }
-        throw(e);
-    });
+        })
+        .catch(e => {
+            if (!isNil(scriptLabVersionNumber)) {
+                /* return previously retrieved version if web request fails */
+                return scriptLabVersionNumber;
+            }
+            throw (e);
+        });
 }
 
 function generateSnippetHtmlData(
@@ -704,4 +743,13 @@ function getRuntimeHelpersUrl() {
     }
 
     return _runtimeHelpersUrl;
+}
+
+
+function getClientSecret() {
+    if (currentConfig.name === 'LOCAL') {
+        return (currentConfig as ILocalHostEnvironmentConfig).clientSecretLocalHost;
+    };
+
+    return secrets ? secrets[env] : '';
 }

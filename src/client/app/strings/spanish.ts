@@ -3,7 +3,7 @@
 // still strings that need to be localized (just search for this function name).
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
-export function getSpanishStrings(): ClientStrings {
+export function getSpanishStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
 
     return {
@@ -162,6 +162,7 @@ export function getSpanishStrings(): ClientStrings {
         openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
         openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
         downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+        openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
 
         // Outlook-only strings
 
@@ -182,16 +183,20 @@ export function getSpanishStrings(): ClientStrings {
         noSamplesMessage: `No hay ejemplos aún para esta Aplicación.`,
         importWarning: `Precaución: los ejemplos importados pueden contener código maligno. Ejecuta código sólo de fuentes confiables.`,
         importWarningAction: `No mostrar esta advertencia otra vez.`,
-        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
+        importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
 
         localStorageWarning: `Los fragmentos de código creados localmente serán borrados si se limpia el cache del navegador. ` +
         `Para guardar fragmentos permanentemente, expórtalos como gists on el menú de Compartir.`,
         localStorageWarningAction: `No mostrar esta advertencia otra vez.`,
 
         importInstructions: `Proporciona el URL del fragmento de código o pega el YAML abajo, después escoje `,
-        importUrlLabel: `URL del fragmento de código o ID del gist de Github`,
-        importUrlPlaceholder: `ejemplo. https://gist.github.com/sampleGistId`,
-        importYamlLabel: `YAML del fragmento de código`,
+        importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel
+            /* String has been tweaked from original.  It should now be roughly a shortened combination of
+               `URL del fragmento de código o ID del gist de Github`,
+               and
+               `YAML del fragmento de código`
+               */,
+        exampleAbbreviation: 'ejemplo',
 
         unexpectedError: 'Ocurrió un error inesperado',
 
@@ -271,7 +276,7 @@ export function getSpanishStrings(): ClientStrings {
             loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
             authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
             authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
-            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedResource,
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs

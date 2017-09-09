@@ -3,7 +3,7 @@
 // still strings that need to be localized (just search for this function name).
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
-export function getChineseSimplifiedStrings(): ClientStrings {
+export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
 
     return {
@@ -164,6 +164,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
         openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
         downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
+        openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
 
         // Outlook-only strings
 
@@ -184,16 +185,15 @@ export function getChineseSimplifiedStrings(): ClientStrings {
         noSamplesMessage: `这个主机还没有样品可供使用。`,
         importWarning: `导入的代码段可能包含恶意代码。除非您信任这些资源，否则不要运行代码段。`,
         importWarningAction: `不要再显示这个警告了。`,
-        importConfirm: getEnglishSubstitutesForNotYetTranslated().importConfirm,
+        importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
 
         localStorageWarning: `如果您清除浏览器缓存，则创建的代码片段将被删除。 ` +
         `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,
         localStorageWarningAction: `不要再显示这个警告了。`,
 
         importInstructions: `进入代码段的URL或粘贴下面的YAML，然后选择`,
-        importUrlLabel: `代码段 URL or GitHub gist ID`,
-        importUrlPlaceholder: `eg. https://gist.github.com/sampleGistId`,
-        importYamlLabel: `代码段 YAML`,
+        importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel,
+        exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated().exampleAbbreviation,
 
         unexpectedError: '出现意外错误',
 
@@ -273,7 +273,7 @@ export function getChineseSimplifiedStrings(): ClientStrings {
             loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
             authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
             authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
-            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedResource,
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs

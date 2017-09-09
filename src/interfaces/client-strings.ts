@@ -1,4 +1,4 @@
-interface ClientStrings {
+interface ClientStringsPerLanguage {
     playgroundName: string;
     playgroundTagline: string;
 
@@ -144,6 +144,7 @@ interface ClientStrings {
     openInHost: string;
     openInGithub: string;
     downloadAsHostFile: string;
+    openTryIt: string;
 
     // Gallery.view strings
 
@@ -175,16 +176,14 @@ interface ClientStrings {
     noSamplesMessage: string;
     importWarning: string;
     importWarningAction: string;
-    importConfirm: string;
+    importSucceed: string;
 
     localStorageWarning: string;
     localStorageWarningAction: string;
 
     importInstructions: string;
-    importUrlLabel: string;
-    importUrlPlaceholder: string;
-    importYamlLabel: string;
-
+    importUrlOrYamlLabel: string;
+    exampleAbbreviation: string;
 
     unexpectedError: string;
 
@@ -255,9 +254,13 @@ interface ClientStrings {
         loggingOutOnBehalfOfSnippet: string;
         authenticationRedirect: string;
         authenticationError: string;
-        unrecognizedService: string;
+        unrecognizedResource: string;
         invalidParametersPassedInForAuth: string;
         invalidAuthResponseReceived: string;
         yourAccessTokenIs: string;
     }
+}
+
+interface ClientStrings extends ClientStringsPerLanguage {
+    importUrlPlaceholder: string;
 }

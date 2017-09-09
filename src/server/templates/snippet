@@ -44,7 +44,6 @@
     <!-- ScriptLab-Specific Runtime Helpers -->
     <script src="{{{runtimeHelpersUrl}}}"></script>
     <script>
-        ScriptLab._editorUrl = "{{{editorUrl}}}";
         ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
     </script>
     

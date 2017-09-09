@@ -103,24 +103,42 @@ interface IEvent<T> {
     data: T
 }
 
-interface IEnvironment {
-    devMode?: boolean;
-    build?: {
-        name: string;
-        version: string;
-        timestamp: string;
-        author: string;
-        humanReadableTimestamp: string;
-    },
-    config?: IEnvironmentConfig
-    host?: string,
-    platform?: string,
-    PLAYGROUND_ORIGIN?: string,
-    PLAYGROUND_REDIRECT?: string
+declare var PLAYGROUND: ICompiledPlaygroundInfo;
+
+interface ICompiledPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: {
+        local: ILocalHostEnvironmentConfig,
+        edge: IEnvironmentConfig,
+        insiders: IEnvironmentConfig,
+        production: IEnvironmentConfig
+    };
+    localStorageKeys: {
+        originEnvironmentUrl: string;
+        redirectEnvironmentUrl: string;
+        playgroundCache: string;
+    };
+}
+
+interface ICurrentPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: IEnvironmentConfig;
+    host?: string;
+    platform?: string;
+}
+
+interface IBuildInfo {
+    name: string;
+    version: string;
+    timestamp: string;
+    author: string;
+    humanReadableTimestamp: string;
 }
 
 interface IEnvironmentConfig {
-    name: string,
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,
@@ -130,11 +148,13 @@ interface IEnvironmentConfig {
     samplesUrl: string
 }
 
-declare var PLAYGROUND: IEnvironment;
+interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
+    clientSecretLocalHost: string;
+}
 
 interface ISettings {
     lastOpened: ISnippet,
-    profile: IProfile,
+    profile: IBasicProfile,
     theme: boolean,
     language: string,
     env: string
@@ -155,8 +175,8 @@ interface HeartbeatParams {
 
 // NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
 interface AuthRequestParamData {
-    action: 'login' | 'logout';
-    service: 'graph';
+    auth_action: 'login' | 'logout';
+    resource: string;
     client_id: string;
     is_office_host: boolean;
 }

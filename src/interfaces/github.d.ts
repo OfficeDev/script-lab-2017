@@ -1,8 +1,3 @@
-interface IProfile {
-    user: IBasicProfile,
-    orgs: IBasicProfile[]
-}
-
 interface IBasicProfile {
     login?: string,
     id?: number,

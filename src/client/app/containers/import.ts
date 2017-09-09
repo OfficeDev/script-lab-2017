@@ -1,9 +1,8 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { UIEffects } from '../effects/ui';
-import { environment, AI, storage, isInsideOfficeApp } from '../helpers';
+import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
@@ -79,25 +78,9 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
-                        <div *ngIf="showImportWarning" class="ms-MessageBar ms-MessageBar--severeWarning">
-                            <div class="ms-MessageBar-content">
-                                <div class="ms-MessageBar-icon">
-                                    <i class="ms-Icon ms-Icon--Warning"></i>
-                                </div>
-                                <div class="ms-MessageBar-text">
-                                    {{strings.importWarning}}
-                                    <br />
-                                    <a href="javascript:void(0);" (click)="hideImportWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ms-TextField import__field">
-                            <label class="ms-Label">{{strings.importUrlLabel}}</label>
-                            <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
-                        </div>
                         <div class="ms-TextField ms-TextField--multiline import__field">
-                            <label class="ms-Label">{{strings.importYamlLabel}}</label>
-                            <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
+                            <label class="ms-Label">{{strings.importUrlOrYamlLabel}}</label>
+                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}" ></textarea>
                         </div>
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
@@ -113,20 +96,20 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
     `
 })
 export class Import {
+    @Input() isEditorTryIt;
+
     view = 'snippets';
-    url: string;
-    snippet: string;
+    urlOrSnippet: string;
     showLocalStorageWarning: boolean;
-    showImportWarning: boolean;
     activeSnippetId: string;
 
     strings = Strings();
 
     constructor(
-        private _effects: UIEffects,
         private _request: Request,
         private _store: Store<fromRoot.State>
     ) {
+        trustedSnippetManager.cleanUpTrustedSnippets();
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
@@ -134,17 +117,17 @@ export class Import {
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
             .subscribe(() => {
-                if (!this.hasViewUrlSetting()) {
+                if (!this.hasViewUrlSetting() && !this.isEditorTryIt) {
                     this._store.dispatch(new UI.ToggleImportAction(true));
                 }
             });
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
-        this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
         this.importViewSnippet()
             .then(deleteSettings => {
                 if (deleteSettings) {
-                    // Keep correlation id in document settings
+
+                    Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
                     Office.context.document.settings.remove(VIEW_URL_SETTING_PROPERTY_NAME);
                     Office.context.document.settings.saveAsync();
                 }
@@ -157,7 +140,8 @@ export class Import {
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
-            if (isEmpty(snippets) && !this.hasViewUrlSetting()) {
+            let showSampleView = isEmpty(snippets) && !this.hasViewUrlSetting() && !this.isEditorTryIt;
+            if (showSampleView) {
                 this.switch();
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
@@ -167,11 +151,6 @@ export class Import {
     hideLocalStorageWarning() {
         this.showLocalStorageWarning = false;
         storage.settings.insert('disableLocalStorageWarning', true as any);
-    }
-
-    hideImportWarning() {
-        this.showImportWarning = false;
-        storage.settings.insert('disableImportWarning', true as any);
     }
 
     switch(view = 'samples') {
@@ -195,13 +174,8 @@ export class Import {
                 break;
 
             case 'import':
-                if (this.url) {
-                    mode = Snippet.ImportType.URL;
-                }
-                else {
-                    mode = Snippet.ImportType.YAML;
-                }
-                data = this.url || this.snippet;
+                mode = Snippet.ImportType.URL_OR_YAML;
+                data = this.urlOrSnippet;
                 break;
 
             case 'samples':
@@ -241,18 +215,6 @@ export class Import {
         // Do not import if there are no view settings
         if (!this.hasViewUrlSetting()) {
             return Promise.resolve(false);
-        }
-
-        let importResult = await this._effects.alert(
-            this.strings.importConfirm,
-            this.strings.importLabel,
-            this.strings.importButtonLabel, this.strings.cancelButtonLabel
-        );
-
-        if (importResult === this.strings.cancelButtonLabel) {
-            this.switch();
-            this._store.dispatch(new UI.ToggleImportAction(true));
-            return Promise.resolve(true);
         }
 
         let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);

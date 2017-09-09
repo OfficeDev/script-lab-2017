@@ -158,7 +158,7 @@ export class Gallery {
             displayLanguage: getDisplayLanguage()
         };
         const data = JSON.stringify(state);
-        const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
+        const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
 
         this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
