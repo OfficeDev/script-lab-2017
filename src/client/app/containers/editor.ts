@@ -7,6 +7,7 @@ import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 import { debounce } from 'lodash';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'editor',
@@ -24,6 +25,10 @@ export class Editor implements AfterViewInit {
     @ViewChild('editor') private _editor: ElementRef;
     @Input() isViewMode: boolean;
     private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
+    private menuSub: Subscription;
+    private themeSub: Subscription;
+    private snippetSub: Subscription;
+    private tabSub: Subscription;
 
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
@@ -56,6 +61,13 @@ export class Editor implements AfterViewInit {
         });
         this._createTabs();
         this._subscribeToState();
+    }
+
+    ngOnDestroy() {
+        this.menuSub.unsubscribe();
+        this.themeSub.unsubscribe();
+        this.snippetSub.unsubscribe();
+        this.tabSub.unsubscribe();
     }
 
     changeTab = (name: string = 'script') => {
@@ -95,13 +107,13 @@ export class Editor implements AfterViewInit {
     }
 
     private _subscribeToState() {
-        this._store.select(fromRoot.getMenu)
+        this.menuSub = this._store.select(fromRoot.getMenu)
             .subscribe(() => this._resize());
 
-        this._store.select(fromRoot.getTheme)
+        this.themeSub = this._store.select(fromRoot.getTheme)
             .subscribe(theme => monaco.editor.setTheme(theme ? 'vs' : 'vs-dark'));
 
-        this._store.select(fromRoot.getCurrent)
+        this.snippetSub = this._store.select(fromRoot.getCurrent)
             .filter(data => {
                 this.hide = data == null;
                 return !this.hide;
@@ -111,7 +123,7 @@ export class Editor implements AfterViewInit {
                 this._changeSnippet(snippet);
             });
 
-        this._store.select(fromRoot.getActiveTab)
+        this.tabSub = this._store.select(fromRoot.getActiveTab)
             .subscribe(newTab => {
                 if (newTab == null) {
                     // RESET Action

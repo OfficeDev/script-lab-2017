@@ -6,6 +6,7 @@ import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } fr
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
+import { Subscription } from 'rxjs/Subscription';
 
 const VIEW_URL_SETTING_PROPERTY_NAME = 'SnippetToImport';
 const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
@@ -105,6 +106,8 @@ export class Import {
 
     strings = Strings();
 
+    private snippetSub: Subscription;
+
     constructor(
         private _request: Request,
         private _store: Store<fromRoot.State>
@@ -113,7 +116,7 @@ export class Import {
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
 
-        this._store.select(fromRoot.getCurrent)
+        this.snippetSub = this._store.select(fromRoot.getCurrent)
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
             .subscribe(() => {
@@ -147,6 +150,10 @@ export class Import {
             }
             return snippets;
         });
+
+    ngOnDestroy() {
+        this.snippetSub.unsubscribe();
+    }
 
     hideLocalStorageWarning() {
         this.showLocalStorageWarning = false;

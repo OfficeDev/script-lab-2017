@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
 import { UI } from '../actions';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'alert',
@@ -23,14 +24,20 @@ import { UI } from '../actions';
 export class Alert {
     dialog: IAlert;
 
+    private alertSub: Subscription;
+
     constructor(private _store: Store<fromRoot.State>) {
-        this._store.select(fromRoot.getDialog).subscribe(dialog => {
+        this.alertSub = this._store.select(fromRoot.getDialog).subscribe(dialog => {
             this.dialog = dialog;
         });
     }
 
     get isMultiLine() {
         return this.dialog && this.dialog.actions && this.dialog.actions.length > 2;
+    }
+
+    ngOnDestroy() {
+        this.alertSub.unsubscribe();
     }
 
     dismiss(action: string) {
