@@ -276,7 +276,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
             loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
             authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
             authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
-            unrecognizedService: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedService,
+            unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedResource,
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
