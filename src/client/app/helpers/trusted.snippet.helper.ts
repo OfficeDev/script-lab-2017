@@ -14,10 +14,17 @@ class TrustedSnippet {
         } catch (e) { }
     }
 
-    isSnippetTrusted(snippetId: string, gistId: string): boolean {
-        /* Samples are automatically trusted. Check local storage for gists. */
+    isSnippetTrusted(snippetId: string, gistId: string, gistOwnerId: string): boolean {
+        /* Samples or locally-created snippets are automatically trusted.
+           I's only the Gists that you need to watch out for. */
         if (!gistId) {
             return true;
+        }
+
+        if (storage.current.profile && storage.current.profile.login) {
+            if (storage.current.profile.login === gistOwnerId) {
+                return true;
+            }
         }
 
         try {
@@ -31,7 +38,7 @@ class TrustedSnippet {
         }
     }
 
-    updateTrustedSnippets(snippetId: string): void {
+    trustSnippet(snippetId: string): void {
         try {
             let trustedSnippets = JSON.parse(window.localStorage.getItem(TRUSTED_SNIPPETS_KEY));
             if (!trustedSnippets) {

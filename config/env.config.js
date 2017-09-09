@@ -21,6 +21,7 @@ const config = {
     local: {
         name: 'LOCAL',
         clientId: '',
+        clientSecretLocalHost: '',
         instrumentationKey: null,
         editorUrl: 'https://localhost:3000',
         tokenUrl: 'https://localhost:3200/auth',

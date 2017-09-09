@@ -88,10 +88,9 @@ There are also files related to Azure deployment, git ignores, a Travis configur
 ## Enabling auth for local testing (optional, if debugging auth-related code)
 1. Go to <https://github.com/settings/developers>, and click "[Register new application](https://github.com/settings/applications/new)" if you haven't done it before for your own dev copy of ScriptLab.
 2. Give it a name like "ScriptLab Local Dev", with a Homepage and Auth callback URL of `https://localhost:3000`.
-3. In `config/env.config.js`, find the `const config = { ... ` line, and under `local: { ...`, find `clientId: ''`, and replace with `clientId: '<id-from-github>'`.
-4. In `server/server.ts`, find `client_secret: secrets ? secrets[env] : '',`, and replace it with `secrets ? secrets[env] : '<client-secret-from-github>'`.
-5. If the site is running, re-start it and do a new `npm start`.  Incremental compilation is not enough for these changes. Note, too, that you need both the site and the server (F5) running to make auth work.
-6. Once you are done with your testing, **be sure to undo both changes!**.
+3. In `config/env.config.js`, find the `const config = { ... ` line, and under `local: { ...`, fill in the client ID and client secret
+4. If the site is running, re-start it and do a new `npm start`.  Incremental compilation is not enough for these changes. Note, too, that you need both the site and the server (F5) running to make auth work.
+5. Once you are done with your testing, **be sure to undo both changes!**.
 
 
 # Manual-testing scenarios

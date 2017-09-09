@@ -139,7 +139,7 @@ export class SnippetEffects {
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
-                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist);
+                const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
 
                 AI.trackEvent('[Runner] Running Snippet', { snippet: snippet.id });
                 post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
@@ -411,10 +411,6 @@ export class SnippetEffects {
         snippet.id = snippet.id === '' ? cuid() : snippet.id;
         snippet.gist = rawSnippet.gist;
         snippet.gistOwnerId = rawSnippet.gistOwnerId;
-
-        if (snippet.gist && this._github.profile && this._github.profile.login === snippet.gistOwnerId) {
-            trustedSnippetManager.updateTrustedSnippets(snippet.id);
-        }
 
         let properties = {};
         if (mode === Snippet.ImportType.GIST) {

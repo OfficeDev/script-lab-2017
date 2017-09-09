@@ -231,7 +231,7 @@ registerRoute('post', '/auth/:user', (req, res) => {
             },
             json: {
                 client_id: clientId,
-                client_secret: secrets ? secrets[env] : '',
+                client_secret: getClientSecret(),
                 redirect_uri: editorUrl,
                 code,
                 state
@@ -743,4 +743,13 @@ function getRuntimeHelpersUrl() {
     }
 
     return _runtimeHelpersUrl;
+}
+
+
+function getClientSecret() {
+    if (currentConfig.name === 'LOCAL') {
+        return (currentConfig as ILocalHostEnvironmentConfig).clientSecretLocalHost;
+    };
+
+    return secrets ? secrets[env] : '';
 }
