@@ -44,9 +44,15 @@ interface InitializationParams {
         window: Window
     } = <any>{};
 
+    let isInTryItMode = checkIfInTryItMode();
+
     function initializeRunner(params: InitializationParams): void {
         try {
-            if (!((window.top as any).in_try_it_mode) && params.officeJS) {
+            if (isInTryItMode) {
+                // Nothing to wait on, playground is ready:
+                setPlaygroundHostIsReady();
+            }
+            else if (params.officeJS) {
                 let script = document.createElement('script');
                 script.src = params.officeJS;
                 script.addEventListener('load', (event) => {
@@ -55,13 +61,15 @@ interface InitializationParams {
                         // re-initialization of this page in case of a page like the error dialog,
                         // which doesn't defined (override) Office.initialize.
                         Office.initialize = () => { };
-                        (window as any).playground_host_ready = true;
+                        setPlaygroundHostIsReady();
                     };
                 });
                 document.getElementsByTagName('head')[0].appendChild(script);
-            } else {
-                (window as any).playground_host_ready = true;
             }
+            else {
+                setPlaygroundHostIsReady();
+            }
+
             initializeRunnerHelper();
         }
         catch (error) {
@@ -167,11 +175,9 @@ interface InitializationParams {
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
-                if ((window.top as any).in_try_it_mode) {
-                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window.top[namespace]);
-                } else {
-                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
-                }
+                officeNamespacesForIframe.forEach(namespace => {
+                    contentWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
+                });
             }
 
             $emptySnippetPlaceholder.remove();
@@ -254,7 +260,7 @@ interface InitializationParams {
     }
 
     async function ensureHostInitialized(): Promise<any> {
-        if ((window.top as any).in_try_it_mode) {
+        if (isInTryItMode) {
             (window as any).Office = {
                 initialize: () => { },
 
@@ -271,13 +277,13 @@ interface InitializationParams {
 
         // window.playground_host_ready is set within the runner template (embedded in html code)
         // when the host is ready (i.e., in Office.initialized callback, if Office host)
-        if ((window as any).playground_host_ready) {
+        if (getIsPlaygroundHostReady()) {
             return Promise.resolve();
         }
 
         return new Promise((resolve) => {
             const interval = setInterval(() => {
-                if ((window as any).playground_host_ready) {
+                if (getIsPlaygroundHostReady()) {
                     clearInterval(interval);
                     return resolve();
                 }
@@ -503,6 +509,26 @@ interface InitializationParams {
                 flexProperties.map(prefix => `${prefix}: 1 1 1px`).join('; ')
             );
         }, 0);
+    }
+
+    function checkIfInTryItMode(): boolean {
+        // Note: need to surround with try/catch because on Office Online,
+        // window.parent will be Office Online itself which is on a different domain,
+        // and so the call will throw an exception!  So if can't access parent,
+        // then obviously window.parent is *NOT* in try-it mode!
+        try {
+            return (window.parent as any).in_try_it_mode;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function setPlaygroundHostIsReady() {
+        (window as any).playground_host_ready = true;
+    }
+
+    function getIsPlaygroundHostReady(): boolean {
+        return (window as any).playground_host_ready;
     }
 
 })();
