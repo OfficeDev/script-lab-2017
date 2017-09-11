@@ -67,6 +67,16 @@
       <Host xsi:type="Workbook">
         <DesktopFormFactor>
           <FunctionFile resid="PG.Functions.Url" />
+          <AllFormFactors>
+            <ExtensionPoint xsi:type="CustomFunctions">
+              <Script>
+                <SourceLocation resid="customfunctionsjs" />
+              </Script>
+              <Page>
+                <SourceLocation resid="customfunctionshtml"/>
+              </Page>
+            </ExtensionPoint>
+          </AllFormFactors>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
               <Group id="PG.PlayGroup">
@@ -476,6 +486,8 @@
         <bt:Url id="PG.Code.Url" DefaultValue="https://script-lab.azureedge.net?commands=1" />
         <bt:Url id="PG.Run.Url" DefaultValue="https://script-lab.azureedge.net/run.html" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://script-lab.azureedge.net/functions.html" />
+        <bt:Url id="customfunctionsjs" DefaultValue="https://script-lab.azureedge.net/customfunctions.js" />
+        <bt:Url id="customfunctionshtml" DefaultValue="https://script-lab.azureedge.net/customfunctions.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="Script Lab" />
