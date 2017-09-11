@@ -60,6 +60,15 @@ let imports = [
             window.localStorage.setItem(WAC_URL_STORAGE_KEY, pageParams.wacUrl);
         }
 
+        // If the "try it" page uses an instance of a (local) Office Online that is over HTTP instead of HTTPS,
+        // The runner will have needed to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
+        let wacStorageKeyIfAny: string = window.localStorage[WAC_URL_STORAGE_KEY];
+        if (wacStorageKeyIfAny) {
+            if (wacStorageKeyIfAny.toLowerCase().indexOf('http:/') === 0) {
+                environment.current.config.runnerUrl = environment.current.config.runnerUrl.replace('https:/', 'http:/');
+            }
+        }
+
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);
 

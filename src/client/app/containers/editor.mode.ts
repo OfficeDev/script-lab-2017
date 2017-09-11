@@ -88,7 +88,9 @@ export class EditorMode {
     }
 
     get isEditorTryIt() {
-        return this._route.snapshot.url[0] && this._route.snapshot.url[0].path === 'edit';
+        return this._route.snapshot.url[0] &&
+            this._route.snapshot.url[0].path === 'edit' &&
+            window.parent !== window;
     }
 
     get isGistOwned() {
