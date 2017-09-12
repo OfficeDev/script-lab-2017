@@ -37,6 +37,8 @@ export interface IRunnerHandlebarsContext {
 
     strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;
+
+    runnerUrl: string;
 }
 
 export interface IErrorHandlebarsContext {

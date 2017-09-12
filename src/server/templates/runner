@@ -164,9 +164,11 @@
                 lastModified: {{snippet.lastModified}},
                 {{/if}}
                 id: '{{{snippet.id}}}',
-                host: '{{{host}}}'
+                host: '{{{host}}}',
+                runnerUrl: '{{{runnerUrl}}}'
             },
-            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
+            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
+            runnerUrl: '{{{runnerUrl}}}'
         });
     </script>
 </body>

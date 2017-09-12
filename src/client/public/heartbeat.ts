@@ -16,6 +16,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         await environment.initialize(params.host);
 
+        // In case the params have had a different runner URL passed in, update the environment config
+        if (params.runnerUrl) {
+            environment.current.config.runnerUrl = params.runnerUrl;
+        }
+
         messenger = new Messenger(environment.current.config.runnerUrl);
         setupRequestReloadListener(messenger);
 
@@ -30,7 +35,9 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         });
 
         if (trackingSnippet.lastModified === 0) {
-            sendBackCurrentSnippet(true /*settingsAreFresh: true because just loaded the page*/, false /*isTrustedSnippet: only trust snippet through user action*/);
+            sendBackCurrentSnippet(
+                true /*settingsAreFresh: true because just loaded the page*/,
+                false /*isTrustedSnippet: only trust snippet through user action*/);
         }
 
         storage.snippets.notify().subscribe(validateSnippet);
@@ -54,7 +61,9 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         }
 
         // If haven't quit yet, validate and inform (or send back) current snippet:
-        sendBackCurrentSnippet(false /*settingsAreFresh: not fresh, will need to reload*/, false /*isTrustedSnippet: only trust snippet through user action*/);
+        sendBackCurrentSnippet(
+            false /*settingsAreFresh: not fresh, will need to reload*/,
+            false /*isTrustedSnippet: only trust snippet through user action*/);
     }
 
     function sendBackCurrentSnippet(settingsAreFresh: boolean, isTrustedSnippet: boolean) {

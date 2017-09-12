@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as unzip from 'unzip';
 import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
+// TO DEBUG LOCALLY, uncomment this one and comment out the one above: import * as http from 'http';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import * as express from 'express';
@@ -120,10 +121,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 else {
     const cert = {
-        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+         key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+         cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
     };
     https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
+
+    // TO DEBUG LOCALLY, comment out the above, and instead use
+    // http.createServer(app).listen(3200, () => console.log('Playground server running on 3200'));
 }
 
 app.use(cookieParser());
@@ -173,7 +177,8 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 initialLoadSubtitle: strings.loadingSnippetDotDotDot,
                 headerTitle: '',
                 strings,
-                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+                runnerUrl: getRunnerUrlWithCorrectHttpOrHttpsPrefix(req, currentConfig.runnerUrl)
             });
 
             res.setHeader('Cache-Control', 'no-cache, no-store');
@@ -404,14 +409,16 @@ registerRoute('get', ['/try', '/try/:host', '/try/:type/:host/:id'], (req, res) 
 
     return loadTemplate<ITryItHandlebarsContext>('try-it')
         .then(tryItGenerator => {
-            const html = tryItGenerator({
+            const context: ITryItHandlebarsContext = {
                 title: 'Try It!',
                 assets: getAssetPaths(),
                 origin: currentConfig.editorUrl,
                 editorTryItUrl: editorTryItUrl,
-                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
-                wacUrl: decodeURIComponent(req.query.wacUrl)
-            });
+                runnerSnippetUrl: `${getRunnerUrlWithCorrectHttpOrHttpsPrefix(req, currentConfig.runnerUrl)}/run/EXCEL/`,
+                wacUrl: decodeURIComponent(req.query.wacUrl || '')
+            };
+
+            const html = tryItGenerator(context);
 
             res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
@@ -496,7 +503,8 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
-                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+                    runnerUrl: getRunnerUrlWithCorrectHttpOrHttpsPrefix(req, currentConfig.runnerUrl)
                 });
             }
 
@@ -752,4 +760,11 @@ function getClientSecret() {
     };
 
     return secrets ? secrets[env] : '';
+}
+
+function getRunnerUrlWithCorrectHttpOrHttpsPrefix(req: express.Request, url: string) {
+    if (req.protocol.toLowerCase() === 'http' && url.toLowerCase().indexOf('https:/') === 0) {
+        return url.replace('https:/', 'http:/');
+    }
+    return url;
 }
