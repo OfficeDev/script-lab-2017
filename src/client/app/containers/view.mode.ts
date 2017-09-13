@@ -42,13 +42,14 @@ export class ViewMode implements OnInit, OnDestroy {
     viewType: string;
     viewId: string;
     displayUrl: string;
+    snippetSub: Subscription;
 
     constructor(
         private _store: Store<fromRoot.State>,
         private _request: Request,
         private _route: ActivatedRoute
     ) {
-        this._store.select(fromRoot.getCurrent).subscribe(snippet => {
+        this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.snippet = snippet;
         });
     }
@@ -121,7 +122,12 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.paramsSub.unsubscribe();
+        if (this.paramsSub) {
+            this.paramsSub.unsubscribe();
+        }
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
     }
 
     theme$ = this._store.select(fromRoot.getTheme)
