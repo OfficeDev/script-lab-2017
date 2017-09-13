@@ -122,8 +122,12 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.paramsSub.unsubscribe();
-        this.snippetSub.unsubscribe();
+        if (this.paramsSub) {
+            this.paramsSub.unsubscribe();
+        }
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
     }
 
     theme$ = this._store.select(fromRoot.getTheme)

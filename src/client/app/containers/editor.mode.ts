@@ -131,9 +131,15 @@ export class EditorMode {
     showImport$ = this._store.select(fromRoot.getImportState);
 
     ngOnDestroy() {
-        this.snippetSub.unsubscribe();
-        this.sharingSub.unsubscribe();
-        this.errorsSub.unsubscribe();
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
+        if (this.sharingSub) {
+            this.sharingSub.unsubscribe();
+        }
+        if (this.errorsSub) {
+            this.errorsSub.unsubscribe();
+        }
     }
 
     run() {

@@ -152,7 +152,9 @@ export class Import {
         });
 
     ngOnDestroy() {
-        this.snippetSub.unsubscribe();
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
     }
 
     hideLocalStorageWarning() {

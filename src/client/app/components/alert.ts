@@ -37,7 +37,9 @@ export class Alert {
     }
 
     ngOnDestroy() {
-        this.alertSub.unsubscribe();
+        if (this.alertSub) {
+            this.alertSub.unsubscribe();
+        }
     }
 
     dismiss(action: string) {

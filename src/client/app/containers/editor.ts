@@ -64,10 +64,18 @@ export class Editor implements AfterViewInit {
     }
 
     ngOnDestroy() {
-        this.menuSub.unsubscribe();
-        this.themeSub.unsubscribe();
-        this.snippetSub.unsubscribe();
-        this.tabSub.unsubscribe();
+        if (this.menuSub) {
+            this.menuSub.unsubscribe();
+        }
+        if (this.themeSub) {
+            this.themeSub.unsubscribe();
+        }
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
+        if (this.tabSub) {
+            this.tabSub.unsubscribe();
+        }
     }
 
     changeTab = (name: string = 'script') => {
