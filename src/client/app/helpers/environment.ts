@@ -132,8 +132,7 @@ class Environment {
         const hostInfo = await getAsyncHostInfo();
         this.current = {
             ...this.current,
-            host: hostInfo.host,
-            platform: hostInfo.platform
+            ...hostInfo
         };
 
         return;
