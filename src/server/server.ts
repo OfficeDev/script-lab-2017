@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as unzip from 'unzip';
 import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
-// TO DEBUG LOCALLY, uncomment this one and comment out the one above: import * as http from 'http';
+// If want to debug locally on http, comment out the above and use: import * as http from 'http';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import * as express from 'express';
@@ -149,8 +149,9 @@ app.use('/favicon', express.static('favicon'));
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
 registerRoute('get', '/run/:host/:id', (req, res) => {
-    const host = (req.params.host as string).toUpperCase();
-    const id = (req.params.id as string || '').toLowerCase();
+    const params = massageParams<{ host: string, id: string }>(req);
+    const { id, host } = params;
+
     const strings = Strings(req);
 
     if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
@@ -216,7 +217,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
  */
 registerRoute('post', '/auth/:user', (req, res) => {
     const { code, state } = req.body;
-    const { user } = req.params;
+    const { user } = massageParams<{ user: string }>(req);
     const strings = Strings(req);
 
     if (code == null) {
@@ -270,9 +271,11 @@ registerRoute('post', '/compile/snippet', compileCommon);
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
+registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
+    const params = massageParams<{ host: string, type: string, id: string, filename: string }>(req);
+
     let relativePath, templateName;
-    switch (req.params.host.toUpperCase()) {
+    switch (params.host.toUpperCase()) {
         case 'EXCEL':
             relativePath = 'xl';
             templateName = 'excel-template';
@@ -286,7 +289,7 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
             templateName = 'powerpoint-template';
             break;
         default:
-            throw new Error(`Unsupported host: ${req.params.host}`);
+            throw new Error(`Unsupported host: ${params.host}`);
     }
 
     const correlationId = req.query.correlationId;
@@ -295,7 +298,7 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
     if (directoryInfo) {
         directoryInfo.isBeingRead = true;
         fs.createReadStream(directoryInfo.name).pipe(res);
-        res.attachment(req.params.filename);
+        res.attachment(params.filename);
         res.on('finish', () => {
             directoryInfo.isBeingRead = false;
         });
@@ -317,8 +320,8 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
                                 let xmlStringData = data.toString();
                                 xmlStringData = xmlStringData
                                     .replace('%placeholder_version%', versionNumber)
-                                    .replace('%placeholder_type%', req.params.type)
-                                    .replace('%placeholder_id%', req.params.id)
+                                    .replace('%placeholder_type%', params.type)
+                                    .replace('%placeholder_id%', params.id)
                                     .replace('%placeholder_correlation_id%', correlationId);
                                 return resolve(xmlStringData);
                             }
@@ -334,7 +337,7 @@ registerRoute('get', '/open/:type/:host/:id/:filename', async (req, res) => {
                                 let writeZipFile = fs.createWriteStream(zipFileName);
                                 writeZipFile.on('finish', () => {
                                     rimraf(extractDirName, () => { });
-                                    res.attachment(req.params.filename);
+                                    res.attachment(params.filename);
                                     fs.createReadStream(zipFileName).pipe(res);
                                     res.on('finish', () => {
                                         generatedDirectories[correlationId] = {
@@ -398,18 +401,21 @@ registerRoute('post', '/export', (req, res) => {
         });
 });
 
-registerRoute('get', ['/try', '/try/:host', '/try/:type/:host/:id'], (req, res) => {
-    if (!req.params.host) {
-        req.params.host = 'EXCEL';
+registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) => {
+    const params = massageParams<{ host: string, type: string, id: string }>(req);
+    if (!params.host) {
+        params.host = 'EXCEL';
     }
-    let editorTryItUrl =
-        req.params.type && req.params.id
-            ? `${currentConfig.editorUrl}/#/edit/${req.params.type}/${req.params.host}/${req.params.id}`
-            : `${currentConfig.editorUrl}/#/edit/${req.params.host}`;
+
+    let editorTryItUrl = `${currentConfig.editorUrl}/?tryIt=1#/edit/${params.host}`;
+    if (params.type && params.id) {
+        editorTryItUrl += `/${params.type}/${params.id}`;
+    }
 
     return loadTemplate<ITryItHandlebarsContext>('try-it')
         .then(tryItGenerator => {
             const context: ITryItHandlebarsContext = {
+                host: params.host,
                 title: 'Try It!',
                 assets: getAssetPaths(),
                 origin: currentConfig.editorUrl,
@@ -767,4 +773,19 @@ function getRunnerUrlWithCorrectHttpOrHttpsPrefix(req: express.Request, url: str
         return url.replace('https:/', 'http:/');
     }
     return url;
+}
+
+/** Returns the params as a typed object, with "host" always capitalized, and "id" always lowercase */
+function massageParams<T>(req: express.Request): T {
+    let params = req.params as { host?: string, id?: string };
+
+    if (params.host) {
+        params.host = params.host.toUpperCase();
+    }
+
+    if (params.id) {
+        params.id = params.id.toLowerCase();
+    }
+
+    return params as T;
 }

@@ -36,7 +36,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
-        viewModeError: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
+        failedToLoadCodeSnippet: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
 
         snippetGistIdDuplicationError: 'Es existiert bereits ein Schnipsel, das aus dem gleichen GitHub-Gist importiert wurde. Möchten Sie zu diesem Schnipsel wechseln oder eine neue Kopie erstellen?',
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
@@ -207,9 +207,6 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `Ein Konfigurationsproblem hat das Laden des Schnipsels verhindert.`,
-
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `Das Schnipsel konnte nicht gefunden werden. Möglicherweise wurde es gelöscht.`,
 
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */

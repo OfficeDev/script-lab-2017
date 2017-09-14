@@ -71,6 +71,7 @@ export interface IReadmeHandlebarsContext {
 }
 
 export interface ITryItHandlebarsContext {
+    host: string;
     title: string;
     assets: { [key: string]: any };
     origin: string;

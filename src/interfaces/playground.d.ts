@@ -125,8 +125,12 @@ interface ICurrentPlaygroundInfo {
     devMode: boolean;
     build: IBuildInfo;
     config: IEnvironmentConfig;
-    host?: string;
-    platform?: string;
+    host: string;
+    platform: string;
+
+    isAddinCommands: boolean;
+    isTryIt: boolean;
+    wacUrl: string;
 }
 
 interface IBuildInfo {

@@ -29,7 +29,7 @@ interface ClientStringsPerLanguage {
     snippetImportExistingButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
-    viewModeError: string,
+    failedToLoadCodeSnippet: string,
 
     snippetGistIdDuplicationError: string;
     snippetImportError: string;
@@ -190,9 +190,6 @@ interface ClientStringsPerLanguage {
     Refresh: {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */
         missingSnippetParameters: string;
-
-        /** Error if snippet no longer exists */
-        couldNotFindTheSnippet: string;
 
         /** Appends one of the following -- "returning" or "close this window and try again" -- to the error message
          * (navigating back after a couple of seconds, if there is a return URL) */

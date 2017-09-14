@@ -32,7 +32,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: 'Go to existing snippet',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
-        viewModeError: /** NEEDS STRING REVIEW */ 'Failed to load code snippet.',
+        failedToLoadCodeSnippet: /** NEEDS STRING REVIEW */ 'Failed to load the code snippet.',
 
         snippetGistIdDuplicationError: 'There is an existing snippet that was imported from the same Gist ID. Do you want to switch to this snippet or create a new copy?',
         snippetImportError: 'Failed to import snippet',
@@ -199,9 +199,6 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `A configuration problem prevented the snippet from loading.`,
-
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `Couldn't find the snippet. It might have been deleted.`,
 
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */

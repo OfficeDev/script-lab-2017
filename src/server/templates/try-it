@@ -81,6 +81,7 @@
     
     <script type="text/javascript">
         window.initializeTryIt({
+            host: '{{{host}}}',
             origin: '{{{origin}}}',
             runnerSnippetUrl: '{{{runnerSnippetUrl}}}',
             wacUrl: '{{{wacUrl}}}'

@@ -45,7 +45,7 @@ import { isEmpty } from 'lodash';
     <about [(show)]="showAbout"></about>
     <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
     <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
-    <import [isEditorTryIt]="isEditorTryIt" [hidden]="!(showImport$|async)"></import>
+    <import [hidden]="!(showImport$|async)"></import>
     <alert></alert>
     <router-outlet></router-outlet>
     `
@@ -67,11 +67,6 @@ export class EditorMode {
         this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
-
-            if (this.isEditorTryIt) {
-                window.parent.postMessage({ type: 'import-complete', id: this.snippet.id }, environment.current.config.runnerUrl);
-                return;
-            }
         });
 
         this._store.select(fromRoot.getSharing).subscribe(sharing => {
@@ -84,13 +79,11 @@ export class EditorMode {
     }
 
     get isAddinCommands() {
-        return /commands=1/ig.test(location.search);
+        return environment.current.isAddinCommands;
     }
 
     get isEditorTryIt() {
-        return this._route.snapshot.url[0] &&
-            this._route.snapshot.url[0].path === 'edit' &&
-            window.parent !== window;
+        return environment.current.isTryIt;
     }
 
     get isGistOwned() {
@@ -292,8 +285,7 @@ export class EditorMode {
         let sub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
-
-                if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
+                if (host && (environment.current.host.toUpperCase() !== host.toUpperCase())) {
                     environment.current.host = host.toUpperCase();
                     // Update environment in cache
                     environment.current = environment.current;
@@ -302,9 +294,11 @@ export class EditorMode {
                 switch (type) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
-                            .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
-                        );
+                        return this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
+                            .map(lookupTable => {
+                                return { lookupTable: lookupTable, id: id };
+                            })
+                            .catch(exception => Observable.of({ lookupTable: null, id: null }));
                     case 'gist':
                         return Observable.of({ lookupTable: null, id: id });
                     default:
@@ -312,10 +306,21 @@ export class EditorMode {
                 }
             })
             .subscribe(({ lookupTable, id }) => {
+                let commonImportActionParams = {
+                    saveToLocalStorage: false /* Just like samples, don't save until user makes an edit */,
+                    isReadOnlyViewMode: false,
+                    onSuccess: (snippet: ISnippet) => {
+                        this._store.dispatch(new UI.ToggleImportAction(false));
+                        window.parent.postMessage({ type: 'import-complete', id: snippet.id }, environment.current.config.runnerUrl);
+                    }
+                };
+
                 if (lookupTable && lookupTable[id]) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isViewMode: false }));
+                    this._store.dispatch(new Snippet.ImportAction({ ...commonImportActionParams, mode: Snippet.ImportType.SAMPLE, data: lookupTable[id] }));
                 } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isViewMode: false }));
+                    this._store.dispatch(new Snippet.ImportAction({ ...commonImportActionParams, mode: Snippet.ImportType.GIST, data: id }));
+                } else {
+                    this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
                 }
 
                 if (sub && !sub.closed) {

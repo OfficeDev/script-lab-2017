@@ -10,8 +10,6 @@ import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 
-const WAC_URL_STORAGE_KEY = 'playground_wac_url';
-
 @Component({
     selector: 'view-mode',
     template: `
@@ -75,7 +73,7 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     get tryItSupported() {
-        return window.localStorage.getItem(WAC_URL_STORAGE_KEY) && environment.current.host.toUpperCase() === HostType.EXCEL;
+        return environment.current.wacUrl && environment.current.host.toUpperCase() === HostType.EXCEL;
     }
 
     get urlString() {
@@ -86,7 +84,7 @@ export class ViewMode implements OnInit, OnDestroy {
         this.paramsSub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
-                this.displayUrl = `${environment.current.config.editorUrl}/#/view/${type}/${host}/${id}`;
+                this.displayUrl = `${environment.current.config.editorUrl}/#/view/${host}/${type}/${id}`;
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
                     environment.current.host = host.toUpperCase();
                     // Update environment in cache
@@ -99,9 +97,9 @@ export class ViewMode implements OnInit, OnDestroy {
                 switch (type) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
+                        return this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
                             .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
-                        );
+                            .catch(exception => Observable.of({ lookupTable: null, id: null}));
                     case 'gist':
                         return Observable.of({ lookupTable: null, id: id});
                     default:
@@ -110,9 +108,9 @@ export class ViewMode implements OnInit, OnDestroy {
             })
             .subscribe(({ lookupTable, id }) => {
                 if (lookupTable && lookupTable[id]) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isViewMode: true }));
+                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isReadOnlyViewMode: true, saveToLocalStorage: false }));
                 } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isViewMode: true }));
+                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isReadOnlyViewMode: true, saveToLocalStorage: false }));
                 } else {
                     // Redirect to error page
                     location.hash = '/view/error';
@@ -144,7 +142,7 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     openTryIt() {
-        let wacUrl = encodeURIComponent(window.localStorage.getItem(WAC_URL_STORAGE_KEY));
-        window.open(`${environment.current.config.runnerUrl}/try/${this.viewType}/${environment.current.host}/${this.viewId}?wacUrl=${wacUrl}`, '_blank');
+        let wacUrl = encodeURIComponent(environment.current.wacUrl);
+        window.open(`${environment.current.config.runnerUrl}/try/${environment.current.host}/${this.viewType}/${this.viewId}?wacUrl=${wacUrl}`, '_blank');
     }
 }

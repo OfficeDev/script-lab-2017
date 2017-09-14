@@ -2,6 +2,8 @@ import * as $ from 'jquery';
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 let { devMode, build, config } = PLAYGROUND;
 
+const WAC_URL_STORAGE_KEY = 'playground_wac_url';
+
 class Environment {
     private _config: IEnvironmentConfig;
     cache = new Storage<any>(PLAYGROUND.localStorageKeys.playgroundCache, StorageType.SessionStorage);
@@ -40,7 +42,11 @@ class Environment {
                 build,
                 config: this._config,
                 host: host,
-                platform: platform
+                platform: platform,
+
+                isAddinCommands: false,
+                isTryIt: false,
+                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY]
             };
 
             this.cache.insert('environment', this._current);
@@ -58,35 +64,83 @@ class Environment {
         this._current = this.cache.insert('environment', updatedEnv);
     }
 
-    async initialize(currHost?: string, currPlatform?: string): Promise<void> {
+    async initialize(currHost?: string): Promise<void> {
         this._setupCurrentDefaultsIfEmpty();
 
-        if (currHost) {
-            this.current = {
-                ...this.current,
-                host: currHost,
-                platform: currPlatform
-            };
 
+        let pageParams = (Authenticator.extractParams(window.location.href.split('?')[1]) || {}) as {
+            commands: any/* whether app-commands are available, relevant for Office Add-ins */,
+            mode: string /* and older way of opening Script Lab to a particular host */,
+            wacUrl: string,
+            tryIt: any
+        };
+
+        if (pageParams.wacUrl) {
+            this.current = { ...this.current, wacUrl: decodeURIComponent(pageParams.wacUrl) };
+            window.localStorage.setItem(WAC_URL_STORAGE_KEY, this.current.wacUrl);
+        }
+
+        if (pageParams.tryIt) {
+            this.current = { ...this.current, isTryIt: true };
+        }
+
+        if (pageParams.commands) {
+            this.current = { ...this.current, isAddinCommands: true };
+        }
+
+
+        // Having initialized everything except host and platform based off of page params, do the rest:
+
+        if (currHost) {
+            this.current = { ...this.current, host: currHost.toUpperCase() };
             return;
+        }
+
+        if (pageParams.mode) {
+            this.current = { ...this.current, host: pageParams.mode.toUpperCase() };
+            return;
+        }
+
+        if (location.hash) {
+            const viewVsEditAndHostRegex = /^#\/(view|edit)\/(\w+)/;
+            /* The regex captures input as follows:
+                #/edit/excel/samples/id    ==> success, group 1 = edit, group 2 = excel
+                #/edit/EXCEL/samples/id    ==> success, group 1 = edit, group 2 = EXCEL
+                #/view/EXCEL/samples/id    ==> success, group 1 = view, group 2 = EXCEL
+                #/view/EXCEL   ==> success, group 1 = view, group 2 = EXCEL
+                #/view/EXCEL/   ==> success, group 1 = view, group 2 = EXCEL
+
+                ... and fails on anything else.
+             */
+
+            let regexResult = viewVsEditAndHostRegex.exec(location.hash);
+            if (regexResult) {
+                this.current = { ...this.current, host: regexResult[2].toUpperCase() };
+                return;
+            }
         }
 
         if (this.current && this.current.host) {
             return;
         }
 
-        let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
-            if (window.location.search.toLowerCase().indexOf('mode') > 0) {
-                let { mode } = Authenticator.getUrlParams(window.location.search, '', '?') as any;
-                return resolve({ host: mode.toUpperCase(), platform: null });
-            } else if (/#\/view\/|#\/edit\//.test(location.hash)) {
-                const [view, type, host] = location.hash.toLowerCase().replace('#/', '').split('/');
-                if (view && type && host) {
-                    return resolve({ host: host.toUpperCase(), platform: null });
-                }
-                return resolve({ host: null, platform: null });
-            }
-            else {
+
+        // If no information was gleamed through the function parameter, from the URL,
+        // or from existing values, let's either wait on Office.js to give us the host & platform info,
+        // or rely on the user to select from one of the buttons:
+
+        const hostInfo = await getAsyncHostInfo();
+        this.current = {
+            ...this.current,
+            host: hostInfo.host,
+            platform: hostInfo.platform
+        };
+
+        return;
+
+
+        async function getAsyncHostInfo(): Promise<{ host: string, platform: string }> {
+            return new Promise<{ host: string, platform: string }>(resolve => {
                 let hostButtonsTimeout = setTimeout(() => {
                     $('#hosts').show();
                     $('.ms-progress-component__footer').hide();
@@ -102,13 +156,7 @@ class Environment {
                         return resolve({ host, platform });
                     }
                 };
-            }
-        });
-
-        this.current = {
-            ...this.current,
-            host,
-            platform
+            });
         };
     }
 }
