@@ -204,6 +204,9 @@ interface ClientStringsPerLanguage {
         noSnippetIsCurrentlyOpened: string;
 
         getLoadingSnippetSubtitle(snippetName?: string): string;
+
+        runtimeErrorWhileLoadingTheSnippet: string;
+        goBackToEditorToFixError: string;
     };
 
     /** Error strings served by the server and displayed in the Error page */

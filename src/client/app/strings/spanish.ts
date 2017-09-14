@@ -219,7 +219,10 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return 'Loading ' + (snippetName ? `"${snippetName}"` : 'fragmento de código');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
+            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
         },
 
         /** Error strings served by the server and displayed in the Error page */

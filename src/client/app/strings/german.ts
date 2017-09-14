@@ -223,7 +223,10 @@ export function getGermanStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return 'Lade ' + (snippetName ? `"${snippetName}"` : 'Schnipsel');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
+            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
         },
 
         /** Error strings served by the server and displayed in the Error page */

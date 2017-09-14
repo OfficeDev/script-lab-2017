@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
-import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
+import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, MessageType } from '../app/helpers/messenger';
@@ -201,7 +201,16 @@ interface InitializationParams {
         contentWindow.document.open();
         contentWindow.document.write(html);
         (contentWindow as any).console = window.console;
-        contentWindow.onerror = (...args) => console.error(args);
+        contentWindow.onerror = (...args) => {
+            // If errors occur during loading rather than after
+            // "scriptRunnerBeginInit" is called, the Firebug console itself
+            // won't be visible, so it doesn't help to show the console error there.
+            // Instead, expose it as a UI notification:
+            UI.notify(Strings().Runner.runtimeErrorWhileLoadingTheSnippet,
+                Strings().Runner.goBackToEditorToFixError + '\n' + args[0],
+                'error');
+            toggleProgress(false);
+        };
         contentWindow.document.close();
 
         return true;
@@ -402,14 +411,14 @@ interface InitializationParams {
 
         // If still here, proceed to render:
 
+        (window as any).Firebug.Console.clear();
+
         $('#header-refresh').attr('href', refreshUrl);
 
         let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
-
-        (window as any).Firebug.Console.clear();
 
         if (replacedSuccessfully) {
             $('.runner-overlay').hide();

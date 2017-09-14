@@ -216,7 +216,10 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return '下载 ' + (snippetName ? `"${snippetName}"` : '代码段');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
+            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
         },
 
         /** Error strings served by the server and displayed in the Error page */
