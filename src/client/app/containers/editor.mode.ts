@@ -9,6 +9,7 @@ import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'editor-mode',
@@ -58,18 +59,22 @@ export class EditorMode {
 
     strings = Strings();
 
+    private snippetSub: Subscription;
+    private sharingSub: Subscription;
+    private errorsSub: Subscription;
+
     constructor(
         private _store: Store<fromRoot.State>,
         private _effects: UIEffects,
         private _request: Request,
         private _route: ActivatedRoute
     ) {
-        this._store.select(fromRoot.getCurrent).subscribe(snippet => {
+        this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
         });
 
-        this._store.select(fromRoot.getSharing).subscribe(sharing => {
+        this.sharingSub = this._store.select(fromRoot.getSharing).subscribe(sharing => {
             this.isDisabled = sharing;
         });
 
@@ -119,6 +124,18 @@ export class EditorMode {
     sharing$ = this._store.select(fromRoot.getSharing);
 
     showImport$ = this._store.select(fromRoot.getImportState);
+
+    ngOnDestroy() {
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
+        if (this.sharingSub) {
+            this.sharingSub.unsubscribe();
+        }
+        if (this.errorsSub) {
+            this.errorsSub.unsubscribe();
+        }
+    }
 
     run() {
         if (this.snippet == null) {
@@ -259,7 +276,7 @@ export class EditorMode {
     }
 
     showErrors() {
-        this.errors$
+        this.errorsSub = this.errors$
             .filter(errors => errors && errors.length > 0)
             .subscribe(errors => {
                 let data = errors.map(error => error.message).join('\n\n');
