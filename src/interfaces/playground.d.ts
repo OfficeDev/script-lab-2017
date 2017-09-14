@@ -125,8 +125,12 @@ interface ICurrentPlaygroundInfo {
     devMode: boolean;
     build: IBuildInfo;
     config: IEnvironmentConfig;
-    host?: string;
-    platform?: string;
+    host: string;
+    platform: string;
+
+    isAddinCommands: boolean;
+    isTryIt: boolean;
+    wacUrl: string;
 }
 
 interface IBuildInfo {
@@ -171,6 +175,8 @@ interface HeartbeatParams {
      * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
     */
     lastModified: string;
+
+    runnerUrl: string;
 }
 
 // NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"

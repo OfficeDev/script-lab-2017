@@ -13,6 +13,14 @@ export class PlaygroundError extends CustomError {
     }
 }
 
+/** An Error-like object used to convey information with a title and message
+ * (but no App-Insights exception-tracking, for example) */
+export class InformationalError extends CustomError {
+    constructor(name: string, message: string) {
+        super(name, message);
+    }
+}
+
 export class ExceptionHandler implements ErrorHandler {
     handleError(exception: any) {
         AI.trackException(exception, 'Global Exception Service');

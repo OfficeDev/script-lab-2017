@@ -37,6 +37,8 @@ export interface IRunnerHandlebarsContext {
 
     strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;
+
+    runnerUrl: string;
 }
 
 export interface IErrorHandlebarsContext {
@@ -69,6 +71,7 @@ export interface IReadmeHandlebarsContext {
 }
 
 export interface ITryItHandlebarsContext {
+    host: string;
     title: string;
     assets: { [key: string]: any };
     origin: string;

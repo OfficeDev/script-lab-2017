@@ -37,7 +37,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
-        viewModeError: '导入代码段失败。',
+        failedToLoadCodeSnippet: '导入代码段失败。',
 
         snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: '导入代码失败',
@@ -200,9 +200,6 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `配置问题阻止了代码段加载。`,
-
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `找不到代码段。它可能已经被删除了.`,
 
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */

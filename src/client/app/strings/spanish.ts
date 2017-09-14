@@ -36,7 +36,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
-        viewModeError: getEnglishSubstitutesForNotYetTranslated().viewModeError,
+        failedToLoadCodeSnippet: getEnglishSubstitutesForNotYetTranslated().failedToLoadCodeSnippet,
 
         snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: 'Error al importar fragmento de código',
@@ -203,9 +203,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `Un problema de configuración previno evitó que se cargue el fragmento de código.`,
-
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `No se encontró el fragmento de código. Pudo ser borrado.`,
 
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */
