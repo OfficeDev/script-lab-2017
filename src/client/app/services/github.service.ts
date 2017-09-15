@@ -10,6 +10,7 @@ export class GitHubService {
     private _authenticator: Authenticator;
     private _token: IToken;
     private _headers: any;
+    private _profile: IBasicProfile;
 
     constructor(private _request: Request) {
         let { clientId, tokenUrl } = environment.current.config;
@@ -29,7 +30,16 @@ export class GitHubService {
     }
 
     get profile(): IBasicProfile {
-        return storage.current.profile;
+        if (this._profile == null) {
+            this._profile = storage.current.profile;
+        }
+
+        return this._profile;
+    };
+
+    set profile(value) {
+        this._profile = value;
+        storage.current = { profile: value };
     }
 
     user(): Observable<IBasicProfile> {
@@ -83,9 +93,8 @@ export class GitHubService {
     async login(): Promise<IBasicProfile> {
         this._token = await this._authenticator.authenticate('GitHub', environment.current.host === 'TEAMS');
         this._setDefaultHeaders(this._token);
-        const profile = await this.user().toPromise();
-        storage.current = { profile: profile } as any;
-        return profile;
+        this.profile = await this.user().toPromise();
+        return this.profile;
     }
 
     logout() {
