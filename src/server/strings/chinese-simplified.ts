@@ -20,12 +20,9 @@ export function getChineseSimplifiedStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `加载 "${snippetName}"`,
 
-        loadingSnippetDotDotDot: '加载代码片段...',
+        initializingRunner: getEnglishSubstitutesForNotYetTranslated().initializingRunner,
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? '句法误差' : '句法误差'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `欢迎到 Script Lab – 但您可能希望查看编辑器，而不是查看页面。 请返回到 ${editorUrl}`,
 
         createdWithScriptLab: 'Script Lab创造',
 

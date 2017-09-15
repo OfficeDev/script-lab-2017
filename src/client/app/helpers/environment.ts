@@ -144,13 +144,15 @@ class Environment {
                     });
                 }, 2000);
 
-                Office.initialize = () => {
-                    let { host, platform } = Utilities;
-                    if (platform) {
-                        clearTimeout(hostButtonsTimeout);
-                        return resolve({ host, platform });
-                    }
-                };
+                if ((window as any).Office) {
+                    Office.initialize = () => {
+                        let { host, platform } = Utilities;
+                        if (platform) {
+                            clearTimeout(hostButtonsTimeout);
+                            return resolve({ host, platform });
+                        }
+                    };
+                }
             });
         };
     }

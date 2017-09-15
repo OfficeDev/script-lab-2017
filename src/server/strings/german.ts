@@ -20,12 +20,9 @@ export function getGermanStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Lade "${snippetName}"`,
 
-        loadingSnippetDotDotDot: 'Schnipsel wird geladen ...',
+        initializingRunner: getEnglishSubstitutesForNotYetTranslated().initializingRunner,
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Syntaxfehler' : 'Syntaxfehler'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `Willkommen bei Script Lab - möchten Sie lieber den Code-Editor statt des Fensters zur Ausführung sehen? Falls ja, klicken Sie hier ${editorUrl}, um zum Editor zu gelangen.`,
 
         createdWithScriptLab: 'Erstellt mit Script Lab',
 

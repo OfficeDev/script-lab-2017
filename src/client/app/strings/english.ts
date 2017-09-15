@@ -217,8 +217,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
                 return 'Loading ' + (snippetName ? `"${snippetName}"` : 'snippet');
             },
 
-            runtimeErrorWhileLoadingTheSnippet: 'Runtime error while loading the snippet',
-            goBackToEditorToFixError: 'Please return to the editor to fix the error'
+            runtimeErrorWhileLoadingTheSnippet: 'A Runtime error occurred while loading the snippet',
+            goBackToEditorToFixError: 'Please return to the script editor to fix the error.'
         },
 
         /** Error strings served by the server and displayed in the Error page */

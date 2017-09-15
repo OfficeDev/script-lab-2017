@@ -14,12 +14,9 @@ export function getEnglishStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Loading "${snippetName}"`,
 
-        loadingSnippetDotDotDot: 'Loading snippet...',
+        initializingRunner: 'Initializing the runner',
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Syntax error' : 'Syntax errors'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `Welcome to Script Lab – but you probably want to be viewing the Editor, not the Runner page. Please return to ${editorUrl}`,
 
         createdWithScriptLab: 'Created with Script Lab',
 

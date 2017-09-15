@@ -43,7 +43,7 @@ const THREE_HOUR_MS = 10800000;
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
-const otherValidHosts = ['WEB'];
+
 const officeHostToManifestTypeMap = {
     'EXCEL': 'Workbook',
     'WORD': 'Document',
@@ -148,18 +148,13 @@ app.use('/favicon', express.static('favicon'));
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-registerRoute('get', '/run/:host/:id', (req, res) => {
+registerRoute('get', ['/', '/run', '/run/:host', '/run/:host/:id'], (req, res) => {
     const params = massageParams<{ host: string, id: string }>(req);
-    const { id, host } = params;
+    let { id, host } = params;
+    id = id || '';
+    host = host || '';
 
     const strings = Strings(req);
-
-    if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
-        throw new BadRequestError(`${strings.invalidHost} "${host}"`);
-    }
-    if (isNil(id)) {
-        throw new BadRequestError(`${strings.invalidId} "${id}"`);
-    }
 
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
@@ -175,11 +170,10 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
                 host: host,
                 assets: getAssetPaths(),
                 isTrustedSnippet: false, /* Default to snippet not being trusted */
-                initialLoadSubtitle: strings.loadingSnippetDotDotDot,
+                initialLoadSubtitle: strings.initializingRunner,
                 headerTitle: '',
                 strings,
-                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-                runnerUrl: getRunnerUrlWithCorrectHttpOrHttpsPrefix(req, currentConfig.runnerUrl)
+                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
             });
 
             res.setHeader('Cache-Control', 'no-cache, no-store');
@@ -420,7 +414,7 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
                 assets: getAssetPaths(),
                 origin: currentConfig.editorUrl,
                 editorTryItUrl: editorTryItUrl,
-                runnerSnippetUrl: `${getRunnerUrlWithCorrectHttpOrHttpsPrefix(req, currentConfig.runnerUrl)}/run/EXCEL/`,
+                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
                 wacUrl: decodeURIComponent(req.query.wacUrl || '')
             };
 
@@ -429,14 +423,6 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
             res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
         });
-});
-
-/** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
-registerRoute('get', '/', (req, res) => {
-    const strings = Strings(req);
-    throw new InformationalError(
-        strings.scriptLabRunner,
-        strings.getGoBackToEditor(currentConfig.editorUrl));
 });
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
@@ -509,8 +495,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
-                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-                    runnerUrl: getRunnerUrlWithCorrectHttpOrHttpsPrefix(req, currentConfig.runnerUrl)
+                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
                 });
             }
 
@@ -766,13 +751,6 @@ function getClientSecret() {
     };
 
     return secrets ? secrets[env] : '';
-}
-
-function getRunnerUrlWithCorrectHttpOrHttpsPrefix(req: express.Request, url: string) {
-    if (req.protocol.toLowerCase() === 'http' && url.toLowerCase().indexOf('https:/') === 0) {
-        return url.replace('https:/', 'http:/');
-    }
-    return url;
 }
 
 /** Returns the params as a typed object, with "host" always capitalized, and "id" always lowercase */
