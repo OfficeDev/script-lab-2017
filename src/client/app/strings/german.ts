@@ -42,6 +42,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
         snippetImportErrorTitle: 'Importfehler',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
+        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
+        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
         cannotImportSnippetCreatedForDifferentHost:

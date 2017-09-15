@@ -26,6 +26,7 @@ import {
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
+const isPlainObject = require('is-plain-object') as (obj: any) => boolean;
 
 const { build, config, secrets } = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
@@ -121,8 +122,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 else {
     const cert = {
-         key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
-         cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
+        key: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.key')),
+        cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
     };
     https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
 
@@ -136,6 +137,15 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors());
 app.use('/favicon', express.static('favicon'));
 
+// Return just the regular runner page on the following routes:
+registerRoute('get', ['/', '/run', '/compile', '/compile/page', '/compile/snippet'],
+    (req, res) => runCommon({
+        host: null,
+        id: null,
+        query: req.query,
+        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+    }, Strings(req), res)
+);
 
 /**
  * HTTP GET: /run
@@ -143,67 +153,18 @@ app.use('/favicon', express.static('favicon'));
  * Required:
  *   - host
  *   - id
- *
  * Optional query parameters:
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-registerRoute('get', ['/', '/run', '/run/:host', '/run/:host/:id'], (req, res) => {
-    const params = massageParams<{ host: string, id: string }>(req);
-    let { id, host } = params;
-    id = id || '';
-    host = host || '';
-
-    const strings = Strings(req);
-
-    // NOTE: using Promise-based code instead of async/await
-    // to avoid unhandled exception-pausing on debugging.
-    return loadTemplate<IRunnerHandlebarsContext>('runner')
-        .then(runnerHtmlGenerator => {
-            const html = runnerHtmlGenerator({
-                snippet: {
-                    id: id
-                },
-                officeJS: determineOfficeJS(req.query, host),
-                returnUrl: '',
-                origin: currentConfig.editorUrl,
-                host: host,
-                assets: getAssetPaths(),
-                isTrustedSnippet: false, /* Default to snippet not being trusted */
-                initialLoadSubtitle: strings.initializingRunner,
-                headerTitle: '',
-                strings,
-                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
-            });
-
-            res.setHeader('Cache-Control', 'no-cache, no-store');
-            return res.contentType('text/html').status(200).send(html);
-        });
-
-    /**
-     * Helper function to return the OfficeJS URL (from query parameter,
-     * or from guessing based on host), or empty string
-     **/
-    function determineOfficeJS(query: any, host: string): string {
-        const queryParamsLowercase: { officejs: string } = <any>{};
-        forIn(query as { [key: string]: string },
-            (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
-
-        if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
-            return queryParamsLowercase.officejs.trim();
-        }
-
-        if (isOfficeHost(host.toUpperCase())) {
-            // Assume a production Office.js for the Office products --
-            // and worse case (e.g., if targeting Beta, or debug version),
-            // the runner will just force a refresh after the page has loaded
-            return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
-        }
-
-        return '';
-    }
-});
-
+registerRoute('get', ['/run/:host', '/run/:host/:id'],
+    (req, res) => runCommon({
+        host: req.params.host,
+        id: req.params.id,
+        query: req.query,
+        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+    }, Strings(req), res)
+);
 
 /**
  * HTTP POST: /auth
@@ -258,12 +219,14 @@ registerRoute('post', '/auth/:user', (req, res) => {
  */
 registerRoute('post', '/compile/snippet', compileCommon);
 
-
 /**
  * HTTP POST: /compile/page
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
+
+// Also include "get" routes for the "compile" pages, so that a refresh on the page works:
+
 
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
     const params = massageParams<{ host: string, type: string, id: string, filename: string }>(req);
@@ -401,7 +364,7 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
         params.host = 'EXCEL';
     }
 
-    let editorTryItUrl = `${currentConfig.editorUrl}/?tryIt=1#/edit/${params.host}`;
+    let editorTryItUrl = `${currentConfig.editorUrl}/?tryIt=true#/edit/${params.host}`;
     if (params.type && params.id) {
         editorTryItUrl += `/${params.type}/${params.id}`;
     }
@@ -504,6 +467,72 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
             res.setHeader('X-XSS-Protection', '0');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
         });
+}
+
+function runCommon(
+    options: {
+        /** host, may be null */
+        host: string;
+        /** id, may be null */
+        id: string;
+        /** query string, may be null */
+        query: { [key: string]: string };
+        /** language, may be null */
+        explicitlySetDisplayLanguageOrNull: string;
+    },
+    strings: ServerStrings,
+    res: express.Response
+) {
+    let { host, id } = massageParams<{ host: string, id: string }>(options);
+    id = id || '';
+    host = host || '';
+    options.query = options.query || {};
+
+    // NOTE: using Promise-based code instead of async/await
+    // to avoid unhandled exception-pausing on debugging.
+    return loadTemplate<IRunnerHandlebarsContext>('runner')
+        .then(runnerHtmlGenerator => {
+            const html = runnerHtmlGenerator({
+                snippet: {
+                    id: id
+                },
+                officeJS: determineOfficeJS(options.query, host),
+                returnUrl: '',
+                origin: currentConfig.editorUrl,
+                host: host,
+                assets: getAssetPaths(),
+                isTrustedSnippet: false, /* Default to snippet not being trusted */
+                initialLoadSubtitle: strings.initializingRunner,
+                headerTitle: strings.scriptLabRunner,
+                strings,
+                explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
+
+    /**
+     * Helper function to return the OfficeJS URL (from query parameter,
+     * or from guessing based on host), or empty string
+     **/
+    function determineOfficeJS(query: { [key: string]: string }, host: string): string {
+        const queryParamsLowercase: { officejs: string } = <any>{};
+        forIn(query, (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
+
+        if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
+            return queryParamsLowercase.officejs.trim();
+        }
+
+        if (isOfficeHost(host.toUpperCase())) {
+            // Assume a production Office.js for the Office products --
+            // and worse case (e.g., if targeting Beta, or debug version),
+            // the runner will just force a refresh after the page has loaded
+            return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+        }
+
+        return '';
+    }
 }
 
 function parseXmlString(xml): Promise<JSON> {
@@ -754,8 +783,13 @@ function getClientSecret() {
 }
 
 /** Returns the params as a typed object, with "host" always capitalized, and "id" always lowercase */
-function massageParams<T>(req: express.Request): T {
-    let params = req.params as { host?: string, id?: string };
+function massageParams<T>(req: express.Request): T;
+function massageParams<T>(params: { [key: string]: any }): T;
+function massageParams<T>(input) {
+    let params: { host?: string, id?: string } =
+        isPlainObject(input)
+            ? input
+            : (input as express.Request).params;
 
     if (params.host) {
         params.host = params.host.toUpperCase();

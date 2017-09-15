@@ -101,6 +101,13 @@ interface InitializationParams {
 
         if (returnUrl) {
             window.sessionStorage.playground_returnUrl = returnUrl;
+        } else if (window.sessionStorage.playground_returnUrl) {
+            returnUrl = window.sessionStorage.playground_returnUrl;
+        } else {
+            returnUrl = `${environment.current.config.editorUrl}/#/edit/${host}`;
+            if (initialParams.currentSnippet.id) {
+                returnUrl += `/open/${initialParams.currentSnippet.id}`;
+            }
         }
 
         if (initialParams.explicitlySetDisplayLanguageOrNull) {
@@ -108,10 +115,7 @@ interface InitializationParams {
             document.cookie = `displayLanguage=${encodeURIComponent(initialParams.explicitlySetDisplayLanguageOrNull)};path=/;`;
         }
 
-        if (window.sessionStorage.playground_returnUrl) {
-            returnUrl = window.sessionStorage.playground_returnUrl;
-            $('#header-back').attr('href', returnUrl).show();
-        }
+        $('#header-back').attr('href', returnUrl).show();
 
         currentSnippet = {
             ...initialParams.currentSnippet,

@@ -80,7 +80,7 @@ export class EditorMode {
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
 
-        this.checkForEditorTryIt();
+        this.parseEditorRoutingParams();
     }
 
     get isAddinCommands() {
@@ -293,54 +293,84 @@ export class EditorMode {
         // no-op
     }
 
-    checkForEditorTryIt() {
-        if (!this.isEditorTryIt) {
-            return;
-        }
-
-        // Mimic view mode code, except Script Lab contains all editor features
+    parseEditorRoutingParams() {
         let sub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
-            .mergeMap(({ type, host, id }) => {
+            .mergeMap(({ type, host, id }): Observable<{ valid: boolean, mode: string; id: string }> => {
                 if (host && (environment.current.host.toUpperCase() !== host.toUpperCase())) {
-                    environment.appendCurrent({host: host.toUpperCase()});
+                    environment.appendCurrent({ host: host.toUpperCase() });
                 }
 
-                switch (type) {
+                if (!type) {
+                    return Observable.of({ valid: true, mode: null, id: null });
+                }
+
+                switch ((type as string).toLowerCase()) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
                         return this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
                             .map(lookupTable => {
-                                return { lookupTable: lookupTable, id: id };
+                                return { valid: true, mode: Snippet.ImportType.SAMPLE, id: lookupTable[id] };
                             })
-                            .catch(exception => Observable.of({ lookupTable: null, id: null }));
+                            .catch(exception => Observable.of({ valid: false, mode: null, id: null }));
                     case 'gist':
-                        return Observable.of({ lookupTable: null, id: id });
+                        return Observable.of({ valid: true, mode: Snippet.ImportType.GIST, id: id });
+                    case 'open':
+                        return Observable.of({ valid: true, mode: Snippet.ImportType.OPEN, id: id });
                     default:
-                        return Observable.of({ lookupTable: null, id: null });
+                        return Observable.of({ valid: false, mode: null, id: null });
                 }
             })
-            .subscribe(({ lookupTable, id }) => {
-                let commonImportActionParams = {
-                    saveToLocalStorage: false /* Just like samples, don't save until user makes an edit */,
-                    isReadOnlyViewMode: false,
-                    onSuccess: (snippet: ISnippet) => {
-                        this._store.dispatch(new UI.ToggleImportAction(false));
-                        window.parent.postMessage({ type: 'import-complete', id: snippet.id }, environment.current.config.runnerUrl);
-                    }
-                };
-
-                if (lookupTable && lookupTable[id]) {
-                    this._store.dispatch(new Snippet.ImportAction({ ...commonImportActionParams, mode: Snippet.ImportType.SAMPLE, data: lookupTable[id] }));
-                } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction({ ...commonImportActionParams, mode: Snippet.ImportType.GIST, data: id }));
-                } else {
-                    this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
-                }
+            .subscribe(({ valid, mode, id }) => {
+                this._processInitializationImport({ valid, mode, id });
 
                 if (sub && !sub.closed) {
                     sub.unsubscribe();
                 }
             });
+    }
+
+    _processInitializationImport(params: { valid: boolean, mode: string; id: string }): void {
+        let { valid, mode, id } = params;
+
+        // If valid, and import mode is empty, then simply let the editor be (it's just a normal open)
+        if (valid && mode === null) {
+            return;
+        }
+
+        const commonImportActionParams = {
+            mode: mode,
+            isReadOnlyViewMode: false,
+            onSuccess: (snippet: ISnippet) => {
+                this._store.dispatch(new UI.ToggleImportAction(false));
+                if (this.isEditorTryIt) {
+                    window.parent.postMessage({ type: 'import-complete', id: snippet.id },
+                        environment.current.config.runnerUrl);
+                }
+            }
+        };
+
+        switch (mode) {
+            case Snippet.ImportType.SAMPLE:
+                this._store.dispatch(new Snippet.ImportAction({
+                    ...commonImportActionParams, saveToLocalStorage: false, data: id
+                }));
+                break;
+
+            case Snippet.ImportType.GIST:
+                this._store.dispatch(new Snippet.ImportAction({
+                    ...commonImportActionParams, saveToLocalStorage: !this.isEditorTryIt, data: id
+                }));
+                break;
+
+            case Snippet.ImportType.OPEN:
+                this._store.dispatch(new Snippet.ImportAction({
+                    ...commonImportActionParams, saveToLocalStorage: true, data: id
+                }));
+                break;
+
+            default:
+                this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
+        }
     }
 }

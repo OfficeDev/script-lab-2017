@@ -62,11 +62,12 @@ interface ICompiledSnippet extends ITemplate {
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
-
-    /** URL to return to (editor, or gallery view). More than just origin domain */
-    returnUrl: string;
-
     displayLanguage: string;
+
+    /** URL to return to in case of the gallery (or something else custom).
+     * Otherwise, if null, will create a default reference back to editor domain,
+     * taking host and snippet ID into account */
+    returnUrl?: string;    
 }
 
 interface IExportState {

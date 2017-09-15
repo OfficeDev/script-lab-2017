@@ -42,6 +42,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         snippetImportError: 'Error al importar fragmento de código',
         snippetImportErrorTitle: 'Error en importación',
         snippetImportErrorBody: 'No pudimos importar el fragmento de código.',
+        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
+        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
         reloadPrompt: 'Vuelve a cargar este panel e intenta otro URL o ID.',
 
         cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,

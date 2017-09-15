@@ -35,6 +35,8 @@ interface ClientStringsPerLanguage {
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;
+    cannotOpenSnippet: string;
+    requestedSnippetNoLongerExists: string;
     reloadPrompt: string;
 
     cannotImportSnippetCreatedForDifferentHost: (snippetHost: string, currentHost: string) => string;

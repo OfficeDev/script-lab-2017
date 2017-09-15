@@ -43,6 +43,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         snippetImportError: '导入代码失败',
         snippetImportErrorTitle: '导入失败',
         snippetImportErrorBody: `我们不能导入代码。`,
+        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
+        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
         reloadPrompt: '再次导入任务窗口，然后尝试其他URL或者ID。',
 
         cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,

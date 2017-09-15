@@ -154,7 +154,6 @@ export class SnippetEffects {
             } else {
                 const state: IRunnerState = {
                     snippet: snippet,
-                    returnUrl: window.location.href,
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
@@ -377,7 +376,16 @@ export class SnippetEffects {
 
             /* If importing a local snippet, then load it off the store */
             case Snippet.ImportType.OPEN:
-                return Observable.of(storage.snippets.get(data));
+                let snippet = storage.snippets.get(data);
+                if (!snippet) {
+                    this._uiEffects.alert(
+                        Strings().requestedSnippetNoLongerExists,
+                        Strings().cannotOpenSnippet,
+                        Strings().okButtonLabel);
+                    return Observable.of(null);
+                }
+
+                return Observable.of(snippet);
 
             /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
             case Snippet.ImportType.SAMPLE:
@@ -436,7 +444,11 @@ export class SnippetEffects {
                         return output;
                     });
 
-            default: return Observable.of(null);
+            default:
+                // OK that error is in English, because this is a programmer error,
+                // it should not leak to the user:
+                this._uiEffects.alert('Invalid import type', 'Internal Error');
+                return Observable.of(null);
         }
     }
 

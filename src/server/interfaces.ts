@@ -32,7 +32,8 @@ export interface IRunnerHandlebarsContext {
     /** Office.js URL, or empty */
     officeJS: string;
 
-    /** return url (for back button / errors), or empty */
+    /** return url (for back button / errors), or empty
+     * (in which case will come up with default editor URL, using host & id as guide) */
     returnUrl: string;
 
     strings: ServerStrings;

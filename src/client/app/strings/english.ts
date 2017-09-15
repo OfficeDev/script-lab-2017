@@ -38,6 +38,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
+        cannotOpenSnippet: 'Cannot open the snippet',
+        requestedSnippetNoLongerExists: 'The requested snippet no longer exists.',
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
         cannotImportSnippetCreatedForDifferentHost:
