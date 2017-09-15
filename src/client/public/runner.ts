@@ -149,7 +149,6 @@ interface InitializationParams {
             return `${window.location.protocol}//${urlExtractor[2]}`;
         })();
 
-        debugger;
         establishHeartbeat(initialParams.origin, {
             host: host,
             runnerUrl: runnerUrlWithCorrectPrefix,
