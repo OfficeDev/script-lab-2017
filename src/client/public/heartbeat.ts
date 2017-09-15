@@ -18,7 +18,12 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         // In case the params have had a different runner URL passed in, update the environment config
         if (params.runnerUrl) {
-            environment.current.config.runnerUrl = params.runnerUrl;
+            environment.appendCurrent({
+                config: {
+                    ...environment.current.config,
+                    runnerUrl: params.runnerUrl
+                }
+            });
         }
 
         messenger = new Messenger(environment.current.config.runnerUrl);
@@ -123,7 +128,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
                 messenger.send(window.parent, MessageType.REFRESH_RESPONSE, { snippet: snippet, isTrustedSnippet: isTrustedSnippet });
             } else {
-                messenger.send<{name: string}>(window.parent, MessageType.INFORM_STALE, {
+                messenger.send<{ name: string }>(window.parent, MessageType.INFORM_STALE, {
                     name: snippet.name
                 });
             }

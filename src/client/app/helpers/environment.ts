@@ -53,12 +53,12 @@ class Environment {
         }
     }
 
-    get current(): ICurrentPlaygroundInfo {
+    get current(): Readonly<ICurrentPlaygroundInfo> {
         this._setupCurrentDefaultsIfEmpty();
         return this._current;
     }
 
-    set current(value: ICurrentPlaygroundInfo) {
+    appendCurrent(value: Partial<ICurrentPlaygroundInfo>) {
         this._setupCurrentDefaultsIfEmpty();
         let updatedEnv = { ...this._current, ...value };
         this._current = this.cache.insert('environment', updatedEnv);
@@ -76,28 +76,28 @@ class Environment {
         };
 
         if (pageParams.wacUrl) {
-            this.current = { ...this.current, wacUrl: decodeURIComponent(pageParams.wacUrl) };
+            this.appendCurrent({ wacUrl: decodeURIComponent(pageParams.wacUrl) });
             window.localStorage.setItem(WAC_URL_STORAGE_KEY, this.current.wacUrl);
         }
 
         if (pageParams.tryIt) {
-            this.current = { ...this.current, isTryIt: true };
+            this.appendCurrent({ isTryIt: true });
         }
 
         if (pageParams.commands) {
-            this.current = { ...this.current, isAddinCommands: true };
+            this.appendCurrent({ isAddinCommands: true });
         }
 
 
         // Having initialized everything except host and platform based off of page params, do the rest:
 
         if (currHost) {
-            this.current = { ...this.current, host: currHost.toUpperCase() };
+            this.appendCurrent({ host: currHost.toUpperCase() });
             return;
         }
 
         if (pageParams.mode) {
-            this.current = { ...this.current, host: pageParams.mode.toUpperCase() };
+            this.appendCurrent({ host: pageParams.mode.toUpperCase() });
             return;
         }
 
@@ -115,7 +115,7 @@ class Environment {
 
             let regexResult = viewVsEditAndHostRegex.exec(location.hash);
             if (regexResult) {
-                this.current = { ...this.current, host: regexResult[2].toUpperCase() };
+                this.appendCurrent({ host: regexResult[2].toUpperCase() });
                 return;
             }
         }
@@ -130,11 +130,7 @@ class Environment {
         // or rely on the user to select from one of the buttons:
 
         const hostInfo = await getAsyncHostInfo();
-        this.current = {
-            ...this.current,
-            ...hostInfo
-        };
-
+        this.appendCurrent({ ...hostInfo });
         return;
 
 

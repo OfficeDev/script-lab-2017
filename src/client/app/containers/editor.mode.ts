@@ -303,9 +303,7 @@ export class EditorMode {
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
                 if (host && (environment.current.host.toUpperCase() !== host.toUpperCase())) {
-                    environment.current.host = host.toUpperCase();
-                    // Update environment in cache
-                    environment.current = environment.current;
+                    environment.appendCurrent({host: host.toUpperCase()});
                 }
 
                 switch (type) {

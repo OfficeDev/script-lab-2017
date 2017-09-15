@@ -22,11 +22,11 @@ import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/e
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view/:host/:type/:id', component: ViewMode  },
-    { path: 'view/error', component: ViewModeError  },
+    { path: 'view/:host/:type/:id', component: ViewMode },
+    { path: 'view/error', component: ViewModeError },
     { path: 'edit/:host/:type/:id', component: EditorMode },
     { path: 'edit/:host', component: EditorMode },
-    { path: '',  component: EditorMode }
+    { path: '', component: EditorMode }
 ];
 
 let imports = [
@@ -34,8 +34,8 @@ let imports = [
     HttpModule,
     FormsModule,
     RouterModule.forRoot(
-      appRoutes,
-      { useHash: true }
+        appRoutes,
+        { useHash: true }
     ),
     StoreModule.provideStore(rootReducer),
     EffectsModule.run(SnippetEffects),
@@ -57,7 +57,12 @@ let imports = [
         // The runner will have needed to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
         if (environment.current.isTryIt) {
             if (environment.current.wacUrl.toLowerCase().indexOf('http:/') === 0) {
-                environment.current.config.runnerUrl = environment.current.config.runnerUrl.replace('https:/', 'http:/');
+                environment.appendCurrent({
+                    config: {
+                        ...environment.current.config,
+                        runnerUrl: environment.current.config.runnerUrl.replace('https:/', 'http:/')
+                    }
+                });
             }
         }
 
@@ -105,6 +110,6 @@ export class AppModule {
         this._store
             .select(getSettings)
             .debounceTime(300)
-            .subscribe(changes => { storage.current = changes; });
+            .subscribe(changes => { storage.appendCurrent(changes); });
     }
 }

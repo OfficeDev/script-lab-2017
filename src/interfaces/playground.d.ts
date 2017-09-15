@@ -122,11 +122,11 @@ interface ICompiledPlaygroundInfo {
 }
 
 interface ICurrentPlaygroundInfo {
-    devMode: boolean;
-    build: IBuildInfo;
-    config: IEnvironmentConfig;
-    host: string;
-    platform: string;
+    devMode: Readonly<boolean>;
+    build: Readonly<IBuildInfo>;
+    config: Readonly<IEnvironmentConfig>;
+    host: Readonly<string>;
+    platform: Readonly<string>;
 
     isAddinCommands: boolean;
     isTryIt: boolean;

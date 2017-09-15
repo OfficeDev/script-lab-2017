@@ -84,7 +84,7 @@ export class GitHubService {
         this._token = await this._authenticator.authenticate('GitHub', environment.current.host === 'TEAMS');
         this._setDefaultHeaders(this._token);
         const profile = await this.user().toPromise();
-        storage.current = { profile: profile } as any;
+        storage.appendCurrent({ profile: profile });
         return profile;
     }
 

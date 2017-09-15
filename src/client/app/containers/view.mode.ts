@@ -87,9 +87,7 @@ export class ViewMode implements OnInit, OnDestroy {
             .mergeMap(({ type, host, id }) => {
                 this.displayUrl = `${environment.current.config.editorUrl}/#/view/${host}/${type}/${id}`;
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
-                    environment.current.host = host.toUpperCase();
-                    // Update environment in cache
-                    environment.current = environment.current;
+                    environment.appendCurrent({ host: host.toUpperCase() });
                 }
 
                 this.viewType = type;
@@ -100,11 +98,11 @@ export class ViewMode implements OnInit, OnDestroy {
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
                         return this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
                             .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
-                            .catch(exception => Observable.of({ lookupTable: null, id: null}));
+                            .catch(exception => Observable.of({ lookupTable: null, id: null }));
                     case 'gist':
-                        return Observable.of({ lookupTable: null, id: id});
+                        return Observable.of({ lookupTable: null, id: id });
                     default:
-                        return Observable.of({ lookupTable: null, id: null});
+                        return Observable.of({ lookupTable: null, id: null });
                 }
             })
             .subscribe(({ lookupTable, id }) => {

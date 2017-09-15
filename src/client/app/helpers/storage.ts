@@ -30,14 +30,14 @@ class StorageHelper {
         return this.current && this.current.lastOpened;
     }
 
-    get current() {
+    get current(): Readonly<ISettings> {
         if (environment.current && environment.current.host) {
             return this.settings.get(environment.current.host);
         }
         return null;
     }
 
-    set current(value: ISettings) {
+    appendCurrent(value: Partial<ISettings>) {
         if (environment.current && environment.current.host) {
             let updatedSettings = { ...this.current, ...value };
             this.settings.insert(environment.current.host, updatedSettings);
