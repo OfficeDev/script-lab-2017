@@ -6,17 +6,17 @@ interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     id?: string;
     gist?: string;
+    gistOwnerId?: string;
     name?: string;
     description?: string;
     /** author: export-only */
-    author?: string; 
+    author?: string;
     host: string;
     /** api_set: export-only (+ check at first level of import) */
     api_set?: {
         [index: string]: number
     },
     platform: string;
-    origin: string;
     created_at: number;
     modified_at: number;
 }
@@ -59,49 +59,26 @@ interface ICompiledSnippet extends ITemplate {
     typings?: string[];
 }
 
-interface IRunnerHandlebarsContext {
-    /** Snippet info (or null, to signify "opportunistic" runner that attaches to anything open) */
-    snippet: {
-        id: string,
-
-        /** Last modified (or 0, if want to load from scratch) */
-        lastModified?: number
-
-        /** Snippet contents (or empty, if want to read it off of the ID using the heartbeat) */
-        content?: string;
-    }
-
-    origin: string;
-    host: string;
-
-    initialLoadSubtitle: string;
-    headerTitle: string;
-
-    /** Office.js URL, or empty */
-    officeJS: string;
-
-    /** return url (for back button / errors), or empty */
-    returnUrl: string;
-}
-
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
 
     /** URL to return to (editor, or gallery view). More than just origin domain */
     returnUrl: string;
+
+    displayLanguage: string;
 }
 
-interface IErrorHandlebarsContext {
-    origin: string;
-    message: string;
-    details: string;
-    expandDetailsByDefault: boolean;
+interface IExportState {
+    snippet: ISnippet;
+    additionalFields: ISnippet;
+    sanitizedFilenameBase: string;
+    displayLanguage: string;
 }
 
 interface IMonacoEditorState {
     name?: string;
-    view?: string;
+    displayName?: string;
     content?: string;
     language?: string;
     viewState?: monaco.editor.IEditorViewState;
@@ -126,22 +103,46 @@ interface IEvent<T> {
     data: T
 }
 
-interface IEnvironment {
-    devMode?: boolean;
-    build?: {
-        name: string;
-        version: string;
-        timestamp: string;
-        author: string;
-        humanReadibleTimestamp: string;
-    },
-    config?: IEnvironmentConfig
-    host?: string,
-    platform?: string
+declare var PLAYGROUND: ICompiledPlaygroundInfo;
+
+interface ICompiledPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: {
+        local: ILocalHostEnvironmentConfig,
+        edge: IEnvironmentConfig,
+        insiders: IEnvironmentConfig,
+        production: IEnvironmentConfig
+    };
+    localStorageKeys: {
+        originEnvironmentUrl: string;
+        redirectEnvironmentUrl: string;
+        playgroundCache: string;
+    };
+}
+
+interface ICurrentPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: IEnvironmentConfig;
+    host: string;
+    platform: string;
+
+    isAddinCommands: boolean;
+    isTryIt: boolean;
+    wacUrl: string;
+}
+
+interface IBuildInfo {
+    name: string;
+    version: string;
+    timestamp: string;
+    author: string;
+    humanReadableTimestamp: string;
 }
 
 interface IEnvironmentConfig {
-    name: string,
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,
@@ -151,11 +152,13 @@ interface IEnvironmentConfig {
     samplesUrl: string
 }
 
-declare var PLAYGROUND: IEnvironment;
+interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
+    clientSecretLocalHost: string;
+}
 
 interface ISettings {
     lastOpened: ISnippet,
-    profile: IProfile,
+    profile: IBasicProfile,
     theme: boolean,
     language: string,
     env: string
@@ -172,4 +175,14 @@ interface HeartbeatParams {
      * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
     */
     lastModified: string;
+
+    runnerUrl: string;
+}
+
+// NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
+interface AuthRequestParamData {
+    auth_action: 'login' | 'logout';
+    resource: string;
+    client_id: string;
+    is_office_host: boolean;
 }

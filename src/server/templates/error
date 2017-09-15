@@ -2,20 +2,22 @@
 <html>
 
 <head>
-    <title>Error</title>
+    <title>{{title}}</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/polyfills.bundle.css" />
-    <link rel="stylesheet" href="{{{origin}}}/error.bundle.css" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.error.css}}}" />
 </head>
 
 <body class="app error-page">
     <div>
-        <h1 class="ms-font-xxl">Error</h1>
+        <h1 class="ms-font-xxl">{{title}}</h1>
+        {{#if message}}
         <h2 class="ms-font-xl">{{message}}</h2>
+        {{/if}}
     </div>
     <div>
         <p id="more-details-link" class="ms-font-m clickable center"></p>
@@ -24,9 +26,9 @@
         </div>
     </div>
 
-    <script src="{{{origin}}}/polyfills.bundle.js"></script>
-    <script src="{{{origin}}}/vendor.bundle.js"></script>
-    <script src="{{{origin}}}/error.bundle.js"></script>
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.error.js}}}"></script>
 
     <script>
         window.initializeErrorView({{{expandDetailsByDefault}}});

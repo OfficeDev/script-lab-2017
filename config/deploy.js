@@ -1,13 +1,17 @@
 #!/usr/bin/env node --harmony
 
 let path = require('path');
+let fs = require('fs');
 let chalk = require('chalk');
 let _ = require('lodash');
 let { build, config } = require('./env.config');
 let shell = require('shelljs');
 let webpackConfig = require('./webpack.prod');
 let webpack = require('webpack');
-let { TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_COMMIT_MESSAGE, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+
+let { TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+let TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env['TRAVIS_COMMIT_MESSAGE'].replace(/\W/g, '_');
+
 process.env.NODE_ENV = process.env.ENV = 'production';
 
 precheck();
@@ -27,17 +31,17 @@ if (slot == null) {
 let buildConfig;
 switch (slot) {
     case 'master':
-        buildConfig = config['edge'];
+        buildConfig = config.edge;
         slot = 'edge';
         break;
 
     case 'insiders':
-        buildConfig = config['insiders'];
+        buildConfig = config.insiders;
         slot = 'insiders';
         break;
 
     case 'production':
-        buildConfig = config['production'];
+        buildConfig = config.production;
         slot = 'staging';
         break;
 
@@ -62,10 +66,21 @@ const RUNNER_URL = 'https://'
     + slot + '.scm.azurewebsites.net:443/'
     + AZURE_WA_SITE + '-runner.git';
 
-log('Deploying commit: "' + TRAVIS_COMMIT_MESSAGE + '" to ' + AZURE_WA_SITE + '-' + slot + '...');
+let copyDeployedResourcesUrl = EDITOR_URL;
 
-deployBuild(EDITOR_URL, 'dist/client');
-deployBuild(RUNNER_URL, 'dist/server');
+// For production, changes are first deployed to staging environment which gets swapped and contains the prior build.
+// We always want to copy existing bundle resources from the latest in production.
+if (slot === 'staging') {
+    copyDeployedResourcesUrl = 'https://'
+        + AZURE_WA_USERNAME + ':'
+        + AZURE_WA_PASSWORD + '@'
+        + AZURE_WA_SITE + '.scm.azurewebsites.net:443/'
+        + AZURE_WA_SITE + '.git';
+}
+
+log('Deploying commit: "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '" to ' + AZURE_WA_SITE + '-' + slot + '...');
+deployBuild(EDITOR_URL, 'dist/client', copyDeployedResourcesUrl);
+deployBuild(RUNNER_URL, 'dist/server', null);
 
 function precheck(skip) {
     if (skip) {
@@ -93,12 +108,17 @@ function precheck(skip) {
     }
 }
 
-function deployBuild(url, folder) {
+function deployBuild(url, folder, copyDeployedResourcesUrl) {
     try {
         let current_path = path.resolve();
         let next_path = path.resolve(folder);
         shell.cd(next_path);
         const start = Date.now();
+
+        if (copyDeployedResourcesUrl) {
+            buildAssetHistory(copyDeployedResourcesUrl, next_path);
+        }
+
         shell.exec('git init');
         shell.exec('git config --add user.name "Travis CI"');
         shell.exec('git config --add user.email "travis.ci@microsoft.com"');
@@ -107,7 +127,7 @@ function deployBuild(url, folder) {
             shell.echo(result.stderr);
             exit('An error occurred while adding files...', true);
         }
-        result = shell.exec('git commit -m "' + TRAVIS_COMMIT_MESSAGE + '"');
+        result = shell.exec('git commit -m "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '"');
         if (result.code !== 0) {
             shell.echo(result.stderr);
             exit('An error occurred while commiting files...', true);
@@ -125,6 +145,47 @@ function deployBuild(url, folder) {
         log('Deployment failed...', 'red');
         console.log(error);
     }
+}
+
+function buildAssetHistory(url, folder) {
+    shell.exec('git clone ' + url + ' current_build');
+    shell.cp('-n', ['current_build/*.js', 'current_build/*.css'], '.');
+    let now = (new Date().getTime()) / 1000;
+    let oldHistoryPath = path.resolve(folder, 'current_build/history.json');
+    let newHistoryPath = path.resolve(folder, 'history.json');
+    let oldAssetsPath = path.resolve(folder, 'current_build/bundles');
+    let newAssetsPath = path.resolve(folder, 'bundles');
+
+    // Parse old history file if it exists
+    let history = {};
+    if (fs.existsSync(oldHistoryPath)) {
+        history = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
+    }
+
+    // Add new asset files to history, with current timestamp; exclude chunk files
+    let newAssets = fs.readdirSync(newAssetsPath);
+    for (asset of newAssets) {
+        if (!(/chunk.js/i.test(asset))) {
+            history[asset] = { time: now };
+        }
+    }
+
+    let existingAssets = [];
+    try {
+        fs.accessSync(oldAssetsPath);
+        existingAssets = fs.readdirSync(oldAssetsPath);
+    } catch(e) {}
+    
+    for (asset of existingAssets) {
+        let assetPath = path.resolve(newAssetsPath, asset);
+        // Check if old assets don't name-conflict and are less than six months old
+        if (history[asset] && !fs.existsSync(assetPath) && (now - history[asset].time < 15768000)) {
+            fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
+        }
+    }
+
+    fs.writeFileSync(newHistoryPath, JSON.stringify(history));
+    shell.rm('-rf', 'current_build');
 }
 
 function log(message, color) {

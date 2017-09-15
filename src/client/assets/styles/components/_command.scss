@@ -10,6 +10,10 @@ command {
         display: block;
     }
 
+    &.disabled .command__dropdown {
+        display: none;
+    }
+
     &.title {
         .command {
             &__icon {
@@ -25,6 +29,34 @@ command {
                     margin-left: 0;
                 }
             }
+        }
+    }
+
+    &.view-disable {
+        pointer-events: none;
+       
+        .command {
+            &__icon > span {
+                display: block;
+                margin-left: 0;
+            }
+        }
+    }
+
+    &.view-playground {
+        width: 100%;
+        align-items: flex-end;
+
+        .command {
+            &__icon > span {
+                display: block;
+                margin-left: 0;
+            }
+        }
+
+        .command__dropdown {
+            left: auto;
+            right: 0px;
         }
     }
 }
@@ -135,6 +167,9 @@ footer.command__bar--condensed {
             &__icon {
                 height: auto;
                 width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                padding-left: 40px;
 
                 span {
                     display: block !important;

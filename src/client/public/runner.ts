@@ -1,9 +1,9 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber, assign } from 'lodash';
-import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
+import { toNumber, assign, isNil } from 'lodash';
+import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries } from '../app/helpers/utilities';
-import { Strings } from '../app/helpers';
+import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, MessageType } from '../app/helpers/messenger';
 import '../assets/styles/extras.scss';
 
@@ -11,12 +11,14 @@ interface InitializationParams {
     origin: string;
     officeJS: string;
     returnUrl: string;
-    heartbeatParams: HeartbeatParams
+    isTrustedSnippet: boolean;
+    heartbeatParams: HeartbeatParams,
+    explicitlySetDisplayLanguageOrNull: string;
 }
 
 (() => {
     /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-    const officeNamespacesForIframe = ['OfficeExtension', 'Excel', 'Word', 'OneNote'];
+    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
 
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
@@ -42,8 +44,32 @@ interface InitializationParams {
         window: Window
     } = <any>{};
 
+    let isInTryItMode = checkIfInTryItMode();
+
     function initializeRunner(params: InitializationParams): void {
         try {
+            if (isInTryItMode) {
+                // Nothing to wait on, playground is ready:
+                setPlaygroundHostIsReady();
+            }
+            else if (params.officeJS) {
+                let script = document.createElement('script');
+                script.src = params.officeJS;
+                script.addEventListener('load', (event) => {
+                    Office.initialize = () => {
+                        // Set initialize to an empty function -- that way, doesn't cause
+                        // re-initialization of this page in case of a page like the error dialog,
+                        // which doesn't defined (override) Office.initialize.
+                        Office.initialize = () => { };
+                        setPlaygroundHostIsReady();
+                    };
+                });
+                document.getElementsByTagName('head')[0].appendChild(script);
+            }
+            else {
+                setPlaygroundHostIsReady();
+            }
+
             initializeRunnerHelper();
         }
         catch (error) {
@@ -54,6 +80,11 @@ interface InitializationParams {
         async function initializeRunnerHelper() {
             if (params.returnUrl) {
                 window.sessionStorage.playground_returnUrl = params.returnUrl;
+            }
+
+            if (params.explicitlySetDisplayLanguageOrNull) {
+                setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
+                document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
             }
 
             if (window.sessionStorage.playground_returnUrl) {
@@ -77,9 +108,9 @@ interface InitializationParams {
 
             $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
             if (Utilities.platform === PlatformType.PC) {
-                $('#padding-for-personality-menu').width('20px');
+                $('#padding-for-personality-menu').addClass('flex-fixed-width-twenty-px');
             } else if (Utilities.platform === PlatformType.MAC) {
-                $('#padding-for-personality-menu').width('40px');
+                $('#padding-for-personality-menu').addClass('flex-fixed-width-forty-px');
             }
 
             $snippetContent = $('#snippet-code-content');
@@ -87,17 +118,18 @@ interface InitializationParams {
             // Because it's a multiline text inside of a "pre" tag, trim it:
             const snippetHtml = $snippetContent.text().trim();
 
+            let isTrustedSnippet = isNil(params.isTrustedSnippet) ? false : params.isTrustedSnippet;
             if (snippetHtml.length > 0) {
                 // Clear the text, but keep the placeholder in the DOM,
                 // so that can keep adding the snippet frame relative to its position
                 $snippetContent.text('');
 
-                replaceSnippetIframe(snippetHtml, params.officeJS);
+                replaceSnippetIframe(atob(snippetHtml), params.officeJS, isTrustedSnippet);
             }
 
             establishHeartbeat(params.origin, params.heartbeatParams);
 
-            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/));
+            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/));
 
             initializeTooltipUpdater();
 
@@ -110,8 +142,9 @@ interface InitializationParams {
     (window as any).initializeRunner = initializeRunner;
 
 
-    /** Creates a snippet iframe and returns it (still hidden) */
-    function replaceSnippetIframe(html: string, officeJS: string): void {
+    /** Creates a snippet iframe and returns it (still hidden). Returns true on success
+     * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
+    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): boolean {
         showHeader();
 
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
@@ -119,6 +152,15 @@ interface InitializationParams {
 
         const $emptySnippetPlaceholder = $('<div class="snippet-frame"></div>')
             .insertAfter($snippetContent);
+
+        if (!isTrustedSnippet) {
+            showReloadNotification($('#notify-snippet-not-trusted'),
+                () => clearAndRefresh(currentSnippet.id, '', true /*isTrustedSnippet*/),
+                () => window.location.href = returnUrl,
+                false /*allowShowLoadingDots => not for trust dialog*/
+            );
+            return false;
+        }
 
         const $iframe =
             $('<iframe class="snippet-frame" style="display:none" src="about:blank"></iframe>')
@@ -133,7 +175,9 @@ interface InitializationParams {
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
-                officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
+                officeNamespacesForIframe.forEach(namespace => {
+                    contentWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
+                });
             }
 
             $emptySnippetPlaceholder.remove();
@@ -157,14 +201,25 @@ interface InitializationParams {
         contentWindow.document.open();
         contentWindow.document.write(html);
         (contentWindow as any).console = window.console;
-        contentWindow.onerror = (...args) => console.error(args);
+        contentWindow.onerror = (...args) => {
+            // If errors occur during loading rather than after
+            // "scriptRunnerBeginInit" is called, the Firebug console itself
+            // won't be visible, so it doesn't help to show the console error there.
+            // Instead, expose it as a UI notification:
+            UI.notify(Strings().Runner.runtimeErrorWhileLoadingTheSnippet,
+                Strings().Runner.goBackToEditorToFixError + '\n' + args[0],
+                'error');
+            toggleProgress(false);
+        };
         contentWindow.document.close();
+
+        return true;
     }
 
     function handleError(error: Error) {
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
-            candidateErrorString = Strings.Runner.unexpectedError;
+            candidateErrorString = Strings().unexpectedError;
         }
 
         $('#header-text').text('');
@@ -183,7 +238,7 @@ interface InitializationParams {
         }
 
         $error.find('.action-fast-reload').off('click').click(() => {
-            clearAndRefresh(null /*id*/, null /*name*/);
+            clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/);
             $error.hide();
         });
 
@@ -214,15 +269,30 @@ interface InitializationParams {
     }
 
     async function ensureHostInitialized(): Promise<any> {
+        if (isInTryItMode) {
+            (window as any).Office = {
+                initialize: () => { },
+
+                context: {
+                    requirements: {
+                        isSetSupported: (setName: string) => {
+                            return setName.toLowerCase().trim() === 'excelapi';
+                        }
+                    }
+                }
+            };
+            return Promise.resolve();
+        }
+
         // window.playground_host_ready is set within the runner template (embedded in html code)
         // when the host is ready (i.e., in Office.initialized callback, if Office host)
-        if ((window as any).playground_host_ready) {
+        if (getIsPlaygroundHostReady()) {
             return Promise.resolve();
         }
 
         return new Promise((resolve) => {
             const interval = setInterval(() => {
-                if ((window as any).playground_host_ready) {
+                if (getIsPlaygroundHostReady()) {
                     clearInterval(interval);
                     return resolve();
                 }
@@ -257,8 +327,10 @@ interface InitializationParams {
             .subscribe(input => {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
-                        () => clearAndRefresh(currentSnippet.id, input.message.name),
-                        () => isListeningTo.currentSnippetContentChange = false);
+                        () => clearAndRefresh(currentSnippet.id, input.message.name, false /*isTrustedSnippet*/),
+                        () => isListeningTo.currentSnippetContentChange = false,
+                        true, /*allowShowLoadingDots*/
+                    );
                 }
             });
 
@@ -275,16 +347,17 @@ interface InitializationParams {
                     if (isListeningTo.snippetSwitching) {
                         $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                         showReloadNotification($anotherSnippetSelected,
-                            () => clearAndRefresh(input.message.id, input.message.name),
-                            () => isListeningTo.snippetSwitching = false);
+                            () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
+                            () => isListeningTo.snippetSwitching = false,
+                            true /*allowShowLoadingDots*/);
                     }
                 }
             });
 
-        heartbeat.messenger.listen<ISnippet>()
+        heartbeat.messenger.listen<{ snippet: ISnippet, isTrustedSnippet: boolean }>()
             .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
             .subscribe(input => {
-                const snippet = input.message;
+                const snippet = input.message.snippet;
                 const data = JSON.stringify({
                     snippet: snippet,
                     returnUrl: returnUrl
@@ -292,18 +365,16 @@ interface InitializationParams {
 
                 // Use jQuery post rather than the Utilities post here
                 // (don't want to navigate, just to do an AJAX call)
-                $.post(window.location.origin + '/compile/snippet', { data: data })
-                    .then(html => processSnippetReload(html, snippet))
-                    .fail(handleError)
-                    .always(() => {
-                        $('.runner-overlay').hide();
-                        $('.runner-notification').not('#notify-error').hide();
-                    });
+                $.post(window.location.origin + '/compile/snippet', { data: data, isTrustedSnippet: input.message.isTrustedSnippet })
+                    .then(html => processSnippetReload(html, snippet, input.message.isTrustedSnippet))
+                    .fail(handleError);
             });
     }
 
-    function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void) {
-        $notificationContainer.find('.action-fast-reload').off('click').click(reloadAction);
+    function showReloadNotification($notificationContainer: JQuery, reloadAction: () => void, dismissAction: () => void, allowShowLoadingDots: boolean) {
+        $notificationContainer.find('.action-fast-reload').off('click').click(() => {
+            reloadAction();
+        });
 
         $notificationContainer.find('.action-dismiss').off('click').click(() => {
             $('.runner-overlay').hide();
@@ -311,13 +382,15 @@ interface InitializationParams {
             dismissAction();
         });
 
+        $('.cs-loader').css('visibility', allowShowLoadingDots ? 'visible' : 'hidden');
+
         // Show the current notification (and hide any others)
         $('.runner-notification').hide();
         $('.runner-overlay').show();
         $notificationContainer.show();
     }
 
-    function processSnippetReload(html: string, snippet: ISnippet) {
+    function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
         const desiredOfficeJS = processLibraries(snippet).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
@@ -331,32 +404,37 @@ interface InitializationParams {
 
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
-            toggleProgress(true, Strings.Runner.reloadingOfficeJs);
+            toggleProgress(true, Strings().Runner.reloadingOfficeJs);
             window.location.href = refreshUrl;
             return;
         }
 
         // If still here, proceed to render:
 
+        (window as any).Firebug.Console.clear();
+
         $('#header-refresh').attr('href', refreshUrl);
 
-        replaceSnippetIframe(html, processLibraries(snippet).officeJS);
+        let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
 
-        (window as any).Firebug.Console.clear();
+        if (replacedSuccessfully) {
+            $('.runner-overlay').hide();
+            $('.runner-notification').hide();
+        }
     }
 
     /** Clear current snippet frame and send a refresh REFRESH_REQUEST
      * @param id: id of snippet, or null to fetch the last-opened
      * @param name: name of the snippet, or null to use a generic "loading snippet" text
      */
-    function clearAndRefresh(id: string, name: string) {
+    function clearAndRefresh(id: string, name: string, isTrustedSnippet: boolean) {
         $('.runner-overlay').hide();
         $('.runner-notification').hide();
 
-        toggleProgress(true, Strings.Runner.getLoadingSnippetSubtitle(name));
+        toggleProgress(true, Strings().Runner.getLoadingSnippetSubtitle(name));
 
         // Remove the frame (in case had a timer or anything else that may as well get destroyed...)
         $('.snippet-frame').remove();
@@ -365,7 +443,7 @@ interface InitializationParams {
             assign(isListeningTo, defaultIsListeningTo);
         }
 
-        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, id);
+        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
     }
 
     function generateRefreshUrl(desiredOfficeJS: string) {
@@ -412,7 +490,9 @@ interface InitializationParams {
         $headerTitle.on('mouseover', refreshLastUpdatedText);
 
         function refreshLastUpdatedText() {
-            $headerTitle.attr('title', `Last updated ${moment(currentSnippet.lastModified).fromNow()}. Click to refresh`);
+            const strings = Strings();
+            const momentText = moment(currentSnippet.lastModified).locale(getDisplayLanguageOrFake()).fromNow();
+            $headerTitle.attr('title', `${strings.HtmlPageStrings.lastUpdated} ${momentText}. ${strings.HtmlPageStrings.clickToRefresh}.`);
         }
     }
 
@@ -438,6 +518,26 @@ interface InitializationParams {
                 flexProperties.map(prefix => `${prefix}: 1 1 1px`).join('; ')
             );
         }, 0);
+    }
+
+    function checkIfInTryItMode(): boolean {
+        // Note: need to surround with try/catch because on Office Online,
+        // window.parent will be Office Online itself which is on a different domain,
+        // and so the call will throw an exception!  So if can't access parent,
+        // then obviously window.parent is *NOT* in try-it mode!
+        try {
+            return (window.parent as any).in_try_it_mode;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function setPlaygroundHostIsReady() {
+        (window as any).playground_host_ready = true;
+    }
+
+    function getIsPlaygroundHostReady(): boolean {
+        return (window as any).playground_host_ready;
     }
 
 })();

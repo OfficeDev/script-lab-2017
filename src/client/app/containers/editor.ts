@@ -1,18 +1,20 @@
-import { Component, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { AI } from '../helpers';
+import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 import { debounce } from 'lodash';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'editor',
     template: `
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
-                {{tab.view}}
+                {{tab.displayName}}
             </li>
         </ul>
         <section id="editor" #editor class="viewport"></section>
@@ -20,9 +22,13 @@ import { debounce } from 'lodash';
     `
 })
 export class Editor implements AfterViewInit {
-    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
     @ViewChild('editor') private _editor: ElementRef;
-    private _readonly: boolean;
+    @Input() isViewMode: boolean;
+    private _monacoEditor: monaco.editor.IStandaloneCodeEditor;
+    private menuSub: Subscription;
+    private themeSub: Subscription;
+    private snippetSub: Subscription;
+    private tabSub: Subscription;
 
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
@@ -35,31 +41,72 @@ export class Editor implements AfterViewInit {
     }
 
     /**
-     * Initialize the component and subscribe to all the neccessary actions.
+     * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
-        this._monacoEditor = await this._monaco.create(this._editor, { theme: 'vs' });
+        let _overrides = { theme: 'vs' };
+        if (this.isViewMode) {
+            _overrides['readOnly'] = true;
+        }
+        this._monacoEditor = await this._monaco.create(this._editor, _overrides);
+        let editor = this._monacoEditor;
+        editor.addAction({
+            id: 'trigger-suggest', /* Unique id for action */
+            label: Strings().editorTriggerSuggestContextMenuLabel,
+            keybindings: [monaco.KeyCode.F2],
+            keybindingContext: null,
+            contextMenuGroupId: 'navigation',
+            contextMenuOrder: 0, /* put at top of context menu */
+            run: () => editor.trigger('ngAfterViewInit', 'editor.action.triggerSuggest', {})
+        });
         this._createTabs();
         this._subscribeToState();
     }
 
-    changeTab = (name: string = 'script') => this._store.dispatch(new Monaco.ChangeTabAction(name, this.tabs.get(name).language));
+    ngOnDestroy() {
+        if (this.menuSub) {
+            this.menuSub.unsubscribe();
+        }
+        if (this.themeSub) {
+            this.themeSub.unsubscribe();
+        }
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
+        if (this.tabSub) {
+            this.tabSub.unsubscribe();
+        }
+    }
+
+    changeTab = (name: string = 'script') => {
+        let language = '';
+        if (name !== 'libraries') {
+            language = this.tabs.get(name).language;
+        }
+
+        this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
+    }
 
     updateIntellisense() {
         if (this.snippet == null) {
             return;
         }
 
-        this._store.dispatch(new Monaco.UpdateIntellisenseAction(this.snippet.libraries.split('\n'), 'typescript'));
+        this._store.dispatch(new Monaco.UpdateIntellisenseAction(
+            { libraries: this.snippet.libraries.split('\n'), language: 'typescript' }
+        ));
     }
 
     private _createTabs() {
-        ['Script', 'Template', 'Style', 'Libraries'].forEach(title => {
-            let name = title.toLowerCase();
+        ['script', 'template', 'style', 'libraries'].forEach(name => {
+            const displayName = Strings().tabDisplayNames[name];
+            if (!displayName) {
+                throw new Error(`No display name for tab "${name}"`);
+            }
 
             let tab = <IMonacoEditorState>{
-                name: name,
-                view: title,
+                name,
+                displayName,
                 viewState: null
             };
 
@@ -68,13 +115,13 @@ export class Editor implements AfterViewInit {
     }
 
     private _subscribeToState() {
-        this._store.select(fromRoot.getMenu)
+        this.menuSub = this._store.select(fromRoot.getMenu)
             .subscribe(() => this._resize());
 
-        this._store.select(fromRoot.getTheme)
-            .subscribe(theme => this._monaco.updateOptions(this._monacoEditor, { theme: theme ? 'vs' : 'vs-dark' }));
+        this.themeSub = this._store.select(fromRoot.getTheme)
+            .subscribe(theme => monaco.editor.setTheme(theme ? 'vs' : 'vs-dark'));
 
-        this._store.select(fromRoot.getCurrent)
+        this.snippetSub = this._store.select(fromRoot.getCurrent)
             .filter(data => {
                 this.hide = data == null;
                 return !this.hide;
@@ -84,7 +131,7 @@ export class Editor implements AfterViewInit {
                 this._changeSnippet(snippet);
             });
 
-        this._store.select(fromRoot.getActiveTab)
+        this.tabSub = this._store.select(fromRoot.getActiveTab)
             .subscribe(newTab => {
                 if (newTab == null) {
                     // RESET Action
@@ -102,12 +149,12 @@ export class Editor implements AfterViewInit {
                 if (newTab) {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
-                    let timer = AI.trackPageView(this.currentState.view, `/edit/${this.currentState.name}`);
+                    let timer = AI.trackPageView(this.currentState.displayName, `/edit/${this.currentState.name}`);
                     if (this.currentState.name === 'script') {
                         this.updateIntellisense();
                     }
                     this._monacoEditor.setModel(this.currentState.model);
-                    this._monacoEditor.restoreViewState(this.currentState.viewState);
+                    this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();
                     this._resize();
                     timer.stop();
@@ -152,7 +199,7 @@ export class Editor implements AfterViewInit {
      * The same update happens even on tab switch.
      */
     private _debouncedInput = debounce(() => {
-        if (!this._readonly) {
+        if (!this.isViewMode) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
         }

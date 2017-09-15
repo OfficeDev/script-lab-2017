@@ -3,12 +3,16 @@
 ///       Script Lab Samples project.  Please be sure that any changes that you  ///
 ///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
 ///       in https://github.com/OfficeDev/script-lab-samples                     ///
+///                                                                              ///
+///       That same shared portion is also used in the "server" portion of this  ///
+///       project (src\server\core\snippet.helper.ts). Please ensure that these  ///
+///       copies stay in sync as well.                                           ///
 ////////////////////////////////////////////////////////////////////////////////////
 
 import * as jsyaml from 'js-yaml';
 import { forIn } from 'lodash';
 import { environment } from './environment';
-import { Strings } from './strings';
+import { Strings } from '../strings';
 
 export enum SnippetFieldType {
     /** PUBLIC = Store internally, and also include in copy-to-clipboard */
@@ -25,6 +29,7 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     /* ITemplate base class */
     id: SnippetFieldType.INTERNAL,
     gist: SnippetFieldType.INTERNAL,
+    gistOwnerId: SnippetFieldType.INTERNAL,
     name: SnippetFieldType.PUBLIC,
     description: SnippetFieldType.PUBLIC,
     // author: export-only, always want to generate on the fly, so skip altogether
@@ -69,13 +74,12 @@ export function getSnippetDefaults(): ISnippet {
     return {
         id: '',
         gist: '',
-        name: Strings.defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
+        name: Strings().defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
         description: '',
         // author: export-only, always want to generate on the fly, so skip altogether
         host: environment.current.host,
         // api_set: export-only, always want to generate on the fly, so skip altogether
         platform: environment.current.platform,
-        origin: environment.current.config.editorUrl,
         created_at: Date.now(),
         modified_at: Date.now(),
 

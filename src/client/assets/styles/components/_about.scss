@@ -32,8 +32,22 @@
     }
 
     &__tertiary-text {
-        margin-bottom: $default-spacing * 2;
+        margin-bottom: $default-spacing;
         color: $foreground-lighter;
         white-space: pre-line;
+    }
+
+    &__environment {
+        margin-top: $default-spacing;
+    }
+
+    &__environment-text {
+        color: $foreground-light;
+    }
+
+    &__environment-select {
+        display: block;
+        margin: auto;
+        margin-top: 5px;
     }
 }

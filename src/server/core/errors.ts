@@ -37,3 +37,10 @@ export class NotFoundError extends ServerError {
         super('NotFoundError', 404, message, innerError);
     }
 }
+
+/** A not-really-an-error to pass along information and display it using the ServerError infrastructure */
+export class InformationalError extends Error {
+    constructor(message: string, public details?: string) {
+        super(message);
+    }
+}

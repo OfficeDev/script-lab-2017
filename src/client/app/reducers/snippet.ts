@@ -1,6 +1,7 @@
 import { SnippetActions, SnippetActionTypes } from '../actions/snippet';
 import { GitHubActions, GitHubActionTypes } from '../actions/github';
 import { AI } from '../helpers';
+import * as sha1 from 'crypto-js/sha1';
 
 export interface SnippetState {
     lastOpened?: ISnippet;
@@ -34,6 +35,10 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.LOAD_SNIPPETS_SUCCESS:
             return { ...state, snippets: action.payload };
+
+        case SnippetActionTypes.OPEN_IN_PLAYGROUND:
+            AI.trackEvent(action.type);
+            return state;
 
         case SnippetActionTypes.LOAD_TEMPLATES_SUCCESS:
             return { ...state, templates: action.payload };
@@ -73,6 +78,11 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             return { ...state, running: true };
         }
 
+        case SnippetActionTypes.CANCEL_RUN: {
+            AI.trackEvent(action.type);
+            return { ...state, running: false };
+        }
+
         case SnippetActionTypes.VIEW: {
             AI.trackEvent(action.type, { id: action.payload.id });
             return { ...state, loading: false };
@@ -80,6 +90,16 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
 
         case SnippetActionTypes.STORE_UPDATED:
             return { ...state, loading: false };
+
+        case SnippetActionTypes.UPDATE_INFO: {
+            let updatedInfo = { };
+            if (action.payload.gist != null) {
+                updatedInfo['gistHashedId'] = sha1(action.payload.gist.toString());
+            }
+
+            AI.trackEvent(action.type, updatedInfo);
+            return { ...state, loading: false };
+        }
 
         default: return state;
     }

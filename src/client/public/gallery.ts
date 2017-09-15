@@ -1,15 +1,35 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { storage, environment, applyTheme, post } from '../app/helpers';
+import { storage, environment, applyTheme, post, trustedSnippetManager } from '../app/helpers';
+import { Strings, getDisplayLanguage } from '../app/strings';
 import '../assets/styles/extras.scss';
 
 (async () => {
     await environment.initialize();
     await applyTheme(environment.current.host);
-    const gallery = new Gallery();
-    gallery.hideProgress();
-    gallery.render();
-    gallery.renderLastOpened();
+
+
+    const strings = Strings();
+
+    document.title = strings.HtmlPageStrings.PageTitles.run;
+
+    document.getElementById('subtitle').textContent = strings.HtmlPageStrings.loadingRunnerDotDotDot;
+    document.getElementById('subtitle').style.visibility = 'visible';
+
+    document.getElementById('choose-your-host').textContent = strings.HtmlPageStrings.chooseYourHost;
+    document.getElementById('choose-your-host').style.visibility = 'visible';
+
+    document.getElementById('last-opened-header-text').textContent = strings.HtmlPageStrings.lastOpenedSnippet;
+    document.getElementById('last-opened-empty').textContent =
+        strings.HtmlPageStrings.noLastOpenedSnippets + ' ' +
+        strings.HtmlPageStrings.toGetStartedCreateOrImportSnippet;
+    document.getElementById('my-saved-snippets').textContent = strings.HtmlPageStrings.mySavedSnippets;
+    document.getElementById('snippet-list-empty').textContent =
+        strings.HtmlPageStrings.noLocalSnippets + ' ' +
+        strings.HtmlPageStrings.toGetStartedCreateOrImportSnippet;
+
+
+    new Gallery();
 })();
 
 export class Gallery {
@@ -32,6 +52,18 @@ export class Gallery {
 
         storage.snippets.notify().subscribe(() => this.render());
         storage.settings.notify().subscribe(() => this.renderLastOpened());
+
+        if (window.location.href.indexOf('gallery=true') < 0) {
+            if (storage.current.lastOpened) {
+                this._postSnippet(storage.current.lastOpened);
+                return;
+            }
+        }
+
+        // Otherwise, proceed to render
+        this.hideProgress();
+        this.render();
+        this.renderLastOpened();
     }
 
     showProgress(message: string) {
@@ -46,8 +78,8 @@ export class Gallery {
     }
 
     render() {
-        console.log('Refreshing snippets');
         this._$snippetList.html('');
+        storage.snippets.load();
         if (storage.snippets.count) {
             this._$noSnippets.hide();
             storage.snippets.values().forEach(snippet => this.insertSnippet(snippet, this._$snippetList));
@@ -61,7 +93,8 @@ export class Gallery {
 
     renderLastOpened() {
         this._$lastOpened.html('');
-        if (storage.lastOpened) {
+        storage.settings.load();
+        if (storage.current.lastOpened) {
             this.insertSnippet(storage.current.lastOpened, this._$lastOpened);
             this._$lastOpened.show();
             this._$lastOpenedEmpty.hide();
@@ -79,24 +112,26 @@ export class Gallery {
 
         $item.click(() => {
             $item.attr('title', '');
-            this._navigate(id);
+            this._navigateById(id);
         });
 
         $item.on('mouseover', () => $item.attr(
-            'title', `Last updated ${moment(modified_at).fromNow()}`));
+            'title', `${Strings().HtmlPageStrings.lastUpdated} ${moment(modified_at).fromNow()}`));
 
         $item.appendTo(location);
     }
 
-    private _navigate(id: string) {
+    private _navigateById(id: string) {
         // Refresh the snippets and settings, in case there was a code change to one of the snippets.
+        storage.settings.load();
+        storage.snippets.load();
         let snippet = storage.snippets.get(id);
 
         /**
          * Check if the clicked snippet is the lastOpened
          */
         if (snippet === null) {
-            let lastOpened = storage.lastOpened;
+            let lastOpened = storage.current.lastOpened;
             snippet = id === lastOpened.id ? lastOpened : null;
         }
 
@@ -108,20 +143,25 @@ export class Gallery {
             this.render();
         }
 
+        this._postSnippet(snippet);
+    }
+
+    private _postSnippet(snippet: ISnippet) {
         const overrides = <ISnippet>{
             host: environment.current.host,
             platform: environment.current.platform,
-            origin: environment.current.config.editorUrl,
         };
 
-        const data = JSON.stringify({
+        const state: IRunnerState = {
             snippet: { ...snippet, ...overrides },
-            showBackButton: true,
-            returnUrl: location.href
-        });
+            returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`,
+            displayLanguage: getDisplayLanguage()
+        };
+        const data = JSON.stringify(state);
+        const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
 
-        this.showProgress(`Running ${snippet.name}`);
-        return post(environment.current.config.runnerUrl + '/compile/page', { data });
+        this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
+        return post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
     }
 
     private setUpMomentJsDurationDefaults() {

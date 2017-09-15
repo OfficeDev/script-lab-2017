@@ -4,8 +4,9 @@ import { NgModule, enableProdMode } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule, Routes } from '@angular/router';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator } from '@microsoft/office-js-helpers';
+import { Authenticator, UI } from '@microsoft/office-js-helpers';
 import { StoreModule, Store } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
@@ -13,16 +14,29 @@ import { EffectsModule } from '@ngrx/effects';
 import { SERVICE_PROVIDERS, MonacoService } from './app/services';
 import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
+import { Strings } from './app/strings';
 import { COMPONENT_DECLARATIONS } from './components';
-import { AppComponent } from './app/containers';
+import { AppComponent, EditorMode, ViewMode, ViewModeError } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
+
+let appRoutes: Routes = [
+    { path: 'view/:host/:type/:id', component: ViewMode  },
+    { path: 'view/error', component: ViewModeError  },
+    { path: 'edit/:host/:type/:id', component: EditorMode },
+    { path: 'edit/:host', component: EditorMode },
+    { path: '',  component: EditorMode }
+];
 
 let imports = [
     BrowserModule,
     HttpModule,
     FormsModule,
+    RouterModule.forRoot(
+      appRoutes,
+      { useHash: true }
+    ),
     StoreModule.provideStore(rootReducer),
     EffectsModule.run(SnippetEffects),
     EffectsModule.run(MonacoEffects),
@@ -31,11 +45,21 @@ let imports = [
 ];
 
 (async function start() {
+    const strings = Strings();
+
     try {
         await Promise.all([
             environment.initialize(),
             MonacoService.initialize()
         ]);
+
+        // If the "try it" page uses an instance of a (local) Office Online that is over HTTP instead of HTTPS,
+        // The runner will have needed to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
+        if (environment.current.isTryIt) {
+            if (environment.current.wacUrl.toLowerCase().indexOf('http:/') === 0) {
+                environment.current.config.runnerUrl = environment.current.config.runnerUrl.replace('https:/', 'http:/');
+            }
+        }
 
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);
@@ -56,10 +80,10 @@ let imports = [
         }
     }
     catch (e) {
-        $('.ms-progress-component__sub-title').text('Error initializing Script Lab.')
-            .click(() => {
-                $('.ms-progress-component__sub-title').text(JSON.stringify(e, null, 4));
-            });
+        $('.ms-progress-component__sub-title')
+            .text(strings.HtmlPageStrings.errorInitializingScriptLab)
+            .css('cursor', 'pointer')
+            .click(() => UI.notify(e));
         $('.ms-progress-component__footer').hide();
         AI.trackException(e, 'Playground Initialization');
     }

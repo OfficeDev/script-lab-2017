@@ -3,8 +3,9 @@
 There are several ways in which you can contribute to the project:
 
 1. **Log bugs or file feature suggestions**. To do this, simply file the bugs/suggestions in the Issues tab on GitHub for this project.
-2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/script-lab-samples>**.
-3. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
+2. **Code samples**.  To suggest edits to existing samples, or to suggest your own, please submit a pull request against the Samples repo: **<https://github.com/OfficeDev/office-js-snippets>**.
+3. **Translations**.  In addition to English, we now support German, courtesy of a community member who liked Script Lab so much that he decided to translate it into his native language (and blazed the way for how to do translations in general)!  Translating to other languages should now be pretty simple.  Please see "[TRANSLATING.md](TRANSLATING.md)" for more details.
+4. **Bug-fix/feature contributions**.  If you have features or bug fixes that you'd like to see incorporated into the playground, just send us your pull request!
 
 
 # Running the playground from source
@@ -13,22 +14,22 @@ There are several ways in which you can contribute to the project:
 
 * Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
   * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
-* Download & install Node, version 6.9+.  <https://nodejs.org/en>.
+* Download & install Node, version 6.9+.  In our experience, the LTS version of 6.10 and 6.11 works, whereas 8.1.2 did not, so mileage may vary. <https://nodejs.org/en>.
 * Download & install Yarn, for use as an alternative for `npm install`.  Download from  <https://yarnpkg.com/en/docs/install>.  The documentation also describes why Yarn is preferable to `npm install`.
 * Install `nodemon` for global use, using
 ~~~
     yarn global add nodemon
 ~~~
 
-
+Note: the installation of Node JS and Yarn add paths to your operating system's PATH variable. Therefore, in some cases you may log off and log in from your System to get Node JS and Yarn work withing Visual Studio Code.
 
 ## Build steps:
 
 1. Clone the repo
-2. Open the root of the repository with VS Code.  (**File --> Open Folder...**)
+2. Open the root of the repository with VS Code.  (**File --> Open Folder...**) <br /><br />
 ![alt text](.github/images/vs-code-open-folder.jpg)
 
-3. Open the terminal from within VS Code (**View --> Integrated Terminal**)
+3. Open the terminal from within VS Code (**View --> Integrated Terminal**) <br /><br />
 ![alt text](.github/images/vs-code-terminal.jpg)
 
 4. In the terminal, type in `yarn install` and wait for all of the packages to be downloaded (this may take a few minutes).  The command prompt will return the control back to you once it's done.
@@ -47,20 +48,24 @@ There are several ways in which you can contribute to the project:
  --------------------------------------
 ~~~
 
-6.	Trust the certificates for both <https://localhost:3000> and <https://localhost:3100>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
+6. **Importantly**, *once the `npm start` has completed and you see the message above*, **start the runner (server) by pressing `F5` within VS Code**.  Failure to do this will cause the "run" button to lead to an error (since the server, which is where the "run" code is running, is offline).  Ditto for auth, export, and other scenarios.
+
+>>> NOTE: If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.  
+
+7.	Trust the certificates for both <https://localhost:3000>, <https://localhost:3100>, and <https://localhost:3200>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
 
 ![](.github/images/trust-ssl-internet-explorer.gif).
 
-7.  Start the runner (server) by pressing `F5` within VS Code.  If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.
-
 The website is now running.  To try it out in an Add-in, see the next section.
+
+> Note:  To **stop debugging**, first press the "stop" button on the debugger (shift + F5). You will see an error on the server terminal window (`[nodemon] app crashed - waiting for file changes before starting...`); that's ok, just close that terminal instance (trash icon on top-right of terminal).  If you want to restart debugging later, just re-press F5 again.
 
 
 ## Testing inside of an add-in
 
 1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `script-lab-local.xml`.
 
-2. Sideload the manfiest into your office host application.  See <https://dev.office.com/docs/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
+2. Sideload the manifest into your office host application.  See <https://aka.ms/sideload-addins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
 
 
 ## General structure
@@ -80,34 +85,17 @@ At the root level of the repo, the folders of interest (and skipping over the ot
 There are also files related to Azure deployment, git ignores, a Travis configuration for continuous-integration, a package.json with the project's metadata, TypeScript configuration files for client and server, a linter configuration, and etc.  And of course, the project's README.
 
 
-## Enabling auth for local testing
+## Enabling auth for local testing (optional, if debugging auth-related code)
 1. Go to <https://github.com/settings/developers>, and click "[Register new application](https://github.com/settings/applications/new)" if you haven't done it before for your own dev copy of ScriptLab.
 2. Give it a name like "ScriptLab Local Dev", with a Homepage and Auth callback URL of `https://localhost:3000`.
-3. In `config/env.config.js`, find the `const config = { ... ` line, and under `local: { ...`, find `clientId: ''`, and replace with `clientId: '<id-from-github>'`.
-4. In `server/server.ts`, find `client_secret: secrets ? secrets[env] : '',`, and replace it with `secrets ? secrets[env] : '<client-secret-from-github>'`.
+3. In `config/env.config.js`, find the `const config = { ... ` line, and under `local: { ...`, fill in the client ID and client secret
+4. If the site is running, re-start it and do a new `npm start`.  Incremental compilation is not enough for these changes. Note, too, that you need both the site and the server (F5) running to make auth work.
 5. Once you are done with your testing, **be sure to undo both changes!**.
 
 
 # Manual-testing scenarios
 
-* Create a snippet -- both "new" and from a sample
-* Import someone else's snippet
-  * From YAML
-  * From Gist (incl. old-style)
-  * From Non-GitHub URL **[Currently doesn't work, [Issue #146](https://github.com/OfficeDev/script-lab/issues/146)]**.
-* Run snippet, in both in-editor runner (Office 2016 RTM and earlier, or online, or via tweaking the manifest to remove `command=true`) and via the "Run" button (`run.html`), testing that:
-  * Snippet renders correctly
-  * "Run" from editor or run gallery, in-place refresh, and full refresh all work correctly (render the snippet, don't double-refresh, etc.). The run (either type) doesn't show a "snippet needs reloading" message if the snippet is already fresh.
-  * Console log renders correctly (and scrolls correctly, if many lines)
-  * Erroneous code (e.g, syntax error) shows error correctly.
-  * Running deleted snippet has reasonable behavior.
-  * [Side-by-side runner]:
-    * Edit to code causes runner want to refresh.
-    * Whether starting from error or going to error state and back out, should act correctly.
-* Sharing:
-  * Copying to clipboard works
-  * Can share as gist
-
+Please see "[TESTING.md](TESTING.md)".
 
 # Tips & tricks
 
