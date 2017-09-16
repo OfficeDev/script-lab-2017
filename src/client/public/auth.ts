@@ -79,7 +79,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 const expiresIn = authResponseKeyValues['expires_in'];
                 if (accessToken) {
                     const message = {
-                        type: "auth",
+                        type: 'auth',
                         message: {
                             accessToken: accessToken,
                             expiresIn: expiresIn

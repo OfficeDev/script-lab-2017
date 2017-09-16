@@ -242,7 +242,7 @@ module ScriptLab {
     function _extractAndCacheAccessToken(message: any, clientId: string, resource: string): string {
         cachedAuthTokens[_cacheKey(clientId, resource)] = {
             token: message.accessToken,
-            expiry: Date.now() + ((message.expiresIn - 60*5 /* five minute of safety margin */ ) * 1000)
+            expiry: Date.now() + ((message.expiresIn - 60 * 5 /* five minute of safety margin */ ) * 1000)
         };
         return message.accessToken;
     }
