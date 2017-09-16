@@ -56,6 +56,6 @@ export class SnippetInfo {
 
     get viewModeGistUrl() {
         let host = this.snippet.host.toLowerCase();
-        return `${environment.current.config.editorUrl}/#/view/gist/${host}/${this.snippet.gist}`;
+        return `${environment.current.config.editorUrl}/#/view/${host}/gist/${this.snippet.gist}`;
     }
 }

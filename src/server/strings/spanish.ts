@@ -20,12 +20,9 @@ export function getSpanishStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Cargando "${snippetName}"`,
 
-        loadingSnippetDotDotDot: 'Cargando código ...',
+        initializingRunner: getEnglishSubstitutesForNotYetTranslated().initializingRunner,
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Errores de sintaxis' : 'Syntax errors'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `Bienvenido a Script Lab – pero probablemente quieres usar el Editor y no la ventana que ejecuta el código. Favor de regresar a ${editorUrl}`,
 
         createdWithScriptLab: 'Creado usando Script Lab',
 

@@ -10,10 +10,8 @@ interface ServerStrings {
     line: string;
 
     getLoadingSnippetSubtitle(snippetName: string): string;
-    loadingSnippetDotDotDot: string;
+    initializingRunner: string;
     getSyntaxErrorsTitle(count: number): string
-
-    getGoBackToEditor(editorUrl: string): string
 
     createdWithScriptLab: string;
 

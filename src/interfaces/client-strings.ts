@@ -29,12 +29,14 @@ interface ClientStringsPerLanguage {
     snippetImportExistingButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
-    viewModeError: string,
+    failedToLoadCodeSnippet: string,
 
     snippetGistIdDuplicationError: string;
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;
+    cannotOpenSnippet: string;
+    requestedSnippetNoLongerExists: string;
     reloadPrompt: string;
 
     cannotImportSnippetCreatedForDifferentHost: (snippetHost: string, currentHost: string) => string;
@@ -191,9 +193,6 @@ interface ClientStringsPerLanguage {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */
         missingSnippetParameters: string;
 
-        /** Error if snippet no longer exists */
-        couldNotFindTheSnippet: string;
-
         /** Appends one of the following -- "returning" or "close this window and try again" -- to the error message
          * (navigating back after a couple of seconds, if there is a return URL) */
         getTextToAppendToErrorMessage: (returnUrl: string) => string;
@@ -207,6 +206,9 @@ interface ClientStringsPerLanguage {
         noSnippetIsCurrentlyOpened: string;
 
         getLoadingSnippetSubtitle(snippetName?: string): string;
+
+        runtimeErrorWhileLoadingTheSnippet: string;
+        goBackToEditorToFixError: string;
     };
 
     /** Error strings served by the server and displayed in the Error page */

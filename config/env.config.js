@@ -46,7 +46,7 @@ const config = {
         editorUrl: 'https://bornholm-insiders.azurewebsites.net',
         tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
         runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
-        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
     },
     production: {
