@@ -16,8 +16,12 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         await environment.initialize(params.host);
 
-        // In case the params have had a different runner URL passed in, update the environment config
-        if (params.runnerUrl) {
+        // In case the params have had a different runner URL passed in, update the environment config.
+        // Note that for reasons unbeknown, just updating the environment *even with the same URL*
+        // Is causing Internet Explorer, at least within an Office Add-in, to throw "SecurityError"-s.
+        // So, only doing the update if needed (the only use-case today for different runner URLs
+        // is outside the add-in anyway)
+        if (params.runnerUrl && environment.current.config.runnerUrl !== params.runnerUrl) {
             environment.appendCurrent({
                 config: {
                     ...environment.current.config,
