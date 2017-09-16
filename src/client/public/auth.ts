@@ -78,7 +78,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 const accessToken = authResponseKeyValues['access_token'];
                 const expiresIn = authResponseKeyValues['expires_in'];
                 if (accessToken) {
-                    const message = 'AUTH:access_token=' + accessToken+"&AUTH:expires_in=" + expiresIn;
+                    const message = 'AUTH:access_token=' + accessToken + '&AUTH:expires_in=' + expiresIn;
                     if (authRequest.is_office_host) {
                         Office.context.ui.messageParent(message);
                     } else {

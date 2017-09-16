@@ -38,7 +38,7 @@ module ScriptLab {
             } else {
                 throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
             }
-        }   
+        }
     }
 
     /** [PREVIEW] Log the user out of a service
@@ -237,7 +237,7 @@ module ScriptLab {
     }
 
     function _getCachedAccessToken(clientId: string, resource: string): string {
-        const cachedAuthToken = cachedAuthTokens[clientId + resource]; 
+        const cachedAuthToken = cachedAuthTokens[clientId + resource];
         if (cachedAuthToken) {
             if (cachedAuthToken.expiry > Date.now()) {
                 /* Token is valid. Return it */
