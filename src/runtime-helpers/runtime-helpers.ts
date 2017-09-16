@@ -33,11 +33,11 @@ module ScriptLab {
         } else {
             if (_isPlainWeb()) {
                 return _getAccessTokenViaWindowOpen(clientId, resource);
-            } else if (_isDialogApiSupported()) {
+            } 
+            if (_isDialogApiSupported()) {
                 return _getAccessTokenViaDialogApi(clientId, resource);
-            } else {
-                throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
             }
+            throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
         }
     }
 
@@ -79,13 +79,19 @@ module ScriptLab {
                 if (typeof event.data !== 'string') {
                     return;
                 }
-
-                if (event.data.indexOf('AUTH:access_token=') === 0) {
-                    window.removeEventListener('message', accessTokenMessageListener);
-                    resolve(_extractAndCacheAccessToken(event.data, clientId, resource));
-                    authDialog.close();
-                    return;
+                let message;
+                try {
+                    message = JSON.parse(event.data);
+                    if (message.type === "auth") {
+                        window.removeEventListener('message', accessTokenMessageListener);
+                        resolve(_extractAndCacheAccessToken(message.message, clientId, resource));
+                        authDialog.close();
+                        return;
+                    }
                 }
+                catch (exception) {
+                }
+
                 if (event.data.indexOf('AUTH:error=') === 0) {
                     window.removeEventListener('message', accessTokenMessageListener);
                     reject(new Error(event.data.substr('AUTH:error='.length)));
@@ -124,12 +130,17 @@ module ScriptLab {
                             if (typeof args.message !== 'string') {
                                 throw new Error(); // to be caught below
                             }
-
-                            if (args.message.indexOf('AUTH:access_token=') === 0) {
-                                resolve(_extractAndCacheAccessToken(args.message, clientId, resource));
-                                resolve(args.message.substr('AUTH:access_token='.length));
-                                dialog.close();
+                            let message;
+                            try {
+                                message = JSON.parse(args.message);
+                                if (message.type === "auth") {
+                                    resolve(_extractAndCacheAccessToken(message.message, clientId, resource));
+                                    dialog.close();
+                                }
                             }
+                            catch (exception) {
+                            }
+
                             if (args.message.indexOf('AUTH:error=') === 0) {
                                 reject(new Error(args.message.substr('AUTH:error='.length)));
                                 dialog.close();
@@ -228,34 +239,37 @@ module ScriptLab {
         return (window as any).Office.context.requirements.isSetSupported('DialogApi');
     }
 
-    function _extractAndCacheAccessToken(message: string, clientId: string, resource: string): string {
-        const authResponseKeyValues = message.split('&');
-        const accessToken = authResponseKeyValues[0].substr('AUTH:access_token='.length);
-        const expiresIn = Number(authResponseKeyValues[1].substr('AUTH:expires_in='.length));
-        cachedAuthTokens[clientId + resource] = { token: accessToken, expiry: Date.now() + ((expiresIn - 60) * 1000) };
-        return accessToken;
+    function _extractAndCacheAccessToken(message: any, clientId: string, resource: string): string {
+        cachedAuthTokens[_cacheKey(clientId, resource)] = { 
+            token: message.accessToken, 
+            expiry: Date.now() + ((message.expiresIn - 60*5 /* five minute of safety margin */ ) * 1000) 
+        };
+        return message.accessToken;
     }
 
     function _getCachedAccessToken(clientId: string, resource: string): string {
-        const cachedAuthToken = cachedAuthTokens[clientId + resource];
-        if (cachedAuthToken) {
-            if (cachedAuthToken.expiry > Date.now()) {
-                /* Token is valid. Return it */
-                return cachedAuthToken.token;
-            }
-            else {
-                /* Token in cache has expired. Remove it from the cache */
-                _removeCachedAccessToken(clientId, resource);
-                return null;
-            }
-        } else {
+        const cachedAuthToken = cachedAuthTokens[_cacheKey(clientId,resource)];
+        if (!cachedAuthToken) {
+            return null;
+        }
+        if (cachedAuthToken.expiry > Date.now()) {
+            /* Token is valid. Return it */
+            return cachedAuthToken.token;
+        }
+        else {
+            /* Token in cache has expired. Remove it from the cache */
+            _removeCachedAccessToken(clientId, resource);
             return null;
         }
     }
 
+    function _cacheKey(clientId: string, resource: string) {
+        return `${clientId}_${resource}`;
+    }
+
     function _removeCachedAccessToken(clientId: string, resource: string) {
-        if (cachedAuthTokens[clientId + resource]) {
-            delete cachedAuthTokens[clientId + resource];
+        if (cachedAuthTokens[_cacheKey(clientId,resource)]) {
+            delete cachedAuthTokens[_cacheKey(clientId,resource)];
         }
     }
 }
