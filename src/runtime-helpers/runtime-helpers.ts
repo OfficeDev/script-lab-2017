@@ -16,23 +16,36 @@
 module ScriptLab {
     const CODE_DIALOG_CLOSED_BY_USER = 12006;
 
+    const cachedAuthTokens: {
+        [clientIdAndResource: string]: {
+            token: string;
+            expiry: number;
+        }
+    } = {};
+
     /** [PREVIEW] Gets an access token on behalf of the user for a particular service
      * @param resource: The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
     */
     export function getAccessToken(clientId: string, resource: string = 'graph'): Promise<string> {
-        if (_isPlainWeb()) {
-            return _getAccessTokenViaWindowOpen(clientId, resource);
-        } else if (_isDialogApiSupported()) {
-            return _getAccessTokenViaDialogApi(clientId, resource);
+        const cachedAccessToken = _getCachedAccessToken(clientId, resource);
+        if (cachedAccessToken) {
+            return Promise.resolve(cachedAccessToken);
         } else {
-            throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
-        }
+            if (_isPlainWeb()) {
+                return _getAccessTokenViaWindowOpen(clientId, resource);
+            } else if (_isDialogApiSupported()) {
+                return _getAccessTokenViaDialogApi(clientId, resource);
+            } else {
+                throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
+            }
+        }   
     }
 
     /** [PREVIEW] Log the user out of a service
      * @param resource: The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
     */
     export function logout(clientId: string, resource: string): Promise<any> {
+        _removeCachedAccessToken(clientId, resource);
         if (_isPlainWeb()) {
             return _logoutViaWindowOpen(clientId, resource);
         } else if (_isDialogApiSupported()) {
@@ -69,7 +82,7 @@ module ScriptLab {
 
                 if (event.data.indexOf('AUTH:access_token=') === 0) {
                     window.removeEventListener('message', accessTokenMessageListener);
-                    resolve(event.data.substr('AUTH:access_token='.length));
+                    resolve(_extractAndCacheAccessToken(event.data, clientId, resource));
                     authDialog.close();
                     return;
                 }
@@ -113,6 +126,7 @@ module ScriptLab {
                             }
 
                             if (args.message.indexOf('AUTH:access_token=') === 0) {
+                                resolve(_extractAndCacheAccessToken(args.message, clientId, resource));
                                 resolve(args.message.substr('AUTH:access_token='.length));
                                 dialog.close();
                             }
@@ -212,6 +226,37 @@ module ScriptLab {
 
     function _isDialogApiSupported() {
         return (window as any).Office.context.requirements.isSetSupported('DialogApi');
+    }
+
+    function _extractAndCacheAccessToken(message: string, clientId: string, resource: string): string {
+        const authResponseKeyValues = message.split('&');
+        const accessToken = authResponseKeyValues[0].substr('AUTH:access_token='.length);
+        const expiresIn = Number(authResponseKeyValues[1].substr('AUTH:expires_in='.length));
+        cachedAuthTokens[clientId + resource] = { token: accessToken, expiry: Date.now() + ((expiresIn - 60) * 1000) };
+        return accessToken;
+    }
+
+    function _getCachedAccessToken(clientId: string, resource: string): string {
+        const cachedAuthToken = cachedAuthTokens[clientId + resource]; 
+        if (cachedAuthToken) {
+            if (cachedAuthToken.expiry > Date.now()) {
+                /* Token is valid. Return it */
+                return cachedAuthToken.token;
+            }
+            else {
+                /* Token in cache has expired. Remove it from the cache */
+                _removeCachedAccessToken(clientId, resource);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    function _removeCachedAccessToken(clientId: string, resource: string) {
+        if (cachedAuthTokens[clientId + resource]) {
+            delete cachedAuthTokens[clientId + resource];
+        }
     }
 }
 
