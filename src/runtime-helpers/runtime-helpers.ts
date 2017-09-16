@@ -33,7 +33,7 @@ module ScriptLab {
         } else {
             if (_isPlainWeb()) {
                 return _getAccessTokenViaWindowOpen(clientId, resource);
-            } 
+            }
             if (_isDialogApiSupported()) {
                 return _getAccessTokenViaDialogApi(clientId, resource);
             }
@@ -82,7 +82,7 @@ module ScriptLab {
                 let message;
                 try {
                     message = JSON.parse(event.data);
-                    if (message.type === "auth") {
+                    if (message.type === 'auth') {
                         window.removeEventListener('message', accessTokenMessageListener);
                         resolve(_extractAndCacheAccessToken(message.message, clientId, resource));
                         authDialog.close();
@@ -133,7 +133,7 @@ module ScriptLab {
                             let message;
                             try {
                                 message = JSON.parse(args.message);
-                                if (message.type === "auth") {
+                                if (message.type === 'auth') {
                                     resolve(_extractAndCacheAccessToken(message.message, clientId, resource));
                                     dialog.close();
                                 }
@@ -240,15 +240,15 @@ module ScriptLab {
     }
 
     function _extractAndCacheAccessToken(message: any, clientId: string, resource: string): string {
-        cachedAuthTokens[_cacheKey(clientId, resource)] = { 
-            token: message.accessToken, 
-            expiry: Date.now() + ((message.expiresIn - 60*5 /* five minute of safety margin */ ) * 1000) 
+        cachedAuthTokens[_cacheKey(clientId, resource)] = {
+            token: message.accessToken,
+            expiry: Date.now() + ((message.expiresIn - 60*5 /* five minute of safety margin */ ) * 1000)
         };
         return message.accessToken;
     }
 
     function _getCachedAccessToken(clientId: string, resource: string): string {
-        const cachedAuthToken = cachedAuthTokens[_cacheKey(clientId,resource)];
+        const cachedAuthToken = cachedAuthTokens[_cacheKey(clientId, resource)];
         if (!cachedAuthToken) {
             return null;
         }
@@ -268,8 +268,8 @@ module ScriptLab {
     }
 
     function _removeCachedAccessToken(clientId: string, resource: string) {
-        if (cachedAuthTokens[_cacheKey(clientId,resource)]) {
-            delete cachedAuthTokens[_cacheKey(clientId,resource)];
+        if (cachedAuthTokens[_cacheKey(clientId, resource)]) {
+            delete cachedAuthTokens[_cacheKey(clientId, resource)];
         }
     }
 }
