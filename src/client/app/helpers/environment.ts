@@ -5,28 +5,41 @@ let { devMode, build, config } = PLAYGROUND;
 const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 
 class Environment {
-    private _config: IEnvironmentConfig;
     cache = new Storage<any>(PLAYGROUND.localStorageKeys.playgroundCache, StorageType.SessionStorage);
+    private _config: IEnvironmentConfig;
+    private _current: ICurrentPlaygroundInfo;
 
     constructor() {
-        if (devMode) {
-            this._config = config.local;
-        }
-        else {
-            let { origin } = location;
-            if (/bornholm-insiders/.test(origin)) {
-                this._config = config.insiders;
-            }
-            else if (/bornholm-edge/.test(origin)) {
-                this._config = config.edge;
-            }
-            else {
-                this._config = config.production;
-            }
-        }
+        this._config = this._determineConfig();
     }
 
-    private _current: ICurrentPlaygroundInfo;
+    private _determineConfig(): IEnvironmentConfig {
+        if (devMode) {
+            return config.local;
+        }
+
+        let origin = location.origin.toLowerCase();
+
+        // Note: need to test both for editor and runner domain, since the runner
+        // can (and does) include files from the editor domain, all the while
+        // window.location.origin is in runner domain.
+
+        if (/^bornholm-(runner-)?insiders\./.test(origin)) {
+            return config.insiders;
+        }
+
+        if (/^bornholm-(runner-)?edge\./.test(origin)) {
+            return config.edge;
+        }
+
+        // Production has both the azure website serving the content, and the CDN mirrors
+        if (/^bornholm-(runner-)?\./.test(origin) || /^script-lab(-runner)?\./.test(origin)) {
+            return config.production;
+        }
+
+        throw new Error('Unexpected error: invalid Script Lab environment');
+    }
+
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
             let host: string;
