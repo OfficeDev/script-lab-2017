@@ -81,16 +81,17 @@ class Environment {
      * of course!) based both on synchronously-available data, and on Office.js or user input
      * (if need manual input to determine host) */
     async initialize(currHost?: string): Promise<void> {
-        this.initializePartial(currHost);
+        if (this.initializePartial(currHost)) {
+            return;
+        }
 
         await this._initializeHostBasedOnOfficeJsOrUserClick();
     }
 
     /** Performs a partial initialization, based of off only synchronously-available data
      * (e.g., current page URL, etc.).  Also initialized config, since that is also static based on URL */
-    initializePartial(currHost?: string): void {
+    initializePartial(currHost?: string): boolean {
         this._setupCurrentDefaultsIfEmpty();
-
 
         let pageParams = (Authenticator.extractParams(window.location.href.split('?')[1]) || {}) as {
             commands: any/* whether app-commands are available, relevant for Office Add-ins */,
@@ -117,12 +118,12 @@ class Environment {
 
         if (currHost) {
             this.appendCurrent({ host: currHost.toUpperCase() });
-            return;
+            return true;
         }
 
         if (pageParams.mode) {
             this.appendCurrent({ host: pageParams.mode.toUpperCase() });
-            return;
+            return true;
         }
 
         if (location.hash) {
@@ -140,16 +141,19 @@ class Environment {
             let regexResult = viewVsEditAndHostRegex.exec(location.hash);
             if (regexResult) {
                 this.appendCurrent({ host: regexResult[2].toUpperCase() });
-                return;
+                return true;
             }
         }
 
         if (this.current && this.current.host) {
-            return;
+            return true;
         }
 
-    }
 
+        // If still haven't quit, then don't have enough information to
+        // resolve the host info.
+        return false;
+    }
 
     private async _initializeHostBasedOnOfficeJsOrUserClick() {
         // If no information was gleamed through the function parameter, from the URL,
