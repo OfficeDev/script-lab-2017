@@ -5,9 +5,12 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = '出现意外错误';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: '代码 ● 编写 ● 共享',
         error: '错误',
         unexpectedError: unexpectedError,
         invalidHost: '无效的主机',
@@ -19,8 +22,6 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         line: '线条',
 
         getLoadingSnippetSubtitle: (snippetName: string) => `加载 "${snippetName}"`,
-
-        initializingRunner: getEnglishSubstitutesForNotYetTranslated().initializingRunner,
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? '句法误差' : '句法误差'),
 

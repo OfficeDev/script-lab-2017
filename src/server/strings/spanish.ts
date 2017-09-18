@@ -5,9 +5,13 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = 'Se produjo un error inesperado';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: 'Codifica ● Ejecuta ● Comparte',
+
         error: 'Error',
         unexpectedError: unexpectedError,
         invalidHost: 'Host inválido',
@@ -19,8 +23,6 @@ export function getSpanishStrings(): ServerStrings {
         line: 'Line',
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Cargando "${snippetName}"`,
-
-        initializingRunner: getEnglishSubstitutesForNotYetTranslated().initializingRunner,
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Errores de sintaxis' : 'Syntax errors'),
 

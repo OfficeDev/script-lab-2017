@@ -12,9 +12,13 @@
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
     <style>
         /** On this particular page, adjust progress so that it keeps the header visible */
+        
         #progress {
             top: 40px;
             height: calc(100vh - 40px);
+        }
+        #ribbon {
+            top: -15px /* 25px in original, minus 40px for header */
         }
     </style>
 </head>
@@ -22,6 +26,7 @@
 <body class="ms-font-m">
     <app id="progress" class="app">
         <div class="ms-progress-component">
+            <div id="ribbon" class="ribbon"></div>
             <main class="ms-progress-component__main">
                 <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.svg">
                 <h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>

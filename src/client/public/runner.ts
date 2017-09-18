@@ -2,7 +2,7 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries, environment } from '../app/helpers';
+import { generateUrl, processLibraries, environment, instantiateRibbon } from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, MessageType } from '../app/helpers/messenger';
 
@@ -54,6 +54,9 @@ interface InitializationParams {
 
     async function initializeRunner(params: InitializationParams): Promise<void> {
         try {
+            await environment.initializePartial(params.host);
+            instantiateRibbon('ribbon');
+
             document.getElementById('choose-your-host').textContent = Strings().HtmlPageStrings.chooseYourHost;
             document.getElementById('choose-your-host').style.visibility = 'visible';
 
@@ -87,6 +90,8 @@ interface InitializationParams {
     }
 
     async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
+        // Even though already did a partial initialization, do a more thorough
+        // one here that will let the user choose the host, if one isn't specified:
         await environment.initialize(initialParams.host);
 
         // Having (possibly) re-initialized host (if via buttons), assign final value,
@@ -138,7 +143,6 @@ interface InitializationParams {
 
         // Because it's a multiline text inside of a "pre" tag, trim it:
         const snippetHtml = $snippetContent.text().trim();
-
         let isTrustedSnippet = isNil(initialParams.isTrustedSnippet) ? false : initialParams.isTrustedSnippet;
         if (snippetHtml.length > 0) {
             // Clear the text, but keep the placeholder in the DOM,
@@ -503,6 +507,7 @@ interface InitializationParams {
     }
 
     function showHeader() {
+        $('#ribbon').hide();
         $('#header').css('visibility', 'visible');
     }
 

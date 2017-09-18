@@ -77,7 +77,18 @@ class Environment {
         this._current = this.cache.insert('environment', updatedEnv);
     }
 
+    /** Performs a full initialization (and returns quickly out if already initialized
+     * of course!) based both on synchronously-available data, and on Office.js or user input
+     * (if need manual input to determine host) */
     async initialize(currHost?: string): Promise<void> {
+        this.initializePartial(currHost);
+
+        await this._initializeHostBasedOnOfficeJsOrUserClick();
+    }
+
+    /** Performs a partial initialization, based of off only synchronously-available data
+     * (e.g., current page URL, etc.).  Also initialized config, since that is also static based on URL */
+    initializePartial(currHost?: string): void {
         this._setupCurrentDefaultsIfEmpty();
 
 
@@ -122,7 +133,7 @@ class Environment {
                 #/view/EXCEL/samples/id    ==> success, group 1 = view, group 2 = EXCEL
                 #/view/EXCEL   ==> success, group 1 = view, group 2 = EXCEL
                 #/view/EXCEL/   ==> success, group 1 = view, group 2 = EXCEL
-
+ 
                 ... and fails on anything else.
              */
 
@@ -137,7 +148,10 @@ class Environment {
             return;
         }
 
+    }
 
+
+    private async _initializeHostBasedOnOfficeJsOrUserClick() {
         // If no information was gleamed through the function parameter, from the URL,
         // or from existing values, let's either wait on Office.js to give us the host & platform info,
         // or rely on the user to select from one of the buttons:

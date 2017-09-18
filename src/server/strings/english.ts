@@ -1,7 +1,11 @@
 export function getEnglishStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = 'An unexpected error occurred';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: 'Code ● Run ● Share',
+
         error: 'Error',
         unexpectedError: unexpectedError,
         invalidHost: 'Invalid host',
@@ -13,8 +17,6 @@ export function getEnglishStrings(): ServerStrings {
         line: 'Line',
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Loading "${snippetName}"`,
-
-        initializingRunner: 'Initializing the runner',
 
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Syntax error' : 'Syntax errors'),
 

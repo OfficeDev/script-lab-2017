@@ -502,7 +502,7 @@ function runCommon(
                 host: host,
                 assets: getAssetPaths(),
                 isTrustedSnippet: false, /* Default to snippet not being trusted */
-                initialLoadSubtitle: strings.initializingRunner,
+                initialLoadSubtitle: strings.playgroundTagline,
                 headerTitle: strings.scriptLabRunner,
                 strings,
                 explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull

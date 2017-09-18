@@ -14,7 +14,8 @@ import { Authenticator } from '@microsoft/office-js-helpers';
     (async () => {
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
-        await environment.initialize(params.host);
+        // Can do partial initialization, since host is guaranteed to be known
+        await environment.initializePartial(params.host);
 
         // In case the params have had a different runner URL passed in, update the environment config.
         // Note that for reasons unbeknown, just updating the environment *even with the same URL*
