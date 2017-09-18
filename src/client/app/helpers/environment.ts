@@ -134,7 +134,7 @@ class Environment {
                 #/view/EXCEL/samples/id    ==> success, group 1 = view, group 2 = EXCEL
                 #/view/EXCEL   ==> success, group 1 = view, group 2 = EXCEL
                 #/view/EXCEL/   ==> success, group 1 = view, group 2 = EXCEL
- 
+
                 ... and fails on anything else.
              */
 
