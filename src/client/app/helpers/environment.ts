@@ -109,19 +109,7 @@ class Environment {
 
         if (pageParams.tryIt) {
             this.appendCurrent({ isTryIt: true });
-
-            // If the "try it" page (or the editor used therein) uses an instance of a (non-production)
-            // Office Online that is over HTTP instead of HTTPS, the runner will have needed
-            // to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
-
-            if (this.current.wacUrl.toLowerCase().indexOf('http:/') === 0) {
-                this.appendCurrent({
-                    config: {
-                        ...this.current.config,
-                        runnerUrl: this.current.config.runnerUrl.replace('https:/', 'http:/')
-                    }
-                });
-            }
+            this.updateRunnerUrlForWacEmbed();
         }
 
         if (pageParams.commands) {
@@ -168,6 +156,21 @@ class Environment {
         // If still haven't quit, then don't have enough information to
         // resolve the host info.
         return false;
+    }
+
+    updateRunnerUrlForWacEmbed() {
+        // If the "try it" page (or the editor used therein) uses an instance of a (non-production)
+        // Office Online that is over HTTP instead of HTTPS, the runner will have needed
+        // to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
+
+        if (this.current.wacUrl.toLowerCase().indexOf('http:/') === 0) {
+            this.appendCurrent({
+                config: {
+                    ...this.current.config,
+                    runnerUrl: this.current.config.runnerUrl.replace('https:/', 'http:/')
+                }
+            });
+        }
     }
 
     private async _initializeHostBasedOnOfficeJsOrUserClick() {
