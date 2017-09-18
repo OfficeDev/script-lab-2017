@@ -364,7 +364,12 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
         params.host = 'EXCEL';
     }
 
-    let editorTryItUrl = `${currentConfig.editorUrl}/?tryIt=true#/edit/${params.host}`;
+    let editorTryItUrl = `${currentConfig.editorUrl}/?tryIt=true`;
+    if (req.query.wacUrl) {
+        editorTryItUrl += `&wacUrl=${decodeURIComponent(req.query.wacUrl)}`;
+    }
+    editorTryItUrl += `#/edit/${params.host}`;
+
     if (params.type && params.id) {
         editorTryItUrl += `/${params.type}/${params.id}`;
     }
@@ -373,11 +378,11 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
         .then(tryItGenerator => {
             const context: ITryItHandlebarsContext = {
                 host: params.host,
-                title: 'Try It!',
+                pageTitle: Strings(req).tryItPageTitle,
+                initialLoadSubtitle: Strings(req).playgroundTagline,
                 assets: getAssetPaths(),
                 origin: currentConfig.editorUrl,
                 editorTryItUrl: editorTryItUrl,
-                runnerSnippetUrl: `${currentConfig.runnerUrl}/run/EXCEL/`,
                 wacUrl: decodeURIComponent(req.query.wacUrl || '')
             };
 

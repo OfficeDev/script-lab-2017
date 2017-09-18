@@ -54,7 +54,7 @@ interface InitializationParams {
 
     async function initializeRunner(params: InitializationParams): Promise<void> {
         try {
-            await environment.initializePartial(params.host);
+            await environment.initializePartial({ host: params.host });
             instantiateRibbon('ribbon');
 
             document.getElementById('choose-your-host').textContent = Strings().HtmlPageStrings.chooseYourHost;
@@ -92,7 +92,7 @@ interface InitializationParams {
     async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
         // Even though already did a partial initialization, do a more thorough
         // one here that will let the user choose the host, if one isn't specified:
-        await environment.initialize(initialParams.host);
+        await environment.initialize({ host: initialParams.host });
 
         // Having (possibly) re-initialized host (if via buttons), assign final value,
         // both to "initialParams" (just in case it gets used again) and to the longer-term host variable:

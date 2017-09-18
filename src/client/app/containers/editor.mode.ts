@@ -333,8 +333,16 @@ export class EditorMode {
     _processInitializationImport(params: { valid: boolean, mode: string; id: string }): void {
         let { valid, mode, id } = params;
 
+        const postImportCompleteMessageIfRelevant = (snippetId: string | null) => {
+            if (this.isEditorTryIt) {
+                window.parent.postMessage({ type: 'import-complete', id: snippetId },
+                    environment.current.config.runnerUrl);
+            }
+        };
+
         // If valid, and import mode is empty, then simply let the editor be (it's just a normal open)
         if (valid && mode === null) {
+            postImportCompleteMessageIfRelevant(null);
             return;
         }
 
@@ -343,10 +351,7 @@ export class EditorMode {
             isReadOnlyViewMode: false,
             onSuccess: (snippet: ISnippet) => {
                 this._store.dispatch(new UI.ToggleImportAction(false));
-                if (this.isEditorTryIt) {
-                    window.parent.postMessage({ type: 'import-complete', id: snippet.id },
-                        environment.current.config.runnerUrl);
-                }
+                postImportCompleteMessageIfRelevant(snippet.id);
             }
         };
 

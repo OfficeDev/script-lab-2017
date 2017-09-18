@@ -190,7 +190,7 @@ body.OUTLOOK {
 .panel {
 	&.left {
 		flex: 0 0 auto;
-		width: 50%;
+		width: calc(50% - 9px);
 		min-height: 200px;
 		min-width: 200px;
 		white-space: nowrap;

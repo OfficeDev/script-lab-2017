@@ -32,6 +32,7 @@ export function getEnglishStrings(): ServerStrings {
 
         run: 'Run',
         runPageTitle: 'Run snippet',
+        tryItPageTitle: 'Try it',
         back: 'Back',
         snippetNotTrusted: 'This snippet comes from an external source. You need to trust it before you can run it.',
         trust: 'Trust',

@@ -28,6 +28,7 @@ interface ServerStrings {
 
     run: string;
     runPageTitle: string;
+    tryItPageTitle: string;
     back: string;
     snippetNotTrusted: string;
     trust: string;

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>{{title}}</title>
+    <title>{{pageTitle}}</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,6 +29,7 @@
                         <main class="ms-progress-component__main">
                             <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.svg">
                             <h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
+                            <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
                         </main>
                         <footer class="ms-progress-component__footer">
                             <div class="ms-progress">
@@ -83,7 +84,6 @@
         window.initializeTryIt({
             host: '{{{host}}}',
             origin: '{{{origin}}}',
-            runnerSnippetUrl: '{{{runnerSnippetUrl}}}',
             wacUrl: '{{{wacUrl}}}'
         });
     </script>

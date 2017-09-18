@@ -59,7 +59,7 @@ class Environment {
 
                 isAddinCommands: false,
                 isTryIt: false,
-                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY]
+                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || ''
             };
 
             this.cache.insert('environment', this._current);
@@ -80,8 +80,8 @@ class Environment {
     /** Performs a full initialization (and returns quickly out if already initialized
      * of course!) based both on synchronously-available data, and on Office.js or user input
      * (if need manual input to determine host) */
-    async initialize(currHost?: string): Promise<void> {
-        if (this.initializePartial(currHost)) {
+    async initialize(overrides?: { host?: string, tryIt?: boolean }): Promise<void> {
+        if (this.initializePartial(overrides)) {
             return;
         }
 
@@ -90,15 +90,17 @@ class Environment {
 
     /** Performs a partial initialization, based of off only synchronously-available data
      * (e.g., current page URL, etc.).  Also initialized config, since that is also static based on URL */
-    initializePartial(currHost?: string): boolean {
+    initializePartial(overrides?: { host?: string, tryIt?: boolean }): boolean {
         this._setupCurrentDefaultsIfEmpty();
 
         let pageParams = (Authenticator.extractParams(window.location.href.split('?')[1]) || {}) as {
             commands: any/* whether app-commands are available, relevant for Office Add-ins */,
             mode: string /* and older way of opening Script Lab to a particular host */,
+            host: string /* same as "mode", also needed here so that overrides can also have this parameter */,
             wacUrl: string,
-            tryIt: any
+            tryIt: any,
         };
+        pageParams = { ...pageParams, ...overrides };
 
         if (pageParams.wacUrl) {
             this.appendCurrent({ wacUrl: decodeURIComponent(pageParams.wacUrl) });
@@ -107,6 +109,19 @@ class Environment {
 
         if (pageParams.tryIt) {
             this.appendCurrent({ isTryIt: true });
+
+            // If the "try it" page (or the editor used therein) uses an instance of a (non-production)
+            // Office Online that is over HTTP instead of HTTPS, the runner will have needed
+            // to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
+
+            if (this.current.wacUrl.toLowerCase().indexOf('http:/') === 0) {
+                this.appendCurrent({
+                    config: {
+                        ...this.current.config,
+                        runnerUrl: this.current.config.runnerUrl.replace('https:/', 'http:/')
+                    }
+                });
+            }
         }
 
         if (pageParams.commands) {
@@ -116,8 +131,8 @@ class Environment {
 
         // Having initialized everything except host and platform based off of page params, do the rest:
 
-        if (currHost) {
-            this.appendCurrent({ host: currHost.toUpperCase() });
+        if (pageParams.host) {
+            this.appendCurrent({ host: pageParams.host.toUpperCase() });
             return true;
         }
 

@@ -53,19 +53,6 @@ let imports = [
             MonacoService.initialize()
         ]);
 
-        // If the "try it" page uses an instance of a (local) Office Online that is over HTTP instead of HTTPS,
-        // The runner will have needed to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
-        if (environment.current.isTryIt) {
-            if (environment.current.wacUrl.toLowerCase().indexOf('http:/') === 0) {
-                environment.appendCurrent({
-                    config: {
-                        ...environment.current.config,
-                        runnerUrl: environment.current.config.runnerUrl.replace('https:/', 'http:/')
-                    }
-                });
-            }
-        }
-
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);
 

@@ -71,10 +71,10 @@ export interface IReadmeHandlebarsContext {
 
 export interface ITryItHandlebarsContext {
     host: string;
-    title: string;
+    pageTitle: string;
+    initialLoadSubtitle: string;
     assets: { [key: string]: any };
     origin: string;
     editorTryItUrl: string;
-    runnerSnippetUrl: string;
     wacUrl: string;
 }

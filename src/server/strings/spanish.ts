@@ -29,6 +29,8 @@ export function getSpanishStrings(): ServerStrings {
         createdWithScriptLab: 'Creado usando Script Lab',
 
         scriptLabRunner: 'Ejecutor Script Lab ',
+        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+
         versionInfo: 'Información de versión',
 
         manifestDefaults: {

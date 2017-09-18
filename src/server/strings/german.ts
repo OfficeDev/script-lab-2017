@@ -29,6 +29,8 @@ export function getGermanStrings(): ServerStrings {
         createdWithScriptLab: 'Erstellt mit Script Lab',
 
         scriptLabRunner: 'Script Lab Runner',
+        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+
         versionInfo: 'Versionsinformationen',
 
         manifestDefaults: {

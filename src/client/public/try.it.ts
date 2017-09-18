@@ -1,13 +1,13 @@
 import * as $ from 'jquery';
 import * as OfficeJsHelpers from '@microsoft/office-js-helpers';
 import { environment, InformationalError } from '../app/helpers';
+import { isPlainObject } from 'lodash';
 
 import '../assets/styles/extras.scss';
 
 interface InitializationParams {
     host: string;
     origin: string;
-    runnerSnippetUrl: string;
     wacUrl: string;
 }
 
@@ -20,40 +20,50 @@ interface InitializationParams {
         params = receivedParams;
 
         window.addEventListener('message', receiveMessage, false);
-        $(document).ready(() => tryCatch(() => initializeTryItHelper()));
 
         function receiveMessage(event) {
             if (event.origin !== params.origin) {
                 return;
             }
 
-            snippetId = event.data.id;
+            if (isPlainObject(event.data) && event.data.type === 'import-complete') {
+                snippetId = event.data.id;
+                initializeTryItHelper();
+            }
         }
     };
 
     async function initializeTryItHelper() {
-        await environment.initialize(params.host);
+        $(document).ready(() => tryCatch(async () => {
+            await environment.initialize({ host: params.host, tryIt: true });
 
-        if (!environment.current.wacUrl) {
-            throw new InformationalError(
-                'Error: missing Office Online reference',
-                `Until we can have a production Office Online server working with the "Try it live" feature, ` +
-                `you'll need to bootstrap the experience once by providing a "wacURL" parameter. ` +
-                `Please see the docs demo page for the URL, click on it once (in the browser that you want to use the "Try it live" feature in), ` +
-                ` and then refresh this page.`);
-        }
+            if (!environment.current.wacUrl) {
+                throw new InformationalError(
+                    'Error: missing Office Online reference',
+                    `Until we can have a production server for the "Try it live" experience, ` +
+                    `you'll need to bootstrap the experience once by providing a "wacURL" parameter. ` +
+                    `Please see the docs demo page for the URL, click on it once (in the browser that you want to use the "Try it live" feature in), ` +
+                    ` and then refresh this page.`);
+            }
 
-        let session = new (OfficeExtension as any).EmbeddedSession(
-            environment.current.wacUrl,
-            { id: 'embed-frame', container: document.getElementById('panel-bottom') }
-        );
+            const session = new (OfficeExtension as any).EmbeddedSession(
+                environment.current.wacUrl,
+                { id: 'embed-frame', container: document.getElementById('panel-bottom') }
+            );
 
-        await session.init();
+            await session.init();
 
-        $('.runner-frame').remove();
-        $('.panel.right').append(`<iframe class="runner-frame" id="runner-frame" src="${params.runnerSnippetUrl}${snippetId}"></iframe>`);
+            let url = `${environment.current.config.runnerUrl}/run/${environment.current.host}`;
+            if (snippetId) {
+                url += `/${snippetId}`;
+            }
+            // FIXME: ensure that runner still allows switching via heartbeat.
 
-        (OfficeExtension.ClientRequestContext as any)._overrideSession = session;
+            $('.runner-frame').remove();
+            $('.panel.right').append(`<iframe class="runner-frame" id="runner-frame" src="${url}"></iframe>`);
+
+            (OfficeExtension.ClientRequestContext as any)._overrideSession = session;
+        }));
     };
 
     async function tryCatch(callback) {

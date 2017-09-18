@@ -28,6 +28,8 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         createdWithScriptLab: 'Script Lab创造',
 
         scriptLabRunner: 'Script Lab 应用',
+        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+
         versionInfo: '版本信息',
 
         manifestDefaults: {
