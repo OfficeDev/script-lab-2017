@@ -1,4 +1,4 @@
-﻿[![Build Status](https://travis-ci.org/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.com/OfficeDev/script-lab)
+﻿[![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.org/OfficeDev/script-lab)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2bd3136187484835afb55a961451b81a)](https://www.codacy.com/app/WrathOfZombies/script-lab_2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OfficeDev/script-lab&amp;utm_campaign=Badge_Grade)
 <a id="top"></a>
 # Script Lab, a Microsoft Garage project
