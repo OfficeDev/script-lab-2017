@@ -32,7 +32,6 @@ import { Strings } from '../strings';
     `
 })
 
-
 export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
