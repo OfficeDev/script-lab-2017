@@ -87,7 +87,7 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     get downloadAsFileSupported() {
-        return !this.openInHostSupported /* No need to show it twice */
+        return !this.openInHostSupported; /* No need to show it twice */
         /* && FIXME: only Windows or Mac */
     }
 
