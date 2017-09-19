@@ -39,11 +39,10 @@ interface InitializationParams {
 
             if (!environment.current.wacUrl) {
                 throw new InformationalError(
-                    'Error: missing Office Online reference',
-                    `Until we can have a production server for the "Try it live" experience, ` +
-                    `you'll need to bootstrap the experience once by providing a "wacURL" parameter. ` +
-                    `Please see the docs demo page for the URL, click on it once (in the browser that you want to use the "Try it live" feature in), ` +
-                    ` and then refresh this page.`);
+                    `You're accessing a PREVIEW feature... but you don't have the secret code!`,
+                    `Until we have a production server set up for the "Try it live" experience, ` +
+                    `you'll need to bootstrap the experience with providing a "wacURL" parameter. ` +
+                    `Please see the "Prereqs" section of the docs demo page, follow the link there, and then refresh this page.`);
             }
 
             const session = new (OfficeExtension as any).EmbeddedSession(
@@ -71,8 +70,12 @@ interface InitializationParams {
             await callback();
         }
         catch (error) {
-            $('body').empty();
-            OfficeJsHelpers.UI.notify(error);
+            if (error instanceof InformationalError) {
+                OfficeJsHelpers.UI.notify(error.title, error.message, 'warning');
+            } else {
+                OfficeJsHelpers.UI.notify(error);
+            }
+
             OfficeJsHelpers.Utilities.log(error);
         }
     }

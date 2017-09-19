@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as unzip from 'unzip';
 import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
-// If want to debug locally on http, comment out the above and use: import * as http from 'http';
+// If want to debug locally on http, comment out the above and use:
+// import * as http from 'http';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import * as express from 'express';

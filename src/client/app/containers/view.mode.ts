@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Utilities, PlatformType, HostType } from '@microsoft/office-js-helpers';
+import { HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { UI, Snippet } from '../actions';
-import { environment, getGistUrl } from '../helpers';
+import { environment, getGistUrl, getHostAppName } from '../helpers';
 import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
@@ -19,7 +19,7 @@ import { Strings } from '../strings';
                 <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
                     <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
                     <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
-                    <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
+                    <command [title]="strings.downloadAsFile" (click)="openInPlayground(true)"></command>
                 </command>
             </header>
             <editor [isViewMode]="true"></editor>
@@ -62,15 +62,16 @@ export class ViewMode implements OnInit, OnDestroy {
 
     get openInPlaygroundSupported() {
         let host = environment.current.host.toUpperCase();
-        return Utilities.platform !== PlatformType.IOS && (host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT);
+        let isSupportedOfficeHost =
+            host === HostType.EXCEL ||
+            host === HostType.WORD ||
+            host === HostType.POWERPOINT;
+
+        return isSupportedOfficeHost;
     }
 
     get openInHostString() {
-        return this.strings.openInHost.replace('{0}', environment.current.host.toLowerCase());
-    }
-
-    get downloadAsHostFileString() {
-        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host.toLowerCase());
+        return this.strings.openInHost.replace('{0}', getHostAppName(environment.current.host));
     }
 
     get tryItSupported() {
@@ -149,8 +150,7 @@ export class ViewMode implements OnInit, OnDestroy {
         environment.updateRunnerUrlForWacEmbed();
 
         const url = `${environment.current.config.runnerUrl}/try/${
-            environment.current.host}/${this.viewType}/${this.viewId}` +
-            `?wacUrl=${encodeURIComponent(environment.current.wacUrl)}`;
+            environment.current.host}/${this.viewType}/${this.viewId}`;
 
         window.open(url, '_blank');
     }
