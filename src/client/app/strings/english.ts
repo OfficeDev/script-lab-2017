@@ -165,7 +165,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         openInHost: 'Open in {0}',
         openInGithub: 'Open in GitHub',
         downloadAsHostFile: 'Download {0} file',
-        openTryIt: 'Try it live, in your browser!', /** NEEDS STRING REVIEW **/
+        openTryIt: 'Try it in your browser', /** NEEDS STRING REVIEW **/
 
         // Outlook-only strings
 

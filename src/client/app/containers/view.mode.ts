@@ -18,8 +18,8 @@ import { Strings } from '../strings';
                 <command class="view-disable" [title]="snippet?.name"></command>
                 <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
                     <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
-                    <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
-                    <command [title]="strings.downloadAsFile" (click)="openInPlayground(true)"></command>
+                    <command *ngIf="openInHostSupported" [title]="openInHostString" (click)="openInPlayground(false)"></command>
+                    <command *ngIf="downloadAsFileSupported" [title]="strings.downloadAsFile" (click)="openInPlayground(true)"></command>
                 </command>
             </header>
             <editor [isViewMode]="true"></editor>
@@ -31,7 +31,6 @@ import { Strings } from '../strings';
         </main>
     `
 })
-
 
 export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
@@ -66,8 +65,11 @@ export class ViewMode implements OnInit, OnDestroy {
             host === HostType.EXCEL ||
             host === HostType.WORD ||
             host === HostType.POWERPOINT;
+        if (!isSupportedOfficeHost) {
+            return false;
+        }
 
-        return isSupportedOfficeHost;
+        return this.tryItSupported || this.openInHostSupported || this.downloadAsFileSupported;
     }
 
     get openInHostString() {
@@ -75,7 +77,18 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     get tryItSupported() {
-        return environment.current.wacUrl && environment.current.host.toUpperCase() === HostType.EXCEL;
+        return environment.current.wacUrl &&
+            environment.current.host.toUpperCase() === HostType.EXCEL /* &&
+            FIXME: Ensure not Safari browser */;
+    }
+
+    get openInHostSupported() {
+        return true /* && Ensure Windows OS */;
+    }
+
+    get downloadAsFileSupported() {
+        return !this.openInHostSupported /* No need to show it twice */
+        /* && FIXME: only Windows or Mac */
     }
 
     get urlString() {
