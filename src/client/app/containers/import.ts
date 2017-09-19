@@ -6,6 +6,7 @@ import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } fr
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { Subscription } from 'rxjs/Subscription';
+import { isEmpty } from 'lodash';
 
 const SNIPPET_TO_IMPORT_PROPERTY_NAME = 'SnippetToImport';
 const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
@@ -131,6 +132,15 @@ export class Import {
     templates$ = this._store.select(fromRoot.getTemplates);
     gists$ = this._store.select(fromRoot.getGists);
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
+
+    snippets$ = this._store.select(fromRoot.getSnippets)
+        .map(snippets => {
+            if (isEmpty(snippets)) {
+                this.switch('samples');
+                this._store.dispatch(new UI.ToggleImportAction(true));
+            }
+            return snippets;
+        });
 
     ngOnDestroy() {
         if (this.snippetSub) {
