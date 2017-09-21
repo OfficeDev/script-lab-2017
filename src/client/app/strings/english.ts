@@ -120,7 +120,6 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: 'Snippet description',
         gistUrlLabel: /** NEEDS STRING REVIEW */ 'Gist URL',
         gistUrlLinkLabel: /** NEEDS STRING REVIEW */ 'Open in browser',
-        viewModeGistUrlLabel: /** NEEDS STRING REVIEW */ 'Script-Lab view-only URL',
 
         // Containers strings
         //app.ts
