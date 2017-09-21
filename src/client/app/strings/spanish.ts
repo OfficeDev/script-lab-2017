@@ -119,7 +119,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: 'Descripción del fragmento de código ',
         gistUrlLabel: 'URL del gist',
         gistUrlLinkLabel: 'Abrir en navegador',
-        viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
