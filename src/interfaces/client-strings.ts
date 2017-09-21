@@ -112,7 +112,6 @@ interface ClientStringsPerLanguage {
     descriptionPlaceholder: string;
     gistUrlLabel: string;
     gistUrlLinkLabel: string;
-    viewModeGistUrlLabel: string;
 
     // Containers strings
     //app.ts

@@ -121,7 +121,6 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: '代码段简介',
         gistUrlLabel: 'Gist URL',
         gistUrlLinkLabel: '在游览器中打开',
-        viewModeGistUrlLabel: '仅供游览的Script-Lab URL',
 
         // Containers strings
         //app.ts
