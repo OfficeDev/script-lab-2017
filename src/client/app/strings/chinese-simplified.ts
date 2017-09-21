@@ -35,6 +35,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: '更多信息',
         importButtonLabel: '输入',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
         failedToLoadCodeSnippet: '导入代码段失败。',

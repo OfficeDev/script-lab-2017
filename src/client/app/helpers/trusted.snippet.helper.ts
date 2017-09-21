@@ -1,7 +1,7 @@
 import { storage } from '../helpers';
 const TRUSTED_SNIPPETS_KEY = 'playground_trusted_snippets';
 
-class TrustedSnippet {
+class TrustedSnippetManager {
     cleanUpTrustedSnippets(): void {
         try {
             let trustedSnippets = JSON.parse(window.localStorage.getItem(TRUSTED_SNIPPETS_KEY));
@@ -48,6 +48,14 @@ class TrustedSnippet {
             window.localStorage.setItem(TRUSTED_SNIPPETS_KEY, JSON.stringify(trustedSnippets));
         } catch (e) { }
     }
+
+    untrustSnippet(snippetId: string): void {
+        try {
+            let trustedSnippets = JSON.parse(window.localStorage.getItem(TRUSTED_SNIPPETS_KEY));
+            delete trustedSnippets[snippetId];
+            window.localStorage.setItem(TRUSTED_SNIPPETS_KEY, JSON.stringify(trustedSnippets));
+        } catch (e) { }
+    }
 }
 
-export const trustedSnippetManager = new TrustedSnippet();
+export const trustedSnippetManager = new TrustedSnippetManager();
