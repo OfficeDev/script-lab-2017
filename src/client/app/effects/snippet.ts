@@ -529,7 +529,10 @@ export class SnippetEffects {
                 case Strings().overwriteExistingButtonLabel: {
                     snippet.id = snippetsWithSameGistId[0].id;
                     trustedSnippetManager.untrustSnippet(snippet.id);
-                    return [new Snippet.SaveAction(snippet)];
+                    return [
+                        new Snippet.ImportSuccessAction(snippet),
+                        new Snippet.SaveAction(snippet)
+                    ];
                 }
 
                 case Strings().cancelButtonLabel: {
