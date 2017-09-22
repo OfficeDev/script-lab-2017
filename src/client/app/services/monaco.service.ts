@@ -30,7 +30,6 @@ export class MonacoService {
         wrappingIndent: 'indent',
         scrollbar: {
             vertical: 'visible',
-            verticalHasArrows: true,
             arrowSize: 15
         }
     };
