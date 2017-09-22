@@ -13,7 +13,7 @@ module.exports = (env) =>
         output: {
             path: path.resolve('./dist/client'),
             filename: 'bundles/[name].[chunkhash].bundle.js',
-            chunkFilename: 'bundles/[id].chunk.js'
+            chunkFilename: 'bundles/[id].[chunkhash].chunk.js'
         },
 
         module: {
@@ -56,19 +56,6 @@ module.exports = (env) =>
         },
 
         plugins: [
-            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css'),
-            new webpack.optimize.UglifyJsPlugin({
-                sourceMap: true,
-                compress: true,
-                mangle: {
-                    screw_ie8: true,
-                    keep_fnames: true
-                },
-                compress: {
-                    warnings: false,
-                    screw_ie8: true
-                },
-                comments: false
-            })
+            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css')
         ]
     });
