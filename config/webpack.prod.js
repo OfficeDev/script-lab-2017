@@ -56,6 +56,19 @@ module.exports = (env) =>
         },
 
         plugins: [
-            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css')
+            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css'),
+            new webpack.optimize.UglifyJsPlugin({
+                sourceMap: true,
+                compress: true,
+                mangle: {
+                    screw_ie8: true,
+                    keep_fnames: true
+                },
+                compress: {
+                    warnings: false,
+                    screw_ie8: true
+                },
+                comments: false
+            })
         ]
     });
