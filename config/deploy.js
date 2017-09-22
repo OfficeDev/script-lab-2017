@@ -55,15 +55,17 @@ const URL = 'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
 const EDITOR_URL = 'https://'
     + AZURE_WA_USERNAME + ':'
     + AZURE_WA_PASSWORD + '@'
-    + AZURE_WA_SITE + '-'
-    + slot + '.scm.azurewebsites.net:443/'
+    + AZURE_WA_SITE
+    + '-' + slot
+    + '.scm.azurewebsites.net:443/'
     + AZURE_WA_SITE + '.git';
 
 const RUNNER_URL = 'https://'
     + AZURE_WA_USERNAME + ':'
     + AZURE_WA_PASSWORD + '@'
-    + AZURE_WA_SITE + '-runner-'
-    + slot + '.scm.azurewebsites.net:443/'
+    + AZURE_WA_SITE + '-runner'
+    + '-' + slot
+    + '.scm.azurewebsites.net:443/'
     + AZURE_WA_SITE + '-runner.git';
 
 let copyDeployedResourcesUrl = EDITOR_URL;
@@ -74,7 +76,8 @@ if (slot === 'staging') {
     copyDeployedResourcesUrl = 'https://'
         + AZURE_WA_USERNAME + ':'
         + AZURE_WA_PASSWORD + '@'
-        + AZURE_WA_SITE + '.scm.azurewebsites.net:443/'
+        + AZURE_WA_SITE
+        + '.scm.azurewebsites.net:443/'
         + AZURE_WA_SITE + '.git';
 }
 
@@ -130,7 +133,7 @@ function deployBuild(url, folder, copyDeployedResourcesUrl) {
         result = shell.exec('git commit -m "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '"');
         if (result.code !== 0) {
             shell.echo(result.stderr);
-            exit('An error occurred while commiting files...', true);
+            exit('An error occurred while committing files...', true);
         }
         log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
         result = shell.exec('git push ' + url + ' -q -f -u HEAD:refs/heads/master', { silent: true });
