@@ -164,7 +164,7 @@ function buildAssetAndLibHistory(url, folder) {
             console.log(`The library "${asset}" is already in current build, so skipping copying it from a previous build`);
         } else {
             console.log(`Copying "${asset}" from a previous build into the current "libs" folder`);
-            fs.copySync(path.resolve(oldAssetsPath, asset), libPath);
+            fs.copySync(path.resolve(oldLibsPath, asset), libPath);
         }
     }
 
