@@ -72,63 +72,64 @@ class RedirectPlugin {
 
                 if (htmlHead && htmlHead.length > 0) {
                     htmlHead = htmlHead.index;
-                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) + headOpeningTag +
-                    `
-                    <script>
-                    (function() {
-                        function getParameterByName(name) {
-                            var url = window.location.search;
-                            var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
-                            var match = queryExp.exec(url);
-                            if (match && match.length > 1) {
-                                return match[1];
+                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
+                        headOpeningTag +
+                        `
+                        <script>
+                        (function() {
+                            function getParameterByName(name) {
+                                var url = window.location.search;
+                                var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
+                                var match = queryExp.exec(url);
+                                if (match && match.length > 1) {
+                                    return match[1];
+                                }
+                                return null;
+                            };
+                            var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
+                            var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
+
+                            // Set target environment for origin environment to redirect to
+                            if (targetUrl.length > 0) {
+                                targetUrl = decodeURIComponent(targetUrl)
+                                // Clear origin environment's local storage if target = origin
+                                if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
+                                    window.localStorage.removeItem("${redirectEnvironmentUrl}");
+                                    return;
+                                }
+
+                                window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
                             }
-                            return null;
-                        };
-                        var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
-                        var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
 
-                        // Set target environment for origin environment to redirect to
-                        if (targetUrl.length > 0) {
-                            targetUrl = decodeURIComponent(targetUrl)
-                            // Clear origin environment's local storage if target = origin
-                            if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
-                                window.localStorage.removeItem("${redirectEnvironmentUrl}");
-                                return;
+                            // Redirect origin environment to target
+                            var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
+                            if (redirectUrl) {
+                                var originParam = [
+                                    (window.location.search ? "&" : "?"), 
+                                    "originEnvironment=",
+                                    encodeURIComponent(window.location.origin)
+                                ].join("");
+
+                                window.location.replace([
+                                    redirectUrl,
+                                    window.location.pathname,
+                                    window.location.search,
+                                    originParam,
+                                    window.location.hash
+                                ].join(""));
                             }
 
-                            window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
-                        }
+                            // Point app environment back to origin if user is not in origin
+                            if (originUrl.length > 0) {
+                                window.localStorage.setItem("${originEnvironmentUrl}",
+                                    decodeURIComponent(originUrl).toLowerCase());
+                            }
 
-                        // Redirect origin environment to target
-                        var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
-                        if (redirectUrl) {
-                            var originParam = [
-                                (window.location.search ? "&" : "?"), 
-                                "originEnvironment=",
-                                encodeURIComponent(window.location.origin)
-                            ].join("");
-
-                            window.location.replace([
-                                redirectUrl,
-                                window.location.pathname,
-                                window.location.search,
-                                originParam,
-                                window.location.hash
-                            ].join(""));
-                        }
-
-                        // Point app environment back to origin if user is not in origin
-                        if (originUrl.length > 0) {
-                            window.localStorage.setItem("${originEnvironmentUrl}",
-                                decodeURIComponent(originUrl).toLowerCase());
-                        }
-
-                        // If reached here, environment is already configured
-                    })();
-                    </script>
-                    ` + 
-                    htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
+                            // If reached here, environment is already configured
+                        })();
+                        </script>
+                        ` + 
+                        htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
                 }
                 callback(null, htmlPluginData);
             });

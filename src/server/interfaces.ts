@@ -21,9 +21,7 @@ export interface IRunnerHandlebarsContext {
         content?: string;
     }
 
-    origin: string;
     host: string;
-    assets: { [key: string]: any };
     isTrustedSnippet: boolean;
 
     initialLoadSubtitle: string;
@@ -41,8 +39,6 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface IErrorHandlebarsContext {
-    origin: string;
-    assets: { [key: string]: any };
     title: string;
     message: string;
     details: string;
@@ -73,8 +69,6 @@ export interface ITryItHandlebarsContext {
     host: string;
     pageTitle: string;
     initialLoadSubtitle: string;
-    assets: { [key: string]: any };
-    origin: string;
     editorTryItUrl: string;
     wacUrl: string;
 }
