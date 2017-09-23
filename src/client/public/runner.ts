@@ -110,9 +110,6 @@ interface InitializationParams {
             returnUrl = window.sessionStorage.playground_returnUrl;
         } else {
             returnUrl = `${environment.current.config.editorUrl}/#/edit/${host}`;
-            if (initialParams.currentSnippet.id) {
-                returnUrl += `/open/${initialParams.currentSnippet.id}`;
-            }
         }
 
         if (initialParams.explicitlySetDisplayLanguageOrNull) {
