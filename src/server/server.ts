@@ -12,11 +12,11 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
 import * as Archiver from 'archiver';
-import { isString, forIn, isNil } from 'lodash';
+import { isString, forIn, isNil, isPlainObject } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
 import { Strings, getExplicitlySetDisplayLanguageOrNull } from './strings';
-import { loadTemplate } from './core/template.generator';
+import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.generator';
 import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
@@ -27,7 +27,6 @@ import {
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
-const isPlainObject = require('is-plain-object') as (obj: any) => boolean;
 
 const { build, config, secrets } = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
@@ -377,17 +376,13 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
 
     return loadTemplate<ITryItHandlebarsContext>('try-it')
         .then(tryItGenerator => {
-            const context: ITryItHandlebarsContext = {
+            const html = tryItGenerator({
                 host: params.host,
                 pageTitle: Strings(req).tryItPageTitle,
                 initialLoadSubtitle: Strings(req).playgroundTagline,
-                assets: getAssetPaths(),
-                origin: currentConfig.editorUrl,
                 editorTryItUrl: editorTryItUrl,
                 wacUrl: decodeURIComponent(req.query.wacUrl || '')
-            };
-
-            const html = tryItGenerator(context);
+            });
 
             res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
@@ -410,12 +405,9 @@ registerRoute('get', '/version', (req, res) => {
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/snippet/auth', (req, res) => {
-    return loadTemplate<{ origin: string, assets: any }>('snippet-auth')
+    return loadTemplate('snippet-auth')
         .then(authGenerator => {
-            const html = authGenerator({
-                origin: currentConfig.editorUrl,
-                assets: getAssetPaths()
-            });
+            const html = authGenerator({});
 
             res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
@@ -457,9 +449,7 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
-                    origin: currentConfig.editorUrl,
                     host: snippet.host,
-                    assets: getAssetPaths(),
                     isTrustedSnippet,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
@@ -504,9 +494,7 @@ function runCommon(
                 },
                 officeJS: determineOfficeJS(options.query, host),
                 returnUrl: '',
-                origin: currentConfig.editorUrl,
                 host: host,
-                assets: getAssetPaths(),
                 isTrustedSnippet: false, /* Default to snippet not being trusted */
                 initialLoadSubtitle: strings.playgroundTagline,
                 headerTitle: strings.scriptLabRunner,
@@ -737,8 +725,6 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
     }
 
     return errorHtmlGenerator({
-        origin: currentConfig.editorUrl,
-        assets: getAssetPaths(),
         title,
         message,
         details,
@@ -746,21 +732,33 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
     });
 }
 
-
-let _assetPaths;
-function getAssetPaths(): { [key: string]: any } {
-    if (!_assetPaths) {
-        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
-        _assetPaths = JSON.parse(data.toString());
+let _defaultHandlebarsContext: IDefaultHandlebarsContext;
+function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
+    if (!_defaultHandlebarsContext) {
+        let versionedPackageNames = getFileAsJson('versionPackageNames.json');
+        _defaultHandlebarsContext = {
+            origin: currentConfig.editorUrl,
+            assets: getFileAsJson('assets.json'),
+            versionedPackageNames_office_ui_fabric_js: versionedPackageNames['office-ui-fabric-js'],
+            versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom']
+        };
     }
 
-    return _assetPaths;
+    return _defaultHandlebarsContext;
+
+    function getFileAsJson(filename) {
+        return JSON.parse(fs.readFileSync(path.resolve(__dirname, filename)).toString());
+    }
+}
+
+function loadTemplate<T>(templateName: string) {
+    return loadTemplateHelper<T>(templateName, getDefaultHandlebarsContext());
 }
 
 let _runtimeHelpersUrl;
 function getRuntimeHelpersUrl() {
     if (!_runtimeHelpersUrl) {
-        let assetPaths = getAssetPaths();
+        let assetPaths = getDefaultHandlebarsContext().assets;
         // Some assets, like the runtime helpers, are not compiled with webpack.
         // Instead, they are manually copied, and end up with no hash.
         // So, to guarantee their freshness, use the runner hash (once per deployment)
@@ -778,7 +776,6 @@ function getRuntimeHelpersUrl() {
 
     return _runtimeHelpersUrl;
 }
-
 
 function getClientSecret() {
     if (currentConfig.name === 'LOCAL') {
