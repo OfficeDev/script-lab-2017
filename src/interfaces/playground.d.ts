@@ -17,7 +17,6 @@ interface ITemplate {
         [index: string]: number
     },
     platform: string;
-    origin: string;
     created_at: number;
     modified_at: number;
 }
@@ -63,11 +62,12 @@ interface ICompiledSnippet extends ITemplate {
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
-
-    /** URL to return to (editor, or gallery view). More than just origin domain */
-    returnUrl: string;
-
     displayLanguage: string;
+
+    /** URL to return to in case of the gallery (or something else custom).
+     * Otherwise, if null, will create a default reference back to editor domain,
+     * taking host and snippet ID into account */
+    returnUrl?: string;    
 }
 
 interface IExportState {
@@ -104,24 +104,46 @@ interface IEvent<T> {
     data: T
 }
 
-interface IEnvironment {
-    devMode?: boolean;
-    build?: {
-        name: string;
-        version: string;
-        timestamp: string;
-        author: string;
-        humanReadableTimestamp: string;
-    },
-    config?: IEnvironmentConfig
-    host?: string,
-    platform?: string,
-    PLAYGROUND_ORIGIN?: string,
-    PLAYGROUND_REDIRECT?: string
+declare var PLAYGROUND: ICompiledPlaygroundInfo;
+
+interface ICompiledPlaygroundInfo {
+    devMode: boolean;
+    build: IBuildInfo;
+    config: {
+        local: ILocalHostEnvironmentConfig,
+        edge: IEnvironmentConfig,
+        insiders: IEnvironmentConfig,
+        production: IEnvironmentConfig
+    };
+    localStorageKeys: {
+        originEnvironmentUrl: string;
+        redirectEnvironmentUrl: string;
+        playgroundCache: string;
+    };
+}
+
+interface ICurrentPlaygroundInfo {
+    devMode: Readonly<boolean>;
+    build: Readonly<IBuildInfo>;
+    config: Readonly<IEnvironmentConfig>;
+    host: Readonly<string>;
+    platform: Readonly<string>;
+
+    isAddinCommands: boolean;
+    isTryIt: boolean;
+    wacUrl: string;
+}
+
+interface IBuildInfo {
+    name: string;
+    version: string;
+    timestamp: string;
+    author: string;
+    humanReadableTimestamp: string;
 }
 
 interface IEnvironmentConfig {
-    name: string,
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,
@@ -131,11 +153,13 @@ interface IEnvironmentConfig {
     samplesUrl: string
 }
 
-declare var PLAYGROUND: IEnvironment;
+interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
+    clientSecretLocalHost: string;
+}
 
 interface ISettings {
     lastOpened: ISnippet,
-    profile: IProfile,
+    profile: IBasicProfile,
     theme: boolean,
     language: string,
     env: string
@@ -152,4 +176,14 @@ interface HeartbeatParams {
      * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
     */
     lastModified: string;
+
+    runnerUrl: string;
+}
+
+// NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"
+interface AuthRequestParamData {
+    auth_action: 'login' | 'logout';
+    resource: string;
+    client_id: string;
+    is_office_host: boolean;
 }

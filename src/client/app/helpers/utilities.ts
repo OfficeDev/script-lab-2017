@@ -3,8 +3,23 @@ import { AI } from './ai.helper';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
+
+const officeHostsToAppNames = {
+    'ACCESS': 'Access',
+    'EXCEL': 'Excel',
+    'ONENOTE': 'OneNote',
+    'OUTLOOK': 'Outlook',
+    'POWERPOINT': 'PowerPoint',
+    'PROJECT': 'Project',
+    'WORD': 'Word'
+};
+
 export function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
+}
+
+export function getHostAppName(host: string) {
+    return officeHostsToAppNames[host.toUpperCase()];
 }
 
 export function isInsideOfficeApp() {
@@ -75,6 +90,10 @@ export function post(path: string, params: any) {
 
     document.body.appendChild(form);
     form.submit();
+}
+
+export function getGistUrl(id: string): string {
+    return `https://gist.github.com/${id}`;
 }
 
 export function stringOrEmpty(text: string): string {

@@ -27,8 +27,8 @@
 	<link rel="icon" type="image/x-icon" href="favicon/favicon.ico" />
 	<link rel="manifest" href="favicon/manifest.json">
 
-	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.min.css" />
-	<link rel="stylesheet" href="libs/office-ui-fabric-js/css/fabric.components.min.css" />
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.min.css" />
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.components.min.css" />
 </head>
 
 <body class="ms-font-m">
@@ -67,14 +67,14 @@
 					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--excel" data-host="EXCEL"></div>
 					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--word" data-host="WORD"></div>
 					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--powerpoint" data-host="POWERPOINT"></div>
-					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--onenote" data-host="ONENOTE"></div>
 					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--project" data-host="PROJECT"></div>
-					<div class="hostButton ms-Icon ms-Icon--Group" data-host="TEAMS"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--outlook" data-host="OUTLOOK"></div>
 				</div>
 			</div>
 		</div>
 	</app>
-	<script src="libs/monaco-editor/vs/loader.js"></script>
+
+	<script src="libs/{{{versionedPackageNames['monaco-editor']}}}/vs/loader.js"></script>
 </body>
 
 </html>

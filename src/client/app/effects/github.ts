@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { PlaygroundError, AI, getShareableYaml, environment } from '../helpers';
+import { PlaygroundError, AI, getShareableYaml, environment, getGistUrl } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { GitHubService } from '../services';
 import { Store, Action } from '@ngrx/store';
@@ -41,10 +41,13 @@ export class GitHubEffects {
                 ]));
         });
 
-    @Effect({ dispatch: false })
+    @Effect()
     logout$: Observable<Action> = this.actions$
         .ofType(GitHub.GitHubActionTypes.LOGGED_OUT)
-        .map(() => this._github.logout())
+        .map(() => {
+            this._github.logout();
+            return new GitHub.LoadGistsSuccessAction(null);
+        })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().githubLogoutFailed, exception)));
 
     @Effect()
@@ -125,7 +128,7 @@ export class GitHubEffects {
                 throw exception;
             }))
             .mergeMap(async ({ type, gist, snippetId }) => {
-                let gistUrl = `https://gist.github.com/${gist.owner.login}/${gist.id}`;
+                let gistUrl = getGistUrl((gist as IGist).id);
                 let messageBody =
                     type === GitHub.GitHubActionTypes.UPDATE_GIST ?
                         `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
@@ -138,12 +141,12 @@ export class GitHubEffects {
                     window.open(gistUrl);
                 }
 
-                return { gist: gist, snippetId: snippetId };
+                return { gist: gist as IGist, snippetId: snippetId };
             })
             .mergeMap(({ gist, snippetId }) => Observable.from([
-                    new GitHub.LoadGistsAction(),
-                    new GitHub.ShareSuccessAction(gist),
-                    new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+                new GitHub.LoadGistsAction(),
+                new GitHub.ShareSuccessAction(gist),
+                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
             )
             .catch(exception => {
                 let actions: Action[] = [new GitHub.ShareFailedAction(exception)];

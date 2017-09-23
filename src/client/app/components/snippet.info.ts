@@ -1,4 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { getGistUrl, environment, storage } from '../helpers';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
 
@@ -18,9 +19,9 @@ import { isNil } from 'lodash';
                     <textarea class="ms-TextField-field ms-font-m" [(ngModel)]="snippet.description" placeholder="{{strings.descriptionPlaceholder}}"></textarea>
                 </div>
 
-                <div *ngIf="!!url" class="ms-TextField">
+                <div *ngIf="showGistUrl" class="ms-TextField">
                     <label class="ms-Label">{{strings.gistUrlLabel}}</label>
-                    <a href="{{url}}" target="_blank">{{strings.gistUrlLinkLabel}}</a>
+                    <a href="{{gistUrl}}" target="_blank">{{strings.gistUrlLinkLabel}}</a>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
@@ -44,7 +45,26 @@ export class SnippetInfo {
 
     strings = Strings();
 
-    get url() {
-        return isNil(this.snippet.gist) ? null : `https://gist.github.com/${this.snippet.gist}`;
+    get showGistUrl() {
+        if (!this.snippet.gist) {
+            return false;
+        }
+
+        if (storage.current.profile && storage.current.profile.login) {
+            if (storage.current.profile.login === this.snippet.gistOwnerId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    get gistUrl() {
+        return isNil(this.snippet.gist) ? null : getGistUrl(this.snippet.gist);
+    }
+
+    get viewModeGistUrl() {
+        let host = this.snippet.host.toLowerCase();
+        return `${environment.current.config.editorUrl}/#/view/${host}/gist/${this.snippet.gist}`;
     }
 }

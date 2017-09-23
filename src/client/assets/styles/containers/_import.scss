@@ -46,6 +46,12 @@ import {
 
     &-tab__section {
         padding: 15px;
+
+        > collapse {
+            -webkit-box-flex: 0;
+            -ms-flex: none;
+            flex: none;
+        }
     }
 
     &__title {
@@ -59,6 +65,9 @@ import {
 
     &__field {
         margin-bottom: 2*$default-spacing;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
 
         .ms-Label {
             text-transform: uppercase;
@@ -66,6 +75,7 @@ import {
 
         textarea {
             min-height: 300px !important;
+            flex: 1 1 auto;
         }
     }
 }

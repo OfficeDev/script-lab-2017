@@ -10,6 +10,7 @@ export class GitHubService {
     private _authenticator: Authenticator;
     private _token: IToken;
     private _headers: any;
+    private _profile: IBasicProfile;
 
     constructor(private _request: Request) {
         let { clientId, tokenUrl } = environment.current.config;
@@ -29,8 +30,17 @@ export class GitHubService {
     }
 
     get profile(): IBasicProfile {
-        return storage.current.profile;
+        if (this._profile == null) {
+            this._profile = storage.current.profile;
+        }
+
+        return this._profile;
     };
+
+    set profile(value) {
+        this._profile = value;
+        storage.appendCurrent({ profile: value });
+    }
 
     user(): Observable<IBasicProfile> {
         return this._request.get<IBasicProfile>(`${this._baseUrl}/user`, ResponseTypes.JSON, this._headers);
@@ -83,7 +93,10 @@ export class GitHubService {
     async login(): Promise<IBasicProfile> {
         this._token = await this._authenticator.authenticate('GitHub', environment.current.host === 'TEAMS');
         this._setDefaultHeaders(this._token);
+
         const profile = await this.user().toPromise();
+        storage.appendCurrent({ profile: profile });
+        this.profile = profile;
         return profile;
     }
 
@@ -112,16 +125,28 @@ export class GitHubService {
         let body = {
             description: description,
             public: isPublic,
-            files: files
-        };
+        } as { description: string, public: boolean, files: IGistFiles };
 
         let url = `${this._baseUrl}/gists`;
         if (!(id == null)) {
             url += `/${id}`;
-            return this._request.patch<IGist>(url, body, ResponseTypes.JSON, this._headers);
+            return this.gist(id)
+                .mergeMap(gist => {
+                    let oldFilename = Object.keys(gist.files)[0];
+                    let newFilename = Object.keys(files)[0];
+                    body.files = {};
+                    /* Rename file when updating; if name has not changed, equivalent of no-op */
+                    body.files[oldFilename] = {
+                        filename: newFilename,
+                        content: files[newFilename].content,
+                        language: files[newFilename].language
+                    };
+                    return this._request.patch<IGist>(url, body, ResponseTypes.JSON, this._headers);
+                });
+        } else {
+            body.files = files;
+            return this._request.post<IGist>(url, body, ResponseTypes.JSON, this._headers);
         }
-
-        return this._request.post<IGist>(url, body, ResponseTypes.JSON, this._headers);
     }
 
     forkGist(id: string): Observable<IGist> {

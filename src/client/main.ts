@@ -4,8 +4,9 @@ import { NgModule, enableProdMode } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule, Routes } from '@angular/router';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Authenticator } from '@microsoft/office-js-helpers';
+import { Authenticator, UI } from '@microsoft/office-js-helpers';
 import { StoreModule, Store } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
@@ -15,15 +16,27 @@ import { PIPES } from './app/pipes';
 import { EXCEPTION_PROVIDER, applyTheme, AI, storage, environment } from './app/helpers';
 import { Strings } from './app/strings';
 import { COMPONENT_DECLARATIONS } from './components';
-import { AppComponent } from './app/containers';
+import { AppComponent, EditorMode, ViewMode, ViewModeError } from './app/containers';
 import { rootReducer, getSettings, State } from './app/reducers';
 import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/effects';
 import './assets/styles/editor.scss';
+
+let appRoutes: Routes = [
+    { path: 'view/:host/:type/:id', component: ViewMode },
+    { path: 'view/error', component: ViewModeError },
+    { path: 'edit/:host/:type/:id', component: EditorMode },
+    { path: 'edit/:host', component: EditorMode },
+    { path: '', component: EditorMode }
+];
 
 let imports = [
     BrowserModule,
     HttpModule,
     FormsModule,
+    RouterModule.forRoot(
+        appRoutes,
+        { useHash: true }
+    ),
     StoreModule.provideStore(rootReducer),
     EffectsModule.run(SnippetEffects),
     EffectsModule.run(MonacoEffects),
@@ -59,10 +72,10 @@ let imports = [
         }
     }
     catch (e) {
-        $('.ms-progress-component__sub-title').text(strings.HtmlPageStrings.errorInitializingScriptLab)
-            .click(() => {
-                $('.ms-progress-component__sub-title').text(JSON.stringify(e, null, 4));
-            });
+        $('.ms-progress-component__sub-title')
+            .text(strings.HtmlPageStrings.errorInitializingScriptLab)
+            .css('cursor', 'pointer')
+            .click(() => UI.notify(e));
         $('.ms-progress-component__footer').hide();
         AI.trackException(e, 'Playground Initialization');
     }
@@ -84,6 +97,6 @@ export class AppModule {
         this._store
             .select(getSettings)
             .debounceTime(300)
-            .subscribe(changes => { storage.current = changes; });
+            .subscribe(changes => { storage.appendCurrent(changes); });
     }
 }

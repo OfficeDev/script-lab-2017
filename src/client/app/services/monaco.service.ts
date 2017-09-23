@@ -16,18 +16,20 @@ export class MonacoService {
         value: '',
         language: 'text',
         lineNumbers: true as any,
+        minimap: {
+            enabled: false
+        },
         roundedSelection: false,
         scrollBeyondLastLine: false,
         formatOnType: true,
         formatOnPaste: true,
         fontSize: 14,
-        wrappingColumn: 0,
+        wordWrap: 'on',
         folding: true,
         theme: 'vs',
         wrappingIndent: 'indent',
         scrollbar: {
             vertical: 'visible',
-            verticalHasArrows: true,
             arrowSize: 15
         }
     };
@@ -85,15 +87,6 @@ export class MonacoService {
         return monaco.editor.create(element.nativeElement, options);
     }
 
-    updateOptions(editor: monaco.editor.IStandaloneCodeEditor, overrides: monaco.editor.IEditorOptions) {
-        if (editor == null || overrides == null) {
-            return;
-        }
-
-        let options = { ...this._defaults, ...overrides };
-        editor.updateOptions(options);
-    }
-
     static initialize() {
         if (MonacoService.current == null) {
             MonacoService.current = MonacoService._loadMonaco();
@@ -103,12 +96,12 @@ export class MonacoService {
     }
 
     static _loadMonaco() {
-        return new Promise((resolve, reject) => {
+        return new Promise<typeof monaco>((resolve, reject) => {
             try {
                 let event = AI.trackTimedEvent('[Perf] Monaco loaded');
                 let require = (<any>window).require;
                 if (require) {
-                    let path = `${location.origin}/libs/monaco-editor/vs`;
+                    let path = `${location.origin}/libs/${(window as any).versionedPackageNames['monaco-editor']}/vs`;
 
                     const requireConfig = {
                         paths: {
@@ -132,7 +125,7 @@ export class MonacoService {
     private async _registerLanguageServices() {
         let monaco = await MonacoService.current;
         monaco.languages.register({ id: 'libraries' });
-        monaco.languages.setMonarchTokensProvider('libraries', {
+        monaco.languages.setMonarchTokensProvider('libraries', <monaco.languages.IMonarchLanguage>{
             tokenizer: {
                 root: [
                     [Regex.STARTS_WITH_COMMENT, 'comment'],

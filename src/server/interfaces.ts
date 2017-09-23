@@ -1,9 +1,12 @@
-import {ServerStrings} from './strings';
-
 export interface ISnippetHandlebarsContext extends ICompiledSnippet {
     isOfficeSnippet: boolean;
     isExternalExport: boolean;
     strings: ServerStrings;
+
+    // For the runtime helpers, need both their URL, and the origin editor URL
+    runtimeHelpersUrl: string;
+    editorUrl: string;
+    runtimeHelperStringifiedStrings: string;
 }
 
 export interface IRunnerHandlebarsContext {
@@ -18,9 +21,8 @@ export interface IRunnerHandlebarsContext {
         content?: string;
     }
 
-    origin: string;
     host: string;
-    assets: { [key: string]: any };
+    isTrustedSnippet: boolean;
 
     initialLoadSubtitle: string;
     headerTitle: string;
@@ -28,7 +30,8 @@ export interface IRunnerHandlebarsContext {
     /** Office.js URL, or empty */
     officeJS: string;
 
-    /** return url (for back button / errors), or empty */
+    /** return url (for back button / errors), or empty
+     * (in which case will come up with default editor URL, using host & id as guide) */
     returnUrl: string;
 
     strings: ServerStrings;
@@ -36,8 +39,6 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface IErrorHandlebarsContext {
-    origin: string;
-    assets: { [key: string]: any };
     title: string;
     message: string;
     details: string;
@@ -62,4 +63,12 @@ export interface IReadmeHandlebarsContext {
     exportedOn: string;
     isAddin: boolean;
     addinOrWebpage: 'Add-in' | 'webpage';
+}
+
+export interface ITryItHandlebarsContext {
+    host: string;
+    pageTitle: string;
+    initialLoadSubtitle: string;
+    editorTryItUrl: string;
+    wacUrl: string;
 }

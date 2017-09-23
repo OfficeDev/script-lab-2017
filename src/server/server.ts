@@ -1,23 +1,28 @@
 import * as fs from 'fs';
+import * as unzip from 'unzip';
+import * as xml2js from 'xml2js-parser';
 import * as https from 'https';
+// If want to debug locally on http, comment out the above and use:
+// import * as http from 'http';
 import * as path from 'path';
+import * as rimraf from 'rimraf';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as Request from 'request';
 import * as Archiver from 'archiver';
-import { isString, forIn, isNil } from 'lodash';
+import { isString, forIn, isNil, isPlainObject } from 'lodash';
 import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
-import { Strings, ServerStrings, getExplicitlySetDisplayLanguageOrNull } from './strings';
-import { loadTemplate } from './core/template.generator';
+import { Strings, getExplicitlySetDisplayLanguageOrNull } from './strings';
+import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.generator';
 import { SnippetGenerator } from './core/snippet.generator';
 import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
-    IRunnerHandlebarsContext, ISnippetHandlebarsContext
+    IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -29,11 +34,17 @@ const currentConfig = config[env] as IEnvironmentConfig;
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
+let scriptLabVersionNumber;
+const SCRIPT_LAB_STORE_URL = 'https://store.office.com/app/query?type=5&cmo=en-US&rt=xml';
+const SCRIPT_LAB_STORE_ID = 'wa104380862';
+
+const ONE_HOUR_MS = 3600000;
+const THREE_HOUR_MS = 10800000;
 
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
-const otherValidHosts = ['WEB'];
+
 const officeHostToManifestTypeMap = {
     'EXCEL': 'Workbook',
     'WORD': 'Document',
@@ -47,15 +58,61 @@ function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
 }
 
-let assetPaths;
-function getAssetPaths(): { [key: string]: string } {
-    if (!assetPaths) {
-        let data = fs.readFileSync(path.resolve(__dirname, 'assets.json'));
-        assetPaths = JSON.parse(data.toString());
+
+let generatedDirectories = {};
+/* Cleans up generated template directories */
+setInterval(() => {
+    let ids = Object.keys(generatedDirectories);
+    for (let id of ids) {
+        let directoryInfo = generatedDirectories[id];
+        let now = (new Date()).getTime();
+        // If generated file is more than an hour old and isn't being read, delete it from both server and map to clean up clutter
+        if (directoryInfo && !directoryInfo.isBeingRead && (now - directoryInfo.timestamp) > ONE_HOUR_MS) {
+            delete generatedDirectories[id];
+            fs.unlink(directoryInfo.name, (err) => {
+                if (err) {
+                    ai.trackException('File deletion failed', { name: directoryInfo.name });
+                }
+            });
+        }
+    }
+}, ONE_HOUR_MS);
+
+/* Cleans up lurker template directories that may not have been deleted by above function (perhaps due to server restart) */
+setInterval(() => {
+    let filenames: string[] = [];
+    for (let id of Object.keys(generatedDirectories)) {
+        filenames.push(generatedDirectories[id].relativeFilePath);
     }
 
-    return assetPaths;
-}
+    fs.readdir(path.resolve(__dirname, 'working'), (err, files) => {
+        if (err) {
+            ai.trackException('Error reading directory', err);
+            return;
+        }
+        ai.trackEvent('Number of generated files left to be deleted', { numFiles: `${files.length}` });
+
+        files.forEach(file => {
+            let relativePath = `working/${file}`;
+            let absolutePath = path.resolve(__dirname, relativePath);
+            if (filenames.indexOf(relativePath) < 0) {
+                fs.stat(absolutePath, (err, stat) => {
+                    let now = (new Date()).getTime();
+                    // Delete all directories older than three hours and all files older than three hours that are not in map
+                    if ((now - stat.mtime.getMilliseconds()) > THREE_HOUR_MS) {
+                        if (stat.isDirectory()) {
+                            rimraf(absolutePath, () => { });
+                        } else {
+                            fs.unlink(absolutePath, (err) => {
+                                ai.trackException('File deletion failed', { name: absolutePath });
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+}, 12540000); /* 209 minutes in ms; chosen to avoid clash with above interval*/
 
 /**
  * Server CERT and PORT configuration
@@ -69,6 +126,9 @@ else {
         cert: fs.readFileSync(path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'))
     };
     https.createServer(cert, app).listen(3200, () => console.log('Playground server running on 3200'));
+
+    // TO DEBUG LOCALLY, comment out the above, and instead use
+    // http.createServer(app).listen(3200, () => console.log('Playground server running on 3200'));
 }
 
 app.use(cookieParser());
@@ -77,6 +137,15 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors());
 app.use('/favicon', express.static('favicon'));
 
+// Return just the regular runner page on the following routes:
+registerRoute('get', ['/', '/run', '/compile', '/compile/page', '/compile/snippet'],
+    (req, res) => runCommon({
+        host: null,
+        id: null,
+        query: req.query,
+        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+    }, Strings(req), res)
+);
 
 /**
  * HTTP GET: /run
@@ -84,70 +153,18 @@ app.use('/favicon', express.static('favicon'));
  * Required:
  *   - host
  *   - id
- *
  * Optional query parameters:
  *   - officeJS: Office.js reference (to allow switching between prod and beta, minified vs release)
  *               If not specified, default production Office.js will be assumed for Office snippets.
  */
-registerRoute('get', '/run/:host/:id', (req, res) => {
-    const host = (req.params.host as string).toUpperCase();
-    const id = (req.params.id as string || '').toLowerCase();
-    const strings = Strings(req);
-
-    if (officeHosts.indexOf(host) < 0 && otherValidHosts.indexOf(host) < 0) {
-        throw new BadRequestError(`${strings.invalidHost} "${host}"`);
-    }
-    if (isNil(id)) {
-        throw new BadRequestError(`${strings.invalidId} "${id}"`);
-    }
-
-    // NOTE: using Promise-based code instead of async/await
-    // to avoid unhandled exception-pausing on debugging.
-    return loadTemplate<IRunnerHandlebarsContext>('runner')
-        .then(runnerHtmlGenerator => {
-            const html = runnerHtmlGenerator({
-                snippet: {
-                    id: id
-                },
-                officeJS: determineOfficeJS(req.query, host),
-                returnUrl: '',
-                origin: currentConfig.editorUrl,
-                host: host,
-                assets: getAssetPaths(),
-                initialLoadSubtitle: strings.loadingSnippetDotDotDot,
-                headerTitle: '',
-                strings,
-                explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
-            });
-
-            res.setHeader('Cache-Control', 'no-cache, no-store');
-            return res.contentType('text/html').status(200).send(html);
-        });
-
-    /**
-     * Helper function to return the OfficeJS URL (from query parameter,
-     * or from guessing based on host), or empty string
-     **/
-    function determineOfficeJS(query: any, host: string): string {
-        const queryParamsLowercase: { officejs: string } = <any>{};
-        forIn(query as { [key: string]: string },
-            (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
-
-        if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
-            return queryParamsLowercase.officejs.trim();
-        }
-
-        if (isOfficeHost(host.toUpperCase())) {
-            // Assume a production Office.js for the Office products --
-            // and worse case (e.g., if targeting Beta, or debug version),
-            // the runner will just force a refresh after the page has loaded
-            return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
-        }
-
-        return '';
-    }
-});
-
+registerRoute('get', ['/run/:host', '/run/:host/:id'],
+    (req, res) => runCommon({
+        host: req.params.host,
+        id: req.params.id,
+        query: req.query,
+        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+    }, Strings(req), res)
+);
 
 /**
  * HTTP POST: /auth
@@ -155,7 +172,7 @@ registerRoute('get', '/run/:host/:id', (req, res) => {
  */
 registerRoute('post', '/auth/:user', (req, res) => {
     const { code, state } = req.body;
-    const { user } = req.params;
+    const { user } = massageParams<{ user: string }>(req);
     const strings = Strings(req);
 
     if (code == null) {
@@ -175,7 +192,7 @@ registerRoute('post', '/auth/:user', (req, res) => {
             },
             json: {
                 client_id: clientId,
-                client_secret: secrets ? secrets[env] : '',
+                client_secret: getClientSecret(),
                 redirect_uri: editorUrl,
                 code,
                 state
@@ -202,12 +219,103 @@ registerRoute('post', '/auth/:user', (req, res) => {
  */
 registerRoute('post', '/compile/snippet', compileCommon);
 
-
 /**
  * HTTP POST: /compile/page
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
 registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
+
+// Also include "get" routes for the "compile" pages, so that a refresh on the page works:
+
+
+registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
+    const params = massageParams<{ host: string, type: string, id: string, filename: string }>(req);
+
+    let relativePath, templateName;
+    switch (params.host.toUpperCase()) {
+        case 'EXCEL':
+            relativePath = 'xl';
+            templateName = 'excel-template';
+            break;
+        case 'WORD':
+            relativePath = 'word';
+            templateName = 'word-template';
+            break;
+        case 'POWERPOINT':
+            relativePath = 'ppt';
+            templateName = 'powerpoint-template';
+            break;
+        default:
+            throw new Error(`Unsupported host: ${params.host}`);
+    }
+
+    const correlationId = req.query.correlationId;
+    let directoryInfo = generatedDirectories[correlationId];
+    // Check if file already exists on server for correlation id
+    if (directoryInfo) {
+        directoryInfo.isBeingRead = true;
+        fs.createReadStream(directoryInfo.name).pipe(res);
+        res.attachment(params.filename);
+        res.on('finish', () => {
+            directoryInfo.isBeingRead = false;
+        });
+    } else {
+        return getVersionNumber()
+            .then(versionNumber => {
+                let timestamp = (new Date()).getTime();
+                let relativeFilePath = `working/${templateName}${timestamp}`;
+                let extractDirName = path.resolve(__dirname, relativeFilePath);
+                let zip = fs.createReadStream(path.resolve(__dirname, `${templateName}.zip`)).pipe(unzip.Extract({ path: extractDirName }));
+
+                zip.on('close', () => {
+                    let xmlFileName = `${extractDirName}/${relativePath}/webextensions/webextension1.xml`;
+                    (new Promise<string>((resolve, reject) => {
+                        fs.readFile(xmlFileName, (err, data) => {
+                            if (err) {
+                                throw (err);
+                            } else {
+                                let xmlStringData = data.toString();
+                                xmlStringData = xmlStringData
+                                    .replace('%placeholder_version%', versionNumber)
+                                    .replace('%placeholder_type%', params.type)
+                                    .replace('%placeholder_id%', params.id)
+                                    .replace('%placeholder_correlation_id%', correlationId);
+                                return resolve(xmlStringData);
+                            }
+                        });
+                    }))
+                        .then(xmlStringData => {
+                            fs.writeFile(xmlFileName, xmlStringData, (err) => {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                let zipFileName = `${extractDirName}.zip`;
+                                let writeZipFile = fs.createWriteStream(zipFileName);
+                                writeZipFile.on('finish', () => {
+                                    rimraf(extractDirName, () => { });
+                                    res.attachment(params.filename);
+                                    fs.createReadStream(zipFileName).pipe(res);
+                                    res.on('finish', () => {
+                                        generatedDirectories[correlationId] = {
+                                            name: zipFileName,
+                                            relativeFilePath: `${relativeFilePath}.zip`,
+                                            isBeingRead: false,
+                                            timestamp
+                                        };
+                                    });
+                                });
+
+                                const archiver = Archiver('zip');
+                                archiver.pipe(writeZipFile);
+                                archiver.directory(extractDirName, '');
+                                archiver.finalize();
+                            });
+                        });
+                });
+            });
+    }
+});
 
 registerRoute('post', '/export', (req, res) => {
     const data: IExportState = JSON.parse(req.body.data);
@@ -250,13 +358,35 @@ registerRoute('post', '/export', (req, res) => {
         });
 });
 
+registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) => {
+    const params = massageParams<{ host: string, type: string, id: string }>(req);
+    if (!params.host) {
+        params.host = 'EXCEL';
+    }
 
-/** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
-registerRoute('get', '/', (req, res) => {
-    const strings = Strings(req);
-    throw new InformationalError(
-        strings.scriptLabRunner,
-        strings.getGoBackToEditor(currentConfig.editorUrl));
+    let editorTryItUrl = `${currentConfig.editorUrl}/?tryIt=true`;
+    if (req.query.wacUrl) {
+        editorTryItUrl += `&wacUrl=${decodeURIComponent(req.query.wacUrl)}`;
+    }
+    editorTryItUrl += `#/edit/${params.host}`;
+
+    if (params.type && params.id) {
+        editorTryItUrl += `/${params.type}/${params.id}`;
+    }
+
+    return loadTemplate<ITryItHandlebarsContext>('try-it')
+        .then(tryItGenerator => {
+            const html = tryItGenerator({
+                host: params.host,
+                pageTitle: Strings(req).tryItPageTitle,
+                initialLoadSubtitle: Strings(req).playgroundTagline,
+                editorTryItUrl: editorTryItUrl,
+                wacUrl: decodeURIComponent(req.query.wacUrl || '')
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
 });
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
@@ -273,12 +403,24 @@ registerRoute('get', '/version', (req, res) => {
     );
 });
 
+/** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
+registerRoute('get', '/snippet/auth', (req, res) => {
+    return loadTemplate('snippet-auth')
+        .then(authGenerator => {
+            const html = authGenerator({});
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
+});
+
 
 // HELPERS
 
 function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
+    let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
     const strings = Strings(req);
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
@@ -303,13 +445,12 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
                     snippet: {
                         id: snippet.id,
                         lastModified: snippet.modified_at,
-                        content: html
+                        content: Buffer.from(html).toString('base64')
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
-                    origin: snippet.origin,
                     host: snippet.host,
-                    assets: getAssetPaths(),
+                    isTrustedSnippet,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
@@ -319,7 +460,114 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
 
             timer.stop();
             res.setHeader('Cache-Control', 'no-cache, no-store');
+            res.setHeader('X-XSS-Protection', '0');
             res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
+        });
+}
+
+function runCommon(
+    options: {
+        /** host, may be null */
+        host: string;
+        /** id, may be null */
+        id: string;
+        /** query string, may be null */
+        query: { [key: string]: string };
+        /** language, may be null */
+        explicitlySetDisplayLanguageOrNull: string;
+    },
+    strings: ServerStrings,
+    res: express.Response
+) {
+    let { host, id } = massageParams<{ host: string, id: string }>(options);
+    id = id || '';
+    host = host || '';
+    options.query = options.query || {};
+
+    // NOTE: using Promise-based code instead of async/await
+    // to avoid unhandled exception-pausing on debugging.
+    return loadTemplate<IRunnerHandlebarsContext>('runner')
+        .then(runnerHtmlGenerator => {
+            const html = runnerHtmlGenerator({
+                snippet: {
+                    id: id
+                },
+                officeJS: determineOfficeJS(options.query, host),
+                returnUrl: '',
+                host: host,
+                isTrustedSnippet: false, /* Default to snippet not being trusted */
+                initialLoadSubtitle: strings.playgroundTagline,
+                headerTitle: strings.scriptLabRunner,
+                strings,
+                explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull
+            });
+
+            res.setHeader('Cache-Control', 'no-cache, no-store');
+            return res.contentType('text/html').status(200).send(html);
+        });
+
+    /**
+     * Helper function to return the OfficeJS URL (from query parameter,
+     * or from guessing based on host), or empty string
+     **/
+    function determineOfficeJS(query: { [key: string]: string }, host: string): string {
+        const queryParamsLowercase: { officejs: string } = <any>{};
+        forIn(query, (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
+
+        if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
+            return queryParamsLowercase.officejs.trim();
+        }
+
+        if (isOfficeHost(host.toUpperCase())) {
+            // Assume a production Office.js for the Office products --
+            // and worse case (e.g., if targeting Beta, or debug version),
+            // the runner will just force a refresh after the page has loaded
+            return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+        }
+
+        return '';
+    }
+}
+
+function parseXmlString(xml): Promise<JSON> {
+    return new Promise((resolve, reject) => {
+        xml2js.parseString(xml, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+function getVersionNumber(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        return Request.post({
+            url: SCRIPT_LAB_STORE_URL,
+            body: SCRIPT_LAB_STORE_ID,
+        }, (error, httpResponse, body) => {
+            if (error) {
+                ai.trackException('[Snippet] Get version number failed', error);
+                return reject(error);
+            }
+            else {
+                ai.trackEvent('[Snippet] Get version number succeeded', { body });
+                return resolve(body);
+            }
+        });
+    })
+        .then(xml => (parseXmlString(xml)))
+        .then(xmlJson => {
+            scriptLabVersionNumber = xmlJson['o:results']['o:wainfo'][0]['$']['o:ver'];
+            return scriptLabVersionNumber;
+        })
+        .catch(e => {
+            if (!isNil(scriptLabVersionNumber)) {
+                /* return previously retrieved version if web request fails */
+                return scriptLabVersionNumber;
+            }
+            throw (e);
         });
 }
 
@@ -350,7 +598,11 @@ function generateSnippetHtmlData(
                     ...compiledSnippetOrError,
                     isOfficeSnippet: isOfficeHost(snippet.host),
                     isExternalExport: isExternalExport,
-                    strings
+                    strings,
+                    runtimeHelpersUrl: getRuntimeHelpersUrl(),
+                    editorUrl: currentConfig.editorUrl,
+                    runtimeHelperStringifiedStrings: JSON.stringify(
+                        strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
                 };
 
                 const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
@@ -473,11 +725,82 @@ async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<
     }
 
     return errorHtmlGenerator({
-        origin: currentConfig.editorUrl,
-        assets: getAssetPaths(),
         title,
         message,
         details,
         expandDetailsByDefault
     });
+}
+
+let _defaultHandlebarsContext: IDefaultHandlebarsContext;
+function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
+    if (!_defaultHandlebarsContext) {
+        let versionedPackageNames = getFileAsJson('versionPackageNames.json');
+        _defaultHandlebarsContext = {
+            origin: currentConfig.editorUrl,
+            assets: getFileAsJson('assets.json'),
+            versionedPackageNames_office_ui_fabric_js: versionedPackageNames['office-ui-fabric-js'],
+            versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom']
+        };
+    }
+
+    return _defaultHandlebarsContext;
+
+    function getFileAsJson(filename) {
+        return JSON.parse(fs.readFileSync(path.resolve(__dirname, filename)).toString());
+    }
+}
+
+function loadTemplate<T>(templateName: string) {
+    return loadTemplateHelper<T>(templateName, getDefaultHandlebarsContext());
+}
+
+let _runtimeHelpersUrl;
+function getRuntimeHelpersUrl() {
+    if (!_runtimeHelpersUrl) {
+        let assetPaths = getDefaultHandlebarsContext().assets;
+        // Some assets, like the runtime helpers, are not compiled with webpack.
+        // Instead, they are manually copied, and end up with no hash.
+        // So, to guarantee their freshness, use the runner hash (once per deployment)
+        // as a good approximation for when it's time to get a new version.
+        let runnerHashIfAny: string;
+        let runnerHashPattern = /^bundles\/runner\.(\w*)\.bundle.js/;
+        let runnerHashMatch = runnerHashPattern.exec(assetPaths.runner.js);
+        if (runnerHashMatch && runnerHashMatch.length === 2) {
+            runnerHashIfAny = runnerHashMatch[1];
+        }
+
+        _runtimeHelpersUrl = currentConfig.editorUrl + '/runtime-helpers.js' +
+            (runnerHashIfAny ? ('?hash=' + runnerHashIfAny) : '');
+    }
+
+    return _runtimeHelpersUrl;
+}
+
+function getClientSecret() {
+    if (currentConfig.name === 'LOCAL') {
+        return (currentConfig as ILocalHostEnvironmentConfig).clientSecretLocalHost;
+    };
+
+    return secrets ? secrets[env] : '';
+}
+
+/** Returns the params as a typed object, with "host" always capitalized, and "id" always lowercase */
+function massageParams<T>(req: express.Request): T;
+function massageParams<T>(params: { [key: string]: any }): T;
+function massageParams<T>(input) {
+    let params: { host?: string, id?: string } =
+        isPlainObject(input)
+            ? input
+            : (input as express.Request).params;
+
+    if (params.host) {
+        params.host = params.host.toUpperCase();
+    }
+
+    if (params.id) {
+        params.id = params.id.toLowerCase();
+    }
+
+    return params as T;
 }

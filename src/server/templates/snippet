@@ -41,6 +41,12 @@
     <!-- HTML -->
     {{{indent template 1}}}
 
+    <!-- ScriptLab-Specific Runtime Helpers -->
+    <script src="{{{runtimeHelpersUrl}}}"></script>
+    <script>
+        ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
+    </script>
+    
     <!-- JS Libraries -->
     {{#each scriptReferences}}
     <script crossorigin="anonymous" src="{{this}}"></script>
@@ -52,7 +58,7 @@
         {{else}}
         {{!-- It appears that doing document.body.onload from the runner can sometimes be --}}
         {{!-- unreliable and fail to fire. So, do a safer (albeit polluting) approach --}}
-        try { window.parent.scriptRunnerBeginInit(); } catch (e) { /* ignore*/ }
+        window.parent.scriptRunnerBeginInit();
 
         {{/if}}
         {{#if officeJS}}
@@ -65,7 +71,7 @@
 
         {{#if isExternalExport}}
         {{else}}
-        try { window.parent.scriptRunnerEndInit(); } catch (e) { /* ignore*/ }
+        window.parent.scriptRunnerEndInit();
         {{/if}}
     </script>
 </body>

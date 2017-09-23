@@ -2,11 +2,14 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { AI, storage } from '../helpers';
+import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } from '../helpers';
+import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
+import { Subscription } from 'rxjs/Subscription';
 import { isEmpty } from 'lodash';
 
-//strings are specified inline (not imported) for performance reasons
+const SNIPPET_TO_IMPORT_PROPERTY_NAME = 'SnippetToImport';
+const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,25 +79,9 @@ import { isEmpty } from 'lodash';
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
                         <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
-                        <div *ngIf="showImportWarning" class="ms-MessageBar ms-MessageBar--severeWarning">
-                            <div class="ms-MessageBar-content">
-                                <div class="ms-MessageBar-icon">
-                                    <i class="ms-Icon ms-Icon--Warning"></i>
-                                </div>
-                                <div class="ms-MessageBar-text">
-                                    {{strings.importWarning}}
-                                    <br />
-                                    <a href="javascript:void(0);" (click)="hideImportWarning()" class="ms-Link">{{strings.importWarningAction}}</a> 
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ms-TextField import__field">
-                            <label class="ms-Label">{{strings.importUrlLabel}}</label>
-                            <input class="ms-TextField-field" type="text" [(ngModel)]="url" placeholder="{{strings.importUrlPlaceholder}}" >
-                        </div>
                         <div class="ms-TextField ms-TextField--multiline import__field">
-                            <label class="ms-Label">{{strings.importYamlLabel}}</label>
-                            <textarea [(ngModel)]="snippet" class="ms-TextField-field"></textarea>
+                            <label class="ms-Label">{{strings.importUrlOrYamlLabel}}</label>
+                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}" ></textarea>
                         </div>
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
@@ -111,52 +98,63 @@ import { isEmpty } from 'lodash';
 })
 export class Import {
     view = 'snippets';
-    url: string;
-    snippet: string;
+    urlOrSnippet: string;
     showLocalStorageWarning: boolean;
-    showImportWarning: boolean;
     activeSnippetId: string;
 
     strings = Strings();
 
-    constructor(private _store: Store<fromRoot.State>) {
+    private snippetSub: Subscription;
+
+    constructor(
+        private _request: Request,
+        private _store: Store<fromRoot.State>
+    ) {
+        trustedSnippetManager.cleanUpTrustedSnippets();
         this._store.dispatch(new Snippet.LoadSnippetsAction());
         this._store.dispatch(new Snippet.LoadTemplatesAction());
-        this._store.dispatch(new GitHub.LoadGistsAction());
 
-        this._store.select(fromRoot.getCurrent)
+        this.snippetSub = this._store.select(fromRoot.getCurrent)
             .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
             .filter(snippet => snippet == null)
-            .subscribe(() => this._store.dispatch(new UI.ToggleImportAction(true)));
+            .subscribe(() => {
+                this._store.dispatch(new UI.ToggleImportAction(true));
+            });
 
         this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
-        this.showImportWarning = !(storage.settings.get('disableImportWarning') as any === true);
+
+        if (this.documentHasSnippetToImportSetting) {
+            this.importInDocumentSnippet();
+        }
     }
 
     show$ = this._store.select(fromRoot.getImportState);
     templates$ = this._store.select(fromRoot.getTemplates);
     gists$ = this._store.select(fromRoot.getGists);
     isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
+
     snippets$ = this._store.select(fromRoot.getSnippets)
         .map(snippets => {
             if (isEmpty(snippets)) {
-                this.switch();
+                this.switch('samples');
                 this._store.dispatch(new UI.ToggleImportAction(true));
             }
             return snippets;
         });
+
+    ngOnDestroy() {
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
+    }
 
     hideLocalStorageWarning() {
         this.showLocalStorageWarning = false;
         storage.settings.insert('disableLocalStorageWarning', true as any);
     }
 
-    hideImportWarning() {
-        this.showImportWarning = false;
-        storage.settings.insert('disableImportWarning', true as any);
-    }
-
-    switch(view = 'samples') {
+    /* Switch to a particular view (snippets, samples, import wizard) of the import screen */
+    switch(view: string) {
         AI.trackPageView(view, `/import/${view}`).stop();
         this.view = view;
     }
@@ -177,13 +175,8 @@ export class Import {
                 break;
 
             case 'import':
-                if (this.url) {
-                    mode = Snippet.ImportType.URL;
-                }
-                else {
-                    mode = Snippet.ImportType.YAML;
-                }
-                data = this.url || this.snippet;
+                mode = Snippet.ImportType.URL_OR_YAML;
+                data = this.urlOrSnippet;
                 break;
 
             case 'samples':
@@ -198,7 +191,9 @@ export class Import {
 
         data = data.trim();
 
-        this._store.dispatch(new Snippet.ImportAction(mode, data));
+        this._store.dispatch(new Snippet.ImportAction({
+            mode: mode, data: data, saveToLocalStorage: this.view !== 'samples', isReadOnlyViewMode: false
+        }));
         this.cancel();
     }
 
@@ -207,11 +202,60 @@ export class Import {
     }
 
     new() {
-        this._store.dispatch(new Snippet.ImportAction(Snippet.ImportType.DEFAULT));
+        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.DEFAULT, data: null, saveToLocalStorage: true, isReadOnlyViewMode: false }));
         this._store.dispatch(new UI.ToggleImportAction(false));
     }
 
     cancel() {
         this._store.dispatch(new UI.ToggleImportAction(false));
+    }
+
+    get documentHasSnippetToImportSetting(): boolean {
+        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(SNIPPET_TO_IMPORT_PROPERTY_NAME);
+    }
+
+    async importInDocumentSnippet(): Promise<void> {
+        let commonImportActionParams = {
+            saveToLocalStorage: false /* Just like samples, don't save until user makes an edit */,
+            isReadOnlyViewMode: false,
+            onSuccess: () => {
+                this._store.dispatch(new UI.ToggleImportAction(false));
+                Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
+                Office.context.document.settings.remove(SNIPPET_TO_IMPORT_PROPERTY_NAME);
+                Office.context.document.settings.saveAsync();
+            }
+        };
+
+        let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);
+        let viewData = Office.context.document.settings.get(SNIPPET_TO_IMPORT_PROPERTY_NAME);
+
+        if (viewData.type === 'samples') {
+            let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
+            let onError = error => this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet, error));
+            let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
+                .subscribe(lookupTable => {
+                    if (lookupTable && lookupTable[viewData.id]) {
+                        this._store.dispatch(new Snippet.ImportAction({
+                            ...commonImportActionParams,
+                            mode: Snippet.ImportType.SAMPLE,
+                            data: lookupTable[viewData.id]
+                        }));
+                    }
+
+                    if (sub && !sub.closed) {
+                        sub.unsubscribe();
+                    }
+                }, onError);
+        }
+        else {
+            // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
+            this._store.dispatch(new Snippet.ImportAction({
+                ...commonImportActionParams,
+                mode: Snippet.ImportType.GIST,
+                data: viewData.id
+            }));
+        }
+
+        AI.trackEvent('Open in playground completed', { id: correlationId });
     }
 }

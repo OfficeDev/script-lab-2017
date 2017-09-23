@@ -7,3 +7,4 @@ export * from './storage';
 export * from './environment';
 export * from './messenger';
 export * from './snippet.helper';
+export * from './trusted.snippet.helper';

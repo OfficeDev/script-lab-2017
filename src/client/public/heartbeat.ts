@@ -1,5 +1,5 @@
 import { toNumber } from 'lodash';
-import { environment, storage, Messenger, MessageType } from '../app/helpers';
+import { environment, storage, Messenger, MessageType, trustedSnippetManager } from '../app/helpers';
 import { Strings } from '../app/strings';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
@@ -14,7 +14,22 @@ import { Authenticator } from '@microsoft/office-js-helpers';
     (async () => {
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
-        await environment.initialize(params.host);
+        // Can do partial initialization, since host is guaranteed to be known
+        await environment.initializePartial({ host: params.host });
+
+        // In case the params have had a different runner URL passed in, update the environment config.
+        // Note that for reasons unbeknown, just updating the environment *even with the same URL*
+        // Is causing Internet Explorer, at least within an Office Add-in, to throw "SecurityError"-s.
+        // So, only doing the update if needed (the only use-case today for different runner URLs
+        // is outside the add-in anyway)
+        if (params.runnerUrl && environment.current.config.runnerUrl !== params.runnerUrl) {
+            environment.appendCurrent({
+                config: {
+                    ...environment.current.config,
+                    runnerUrl: params.runnerUrl
+                }
+            });
+        }
 
         messenger = new Messenger(environment.current.config.runnerUrl);
         setupRequestReloadListener(messenger);
@@ -30,7 +45,9 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         });
 
         if (trackingSnippet.lastModified === 0) {
-            sendBackCurrentSnippet(true /*settingsAreFresh: true because just loaded the page*/);
+            sendBackCurrentSnippet(
+                true /*settingsAreFresh: true because just loaded the page*/,
+                false /*isTrustedSnippet: only trust snippet through user action*/);
         }
 
         storage.snippets.notify().subscribe(validateSnippet);
@@ -54,10 +71,12 @@ import { Authenticator } from '@microsoft/office-js-helpers';
         }
 
         // If haven't quit yet, validate and inform (or send back) current snippet:
-        sendBackCurrentSnippet(false /*settingsAreFresh: not fresh, will need to reload*/);
+        sendBackCurrentSnippet(
+            false /*settingsAreFresh: not fresh, will need to reload*/,
+            false /*isTrustedSnippet: only trust snippet through user action*/);
     }
 
-    function sendBackCurrentSnippet(settingsAreFresh: boolean) {
+    function sendBackCurrentSnippet(settingsAreFresh: boolean, isTrustedSnippet: boolean) {
         if (!settingsAreFresh) {
             storage.snippets.load();
         }
@@ -99,6 +118,11 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             return;
         }
 
+        // Upon user trusting snippet, update in local storage
+        if (isTrustedSnippet) {
+            trustedSnippetManager.trustSnippet(snippet.id);
+        }
+
         if (snippet.modified_at !== trackingSnippet.lastModified) {
             // If was already tracking the snippet and had a real lastModified number set,
             // inform the user that the snippet is stale.  Otherwise, just send it immediately.
@@ -106,9 +130,10 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             const sendImmediately = trackingSnippet.lastModified < 1;
             if (sendImmediately) {
                 trackingSnippet.lastModified = snippet.modified_at;
-                messenger.send(window.parent, MessageType.REFRESH_RESPONSE, snippet);
+                isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
+                messenger.send(window.parent, MessageType.REFRESH_RESPONSE, { snippet: snippet, isTrustedSnippet: isTrustedSnippet });
             } else {
-                messenger.send<{name: string}>(window.parent, MessageType.INFORM_STALE, {
+                messenger.send<{ name: string }>(window.parent, MessageType.INFORM_STALE, {
                     name: snippet.name
                 });
             }
@@ -116,18 +141,18 @@ import { Authenticator } from '@microsoft/office-js-helpers';
     }
 
     function setupRequestReloadListener(messenger: Messenger) {
-        messenger.listen<string>()
+        messenger.listen<{ id: string, isTrustedSnippet: boolean }>()
             .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
             .subscribe((input) => {
                 trackingSnippet = {
-                    id: input.message,
+                    id: input.message.id,
                     lastModified: 0 /* Set to last modified, so that refreshes immediately */
                 };
 
 
                 // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
                 // will be sure to send the last-opened snippet if the ID is empty
-                sendBackCurrentSnippet(false /*settingsAreFresh*/);
+                sendBackCurrentSnippet(false /*settingsAreFresh*/, input.message.isTrustedSnippet);
             });
     }
 

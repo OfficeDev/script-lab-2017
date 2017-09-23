@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
-import { BadRequestError } from './errors';
+import { BadRequestError, InformationalError } from './errors';
 import { processLibraries } from './libraries.processor';
-import { ServerStrings } from '../strings';
 
 export class SnippetGenerator {
     constructor(private _strings: ServerStrings) { }
@@ -25,7 +24,6 @@ export class SnippetGenerator {
                     description: snippet.description,
                     host: snippet.host,
                     platform: snippet.platform,
-                    origin: snippet.origin,
                     created_at: snippet.created_at,
                     modified_at: snippet.modified_at,
                     style: snippet.style.content,
@@ -59,7 +57,7 @@ export class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new BadRequestError(
+                    throw new InformationalError(
                         this._strings.getSyntaxErrorsTitle(result.diagnostics.length),
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);

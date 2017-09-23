@@ -12,17 +12,26 @@ import { createFakeStrings, getStrings } from './common';
 import { getEnglishStrings } from './english';
 import { getGermanStrings } from './german';
 import { getSpanishStrings } from './spanish';
+import { getChineseSimplifiedStrings } from './chinese-simplified';
 
 const languageGenerator: { [key: string]: () => ServerStrings } = {
     'en': () => getEnglishStrings(),
     'de': () => getGermanStrings(),
     'es': () => getSpanishStrings(),
+    'zh-cn': () => getChineseSimplifiedStrings(),
     '??': () => createFakeStrings(() => getEnglishStrings())
 };
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
+/** Function for use in non-English files, acting as a marker for text that still needs to be translated.
+ * We are not using "getEnglishStrings()" directly to avoid an extra import in the other files,
+ * and so that it's semantically clear that there are missing translations left.
+ */
+export function getEnglishSubstitutesForNotYetTranslated() {
+    return getEnglishStrings();
+}
 
 export function Strings(language: string): ServerStrings;
 export function Strings(req: express.Request): ServerStrings;
@@ -60,43 +69,4 @@ function getDisplayLanguage(req: express.Request): string {
     return getExplicitlySetDisplayLanguageOrNull(req) ||
         req.acceptsLanguages(keys(languageGenerator)) as string ||
         'en';
-}
-
-export interface ServerStrings {
-    error: string;
-    unexpectedError: string;
-    invalidHost: string;
-    invalidId: string;
-    receivedInvalidAuthCode: string;
-    failedToAuthenticateUser: string;
-    receivedInvalidSnippetData: string;
-    unrecognizedScriptLanguage: string;
-    line: string;
-
-    getLoadingSnippetSubtitle(snippetName: string): string;
-    loadingSnippetDotDotDot: string;
-    getSyntaxErrorsTitle(count: number): string
-
-    getGoBackToEditor(editorUrl: string): string
-
-    createdWithScriptLab: string;
-
-    scriptLabRunner: string;
-    versionInfo: string;
-
-    manifestDefaults: {
-        nameIfEmpty: string;
-        descriptionIfEmpty: string;
-    };
-
-    run: string;
-    runPageTitle: string;
-    back: string;
-    switchToSnippet: string;
-    snippetCodeChanged: string;
-    refresh: string;
-    dismiss: string;
-    editingDifferentSnippet1: string;
-    editingDifferentSnippet2: string;
-    loadLatestSnippet: string;
 }
