@@ -1,7 +1,7 @@
 #!/usr/bin/env node --harmony
 
 let path = require('path');
-let fs = require('fs');
+const fs = require('fs-extra');
 let chalk = require('chalk');
 let _ = require('lodash');
 let { build, config } = require('./env.config');
@@ -119,7 +119,7 @@ function deployBuild(url, folder, copyDeployedResourcesUrl) {
         const start = Date.now();
 
         if (copyDeployedResourcesUrl) {
-            buildAssetHistory(copyDeployedResourcesUrl, next_path);
+            buildAssetAndLibHistory(copyDeployedResourcesUrl, next_path);
         }
 
         shell.exec('git init');
@@ -150,10 +150,26 @@ function deployBuild(url, folder, copyDeployedResourcesUrl) {
     }
 }
 
-function buildAssetHistory(url, folder) {
+function buildAssetAndLibHistory(url, folder) {
     shell.exec('git clone ' + url + ' current_build');
     shell.cp('-n', ['current_build/*.js', 'current_build/*.css'], '.');
+
+    let oldLibsPath = path.resolve(folder, 'current_build/libs');
+    let newLibsPath = path.resolve(folder, 'libs');
+
+    for (asset of fs.readdirSync(oldLibsPath)) {
+        let libPath = path.resolve(newAssetsPath, asset);
+        // Check if old assets don't name-conflict
+        if (fs.existsSync(libPath)) {
+            console.log(`The library "${asset}" is already in current build, so skipping copying it from a previous build`);
+        } else {
+            console.log(`Copying "${asset}" from a previous build into the current "libs" folder`);
+            fs.copySync(path.resolve(oldAssetsPath, asset), libPath);
+        }
+    }
+
     let now = (new Date().getTime()) / 1000;
+
     let oldHistoryPath = path.resolve(folder, 'current_build/history.json');
     let newHistoryPath = path.resolve(folder, 'history.json');
     let oldAssetsPath = path.resolve(folder, 'current_build/bundles');
@@ -173,12 +189,7 @@ function buildAssetHistory(url, folder) {
         }
     }
 
-    let existingAssets = [];
-    try {
-        fs.accessSync(oldAssetsPath);
-        existingAssets = fs.readdirSync(oldAssetsPath);
-    } catch(e) {}
-    
+    let existingAssets = fs.readdirSync(oldAssetsPath);
     for (asset of existingAssets) {
         let assetPath = path.resolve(newAssetsPath, asset);
         // Check if old assets don't name-conflict and are less than six months old

@@ -35,6 +35,8 @@ interface InitializationParams {
 
     async function initializeTryItHelper() {
         $(document).ready(() => tryCatch(async () => {
+            setUpResizables();
+
             await environment.initialize({ host: params.host, tryIt: true });
 
             if (!environment.current.wacUrl) {
@@ -64,6 +66,22 @@ interface InitializationParams {
             (OfficeExtension.ClientRequestContext as any)._overrideSession = session;
         }));
     };
+
+    function setUpResizables() {
+        $('.panel.left').resizable({
+            handleSelector: '.splitter.vertical',
+            resizeHeight: false,
+            onDragStart: () => $('iframe').css('pointer-events', 'none'),
+            onDragEnd: $('iframe').css('pointer-events', 'auto')
+        });
+
+        $('.panel.top').resizable({
+            handleSelector: '.splitter.horizontal',
+            resizeWidth: false,
+            onDragStart: () => $('iframe').css('pointer-events', 'none'),
+            onDragEnd: () => $('iframe').css('pointer-events', 'auto')
+        });
+    }
 
     async function tryCatch(callback) {
         try {
