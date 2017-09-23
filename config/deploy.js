@@ -158,7 +158,7 @@ function buildAssetAndLibHistory(url, folder) {
     let newLibsPath = path.resolve(folder, 'libs');
 
     for (asset of fs.readdirSync(oldLibsPath)) {
-        let libPath = path.resolve(newAssetsPath, asset);
+        let libPath = path.resolve(newLibsPath, asset);
         // Check if old assets don't name-conflict
         if (fs.existsSync(libPath)) {
             console.log(`The library "${asset}" is already in current build, so skipping copying it from a previous build`);
