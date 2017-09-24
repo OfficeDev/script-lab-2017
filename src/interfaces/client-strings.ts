@@ -17,6 +17,7 @@ interface ClientStringsPerLanguage {
     close: string;
     about: string;
     feedback: string;
+    error: string;
     errors: string;
     dismiss: string;
 
@@ -105,6 +106,8 @@ interface ClientStringsPerLanguage {
     aboutCurrentEnvironment: string;
     aboutSwitchEnvironment: string;
     changeEnvironmentConfirm: string;
+    showExperimentationFlags: string;
+    invalidExperimentationFlags: string;
 
     //snippet.info.ts
     snippetInfoDialogTitle: string;
@@ -188,6 +191,8 @@ interface ClientStringsPerLanguage {
     importUrlOrYamlLabel: string;
     exampleAbbreviation: string;
 
+    pleaseWait: string;
+    scriptLabIsReloading: string;
     unexpectedError: string;
 
     Refresh: {
