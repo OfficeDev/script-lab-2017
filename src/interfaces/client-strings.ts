@@ -28,6 +28,8 @@ interface ClientStringsPerLanguage {
     moreInfoButtonLabel: string;
     importButtonLabel: string;
     snippetImportExistingButtonLabel: string;
+    overwriteExistingButtonLabel: string;
+    createNewCopyButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
     failedToLoadCodeSnippet: string,

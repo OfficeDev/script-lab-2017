@@ -31,6 +31,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'More info',
         importButtonLabel: 'Import',
         snippetImportExistingButtonLabel: 'Go to existing snippet',
+        overwriteExistingButtonLabel: 'Overwrite existing snippet',
+        createNewCopyButtonLabel: 'Create a new copy',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
         failedToLoadCodeSnippet: /** NEEDS STRING REVIEW */ 'Failed to load the code snippet.',

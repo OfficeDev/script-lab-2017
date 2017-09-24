@@ -35,6 +35,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
         failedToLoadCodeSnippet: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
