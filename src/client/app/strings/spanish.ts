@@ -36,12 +36,14 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
-        viewModeError: getEnglishSubstitutesForNotYetTranslated().viewModeError,
+        failedToLoadCodeSnippet: getEnglishSubstitutesForNotYetTranslated().failedToLoadCodeSnippet,
 
         snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: 'Error al importar fragmento de código',
         snippetImportErrorTitle: 'Error en importación',
         snippetImportErrorBody: 'No pudimos importar el fragmento de código.',
+        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
+        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
         reloadPrompt: 'Vuelve a cargar este panel e intenta otro URL o ID.',
 
         cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
@@ -117,7 +119,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: 'Descripción del fragmento de código ',
         gistUrlLabel: 'URL del gist',
         gistUrlLinkLabel: 'Abrir en navegador',
-        viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
@@ -204,9 +205,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `Un problema de configuración previno evitó que se cargue el fragmento de código.`,
 
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `No se encontró el fragmento de código. Pudo ser borrado.`,
-
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */
             getTextToAppendToErrorMessage: (returnUrl: string) =>
@@ -222,7 +220,10 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return 'Loading ' + (snippetName ? `"${snippetName}"` : 'fragmento de código');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
+            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
         },
 
         /** Error strings served by the server and displayed in the Error page */

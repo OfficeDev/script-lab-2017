@@ -1,16 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Utilities, PlatformType, HostType } from '@microsoft/office-js-helpers';
+import { HostType } from '@microsoft/office-js-helpers';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { UI, Snippet } from '../actions';
-import { environment, getGistUrl } from '../helpers';
+import { environment, getGistUrl, getHostAppName } from '../helpers';
 import * as fromRoot from '../reducers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
-
-const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 
 @Component({
     selector: 'view-mode',
@@ -20,8 +18,8 @@ const WAC_URL_STORAGE_KEY = 'playground_wac_url';
                 <command class="view-disable" [title]="snippet?.name"></command>
                 <command *ngIf="openInPlaygroundSupported" class="view-playground" [title]="strings.openInPlayground">
                     <command *ngIf="tryItSupported" [title]="strings.openTryIt" (click)="openTryIt()"></command>
-                    <command [title]="openInHostString" (click)="openInPlayground(false)"></command>
-                    <command [title]="downloadAsHostFileString" (click)="openInPlayground(true)"></command>
+                    <command *ngIf="openInHostSupported" [title]="openInHostString" (click)="openInPlayground(false)"></command>
+                    <command *ngIf="downloadAsFileSupported" [title]="strings.downloadAsFile" (click)="openInPlayground(true)"></command>
                 </command>
             </header>
             <editor [isViewMode]="true"></editor>
@@ -34,7 +32,6 @@ const WAC_URL_STORAGE_KEY = 'playground_wac_url';
     `
 })
 
-
 export class ViewMode implements OnInit, OnDestroy {
     strings = Strings();
     snippet: ISnippet;
@@ -42,13 +39,14 @@ export class ViewMode implements OnInit, OnDestroy {
     viewType: string;
     viewId: string;
     displayUrl: string;
+    snippetSub: Subscription;
 
     constructor(
         private _store: Store<fromRoot.State>,
         private _request: Request,
         private _route: ActivatedRoute
     ) {
-        this._store.select(fromRoot.getCurrent).subscribe(snippet => {
+        this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.snippet = snippet;
         });
     }
@@ -63,19 +61,34 @@ export class ViewMode implements OnInit, OnDestroy {
 
     get openInPlaygroundSupported() {
         let host = environment.current.host.toUpperCase();
-        return Utilities.platform !== PlatformType.IOS && (host === HostType.EXCEL || host === HostType.WORD || host === HostType.POWERPOINT);
+        let isSupportedOfficeHost =
+            host === HostType.EXCEL ||
+            host === HostType.WORD ||
+            host === HostType.POWERPOINT;
+        if (!isSupportedOfficeHost) {
+            return false;
+        }
+
+        return this.tryItSupported || this.openInHostSupported || this.downloadAsFileSupported;
     }
 
     get openInHostString() {
-        return this.strings.openInHost.replace('{0}', environment.current.host.toLowerCase());
-    }
-
-    get downloadAsHostFileString() {
-        return this.strings.downloadAsHostFile.replace('{0}', environment.current.host.toLowerCase());
+        return this.strings.openInHost.replace('{0}', getHostAppName(environment.current.host));
     }
 
     get tryItSupported() {
-        return window.localStorage.getItem(WAC_URL_STORAGE_KEY) && environment.current.host.toUpperCase() === HostType.EXCEL;
+        return environment.current.wacUrl &&
+            environment.current.host.toUpperCase() === HostType.EXCEL /* &&
+            FIXME: Ensure not Safari browser */;
+    }
+
+    get openInHostSupported() {
+        return true /* && Ensure Windows OS */;
+    }
+
+    get downloadAsFileSupported() {
+        return !this.openInHostSupported; /* No need to show it twice */
+        /* && FIXME: only Windows or Mac */
     }
 
     get urlString() {
@@ -86,11 +99,9 @@ export class ViewMode implements OnInit, OnDestroy {
         this.paramsSub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
             .mergeMap(({ type, host, id }) => {
-                this.displayUrl = `${environment.current.config.editorUrl}/#/view/${type}/${host}/${id}`;
+                this.displayUrl = `${environment.current.config.editorUrl}/#/view/${host}/${type}/${id}`;
                 if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
-                    environment.current.host = host.toUpperCase();
-                    // Update environment in cache
-                    environment.current = environment.current;
+                    environment.appendCurrent({ host: host.toUpperCase() });
                 }
 
                 this.viewType = type;
@@ -99,20 +110,20 @@ export class ViewMode implements OnInit, OnDestroy {
                 switch (type) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
+                        return this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
                             .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
-                        );
+                            .catch(exception => Observable.of({ lookupTable: null, id: null }));
                     case 'gist':
-                        return Observable.of({ lookupTable: null, id: id});
+                        return Observable.of({ lookupTable: null, id: id });
                     default:
-                        return Observable.of({ lookupTable: null, id: null});
+                        return Observable.of({ lookupTable: null, id: null });
                 }
             })
             .subscribe(({ lookupTable, id }) => {
                 if (lookupTable && lookupTable[id]) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isViewMode: true }));
+                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isReadOnlyViewMode: true, saveToLocalStorage: false }));
                 } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isViewMode: true }));
+                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isReadOnlyViewMode: true, saveToLocalStorage: false }));
                 } else {
                     // Redirect to error page
                     location.hash = '/view/error';
@@ -121,7 +132,12 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.paramsSub.unsubscribe();
+        if (this.paramsSub) {
+            this.paramsSub.unsubscribe();
+        }
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
     }
 
     theme$ = this._store.select(fromRoot.getTheme)
@@ -144,7 +160,11 @@ export class ViewMode implements OnInit, OnDestroy {
     }
 
     openTryIt() {
-        let wacUrl = encodeURIComponent(window.localStorage.getItem(WAC_URL_STORAGE_KEY));
-        window.open(`${environment.current.config.runnerUrl}/try/${this.viewType}/${environment.current.host}/${this.viewId}?wacUrl=${wacUrl}`, '_blank');
+        environment.updateRunnerUrlForWacEmbed();
+
+        const url = `${environment.current.config.runnerUrl}/try/${
+            environment.current.host}/${this.viewType}/${this.viewId}`;
+
+        window.open(url, '_blank');
     }
 }

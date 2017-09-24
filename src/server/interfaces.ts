@@ -21,9 +21,7 @@ export interface IRunnerHandlebarsContext {
         content?: string;
     }
 
-    origin: string;
     host: string;
-    assets: { [key: string]: any };
     isTrustedSnippet: boolean;
 
     initialLoadSubtitle: string;
@@ -32,7 +30,8 @@ export interface IRunnerHandlebarsContext {
     /** Office.js URL, or empty */
     officeJS: string;
 
-    /** return url (for back button / errors), or empty */
+    /** return url (for back button / errors), or empty
+     * (in which case will come up with default editor URL, using host & id as guide) */
     returnUrl: string;
 
     strings: ServerStrings;
@@ -40,8 +39,6 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface IErrorHandlebarsContext {
-    origin: string;
-    assets: { [key: string]: any };
     title: string;
     message: string;
     details: string;
@@ -69,10 +66,9 @@ export interface IReadmeHandlebarsContext {
 }
 
 export interface ITryItHandlebarsContext {
-    title: string;
-    assets: { [key: string]: any };
-    origin: string;
+    host: string;
+    pageTitle: string;
+    initialLoadSubtitle: string;
     editorTryItUrl: string;
-    runnerSnippetUrl: string;
     wacUrl: string;
 }

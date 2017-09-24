@@ -190,7 +190,7 @@ body.OUTLOOK {
 .panel {
 	&.left {
 		flex: 0 0 auto;
-		width: 50%;
+		width: calc(50% - 9px);
 		min-height: 200px;
 		min-width: 200px;
 		white-space: nowrap;
@@ -223,14 +223,14 @@ body.OUTLOOK {
   flex: 0 0 auto;
 
   &.vertical {
-	  background: url('../images/vsplitter.png') center center no-repeat $background-light;
+	  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAhCAQAAABOpSL+AAAAIklEQVR4AWMwbb/PdR+JZDD9f1/oPhI5sgVGBSruc9xHIgGdSQqqQJGkRgAAAABJRU5ErkJggg==') center center no-repeat $background-light;
 	  min-height: 200px;
 	  width: 18px;
 	  cursor: col-resize;
   }
 
   &.horizontal {
-      background: url('../images/hsplitter.png') center center no-repeat $background-light;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAICAQAAADdTl4aAAAAIElEQVQoz2MwrTD9TxFsZ7jPcV+IIsjFQAUw6hFqegQA+xzRHT2p7pEAAAAASUVORK5CYII=') center center no-repeat $background-light;
 	  height: 18px;
 	  cursor: row-resize;
   }
@@ -239,4 +239,6 @@ body.OUTLOOK {
 #editor-frame, #runner-frame, #embed-frame {
 	height: 100% !important;
 	width: 100% !important;
+	outline: none;
+	border: none;
 }

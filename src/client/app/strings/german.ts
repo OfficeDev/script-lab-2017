@@ -36,12 +36,14 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
-        viewModeError: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
+        failedToLoadCodeSnippet: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
 
         snippetGistIdDuplicationError: 'Es existiert bereits ein Schnipsel, das aus dem gleichen GitHub-Gist importiert wurde. Möchten Sie zu diesem Schnipsel wechseln oder eine neue Kopie erstellen?',
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
         snippetImportErrorTitle: 'Importfehler',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
+        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
+        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
         cannotImportSnippetCreatedForDifferentHost:
@@ -122,7 +124,6 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: 'Beschreibung des Schipsels',
         gistUrlLabel: 'GitHub-Gist-URL',
         gistUrlLinkLabel: 'Im Browser öffnen',
-        viewModeGistUrlLabel: getEnglishSubstitutesForNotYetTranslated().viewModeGistUrlLabel,
 
         // Containers strings
         //app.ts
@@ -208,9 +209,6 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `Ein Konfigurationsproblem hat das Laden des Schnipsels verhindert.`,
 
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `Das Schnipsel konnte nicht gefunden werden. Möglicherweise wurde es gelöscht.`,
-
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */
             getTextToAppendToErrorMessage: (returnUrl: string) =>
@@ -226,7 +224,10 @@ export function getGermanStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return 'Lade ' + (snippetName ? `"${snippetName}"` : 'Schnipsel');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
+            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
         },
 
         /** Error strings served by the server and displayed in the Error page */

@@ -5,9 +5,13 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = 'Es ist ein unerwarteter Fehler aufgetreten.';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
+
         error: 'Fehler',
         unexpectedError: unexpectedError,
         invalidHost: 'Ungültiger Host',
@@ -20,16 +24,13 @@ export function getGermanStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Lade "${snippetName}"`,
 
-        loadingSnippetDotDotDot: 'Schnipsel wird geladen ...',
-
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Syntaxfehler' : 'Syntaxfehler'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `Willkommen bei Script Lab - möchten Sie lieber den Code-Editor statt des Fensters zur Ausführung sehen? Falls ja, klicken Sie hier ${editorUrl}, um zum Editor zu gelangen.`,
 
         createdWithScriptLab: 'Erstellt mit Script Lab',
 
         scriptLabRunner: 'Script Lab Runner',
+        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+
         versionInfo: 'Versionsinformationen',
 
         manifestDefaults: {

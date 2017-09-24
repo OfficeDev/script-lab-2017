@@ -37,12 +37,14 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
-        viewModeError: '导入代码段失败。',
+        failedToLoadCodeSnippet: '导入代码段失败。',
 
         snippetGistIdDuplicationError: getEnglishSubstitutesForNotYetTranslated().snippetGistIdDuplicationError,
         snippetImportError: '导入代码失败',
         snippetImportErrorTitle: '导入失败',
         snippetImportErrorBody: `我们不能导入代码。`,
+        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
+        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
         reloadPrompt: '再次导入任务窗口，然后尝试其他URL或者ID。',
 
         cannotImportSnippetCreatedForDifferentHost: getEnglishSubstitutesForNotYetTranslated().cannotImportSnippetCreatedForDifferentHost,
@@ -119,7 +121,6 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: '代码段简介',
         gistUrlLabel: 'Gist URL',
         gistUrlLinkLabel: '在游览器中打开',
-        viewModeGistUrlLabel: '仅供游览的Script-Lab URL',
 
         // Containers strings
         //app.ts
@@ -201,9 +202,6 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `配置问题阻止了代码段加载。`,
 
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `找不到代码段。它可能已经被删除了.`,
-
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */
             getTextToAppendToErrorMessage: (returnUrl: string) =>
@@ -219,7 +217,10 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return '下载 ' + (snippetName ? `"${snippetName}"` : '代码段');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
+            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
         },
 
         /** Error strings served by the server and displayed in the Error page */

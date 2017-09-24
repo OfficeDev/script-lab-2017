@@ -22,11 +22,11 @@ import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/e
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view/:type/:host/:id', component: ViewMode  },
-    { path: 'view/error', component: ViewModeError  },
-    { path: 'edit/:type/:host/:id', component: EditorMode },
+    { path: 'view/:host/:type/:id', component: ViewMode },
+    { path: 'view/error', component: ViewModeError },
+    { path: 'edit/:host/:type/:id', component: EditorMode },
     { path: 'edit/:host', component: EditorMode },
-    { path: '',  component: EditorMode }
+    { path: '', component: EditorMode }
 ];
 
 let imports = [
@@ -34,8 +34,8 @@ let imports = [
     HttpModule,
     FormsModule,
     RouterModule.forRoot(
-      appRoutes,
-      { useHash: true }
+        appRoutes,
+        { useHash: true }
     ),
     StoreModule.provideStore(rootReducer),
     EffectsModule.run(SnippetEffects),
@@ -46,28 +46,12 @@ let imports = [
 
 (async function start() {
     const strings = Strings();
-    const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 
     try {
         await Promise.all([
             environment.initialize(),
             MonacoService.initialize()
         ]);
-
-        let pageParams = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
-        // wacUrl query string parameter must be encoded
-        if (pageParams.wacUrl) {
-            window.localStorage.setItem(WAC_URL_STORAGE_KEY, pageParams.wacUrl);
-        }
-
-        // If the "try it" page uses an instance of a (local) Office Online that is over HTTP instead of HTTPS,
-        // The runner will have needed to be on the http domain.  So tweak the in-memory runnerUrl accordingly:
-        let wacStorageKeyIfAny: string = window.localStorage[WAC_URL_STORAGE_KEY];
-        if (wacStorageKeyIfAny) {
-            if (wacStorageKeyIfAny.toLowerCase().indexOf('http:/') === 0) {
-                environment.current.config.runnerUrl = environment.current.config.runnerUrl.replace('https:/', 'http:/');
-            }
-        }
 
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);
@@ -113,6 +97,6 @@ export class AppModule {
         this._store
             .select(getSettings)
             .debounceTime(300)
-            .subscribe(changes => { storage.current = changes; });
+            .subscribe(changes => { storage.appendCurrent(changes); });
     }
 }

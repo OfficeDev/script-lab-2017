@@ -1,7 +1,11 @@
 export function getEnglishStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = 'An unexpected error occurred';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: 'Code ● Run ● Share',
+
         error: 'Error',
         unexpectedError: unexpectedError,
         invalidHost: 'Invalid host',
@@ -14,12 +18,7 @@ export function getEnglishStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Loading "${snippetName}"`,
 
-        loadingSnippetDotDotDot: 'Loading snippet...',
-
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Syntax error' : 'Syntax errors'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `Welcome to Script Lab – but you probably want to be viewing the Editor, not the Runner page. Please return to ${editorUrl}`,
 
         createdWithScriptLab: 'Created with Script Lab',
 
@@ -33,6 +32,7 @@ export function getEnglishStrings(): ServerStrings {
 
         run: 'Run',
         runPageTitle: 'Run snippet',
+        tryItPageTitle: 'Try it',
         back: 'Back',
         snippetNotTrusted: 'This snippet comes from an external source. You need to trust it before you can run it.',
         trust: 'Trust',

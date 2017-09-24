@@ -6,22 +6,27 @@
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
     <style>
         /** On this particular page, adjust progress so that it keeps the header visible */
+        
         #progress {
             top: 40px;
             height: calc(100vh - 40px);
         }
+        #ribbon {
+            top: -15px /* 25px in original, minus 40px for header */
+        }
     </style>
 </head>
 
-<body class="{{{host}}}">
+<body class="ms-font-m">
     <app id="progress" class="app">
         <div class="ms-progress-component">
+            <div id="ribbon" class="ribbon"></div>
             <main class="ms-progress-component__main">
                 <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.svg">
                 <h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
@@ -40,6 +45,20 @@
                     </div>
                 </div>
             </footer>
+            <div id="hosts" class="ms-u-slideUpIn20">
+				<!--Note: text below will get localized at runtime, and is hidden (but still taking up screen layout space) until then:-->
+				<p id="choose-your-host" style="visibility:hidden">Choose your host:</p>
+
+				<div class="buttons">
+					<div class="hostButton ms-Icon ms-Icon--Globe" data-host="WEB"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--excel" data-host="EXCEL"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--word" data-host="WORD"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--powerpoint" data-host="POWERPOINT"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--project" data-host="PROJECT"></div>
+					<div class="hostButton ms-BrandIcon--Icon48 ms-BrandIcon--outlook" data-host="OUTLOOK"></div>
+				</div>
+			</div>
+
         </div>
     </app>
 
@@ -154,17 +173,17 @@
 
     <script type="text/javascript">
         window.initializeRunner({
+            host: '{{{host}}}',
             origin: '{{{origin}}}',
-            officeJS: '{{{officeJS}}}',
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
             isTrustedSnippet: {{{isTrustedSnippet}}},
-            heartbeatParams: {
+            currentSnippet: {
                 {{#if snippet.lastModified}}
                 lastModified: {{snippet.lastModified}},
                 {{/if}}
                 id: '{{{snippet.id}}}',
-                host: '{{{host}}}'
+                officeJS: '{{{officeJS}}}',
             },
             explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
         });
