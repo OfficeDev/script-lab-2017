@@ -81,7 +81,7 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                         <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
                         <div class="ms-TextField ms-TextField--multiline import__field">
                             <label class="ms-Label">{{strings.importUrlOrYamlLabel}}</label>
-                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}" ></textarea>
+                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}"></textarea>
                         </div>
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">

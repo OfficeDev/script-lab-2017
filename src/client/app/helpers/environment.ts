@@ -1,8 +1,13 @@
 import * as $ from 'jquery';
+import { attempt, isError, isPlainObject } from 'lodash';
+
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
+import { Strings } from '../strings';
+
 let { devMode, build, config } = PLAYGROUND;
 
 const WAC_URL_STORAGE_KEY = 'playground_wac_url';
+const EXPERIMENTATION_FLAGS_KEY = 'playground_experimentation_flags';
 
 class Environment {
     cache = new Storage<any>(PLAYGROUND.localStorageKeys.playgroundCache, StorageType.SessionStorage);
@@ -42,6 +47,9 @@ class Environment {
 
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
+            // Once ready to use experimentation flags, use them like this:
+            // let experimentationFlags = JSON.parse(this.getExperimentationFlagsString())
+
             let host: string;
             let platform: string;
             let environment = this.cache.get('environment') as ICurrentPlaygroundInfo;
@@ -73,8 +81,34 @@ class Environment {
 
     appendCurrent(value: Partial<ICurrentPlaygroundInfo>) {
         this._setupCurrentDefaultsIfEmpty();
-        let updatedEnv = { ...this._current, ...value };
+        const updatedEnv = { ...this._current, ...value };
         this._current = this.cache.insert('environment', updatedEnv);
+    }
+
+    /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */
+    getExperimentationFlagsString(): string {
+        const flagSetInStorage = window.localStorage[EXPERIMENTATION_FLAGS_KEY];
+        const flagsOrError: IExperimentationFlags | Error = attempt(() => JSON.parse(flagSetInStorage));
+        const isErrorOrEmpty = isError(flagsOrError) || JSON.stringify(flagsOrError).length === '{}'.length;
+        return isErrorOrEmpty ? ('{' + '\n    ' + '\n' + '}') : JSON.stringify(flagsOrError, null, 4);
+    }
+
+    /** Sets experimentation flags; will throw an error if the value provided is not a valid JSON-ifiable string.
+     * Returns true if update is different than what it was before (while ignoring formatting) */
+    updateExperimentationFlags(value: string): boolean {
+        let objectAttempt = attempt(() => JSON.parse(value));
+        if (isError(objectAttempt) || !isPlainObject(objectAttempt)) {
+            throw new Error(Strings().invalidExperimentationFlags);
+        }
+
+        const identicalToPreviousSettings =
+            JSON.stringify(JSON.parse(this.getExperimentationFlagsString())) === JSON.stringify(objectAttempt);
+
+        if (!identicalToPreviousSettings) {
+            window.localStorage[EXPERIMENTATION_FLAGS_KEY] = value;
+        }
+
+        return !identicalToPreviousSettings;
     }
 
     /** Performs a full initialization (and returns quickly out if already initialized
