@@ -14,6 +14,7 @@ const { GH_SECRETS } = process.env;
 const versionedPackageNames = getVersionedPackageNames([
     'monaco-editor',
     'office-ui-fabric-js',
+    'jquery',
     'jquery-resizable-dom'
 ]);
 
@@ -142,6 +143,10 @@ module.exports = (prodMode) =>
                 {
                     from: '../../node_modules/office-ui-fabric-js/dist/js',
                     to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/js'
+                },
+                {
+                    from: '../../node_modules/jquery/dist',
+                    to: './libs/' + versionedPackageNames['jquery']
                 },
                 {
                     from: '../../node_modules/jquery-resizable-dom/dist',
