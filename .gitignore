@@ -62,3 +62,4 @@ typings
 dist
 npm-debug.log*
 compiled
+BookWithTaskPane.xlsx

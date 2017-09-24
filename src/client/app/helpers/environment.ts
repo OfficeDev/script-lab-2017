@@ -1,6 +1,7 @@
 import * as $ from 'jquery';
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 let { devMode, build, config } = PLAYGROUND;
+import { isNil } from 'lodash';
 
 const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 
@@ -42,24 +43,21 @@ class Environment {
 
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
-            let host: string;
-            let platform: string;
-            let environment = this.cache.get('environment') as ICurrentPlaygroundInfo;
-            if (environment) {
-                host = environment.host;
-                platform = environment.platform;
-            }
+            let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
 
             this._current = {
                 devMode,
                 build,
                 config: this._config,
-                host: host,
-                platform: platform,
+
+                supportsCustomFunctions: false,
 
                 isAddinCommands: false,
                 isTryIt: false,
-                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || ''
+                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || '',
+
+                // And append (override) any existing environment values that may have already been cached
+                ...cachedEnvironment
             };
 
             this.cache.insert('environment', this._current);
@@ -74,6 +72,16 @@ class Environment {
     appendCurrent(value: Partial<ICurrentPlaygroundInfo>) {
         this._setupCurrentDefaultsIfEmpty();
         let updatedEnv = { ...this._current, ...value };
+
+        if (!isNil(value.host)) {
+            if (value.host.toUpperCase() === 'EXCEL') {
+                updatedEnv = {
+                    ...updatedEnv,
+                    supportsCustomFunctions: true
+                };
+            }
+        }
+
         this._current = this.cache.insert('environment', updatedEnv);
     }
 

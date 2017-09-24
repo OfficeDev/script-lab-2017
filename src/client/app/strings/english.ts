@@ -142,9 +142,10 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
 
         tabDisplayNames: {
             'script': 'Script',
-            'template': 'Template',
+            'template': 'HTML',
             'style': 'Style',
-            'libraries': 'Libraries'
+            'libraries': 'Libraries',
+            'customFunctions': 'Custom Functions'
         },
 
         // Gallery.view strings

@@ -2,7 +2,7 @@ import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } 
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI } from '../helpers';
+import { AI, environment } from '../helpers';
 import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
@@ -11,12 +11,12 @@ import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'editor',
-    template: `
+    template: `   
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
                 {{tab.displayName}}
             </li>
-        </ul>
+        </ul>            
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
@@ -29,6 +29,7 @@ export class Editor implements AfterViewInit {
     private themeSub: Subscription;
     private snippetSub: Subscription;
     private tabSub: Subscription;
+    private tabNames: string[];
 
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
@@ -38,6 +39,10 @@ export class Editor implements AfterViewInit {
         private _store: Store<fromRoot.State>,
         private _monaco: MonacoService
     ) {
+        this.tabNames = ['script', 'template', 'style', 'libraries'];
+        if (environment.current.supportsCustomFunctions) {
+            this.tabNames.push('customFunctions');
+        }
     }
 
     /**
@@ -98,7 +103,7 @@ export class Editor implements AfterViewInit {
     }
 
     private _createTabs() {
-        ['script', 'template', 'style', 'libraries'].forEach(name => {
+        this.tabNames.forEach(name => {
             const displayName = Strings().tabDisplayNames[name];
             if (!displayName) {
                 throw new Error(`No display name for tab "${name}"`);
@@ -171,7 +176,8 @@ export class Editor implements AfterViewInit {
                 item.model.dispose();
             }
 
-            let content, language, model, viewState = null;
+            let content: string;
+            let language: string;
 
             if (item.name === 'libraries') {
                 [content, language] = [snippet[item.name], item.name];
@@ -180,14 +186,15 @@ export class Editor implements AfterViewInit {
                 content = snippet[item.name].content;
                 language = snippet[item.name].language;
             }
-            model = monaco.editor.createModel(content, language);
+
+            let model = monaco.editor.createModel(content, language);
 
             model.onDidChangeContent(() => this._debouncedInput());
 
             item.model = model;
             item.content = content;
             item.language = language;
-            item.viewState = viewState;
+            item.viewState = null;
         });
 
         this._snippet = snippet;
@@ -214,7 +221,7 @@ export class Editor implements AfterViewInit {
             return null;
         }
 
-        ['script', 'template', 'style', 'libraries'].forEach(name => {
+        this.tabNames.forEach(name => {
             let { content, language } = this.tabs.get(name);
             if (name === 'libraries') {
                 this._snippet.libraries = content;

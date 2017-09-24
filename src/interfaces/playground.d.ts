@@ -40,6 +40,10 @@ interface ISnippet extends ITemplate {
         language: string;
     };
     libraries?: string;
+    customFunctions?: {
+        content: string;
+        language: string;
+    };
 }
 
 interface ILibraryDefinition {
@@ -129,6 +133,8 @@ interface ICurrentPlaygroundInfo {
     host: Readonly<string>;
     platform: Readonly<string>;
 
+    supportsCustomFunctions: boolean;
+    
     isAddinCommands: boolean;
     isTryIt: boolean;
     wacUrl: string;

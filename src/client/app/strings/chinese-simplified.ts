@@ -143,9 +143,11 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
         tabDisplayNames: {
             'script': '脚本',
-            'template': '样本',
+            'template': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
+                /* Changed from "Template" to "HTML" in english; should we use 'HTML' or the original Chinese: //'样本' */,
             'style': '样式',
-            'libraries': '资源库'
+            'libraries': '资源库',
+            'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
 
         // Gallery.view strings

@@ -141,9 +141,10 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
 
         tabDisplayNames: {
             'script': 'Código ',
-            'template': 'Plantilla',
+            'template': 'HTML',
             'style': 'Estilo',
-            'libraries': 'Librerías'
+            'libraries': 'Librerías',
+            'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
 
         // Gallery.view strings

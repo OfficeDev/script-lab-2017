@@ -137,6 +137,7 @@ interface ClientStringsPerLanguage {
         'template': string;
         'style': string;
         'libraries': string;
+        'customFunctions': string;
     },
 
     // view.mode.ts strings

@@ -148,7 +148,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             'script': 'Script',
             'template': 'HTML',
             'style': 'CSS',
-            'libraries': 'Bibliotheken'
+            'libraries': 'Bibliotheken',
+            'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
 
         // Gallery.view strings

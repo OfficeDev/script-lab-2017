@@ -1,24 +1,30 @@
 @import '../mixins';
 @import '../vars';
-
 editor {
     @include flex();
     flex: 1 1 100%;
     position: relative;
     overflow: hidden;
-
     .tabs {
-        overflow: hidden;
-        flex: 0 0 40px;
+        flex: 0 0 auto;
+        padding-bottom: 3px;
+    }
+    .ms-Pivot.ms-Pivot--tabs .ms-Pivot-link {
+        line-height: 38px;
+        height: 38px;
+    }
+    .ms-Pivot-link.is-selected:before {
+        position: absolute;
+        bottom: 2px;
     }
 }
 
 .viewport {
     @include flex();
+    margin-top: 10px;
     flex: 1 1 100%;
     width: 100% !important;
     height: 100% !important;
-
     &__placeholder {
         background: transparent center center no-repeat;
         background-size: contain;
