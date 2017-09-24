@@ -1,12 +1,15 @@
 const { dependencies } = require('../package.json');
 
 function getVersionedPackageNames(packageNames) {
-    let validNumericRegex = /^[0-9\.]+$/;
+    let validNumericRegex = /^\d+\.\d+\.\d+.*$/;
     /*
-    passes:
+        passes:
         2.3.4
+        222.33.444
+        1.1.2-private
+        1.1.2-private.0
 
-    fails:
+        fails:
         ^1.3.0
         2.2.*
     */
@@ -15,8 +18,8 @@ function getVersionedPackageNames(packageNames) {
     packageNames.forEach(item => {
         let versionNumberWithDots = dependencies[item];
         if (!validNumericRegex.test(versionNumberWithDots)) {
-            throw new Error(`Package number for "${item}: ${versionNumberWithDots}" must be of a simple #.#.# format, ` +
-                `pointing at a specific version, no special characters.`);
+            throw new Error(`Package number for "${item}: ${versionNumberWithDots}" must start with a #.#.# format, ` +
+                `pointing at a specific version.`);
         }
         let versionNumber = versionNumberWithDots.replace('.', '-').replace('.', '-');
         result[item] = item + '-' + versionNumber;
