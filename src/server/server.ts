@@ -740,6 +740,7 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
             origin: currentConfig.editorUrl,
             assets: getFileAsJson('assets.json'),
             versionedPackageNames_office_ui_fabric_js: versionedPackageNames['office-ui-fabric-js'],
+            versionedPackageNames_jquery: versionedPackageNames['jquery'],
             versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom']
         };
     }
