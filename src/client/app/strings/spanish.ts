@@ -34,6 +34,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'Más información',
         importButtonLabel: 'Importar',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
         failedToLoadCodeSnippet: getEnglishSubstitutesForNotYetTranslated().failedToLoadCodeSnippet,
