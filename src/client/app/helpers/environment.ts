@@ -189,6 +189,8 @@ class Environment {
                     $('#hosts').show();
                     $('.ms-progress-component__footer').hide();
                     $('.hostButton').click(function hostButtonClick() {
+                        $('#hosts').hide();
+                        $('.ms-progress-component__footer').show();
                         resolve({ host: $(this).data('host'), platform: null });
                     });
                 }, 2000);

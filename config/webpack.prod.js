@@ -13,7 +13,7 @@ module.exports = (env) =>
         output: {
             path: path.resolve('./dist/client'),
             filename: 'bundles/[name].[chunkhash].bundle.js',
-            chunkFilename: 'bundles/[id].chunk.js'
+            chunkFilename: 'bundles/[id].[chunkhash].chunk.js'
         },
 
         module: {

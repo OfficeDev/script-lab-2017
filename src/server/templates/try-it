@@ -7,15 +7,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/excel-web-16.00.js"></script>
-    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/libs/office-ui-fabric-js/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.tryIt.css}}}" />
 </head>
 
 <body class="app">
-    <script src="{{{origin}}}/libs/jquery/jquery.min.js"></script>
-    <script src="{{{origin}}}/libs/jquery-resizable-dom/jquery-resizable.min.js"></script>
+    <script src="{{{origin}}}/libs/{{{versionedPackageNames_jquery}}}/jquery.min.js"></script>
+    <script src="{{{origin}}}/libs/{{{versionedPackageNames_jquery_resizable_dom}}}/jquery-resizable.min.js"></script>
 
     <div class="panel-container vertical">
         <div class="panel top">
@@ -55,30 +55,6 @@
     <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
     <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
     <script src="{{{origin}}}/{{{assets.tryIt.js}}}"></script>
-
-    <script type="text/javascript">
-        $('.panel.left').resizable({
-            handleSelector: '.splitter.vertical',
-            resizeHeight: false,
-            onDragStart: function() {
-                $('iframe').css('pointer-events', 'none');
-            },
-            onDragEnd: function() {
-                $('iframe').css('pointer-events', 'auto');
-            }
-        });
-
-        $('.panel.top').resizable({
-            handleSelector: '.splitter.horizontal',
-            resizeWidth: false,
-            onDragStart: function() {
-                $('iframe').css('pointer-events', 'none');
-            },
-            onDragEnd: function() {
-                $('iframe').css('pointer-events', 'auto');
-            }
-        });
-    </script>
     
     <script type="text/javascript">
         window.initializeTryIt({

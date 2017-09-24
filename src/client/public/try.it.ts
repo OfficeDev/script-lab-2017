@@ -1,9 +1,12 @@
-import * as $ from 'jquery';
 import * as OfficeJsHelpers from '@microsoft/office-js-helpers';
 import { environment, InformationalError } from '../app/helpers';
 import { isPlainObject } from 'lodash';
 
 import '../assets/styles/extras.scss';
+
+// Note that explicitly *NOT* IMPORTING jQuery, it will be loaded
+// on the page explicitly, since it needs to be used in conjunction
+// with the "jquery-resizable-dom" library
 
 interface InitializationParams {
     host: string;
@@ -35,6 +38,8 @@ interface InitializationParams {
 
     async function initializeTryItHelper() {
         $(document).ready(() => tryCatch(async () => {
+            setUpResizables();
+
             await environment.initialize({ host: params.host, tryIt: true });
 
             if (!environment.current.wacUrl) {
@@ -64,6 +69,22 @@ interface InitializationParams {
             (OfficeExtension.ClientRequestContext as any)._overrideSession = session;
         }));
     };
+
+    function setUpResizables() {
+        $('.panel.left').resizable({
+            handleSelector: '.splitter.vertical',
+            resizeHeight: false,
+            onDragStart: () => $('iframe').css('pointer-events', 'none'),
+            onDragEnd: $('iframe').css('pointer-events', 'auto')
+        });
+
+        $('.panel.top').resizable({
+            handleSelector: '.splitter.horizontal',
+            resizeWidth: false,
+            onDragStart: () => $('iframe').css('pointer-events', 'none'),
+            onDragEnd: () => $('iframe').css('pointer-events', 'auto')
+        });
+    }
 
     async function tryCatch(callback) {
         try {

@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const fs = require('fs');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -7,7 +8,17 @@ const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
 const { build, config, RedirectPlugin, localStorageKeys } = require('./env.config');
+const { getVersionedPackageNames, VersionedPackageSubstitutionsPlugin } = require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
+
+const versionedPackageNames = getVersionedPackageNames([
+    'monaco-editor',
+    'office-ui-fabric-js',
+    'jquery',
+    'jquery-resizable-dom'
+]);
+
+fs.writeFileSync(path.resolve('./dist/server/versionPackageNames.json'), JSON.stringify(versionedPackageNames));
 
 module.exports = (prodMode) =>
     ({
@@ -123,23 +134,23 @@ module.exports = (prodMode) =>
                 },
                 {
                     from: '../../node_modules/monaco-editor/min',
-                    to: './libs/monaco-editor'
+                    to: './libs/' + versionedPackageNames['monaco-editor']
                 },
                 {
                     from: '../../node_modules/office-ui-fabric-js/dist/css',
-                    to: './libs/office-ui-fabric-js/css'
+                    to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/css'
                 },
                 {
                     from: '../../node_modules/office-ui-fabric-js/dist/js',
-                    to: './libs/office-ui-fabric-js/js'
+                    to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/js'
                 },
                 {
                     from: '../../node_modules/jquery/dist',
-                    to: './libs/jquery'
+                    to: './libs/' + versionedPackageNames['jquery']
                 },
                 {
                     from: '../../node_modules/jquery-resizable-dom/dist',
-                    to: './libs/jquery-resizable-dom'
+                    to: './libs/' + versionedPackageNames['jquery-resizable-dom']
                 }
             ]),
             new HtmlWebpackPlugin({
@@ -168,6 +179,8 @@ module.exports = (prodMode) =>
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
             }),
             
-            new RedirectPlugin()
+            new RedirectPlugin(),
+
+            new VersionedPackageSubstitutionsPlugin(versionedPackageNames)
         ]
     });
