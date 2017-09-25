@@ -50,4 +50,16 @@
         margin: auto;
         margin-top: 5px;
     }
+
+    &__special-flags {
+        margin-top: 15px;
+
+        .ms-TextField {
+            margin-top: 5px;
+
+            textarea {
+                height: 6em;
+            }
+        }
+    }
 }

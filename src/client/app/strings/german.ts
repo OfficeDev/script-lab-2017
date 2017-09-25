@@ -24,6 +24,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         close: 'Schließen',
         about: 'Info',
         feedback: 'Feedback',
+        error: getEnglishSubstitutesForNotYetTranslated().error,
         errors: 'Fehler',
         dismiss: 'Schließen',
 
@@ -34,6 +35,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
         failedToLoadCodeSnippet: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
@@ -115,6 +118,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         aboutCurrentEnvironment: 'Aktuelle Umgebung:',
         aboutSwitchEnvironment: 'Wechseln von {0} zu {1}',
         changeEnvironmentConfirm: 'Sie sind dabei, zu einer anderen Umgebung von Script Lab zu wechseln und verlieren dadurch den Zugriff auf Ihre gespeicherten Schnipsel bis Sie wieder zu dieser Umgebung zurückkehren. Möchten Sie fortfahren?',
+        showExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().showExperimentationFlags,
+        invalidExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().invalidExperimentationFlags,
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Schnipsel-Info',
@@ -203,7 +208,10 @@ export function getGermanStrings(): ClientStringsPerLanguage {
                "YAML-Code des Schnipsels"
             */,
         exampleAbbreviation: `z.B.`,
+
         unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
+        pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
+        scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */

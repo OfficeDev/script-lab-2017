@@ -1,9 +1,12 @@
-import * as $ from 'jquery';
 import * as OfficeJsHelpers from '@microsoft/office-js-helpers';
 import { environment, InformationalError } from '../app/helpers';
 import { isPlainObject } from 'lodash';
 
 import '../assets/styles/extras.scss';
+
+// Note that explicitly *NOT* IMPORTING jQuery, it will be loaded
+// on the page explicitly, since it needs to be used in conjunction
+// with the "jquery-resizable-dom" library
 
 interface InitializationParams {
     host: string;

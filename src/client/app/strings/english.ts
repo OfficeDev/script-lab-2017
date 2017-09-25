@@ -20,6 +20,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         close: 'Close',
         about: 'About',
         feedback: 'Feedback',
+        error: 'Error',
         errors: 'Errors',
         dismiss: 'Dismiss',
 
@@ -30,6 +31,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'More info',
         importButtonLabel: 'Import',
         snippetImportExistingButtonLabel: 'Go to existing snippet',
+        overwriteExistingButtonLabel: 'Overwrite existing snippet',
+        createNewCopyButtonLabel: 'Create a new copy',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
         failedToLoadCodeSnippet: /** NEEDS STRING REVIEW */ 'Failed to load the code snippet.',
@@ -111,6 +114,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         aboutCurrentEnvironment: /** NEEDS STRING REVIEW */ 'Current Environment:',
         aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Switch from {0} to {1}:',
         changeEnvironmentConfirm: /** NEEDS STRING REVIEW */ 'You are about to change your Script Lab environment and will not have access to your saved local snippets until you return to this environment. Are you sure you want to proceed?',
+        showExperimentationFlags: 'Show experimentation flags',
+        invalidExperimentationFlags: 'Invalid experimentation flags (must be a valid JSON object)',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Info',
@@ -196,6 +201,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         exampleAbbreviation: `e.g.:`,
 
         unexpectedError: 'An unexpected error has occurred',
+        pleaseWait: 'Please wait',
+        scriptLabIsReloading: 'Script Lab is reloading...',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */

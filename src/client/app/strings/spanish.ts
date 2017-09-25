@@ -24,6 +24,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         close: 'Cerrar',
         about: 'Acerca de',
         feedback: 'Retroalimentación',
+        error: getEnglishSubstitutesForNotYetTranslated().error,
         errors: 'Errores',
         dismiss: 'Ignorar',
 
@@ -34,6 +35,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'Más información',
         importButtonLabel: 'Importar',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: 'Sugerir código',
 
         failedToLoadCodeSnippet: getEnglishSubstitutesForNotYetTranslated().failedToLoadCodeSnippet,
@@ -110,6 +113,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         aboutCurrentEnvironment: 'Ambiente actual:',
         aboutSwitchEnvironment: 'Cambiar de {0} a {1}:',
         changeEnvironmentConfirm: 'Está por cambiar el ambiente de Script Lab y no tendrá acceso a los fragmentos de código guardados de manera local hasta que regrese al ambiente. ¿Está seguro de proceder?',
+        showExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().showExperimentationFlags,
+        invalidExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().invalidExperimentationFlags,
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Información',
@@ -200,6 +205,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         exampleAbbreviation: 'ejemplo',
 
         unexpectedError: 'Ocurrió un error inesperado',
+        pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
+        scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
