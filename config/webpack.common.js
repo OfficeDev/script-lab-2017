@@ -41,7 +41,7 @@ module.exports = (prodMode) =>
             error: './public/error.ts',
             auth: './public/auth.ts',
             tryIt: './public/try.it.ts',
-            customFunctions: './public/custom-functions.ts'
+            customFunctions: './public/custom.functions.ts'
         },
 
         resolve: {
@@ -156,7 +156,7 @@ module.exports = (prodMode) =>
                     to: './libs/' + versionedPackageNames['jquery-resizable-dom']
                 },
                 {
-                    from: '../../node_modules/office-js/dist',
+                    from: '../../node_modules/@microsoft/office-js/dist',
                     to: './libs/' + versionedPackageNames['@microsoft/office-js']
                 }
             ]),
