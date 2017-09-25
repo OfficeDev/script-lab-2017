@@ -79,7 +79,6 @@ class Environment {
 
     appendCurrent(value: Partial<ICurrentPlaygroundInfo>) {
         this._setupCurrentDefaultsIfEmpty();
-<<<<<<< HEAD
         let updatedEnv = { ...this._current, ...value };
 
         if (!isNil(value.host)) {
@@ -91,9 +90,6 @@ class Environment {
             }
         }
 
-=======
-        const updatedEnv = { ...this._current, ...value };
->>>>>>> manifestmodernization1
         this._current = this.cache.insert('environment', updatedEnv);
     }
 
