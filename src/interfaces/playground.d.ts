@@ -1,3 +1,7 @@
+interface IExperimentationFlags {
+    testFlag: string;
+}
+
 interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure

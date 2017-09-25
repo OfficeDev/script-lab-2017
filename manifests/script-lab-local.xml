@@ -42,6 +42,13 @@
     <Description resid="PG.Description" />
     <Hosts>
       <Host xsi:type="Workbook">
+        <AllFormFactors>
+          <ExtensionPoint xsi:type="CustomFunctions">
+            <Page>
+              <SourceLocation resid="PG.CustomFunctions.URL"/>
+            </Page>
+          </ExtensionPoint>
+        </AllFormFactors>
         <DesktopFormFactor>
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
@@ -454,6 +461,7 @@
         <bt:Url id="PG.Code.Url" DefaultValue="https://localhost:3000?commands=1" />
         <bt:Url id="PG.Run.Url" DefaultValue="https://localhost:3000/run.html" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://localhost:3000/functions.html" />
+        <bt:Url id="PG.CustomFunctions.URL" DefaultValue="https://localhost:3000//custom-functions.html />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="[DEV] Script Lab" />

@@ -14,7 +14,10 @@ const { GH_SECRETS } = process.env;
 const versionedPackageNames = getVersionedPackageNames([
     'monaco-editor',
     'office-ui-fabric-js',
-    'jquery-resizable-dom'
+    'jquery',
+    'jquery-resizable-dom',
+    '@microsoft/office-js' /* Need Office.js temporarily for custom-function support,
+        which is only available on a "1.1.2-private.0" version for now */
 ]);
 
 fs.writeFileSync(path.resolve('./dist/server/versionPackageNames.json'), JSON.stringify(versionedPackageNames));
@@ -37,7 +40,8 @@ module.exports = (prodMode) =>
             runner: './public/runner.ts',
             error: './public/error.ts',
             auth: './public/auth.ts',
-            tryIt: './public/try.it.ts'
+            tryIt: './public/try.it.ts',
+            customFunctions: './public/custom.functions.ts'
         },
 
         resolve: {
@@ -144,8 +148,16 @@ module.exports = (prodMode) =>
                     to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/js'
                 },
                 {
+                    from: '../../node_modules/jquery/dist',
+                    to: './libs/' + versionedPackageNames['jquery']
+                },
+                {
                     from: '../../node_modules/jquery-resizable-dom/dist',
                     to: './libs/' + versionedPackageNames['jquery-resizable-dom']
+                },
+                {
+                    from: '../../node_modules/@microsoft/office-js/dist',
+                    to: './libs/' + versionedPackageNames['@microsoft/office-js']
                 }
             ]),
             new HtmlWebpackPlugin({
@@ -167,6 +179,11 @@ module.exports = (prodMode) =>
                 filename: 'heartbeat.html',
                 template: './views/heartbeat.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'custom-functions.html',
+                template: './views/custom-functions.html',
+                chunks: ['polyfills', 'vendor', 'customFunctions'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'tutorial.html',

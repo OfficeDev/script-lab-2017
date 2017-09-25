@@ -25,16 +25,19 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         close: '关闭',
         about: '关于',
         feedback: '回馈',
+        error: getEnglishSubstitutesForNotYetTranslated().error,
         errors: '错误',
         dismiss: '解散',
 
-        okButtonLabel: 'OK',
+        okButtonLabel: getEnglishSubstitutesForNotYetTranslated().okButtonLabel,
         logoutButtonLabel: '退出',
         cancelButtonLabel: '注销',
         saveButtonLabel: '保存',
         moreInfoButtonLabel: '更多信息',
         importButtonLabel: '输入',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
         failedToLoadCodeSnippet: '导入代码段失败。',
@@ -112,6 +115,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         aboutCurrentEnvironment: '当前环境:',
         aboutSwitchEnvironment: '从 {0} 转换到 {1}:',
         changeEnvironmentConfirm: '您将更改Script Lab工作平台，在返回当前的工作平台之前，将无法访问您保存的本地代码段. 您确定要继续吗?',
+        showExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().showExperimentationFlags,
+        invalidExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().invalidExperimentationFlags,
 
         //snippet.info.ts
         snippetInfoDialogTitle: '信息',
@@ -199,6 +204,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated().exampleAbbreviation,
 
         unexpectedError: '出现意外错误',
+        pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
+        scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
