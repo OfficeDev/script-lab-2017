@@ -48,12 +48,14 @@ class Environment {
 
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
-            let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
+            this._current = {} as ICurrentPlaygroundInfo;
+            
+            let cachedEnvironment = (this.cache.get('environment') || {}) as {
+                host: string;
+                platform;
+            };
 
-            // Once ready to use experimentation flags, use them like this:
-            // let experimentationFlags = JSON.parse(this.getExperimentationFlagsString())
-
-            this._current = {
+            let aboutToAppend: ICurrentPlaygroundInfo = {
                 devMode,
                 build,
                 config: this._config,
@@ -67,6 +69,9 @@ class Environment {
                 // And append (override) any existing environment values that may have already been cached
                 ...cachedEnvironment
             };
+
+            // Append via "appendCurrent", so that any specific logic can run
+            this.appendCurrent(aboutToAppend);
 
             this.cache.insert('environment', this._current);
         }
@@ -85,12 +90,16 @@ class Environment {
             if (value.host.toUpperCase() === 'EXCEL') {
                 updatedEnv = {
                     ...updatedEnv,
-                    supportsCustomFunctions: true
+                    supportsCustomFunctions: this.getExperimentationFlagValue('customFunctions')
                 };
             }
         }
 
         this._current = this.cache.insert('environment', updatedEnv);
+    }
+
+    getExperimentationFlagValue(name: 'customFunctions'): any {
+        return JSON.parse(this.getExperimentationFlagsString())[name];
     }
 
     /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */
