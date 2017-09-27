@@ -14,6 +14,11 @@ const officeHostsToAppNames = {
     'WORD': 'Word'
 };
 
+export function isValidHost(host: string) {
+    host = host.toUpperCase();
+    return isOfficeHost(host) || (host === 'WEB');
+}
+
 export function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
 }

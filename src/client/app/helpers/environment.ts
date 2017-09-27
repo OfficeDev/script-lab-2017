@@ -3,6 +3,7 @@ import { attempt, isError, isPlainObject } from 'lodash';
 
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Strings } from '../strings';
+import { isValidHost } from '../helpers';
 
 let { devMode, build, config } = PLAYGROUND;
 
@@ -159,8 +160,16 @@ class Environment {
         }
 
         if (pageParams.mode) {
-            this.appendCurrent({ host: pageParams.mode.toUpperCase() });
-            return true;
+            if (pageParams.mode.endsWith('/')) {
+                pageParams.mode = pageParams.mode.substr(0, pageParams.mode.length - 1);
+            }
+            if (pageParams.mode.endsWith('#')) {
+                pageParams.mode = pageParams.mode.substr(0, pageParams.mode.length - 1);
+            }
+            if (isValidHost(pageParams.mode)) {
+                this.appendCurrent({ host: pageParams.mode.toUpperCase() });
+                return true;
+            }
         }
 
         if (location.hash) {
