@@ -4,7 +4,7 @@ export interface ISnippetHandlebarsContext extends ICompiledSnippet {
     strings: ServerStrings;
 
     // For the runtime helpers, need both their URL, and the origin editor URL
-    runtimeHelpersUrl: string;
+    authHelpersUrl: string;
     editorUrl: string;
     runtimeHelperStringifiedStrings: string;
 }

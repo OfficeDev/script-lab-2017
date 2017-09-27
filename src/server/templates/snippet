@@ -42,7 +42,7 @@
     {{{indent template 1}}}
 
     <!-- ScriptLab-Specific Runtime Helpers -->
-    <script src="{{{runtimeHelpersUrl}}}"></script>
+    <script src="{{{authHelpersUrl}}}"></script>
     <script>
         ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
     </script>

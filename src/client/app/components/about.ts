@@ -59,8 +59,8 @@ export class About implements AfterViewInit {
 
     cache = [
         `${Strings().aboutStorage}`,
-        `${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings().aboutSnippets)}`,
-        `${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}`,
+        `${storageSize(localStorage, storage.LocalStorageKey_PlaygroundHostSnippets, Strings().aboutSnippets)}`,
+        `${storageSize(sessionStorage, storage.SessionStorageKey_IntelliSenseCache, Strings().aboutIntellisense)}`,
     ].join('\n');
 
     config = {

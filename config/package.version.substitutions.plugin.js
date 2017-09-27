@@ -21,8 +21,15 @@ function getVersionedPackageNames(packageNames) {
             throw new Error(`Package number for "${item}: ${versionNumberWithDots}" must start with a #.#.# format, ` +
                 `pointing at a specific version.`);
         }
-        let versionNumber = versionNumberWithDots.replace('.', '-').replace('.', '-');
-        result[item] = item + '-' + versionNumber;
+
+        let concatenated = item + '-' + versionNumberWithDots;
+        let filesafeFolderName = concatenated.toLowerCase()
+            .replace(/[^0-9a-zA-Z]/g, '-') /* replace any non-alphanumeric with a hyphen */
+            .replace(/-+/g, '-') /* and ensure that don't end up with -- or --, just a single hyphen */
+            .replace(/^-+/, '') /* trim any hyphens before */
+            .replace(/-+$/, '') /* and trim any at the end, as well */;
+
+        result[item] = filesafeFolderName;
     });
     return result;
 }

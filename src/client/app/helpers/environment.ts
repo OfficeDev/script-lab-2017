@@ -49,7 +49,7 @@ class Environment {
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
             let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
-
+            delete cachedEnvironment.runtimeSessionTimestamp;
             // Once ready to use experimentation flags, use them like this:
             // let experimentationFlags = JSON.parse(this.getExperimentationFlagsString())
 
@@ -64,9 +64,13 @@ class Environment {
                 isTryIt: false,
                 wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || '',
 
-                // And append (override) any existing environment values that may have already been cached
-                ...cachedEnvironment
+                host: null,
+                platform: null,
+
+                runtimeSessionTimestamp: (new Date()).getTime().toString()
             };
+
+            this.appendCurrent(cachedEnvironment);
 
             this.cache.insert('environment', this._current);
         }

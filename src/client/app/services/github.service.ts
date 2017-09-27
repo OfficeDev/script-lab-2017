@@ -109,7 +109,7 @@ export class GitHubService {
             return Observable.of([]);
         }
         let url = `${this._baseUrl}/users/${this.profile.login}/gists`;
-        return this._request.get<IGist[]>(url, ResponseTypes.JSON, this._headers, true /*force bypass of cache*/);
+        return this._request.get<IGist[]>(url, ResponseTypes.JSON, this._headers, (new Date).getTime().toString() /*force bypass of cache*/);
     }
 
     gist(id: string, sha?: string): Observable<IGist> {
@@ -118,7 +118,7 @@ export class GitHubService {
             url += `/${sha}`;
         }
 
-        return this._request.get<IGist>(url, ResponseTypes.JSON, this._headers, true /*force bypass of cache*/);
+        return this._request.get<IGist>(url, ResponseTypes.JSON, this._headers, (new Date).getTime().toString() /*force bypass of cache*/);
     }
 
     createOrUpdateGist(description: string, files: IGistFiles, id?: string, isPublic: boolean = true): Observable<IGist> {

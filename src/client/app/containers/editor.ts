@@ -92,13 +92,13 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
     }
 
-    updateIntellisense() {
+    updateIntellisense(tabName: 'script' | 'customFunctions') {
         if (this.snippet == null) {
             return;
         }
 
         this._store.dispatch(new Monaco.UpdateIntellisenseAction(
-            { libraries: this.snippet.libraries.split('\n'), language: 'typescript' }
+            { libraries: this.snippet.libraries.split('\n'), language: 'typescript', tabName }
         ));
     }
 
@@ -155,8 +155,8 @@ export class Editor implements AfterViewInit {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
                     let timer = AI.trackPageView(this.currentState.displayName, `/edit/${this.currentState.name}`);
-                    if (this.currentState.name === 'script') {
-                        this.updateIntellisense();
+                    if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
+                        this.updateIntellisense(this.currentState.name);
                     }
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
