@@ -57,6 +57,8 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
+    strings = Strings();
+
     cache = [
         `${Strings().aboutStorage}`,
         `${storageSize(localStorage, storage.LocalStorageKey_PlaygroundHostSnippets, Strings().aboutSnippets)}`,
@@ -66,8 +68,6 @@ export class About implements AfterViewInit {
     config = {
         build: environment.current.build,
     };
-
-    strings = Strings();
 
     availableLanguages = [] as { name: string, value: string }[];
     currentChosenLanguage = '';

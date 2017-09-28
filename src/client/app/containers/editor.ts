@@ -16,7 +16,12 @@ import { Subscription } from 'rxjs/Subscription';
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
                 {{tab.displayName}}
             </li>
-        </ul>            
+        </ul>
+        <section class="custom-functions" *ngIf="showRegisterCustomFunctions">
+            <button class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()">
+                <span class="ms-Button-label">{{strings.registerCustomFunctions}}</span>
+            </button>
+        </section>
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
@@ -34,6 +39,9 @@ export class Editor implements AfterViewInit {
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
     hide: boolean = true;
+    showRegisterCustomFunctions = false;
+
+    strings = Strings();
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -102,6 +110,10 @@ export class Editor implements AfterViewInit {
         ));
     }
 
+    registerCustomFunctions() {
+        // TODO
+    }
+
     private _createTabs() {
         this.tabNames.forEach(name => {
             const displayName = Strings().tabDisplayNames[name];
@@ -158,6 +170,7 @@ export class Editor implements AfterViewInit {
                     if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
                         this.updateIntellisense(this.currentState.name);
                     }
+                    this.showRegisterCustomFunctions = newTab === 'customFunctions';
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();

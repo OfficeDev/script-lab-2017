@@ -157,6 +157,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
 
+        registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+
         // Gallery.view strings
 
         snippetsTab: 'Schnipsel',

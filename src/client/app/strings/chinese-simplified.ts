@@ -155,6 +155,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
             'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
 
+        registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+
         // Gallery.view strings
 
         snippetsTab: '代码段',

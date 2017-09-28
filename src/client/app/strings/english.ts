@@ -153,6 +153,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
             'customFunctions': 'Custom Functions'
         },
 
+        registerCustomFunctions: 'Register Custom Functions',
+
         // Gallery.view strings
 
         snippetsTab: 'Snippets',
