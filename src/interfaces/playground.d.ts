@@ -124,6 +124,7 @@ interface ICompiledPlaygroundInfo {
         redirectEnvironmentUrl: string;
         playgroundCache: string;
     };
+    safeExternalUrls: { [key: string]: string };
 }
 
 interface ICurrentPlaygroundInfo {

@@ -61,6 +61,20 @@ const config = {
     }
 };
 
+var safeExternalUrls = {
+    tutorial: window.location.origin + '/tutorial.html',
+    code: window.location.origin + '/?mode=${Utilities.host}',
+    playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+    ask: 'https://stackoverflow.com/questions/tagged/office-js',
+    excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
+    word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
+    onenote_api: 'https://dev.office.com/docs/add-ins/onenote/onenote-add-ins-programming-overview',
+    outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/',
+    powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+    project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
+    generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+};
+
 class RedirectPlugin {
     apply(compiler) {
         compiler.plugin('compilation', (compilation) => {
@@ -174,5 +188,6 @@ class RedirectPlugin {
 
 exports.build = build;
 exports.config = config;
+exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
 exports.RedirectPlugin = RedirectPlugin;

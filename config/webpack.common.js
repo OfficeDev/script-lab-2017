@@ -28,6 +28,7 @@ module.exports = (prodMode) =>
             indexScript: './public/index.script.ts',
             runScript: './public/run.script.ts',
             tutorialScript: './public/tutorial.script.ts',
+            externalPageScript: './public/external.page.script.ts', 
 
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
@@ -111,10 +112,6 @@ module.exports = (prodMode) =>
                     ignore: ['*.ts']
                 },
                 {
-                    from: './views/external-page.html',
-                    to: 'external-page.html',
-                },
-                {
                     from: '../../config/env.config.js',
                     to: '../server/core/env.config.js',
                     transform: (content, path) => {
@@ -177,6 +174,11 @@ module.exports = (prodMode) =>
                 filename: 'tutorial.html',
                 template: './views/tutorial.html',
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'external-page.html',
+                template: './views/external-page.html',
+                chunks: ['polyfills', 'vendor', 'externalPageScript'],
             }),
             
             new RedirectPlugin(),
