@@ -27,6 +27,7 @@ module.exports = (prodMode) =>
             runner: './public/runner.ts',
             error: './public/error.ts',
             auth: './public/auth.ts',
+            filepicker: './public/filepicker.ts',
             tryIt: './public/try.it.ts'
         },
 

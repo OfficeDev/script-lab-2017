@@ -278,6 +278,13 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
             invalidAuthResponseReceived: 'Invalid response received from the authentication service',
             yourAccessTokenIs: 'Your access token is'
+        },
+
+        FilePicker: {
+            authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...',
+            filePickerError: 'File picker error',
+            invalidParametersPassedInForFilePicker: 'Invalid parameters passed to file picker',
+            invalidFilePickerResponseReceived: 'Invalid response received from file picker',
         }
     };
 }

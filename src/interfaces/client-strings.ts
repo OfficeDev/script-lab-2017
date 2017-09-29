@@ -261,6 +261,13 @@ interface ClientStringsPerLanguage {
         invalidAuthResponseReceived: string;
         yourAccessTokenIs: string;
     }
+
+    FilePicker: {
+        authenticatingOnBehalfOfSnippet: string,
+        filePickerError: string,
+        invalidParametersPassedInForFilePicker: string,
+        invalidFilePickerResponseReceived: string,
+    }
 }
 
 interface ClientStrings extends ClientStringsPerLanguage {

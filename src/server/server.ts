@@ -408,11 +408,17 @@ registerRoute('get', '/version', (req, res) => {
     );
 });
 
-/** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
-registerRoute('get', '/snippet/auth', (req, res) => {
-    return loadTemplate<{ origin: string, assets: any }>('snippet-auth')
-        .then(authGenerator => {
-            const html = authGenerator({
+registerRoute('get', '/snippet/auth', (req, res) => launchPageCommon(res, 'snippet-auth'));
+registerRoute('get', '/snippet/filepicker', (req, res) => launchPageCommon(res, 'snippet-filepicker'));
+registerRoute('post', '/snippet/filepicker', (req, res) => launchPageCommon(res, 'snippet-filepicker'));
+
+// HELPERS
+
+function launchPageCommon(res: express.Response, templateName: string, params: any = {}) {
+    return loadTemplate<any>(templateName)
+        .then(templateGenerator => {
+            const html = templateGenerator({
+                ...params,
                 origin: currentConfig.editorUrl,
                 assets: getAssetPaths()
             });
@@ -420,10 +426,7 @@ registerRoute('get', '/snippet/auth', (req, res) => {
             res.setHeader('Cache-Control', 'no-cache, no-store');
             return res.contentType('text/html').status(200).send(html);
         });
-});
-
-
-// HELPERS
+}
 
 function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);

@@ -286,6 +286,13 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
+        },
+
+        FilePicker: {
+            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().FilePicker.authenticatingOnBehalfOfSnippet,
+            filePickerError: getEnglishSubstitutesForNotYetTranslated().FilePicker.filePickerError,
+            invalidParametersPassedInForFilePicker: getEnglishSubstitutesForNotYetTranslated().FilePicker.invalidParametersPassedInForFilePicker,
+            invalidFilePickerResponseReceived: getEnglishSubstitutesForNotYetTranslated().FilePicker.invalidFilePickerResponseReceived
         }
     };
 }

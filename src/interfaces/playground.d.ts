@@ -187,3 +187,10 @@ interface AuthRequestParamData {
     client_id: string;
     is_office_host: boolean;
 }
+
+// NOTE:  This interface must be kept in sync with the parameters to "_generateFilePickerUrl" in "runtime-helpers.ts"
+interface FilePickerParamData {
+    filePicker_action: 'open' | 'save';
+    client_id: string;
+    is_office_host: boolean;
+}
