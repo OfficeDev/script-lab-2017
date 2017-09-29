@@ -3,6 +3,33 @@ import { environment } from './environment';
 import * as cuid from 'cuid';
 
 class StorageHelper {
+    LocalStorageKey_PlaygroundSettings = 'playground_settings';
+    get LocalStorageKey_PlaygroundHostSnippets() {
+        return `playground_${environment.current.host}_snippets`;
+    }
+
+    SessionStorageKey_IntelliSenseCache = 'playground_intellisense';
+
+
+    private _settings: Storage<ISettings>;
+    get settings() {
+        if (!this._settings) {
+            this._settings = new Storage<ISettings>(this.LocalStorageKey_PlaygroundSettings);
+        }
+        return this._settings;
+    }
+
+    private _intellisenseCache: Storage<string>;
+    get intellisenseCache() {
+        if (!this._intellisenseCache) {
+            this._intellisenseCache = new Storage<string>(this.SessionStorageKey_IntelliSenseCache, StorageType.SessionStorage);
+            if (environment.current.devMode) {
+                this._intellisenseCache.clear();
+            }
+        }
+        return this._intellisenseCache;
+    }
+
     private _user: string;
     get user(): string {
         if (this._user == null) {
@@ -15,13 +42,10 @@ class StorageHelper {
         return this._user;
     }
 
-    settings = new Storage<ISettings>('playground_settings');
-    intellisenseCache = new Storage<string>('playground_intellisense', StorageType.SessionStorage);
-
     private _snippets: Storage<ISnippet> = null;
     get snippets() {
         if (this._snippets == null && environment.current && environment.current.host) {
-            this._snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
+            this._snippets = new Storage<ISnippet>(this.LocalStorageKey_PlaygroundHostSnippets);
         }
         return this._snippets;
     }

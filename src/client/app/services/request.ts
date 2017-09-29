@@ -19,9 +19,9 @@ export class Request {
         return this._response(xhr, responseType);
     }
 
-    get<T>(url: string, responseType: ResponseTypes, headers?: Object, forceBypassCache?: boolean): Observable<T> {
-        if (forceBypassCache != null && forceBypassCache) {
-            url = url + ((url.indexOf('?') === -1) ? '?' : '&') + `timestamp=${(new Date).getTime()}`;
+    get<T>(url: string, responseType: ResponseTypes, headers?: Object, cacheBusterString?: string): Observable<T> {
+        if (cacheBusterString) {
+            url = url + ((url.indexOf('?') === -1) ? '?' : '&') + `cachebuster=` + encodeURIComponent(cacheBusterString);
         }
 
         let options = this._generateHeaders(headers);

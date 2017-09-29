@@ -16,7 +16,12 @@ import { Subscription } from 'rxjs/Subscription';
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
                 {{tab.displayName}}
             </li>
-        </ul>            
+        </ul>
+        <section class="custom-functions" *ngIf="showRegisterCustomFunctions">
+            <button class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()">
+                <span class="ms-Button-label">{{strings.registerCustomFunctions}}</span>
+            </button>
+        </section>
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
@@ -34,6 +39,9 @@ export class Editor implements AfterViewInit {
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
     hide: boolean = true;
+    showRegisterCustomFunctions = false;
+
+    strings = Strings();
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -92,14 +100,18 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
     }
 
-    updateIntellisense() {
+    updateIntellisense(tabName: 'script' | 'customFunctions') {
         if (this.snippet == null) {
             return;
         }
 
         this._store.dispatch(new Monaco.UpdateIntellisenseAction(
-            { libraries: this.snippet.libraries.split('\n'), language: 'typescript' }
+            { libraries: this.snippet.libraries.split('\n'), language: 'typescript', tabName }
         ));
+    }
+
+    registerCustomFunctions() {
+        // TODO
     }
 
     private _createTabs() {
@@ -155,9 +167,10 @@ export class Editor implements AfterViewInit {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
                     let timer = AI.trackPageView(this.currentState.displayName, `/edit/${this.currentState.name}`);
-                    if (this.currentState.name === 'script') {
-                        this.updateIntellisense();
+                    if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
+                        this.updateIntellisense(this.currentState.name);
                     }
+                    this.showRegisterCustomFunctions = newTab === 'customFunctions';
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();

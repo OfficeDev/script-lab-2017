@@ -57,17 +57,17 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
+    strings = Strings();
+
     cache = [
         `${Strings().aboutStorage}`,
-        `${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings().aboutSnippets)}`,
-        `${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}`,
+        `${storageSize(localStorage, storage.LocalStorageKey_PlaygroundHostSnippets, Strings().aboutSnippets)}`,
+        `${storageSize(sessionStorage, storage.SessionStorageKey_IntelliSenseCache, Strings().aboutIntellisense)}`,
     ].join('\n');
 
     config = {
         build: environment.current.build,
     };
-
-    strings = Strings();
 
     availableLanguages = [] as { name: string, value: string }[];
     currentChosenLanguage = '';

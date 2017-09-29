@@ -143,7 +143,9 @@ interface ClientStringsPerLanguage {
         'style': string;
         'libraries': string;
         'customFunctions': string;
-    },
+    };
+
+    registerCustomFunctions: string;
 
     // view.mode.ts strings
 

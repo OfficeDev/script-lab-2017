@@ -137,6 +137,11 @@ interface ICurrentPlaygroundInfo {
     host: Readonly<string>;
     platform: Readonly<string>;
 
+    /** A timestamp specifically for the in-memory session (i.e.,
+     * even more short-term than sessionStorage, which has a lifetime-of-tab duration;
+     * whereas this one will get generated anew with each reload) */
+    runtimeSessionTimestamp: Readonly<string>;
+
     supportsCustomFunctions: boolean;
     
     isAddinCommands: boolean;

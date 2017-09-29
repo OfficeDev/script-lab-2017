@@ -3,6 +3,7 @@ import { attempt, isError, isPlainObject } from 'lodash';
 
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Strings } from '../strings';
+import { isValidHost } from '../helpers';
 
 let { devMode, build, config } = PLAYGROUND;
 import { isNil } from 'lodash';
@@ -48,14 +49,12 @@ class Environment {
 
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
-            this._current = {} as ICurrentPlaygroundInfo;
-            
-            let cachedEnvironment = (this.cache.get('environment') || {}) as {
-                host: string;
-                platform;
-            };
+            let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
+            delete cachedEnvironment.runtimeSessionTimestamp;
+            // Once ready to use experimentation flags, use them like this:
+            // let experimentationFlags = JSON.parse(this.getExperimentationFlagsString())
 
-            let aboutToAppend: ICurrentPlaygroundInfo = {
+            this._current = {
                 devMode,
                 build,
                 config: this._config,
@@ -66,12 +65,13 @@ class Environment {
                 isTryIt: false,
                 wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || '',
 
-                // And append (override) any existing environment values that may have already been cached
-                ...cachedEnvironment
+                host: null,
+                platform: null,
+
+                runtimeSessionTimestamp: (new Date()).getTime().toString()
             };
 
-            // Append via "appendCurrent", so that any specific logic can run
-            this.appendCurrent(aboutToAppend);
+            this.appendCurrent(cachedEnvironment);
 
             this.cache.insert('environment', this._current);
         }
@@ -176,8 +176,16 @@ class Environment {
         }
 
         if (pageParams.mode) {
-            this.appendCurrent({ host: pageParams.mode.toUpperCase() });
-            return true;
+            if (pageParams.mode.endsWith('/')) {
+                pageParams.mode = pageParams.mode.substr(0, pageParams.mode.length - 1);
+            }
+            if (pageParams.mode.endsWith('#')) {
+                pageParams.mode = pageParams.mode.substr(0, pageParams.mode.length - 1);
+            }
+            if (isValidHost(pageParams.mode)) {
+                this.appendCurrent({ host: pageParams.mode.toUpperCase() });
+                return true;
+            }
         }
 
         if (location.hash) {

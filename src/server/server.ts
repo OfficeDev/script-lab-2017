@@ -599,7 +599,7 @@ function generateSnippetHtmlData(
                     isOfficeSnippet: isOfficeHost(snippet.host),
                     isExternalExport: isExternalExport,
                     strings,
-                    runtimeHelpersUrl: getRuntimeHelpersUrl(),
+                    authHelpersUrl: getTheRuntimeHelpersUrl('auth-helpers'),
                     editorUrl: currentConfig.editorUrl,
                     runtimeHelperStringifiedStrings: JSON.stringify(
                         strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
@@ -756,26 +756,23 @@ function loadTemplate<T>(templateName: string) {
     return loadTemplateHelper<T>(templateName, getDefaultHandlebarsContext());
 }
 
-let _runtimeHelpersUrl;
-function getRuntimeHelpersUrl() {
-    if (!_runtimeHelpersUrl) {
+let _runnerHashIfAny: string;
+function getTheRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions') {
+    if (!_runnerHashIfAny) {
         let assetPaths = getDefaultHandlebarsContext().assets;
         // Some assets, like the runtime helpers, are not compiled with webpack.
         // Instead, they are manually copied, and end up with no hash.
         // So, to guarantee their freshness, use the runner hash (once per deployment)
         // as a good approximation for when it's time to get a new version.
-        let runnerHashIfAny: string;
         let runnerHashPattern = /^bundles\/runner\.(\w*)\.bundle.js/;
         let runnerHashMatch = runnerHashPattern.exec(assetPaths.runner.js);
         if (runnerHashMatch && runnerHashMatch.length === 2) {
-            runnerHashIfAny = runnerHashMatch[1];
+            _runnerHashIfAny = runnerHashMatch[1];
         }
-
-        _runtimeHelpersUrl = currentConfig.editorUrl + '/runtime-helpers.js' +
-            (runnerHashIfAny ? ('?hash=' + runnerHashIfAny) : '');
     }
 
-    return _runtimeHelpersUrl;
+    return `${currentConfig.editorUrl}/${filename}.js` +
+            (_runnerHashIfAny ? ('?hash=' + _runnerHashIfAny) : '');
 }
 
 function getClientSecret() {
