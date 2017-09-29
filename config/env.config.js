@@ -81,86 +81,86 @@ class RedirectPlugin {
                         headOpeningTag +
                         `
                         <script>
-                        (function() {
-                            try {
-                                function getParameterByName(name) {
-                                    var url = window.location.search;
-                                    var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
-                                    var match = queryExp.exec(url);
-                                    if (match && match.length > 1) {
-                                        return match[1];
-                                    }
-                                    return null;
+                    (function() {
+                        try {
+                            function getParameterByName(name) {
+                                var url = window.location.search;
+                                var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
+                                var match = queryExp.exec(url);
+                                if (match && match.length > 1) {
+                                    return match[1];
                                 }
-
-                                function isAllowedUrl(url) {
-                                    if (url == null || url.trim().length === 0) {
-                                        return true;
-                                    }
-                                    
-                                    url = decodeURIComponent(url);
-
-                                    var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
-
-                                    var matchingLocation = validRedirectLocations.find(function(location) {
-                                        return location.indexOf(url) === 0;
-                                    });
-
-                                    return matchingLocation ? true : false;
-                                }
-
-
-                                var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
-                                var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
-
-                                let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
-                                if (!urlsAreOk) {
-                                    throw new Error("Invalid query parameters for target or origin environments");
-                                }
-
-                                // Set target environment for origin environment to redirect to
-                                if (targetUrl.length > 0) {
-                                    targetUrl = decodeURIComponent(targetUrl)
-                                    // Clear origin environment's local storage if target = origin
-                                    if (window.location.href.toLowerCase().indexOf(targetUrl) === 0) {
-                                        window.localStorage.removeItem("${redirectEnvironmentUrl}");
-                                        return;
-                                    }
-
-                                    window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
-                                }
-
-                                // Redirect origin environment to target
-                                var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
-                                if (redirectUrl) {
-                                    var originParam = [
-                                        (window.location.search ? "&" : "?"), 
-                                        "originEnvironment=",
-                                        encodeURIComponent(window.location.origin)
-                                    ].join("");
-
-                                    window.location.replace([
-                                        redirectUrl,
-                                        window.location.pathname,
-                                        window.location.search,
-                                        originParam,
-                                        window.location.hash
-                                    ].join(""));
-                                }
-
-                                // Point app environment back to origin if user is not in origin
-                                if (originUrl.length > 0) {
-                                    window.localStorage.setItem("${originEnvironmentUrl}",
-                                        decodeURIComponent(originUrl).toLowerCase());
-                                }
-
-                                // If reached here, environment is already configured
-                                return;
-
-                            } catch (e) {
-                                console.log("Error redirecting the environments, staying on current page", e);
+                                return null;
                             }
-                        })();
+
+                            function isAllowedUrl(url) {
+                                if (url == null || url.trim().length === 0) {
+                                    return true;
+                                }
+                                
+                                url = decodeURIComponent(url);
+
+                                var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
+
+                                var matchingLocation = validRedirectLocations.find(function(location) {
+                                    return location.indexOf(url) === 0;
+                                });
+
+                                return matchingLocation ? true : false;
+                            }
+
+
+                            var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
+                            var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
+
+                            let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
+                            if (!urlsAreOk) {
+                                throw new Error("Invalid query parameters for target or origin environments");
+                            }
+
+                            // Set target environment for origin environment to redirect to
+                            if (targetUrl.length > 0) {
+                                targetUrl = decodeURIComponent(targetUrl)
+                                // Clear origin environment's local storage if target = origin
+                                if (window.location.href.toLowerCase().indexOf(targetUrl) === 0) {
+                                    window.localStorage.removeItem("${redirectEnvironmentUrl}");
+                                    return;
+                                }
+
+                                window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
+                            }
+
+                            // Redirect origin environment to target
+                            var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
+                            if (redirectUrl) {
+                                var originParam = [
+                                    (window.location.search ? "&" : "?"), 
+                                    "originEnvironment=",
+                                    encodeURIComponent(window.location.origin)
+                                ].join("");
+
+                                window.location.replace([
+                                    redirectUrl,
+                                    window.location.pathname,
+                                    window.location.search,
+                                    originParam,
+                                    window.location.hash
+                                ].join(""));
+                            }
+
+                            // Point app environment back to origin if user is not in origin
+                            if (originUrl.length > 0) {
+                                window.localStorage.setItem("${originEnvironmentUrl}",
+                                    decodeURIComponent(originUrl).toLowerCase());
+                            }
+
+                            // If reached here, environment is already configured
+                            return;
+
+                        } catch (e) {
+                            console.log("Error redirecting the environments, staying on current page", e);
+                        }
+                    })();
                         </script>
                         ` +
                         htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
