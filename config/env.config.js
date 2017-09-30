@@ -94,89 +94,89 @@ class RedirectPlugin {
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
                         headOpeningTag +
                         `
-                        <script>
-                    (function() {
-                        try {
-                            // Taken and slightly tweaked from office-js-helpers Authenticator class:
-                            // https://github.com/OfficeDev/office-js-helpers/blob/master/src/authentication/authenticator.ts
-                            function extractParams(segment) {
-                                if (segment == null || segment.trim() === '') {
-                                    return null;
-                                }
-                                var params = {};
-                                var regex = /([^&=]+)=([^&]*)/g;
-                                var matchParts;
-                                while ((matchParts = regex.exec(segment)) !== null) {
-                                    params[decodeURIComponent(matchParts[1])] = decodeURIComponent(matchParts[2]);
-                                }
-                                return params;
-                            }
+    <script>
+        (function() {
+            try {
+                // Taken and slightly tweaked from office-js-helpers Authenticator class:
+                // https://github.com/OfficeDev/office-js-helpers/blob/master/src/authentication/authenticator.ts
+                function extractParams(segment) {
+                    if (segment == null || segment.trim() === '') {
+                        return null;
+                    }
+                    var params = {};
+                    var regex = /([^&=]+)=([^&]*)/g;
+                    var matchParts;
+                    while ((matchParts = regex.exec(segment)) !== null) {
+                        params[decodeURIComponent(matchParts[1])] = decodeURIComponent(matchParts[2]);
+                    }
+                    return params;
+                }
 
-                            function isAllowedUrl(url) {
-                                if (url.length === 0) {
-                                    return true;
-                                }
+                function isAllowedUrl(url) {
+                    if (url.length === 0) {
+                        return true;
+                    }
 
-                                var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
+                    var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
 
-                                return validRedirectLocations.some(function(location) {
-                                    return location.indexOf(url) === 0;
-                                });
-                            }
+                    return validRedirectLocations.some(function(location) {
+                        return location.indexOf(url) === 0;
+                    });
+                }
 
-                            var params = extractParams(window.location.href.split('?')[1]) || {};
-                            var originUrl = (params["originEnvironment"] || "").trim();
-                            var targetUrl = (params["targetEnvironment"] || "").trim();
+                var params = extractParams(window.location.href.split('?')[1]) || {};
+                var originUrl = (params["originEnvironment"] || "").trim();
+                var targetUrl = (params["targetEnvironment"] || "").trim();
 
-                            let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
-                            if (!urlsAreOk) {
-                                throw new Error("Invalid query parameters for target or origin environments");
-                            }
+                let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
+                if (!urlsAreOk) {
+                    throw new Error("Invalid query parameters for target or origin environments");
+                }
 
-                            // Set target environment for origin environment to redirect to
-                            if (targetUrl.length > 0) {
-                                targetUrl = decodeURIComponent(targetUrl)
-                                // Clear origin environment's local storage if target = origin
-                                if (window.location.href.toLowerCase().indexOf(targetUrl) === 0) {
-                                    window.localStorage.removeItem("${redirectEnvironmentUrl}");
-                                    return;
-                                }
+                // Set target environment for origin environment to redirect to
+                if (targetUrl.length > 0) {
+                    targetUrl = decodeURIComponent(targetUrl)
+                    // Clear origin environment's local storage if target = origin
+                    if (window.location.href.toLowerCase().indexOf(targetUrl) === 0) {
+                        window.localStorage.removeItem("${redirectEnvironmentUrl}");
+                        return;
+                    }
 
-                                window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
-                            }
+                    window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
+                }
 
-                            // Redirect origin environment to target
-                            var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
-                            if (redirectUrl) {
-                                var originParam = [
-                                    (window.location.search ? "&" : "?"), 
-                                    "originEnvironment=",
-                                    encodeURIComponent(window.location.origin)
-                                ].join("");
+                // Redirect origin environment to target
+                var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
+                if (redirectUrl) {
+                    var originParam = [
+                        (window.location.search ? "&" : "?"), 
+                        "originEnvironment=",
+                        encodeURIComponent(window.location.origin)
+                    ].join("");
 
-                                window.location.replace([
-                                    redirectUrl,
-                                    window.location.pathname,
-                                    window.location.search,
-                                    originParam,
-                                    window.location.hash
-                                ].join(""));
-                            }
+                    window.location.replace([
+                        redirectUrl,
+                        window.location.pathname,
+                        window.location.search,
+                        originParam,
+                        window.location.hash
+                    ].join(""));
+                }
 
-                            // Point app environment back to origin if user is not in origin
-                            if (originUrl.length > 0) {
-                                window.localStorage.setItem("${originEnvironmentUrl}",
-                                    decodeURIComponent(originUrl).toLowerCase());
-                            }
+                // Point app environment back to origin if user is not in origin
+                if (originUrl.length > 0) {
+                    window.localStorage.setItem("${originEnvironmentUrl}",
+                        decodeURIComponent(originUrl).toLowerCase());
+                }
 
-                            // If reached here, environment is already configured
-                            return;
+                // If reached here, environment is already configured
+                return;
 
-                        } catch (e) {
-                            console.error("Error redirecting the environments, staying on current page", e);
-                        }
-                    })();
-                        </script>
+            } catch (e) {
+                console.error("Error redirecting the environments, staying on current page", e);
+            }
+        })();
+    </script>
                         ` +
                         htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
                 }

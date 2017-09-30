@@ -40,9 +40,9 @@ class VersionedPackageSubstitutionsPlugin {
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead)
                         + headOpeningTag +
                         `
-                        <script>
-                            window.versionedPackageNames = ${JSON.stringify(this._packageNames)};
-                        </script>
+    <script>
+        window.versionedPackageNames = ${JSON.stringify(this._packageNames)};
+    </script>
                         ` + 
                         htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
                 }
