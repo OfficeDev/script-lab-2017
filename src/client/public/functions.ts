@@ -1,7 +1,11 @@
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 const { safeExternalUrls } = PLAYGROUND;
 
-Office.initialize = () => {    const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+Office.initialize = () => {
+    const tutorialUrl = `${window.location.origin}/tutorial.html`;
+    const codeUrl = `${window.location.origin}/?mode=${Utilities.host}`;
+
+    const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
         options = options || {};
         options.width = options.width || 60;
         options.height = options.height || 60;
@@ -30,9 +34,9 @@ Office.initialize = () => {    const launchInDialog = (url: string, event?: any,
         launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
     };
 
-    (window as any).launchCode = (event) => launchInDialog(safeExternalUrls.code, event, { width: 75, height: 75, displayInIframe: false });
+    (window as any).launchCode = (event) => launchInDialog(codeUrl, event, { width: 75, height: 75, displayInIframe: false });
 
-    (window as any).launchTutorial = (event) => launchInDialog(safeExternalUrls.tutorial, event, { width: 35, height: 45 });
+    (window as any).launchTutorial = (event) => launchInDialog(tutorialUrl, event, { width: 35, height: 45 });
 
     (window as any).launchHelp = (event) => launchDialogNavigation(safeExternalUrls.playground_help, event, { displayInIframe: false });
 

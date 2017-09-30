@@ -3,7 +3,7 @@ import { forIn } from 'lodash';
 const { safeExternalUrls } = PLAYGROUND;
 
 (() => {
-    const params = Authenticator.extractParams(window.location.href.split('?')[1]);
+    const params = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
     let destination = params['destination'];
 
     forIn(safeExternalUrls, (value: string): any => {

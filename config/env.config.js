@@ -61,9 +61,8 @@ const config = {
     }
 };
 
-var safeExternalUrls = {
-    tutorial: window.location.origin + '/tutorial.html',
-    code: window.location.origin + '/?mode=${Utilities.host}',
+// NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
+const safeExternalUrls = {
     playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
     ask: 'https://stackoverflow.com/questions/tagged/office-js',
     excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
@@ -113,7 +112,7 @@ class RedirectPlugin {
                             }
 
                             function isAllowedUrl(url) {
-                                if ((url || "").trim().length === 0) {
+                                if (url.length === 0) {
                                     return true;
                                 }
 
@@ -125,8 +124,10 @@ class RedirectPlugin {
                             }
 
                             var params = extractParams(window.location.href.split('?')[1]) || {};
-                            let urlsAreOk = isAllowedUrl(params["originEnvironment"]) && isAllowedUrl(params["targetEnvironment"]);
+                            var originUrl = (params["originEnvironment"] || "").trim();
+                            var targetUrl = (params["targetEnvironment"] || "").trim();
 
+                            let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
                             if (!urlsAreOk) {
                                 throw new Error("Invalid query parameters for target or origin environments");
                             }
