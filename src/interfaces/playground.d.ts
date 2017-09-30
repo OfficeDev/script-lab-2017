@@ -71,7 +71,7 @@ interface IRunnerState {
     /** URL to return to in case of the gallery (or something else custom).
      * Otherwise, if null, will create a default reference back to editor domain,
      * taking host and snippet ID into account */
-    returnUrl?: string;    
+    returnUrl?: string;
 }
 
 interface IExportState {
@@ -136,7 +136,7 @@ interface ICompiledPlaygroundInfo {
         outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
         powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
-        generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'    
+        generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
     };
 }
 
