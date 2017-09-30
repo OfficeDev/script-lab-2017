@@ -97,37 +97,36 @@ class RedirectPlugin {
                         <script>
                     (function() {
                         try {
-                            function getParameterByName(name) {
-                                var url = window.location.search;
-                                var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
-                                var match = queryExp.exec(url);
-                                if (match && match.length > 1) {
-                                    return match[1];
+                            // Taken and slightly tweaked from office-js-helpers Authenticator class:
+                            // https://github.com/OfficeDev/office-js-helpers/blob/master/src/authentication/authenticator.ts
+                            function extractParams(segment) {
+                                if (segment == null || segment.trim() === '') {
+                                    return null;
                                 }
-                                return null;
+                                var params = {};
+                                var regex = /([^&=]+)=([^&]*)/g;
+                                var matchParts;
+                                while ((matchParts = regex.exec(segment)) !== null) {
+                                    params[decodeURIComponent(matchParts[1])] = decodeURIComponent(matchParts[2]);
+                                }
+                                return params;
                             }
 
                             function isAllowedUrl(url) {
-                                if (url == null || url.trim().length === 0) {
+                                if ((url || "").trim().length === 0) {
                                     return true;
                                 }
-                                
-                                url = decodeURIComponent(url);
 
                                 var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
 
-                                var matchingLocation = validRedirectLocations.find(function(location) {
+                                return validRedirectLocations.some(function(location) {
                                     return location.indexOf(url) === 0;
                                 });
-
-                                return matchingLocation ? true : false;
                             }
 
+                            var params = extractParams(window.location.href.split('?')[1]) || {};
+                            let urlsAreOk = isAllowedUrl(params["originEnvironment"]) && isAllowedUrl(params["targetEnvironment"]);
 
-                            var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
-                            var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
-
-                            let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
                             if (!urlsAreOk) {
                                 throw new Error("Invalid query parameters for target or origin environments");
                             }
@@ -172,7 +171,7 @@ class RedirectPlugin {
                             return;
 
                         } catch (e) {
-                            console.log("Error redirecting the environments, staying on current page", e);
+                            console.error("Error redirecting the environments, staying on current page", e);
                         }
                     })();
                         </script>
