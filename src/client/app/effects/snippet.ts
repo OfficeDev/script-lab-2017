@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
-import { PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager } from '../helpers';
+import {
+    PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager
+} from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
 import { UIEffects } from './ui';
@@ -29,15 +31,32 @@ export class SnippetEffects {
     @Effect()
     import$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.IMPORT)
-        .map(action => ({ data: action.payload.data, mode: action.payload.mode, isViewMode: action.payload.isViewMode }))
-        .mergeMap(({ data, mode, isViewMode }) => {
+        .map(action => ({
+            data: action.payload.data,
+            mode: action.payload.mode,
+            isReadOnlyViewMode: action.payload.isReadOnlyViewMode,
+            saveToLocalStorage: action.payload.saveToLocalStorage,
+            onSuccess: action.payload.onSuccess
+        }))
+        .mergeMap(({ data, mode, isReadOnlyViewMode, saveToLocalStorage, onSuccess }) => {
+            let resultingSnippet: ISnippet;
+
             return this._importRawFromSource(data, mode)
-                .map((snippet: ISnippet) => ({ snippet, mode }))
-                .filter(({ snippet }) => !(snippet == null))
-                .mergeMap(({ snippet, mode }) => this._massageSnippet(snippet, mode, isViewMode))
-                .mergeMap(actions => actions) /* resolve Promise */
+                .filter((snippet) => !isNil(snippet))
+                .mergeMap(async (snippet) => {
+                    let result = await this._massageSnippet(snippet, mode, { isReadOnlyViewMode, saveToLocalStorage });
+                    resultingSnippet = result.snippet;
+                    return result.actions;
+                })
+                .mergeMap(actions => {
+                    if (onSuccess) {
+                        onSuccess(resultingSnippet);
+                    }
+
+                    return actions; /* resolves the Promise */
+                })
                 .catch((exception: Error) => {
-                    if (isViewMode) {
+                    if (isReadOnlyViewMode) {
                         location.hash = '/view/error';
                     } else {
                         const message = (exception instanceof PlaygroundError) ? exception.message : Strings().snippetImportErrorBody;
@@ -135,7 +154,6 @@ export class SnippetEffects {
             } else {
                 const state: IRunnerState = {
                     snippet: snippet,
-                    returnUrl: window.location.href,
                     displayLanguage: getDisplayLanguage()
                 };
                 const data = JSON.stringify(state);
@@ -171,7 +189,7 @@ export class SnippetEffects {
     @Effect()
     updateInfo$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
-        .map(( { payload } ) => {
+        .map(({ payload }) => {
             let { id, name, description, gist, gistOwnerId } = payload;
             let snippet: ISnippet = storage.lastOpened;
             if (storage.snippets.contains(id)) {
@@ -226,7 +244,7 @@ export class SnippetEffects {
             }
             AI.trackEvent('Open in playground initiated', { id: correlationId });
             let filename = `script-lab-playground-${environment.current.host}${extension}`;
-            let url = `${environment.current.config.runnerUrl}/open/${type}/${environment.current.host}/${id}/${filename}?correlationId=${correlationId}`;
+            let url = `${environment.current.config.runnerUrl}/open/${environment.current.host}/${type}/${id}/${filename}?correlationId=${correlationId}`;
             if (isDownload) {
                 window.open(url, '_blank');
             } else {
@@ -238,8 +256,8 @@ export class SnippetEffects {
             return Observable.from([]);
         });
 
-    private _gistIdExists(id: string) {
-        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
+    private _getSnippetsWithMatchingGistID(id: string): ISnippet[] {
+        return storage.snippets.values().filter(item => item.gist && item.gist.trim() === id.trim());
     }
 
     private _nameExists(name: string) {
@@ -254,6 +272,41 @@ export class SnippetEffects {
         if (isNil(snippet.name)) {
             throw new PlaygroundError(Strings().snippetValidationNoTitle);
         }
+    }
+
+    /**
+     * If the action here involves true importing rather than re-opening,
+     * and if the name is already taken by a local snippet, generate a new name.
+     */
+    private _updateSnippetNameIfNeeded(snippet: ISnippet, mode: string, isReadOnlyViewMode: boolean) {
+        if (mode === Snippet.ImportType.OPEN) {
+            return;
+        }
+
+        if (isReadOnlyViewMode) {
+            // Also do nothing, no need to rename something that isn't saving or able to be edited
+            return;
+        }
+
+        if (this._nameExists(snippet.name)) {
+            snippet.name = this._generateName(snippet.name, '');
+        }
+    }
+
+    private _shouldSaveImportedSnippet(mode: string, isReadOnlyViewMode: boolean): boolean {
+        // If a imported snippet is a SAMPLE or the app is in view mode, then skip the save
+        // (simply to avoid clutter -- the user might be opening a bunch, one after the other).
+        // The snippet will get saved as soon as the user makes any changes (if in editor mode).
+
+        if (mode === Snippet.ImportType.SAMPLE) {
+            return false;
+        }
+
+        if (isReadOnlyViewMode) {
+            return false;
+        }
+
+        return true;
     }
 
     private _generateName(name: string, suffix: string = ''): string {
@@ -323,7 +376,16 @@ export class SnippetEffects {
 
             /* If importing a local snippet, then load it off the store */
             case Snippet.ImportType.OPEN:
-                return Observable.of(storage.snippets.get(data));
+                let snippet = storage.snippets.get(data);
+                if (!snippet) {
+                    this._uiEffects.alert(
+                        Strings().requestedSnippetNoLongerExists,
+                        Strings().cannotOpenSnippet,
+                        Strings().okButtonLabel);
+                    return Observable.of(null);
+                }
+
+                return Observable.of(snippet);
 
             /* If import type is URL or SAMPLE, then just load it assuming to be YAML */
             case Snippet.ImportType.SAMPLE:
@@ -382,11 +444,22 @@ export class SnippetEffects {
                         return output;
                     });
 
-            default: return Observable.of(null);
+            default:
+                // OK that error is in English, because this is a programmer error,
+                // it should not leak to the user:
+                this._uiEffects.alert('Invalid import type', 'Internal Error');
+                return Observable.of(null);
         }
     }
 
-    private async _massageSnippet(rawSnippet: ISnippet, mode: string, isViewMode: boolean): Promise<Observable<Action>> {
+    private async _massageSnippet(
+        rawSnippet: ISnippet,
+        mode: string,
+        additionalParameters: {
+            isReadOnlyViewMode: boolean;
+            saveToLocalStorage: boolean;
+        }
+    ): Promise<{ snippet: ISnippet, actions: Observable<Action> }> {
         if (rawSnippet.host && rawSnippet.host !== environment.current.host) {
             throw new PlaygroundError(Strings().cannotImportSnippetCreatedForDifferentHost(
                 rawSnippet.host, environment.current.host));
@@ -398,8 +471,8 @@ export class SnippetEffects {
 
         const scrubbedIfNeeded =
             (mode === Snippet.ImportType.OPEN) ?
-                {...rawSnippet} :
-                getScrubbedSnippet({...rawSnippet}, SnippetFieldType.PUBLIC);
+                { ...rawSnippet } :
+                getScrubbedSnippet({ ...rawSnippet }, SnippetFieldType.PUBLIC);
 
         const snippet = {} as ISnippet;
         assign(snippet, getSnippetDefaults(), scrubbedIfNeeded);
@@ -419,48 +492,70 @@ export class SnippetEffects {
         else if (mode === Snippet.ImportType.SAMPLE) {
             properties['sampleName'] = snippet.name;
         }
-        properties['mode'] = isViewMode ? 'view' : 'editor';
+        properties['isReadOnlyViewMode'] = additionalParameters.isReadOnlyViewMode;
         AI.trackEvent(mode, properties);
 
         /**
          * If the user is importing a gist that already exists, ask the user if they want
          * to navigate to the existing one or create a new one in their local storage.
          */
+
+        let snippetsWithSameGistId: ISnippet[];
         let importResult: string = null;
-        if (mode !== Snippet.ImportType.OPEN && snippet.gist && this._gistIdExists(snippet.gist)) {
-            importResult = await this._uiEffects.alert(
-                Strings().snippetGistIdDuplicationError,
-                `${Strings().importButtonLabel} ${snippet.name}`,
-                Strings().snippetImportExistingButtonLabel, Strings().defaultSnippetTitle, Strings().cancelButtonLabel /* user options */
-            );
+        if (mode !== Snippet.ImportType.OPEN && snippet.gist) {
+            snippetsWithSameGistId = this._getSnippetsWithMatchingGistID(snippet.gist);
+            if (snippetsWithSameGistId.length > 0) {
+                let options = [
+                    Strings().snippetImportExistingButtonLabel,
+                    (snippetsWithSameGistId.length === 1) ? Strings().overwriteExistingButtonLabel : null,
+                    Strings().createNewCopyButtonLabel,
+                    Strings().cancelButtonLabel /* user options */
+                ].filter(item => item !== null);
+
+                importResult = await this._uiEffects.alert(
+                    Strings().snippetGistIdDuplicationError,
+                    `${Strings().importButtonLabel} ${snippet.name}`,
+                    ...options
+                );
+            }
         }
 
-        let actions: Action[] = [];
-        if (importResult === Strings().snippetImportExistingButtonLabel) {
-            for (let item of storage.snippets.values()) {
-                if (item.gist && item.gist.trim() === snippet.gist.trim()) {
-                    actions.push(new Snippet.ImportSuccessAction(item));
-                    break;
+        let getActionsFunc = (): Action[] => {
+            switch (importResult) {
+                case Strings().snippetImportExistingButtonLabel: {
+                    return [new Snippet.ImportSuccessAction(snippetsWithSameGistId[0])];
+                }
+
+                case Strings().overwriteExistingButtonLabel: {
+                    snippet.id = snippetsWithSameGistId[0].id;
+                    trustedSnippetManager.untrustSnippet(snippet.id);
+                    return [
+                        new Snippet.ImportSuccessAction(snippet),
+                        new Snippet.SaveAction(snippet)
+                    ];
+                }
+
+                case Strings().cancelButtonLabel: {
+                    return [];
+                }
+
+                default: {
+                    this._updateSnippetNameIfNeeded(snippet, mode, additionalParameters.isReadOnlyViewMode);
+
+                    const actions: Action[] = [new Snippet.ImportSuccessAction(snippet)];
+
+                    if (this._shouldSaveImportedSnippet(mode, additionalParameters.isReadOnlyViewMode)) {
+                        actions.push(new Snippet.SaveAction(snippet));
+                    }
+                    return actions;
                 }
             }
-        } else if (importResult !== Strings().cancelButtonLabel) {
-            /**
-             * If the action here involves true importing rather than re-opening,
-             * and if the name is already taken by a local snippet, generate a new name.
-             */
-            if (!isViewMode && mode !== Snippet.ImportType.OPEN && this._nameExists(snippet.name)) {
-                snippet.name = this._generateName(snippet.name, '');
-            }
-            actions.push(new Snippet.ImportSuccessAction(snippet));
-            /*
-            * If a imported snippet is a SAMPLE or the app is in view mode, then skip the save (simply to avoid clutter).
-            * The snippet will get saved as soon as the user makes any changes (if in editor mode).
-            */
-            if (mode !== Snippet.ImportType.SAMPLE && !isViewMode) {
-                actions.push(new Snippet.SaveAction(snippet));
-            }
-        }
-        return Observable.from(actions);
+        };
+
+        return {
+            snippet,
+            actions: Observable.from(getActionsFunc())
+        };
     }
 
     private _checkForUnsupportedAPIsIfRelevant(api_set: { [index: string]: number }, snippet: ISnippet) {

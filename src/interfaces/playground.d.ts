@@ -1,3 +1,7 @@
+interface IExperimentationFlags {
+    testFlag: string;
+}
+
 interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
@@ -62,11 +66,12 @@ interface ICompiledSnippet extends ITemplate {
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
-
-    /** URL to return to (editor, or gallery view). More than just origin domain */
-    returnUrl: string;
-
     displayLanguage: string;
+
+    /** URL to return to in case of the gallery (or something else custom).
+     * Otherwise, if null, will create a default reference back to editor domain,
+     * taking host and snippet ID into account */
+    returnUrl?: string;    
 }
 
 interface IExportState {
@@ -122,11 +127,15 @@ interface ICompiledPlaygroundInfo {
 }
 
 interface ICurrentPlaygroundInfo {
-    devMode: boolean;
-    build: IBuildInfo;
-    config: IEnvironmentConfig;
-    host?: string;
-    platform?: string;
+    devMode: Readonly<boolean>;
+    build: Readonly<IBuildInfo>;
+    config: Readonly<IEnvironmentConfig>;
+    host: Readonly<string>;
+    platform: Readonly<string>;
+
+    isAddinCommands: boolean;
+    isTryIt: boolean;
+    wacUrl: string;
 }
 
 interface IBuildInfo {
@@ -171,6 +180,8 @@ interface HeartbeatParams {
      * If lastModified is empty or 0, the heartbeat will send the snippet back immediately;
     */
     lastModified: string;
+
+    runnerUrl: string;
 }
 
 // NOTE:  This interface must be kept in sync with the parameters to "_generateAuthUrl" in "runtime-helpers.ts"

@@ -1,18 +1,24 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
-import { Utilities, PlatformType } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries } from '../app/helpers/utilities';
+import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
+import { generateUrl, processLibraries, environment, instantiateRibbon } from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, MessageType } from '../app/helpers/messenger';
+
+import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
 
 interface InitializationParams {
+    host: string;
     origin: string;
-    officeJS: string;
     returnUrl: string;
     isTrustedSnippet: boolean;
-    heartbeatParams: HeartbeatParams,
+    currentSnippet: {
+        officeJS: string;
+        id: string;
+        lastModified: string;
+    }
     explicitlySetDisplayLanguageOrNull: string;
 }
 
@@ -44,91 +50,124 @@ interface InitializationParams {
         window: Window
     } = <any>{};
 
-    function initializeRunner(params: InitializationParams): void {
+    let isInTryItMode = checkIfInTryItMode();
+
+    async function initializeRunner(params: InitializationParams): Promise<void> {
         try {
-            if (!((window.top as any).in_try_it_mode) && params.officeJS) {
+            await environment.initializePartial({ host: params.host });
+            instantiateRibbon('ribbon');
+
+            document.getElementById('choose-your-host').textContent = Strings().HtmlPageStrings.chooseYourHost;
+            document.getElementById('choose-your-host').style.visibility = 'visible';
+
+            if (isInTryItMode) {
+                // Nothing to wait on, playground is ready:
+                setPlaygroundHostIsReady();
+            }
+            else if (params.currentSnippet.officeJS) {
                 let script = document.createElement('script');
-                script.src = params.officeJS;
+                script.src = params.currentSnippet.officeJS;
                 script.addEventListener('load', (event) => {
                     Office.initialize = () => {
                         // Set initialize to an empty function -- that way, doesn't cause
                         // re-initialization of this page in case of a page like the error dialog,
                         // which doesn't defined (override) Office.initialize.
                         Office.initialize = () => { };
-                        (window as any).playground_host_ready = true;
+                        setPlaygroundHostIsReady();
                     };
                 });
                 document.getElementsByTagName('head')[0].appendChild(script);
-            } else {
-                (window as any).playground_host_ready = true;
             }
-            initializeRunnerHelper();
+            else {
+                setPlaygroundHostIsReady();
+            }
+
+            await initializeRunnerHelper(params);
         }
         catch (error) {
             handleError(error);
         }
+    }
 
-        // Helper:
-        async function initializeRunnerHelper() {
-            if (params.returnUrl) {
-                window.sessionStorage.playground_returnUrl = params.returnUrl;
-            }
+    async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
+        // Even though already did a partial initialization, do a more thorough
+        // one here that will let the user choose the host, if one isn't specified:
+        await environment.initialize({ host: initialParams.host });
 
-            if (params.explicitlySetDisplayLanguageOrNull) {
-                setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
-                document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
-            }
+        // Having (possibly) re-initialized host (if via buttons), assign final value,
+        // both to "initialParams" (just in case it gets used again) and to the longer-term host variable:
+        initialParams.host = environment.current.host;
+        host = environment.current.host;
 
-            if (window.sessionStorage.playground_returnUrl) {
-                returnUrl = window.sessionStorage.playground_returnUrl;
-                $('#header-back').attr('href', returnUrl).show();
-            }
+        // Also apply the host theming by adding this attribute on the "body" element:
+        $('body').addClass(host);
 
-            returnUrl = params.returnUrl;
-            host = params.heartbeatParams.host;
+        returnUrl = initialParams.returnUrl;
 
-            currentSnippet = {
-                id: params.heartbeatParams.id,
-                lastModified: toNumber(params.heartbeatParams.lastModified),
-                officeJS: params.officeJS
-            };
-
-            await Promise.all([
-                loadFirebug(params.origin),
-                ensureHostInitialized()
-            ]);
-
-            $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
-            if (Utilities.platform === PlatformType.PC) {
-                $('#padding-for-personality-menu').addClass('flex-fixed-width-twenty-px');
-            } else if (Utilities.platform === PlatformType.MAC) {
-                $('#padding-for-personality-menu').addClass('flex-fixed-width-forty-px');
-            }
-
-            $snippetContent = $('#snippet-code-content');
-
-            // Because it's a multiline text inside of a "pre" tag, trim it:
-            const snippetHtml = $snippetContent.text().trim();
-
-            let isTrustedSnippet = isNil(params.isTrustedSnippet) ? false : params.isTrustedSnippet;
-            if (snippetHtml.length > 0) {
-                // Clear the text, but keep the placeholder in the DOM,
-                // so that can keep adding the snippet frame relative to its position
-                $snippetContent.text('');
-
-                replaceSnippetIframe(atob(snippetHtml), params.officeJS, isTrustedSnippet);
-            }
-
-            establishHeartbeat(params.origin, params.heartbeatParams);
-
-            $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/));
-
-            initializeTooltipUpdater();
-
-            // create an observer for firebug resizing
-            (new MutationObserver(mutations => mutations.forEach(snippetAndConsoleRefreshSize)))
-                .observe(document.getElementById('FirebugUI'), { attributes: true });
+        if (returnUrl) {
+            window.sessionStorage.playground_returnUrl = returnUrl;
+        } else if (window.sessionStorage.playground_returnUrl) {
+            returnUrl = window.sessionStorage.playground_returnUrl;
+        } else {
+            returnUrl = `${environment.current.config.editorUrl}/#/edit/${host}`;
         }
+
+        if (initialParams.explicitlySetDisplayLanguageOrNull) {
+            setDisplayLanguage(initialParams.explicitlySetDisplayLanguageOrNull);
+            document.cookie = `displayLanguage=${encodeURIComponent(initialParams.explicitlySetDisplayLanguageOrNull)};path=/;`;
+        }
+
+        $('#header-back').attr('href', returnUrl).show();
+
+        currentSnippet = {
+            ...initialParams.currentSnippet,
+            lastModified: toNumber(initialParams.currentSnippet.lastModified)
+        };
+
+        await Promise.all([
+            loadFirebug(initialParams.origin),
+            ensureHostInitialized()
+        ]);
+
+        $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
+        if (Utilities.platform === PlatformType.PC) {
+            $('#padding-for-personality-menu').addClass('flex-fixed-width-twenty-px');
+        } else if (Utilities.platform === PlatformType.MAC) {
+            $('#padding-for-personality-menu').addClass('flex-fixed-width-forty-px');
+        }
+
+        $snippetContent = $('#snippet-code-content');
+
+        // Because it's a multiline text inside of a "pre" tag, trim it:
+        const snippetHtml = $snippetContent.text().trim();
+        let isTrustedSnippet = isNil(initialParams.isTrustedSnippet) ? false : initialParams.isTrustedSnippet;
+        if (snippetHtml.length > 0) {
+            // Clear the text, but keep the placeholder in the DOM,
+            // so that can keep adding the snippet frame relative to its position
+            $snippetContent.text('');
+
+            replaceSnippetIframe(atob(snippetHtml), initialParams.currentSnippet.officeJS, isTrustedSnippet);
+        }
+
+        let runnerUrlWithCorrectPrefix = (() => {
+            let urlExtractor = /^(http[s]?:)\/\/(.*)$/ig.exec(environment.current.config.runnerUrl);
+            return `${window.location.protocol}//${urlExtractor[2]}`;
+        })();
+
+        establishHeartbeat(initialParams.origin, {
+            host: host,
+            runnerUrl: runnerUrlWithCorrectPrefix,
+            id: currentSnippet.id,
+            lastModified: initialParams.currentSnippet.lastModified
+        });
+
+        $('#sync-with-editor').click(() => clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/));
+
+        initializeTooltipUpdater();
+
+        // create an observer for firebug resizing
+        (new MutationObserver(mutations => mutations.forEach(snippetAndConsoleRefreshSize)))
+            .observe(document.getElementById('FirebugUI'), { attributes: true });
     }
 
     (window as any).initializeRunner = initializeRunner;
@@ -167,11 +206,9 @@ interface InitializationParams {
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
-                if ((window.top as any).in_try_it_mode) {
-                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window.top[namespace]);
-                } else {
-                    officeNamespacesForIframe.forEach(namespace => contentWindow[namespace] = window[namespace]);
-                }
+                officeNamespacesForIframe.forEach(namespace => {
+                    contentWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
+                });
             }
 
             $emptySnippetPlaceholder.remove();
@@ -195,7 +232,16 @@ interface InitializationParams {
         contentWindow.document.open();
         contentWindow.document.write(html);
         (contentWindow as any).console = window.console;
-        contentWindow.onerror = (...args) => console.error(args);
+        contentWindow.onerror = (...args) => {
+            // If errors occur during loading rather than after
+            // "scriptRunnerBeginInit" is called, the Firebug console itself
+            // won't be visible, so it doesn't help to show the console error there.
+            // Instead, expose it as a UI notification:
+            UI.notify(Strings().Runner.runtimeErrorWhileLoadingTheSnippet,
+                Strings().Runner.goBackToEditorToFixError + '\n' + args[0],
+                'error');
+            toggleProgress(false);
+        };
         contentWindow.document.close();
 
         return true;
@@ -254,7 +300,7 @@ interface InitializationParams {
     }
 
     async function ensureHostInitialized(): Promise<any> {
-        if ((window.top as any).in_try_it_mode) {
+        if (isInTryItMode) {
             (window as any).Office = {
                 initialize: () => { },
 
@@ -271,13 +317,13 @@ interface InitializationParams {
 
         // window.playground_host_ready is set within the runner template (embedded in html code)
         // when the host is ready (i.e., in Office.initialized callback, if Office host)
-        if ((window as any).playground_host_ready) {
+        if (getIsPlaygroundHostReady()) {
             return Promise.resolve();
         }
 
         return new Promise((resolve) => {
             const interval = setInterval(() => {
-                if ((window as any).playground_host_ready) {
+                if (getIsPlaygroundHostReady()) {
                     clearInterval(interval);
                     return resolve();
                 }
@@ -396,14 +442,14 @@ interface InitializationParams {
 
         // If still here, proceed to render:
 
+        (window as any).Firebug.Console.clear();
+
         $('#header-refresh').attr('href', refreshUrl);
 
         let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
-
-        (window as any).Firebug.Console.clear();
 
         if (replacedSuccessfully) {
             $('.runner-overlay').hide();
@@ -458,6 +504,7 @@ interface InitializationParams {
     }
 
     function showHeader() {
+        $('#ribbon').hide();
         $('#header').css('visibility', 'visible');
     }
 
@@ -503,6 +550,26 @@ interface InitializationParams {
                 flexProperties.map(prefix => `${prefix}: 1 1 1px`).join('; ')
             );
         }, 0);
+    }
+
+    function checkIfInTryItMode(): boolean {
+        // Note: need to surround with try/catch because on Office Online,
+        // window.parent will be Office Online itself which is on a different domain,
+        // and so the call will throw an exception!  So if can't access parent,
+        // then obviously window.parent is *NOT* in try-it mode!
+        try {
+            return (window.parent as any).in_try_it_mode;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function setPlaygroundHostIsReady() {
+        (window as any).playground_host_ready = true;
+    }
+
+    function getIsPlaygroundHostReady(): boolean {
+        return (window as any).playground_host_ready;
     }
 
 })();

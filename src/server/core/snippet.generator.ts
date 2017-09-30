@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { BadRequestError } from './errors';
+import { BadRequestError, InformationalError } from './errors';
 import { processLibraries } from './libraries.processor';
 
 export class SnippetGenerator {
@@ -57,7 +57,7 @@ export class SnippetGenerator {
                 });
 
                 if (result.diagnostics.length) {
-                    throw new BadRequestError(
+                    throw new InformationalError(
                         this._strings.getSyntaxErrorsTitle(result.diagnostics.length),
                         result.diagnostics.map(item => {
                             let upThroughError = content.substr(0, item.start);

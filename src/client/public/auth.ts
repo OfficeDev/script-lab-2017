@@ -76,12 +76,20 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
             if (hasHash) {
                 const authResponseKeyValues = Authenticator.extractParams(window.location.href.split('#')[1]);
                 const accessToken = authResponseKeyValues['access_token'];
+                const expiresIn = authResponseKeyValues['expires_in'];
                 if (accessToken) {
+                    const message = {
+                        type: 'auth',
+                        message: {
+                            accessToken: accessToken,
+                            expiresIn: expiresIn
+                        }
+                    };
                     if (authRequest.is_office_host) {
-                        Office.context.ui.messageParent('AUTH:access_token=' + accessToken);
+                        Office.context.ui.messageParent(JSON.stringify(message));
                     } else {
                         if (window.opener) {
-                            window.opener.postMessage('AUTH:access_token=' + accessToken, environment.current.config.runnerUrl);
+                            window.opener.postMessage(JSON.stringify(message), environment.current.config.runnerUrl);
                         } else {
                             setSubtitleText(strings.Auth.yourAccessTokenIs);
                             const accessTokenInputBox = (document.getElementById('access-token-if-no-redirect') as HTMLInputElement);

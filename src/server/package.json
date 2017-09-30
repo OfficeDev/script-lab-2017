@@ -30,6 +30,7 @@
         "express": "4.15.2",
         "handlebars": "4.0.6",
         "js-yaml": "3.8.2",
+        "is-plain-object": "^2.0.4",
         "lodash": "4.17.4",
         "moment": "2.18.1",
         "request": "2.80.0",

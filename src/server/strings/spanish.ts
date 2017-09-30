@@ -5,9 +5,13 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = 'Se produjo un error inesperado';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: 'Codifica ● Ejecuta ● Comparte',
+
         error: 'Error',
         unexpectedError: unexpectedError,
         invalidHost: 'Host inválido',
@@ -20,16 +24,13 @@ export function getSpanishStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `Cargando "${snippetName}"`,
 
-        loadingSnippetDotDotDot: 'Cargando código ...',
-
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? 'Errores de sintaxis' : 'Syntax errors'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `Bienvenido a Script Lab – pero probablemente quieres usar el Editor y no la ventana que ejecuta el código. Favor de regresar a ${editorUrl}`,
 
         createdWithScriptLab: 'Creado usando Script Lab',
 
         scriptLabRunner: 'Ejecutor Script Lab ',
+        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+
         versionInfo: 'Información de versión',
 
         manifestDefaults: {

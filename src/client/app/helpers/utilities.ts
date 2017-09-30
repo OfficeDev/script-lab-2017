@@ -3,8 +3,28 @@ import { AI } from './ai.helper';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
+
+const officeHostsToAppNames = {
+    'ACCESS': 'Access',
+    'EXCEL': 'Excel',
+    'ONENOTE': 'OneNote',
+    'OUTLOOK': 'Outlook',
+    'POWERPOINT': 'PowerPoint',
+    'PROJECT': 'Project',
+    'WORD': 'Word'
+};
+
+export function isValidHost(host: string) {
+    host = host.toUpperCase();
+    return isOfficeHost(host) || (host === 'WEB');
+}
+
 export function isOfficeHost(host: string) {
     return officeHosts.indexOf(host) >= 0;
+}
+
+export function getHostAppName(host: string) {
+    return officeHostsToAppNames[host.toUpperCase()];
 }
 
 export function isInsideOfficeApp() {

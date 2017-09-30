@@ -20,6 +20,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         close: 'Close',
         about: 'About',
         feedback: 'Feedback',
+        error: 'Error',
         errors: 'Errors',
         dismiss: 'Dismiss',
 
@@ -30,14 +31,18 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'More info',
         importButtonLabel: 'Import',
         snippetImportExistingButtonLabel: 'Go to existing snippet',
+        overwriteExistingButtonLabel: 'Overwrite existing snippet',
+        createNewCopyButtonLabel: 'Create a new copy',
         editorTriggerSuggestContextMenuLabel: 'Trigger Suggest',
 
-        viewModeError: /** NEEDS STRING REVIEW */ 'Failed to load code snippet.',
+        failedToLoadCodeSnippet: /** NEEDS STRING REVIEW */ 'Failed to load the code snippet.',
 
         snippetGistIdDuplicationError: 'There is an existing snippet that was imported from the same Gist ID. Do you want to switch to this snippet or create a new copy?',
         snippetImportError: 'Failed to import snippet',
         snippetImportErrorTitle: 'Import failed',
         snippetImportErrorBody: `We couldn't import the snippet.`,
+        cannotOpenSnippet: 'Cannot open the snippet',
+        requestedSnippetNoLongerExists: 'The requested snippet no longer exists.',
         reloadPrompt: 'Reload this task pane and then try another URL or ID.',
 
         cannotImportSnippetCreatedForDifferentHost:
@@ -109,6 +114,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         aboutCurrentEnvironment: /** NEEDS STRING REVIEW */ 'Current Environment:',
         aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Switch from {0} to {1}:',
         changeEnvironmentConfirm: /** NEEDS STRING REVIEW */ 'You are about to change your Script Lab environment and will not have access to your saved local snippets until you return to this environment. Are you sure you want to proceed?',
+        showExperimentationFlags: 'Show experimentation flags',
+        invalidExperimentationFlags: 'Invalid experimentation flags (must be a valid JSON object)',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Info',
@@ -118,7 +125,6 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         descriptionPlaceholder: 'Snippet description',
         gistUrlLabel: /** NEEDS STRING REVIEW */ 'Gist URL',
         gistUrlLinkLabel: /** NEEDS STRING REVIEW */ 'Open in browser',
-        viewModeGistUrlLabel: /** NEEDS STRING REVIEW */ 'Script-Lab view-only URL',
 
         // Containers strings
         //app.ts
@@ -163,7 +169,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         openInHost: 'Open in {0}',
         openInGithub: 'Open in GitHub',
         downloadAsHostFile: 'Download {0} file',
-        openTryIt: 'Try it live in your browser', /** NEEDS STRING REVIEW **/
+        openTryIt: 'Try it in your browser', /** NEEDS STRING REVIEW **/
 
         // Outlook-only strings
 
@@ -195,13 +201,12 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         exampleAbbreviation: `e.g.:`,
 
         unexpectedError: 'An unexpected error has occurred',
+        pleaseWait: 'Please wait',
+        scriptLabIsReloading: 'Script Lab is reloading...',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
             missingSnippetParameters: `A configuration problem prevented the snippet from loading.`,
-
-            /** Error if snippet no longer exists */
-            couldNotFindTheSnippet: `Couldn't find the snippet. It might have been deleted.`,
 
             /** Appends one of the following to the error message
              * (navigating back after a couple of seconds, if there is a return URL) */
@@ -218,7 +223,10 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
 
             getLoadingSnippetSubtitle: (snippetName?: string) => {
                 return 'Loading ' + (snippetName ? `"${snippetName}"` : 'snippet');
-            }
+            },
+
+            runtimeErrorWhileLoadingTheSnippet: 'A Runtime error occurred while loading the snippet',
+            goBackToEditorToFixError: 'Please return to the script editor to fix the error.'
         },
 
         /** Error strings served by the server and displayed in the Error page */

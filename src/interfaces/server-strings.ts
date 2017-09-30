@@ -1,4 +1,8 @@
 interface ServerStrings {
+    /** Note: playground name and tagline can be copied from client strings */
+    playgroundName: string;
+    playgroundTagline: string;
+
     error: string;
     unexpectedError: string;
     invalidHost: string;
@@ -10,10 +14,7 @@ interface ServerStrings {
     line: string;
 
     getLoadingSnippetSubtitle(snippetName: string): string;
-    loadingSnippetDotDotDot: string;
     getSyntaxErrorsTitle(count: number): string
-
-    getGoBackToEditor(editorUrl: string): string
 
     createdWithScriptLab: string;
 
@@ -27,6 +28,7 @@ interface ServerStrings {
 
     run: string;
     runPageTitle: string;
+    tryItPageTitle: string;
     back: string;
     snippetNotTrusted: string;
     trust: string;

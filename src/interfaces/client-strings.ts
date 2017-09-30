@@ -17,6 +17,7 @@ interface ClientStringsPerLanguage {
     close: string;
     about: string;
     feedback: string;
+    error: string;
     errors: string;
     dismiss: string;
 
@@ -27,14 +28,18 @@ interface ClientStringsPerLanguage {
     moreInfoButtonLabel: string;
     importButtonLabel: string;
     snippetImportExistingButtonLabel: string;
+    overwriteExistingButtonLabel: string;
+    createNewCopyButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
-    viewModeError: string,
+    failedToLoadCodeSnippet: string,
 
     snippetGistIdDuplicationError: string;
     snippetImportError: string;
     snippetImportErrorTitle: string;
     snippetImportErrorBody: string;
+    cannotOpenSnippet: string;
+    requestedSnippetNoLongerExists: string;
     reloadPrompt: string;
 
     cannotImportSnippetCreatedForDifferentHost: (snippetHost: string, currentHost: string) => string;
@@ -101,6 +106,8 @@ interface ClientStringsPerLanguage {
     aboutCurrentEnvironment: string;
     aboutSwitchEnvironment: string;
     changeEnvironmentConfirm: string;
+    showExperimentationFlags: string;
+    invalidExperimentationFlags: string;
 
     //snippet.info.ts
     snippetInfoDialogTitle: string;
@@ -110,7 +117,6 @@ interface ClientStringsPerLanguage {
     descriptionPlaceholder: string;
     gistUrlLabel: string;
     gistUrlLinkLabel: string;
-    viewModeGistUrlLabel: string;
 
     // Containers strings
     //app.ts
@@ -185,14 +191,13 @@ interface ClientStringsPerLanguage {
     importUrlOrYamlLabel: string;
     exampleAbbreviation: string;
 
+    pleaseWait: string;
+    scriptLabIsReloading: string;
     unexpectedError: string;
 
     Refresh: {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */
         missingSnippetParameters: string;
-
-        /** Error if snippet no longer exists */
-        couldNotFindTheSnippet: string;
 
         /** Appends one of the following -- "returning" or "close this window and try again" -- to the error message
          * (navigating back after a couple of seconds, if there is a return URL) */
@@ -207,6 +212,9 @@ interface ClientStringsPerLanguage {
         noSnippetIsCurrentlyOpened: string;
 
         getLoadingSnippetSubtitle(snippetName?: string): string;
+
+        runtimeErrorWhileLoadingTheSnippet: string;
+        goBackToEditorToFixError: string;
     };
 
     /** Error strings served by the server and displayed in the Error page */

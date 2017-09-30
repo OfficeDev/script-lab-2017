@@ -9,6 +9,7 @@ import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'editor-mode',
@@ -45,7 +46,7 @@ import { isEmpty } from 'lodash';
     <about [(show)]="showAbout"></about>
     <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
     <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
-    <import [isEditorTryIt]="isEditorTryIt" [hidden]="!(showImport$|async)"></import>
+    <import [hidden]="!(showImport$|async)"></import>
     <alert></alert>
     <router-outlet></router-outlet>
     `
@@ -58,37 +59,36 @@ export class EditorMode {
 
     strings = Strings();
 
+    private snippetSub: Subscription;
+    private sharingSub: Subscription;
+    private errorsSub: Subscription;
+
     constructor(
         private _store: Store<fromRoot.State>,
         private _effects: UIEffects,
         private _request: Request,
         private _route: ActivatedRoute
     ) {
-        this._store.select(fromRoot.getCurrent).subscribe(snippet => {
+        this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
-
-            if (this.isEditorTryIt) {
-                window.parent.postMessage({ type: 'import-complete', id: this.snippet.id }, environment.current.config.runnerUrl);
-                return;
-            }
         });
 
-        this._store.select(fromRoot.getSharing).subscribe(sharing => {
+        this.sharingSub = this._store.select(fromRoot.getSharing).subscribe(sharing => {
             this.isDisabled = sharing;
         });
 
         this._store.dispatch(new GitHub.IsLoggedInAction());
 
-        this.checkForEditorTryIt();
+        this.parseEditorRoutingParams();
     }
 
     get isAddinCommands() {
-        return /commands=1/ig.test(location.search);
+        return environment.current.isAddinCommands;
     }
 
     get isEditorTryIt() {
-        return this._route.snapshot.url[0] && this._route.snapshot.url[0].path === 'edit';
+        return environment.current.isTryIt;
     }
 
     get isGistOwned() {
@@ -124,6 +124,18 @@ export class EditorMode {
     sharing$ = this._store.select(fromRoot.getSharing);
 
     showImport$ = this._store.select(fromRoot.getImportState);
+
+    ngOnDestroy() {
+        if (this.snippetSub) {
+            this.snippetSub.unsubscribe();
+        }
+        if (this.sharingSub) {
+            this.sharingSub.unsubscribe();
+        }
+        if (this.errorsSub) {
+            this.errorsSub.unsubscribe();
+        }
+    }
 
     run() {
         if (this.snippet == null) {
@@ -264,7 +276,7 @@ export class EditorMode {
     }
 
     showErrors() {
-        this.errors$
+        this.errorsSub = this.errors$
             .filter(errors => errors && errors.length > 0)
             .subscribe(errors => {
                 let data = errors.map(error => error.message).join('\n\n');
@@ -281,44 +293,89 @@ export class EditorMode {
         // no-op
     }
 
-    checkForEditorTryIt() {
-        if (!this.isEditorTryIt) {
-            return;
-        }
-
-        // Mimic view mode code, except Script Lab contains all editor features
+    parseEditorRoutingParams() {
         let sub = this._route.params
             .map(params => ({ type: params.type, host: params.host, id: params.id }))
-            .mergeMap(({ type, host, id }) => {
-
-                if (environment.current.host.toUpperCase() !== host.toUpperCase()) {
-                    environment.current.host = host.toUpperCase();
-                    // Update environment in cache
-                    environment.current = environment.current;
+            .mergeMap(({ type, host, id }): Observable<{ valid: boolean, mode: string; id: string }> => {
+                if (host && (environment.current.host.toUpperCase() !== host.toUpperCase())) {
+                    environment.appendCurrent({ host: host.toUpperCase() });
                 }
 
-                switch (type) {
+                if (!type) {
+                    return Observable.of({ valid: true, mode: null, id: null });
+                }
+
+                switch ((type as string).toLowerCase()) {
                     case 'samples':
                         let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-                        return (this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
-                            .map(lookupTable => ({ lookupTable: lookupTable, id: id }))
-                        );
+                        return this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
+                            .map(lookupTable => {
+                                return { valid: true, mode: Snippet.ImportType.SAMPLE, id: lookupTable[id] };
+                            })
+                            .catch(exception => Observable.of({ valid: false, mode: null, id: null }));
                     case 'gist':
-                        return Observable.of({ lookupTable: null, id: id });
+                        return Observable.of({ valid: true, mode: Snippet.ImportType.GIST, id: id });
+                    case 'open':
+                        return Observable.of({ valid: true, mode: Snippet.ImportType.OPEN, id: id });
                     default:
-                        return Observable.of({ lookupTable: null, id: null });
+                        return Observable.of({ valid: false, mode: null, id: null });
                 }
             })
-            .subscribe(({ lookupTable, id }) => {
-                if (lookupTable && lookupTable[id]) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.SAMPLE, data: lookupTable[id], isViewMode: false }));
-                } else if (id) {
-                    this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.GIST, data: id, isViewMode: false }));
-                }
+            .subscribe(({ valid, mode, id }) => {
+                this._processInitializationImport({ valid, mode, id });
 
                 if (sub && !sub.closed) {
                     sub.unsubscribe();
                 }
             });
+    }
+
+    _processInitializationImport(params: { valid: boolean, mode: string; id: string }): void {
+        let { valid, mode, id } = params;
+
+        const postImportCompleteMessageIfRelevant = (snippetId: string | null) => {
+            if (this.isEditorTryIt) {
+                window.parent.postMessage({ type: 'import-complete', id: snippetId },
+                    environment.current.config.runnerUrl);
+            }
+        };
+
+        // If valid, and import mode is empty, then simply let the editor be (it's just a normal open)
+        if (valid && mode === null) {
+            postImportCompleteMessageIfRelevant(null);
+            return;
+        }
+
+        const commonImportActionParams = {
+            mode: mode,
+            isReadOnlyViewMode: false,
+            onSuccess: (snippet: ISnippet) => {
+                this._store.dispatch(new UI.ToggleImportAction(false));
+                postImportCompleteMessageIfRelevant(snippet.id);
+            }
+        };
+
+        switch (mode) {
+            case Snippet.ImportType.SAMPLE:
+                this._store.dispatch(new Snippet.ImportAction({
+                    ...commonImportActionParams, saveToLocalStorage: false, data: id
+                }));
+                break;
+
+            case Snippet.ImportType.GIST:
+                this._store.dispatch(new Snippet.ImportAction({
+                    ...commonImportActionParams, saveToLocalStorage: !this.isEditorTryIt, data: id
+                }));
+                break;
+
+            case Snippet.ImportType.OPEN:
+                this._store.dispatch(new Snippet.ImportAction({
+                    ...commonImportActionParams, saveToLocalStorage: true, data: id
+                }));
+                break;
+
+            default:
+                this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
+        }
     }
 }

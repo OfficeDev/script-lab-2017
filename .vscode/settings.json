@@ -1,3 +1,6 @@
 {
-    "vsicons.presets.angular": true
+    "typescript.tsdk": "./node_modules/typescript/lib",
+
+    "spellright.notificationClass": "warning",
+    "spellright.ignoreFiles": [ "**/.gitignore", "**/.spellignore" ]
 }

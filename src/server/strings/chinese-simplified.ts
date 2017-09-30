@@ -5,9 +5,12 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ServerStrings {
+    const playgroundName = 'Script Lab';
     const unexpectedError = '出现意外错误';
 
     return {
+        playgroundName: playgroundName,
+        playgroundTagline: '代码 ● 编写 ● 共享',
         error: '错误',
         unexpectedError: unexpectedError,
         invalidHost: '无效的主机',
@@ -20,16 +23,13 @@ export function getChineseSimplifiedStrings(): ServerStrings {
 
         getLoadingSnippetSubtitle: (snippetName: string) => `加载 "${snippetName}"`,
 
-        loadingSnippetDotDotDot: '加载代码片段...',
-
         getSyntaxErrorsTitle: (count: number) => (count === 1 ? '句法误差' : '句法误差'),
-
-        getGoBackToEditor: (editorUrl: string) =>
-            `欢迎到 Script Lab – 但您可能希望查看编辑器，而不是查看页面。 请返回到 ${editorUrl}`,
 
         createdWithScriptLab: 'Script Lab创造',
 
         scriptLabRunner: 'Script Lab 应用',
+        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+
         versionInfo: '版本信息',
 
         manifestDefaults: {

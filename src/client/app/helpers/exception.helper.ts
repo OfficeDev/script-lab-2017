@@ -8,8 +8,16 @@ import { AI } from './ai.helper';
  */
 export class PlaygroundError extends CustomError {
     constructor(message: string, error?: Error) {
-        super('Playground Error', message, error);
+        super('PlaygroundError', message, error);
         AI.trackException(this, this.stack);
+    }
+}
+
+/** An Error-like object used to convey information with a title and message
+ * (but no App-Insights exception-tracking, for example) */
+export class InformationalError extends CustomError {
+    constructor(public title: string, message: string) {
+        super('InformationalError', message);
     }
 }
 
