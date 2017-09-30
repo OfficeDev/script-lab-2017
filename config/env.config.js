@@ -1,6 +1,7 @@
 const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
+
 const localStorageKeys = {
     originEnvironmentUrl: 'playground_origin_environment_url',
     redirectEnvironmentUrl: 'playground_redirect_environment_url',
@@ -191,3 +192,9 @@ exports.config = config;
 exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
 exports.RedirectPlugin = RedirectPlugin;
+
+// NOTE: Data in this file gets propagated to JS on client pages
+// via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition
+// in "webpack.common.js".  If you add anything to these exports
+// that you want other parts of the system to import, be sure
+// to modify the PLAYGROUN definition in "webpack.common.js".

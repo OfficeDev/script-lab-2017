@@ -108,6 +108,9 @@ interface IEvent<T> {
     data: T
 }
 
+// Note: the contents of this injected variable comes from "webpack.common.js"
+// (and in turn derives most of its values from "env.config.js", but
+// via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition)
 declare var PLAYGROUND: ICompiledPlaygroundInfo;
 
 interface ICompiledPlaygroundInfo {
