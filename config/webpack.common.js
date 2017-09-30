@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config, RedirectPlugin, localStorageKeys } = require('./env.config');
+const { build, config, RedirectPlugin, localStorageKeys, safeExternalUrls } = require('./env.config');
 const { getVersionedPackageNames, VersionedPackageSubstitutionsPlugin } = require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
 
@@ -28,6 +28,7 @@ module.exports = (prodMode) =>
             indexScript: './public/index.script.ts',
             runScript: './public/run.script.ts',
             tutorialScript: './public/tutorial.script.ts',
+            externalPageScript: './public/external.page.script.ts', 
 
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
@@ -76,7 +77,8 @@ module.exports = (prodMode) =>
                     devMode: !prodMode,
                     build: build,
                     config: config,
-                    localStorageKeys: localStorageKeys
+                    localStorageKeys: localStorageKeys,
+                    safeExternalUrls: safeExternalUrls
                 })
             }),
             new webpack.LoaderOptionsPlugin({
@@ -109,10 +111,6 @@ module.exports = (prodMode) =>
                     from: './public',
                     to: '',
                     ignore: ['*.ts']
-                },
-                {
-                    from: './views/external-page.html',
-                    to: 'external-page.html',
                 },
                 {
                     from: '../../config/env.config.js',
@@ -177,6 +175,11 @@ module.exports = (prodMode) =>
                 filename: 'tutorial.html',
                 template: './views/tutorial.html',
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'external-page.html',
+                template: './views/external-page.html',
+                chunks: ['polyfills', 'vendor', 'externalPageScript'],
             }),
             
             new RedirectPlugin(),
