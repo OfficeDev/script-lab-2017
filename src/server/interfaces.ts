@@ -38,6 +38,13 @@ export interface IRunnerHandlebarsContext {
     explicitlySetDisplayLanguageOrNull: string;
 }
 
+export interface ICustomFunctionsRunnerHandlebarsContext {
+    snippets: Array<ICustomFunctionsRelevantData>
+
+    showUI: boolean;
+    strings: ServerStrings;
+}
+
 export interface IErrorHandlebarsContext {
     title: string;
     message: string;

@@ -4,12 +4,26 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
-    const playgroundName = 'Script Lab';
 
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: '代码 ● 编写 ● 共享',
 
+        unexpectedError: '出现意外错误',
+
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+
+        error: '错误',
+        cancel: '注销',
+        dismiss: '解散',
+    };
+
+    const { playgroundName } = sharedBetweenServerAndClient;
+
+    return {
         // Environment names
         alpha: 'Alpha',
         beta: 'Beta',
@@ -25,16 +39,14 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         close: '关闭',
         about: '关于',
         feedback: '回馈',
-        error: getEnglishSubstitutesForNotYetTranslated().error,
         errors: '错误',
-        dismiss: '解散',
+        trustSnippetQuestionMark: getEnglishSubstitutesForNotYetTranslated().trustSnippetQuestionMark,
 
-        okButtonLabel: getEnglishSubstitutesForNotYetTranslated().okButtonLabel,
-        logoutButtonLabel: '退出',
-        cancelButtonLabel: '注销',
-        saveButtonLabel: '保存',
-        moreInfoButtonLabel: '更多信息',
-        importButtonLabel: '输入',
+        ok: getEnglishSubstitutesForNotYetTranslated().ok,
+        logout: '退出',
+        save: '保存',
+        moreInfo: '更多信息',
+        import: '输入',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
         createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
@@ -205,7 +217,6 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel,
         exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated().exampleAbbreviation,
 
-        unexpectedError: '出现意外错误',
         pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
         scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
@@ -289,6 +300,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

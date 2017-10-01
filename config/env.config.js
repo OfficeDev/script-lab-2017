@@ -1,10 +1,20 @@
 const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
+
 const localStorageKeys = {
+    hostSnippets_parameterized: 'playground_{0}_snippets',
+    settings: 'playground_settings',
     originEnvironmentUrl: 'playground_origin_environment_url',
     redirectEnvironmentUrl: 'playground_redirect_environment_url',
-    playgroundCache: 'playground_cache'
+    wacUrl: 'playground_wac_url',
+    experimentationFlags: 'playground_experimentation_flags',
+    trustedSnippets: 'playground_trusted_snippets'
+};
+
+const sessionStorageKeys = {
+    environmentCache: 'playground_cache',
+    intelliSenseCache: 'playground_intellisense'
 };
 
 const build = (() => {
@@ -141,4 +151,5 @@ class RedirectPlugin {
 exports.build = build;
 exports.config = config;
 exports.localStorageKeys = localStorageKeys;
+exports.sessionStorageKeys = sessionStorageKeys;
 exports.RedirectPlugin = RedirectPlugin;

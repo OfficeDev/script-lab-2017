@@ -2,7 +2,8 @@ import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } 
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI, environment } from '../helpers';
+import { AI, environment, trustedSnippetManager } from '../helpers';
+import { UIEffects } from '../effects/ui';
 import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
@@ -45,6 +46,7 @@ export class Editor implements AfterViewInit {
 
     constructor(
         private _store: Store<fromRoot.State>,
+        private _uiEffects: UIEffects,
         private _monaco: MonacoService
     ) {
         this.tabNames = ['script', 'template', 'style', 'libraries'];
@@ -110,7 +112,19 @@ export class Editor implements AfterViewInit {
         ));
     }
 
-    registerCustomFunctions() {
+    async registerCustomFunctions() {
+        if (!trustedSnippetManager.isSnippetTrusted(this.snippet.id, this.snippet.gist, this.snippet.gistOwnerId)) {
+            let alertResult = await this._uiEffects.alert(
+                this.strings.snippetNotTrusted,
+                this.strings.trustSnippetQuestionMark,
+                this.strings.trust,
+                this.strings.cancel
+            );
+            if (alertResult === this.strings.cancel) {
+                return;
+            }
+        }
+
         // TODO
     }
 

@@ -5,14 +5,24 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ServerStrings {
-    const playgroundName = 'Script Lab';
-    const unexpectedError = '出现意外错误';
+
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
+        playgroundTagline: '代码 ● 编写 ● 共享',
+
+        unexpectedError: '出现意外错误',
+
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+
+        error: '错误',
+        cancel: '注销',
+        dismiss: '解散',
+    };
 
     return {
-        playgroundName: playgroundName,
-        playgroundTagline: '代码 ● 编写 ● 共享',
-        error: '错误',
-        unexpectedError: unexpectedError,
         invalidHost: '无效的主机',
         invalidId: '无效的ID',
         receivedInvalidAuthCode: '收到验证码无效',
@@ -40,21 +50,19 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         run: '运行',
         runPageTitle: '运行代码片段',
         back: '返回',
-        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
-        trust: getEnglishSubstitutesForNotYetTranslated().trust,
-        cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
         switchToSnippet: `切换到您正在编辑的代码段。`,
         snippetCodeChanged: '你改变在这段代码段。刷新此窗格运行新版本。',
         refresh: '刷新',
-        dismiss: '解散',
         editingDifferentSnippet1: `您现在正在编辑一个不同的代码段`,
         editingDifferentSnippet2: `刷新此窗格以运行它`,
         loadLatestSnippet: '下载最新代码段',
 
         RuntimeHelpers: {
-            unexpectedError: unexpectedError,
+            unexpectedError: sharedBetweenServerAndClient.unexpectedError,
             authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
             officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

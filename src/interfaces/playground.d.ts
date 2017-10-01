@@ -78,6 +78,20 @@ interface IRunnerState {
     returnUrl?: string;    
 }
 
+interface ICustomFunctionsRelevantData {
+    name: string
+    customFunctions: {
+        content: string;
+        language: string;
+    }
+    libraries: string;
+}
+
+/** Request body passed to the custom functions compile route in a POST */
+interface ICompileCustomFunctionsState {
+    snippets: Array<ICustomFunctionsRelevantData>
+}
+
 interface IExportState {
     snippet: ISnippet;
     additionalFields: ISnippet;
@@ -124,10 +138,18 @@ interface ICompiledPlaygroundInfo {
         production: IEnvironmentConfig
     };
     localStorageKeys: {
+        hostSnippets_parameterized: string;
+        settings: string;        
         originEnvironmentUrl: string;
         redirectEnvironmentUrl: string;
-        playgroundCache: string;
+        wacUrl: string;
+        experimentationFlags: string;
+        trustedSnippets: string;
     };
+    sessionStorageKeys: {
+        environmentCache: string;
+        intelliSenseCache: string;
+    }
 }
 
 interface ICurrentPlaygroundInfo {

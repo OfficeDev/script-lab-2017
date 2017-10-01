@@ -135,7 +135,7 @@ export class GitHubEffects {
                         `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
                 let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
 
-                let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().okButtonLabel); // the URL should be a hyperlink and the text should wrap
+                let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().ok); // the URL should be a hyperlink and the text should wrap
 
                 if (result === Strings().gistSharedDialogViewButton) {
                     window.open(gistUrl);
@@ -164,7 +164,7 @@ export class GitHubEffects {
                 this._uiEffects.alert(
                     Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
                     Strings().gistShareFailedTitle,
-                    Strings().okButtonLabel);
+                    Strings().ok);
                 return Observable.from(actions);
             });
         });
@@ -182,7 +182,7 @@ export class GitHubEffects {
                     return yaml;
                 }
             }).on('success', async() => {
-                await this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().okButtonLabel);
+                await this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().ok);
                 this._store.dispatch(new GitHub.ShareSuccessAction(null));
             });
         })

@@ -5,15 +5,24 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ServerStrings {
-    const playgroundName = 'Script Lab';
-    const unexpectedError = 'Se produjo un error inesperado';
 
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: 'Codifica ● Ejecuta ● Comparte',
 
+        unexpectedError: 'Ocurrió un error inesperado',
+
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+
         error: 'Error',
-        unexpectedError: unexpectedError,
+        cancel: 'Cancelar',
+        dismiss: 'Ignorar',
+    };
+
+    return {
         invalidHost: 'Host inválido',
         invalidId: 'ID inválido',
         receivedInvalidAuthCode: 'Se recibió un código de autenticación inválido',
@@ -53,10 +62,12 @@ export function getSpanishStrings(): ServerStrings {
         loadLatestSnippet: 'Cargar el último fragmento de codigo',
 
         RuntimeHelpers: {
-            unexpectedError: unexpectedError,
+            unexpectedError: sharedBetweenServerAndClient.unexpectedError,
             authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
             officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }
 

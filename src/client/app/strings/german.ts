@@ -4,12 +4,25 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ClientStringsPerLanguage {
-    const playgroundName = 'Script Lab';
-
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
 
+        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
+
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+
+        error: 'Fehler',
+        cancel: 'Abbrechen',
+        dismiss: 'Schließen',
+    };
+
+    const { playgroundName } = sharedBetweenServerAndClient;
+
+    return {
         alpha: 'Alpha',
         beta: 'Beta',
         production: 'Produktiv',
@@ -24,16 +37,14 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         close: 'Schließen',
         about: 'Info',
         feedback: 'Feedback',
-        error: getEnglishSubstitutesForNotYetTranslated().error,
         errors: 'Fehler',
-        dismiss: 'Schließen',
+        trustSnippetQuestionMark: getEnglishSubstitutesForNotYetTranslated().trustSnippetQuestionMark,
 
-        okButtonLabel: 'OK',
-        logoutButtonLabel: 'Abmelden',
-        cancelButtonLabel: 'Abbrechen',
-        saveButtonLabel: 'Speichern',
-        moreInfoButtonLabel: 'Mehr Infos',
-        importButtonLabel: 'Importieren',
+        ok: 'OK',
+        logout: 'Abmelden',
+        save: 'Speichern',
+        moreInfo: 'Mehr Infos',
+        import: 'Importieren',
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
         overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
         createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
@@ -296,6 +307,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

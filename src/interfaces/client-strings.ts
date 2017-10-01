@@ -20,13 +20,14 @@ interface ClientStringsPerLanguage {
     error: string;
     errors: string;
     dismiss: string;
+    trustSnippetQuestionMark: string;
 
-    okButtonLabel: string;
-    logoutButtonLabel: string;
-    cancelButtonLabel: string;
-    saveButtonLabel: string;
-    moreInfoButtonLabel: string;
-    importButtonLabel: string;
+    ok: string;
+    logout: string;
+    cancel: string;
+    save: string;
+    moreInfo: string;
+    import: string;
     snippetImportExistingButtonLabel: string;
     overwriteExistingButtonLabel: string;
     createNewCopyButtonLabel: string;
@@ -197,6 +198,9 @@ interface ClientStringsPerLanguage {
     pleaseWait: string;
     scriptLabIsReloading: string;
     unexpectedError: string;
+
+    snippetNotTrusted: string;
+    trust: string;
 
     Refresh: {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */

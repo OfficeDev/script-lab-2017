@@ -1,20 +1,13 @@
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { environment } from './environment';
 import * as cuid from 'cuid';
+const { localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 class StorageHelper {
-    LocalStorageKey_PlaygroundSettings = 'playground_settings';
-    get LocalStorageKey_PlaygroundHostSnippets() {
-        return `playground_${environment.current.host}_snippets`;
-    }
-
-    SessionStorageKey_IntelliSenseCache = 'playground_intellisense';
-
-
     private _settings: Storage<ISettings>;
     get settings() {
         if (!this._settings) {
-            this._settings = new Storage<ISettings>(this.LocalStorageKey_PlaygroundSettings);
+            this._settings = new Storage<ISettings>(localStorageKeys.settings);
         }
         return this._settings;
     }
@@ -22,7 +15,7 @@ class StorageHelper {
     private _intellisenseCache: Storage<string>;
     get intellisenseCache() {
         if (!this._intellisenseCache) {
-            this._intellisenseCache = new Storage<string>(this.SessionStorageKey_IntelliSenseCache, StorageType.SessionStorage);
+            this._intellisenseCache = new Storage<string>(sessionStorageKeys.intelliSenseCache, StorageType.SessionStorage);
             if (environment.current.devMode) {
                 this._intellisenseCache.clear();
             }
@@ -45,7 +38,9 @@ class StorageHelper {
     private _snippets: Storage<ISnippet> = null;
     get snippets() {
         if (this._snippets == null && environment.current && environment.current.host) {
-            this._snippets = new Storage<ISnippet>(this.LocalStorageKey_PlaygroundHostSnippets);
+            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
+                .replace('{0}', environment.current.host);
+            this._snippets = new Storage<ISnippet>(hostStorageKey);
         }
         return this._snippets;
     }

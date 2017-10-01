@@ -22,7 +22,8 @@ import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
-    IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext
+    IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
+    ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -147,6 +148,8 @@ registerRoute('get', ['/', '/run', '/compile', '/compile/page', '/compile/snippe
     }, Strings(req), res)
 );
 
+registerRoute('get', ['/compile/custom-functions'], (req, res) => Promise.resolve().then(() => respondWithHtml(res, '')));
+
 /**
  * HTTP GET: /run
  * Returns a runner page, with the following parameters:
@@ -217,16 +220,20 @@ registerRoute('post', '/auth/:user', (req, res) => {
  * HTTP POST: /compile/snippet
  * Returns the compiled snippet only (no outer runner chrome)
  */
-registerRoute('post', '/compile/snippet', compileCommon);
+registerRoute('post', '/compile/snippet', compileSnippetCommon);
 
 /**
  * HTTP POST: /compile/page
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
-registerRoute('post', '/compile/page', (req, res) => compileCommon(req, res, true /*wrapWithRunnerChrome*/));
+registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, res, true /*wrapWithRunnerChrome*/));
 
-// Also include "get" routes for the "compile" pages, so that a refresh on the page works:
-
+/**
+ * HTTP POST: /compile/custom-functions
+ * Returns a page for rendering in the UI-less control for custom functions.
+ * Note that all snippets passed to this page are already expected to be trusted.
+ */
+registerRoute('post', '/compile/custom-functions', (req, res) => compileCustomFunctionsCommon(req, res, { showUI: false }));
 
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
     const params = massageParams<{ host: string, type: string, id: string, filename: string }>(req);
@@ -417,16 +424,17 @@ registerRoute('get', '/snippet/auth', (req, res) => {
 
 // HELPERS
 
-function compileCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
+function compileSnippetCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
     let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
+
+    const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
+
     const strings = Strings(req);
 
     // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
     // and so that refresh page could know where to return to if the snippet weren't found.
-
-    const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
 
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
@@ -459,10 +467,31 @@ function compileCommon(req: express.Request, res: express.Response, wrapWithRunn
             }
 
             timer.stop();
-            res.setHeader('Cache-Control', 'no-cache, no-store');
-            res.setHeader('X-XSS-Protection', '0');
-            res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
+            respondWithHtml(res, html);
         });
+}
+
+async function compileCustomFunctionsCommon(req: express.Request, res: express.Response, options: { showUI: boolean }) {
+    const params: ICompileCustomFunctionsState = JSON.parse(req.body);
+    const { snippets } = params;
+
+    const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');
+
+    const strings = Strings(req);
+
+    const customFunctionsRunnerGenerator =
+        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions');
+    const html = customFunctionsRunnerGenerator({
+        snippets,
+        strings,
+        ...options
+    });
+
+    timer.stop();
+
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.setHeader('X-XSS-Protection', '0');
+    res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
 }
 
 function runCommon(
@@ -502,8 +531,7 @@ function runCommon(
                 explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull
             });
 
-            res.setHeader('Cache-Control', 'no-cache, no-store');
-            return res.contentType('text/html').status(200).send(html);
+            return respondWithHtml(res, html);
         });
 
     /**
@@ -527,6 +555,12 @@ function runCommon(
 
         return '';
     }
+}
+
+function respondWithHtml(res: express.Response, html: string) {
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    res.setHeader('X-XSS-Protection', '0');
+    return res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
 }
 
 function parseXmlString(xml): Promise<JSON> {
@@ -599,7 +633,7 @@ function generateSnippetHtmlData(
                     isOfficeSnippet: isOfficeHost(snippet.host),
                     isExternalExport: isExternalExport,
                     strings,
-                    authHelpersUrl: getTheRuntimeHelpersUrl('auth-helpers'),
+                    authHelpersUrl: getRuntimeHelpersUrl('auth-helpers'),
                     editorUrl: currentConfig.editorUrl,
                     runtimeHelperStringifiedStrings: JSON.stringify(
                         strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
@@ -686,8 +720,7 @@ async function errorHandler(res: express.Response, error: Error, strings: Server
     }
 
     const html = await generateErrorHtml(error, strings);
-    res.setHeader('Cache-Control', 'no-cache, no-store');
-    return res.contentType('text/html').status(200).send(html);
+    return respondWithHtml(res, html);
 }
 
 async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<string> {
@@ -757,7 +790,7 @@ function loadTemplate<T>(templateName: string) {
 }
 
 let _runnerHashIfAny: string;
-function getTheRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions') {
+function getRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions') {
     if (!_runnerHashIfAny) {
         let assetPaths = getDefaultHandlebarsContext().assets;
         // Some assets, like the runtime helpers, are not compiled with webpack.
@@ -772,7 +805,7 @@ function getTheRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions') 
     }
 
     return `${currentConfig.editorUrl}/${filename}.js` +
-            (_runnerHashIfAny ? ('?hash=' + _runnerHashIfAny) : '');
+        (_runnerHashIfAny ? ('?hash=' + _runnerHashIfAny) : '');
 }
 
 function getClientSecret() {

@@ -5,14 +5,11 @@ import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/offic
 import { Strings } from '../strings';
 import { isValidHost } from '../helpers';
 
-let { devMode, build, config } = PLAYGROUND;
+let { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 import { isNil } from 'lodash';
 
-const WAC_URL_STORAGE_KEY = 'playground_wac_url';
-const EXPERIMENTATION_FLAGS_KEY = 'playground_experimentation_flags';
-
 class Environment {
-    cache = new Storage<any>(PLAYGROUND.localStorageKeys.playgroundCache, StorageType.SessionStorage);
+    cache = new Storage<any>(sessionStorageKeys.environmentCache, StorageType.SessionStorage);
     private _config: IEnvironmentConfig;
     private _current: ICurrentPlaygroundInfo;
 
@@ -63,7 +60,7 @@ class Environment {
 
                 isAddinCommands: false,
                 isTryIt: false,
-                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || '',
+                wacUrl: window.localStorage[localStorageKeys.wacUrl] || '',
 
                 host: null,
                 platform: null,
@@ -104,7 +101,7 @@ class Environment {
 
     /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */
     getExperimentationFlagsString(): string {
-        const flagSetInStorage = window.localStorage[EXPERIMENTATION_FLAGS_KEY];
+        const flagSetInStorage = window.localStorage[localStorageKeys.experimentationFlags];
         const flagsOrError: IExperimentationFlags | Error = attempt(() => JSON.parse(flagSetInStorage));
         const isErrorOrEmpty = isError(flagsOrError) || JSON.stringify(flagsOrError).length === '{}'.length;
         return isErrorOrEmpty ? ('{' + '\n    ' + '\n' + '}') : JSON.stringify(flagsOrError, null, 4);
@@ -122,7 +119,7 @@ class Environment {
             JSON.stringify(JSON.parse(this.getExperimentationFlagsString())) === JSON.stringify(objectAttempt);
 
         if (!identicalToPreviousSettings) {
-            window.localStorage[EXPERIMENTATION_FLAGS_KEY] = value;
+            window.localStorage[localStorageKeys.experimentationFlags] = value;
         }
 
         return !identicalToPreviousSettings;
@@ -155,7 +152,7 @@ class Environment {
 
         if (pageParams.wacUrl) {
             this.appendCurrent({ wacUrl: decodeURIComponent(pageParams.wacUrl) });
-            window.localStorage.setItem(WAC_URL_STORAGE_KEY, this.current.wacUrl);
+            window.localStorage.setItem(localStorageKeys.wacUrl, this.current.wacUrl);
         }
 
         if (pageParams.tryIt) {

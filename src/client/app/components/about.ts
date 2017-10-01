@@ -3,7 +3,7 @@ import { environment, storageSize, storage } from '../helpers';
 import { Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
 import { attempt, isError } from 'lodash';
-let { config, localStorageKeys } = PLAYGROUND;
+let { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +45,7 @@ let { config, localStorageKeys } = PLAYGROUND;
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="okClicked()">
-                        <span class="ms-Button-label">{{strings.okButtonLabel}}</span>
+                        <span class="ms-Button-label">{{strings.ok}}</span>
                     </button>
                 </div>
             </div>
@@ -59,10 +59,12 @@ export class About implements AfterViewInit {
 
     strings = Strings();
 
+    private _hostSnippetsStorageKey = localStorageKeys.hostSnippets_parameterized
+        .replace('{0}', environment.current.host);
     cache = [
         `${Strings().aboutStorage}`,
-        `${storageSize(localStorage, storage.LocalStorageKey_PlaygroundHostSnippets, Strings().aboutSnippets)}`,
-        `${storageSize(sessionStorage, storage.SessionStorageKey_IntelliSenseCache, Strings().aboutIntellisense)}`,
+        `${storageSize(localStorage, this._hostSnippetsStorageKey, Strings().aboutSnippets)}`,
+        `${storageSize(sessionStorage, sessionStorageKeys.intelliSenseCache, Strings().aboutIntellisense)}`,
     ].join('\n');
 
     config = {
@@ -118,7 +120,7 @@ export class About implements AfterViewInit {
             attempt(() => environment.updateExperimentationFlags(this.experimentationFlags));
 
         if (isError(experimentationUpdateResultOrError)) {
-            await this._effects.alert(experimentationUpdateResultOrError.message, this.strings.error, this.strings.okButtonLabel);
+            await this._effects.alert(experimentationUpdateResultOrError.message, this.strings.error, this.strings.ok);
             return;
         } else if (experimentationUpdateResultOrError === true) {
             needsWindowReload = true;
@@ -158,10 +160,10 @@ export class About implements AfterViewInit {
         let changeEnvironmentResult = await this._effects.alert(
             this.strings.changeEnvironmentConfirm,
             changeEnvironmentMessage,
-            this.strings.okButtonLabel,
-            this.strings.cancelButtonLabel
+            this.strings.ok,
+            this.strings.cancel
         );
-        if (changeEnvironmentResult === this.strings.cancelButtonLabel) {
+        if (changeEnvironmentResult === this.strings.cancel) {
             this.selectedConfig = this.configs.find(c => c.value === currentConfigName).value;
             return;
         }
