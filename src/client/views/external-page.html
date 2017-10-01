@@ -3,7 +3,7 @@
 
 <head>
 	<base href="/">
-	<title>About the APIs</title>
+	<title>Script Lab</title>
 
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -11,20 +11,6 @@
 </head>
 
 <body>
-	<script>
-		function getParameterByName(name, url) {
-			if (!url) {
-				url = window.location.href;
-			}
-			name = name.replace(/[\[\]]/g, "\\$&");
-			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-				results = regex.exec(url);
-			if (!results) return null;
-			if (!results[2]) return '';
-			return decodeURIComponent(results[2].replace(/\+/g, " "));
-		}
-		window.location.href = getParameterByName("destination");
-	</script>
 </body>
 
 </html>
