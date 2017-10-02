@@ -1,20 +1,9 @@
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
+const { safeExternalUrls } = PLAYGROUND;
 
 Office.initialize = () => {
-    const urls = {
-        //tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
-        tutorial: `${window.location.origin}/tutorial.html`,
-        code: `${window.location.origin}/?mode=${Utilities.host}`,
-        playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
-        ask: 'https://stackoverflow.com/questions/tagged/office-js',
-        excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
-        word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
-        onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
-        outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
-        powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
-        project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
-        generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
-    };
+    const tutorialUrl = `${window.location.origin}/tutorial.html`;
+    const codeUrl = `${window.location.origin}/?mode=${Utilities.host}`;
 
     const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
         options = options || {};
@@ -45,36 +34,36 @@ Office.initialize = () => {
         launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
     };
 
-    (window as any).launchCode = (event) => launchInDialog(urls.code, event, { width: 75, height: 75, displayInIframe: false });
+    (window as any).launchCode = (event) => launchInDialog(codeUrl, event, { width: 75, height: 75, displayInIframe: false });
 
-    (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, { width: 35, height: 45 });
+    (window as any).launchTutorial = (event) => launchInDialog(tutorialUrl, event, { width: 35, height: 45 });
 
-    (window as any).launchHelp = (event) => launchDialogNavigation(urls.playground_help, event, { displayInIframe: false });
+    (window as any).launchHelp = (event) => launchDialogNavigation(safeExternalUrls.playground_help, event, { displayInIframe: false });
 
-    (window as any).launchAsk = (event) => launchDialogNavigation(urls.ask, event, { displayInIframe: false });
+    (window as any).launchAsk = (event) => launchDialogNavigation(safeExternalUrls.ask, event, { displayInIframe: false });
 
     (window as any).launchApiDocs = (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
-            return launchDialogNavigation(urls.excel_api, event);
+            return launchDialogNavigation(safeExternalUrls.excel_api, event);
         }
         else if (Office.context.requirements.isSetSupported('WordApi')) {
-            return launchDialogNavigation(urls.word_api, event);
+            return launchDialogNavigation(safeExternalUrls.word_api, event);
         }
         else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-            return launchDialogNavigation(urls.onenote_api, event);
+            return launchDialogNavigation(safeExternalUrls.onenote_api, event);
         }
         else {
             if (Utilities.host === HostType.POWERPOINT) {
-                return launchDialogNavigation(urls.powepoint_api, event);
+                return launchDialogNavigation(safeExternalUrls.powepoint_api, event);
             }
             else if (Utilities.host === HostType.PROJECT) {
-                return launchDialogNavigation(urls.project_api, event);
+                return launchDialogNavigation(safeExternalUrls.project_api, event);
             }
             else if (Utilities.host === HostType.OUTLOOK) {
-                return launchDialogNavigation(urls.outlook_api, event);
+                return launchDialogNavigation(safeExternalUrls.outlook_api, event);
             }
             else {
-                return launchDialogNavigation(urls.generic_api, event);
+                return launchDialogNavigation(safeExternalUrls.generic_api, event);
             }
         }
     };

@@ -14,8 +14,8 @@ export function getGermanStrings(): ServerStrings {
 
         unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
 
-        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
-        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+        snippetNotTrusted: 'Dieses Schnipsel stammt aus einer externen Quelle. Sie müssen dem Schnipsel vertrauen, bevor Sie dieses ausführen können.',
+        trust: 'Vertrauen',
 
         error: 'Fehler',
         cancel: 'Abbrechen',
@@ -38,7 +38,7 @@ export function getGermanStrings(): ServerStrings {
         createdWithScriptLab: 'Erstellt mit Script Lab',
 
         scriptLabRunner: 'Script Lab Runner',
-        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+        tryItPageTitle: 'Ausprobieren',
 
         versionInfo: 'Versionsinformationen',
 
@@ -50,6 +50,7 @@ export function getGermanStrings(): ServerStrings {
         run: 'Ausführen',
         runPageTitle: 'Schnipsel ausführen',
         back: 'Zurück',
+
         switchToSnippet: `Zu dem Schnipsel wechseln, welches Sie gerade editieren.`,
         snippetCodeChanged: 'Sie haben den Code zu diesem Schnipsel verändert. Aktualisieren Sie diese Seite, um die neue Version auszuführen.',
         refresh: 'Aktualisieren',
@@ -60,8 +61,8 @@ export function getGermanStrings(): ServerStrings {
 
         RuntimeHelpers: {
             unexpectedError: sharedBetweenServerAndClient.unexpectedError,
-            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
-            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
+            authenticationWasCancelledByTheUser: 'Die Authentifizierung wurde vom Benutzer abgebrochen',
+            officeVersionDoesNotSupportAuthentication: 'Ihre aktuelle Office-Version unterstützt nicht die Anzeige eines Authentifizierungsdialogs. Aktualisieren Sie Office auf eine neuere Version oder verwenden Sie Office-Online, um dieses Schnipsel ausführen zu können.'
         },
 
         ...sharedBetweenServerAndClient

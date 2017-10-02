@@ -65,7 +65,7 @@ interface IRunnerState {
     /** URL to return to in case of the gallery (or something else custom).
      * Otherwise, if null, will create a default reference back to editor domain,
      * taking host and snippet ID into account */
-    returnUrl?: string;    
+    returnUrl?: string;
 }
 
 interface ICustomFunctionsRelevantData {
@@ -117,6 +117,9 @@ interface IEvent<T> {
     data: T
 }
 
+// Note: the contents of this injected variable comes from "webpack.common.js"
+// (and in turn derives most of its values from "env.config.js", but
+// via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition)
 declare var PLAYGROUND: ICompiledPlaygroundInfo;
 
 interface ICompiledPlaygroundInfo {
@@ -140,7 +143,18 @@ interface ICompiledPlaygroundInfo {
     sessionStorageKeys: {
         environmentCache: string;
         intelliSenseCache: string;
-    }
+    };
+    safeExternalUrls: {
+        playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+        ask: 'https://stackoverflow.com/questions/tagged/office-js',
+        excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
+        word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
+        onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
+        outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
+        powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+        project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
+        generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+    };
 }
 
 interface ICurrentPlaygroundInfo {

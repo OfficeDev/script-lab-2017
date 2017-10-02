@@ -71,74 +71,122 @@ const config = {
     }
 };
 
+// NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
+const safeExternalUrls = {
+    playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+    ask: 'https://stackoverflow.com/questions/tagged/office-js',
+    excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
+    word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
+    onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
+    outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
+    powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+    project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
+    generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+};
+
 class RedirectPlugin {
     apply(compiler) {
         compiler.plugin('compilation', (compilation) => {
             compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-                let headOpeningTag = '<head>'; 
+                let headOpeningTag = '<head>';
                 let htmlHead = htmlPluginData.html.match(headOpeningTag);
 
                 let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
+
+                const validRedirectLocations = [];
+                for (var envName in config) {
+                    validRedirectLocations.push(config[envName].editorUrl);
+                }
 
                 if (htmlHead && htmlHead.length > 0) {
                     htmlHead = htmlHead.index;
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
                         headOpeningTag +
                         `
-                        <script>
-                        (function() {
-                            function getParameterByName(name) {
-                                var url = window.location.search;
-                                var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
-                                var match = queryExp.exec(url);
-                                if (match && match.length > 1) {
-                                    return match[1];
-                                }
-                                return null;
-                            };
-                            var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
-                            var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
+    <script>
+        (function() {
+            try {
+                // Taken and slightly tweaked from office-js-helpers Authenticator class:
+                // https://github.com/OfficeDev/office-js-helpers/blob/master/src/authentication/authenticator.ts
+                function extractParams(segment) {
+                    if (segment == null || segment.trim() === '') {
+                        return null;
+                    }
+                    var params = {};
+                    var regex = /([^&=]+)=([^&]*)/g;
+                    var matchParts;
+                    while ((matchParts = regex.exec(segment)) !== null) {
+                        params[decodeURIComponent(matchParts[1])] = decodeURIComponent(matchParts[2]);
+                    }
+                    return params;
+                }
 
-                            // Set target environment for origin environment to redirect to
-                            if (targetUrl.length > 0) {
-                                targetUrl = decodeURIComponent(targetUrl)
-                                // Clear origin environment's local storage if target = origin
-                                if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
-                                    window.localStorage.removeItem("${redirectEnvironmentUrl}");
-                                    return;
-                                }
+                function isAllowedUrl(url) {
+                    if (url.length === 0) {
+                        return true;
+                    }
 
-                                window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
-                            }
+                    var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
 
-                            // Redirect origin environment to target
-                            var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
-                            if (redirectUrl) {
-                                var originParam = [
-                                    (window.location.search ? "&" : "?"), 
-                                    "originEnvironment=",
-                                    encodeURIComponent(window.location.origin)
-                                ].join("");
+                    return validRedirectLocations.some(function(location) {
+                        return location.indexOf(url) === 0;
+                    });
+                }
 
-                                window.location.replace([
-                                    redirectUrl,
-                                    window.location.pathname,
-                                    window.location.search,
-                                    originParam,
-                                    window.location.hash
-                                ].join(""));
-                            }
+                var params = extractParams(window.location.href.split('?')[1]) || {};
+                var originUrl = (params["originEnvironment"] || "").trim();
+                var targetUrl = (params["targetEnvironment"] || "").trim();
 
-                            // Point app environment back to origin if user is not in origin
-                            if (originUrl.length > 0) {
-                                window.localStorage.setItem("${originEnvironmentUrl}",
-                                    decodeURIComponent(originUrl).toLowerCase());
-                            }
+                let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
+                if (!urlsAreOk) {
+                    throw new Error("Invalid query parameters for target or origin environments");
+                }
 
-                            // If reached here, environment is already configured
-                        })();
-                        </script>
-                        ` + 
+                // Set target environment for origin environment to redirect to
+                if (targetUrl.length > 0) {
+                    targetUrl = decodeURIComponent(targetUrl)
+                    // Clear origin environment's local storage if target = origin
+                    if (window.location.href.toLowerCase().indexOf(targetUrl) === 0) {
+                        window.localStorage.removeItem("${redirectEnvironmentUrl}");
+                        return;
+                    }
+
+                    window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
+                }
+
+                // Redirect origin environment to target
+                var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
+                if (redirectUrl) {
+                    var originParam = [
+                        (window.location.search ? "&" : "?"), 
+                        "originEnvironment=",
+                        encodeURIComponent(window.location.origin)
+                    ].join("");
+
+                    window.location.replace([
+                        redirectUrl,
+                        window.location.pathname,
+                        window.location.search,
+                        originParam,
+                        window.location.hash
+                    ].join(""));
+                }
+
+                // Point app environment back to origin if user is not in origin
+                if (originUrl.length > 0) {
+                    window.localStorage.setItem("${originEnvironmentUrl}",
+                        decodeURIComponent(originUrl).toLowerCase());
+                }
+
+                // If reached here, environment is already configured
+                return;
+
+            } catch (e) {
+                console.error("Error redirecting the environments, staying on current page", e);
+            }
+        })();
+    </script>
+                        ` +
                         htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
                 }
                 callback(null, htmlPluginData);
@@ -150,6 +198,13 @@ class RedirectPlugin {
 
 exports.build = build;
 exports.config = config;
+exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
 exports.sessionStorageKeys = sessionStorageKeys;
 exports.RedirectPlugin = RedirectPlugin;
+
+// NOTE: Data in this file gets propagated to JS on client pages
+// via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition
+// in "webpack.common.js".  If you add anything to these exports
+// that you want other parts of the system to import, be sure
+// to modify the PLAYGROUN definition in "webpack.common.js".
