@@ -57,16 +57,6 @@ interface ILibraryDefinition {
     description?: string
 }
 
-interface ICompiledSnippet extends ITemplate {
-    script?: string;
-    style?: string;
-    template?: string;
-    scriptReferences?: string[];
-    linkReferences?: string[];
-    officeJS?: string;
-    typings?: string[];
-}
-
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
@@ -89,7 +79,8 @@ interface ICustomFunctionsRelevantData {
 
 /** Request body passed to the custom functions compile route in a POST */
 interface ICompileCustomFunctionsState {
-    snippets: Array<ICustomFunctionsRelevantData>
+    snippets: Array<ICustomFunctionsRelevantData>;
+    mode: 'register' | 'run'
 }
 
 interface IExportState {

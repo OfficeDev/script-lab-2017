@@ -60,6 +60,7 @@ export function getSpanishStrings(): ServerStrings {
         editingDifferentSnippet1: `Ahora estas editando un fragmento de código diferente.`,
         editingDifferentSnippet2: `Actualiza este panel para ejecutarlo`,
         loadLatestSnippet: 'Cargar el último fragmento de codigo',
+        registeringCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registeringCustomFunctions,
 
         RuntimeHelpers: {
             unexpectedError: sharedBetweenServerAndClient.unexpectedError,

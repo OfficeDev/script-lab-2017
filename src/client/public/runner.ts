@@ -422,7 +422,7 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
         currentSnippet = {
@@ -446,7 +446,8 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
+        let replacedSuccessfully = replaceSnippetIframe(
+            html, processLibraries(snippet.libraries).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;

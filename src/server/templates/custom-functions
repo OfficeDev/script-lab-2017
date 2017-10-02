@@ -2,14 +2,74 @@
 <html>
 
 <head>
-	<title>Add-in Custom Functions</title>
+	<title>{{strings.registeringCustomFunctions}}</title>
 	<meta charset="UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+{{#if isRunMode}}
+{{else}}
+	<link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
+    {{!-- Re-use the same CSS as the runner, since almost all of it is the same anyway --}}
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
+{{/if}}
+
+    <script src="{{{officeJS}}}"></script>
 </head>
 
-<body>
-    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<body class="ms-font-m">
+{{#if isRunMode}}
+{{else}}
+    <app id="progress" class="app">
+        <div class="ms-progress-component">
+            <div id="ribbon" class="ribbon"></div>
+            <main class="ms-progress-component__main">
+                <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.svg">
+                <h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
+                <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
+
+                <div id="snippet-names">
+{{#each snippetNames}}
+                    <span>{{this}}</span>
+{{/each}}
+                </div>
+            </main>
+            <footer class="ms-progress-component__footer">
+                <div class="ms-progress">
+                    <div class="cs-loader">
+                        <div class="cs-loader-inner">
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                            <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </app>
+{{/if}}
+
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.compileCustomFunctions.js}}}"></script>
+
+    <script type="text/javascript">
+        window.initializeCustomFunctions({
+			isRunMode: {{isRunMode}},
+			snippetIframesBase64Texts: [
+{{#each snippetIframesBase64Texts}}
+                '{{this}}'
+{{/each}}
+            ],
+		    lastRegisteredTimestamp: {{lastRegisteredTimestamp}},
+			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
+        });
+    </script>
+
 </body>
 
 </html>

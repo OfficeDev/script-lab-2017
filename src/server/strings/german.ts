@@ -56,6 +56,7 @@ export function getGermanStrings(): ServerStrings {
         editingDifferentSnippet1: `Sie editieren zurzeit ein anderes Schnipsel`,
         editingDifferentSnippet2: `Aktualisieren Sie diese Seite, um das Schnipsel auszuführen`,
         loadLatestSnippet: 'Das zuletzt verwendete Schnipsel laden.',
+        registeringCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registeringCustomFunctions,
 
         RuntimeHelpers: {
             unexpectedError: sharedBetweenServerAndClient.unexpectedError,

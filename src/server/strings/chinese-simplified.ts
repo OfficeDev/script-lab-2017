@@ -56,6 +56,7 @@ export function getChineseSimplifiedStrings(): ServerStrings {
         editingDifferentSnippet1: `您现在正在编辑一个不同的代码段`,
         editingDifferentSnippet2: `刷新此窗格以运行它`,
         loadLatestSnippet: '下载最新代码段',
+        registeringCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registeringCustomFunctions,
 
         RuntimeHelpers: {
             unexpectedError: sharedBetweenServerAndClient.unexpectedError,

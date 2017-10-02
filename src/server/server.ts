@@ -17,13 +17,14 @@ import { replaceTabsWithSpaces, clipText } from './core/utilities';
 import { BadRequestError, UnauthorizedError, InformationalError } from './core/errors';
 import { Strings, getExplicitlySetDisplayLanguageOrNull } from './strings';
 import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.generator';
-import { SnippetGenerator } from './core/snippet.generator';
+import { compileScript } from './core/snippet.generator';
+import { processLibraries } from './core/libraries.processor';
 import { ApplicationInsights } from './core/ai.helper';
 import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
-    ICustomFunctionsRunnerHandlebarsContext
+    // ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -233,7 +234,26 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
  * Returns a page for rendering in the UI-less control for custom functions.
  * Note that all snippets passed to this page are already expected to be trusted.
  */
-registerRoute('post', '/compile/custom-functions', (req, res) => compileCustomFunctionsCommon(req, res, { showUI: false }));
+registerRoute('post', '/compile/custom-functions', async (req, res) => {
+    // const params: ICompileCustomFunctionsState = JSON.parse(req.body);
+    // const { snippets, mode } = params;
+
+    const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');
+
+    // const strings = Strings(req);
+
+    // const customFunctionsRunnerGenerator =
+    //     await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions');
+    // const html = customFunctionsRunnerGenerator({
+    //     snippets,
+    //     strings,
+    //     isRunMode: mode === 'run'
+    // });
+    const html = '';
+
+    timer.stop();
+    return respondWithHtml(res, html);
+});
 
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
     const params = massageParams<{ host: string, type: string, id: string, filename: string }>(req);
@@ -339,7 +359,7 @@ registerRoute('post', '/export', (req, res) => {
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippet, true /*isExternalExport*/, strings),
+        generateSnippetHtmlData(snippet, 'script', true /*isExternalExport*/, strings),
         generateReadme(snippet),
         isOfficeHost(snippet.host) ?
             generateManifest(snippet, additionalFields, filenames.html, strings) : null
@@ -391,8 +411,7 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
                 wacUrl: decodeURIComponent(req.query.wacUrl || '')
             });
 
-            res.setHeader('Cache-Control', 'no-cache, no-store');
-            return res.contentType('text/html').status(200).send(html);
+            return respondWithHtml(res, html);
         });
 });
 
@@ -411,15 +430,9 @@ registerRoute('get', '/version', (req, res) => {
 });
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
-registerRoute('get', '/snippet/auth', (req, res) => {
-    return loadTemplate('snippet-auth')
-        .then(authGenerator => {
-            const html = authGenerator({});
-
-            res.setHeader('Cache-Control', 'no-cache, no-store');
-            return res.contentType('text/html').status(200).send(html);
-        });
-});
+registerRoute('get', '/snippet/auth',
+    async (req, res) => respondWithHtml(res, (await loadTemplate('snippet-auth'))({}))
+);
 
 
 // HELPERS
@@ -439,7 +452,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippet, false /*isExternalExport*/, strings),
+        generateSnippetHtmlData(snippet, 'script', false /*isExternalExport*/, strings),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
         .then(values => {
@@ -467,31 +480,8 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
             }
 
             timer.stop();
-            respondWithHtml(res, html);
+            return respondWithHtml(res, html);
         });
-}
-
-async function compileCustomFunctionsCommon(req: express.Request, res: express.Response, options: { showUI: boolean }) {
-    const params: ICompileCustomFunctionsState = JSON.parse(req.body);
-    const { snippets } = params;
-
-    const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');
-
-    const strings = Strings(req);
-
-    const customFunctionsRunnerGenerator =
-        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions');
-    const html = customFunctionsRunnerGenerator({
-        snippets,
-        strings,
-        ...options
-    });
-
-    timer.stop();
-
-    res.setHeader('Cache-Control', 'no-cache, no-store');
-    res.setHeader('X-XSS-Protection', '0');
-    res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
 }
 
 function runCommon(
@@ -605,8 +595,9 @@ function getVersionNumber(): Promise<string> {
         });
 }
 
-function generateSnippetHtmlData(
+async function generateSnippetHtmlData(
     snippet: ISnippet,
+    whichScriptPart: 'script' | 'customFunctions',
     isExternalExport: boolean,
     strings: ServerStrings
 ): Promise<{ html: string, officeJS: string }> {
@@ -615,37 +606,58 @@ function generateSnippetHtmlData(
         throw new BadRequestError(strings.receivedInvalidSnippetData, null /*details*/);
     }
 
-    // NOTE: using Promise-based code instead of async/await
-    // to avoid unhandled exception-pausing on debugging.
-    const snippetGenerator = new SnippetGenerator(strings);
+    let script: string;
+    try {
+        script = compileScript(snippet[whichScriptPart], strings);
+    } catch (e) {
+        if (e instanceof InformationalError) {
+            ai.trackEvent('Server - Script compile error', { snippetId: snippet.id, part: whichScriptPart });
+            return { html: await generateErrorHtml(e, strings), officeJS: null };
+        }
+    }
 
-    return snippetGenerator.compile(snippet).catch(e => e)
-        .then(async (compiledSnippetOrError: ICompiledSnippet | Error) => {
-            let officeJS = '';
-            let html: string;
+    let { officeJS, linkReferences, scriptReferences } = processLibraries(snippet.libraries);
 
-            if (compiledSnippetOrError instanceof Error) {
-                ai.trackException(compiledSnippetOrError, 'Server - Compile error');
-                html = await generateErrorHtml(compiledSnippetOrError, strings);
-            } else {
-                const snippetHandlebarsContext: ISnippetHandlebarsContext = {
-                    ...compiledSnippetOrError,
-                    isOfficeSnippet: isOfficeHost(snippet.host),
-                    isExternalExport: isExternalExport,
-                    strings,
-                    authHelpersUrl: getRuntimeHelpersUrl('auth-helpers'),
-                    editorUrl: currentConfig.editorUrl,
-                    runtimeHelperStringifiedStrings: JSON.stringify(
-                        strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
-                };
+    const snippetHandlebarsContext: ISnippetHandlebarsContext = {
+        snippet: {
+            name: snippet.name,
+            style: snippet.style.content,
+            template: snippet.template.content,
+            script,
+            officeJS,
+            linkReferences,
+            scriptReferences
+        },
 
-                const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
-                html = snippetHtmlGenerator(snippetHandlebarsContext);
-                officeJS = (compiledSnippetOrError as ICompiledSnippet).officeJS;
-            }
+        isOfficeSnippet: isOfficeHost(snippet.host),
+        isExternalExport,
+        strings,
 
-            return { html, officeJS };
-        });
+        runtimeHelpersUrls: getHelperUrlNamesForPart().map(item => getRuntimeHelpersUrl(item)),
+
+        editorUrl: currentConfig.editorUrl,
+        runtimeHelperStringifiedStrings: JSON.stringify(
+            strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
+    };
+
+    const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
+    return { html: snippetHtmlGenerator(snippetHandlebarsContext), officeJS };
+
+
+    // Helper
+    function getHelperUrlNamesForPart(): Array<'auth-helpers' | 'custom-functions'> {
+        let common: Array<'auth-helpers' | 'custom-functions'> =
+            ['auth-helpers'];
+
+        switch (whichScriptPart) {
+            case 'script':
+                return common;
+            case 'customFunctions':
+                return common.concat(['custom-functions']);
+            default:
+                throw new BadRequestError(strings.receivedInvalidSnippetData, null /*details*/);
+        }
+    }
 }
 
 async function generateManifest(
@@ -804,7 +816,7 @@ function getRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions') {
         }
     }
 
-    return `${currentConfig.editorUrl}/${filename}.js` +
+    return `${currentConfig.editorUrl}/libs/${filename}.js` +
         (_runnerHashIfAny ? ('?hash=' + _runnerHashIfAny) : '');
 }
 

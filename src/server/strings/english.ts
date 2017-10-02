@@ -49,6 +49,7 @@ export function getEnglishStrings(): ServerStrings {
         editingDifferentSnippet1: `You're now editing a different snippet`,
         editingDifferentSnippet2: `Refresh this pane to run it`,
         loadLatestSnippet: 'Load the latest snippet',
+        registeringCustomFunctions: 'Registering custom functions from snippets',
 
         RuntimeHelpers: {
             unexpectedError: sharedBetweenServerAndClient.unexpectedError,

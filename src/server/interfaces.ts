@@ -1,10 +1,19 @@
-export interface ISnippetHandlebarsContext extends ICompiledSnippet {
+export interface ISnippetHandlebarsContext {
+    snippet: {
+        name: string;
+        officeJS: string;
+        linkReferences;
+        style: string;
+        template: string;
+        scriptReferences;
+        script: string;
+    };
+
     isOfficeSnippet: boolean;
     isExternalExport: boolean;
     strings: ServerStrings;
 
-    // For the runtime helpers, need both their URL, and the origin editor URL
-    authHelpersUrl: string;
+    runtimeHelpersUrls: Array<string>;
     editorUrl: string;
     runtimeHelperStringifiedStrings: string;
 }
@@ -39,10 +48,20 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface ICustomFunctionsRunnerHandlebarsContext {
-    snippets: Array<ICustomFunctionsRelevantData>
+    /** isRunMode: true if running inside the hidden frame;
+     * false if used for registration only (but as such, will be showing UI) */
+    isRunMode: boolean;
 
-    showUI: boolean;
+    snippetNames: Array<string>;
+    snippetIframesBase64Texts: Array<string>;
+    lastRegisteredTimestamp: number;
+
+    origin: string;
+    officeJS: string;
+
     strings: ServerStrings;
+    explicitlySetDisplayLanguageOrNull: string;
+    initialLoadSubtitle: string;
 }
 
 export interface IErrorHandlebarsContext {

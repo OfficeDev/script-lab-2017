@@ -569,7 +569,7 @@ export class SnippetEffects {
             return;
         }
 
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.
