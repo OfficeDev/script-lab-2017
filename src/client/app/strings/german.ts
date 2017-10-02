@@ -1,7 +1,8 @@
 // Whenever there is no localized translation, use the English version.
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
-import { getEnglishSubstitutesForNotYetTranslated } from './index';
+
+// import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ClientStringsPerLanguage {
     const playgroundName = 'Script Lab';
@@ -24,7 +25,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         close: 'Schließen',
         about: 'Info',
         feedback: 'Feedback',
-        error: getEnglishSubstitutesForNotYetTranslated().error,
+        error: 'Fehler',
         errors: 'Fehler',
         dismiss: 'Schließen',
 
@@ -35,8 +36,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         moreInfoButtonLabel: 'Mehr Infos',
         importButtonLabel: 'Importieren',
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
-        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
-        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
+        overwriteExistingButtonLabel: 'Bestehendes Schnipsel überschreiben',
+        createNewCopyButtonLabel: 'Eine neue Kopie erstellen',
         editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
         failedToLoadCodeSnippet: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
@@ -45,8 +46,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         snippetImportError: 'Der Import des Schnipsels ist fehlgeschlagen.',
         snippetImportErrorTitle: 'Importfehler',
         snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
-        cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
-        requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated().requestedSnippetNoLongerExists,
+        cannotOpenSnippet: 'Das Schnipsel konnte nicht geöffnet werden',
+        requestedSnippetNoLongerExists: 'Das angeforderte Schnipsel existiert nicht mehr.',
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
         cannotImportSnippetCreatedForDifferentHost:
@@ -63,7 +64,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         snippetLoadAllError: 'Die lokal gespeicherten Schnipsel konnten nicht geladen werden.',
         snippetRunError: 'Die Ausführung des Schnipsels ist fehlgeschlagen.',
         snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
-        snippetOpenInPlaygroundError: getEnglishSubstitutesForNotYetTranslated().snippetOpenInPlaygroundError,
+        snippetOpenInPlaygroundError: /** Note: this is a more general translation **/ 'Das Schnipsel konnte nicht geöffnet werden',
 
         snippetNoOfficeTitle: 'Dieses Schnipsel kann nicht ausgeführt werden.',
         snippetNoOfficeMessage: 'Office Code-Schnipsel können nur innerhalb eines Office-Add-Ins ausgeführt werden. Erweitern Sie Office heute noch um das kostenlose Add-In Script Lab, welches Sie unter https://aka.ms/getscriptlab abrufen können.',
@@ -118,8 +119,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         aboutCurrentEnvironment: 'Aktuelle Umgebung:',
         aboutSwitchEnvironment: 'Wechseln von {0} zu {1}',
         changeEnvironmentConfirm: 'Sie sind dabei, zu einer anderen Umgebung von Script Lab zu wechseln und verlieren dadurch den Zugriff auf Ihre gespeicherten Schnipsel bis Sie wieder zu dieser Umgebung zurückkehren. Möchten Sie fortfahren?',
-        showExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().showExperimentationFlags,
-        invalidExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().invalidExperimentationFlags,
+        showExperimentationFlags: 'Experimentelle Flags anzeigen',
+        invalidExperimentationFlags: 'Bei den experimentellen Flags muss es sich um Daten in einem gültigen JSON-Format handeln.',
 
         //snippet.info.ts
         snippetInfoDialogTitle: 'Schnipsel-Info',
@@ -169,11 +170,11 @@ export function getGermanStrings(): ClientStringsPerLanguage {
 
         // view.mode.ts strings
 
-        openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
-        openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
-        openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
-        downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
-        openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
+        openInPlayground: 'In Script Lab öffnen',
+        openInHost: 'In {0} öffnen',
+        openInGithub: 'In GitHub öffnen',
+        downloadAsHostFile: '{0} Datei herunterladen',
+        openTryIt: 'In Ihrem Browser ausprobieren',
 
         // Outlook-only strings
 
@@ -194,14 +195,14 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         noSamplesMessage: `Es sind noch keine Beispiel-Schnipsel für diese Host-Anwendung verfügbar.`,
         importWarning: `Importierte Schnipsel können schädlichen Code enthalten. Führen Sie nur Schnipsel aus, deren Quelle Sie vertrauen.`,
         importWarningAction: `Diese Meldung nicht mehr anzeigen.`,
-        importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
+        importSucceed: 'Das Schnipsel wurde erfolgreich importiert',
 
-        localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser Cache löschen. ` +
+        localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser-Cache löschen. ` +
         `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
         localStorageWarningAction: `Diese Meldung nicht mehr anzeigen.`,
 
         importInstructions: `Geben Sie die URL zum Schnipsel an oder fügen Sie den YAML-Code in das entsprechende Feld ein. Klicken Sie anschließend auf`,
-        importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel
+        importUrlOrYamlLabel: 'URL des Schnipsels oder YAML-Code'
             /* String has been tweaked from original.  It should now be roughly a shortened combination of
                "URL oder GitHub-Gist-ID zum Code-Schnipsel"
                and
@@ -210,8 +211,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         exampleAbbreviation: `z.B.`,
 
         unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
-        pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
-        scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
+        pleaseWait: 'Bitte warten',
+        scriptLabIsReloading: 'Script Lab wird neu geladen',
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -234,8 +235,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
                 return 'Lade ' + (snippetName ? `"${snippetName}"` : 'Schnipsel');
             },
 
-            runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated().Runner.runtimeErrorWhileLoadingTheSnippet,
-            goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner.goBackToEditorToFixError,
+            runtimeErrorWhileLoadingTheSnippet: 'Beim Laden des Schnipsels ist ein Laufzeitfehler aufgetreten',
+            goBackToEditorToFixError: 'Wechseln Sie bitte zum Editor, um den Fehler zu beheben.',
         },
 
         /** Error strings served by the server and displayed in the Error page */
@@ -285,14 +286,14 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         },
 
         Auth: {
-            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
-            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
-            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
-            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
-            unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedResource,
-            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
-            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
-            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
+            authenticatingOnBehalfOfSnippet: 'Authentifizierung durch das Schnipsel...',
+            loggingOutOnBehalfOfSnippet: 'Abmeldung durch das Schnipsel...',
+            authenticationRedirect: 'Umleitung zur Authentifizierung',
+            authenticationError: 'Authentifizierungsfehler',
+            unrecognizedResource: 'Unerkannte Ressource',
+            invalidParametersPassedInForAuth: 'Es wurden ungültige Parameter zur Authentifizierung übergeben',
+            invalidAuthResponseReceived: 'Der Authentifizierungsdienst hat eine ungültige Antwort zurückgeliefert',
+            yourAccessTokenIs: 'Ihr Zugangstoken ist'
         }
     };
 }

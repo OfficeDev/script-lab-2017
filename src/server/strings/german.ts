@@ -2,7 +2,7 @@
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
 
-import { getEnglishSubstitutesForNotYetTranslated } from './index';
+// import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ServerStrings {
     const playgroundName = 'Script Lab';
@@ -29,7 +29,7 @@ export function getGermanStrings(): ServerStrings {
         createdWithScriptLab: 'Erstellt mit Script Lab',
 
         scriptLabRunner: 'Script Lab Runner',
-        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+        tryItPageTitle: 'Ausprobieren',
 
         versionInfo: 'Versionsinformationen',
 
@@ -41,9 +41,9 @@ export function getGermanStrings(): ServerStrings {
         run: 'Ausführen',
         runPageTitle: 'Schnipsel ausführen',
         back: 'Zurück',
-        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
-        trust: getEnglishSubstitutesForNotYetTranslated().trust,
-        cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
+        snippetNotTrusted: 'Dieses Schnipsel stammt aus einer externen Quelle. Sie müssen dem Schnipsel vertrauen, bevor Sie dieses ausführen können.',
+        trust: 'Vertrauen',
+        cancel: 'Abbrechen',
         switchToSnippet: `Zu dem Schnipsel wechseln, welches Sie gerade editieren.`,
         snippetCodeChanged: 'Sie haben den Code zu diesem Schnipsel verändert. Aktualisieren Sie diese Seite, um die neue Version auszuführen.',
         refresh: 'Aktualisieren',
@@ -54,8 +54,8 @@ export function getGermanStrings(): ServerStrings {
 
         RuntimeHelpers: {
             unexpectedError: unexpectedError,
-            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
-            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
+            authenticationWasCancelledByTheUser: 'Die Authentifizierung wurde vom Benutzer abgebrochen',
+            officeVersionDoesNotSupportAuthentication: 'Ihre aktuelle Office-Version unterstützt nicht die Anzeige eines Authentifizierungsdialogs. Aktualisieren Sie Office auf eine neuere Version oder verwenden Sie Office-Online, um dieses Schnipsel ausführen zu können.'
         }
     };
 }
