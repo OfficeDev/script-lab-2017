@@ -52,7 +52,7 @@ interface InitializationParams {
 
     let isInTryItMode = checkIfInTryItMode();
 
-    async function initializeRunner(params: InitializationParams): Promise<void> {
+    (window as any).initializeRunner = async (params: InitializationParams): Promise<void> => {
         try {
             await environment.initializePartial({ host: params.host });
             instantiateRibbon('ribbon');
@@ -87,7 +87,7 @@ interface InitializationParams {
         catch (error) {
             handleError(error);
         }
-    }
+    };
 
     async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
         // Even though already did a partial initialization, do a more thorough
@@ -169,9 +169,6 @@ interface InitializationParams {
         (new MutationObserver(mutations => mutations.forEach(snippetAndConsoleRefreshSize)))
             .observe(document.getElementById('FirebugUI'), { attributes: true });
     }
-
-    (window as any).initializeRunner = initializeRunner;
-
 
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
