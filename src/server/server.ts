@@ -235,7 +235,7 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
  * Note that all snippets passed to this page are already expected to be trusted.
  */
 registerRoute('post', '/compile/custom-functions', async (req, res) => {
-    const params: ICompileCustomFunctionsState = JSON.parse(req.body);
+    const params: ICompileCustomFunctionsState = JSON.parse(req.body.data);
     const { snippets, mode } = params;
 
     const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');

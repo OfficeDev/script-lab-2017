@@ -68,7 +68,10 @@ const CSS_CLASSES = {
         // "custom-functions" runtime helpers)
         (Excel as any).Script.CustomFunctions = {};
 
-        for (let i = 0; i < initialParams.snippetIframesBase64Texts.length; i++) {
+        const actualCount = initialParams.snippetIframesBase64Texts.length - 1;
+        /* Last one is always null, set in the template for ease of trailing commas... */
+
+        for (let i = 0; i < actualCount; i++) {
             const snippetBase64OrNull = initialParams.snippetIframesBase64Texts[i];
             let $entry = showUI ? $snippetNames.children().eq(i) : null;
 

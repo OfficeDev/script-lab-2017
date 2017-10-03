@@ -42,7 +42,8 @@ module.exports = (prodMode) =>
             error: './public/error.ts',
             auth: './public/auth.ts',
             tryIt: './public/try.it.ts',
-            customFunctions: './public/custom.functions.ts'
+            customFunctions: './public/custom.functions.ts',
+            compileCustomFunctions: './public/compile.custom.functions.ts'
         },
 
         resolve: {

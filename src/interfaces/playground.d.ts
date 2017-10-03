@@ -76,6 +76,8 @@ interface ICompileCustomFunctionsState {
     snippets: Array<ICustomFunctionsRelevantData>;
     mode: 'register' | 'run';
     clientTimestamp: number;
+    
+    displayLanguage: string;
 }
 
 interface IExportState {

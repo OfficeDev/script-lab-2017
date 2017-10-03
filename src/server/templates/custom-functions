@@ -16,7 +16,20 @@
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
 {{/if}}
 
-    <script src="{{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js"></script>
+    {{!-- TODO: FIX CORS issue with {{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js --}}
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.2-private.0/dist/office.js"></script>
+
+    <style>
+        #snippet-names > .in-progress {
+            color: gold;
+        }
+        #snippet-names > .error {
+            color: red;
+        }
+        #snippet-names > .success {
+            color: green;
+        }
+    </style>
 </head>
 
 <body class="ms-font-m">
@@ -32,7 +45,7 @@
 
                 <div id="snippet-names">
 {{#each snippetNames}}
-                    <span>{{this}}</span>
+                    <div>{{this}}</div>
 {{/each}}
                 </div>
             </main>
@@ -62,8 +75,9 @@
 			isRunMode: {{isRunMode}},
 			snippetIframesBase64Texts: [
 {{#each snippetIframesBase64Texts}}
-                '{{this}}'
+                '{{this}}',
 {{/each}}
+                null
             ],
 		    clientTimestamp: {{clientTimestamp}},
 			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
