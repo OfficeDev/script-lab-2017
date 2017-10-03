@@ -2,7 +2,7 @@ import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } 
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI, environment, trustedSnippetManager } from '../helpers';
+import { AI, environment, trustedSnippetManager, navigateToCompileCustomFunctions } from '../helpers';
 import { UIEffects } from '../effects/ui';
 import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
@@ -125,7 +125,7 @@ export class Editor implements AfterViewInit {
             }
         }
 
-        // TODO
+        navigateToCompileCustomFunctions('register');
     }
 
     private _createTabs() {

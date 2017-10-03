@@ -63,6 +63,11 @@ const CSS_CLASSES = {
 
         const $snippetNames = showUI ? $('#snippet-names') : null;
 
+        // Begin with clearing out the Excel.Script.CustomFunctions namespace
+        // (which is assume to already exist and be initialized in the
+        // "custom-functions" runtime helpers)
+        (Excel as any).Script.CustomFunctions = {};
+
         for (let i = 0; i < initialParams.snippetIframesBase64Texts.length; i++) {
             const snippetBase64OrNull = initialParams.snippetIframesBase64Texts[i];
             let $entry = showUI ? $snippetNames.children().eq(i) : null;
@@ -88,7 +93,20 @@ const CSS_CLASSES = {
             }
         }
 
+        // TODO what if the below, or any of this, fails when this is invisible?
+
+        // Complete any function registrations
+        await Excel.run(async (context) => {
+            (context.workbook as any).customFunctions.addAll();
+            await context.sync();
+        });
+
         // TODO: establish heartbeat!
+
+        // If in registration (not run) mode, return back to the editor:
+        if (!initialParams.isRunMode) {
+            window.location.href = `${environment.current.config.editorUrl}/#/edit/EXCEL`;
+        }
     }
 
     function runSnippetCode(html: string): Promise<any> {

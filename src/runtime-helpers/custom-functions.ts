@@ -7,6 +7,23 @@ module ScriptLab {
     /** [PREVIEW] Registers a custom functions with Excel (must be done via this helper in order to work correctly in Script Lab)
      * @param definitions: The function definitions, nested inside of an "Excel.CustomFunctionNamespaceCollection" data structure
      */
-    export function registerCustomFunctions(definitions: Excel.CustomFunctionNamespaceCollection) {
+    export function registerCustomFunctions(definitions: Excel.CustomFunctionNamespaceCollection): void {
+        merge(definitions, Excel.Script.CustomFunctions);
+
+        function merge(data, target) {
+            /* tslint:disable:forin */
+            for (let ns in data) {
+                target[ns] = target[ns] || {};
+
+                for (let fn in target[ns]) {
+                    if (target[ns][fn]) {
+                        // TODO: not localized yet, but also because we're not showing it anywhere yet.
+                        console.log(`Duplicate function name "${fn}" in namespace "${ns}"`);
+                    }
+                    target[ns][fn] = data[ns][fn];
+                }
+            }
+            /* tslint:enable:forin */
+        }
     }
 }

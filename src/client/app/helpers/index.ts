@@ -1,4 +1,5 @@
 export * from './ai.helper';
+export * from './custom.functions.helper';
 export * from './environment';
 export * from './exception.helper';
 export * from './libraries.processor';
