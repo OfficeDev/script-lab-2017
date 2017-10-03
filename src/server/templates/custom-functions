@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
 {{/if}}
 
-    <script src="{{{officeJS}}}"></script>
+    <script src="{{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js"></script>
 </head>
 
 <body class="ms-font-m">
@@ -65,7 +65,7 @@
                 '{{this}}'
 {{/each}}
             ],
-		    lastRegisteredTimestamp: {{lastRegisteredTimestamp}},
+		    clientTimestamp: {{clientTimestamp}},
 			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
         });
     </script>

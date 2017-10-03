@@ -54,10 +54,7 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
 
     snippetNames: Array<string>;
     snippetIframesBase64Texts: Array<string>;
-    lastRegisteredTimestamp: number;
-
-    origin: string;
-    officeJS: string;
+    clientTimestamp: number;
 
     strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;

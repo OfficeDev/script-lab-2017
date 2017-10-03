@@ -25,29 +25,22 @@ interface ITemplate {
     modified_at: number;
 }
 
+interface IContentLanguagePair {
+    content: string;
+    language: string;
+}
+
 interface ISnippet extends ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
     // to update "snippetFields" and "snippetFieldSortingOrder" and "getSnippetDefaults" in
     // "src\client\app\helpers\snippet.helper.ts"
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    script?: {
-        content: string;
-        language: string;
-    };
-    template?: {
-        content: string;
-        language: string;
-    };
-    style?: {
-        content: string;
-        language: string;
-    };
+    script?: IContentLanguagePair;
+    template?: IContentLanguagePair;
+    style?: IContentLanguagePair;
+    customFunctions?: IContentLanguagePair
     libraries?: string;
-    customFunctions?: {
-        content: string;
-        language: string;
-    };
 }
 
 interface ILibraryDefinition {
@@ -69,7 +62,8 @@ interface IRunnerState {
 }
 
 interface ICustomFunctionsRelevantData {
-    name: string
+    id: string;
+    name: string;
     customFunctions: {
         content: string;
         language: string;
@@ -80,7 +74,8 @@ interface ICustomFunctionsRelevantData {
 /** Request body passed to the custom functions compile route in a POST */
 interface ICompileCustomFunctionsState {
     snippets: Array<ICustomFunctionsRelevantData>;
-    mode: 'register' | 'run'
+    mode: 'register' | 'run';
+    clientTimestamp: number;
 }
 
 interface IExportState {

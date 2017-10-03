@@ -4,7 +4,7 @@
 // interface InitializationParams {
 //     isRunMode: boolean;
 //     snippetIframesBase64Texts: Array<string>;
-//     lastRegisteredTimestamp: number;
+//     lastUpdatedTimestamp: number;
 //     explicitlySetDisplayLanguageOrNull: string;
 // }
 

@@ -24,7 +24,7 @@ import { getShareableYaml } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
-    // ICustomFunctionsRunnerHandlebarsContext
+    ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
 
 const moment = require('moment');
@@ -235,21 +235,42 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
  * Note that all snippets passed to this page are already expected to be trusted.
  */
 registerRoute('post', '/compile/custom-functions', async (req, res) => {
-    // const params: ICompileCustomFunctionsState = JSON.parse(req.body);
-    // const { snippets, mode } = params;
+    const params: ICompileCustomFunctionsState = JSON.parse(req.body);
+    const { snippets, mode } = params;
 
     const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');
 
-    // const strings = Strings(req);
+    let strings = Strings(req);
+    let snippetIframesBase64Texts: string[] =
+        (await Promise.all(
+            snippets.map(snippet => {
+                return generateSnippetHtmlData(
+                    {
+                        host: 'EXCEL',
+                        scriptToCompile: snippet.customFunctions,
+                        id: snippet.id,
+                        name: snippet.name,
+                        libraries: snippet.libraries,
+                        style: null,
+                        template: null,
+                    },
+                    'customFunctions', false /*isExternalExport*/, strings);
+            })
+        )).map(result => result.succeeded ? base64encode(result.html) : null);
 
-    // const customFunctionsRunnerGenerator =
-    //     await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions');
-    // const html = customFunctionsRunnerGenerator({
-    //     snippets,
-    //     strings,
-    //     isRunMode: mode === 'run'
-    // });
-    const html = '';
+    const customFunctionsRunnerGenerator =
+        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions');
+
+    const html = customFunctionsRunnerGenerator({
+        isRunMode: mode === 'run',
+        snippetNames: snippets.map(snippet => snippet.name),
+        snippetIframesBase64Texts,
+        clientTimestamp: params.clientTimestamp,
+
+        strings,
+        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+        initialLoadSubtitle: strings.registeringCustomFunctions
+    });
 
     timer.stop();
     return respondWithHtml(res, html);
@@ -359,7 +380,10 @@ registerRoute('post', '/export', (req, res) => {
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippet, 'script', true /*isExternalExport*/, strings),
+        generateSnippetHtmlData(
+            { scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) },
+            'script',
+            true /*isExternalExport*/, strings),
         generateReadme(snippet),
         isOfficeHost(snippet.host) ?
             generateManifest(snippet, additionalFields, filenames.html, strings) : null
@@ -446,13 +470,12 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
 
     const strings = Strings(req);
 
-    // Note: need the return URL explicitly, so can know exactly where to return to (editor vs. gallery view),
-    // and so that refresh page could know where to return to if the snippet weren't found.
+    let snippetDataToCompile = { scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) };
 
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippet, 'script', false /*isExternalExport*/, strings),
+        generateSnippetHtmlData(snippetDataToCompile, 'script', false /*isExternalExport*/, strings),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
         .then(values => {
@@ -466,7 +489,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
                     snippet: {
                         id: snippet.id,
                         lastModified: snippet.modified_at,
-                        content: Buffer.from(html).toString('base64')
+                        content: base64encode(html),
                     },
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
@@ -596,40 +619,44 @@ function getVersionNumber(): Promise<string> {
 }
 
 async function generateSnippetHtmlData(
-    snippet: ISnippet,
+    compileData: {
+        id: string;
+        name: string;
+        scriptToCompile: IContentLanguagePair;
+        libraries: string;
+        style: IContentLanguagePair;
+        template: IContentLanguagePair;
+        host: string;
+    },
     whichScriptPart: 'script' | 'customFunctions',
     isExternalExport: boolean,
     strings: ServerStrings
-): Promise<{ html: string, officeJS: string }> {
-
-    if (snippet == null) {
-        throw new BadRequestError(strings.receivedInvalidSnippetData, null /*details*/);
-    }
+): Promise<{ succeeded: boolean; html: string, officeJS: string }> {
 
     let script: string;
     try {
-        script = compileScript(snippet[whichScriptPart], strings);
+        script = compileScript(compileData.scriptToCompile, strings);
     } catch (e) {
         if (e instanceof InformationalError) {
-            ai.trackEvent('Server - Script compile error', { snippetId: snippet.id, part: whichScriptPart });
-            return { html: await generateErrorHtml(e, strings), officeJS: null };
+            ai.trackEvent('Server - Script compile error', { snippetId: compileData.id, part: whichScriptPart });
+            return { succeeded: false, html: await generateErrorHtml(e, strings), officeJS: null };
         }
     }
 
-    let { officeJS, linkReferences, scriptReferences } = processLibraries(snippet.libraries);
+    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries);
 
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
-            name: snippet.name,
-            style: snippet.style.content,
-            template: snippet.template.content,
+            name: compileData.name,
+            style: (compileData.style || { content: '' }).content,
+            template: (compileData.template || { content: '' }).content,
             script,
             officeJS,
             linkReferences,
             scriptReferences
         },
 
-        isOfficeSnippet: isOfficeHost(snippet.host),
+        isOfficeSnippet: isOfficeHost(compileData.host),
         isExternalExport,
         strings,
 
@@ -641,7 +668,7 @@ async function generateSnippetHtmlData(
     };
 
     const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
-    return { html: snippetHtmlGenerator(snippetHandlebarsContext), officeJS };
+    return { succeeded: true, html: snippetHtmlGenerator(snippetHandlebarsContext), officeJS };
 
 
     // Helper
@@ -786,7 +813,8 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
             assets: getFileAsJson('assets.json'),
             versionedPackageNames_office_ui_fabric_js: versionedPackageNames['office-ui-fabric-js'],
             versionedPackageNames_jquery: versionedPackageNames['jquery'],
-            versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom']
+            versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom'],
+            versionedPackageNames_office_js: versionedPackageNames['@microsoft/office-js']
         };
     }
 
@@ -828,6 +856,11 @@ function getClientSecret() {
     return secrets ? secrets[env] : '';
 }
 
+function extractCommonCompileData(snippet: ISnippet) {
+    let { host, id, libraries, name, style, template } = snippet;
+    return { host, id, libraries, name, style, template };
+}
+
 /** Returns the params as a typed object, with "host" always capitalized, and "id" always lowercase */
 function massageParams<T>(req: express.Request): T;
 function massageParams<T>(params: { [key: string]: any }): T;
@@ -846,4 +879,8 @@ function massageParams<T>(input) {
     }
 
     return params as T;
+}
+
+function base64encode(input: string) {
+    return Buffer.from(input).toString('base64');
 }
