@@ -31266,7 +31266,7 @@ FirebugChrome.Skin =
 FirebugChrome.Skin.CSS =
     replaceAll(FirebugChrome.Skin.CSS,
         'https://getfirebug.com/releases/lite/latest/',
-        window.origin + '/assets/firebug/') +
+        window.firebugOriginUrl + '/assets/firebug/') +
     '\n' +
     [
         '#fbHTMLTab, #fbstylesheetTab, #fbScriptTab, #fbTraceTab, #fbChrome_btInspect, #fbPanelBar2Box, #fbPanelBox2, #fbLargeCommandLineIcon, #fbWindow_btDeactivate, #fbWindow_btDetach {',

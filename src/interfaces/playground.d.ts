@@ -152,6 +152,7 @@ interface ICompiledPlaygroundInfo {
         project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
         generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
     };
+    experimentationFlagsDefaults: {};
 }
 
 interface ICurrentPlaygroundInfo {

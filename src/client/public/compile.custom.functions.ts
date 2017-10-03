@@ -3,13 +3,14 @@ import { isNil } from 'lodash';
 import { UI } from '@microsoft/office-js-helpers';
 import { environment, instantiateRibbon } from '../app/helpers';
 import { Strings, setDisplayLanguage } from '../app/strings';
-
+import { loadFirebug, officeNamespacesForIframe } from './runner.common'
 
 interface InitializationParams {
     isRunMode: boolean;
     snippetIframesBase64Texts: Array<string>;
     clientTimestamp: number;
     explicitlySetDisplayLanguageOrNull: string;
+    returnUrl: string;
 }
 
 const CSS_CLASSES = {
@@ -19,11 +20,6 @@ const CSS_CLASSES = {
 };
 
 (() => {
-    /** Namespaces for the runner wrapper to share with the inner snippet iframe
-     * Note that only listing out Excel-specific ones,
-     * since Custom Functions are only for Excel */
-    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel'];
-
     let showUI: boolean;
 
     (window as any).initializeCustomFunctions = (params: InitializationParams): void => {
@@ -32,6 +28,10 @@ const CSS_CLASSES = {
             showUI = !params.isRunMode; /* show UI for registration, not running invisible snippet */
 
             if (showUI) {
+                // Apply the host theming by adding this attribute on the "body" element:
+                $('body').addClass('EXCEL');
+                $('#header').css('visibility', 'visible');
+
                 instantiateRibbon('ribbon');
             }
 
@@ -63,10 +63,16 @@ const CSS_CLASSES = {
 
         const $snippetNames = showUI ? $('#snippet-names') : null;
 
+        if (showUI) {
+            await loadFirebug(environment.current.config.editorUrl);
+        }
+
         // Begin with clearing out the Excel.Script.CustomFunctions namespace
         // (which is assume to already exist and be initialized in the
         // "custom-functions" runtime helpers)
         (Excel as any).Script.CustomFunctions = {};
+
+        let allSuccessful = true;
 
         const actualCount = initialParams.snippetIframesBase64Texts.length - 1;
         /* Last one is always null, set in the template for ease of trailing commas... */
@@ -74,6 +80,11 @@ const CSS_CLASSES = {
         for (let i = 0; i < actualCount; i++) {
             const snippetBase64OrNull = initialParams.snippetIframesBase64Texts[i];
             let $entry = showUI ? $snippetNames.children().eq(i) : null;
+
+            if (showUI) {
+                const snippetName = showUI ? $entry.text() : null;
+                console.warn(Strings().Runner.getLoadingSnippetSubtitle(snippetName));
+            }
 
             if (isNil(snippetBase64OrNull)) {
                 if (showUI) {
@@ -84,14 +95,11 @@ const CSS_CLASSES = {
                     $entry.addClass(CSS_CLASSES.inProgress);
                 }
 
-                try {
-                    await runSnippetCode(atob(initialParams.snippetIframesBase64Texts[i]));
-                    if (showUI) {
-                        $entry.removeClass(CSS_CLASSES.inProgress).addClass(CSS_CLASSES.success);
-                    }
-                } catch (e) {
-                    // TODO: Think through how to show errors better
-                    $entry.removeClass(CSS_CLASSES.inProgress).addClass(CSS_CLASSES.error);
+                let success = await runSnippetCode(atob(initialParams.snippetIframesBase64Texts[i]));
+                allSuccessful = allSuccessful && success;
+                if (showUI) {
+                    $entry.removeClass(CSS_CLASSES.inProgress)
+                        .addClass(success ? CSS_CLASSES.success : CSS_CLASSES.error);
                 }
             }
         }
@@ -106,13 +114,14 @@ const CSS_CLASSES = {
 
         // TODO: establish heartbeat!
 
-        // If in registration (not run) mode, return back to the editor:
-        if (!initialParams.isRunMode) {
-            window.location.href = `${environment.current.config.editorUrl}/#/edit/EXCEL`;
+        // If in registration (not run) mode, and if all are successful, return back to the editor:
+        if (allSuccessful && !initialParams.isRunMode) {
+            window.location.href = initialParams.returnUrl;
         }
     }
 
-    function runSnippetCode(html: string): Promise<any> {
+    /** Runs the snippet code and returns true if successful, or false if any errors were encountered */
+    function runSnippetCode(html: string): Promise<boolean> {
         const $iframe =
             $('<iframe class="snippet-frame" style="display:none" src="about:blank"></iframe>');
         $('body').append($iframe);
@@ -132,7 +141,7 @@ const CSS_CLASSES = {
                 // Call Office.initialize(), which now initializes the snippet.
                 // The parameter, initializationReason, is not used in the playground.
                 Office.initialize(null /*initializationReason*/);
-                resolve();
+                resolve(true);
             };
 
             // Write to the iframe (and note that must do the ".write" call first,
@@ -141,7 +150,7 @@ const CSS_CLASSES = {
             contentWindow.document.write(html);
             contentWindow.onerror = (...args) => {
                 console.error(args);
-                reject(args); // FIXME, better error handling
+                resolve(false);
             };
             contentWindow.document.close();
         });

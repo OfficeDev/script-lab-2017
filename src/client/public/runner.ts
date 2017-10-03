@@ -5,6 +5,7 @@ import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries, environment, instantiateRibbon } from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, MessageType } from '../app/helpers/messenger';
+import { loadFirebug, officeNamespacesForIframe } from './runner.common'
 
 import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
@@ -23,9 +24,6 @@ interface InitializationParams {
 }
 
 (() => {
-    /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
-
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
      * for where to insert the rendered snippet iframe
@@ -278,22 +276,6 @@ interface InitializationParams {
         $('.runner-notification').hide();
         $('.runner-overlay').show();
         $('#notify-error').show();
-    }
-
-    function loadFirebug(origin: string): Promise<void> {
-        return new Promise<any>((resolve, reject) => {
-            (window as any).origin = origin;
-            const firebugUrl = `${origin}/assets/firebug/firebug-lite-debug.js#startOpened`;
-            const script = $(`<script type="text/javascript" src="${firebugUrl}"></script>`);
-            script.appendTo('head');
-
-            const interval = setInterval(() => {
-                if ((window as any).firebugLiteIsLoaded) {
-                    clearInterval(interval);
-                    return resolve((window as any).Firebug);
-                }
-            }, 100);
-        });
     }
 
     async function ensureHostInitialized(): Promise<any> {

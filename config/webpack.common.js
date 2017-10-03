@@ -7,8 +7,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config, RedirectPlugin, localStorageKeys, sessionStorageKeys, safeExternalUrls } = require('./env.config');
-const { getVersionedPackageNames, VersionedPackageSubstitutionsPlugin } = require('./package.version.substitutions.plugin.js');
+const { build, config, RedirectPlugin,
+    localStorageKeys, sessionStorageKeys,
+    safeExternalUrls, experimentationFlagsDefaults } = require('./env.config');
+const { getVersionedPackageNames,
+    VersionedPackageSubstitutionsPlugin } =require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
 
 const versionedPackageNames = getVersionedPackageNames([
@@ -83,7 +86,8 @@ module.exports = (prodMode) =>
                     config: config,
                     localStorageKeys: localStorageKeys,
                     sessionStorageKeys: sessionStorageKeys,
-                    safeExternalUrls: safeExternalUrls
+                    safeExternalUrls: safeExternalUrls,
+                    experimentationFlagsDefaults: experimentationFlagsDefaults
                 })
             }),
             new webpack.LoaderOptionsPlugin({

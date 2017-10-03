@@ -84,6 +84,10 @@ const safeExternalUrls = {
     generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
 };
 
+const experimentationFlagsDefaults = {
+    customFunctions: false
+};
+
 class RedirectPlugin {
     apply(compiler) {
         compiler.plugin('compilation', (compilation) => {
@@ -201,6 +205,7 @@ exports.config = config;
 exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
 exports.sessionStorageKeys = sessionStorageKeys;
+exports.experimentationFlagsDefaults = experimentationFlagsDefaults;
 exports.RedirectPlugin = RedirectPlugin;
 
 // NOTE: Data in this file gets propagated to JS on client pages

@@ -6,7 +6,7 @@ import { Strings } from '../strings';
 import { isValidHost } from '../helpers';
 
 let { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
-import { isNil } from 'lodash';
+import { isNil, isEqual } from 'lodash';
 
 class Environment {
     cache = new Storage<any>(sessionStorageKeys.environmentCache, StorageType.SessionStorage);
@@ -96,15 +96,29 @@ class Environment {
     }
 
     getExperimentationFlagValue(name: 'customFunctions'): any {
-        return JSON.parse(this.getExperimentationFlagsString())[name];
+        return JSON.parse(this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/))[name];
     }
 
     /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */
-    getExperimentationFlagsString(): string {
-        const flagSetInStorage = window.localStorage[localStorageKeys.experimentationFlags];
-        const flagsOrError: IExperimentationFlags | Error = attempt(() => JSON.parse(flagSetInStorage));
-        const isErrorOrEmpty = isError(flagsOrError) || JSON.stringify(flagsOrError).length === '{}'.length;
-        return isErrorOrEmpty ? ('{' + '\n    ' + '\n' + '}') : JSON.stringify(flagsOrError, null, 4);
+    getExperimentationFlagsString(onEmptyReturnDefaults: boolean): string {
+        const objectToReturn = (() => {
+            const flagSetInStorage = window.localStorage[localStorageKeys.experimentationFlags];
+            const flagsOrError: IExperimentationFlags | Error = attempt(() => JSON.parse(flagSetInStorage));
+
+            let value = isError(flagsOrError) ? {} : flagsOrError;
+            value = {
+                ...PLAYGROUND.experimentationFlagsDefaults,
+                ...value
+            }
+
+            if (isEqual(value, PLAYGROUND.experimentationFlagsDefaults)) {
+                return onEmptyReturnDefaults ? PLAYGROUND.experimentationFlagsDefaults : {};
+            } else {
+                return value;
+            }
+        })();
+
+        return JSON.stringify(objectToReturn, null, 4);
     }
 
     /** Sets experimentation flags; will throw an error if the value provided is not a valid JSON-ifiable string.
@@ -115,12 +129,16 @@ class Environment {
             throw new Error(Strings().invalidExperimentationFlags);
         }
 
-        const identicalToPreviousSettings =
-            JSON.stringify(JSON.parse(this.getExperimentationFlagsString())) === JSON.stringify(objectAttempt);
-
-        if (!identicalToPreviousSettings) {
-            window.localStorage[localStorageKeys.experimentationFlags] = value;
+        if (isEqual(objectAttempt, PLAYGROUND.experimentationFlagsDefaults)) {
+            objectAttempt = {};
         }
+        const previousSetting = JSON.parse(this.getExperimentationFlagsString(
+            false /*onEmptyReturnDefaults = false; instead want actual empty */));
+        const identicalToPreviousSettings = isEqual(previousSetting, objectAttempt);
+
+        // Reset the local storage just in case, but to stringified object attempt rather than straight-up value,
+        // since objectAttempt may have gotten adjusted.
+        window.localStorage[localStorageKeys.experimentationFlags] = JSON.stringify(objectAttempt);
 
         return !identicalToPreviousSettings;
     }

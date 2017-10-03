@@ -2,7 +2,7 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterV
 import { environment, storageSize, storage } from '../helpers';
 import { Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
-import { attempt, isError } from 'lodash';
+import { attempt, isError, isEqual } from 'lodash';
 let { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 @Component({
@@ -37,7 +37,7 @@ let { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
                             </label>
                         </div>
                         <div *ngIf="showExperimentationFlags" class="ms-TextField ms-TextField--multiline">
-                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags" placeholder=""></textarea>
+                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags"></textarea>
                         </div>
                     </div>
                 </div>
@@ -103,8 +103,9 @@ export class About implements AfterViewInit {
 
         this.selectedConfig = this.configs.find(c => c.value.toUpperCase() === environment.current.config.name).value;
 
-        this.experimentationFlags = environment.getExperimentationFlagsString();
-        this.showExperimentationFlags = JSON.stringify(JSON.parse(this.experimentationFlags)).length > '{}'.length;
+        this.experimentationFlags = environment.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/);
+        const isEffectivelyEmpty = isEqual(JSON.parse(this.experimentationFlags), PLAYGROUND.experimentationFlagsDefaults);
+        this.showExperimentationFlags = !isEffectivelyEmpty;
     }
 
     async okClicked() {
@@ -126,7 +127,7 @@ export class About implements AfterViewInit {
             needsWindowReload = true;
         } else {
             // If this component gets re-opened, want to have a re-formatted string, in case it changed.
-            this.experimentationFlags = environment.getExperimentationFlagsString();
+            this.experimentationFlags = environment.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/);
         }
 
 

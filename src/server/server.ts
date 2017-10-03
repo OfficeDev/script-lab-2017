@@ -237,6 +237,7 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
 registerRoute('post', '/compile/custom-functions', async (req, res) => {
     const params: ICompileCustomFunctionsState = JSON.parse(req.body.data);
     const { snippets, mode } = params;
+    const host = 'EXCEL';
 
     const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');
 
@@ -246,13 +247,13 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
             snippets.map(snippet => {
                 return generateSnippetHtmlData(
                     {
-                        host: 'EXCEL',
                         scriptToCompile: snippet.customFunctions,
                         id: snippet.id,
                         name: snippet.name,
                         libraries: snippet.libraries,
                         style: null,
                         template: null,
+                        host
                     },
                     'customFunctions', false /*isExternalExport*/, strings);
             })
@@ -269,7 +270,9 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
 
         strings,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-        initialLoadSubtitle: strings.registeringCustomFunctions
+        initialLoadSubtitle: strings.playgroundTagline,
+        headerTitle: strings.registeringCustomFunctions,
+        returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
     });
 
     timer.stop();

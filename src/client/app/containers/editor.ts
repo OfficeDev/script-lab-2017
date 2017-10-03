@@ -2,12 +2,13 @@ import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } 
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
-import { AI, environment, trustedSnippetManager, navigateToCompileCustomFunctions } from '../helpers';
+import { AI, environment, trustedSnippetManager, getSnippetDefaults,
+    navigateToCompileCustomFunctions } from '../helpers';
 import { UIEffects } from '../effects/ui';
 import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
-import { debounce } from 'lodash';
+import { debounce, isNil } from 'lodash';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
@@ -210,8 +211,13 @@ export class Editor implements AfterViewInit {
                 [content, language] = [snippet[item.name], item.name];
             }
             else {
-                content = snippet[item.name].content;
-                language = snippet[item.name].language;
+                content = (snippet[item.name] || {}).content;
+                language = (snippet[item.name] || {}).language;
+            }
+
+            if (isNil(content) || isNil(language)) {
+                const defaults: IContentLanguagePair = getSnippetDefaults()[item.name];
+                [content, language] = [defaults.content, defaults.language];
             }
 
             let model = monaco.editor.createModel(content, language);

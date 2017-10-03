@@ -59,6 +59,8 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
     strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;
     initialLoadSubtitle: string;
+    headerTitle: string;
+    returnUrl: string;
 }
 
 export interface IErrorHandlebarsContext {
