@@ -300,19 +300,6 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         },
 
         Auth: {
-<<<<<<< HEAD
-            authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.authenticatingOnBehalfOfSnippet,
-            loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth.loggingOutOnBehalfOfSnippet,
-            authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationRedirect,
-            authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth.authenticationError,
-            unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth.unrecognizedResource,
-            invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
-            invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
-            yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
-        },
-
-        ...sharedBetweenServerAndClient
-=======
             authenticatingOnBehalfOfSnippet: 'Authentifizierung durch das Schnipsel...',
             loggingOutOnBehalfOfSnippet: 'Abmeldung durch das Schnipsel...',
             authenticationRedirect: 'Umleitung zur Authentifizierung',
@@ -321,7 +308,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: 'Es wurden ungültige Parameter zur Authentifizierung übergeben',
             invalidAuthResponseReceived: 'Der Authentifizierungsdienst hat eine ungültige Antwort zurückgeliefert',
             yourAccessTokenIs: 'Ihr Zugangstoken ist'
-        }
->>>>>>> master
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }
