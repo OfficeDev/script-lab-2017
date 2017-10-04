@@ -4,6 +4,7 @@ const fs = require('fs');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
@@ -202,6 +203,14 @@ module.exports = (prodMode) =>
             
             new RedirectPlugin(),
 
-            new VersionedPackageSubstitutionsPlugin(versionedPackageNames)
-        ]
+            new VersionedPackageSubstitutionsPlugin(versionedPackageNames),
+
+            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css')
+        ],
+
+        output: {
+            path: path.resolve('./dist/client'),
+            filename: 'bundles/[name].[chunkhash].bundle.js',
+            chunkFilename: 'bundles/[id].[chunkhash].chunk.js'
+        }
     });

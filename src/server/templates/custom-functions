@@ -7,6 +7,10 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+
 {{#if isRunMode}}
 {{else}}
 	<link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
@@ -19,12 +23,21 @@
         /** On this particular page, adjust progress so that it keeps the header visible */        
         #progress {
             top: 40px;
-            height: calc(100vh - 40px);
-            border-top: #ddd 5px solid
+            height: calc(100vh - 40px - 300px);
+            border-top: white 5px solid; /* white = initially invisible */
+        }
+
+        #FirebugUI  {
+            height: 300px !important;
+        }
+
+        /* Also, if an Office JS Helpers notification is invoked, move it down below the header */
+        .office-js-helpers-notification {
+            top: 40px !important;
         }
 
         #snippet-names {
-            max-height: 40%;
+            height: 30%;
             overflow-x: hidden;
             padding: 10px 30px;
             overflow-y: auto;
@@ -44,7 +57,7 @@
 
 {{/if}}
     {{!-- TODO: FIX CORS issue with {{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js --}}
-    <script src="https://unpkg.com/@microsoft/office-js@1.1.2-private.0/dist/office.js"></script>
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.2-private.0/dist/office.debug.js"></script>
 </head>
 
 <body class="ms-font-m">
@@ -54,7 +67,7 @@
         <a id="header-back" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="{{strings.back}}">
             <i class="ms-Icon ms-Icon--Back"></i>
         </a>
-        <div class="command__icon command__center ms-u-slideLeftIn10">
+        <div class="command__icon command__center ms-u-slideLeftIn10 pointer-events-none">
             <span class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
     </header>
@@ -90,24 +103,26 @@
     </app>
 {{/if}}
 
-    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
-    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
-    <script src="{{{origin}}}/{{{assets.compileCustomFunctions.js}}}"></script>
 
     <script type="text/javascript">
-        window.initializeCustomFunctions({
+        window.customFunctionParams = {
 			isRunMode: {{isRunMode}},
 			snippetIframesBase64Texts: [
 {{#each snippetIframesBase64Texts}}
-                '{{this}}',
+                '{{{this}}}',
 {{/each}}
                 null
             ],
 		    clientTimestamp: {{clientTimestamp}},
 			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
             returnUrl: '{{{returnUrl}}}'
-        });
+        };
     </script>
+
+
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.compileCustomFunctions.js}}}"></script>
 
 </body>
 

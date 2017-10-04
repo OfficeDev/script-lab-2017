@@ -22,7 +22,9 @@ const CSS_CLASSES = {
 (() => {
     let showUI: boolean;
 
-    (window as any).initializeCustomFunctions = (params: InitializationParams): void => {
+    (() => {
+        let params: InitializationParams = (window as any).customFunctionParams;
+
         try {
             environment.initializePartial({ host: 'EXCEL' });
             showUI = !params.isRunMode; /* show UI for registration, not running invisible snippet */
@@ -32,7 +34,9 @@ const CSS_CLASSES = {
                 $('body').addClass('EXCEL');
                 $('#header').css('visibility', 'visible');
 
-                instantiateRibbon('ribbon');
+                if (instantiateRibbon('ribbon')) {
+                    $('#progress').css('border-top', '#ddd 5px solid;');
+                }
             }
 
             Office.initialize = async () => {
@@ -53,7 +57,7 @@ const CSS_CLASSES = {
         catch (error) {
             handleError(error);
         }
-    };
+    })();
 
     async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
         if (initialParams.explicitlySetDisplayLanguageOrNull) {
@@ -81,11 +85,6 @@ const CSS_CLASSES = {
             const snippetBase64OrNull = initialParams.snippetIframesBase64Texts[i];
             let $entry = showUI ? $snippetNames.children().eq(i) : null;
 
-            if (showUI) {
-                const snippetName = showUI ? $entry.text() : null;
-                console.warn(Strings().Runner.getLoadingSnippetSubtitle(snippetName));
-            }
-
             if (isNil(snippetBase64OrNull)) {
                 if (showUI) {
                     $entry.addClass(CSS_CLASSES.error);
@@ -104,7 +103,7 @@ const CSS_CLASSES = {
             }
         }
 
-        // TODO what if the below, or any of this, fails when this is invisible?
+        // TODO what if the below, or any of this, fails when this pane invisible?
 
         // Complete any function registrations
         await Excel.run(async (context) => {
@@ -112,7 +111,11 @@ const CSS_CLASSES = {
             await context.sync();
         });
 
-        // TODO: establish heartbeat!
+        // TODO CUSTOM FUNCTIONS: establish heartbeat!
+
+        if (showUI && !allSuccessful) {
+            $('.ms-progress-component__footer').css('visibility', 'hidden');
+        }
 
         // If in registration (not run) mode, and if all are successful, return back to the editor:
         if (allSuccessful && !initialParams.isRunMode) {

@@ -12,14 +12,30 @@
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
     <style>
         /** On this particular page, adjust progress so that it keeps the header visible */
-        
         #progress {
             top: 40px;
             height: calc(100vh - 40px);
+            overflow: visible; /* allow environment ribbon to overflow upwards until header is displayed */
         }
         #ribbon {
             top: -15px /* 25px in original, minus 40px for header */
         }
+
+        /* Also, if an Office JS Helpers notification is invoked, move it down below the header */
+        .office-js-helpers-notification {
+            top: 40px !important;
+        }
+
+        iframe#FirebugUI {
+	        z-index: 1000 !important; /* so that can load *beneath* the progress splash-screen (z-index of 10,000) */
+        }
+        .runner-notification {
+        	z-index: 50000; /* make sure it shows up above everything, including the progress splash-screen */
+        }
+        .runner-overlay {
+            z-index: 40000;
+        }
+
     </style>
 </head>
 

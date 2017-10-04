@@ -9,12 +9,6 @@ module.exports = () =>
     webpackMerge(commonConfig(false), {
         devtool: 'inline-source-map',
 
-        output: {
-            path: path.resolve('./dist/client'),
-            filename: 'bundles/[name].bundle.js',
-            chunkFilename: 'bundles/[name].chunk.js',
-        },
-
         resolve: {
             modules: ["node_modules"]
         },
@@ -38,13 +32,18 @@ module.exports = () =>
                     https: true,
                     host: 'localhost',
                     port: 3000,
-                    proxy: 'https://localhost:3100/'
+                    proxy: 'https://localhost:3100/',
+                    ghostMode: {
+                        clicks: false,
+                        location: false,
+                        forms: false,
+                        scroll: false
+                    }
                 },
                 {
                     reload: false
                 }
-            ),
-            new ExtractTextPlugin('[name].bundle.css'),
+            )
         ],
 
         devServer: {

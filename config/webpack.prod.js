@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.common.js');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;
@@ -9,12 +8,6 @@ const { TRAVIS } = process.env;
 module.exports = (env) =>
     webpackMerge(commonConfig(env.mode === 'prod'), {
         devtool: 'source-map',
-
-        output: {
-            path: path.resolve('./dist/client'),
-            filename: 'bundles/[name].[chunkhash].bundle.js',
-            chunkFilename: 'bundles/[id].[chunkhash].chunk.js'
-        },
 
         module: {
             rules: [
@@ -56,7 +49,6 @@ module.exports = (env) =>
         },
 
         plugins: [
-            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css'),
             new webpack.optimize.UglifyJsPlugin({
                 sourceMap: true,
                 compress: true,

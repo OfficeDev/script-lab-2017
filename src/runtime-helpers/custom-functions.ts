@@ -15,9 +15,9 @@ module ScriptLab {
             for (let ns in data) {
                 target[ns] = target[ns] || {};
 
-                for (let fn in target[ns]) {
+                for (let fn in data[ns]) {
                     if (target[ns][fn]) {
-                        // TODO: not localized yet, but also because we're not showing it anywhere yet.
+                        // TODO CUSTOM FUNCTIONS: localize and figure out how to expose this.
                         console.log(`Duplicate function name "${fn}" in namespace "${ns}"`);
                     }
                     target[ns][fn] = data[ns][fn];
