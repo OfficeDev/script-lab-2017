@@ -54,7 +54,17 @@ The website is now running.  To try it out in an Add-in, see the next section.
 
 > Note:  To **stop debugging**, first press the "stop" button on the debugger (shift + F5). You will see an error on the server terminal window (`[nodemon] app crashed - waiting for file changes before starting...`); that's ok, just close that terminal instance (trash icon on top-right of terminal).  If you want to restart debugging later, just re-press F5 again.
 
-8. If you need to configure BrowserSync settings (including making it stop syncing automatically, if you get into a recursive reload loop...), go to <http://localhost:3001/sync-options>.
+
+## Troubleshooting:
+
+1. If you need to configure BrowserSync settings (including making it stop syncing automatically, if you get into a recursive reload loop...), go to <http://localhost:3001/sync-options>.
+
+2. If you get an error like `modules 14/14 modules 0 activeError: listen EADDRINUSE 127.0.0.1:3100`:
+  - In a `git bash` shell, type out `netstat -a -o | grep 3100` (or whatever the port number is)
+    You will get a response like:
+    `TCP    127.0.0.1:3100         <computer-name>:0       LISTENING       12220`
+  - In a regular command prompt, run
+    `taskkill /pid 12220 /F`  (where `12220` is the process ID from rightmost column)
 
 
 ## Testing inside of an add-in
