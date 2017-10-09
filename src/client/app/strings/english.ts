@@ -121,7 +121,6 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         // Components strings
         // about.ts
         // Syntax of {0}, {1}... is used for placeholders and should not be localized
-        aboutUpdated: 'Last updated:',
         aboutStorage: 'Storage:',
         aboutSnippets: 'Local snippets',
         aboutIntellisense: 'IntelliSense',
@@ -168,6 +167,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: 'Register Custom Functions',
+        customFunctionsLastReloaded: 'Custom Functions last reloaded' /* ___ seconds ago */,
 
         // Gallery.view strings
 

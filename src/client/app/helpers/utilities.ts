@@ -138,6 +138,18 @@ export function generateUrl(base: string, queryParams: any) {
     return `${base}?${result.join('&')}`;
 }
 
+export function setUpMomentJsDurationDefaults(momentInstance: {
+    relativeTimeThreshold(threshold: string, limit: number): boolean;
+}) {
+    momentInstance.relativeTimeThreshold('s', 40);
+    // Note, per documentation, "ss" must be set after "s"
+    momentInstance.relativeTimeThreshold('ss', 2);
+    momentInstance.relativeTimeThreshold('m', 40);
+    momentInstance.relativeTimeThreshold('h', 20);
+    momentInstance.relativeTimeThreshold('d', 25);
+    momentInstance.relativeTimeThreshold('M', 10);
+}
+
 export function stripSpaces(text: string) {
     let lines: string[] = text.split('\n');
 

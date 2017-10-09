@@ -38,10 +38,13 @@
 
         #snippet-names {
             height: 30%;
+            min-height: 60px;
             overflow-x: hidden;
             padding: 10px 30px;
+            box-sizing: border-box;
             overflow-y: auto;
-            margin-top: 60px;
+            margin-top: 10px;
+            width: 100%;
         }
 
         #snippet-names > .in-progress {
@@ -56,7 +59,7 @@
     </style>
 
 {{/if}}
-    {{!-- TODO: FIX CORS issue with {{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js --}}
+    {{!-- TODO CUSTOM FUNCTIONS: FIX CORS issue with {{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js --}}
     <script src="https://unpkg.com/@microsoft/office-js@1.1.2-private.0/dist/office.debug.js"></script>
 </head>
 
@@ -113,7 +116,9 @@
 {{/each}}
                 null
             ],
-		    clientTimestamp: {{clientTimestamp}},
+            heartbeatParams: {
+		        clientTimestamp: {{clientTimestamp}}
+            },
 			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
             returnUrl: '{{{returnUrl}}}'
         };

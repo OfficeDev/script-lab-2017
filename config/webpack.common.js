@@ -47,6 +47,7 @@ module.exports = (prodMode) =>
             auth: './public/auth.ts',
             tryIt: './public/try.it.ts',
             customFunctions: './public/custom.functions.ts',
+            customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
             compileCustomFunctions: './public/compile.custom.functions.ts'
         },
 
@@ -182,13 +183,18 @@ module.exports = (prodMode) =>
             }),
             new HtmlWebpackPlugin({
                 filename: 'heartbeat.html',
-                template: './views/heartbeat.html',
+                template: './views/empty.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',
-                template: './views/custom-functions.html',
+                template: './views/empty.html',
                 chunks: ['polyfills', 'vendor', 'customFunctions'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'custom-functions-heartbeat.html',
+                template: './views/empty.html',
+                chunks: ['polyfills', 'vendor', 'customFunctionsHeartbeat'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'tutorial.html',

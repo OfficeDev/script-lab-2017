@@ -2,10 +2,11 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries, environment, instantiateRibbon } from '../app/helpers';
+import { generateUrl, processLibraries, environment, instantiateRibbon,
+    setUpMomentJsDurationDefaults } from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
-import { Messenger, MessageType } from '../app/helpers/messenger';
-import { loadFirebug, officeNamespacesForIframe } from './runner.common'
+import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
+import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 
 import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
@@ -44,7 +45,7 @@ interface InitializationParams {
     assign(isListeningTo, defaultIsListeningTo);
 
     const heartbeat: {
-        messenger: Messenger,
+        messenger: Messenger<RunnerMessageType>,
         window: Window
     } = <any>{};
 
@@ -320,7 +321,7 @@ interface InitializationParams {
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
         heartbeat.messenger.listen<{ lastOpenedId: string }>()
-            .filter(({ type }) => type === MessageType.HEARTBEAT_INITIALIZED)
+            .filter(({ type }) => type === RunnerMessageType.HEARTBEAT_INITIALIZED)
             .subscribe(input => {
                 if (input.message.lastOpenedId !== heartbeatParams.id) {
                     isListeningTo.snippetSwitching = false;
@@ -328,12 +329,12 @@ interface InitializationParams {
             });
 
         heartbeat.messenger.listen<string>()
-            .filter(({ type }) => type === MessageType.ERROR)
+            .filter(({ type }) => type === RunnerMessageType.ERROR)
             .map(input => new Error(input.message))
             .subscribe(handleError);
 
         heartbeat.messenger.listen<{ name: string }>()
-            .filter(({ type }) => type === MessageType.INFORM_STALE)
+            .filter(({ type }) => type === RunnerMessageType.INFORM_STALE)
             .subscribe(input => {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
@@ -345,7 +346,7 @@ interface InitializationParams {
             });
 
         heartbeat.messenger.listen<{ id: string, name: string }>()
-            .filter(({ type }) => type === MessageType.INFORM_SWITCHED_SNIPPET)
+            .filter(({ type }) => type === RunnerMessageType.INFORM_SWITCHED_SNIPPET)
             .subscribe(input => {
                 const $anotherSnippetSelected = $('#notify-another-snippet-selected');
                 // if switched back to the snippet that was already being tracked,
@@ -365,7 +366,7 @@ interface InitializationParams {
             });
 
         heartbeat.messenger.listen<{ snippet: ISnippet, isTrustedSnippet: boolean }>()
-            .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
+            .filter(({ type }) => type === RunnerMessageType.REFRESH_RESPONSE)
             .subscribe(input => {
                 const snippet = input.message.snippet;
                 const data = JSON.stringify({
@@ -454,7 +455,7 @@ interface InitializationParams {
             assign(isListeningTo, defaultIsListeningTo);
         }
 
-        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
+        heartbeat.messenger.send(heartbeat.window, RunnerMessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
     }
 
     function generateRefreshUrl(desiredOfficeJS: string) {
@@ -489,13 +490,7 @@ interface InitializationParams {
     }
 
     function initializeTooltipUpdater() {
-        moment.relativeTimeThreshold('s', 40);
-        // Note, per documentation, "ss" must be set after "s"
-        moment.relativeTimeThreshold('ss', 2);
-        moment.relativeTimeThreshold('m', 40);
-        moment.relativeTimeThreshold('h', 20);
-        moment.relativeTimeThreshold('d', 25);
-        moment.relativeTimeThreshold('M', 10);
+        setUpMomentJsDurationDefaults(moment);
 
         const $headerTitle = $('#header .command__center');
 

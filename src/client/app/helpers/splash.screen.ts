@@ -1,6 +1,6 @@
 import { environment } from './environment';
 import { Strings } from '../strings';
-let { config } = PLAYGROUND;
+const { config } = PLAYGROUND;
 
 export function instantiateRibbon(elementId: string): boolean {
     let ribbon = document.getElementById(elementId);

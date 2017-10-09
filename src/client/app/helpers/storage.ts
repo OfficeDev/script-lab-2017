@@ -5,7 +5,7 @@ const { localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 class StorageHelper {
     private _settings: Storage<ISettings>;
-    get settings() {
+    get settings(): Storage<ISettings> {
         if (!this._settings) {
             this._settings = new Storage<ISettings>(localStorageKeys.settings);
         }
@@ -13,7 +13,7 @@ class StorageHelper {
     }
 
     private _intellisenseCache: Storage<string>;
-    get intellisenseCache() {
+    get intellisenseCache(): Storage<string> {
         if (!this._intellisenseCache) {
             this._intellisenseCache = new Storage<string>(sessionStorageKeys.intelliSenseCache, StorageType.SessionStorage);
             if (environment.current.devMode) {
@@ -21,6 +21,16 @@ class StorageHelper {
             }
         }
         return this._intellisenseCache;
+    }
+
+    private _snippets: Storage<ISnippet> = null;
+    get snippets(): Storage<ISnippet> {
+        if (this._snippets == null && environment.current && environment.current.host) {
+            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
+                .replace('{0}', environment.current.host);
+            this._snippets = new Storage<ISnippet>(hostStorageKey);
+        }
+        return this._snippets;
     }
 
     private _user: string;
@@ -33,16 +43,6 @@ class StorageHelper {
             }
         }
         return this._user;
-    }
-
-    private _snippets: Storage<ISnippet> = null;
-    get snippets() {
-        if (this._snippets == null && environment.current && environment.current.host) {
-            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
-                .replace('{0}', environment.current.host);
-            this._snippets = new Storage<ISnippet>(hostStorageKey);
-        }
-        return this._snippets;
     }
 
     get lastOpened() {

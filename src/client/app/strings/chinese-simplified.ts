@@ -120,7 +120,6 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         // Components strings
         // about.ts
         // Syntax of {0}, {1}... is used for placeholders and should not be localized
-        aboutUpdated: '最新更新:',
         aboutStorage: '储存:',
         aboutSnippets: '本地的代码段',
         aboutIntellisense: 'IntelliSense',
@@ -168,6 +167,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+        customFunctionsLastReloaded: getEnglishSubstitutesForNotYetTranslated().customFunctionsLastReloaded,
 
         // Gallery.view strings
 

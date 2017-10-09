@@ -75,9 +75,13 @@ interface ICustomFunctionsRelevantData {
 interface ICompileCustomFunctionsState {
     snippets: Array<ICustomFunctionsRelevantData>;
     mode: 'register' | 'run';
-    clientTimestamp: number;
-    
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
+
     displayLanguage: string;
+}
+
+interface ICustomFunctionsHeartbeatParams {
+    clientTimestamp: number;
 }
 
 interface IExportState {
@@ -136,6 +140,18 @@ interface ICompiledPlaygroundInfo {
         wacUrl: string;
         experimentationFlags: string;
         trustedSnippets: string;
+
+
+        /** The last seen custom functions heartbeat timestamp (i.e., the invisible pane's
+         * once per second "I'm still alive" notice) */
+        customFunctionsLastHeartbeatTimestamp: string;
+
+        /** The last time that a custom function was asked to be registered/updated (from editor's side) */
+        customFunctionsLastUpdatedCodeTimestamp: string;
+
+        /** The last timestamp that succeeded in registering (on runner side) and that
+         * the custom functions heartbeat was aware of */
+        customFunctionsCurrentlyRunningTimestamp: string;
     };
     sessionStorageKeys: {
         environmentCache: string;

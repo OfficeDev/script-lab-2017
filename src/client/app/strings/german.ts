@@ -123,7 +123,6 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         // Components strings
         // about.ts
         // Syntax of {0}, {1}... is used for placeholders and should not be localized
-        aboutUpdated: 'Letztes Update:',
         aboutStorage: 'Speicher:',
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
@@ -170,6 +169,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+        customFunctionsLastReloaded: getEnglishSubstitutesForNotYetTranslated().customFunctionsLastReloaded,
 
         // Gallery.view strings
 

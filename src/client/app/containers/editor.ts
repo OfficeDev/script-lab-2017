@@ -1,15 +1,19 @@
+import * as moment from 'moment';
 import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs/Subscription';
+import { debounce, isNil, toNumber } from 'lodash';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
-import { Store } from '@ngrx/store';
-import { AI, environment, trustedSnippetManager, getSnippetDefaults,
-    navigateToCompileCustomFunctions } from '../helpers';
+import {
+    AI, environment, trustedSnippetManager, getSnippetDefaults,
+    navigateToCompileCustomFunctions,
+} from '../helpers';
 import { UIEffects } from '../effects/ui';
-import { Strings } from '../strings';
+import { Strings, getDisplayLanguageOrFake } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
-import { debounce, isNil } from 'lodash';
-import { Subscription } from 'rxjs/Subscription';
+const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor',
@@ -20,8 +24,8 @@ import { Subscription } from 'rxjs/Subscription';
             </li>
         </ul>
         <section class="custom-functions" *ngIf="showRegisterCustomFunctions">
-            <button class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()">
-                <span class="ms-Button-label">{{strings.registerCustomFunctions}}</span>
+            <button title="{{strings.lastRegisteredFunctionsTooltip}}" class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()">
+                <span class="ms-Button-label">{{registerCustomFunctionsButtonText}}</span>
             </button>
         </section>
         <section id="editor" #editor class="viewport"></section>
@@ -38,12 +42,14 @@ export class Editor implements AfterViewInit {
     private tabSub: Subscription;
     private tabNames: string[];
 
+    strings = Strings();
+
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
     hide: boolean = true;
     showRegisterCustomFunctions = false;
-
-    strings = Strings();
+    registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
+    lastRegisteredFunctionsTooltip = '';
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -53,6 +59,8 @@ export class Editor implements AfterViewInit {
         this.tabNames = ['script', 'template', 'style', 'libraries'];
         if (environment.current.supportsCustomFunctions) {
             this.tabNames.push('customFunctions');
+
+            this._updateLastRegisteredFunctionsTooltip();
         }
     }
 
@@ -126,7 +134,54 @@ export class Editor implements AfterViewInit {
             }
         }
 
-        navigateToCompileCustomFunctions('register');
+        let startOfRequestTime = new Date().getTime();
+        window.localStorage.setItem(
+            localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+            startOfRequestTime.toString()
+        );
+
+        const lastSeenHeartbeat = this._getNumberFromLocalStorage(
+            localStorageKeys.customFunctionsLastHeartbeatTimestamp);
+        if ((new Date().getTime() - lastSeenHeartbeat) > 3000) {
+            // Heartbeat isn't running (not alive for 3 seconds).  So do your own navigation now.
+            navigateToCompileCustomFunctions('register');
+            return;
+        }
+
+        // It seems like the heartbeat is running.  So give it a chance to pick up
+
+        // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
+
+        const acceptableWaitTime = 4000;
+
+        this.registerCustomFunctionsButtonText = 'Waiting for custom functions to refresh...';
+        setTimeout(() => {
+            let heartbeatCurrentlyRunningTimestamp = this._getNumberFromLocalStorage(
+                localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+            if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
+                // Yay, it auto-updated!
+                this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
+                this._updateLastRegisteredFunctionsTooltip();
+            } else {
+                this.registerCustomFunctionsButtonText = 'Errors while registering. Redirecting...';
+                navigateToCompileCustomFunctions('register');
+            }
+        }, acceptableWaitTime);
+    }
+
+    private _getNumberFromLocalStorage(key: string): number {
+        return toNumber(window.localStorage.getItem(key) || '0');
+    }
+
+    private _updateLastRegisteredFunctionsTooltip() {
+        let currentlyRunningLastUpdated = this._getNumberFromLocalStorage(
+            localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+        if (currentlyRunningLastUpdated === 0) {
+            return;
+        }
+
+        const momentText = moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow();
+        this.lastRegisteredFunctionsTooltip = `${this.strings.customFunctionsLastReloaded} ${momentText}`;
     }
 
     private _createTabs() {

@@ -9,7 +9,10 @@ const localStorageKeys = {
     redirectEnvironmentUrl: 'playground_redirect_environment_url',
     wacUrl: 'playground_wac_url',
     experimentationFlags: 'playground_experimentation_flags',
-    trustedSnippets: 'playground_trusted_snippets'
+    trustedSnippets: 'playground_trusted_snippets',
+    customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
+    customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
+    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp'
 };
 
 const sessionStorageKeys = {
@@ -212,4 +215,4 @@ exports.RedirectPlugin = RedirectPlugin;
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition
 // in "webpack.common.js".  If you add anything to these exports
 // that you want other parts of the system to import, be sure
-// to modify the PLAYGROUN definition in "webpack.common.js".
+// to modify the PLAYGROUND definition in "webpack.common.js".

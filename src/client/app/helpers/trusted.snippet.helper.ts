@@ -1,5 +1,5 @@
 import { storage } from '../helpers';
-let { localStorageKeys } = PLAYGROUND;
+const { localStorageKeys } = PLAYGROUND;
 
 class TrustedSnippetManager {
     cleanUpTrustedSnippets(): void {

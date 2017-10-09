@@ -118,7 +118,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
 
         // Components strings
         // about.ts
-        aboutUpdated: 'Última actualización:',
         aboutStorage: 'Almacenamiento:',
         aboutSnippets: 'Fragmentos de código locales',
         aboutIntellisense: 'IntelliSense',
@@ -165,6 +164,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+        customFunctionsLastReloaded: getEnglishSubstitutesForNotYetTranslated().customFunctionsLastReloaded,
 
         // Gallery.view strings
 

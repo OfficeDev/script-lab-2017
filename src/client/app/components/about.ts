@@ -3,7 +3,7 @@ import { environment, storageSize, storage } from '../helpers';
 import { Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
 import { attempt, isError, isEqual } from 'lodash';
-let { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
+const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,

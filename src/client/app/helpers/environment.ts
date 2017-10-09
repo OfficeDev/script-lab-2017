@@ -1,12 +1,9 @@
 import * as $ from 'jquery';
-import { attempt, isError, isPlainObject } from 'lodash';
-
+import { attempt, isError, isPlainObject, isNil, isEqual } from 'lodash';
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Strings } from '../strings';
 import { isValidHost } from '../helpers';
-
-let { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
-import { isNil, isEqual } from 'lodash';
+const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 class Environment {
     cache = new Storage<any>(sessionStorageKeys.environmentCache, StorageType.SessionStorage);
@@ -109,7 +106,7 @@ class Environment {
             value = {
                 ...PLAYGROUND.experimentationFlagsDefaults,
                 ...value
-            }
+            };
 
             if (isEqual(value, PLAYGROUND.experimentationFlagsDefaults)) {
                 return onEmptyReturnDefaults ? PLAYGROUND.experimentationFlagsDefaults : {};

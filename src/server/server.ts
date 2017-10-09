@@ -266,7 +266,7 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
         isRunMode: mode === 'run',
         snippetNames: snippets.map(snippet => snippet.name),
         snippetIframesBase64Texts,
-        clientTimestamp: params.clientTimestamp,
+        clientTimestamp: params.heartbeatParams.clientTimestamp,
 
         strings,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),

@@ -1,14 +1,15 @@
 import * as $ from 'jquery';
 import { isNil } from 'lodash';
 import { UI } from '@microsoft/office-js-helpers';
-import { environment, instantiateRibbon } from '../app/helpers';
+import { environment, instantiateRibbon, generateUrl, navigateToCompileCustomFunctions } from '../app/helpers';
 import { Strings, setDisplayLanguage } from '../app/strings';
-import { loadFirebug, officeNamespacesForIframe } from './runner.common'
+import { loadFirebug, officeNamespacesForIframe } from './runner.common';
+import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 
 interface InitializationParams {
     isRunMode: boolean;
     snippetIframesBase64Texts: Array<string>;
-    clientTimestamp: number;
+    heartbeatParams: ICustomFunctionsHeartbeatParams
     explicitlySetDisplayLanguageOrNull: string;
     returnUrl: string;
 }
@@ -27,7 +28,7 @@ const CSS_CLASSES = {
 
         try {
             environment.initializePartial({ host: 'EXCEL' });
-            showUI = !params.isRunMode; /* show UI for registration, not running invisible snippet */
+            showUI = !params.isRunMode; /* show UI for registration, not when running in invisible pane */
 
             if (showUI) {
                 // Apply the host theming by adding this attribute on the "body" element:
@@ -59,7 +60,7 @@ const CSS_CLASSES = {
         }
     })();
 
-    async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
+    async function initializeRunnerHelper(initialParams: InitializationParams) {
         if (initialParams.explicitlySetDisplayLanguageOrNull) {
             setDisplayLanguage(initialParams.explicitlySetDisplayLanguageOrNull);
             document.cookie = `displayLanguage=${encodeURIComponent(initialParams.explicitlySetDisplayLanguageOrNull)};path=/;`;
@@ -103,23 +104,26 @@ const CSS_CLASSES = {
             }
         }
 
-        // TODO what if the below, or any of this, fails when this pane invisible?
-
         // Complete any function registrations
         await Excel.run(async (context) => {
             (context.workbook as any).customFunctions.addAll();
             await context.sync();
         });
 
-        // TODO CUSTOM FUNCTIONS: establish heartbeat!
-
         if (showUI && !allSuccessful) {
             $('.ms-progress-component__footer').css('visibility', 'hidden');
         }
 
-        // If in registration (not run) mode, and if all are successful, return back to the editor:
-        if (allSuccessful && !initialParams.isRunMode) {
-            window.location.href = initialParams.returnUrl;
+        if (initialParams.isRunMode) {
+            // Note that only establish heartbeat at end,
+            // once registration code has completed and was SUCCESSFUL
+            // (heartbeat sets variables to show its last success time)
+            establishHeartbeat(initialParams.heartbeatParams);
+        }
+        else {
+            if (allSuccessful) {
+                window.location.href = initialParams.returnUrl;
+            }
         }
     }
 
@@ -157,6 +161,26 @@ const CSS_CLASSES = {
             };
             contentWindow.document.close();
         });
+    }
+
+    function establishHeartbeat(heartbeatParams: ICustomFunctionsHeartbeatParams) {
+        const $iframe = $('<iframe>', {
+            src: generateUrl(`${environment.current.config.editorUrl}/custom-functions-heartbeat.html`, heartbeatParams),
+            id: 'heartbeat'
+        }).css('display', 'none').appendTo('body');
+
+        const heartbeat: {
+            messenger: Messenger<CustomFunctionsMessageType>,
+            window: Window
+        } = <any>{};
+        heartbeat.messenger = new Messenger(environment.current.config.editorUrl);
+        heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
+
+        heartbeat.messenger.listen<{ }>()
+            .filter(({ type }) => type === CustomFunctionsMessageType.NEED_TO_REFRESH)
+            .subscribe(input => {
+                navigateToCompileCustomFunctions('run', input.message);
+            });
     }
 
     function handleError(error: Error) {

@@ -100,7 +100,6 @@ interface ClientStringsPerLanguage {
 
     // Components strings
     // about.ts
-    aboutUpdated: string;
     aboutStorage: string;
     aboutSnippets: string;
     aboutIntellisense: string;
@@ -147,6 +146,7 @@ interface ClientStringsPerLanguage {
     };
 
     registerCustomFunctions: string;
+    customFunctionsLastReloaded: string;
 
     // view.mode.ts strings
 
