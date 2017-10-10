@@ -110,6 +110,7 @@
     <script type="text/javascript">
         window.customFunctionParams = {
 			isRunMode: {{isRunMode}},
+            showDebugLog: {{showDebugLog}},
 			snippetIframesBase64Texts: [
 {{#each snippetIframesBase64Texts}}
                 '{{{this}}}',

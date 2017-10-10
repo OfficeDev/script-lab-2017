@@ -3,6 +3,7 @@ const moment = require('moment');
 const { startCase } = require('lodash');
 
 const localStorageKeys = {
+    dummyUnusedKey: 'plyaground_dummy_unused_key',
     hostSnippets_parameterized: 'playground_{0}_snippets',
     settings: 'playground_settings',
     originEnvironmentUrl: 'playground_origin_environment_url',
@@ -88,7 +89,8 @@ const safeExternalUrls = {
 };
 
 const experimentationFlagsDefaults = {
-    customFunctions: false
+    customFunctions: false,
+    customFunctionsShowDebugLog: false
 };
 
 class RedirectPlugin {

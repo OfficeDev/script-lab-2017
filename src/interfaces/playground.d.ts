@@ -76,6 +76,7 @@ interface ICompileCustomFunctionsState {
     snippets: Array<ICustomFunctionsRelevantData>;
     mode: 'register' | 'run';
     heartbeatParams: ICustomFunctionsHeartbeatParams;
+    showDebugLog: boolean;
 
     displayLanguage: string;
 }
@@ -133,6 +134,9 @@ interface ICompiledPlaygroundInfo {
         production: IEnvironmentConfig
     };
     localStorageKeys: {
+        /** A dummy key used simply for getting localStorage to refresh (see https://stackoverflow.com/a/40770399) */
+        dummyUnusedKey: string;
+
         hostSnippets_parameterized: string;
         settings: string;        
         originEnvironmentUrl: string;
@@ -184,6 +188,7 @@ interface ICurrentPlaygroundInfo {
     runtimeSessionTimestamp: Readonly<string>;
 
     supportsCustomFunctions: boolean;
+    customFunctionsShowDebugLog: boolean;
     
     isAddinCommands: boolean;
     isTryIt: boolean;

@@ -24,7 +24,7 @@ const { localStorageKeys } = PLAYGROUND;
             </li>
         </ul>
         <section class="custom-functions" *ngIf="showRegisterCustomFunctions">
-            <button title="{{strings.lastRegisteredFunctionsTooltip}}" class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()">
+            <button (mouseover)="updateLastRegisteredFunctionsTooltip()" title="{{lastRegisteredFunctionsTooltip}}" class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()" style="height: auto">
                 <span class="ms-Button-label">{{registerCustomFunctionsButtonText}}</span>
             </button>
         </section>
@@ -50,6 +50,7 @@ export class Editor implements AfterViewInit {
     showRegisterCustomFunctions = false;
     registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
     lastRegisteredFunctionsTooltip = '';
+    isWaitingOnCustomFunctionsUpdate = false;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -60,7 +61,7 @@ export class Editor implements AfterViewInit {
         if (environment.current.supportsCustomFunctions) {
             this.tabNames.push('customFunctions');
 
-            this._updateLastRegisteredFunctionsTooltip();
+            this.updateLastRegisteredFunctionsTooltip();
         }
     }
 
@@ -140,10 +141,10 @@ export class Editor implements AfterViewInit {
             startOfRequestTime.toString()
         );
 
-        const lastSeenHeartbeat = this._getNumberFromLocalStorage(
-            localStorageKeys.customFunctionsLastHeartbeatTimestamp);
-        if ((new Date().getTime() - lastSeenHeartbeat) > 3000) {
-            // Heartbeat isn't running (not alive for 3 seconds).  So do your own navigation now.
+        // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
+        let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
+            this._getTimeElapsedSinceLastCustomFunctionsHeartbeat() > 3000;
+        if (updateImmediately) {
             navigateToCompileCustomFunctions('register');
             return;
         }
@@ -151,29 +152,22 @@ export class Editor implements AfterViewInit {
         // It seems like the heartbeat is running.  So give it a chance to pick up
 
         // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
+        this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
+        this.isWaitingOnCustomFunctionsUpdate = true;
 
-        const acceptableWaitTime = 4000;
-
-        this.registerCustomFunctionsButtonText = 'Waiting for custom functions to refresh...';
-        setTimeout(() => {
+        let interval = setInterval(() => {
             let heartbeatCurrentlyRunningTimestamp = this._getNumberFromLocalStorage(
                 localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
             if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
-                // Yay, it auto-updated!
+                this.isWaitingOnCustomFunctionsUpdate = false;
+                clearInterval(interval);
                 this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
-                this._updateLastRegisteredFunctionsTooltip();
-            } else {
-                this.registerCustomFunctionsButtonText = 'Errors while registering. Redirecting...';
-                navigateToCompileCustomFunctions('register');
+                this.updateLastRegisteredFunctionsTooltip();                
             }
-        }, acceptableWaitTime);
+        }, 2000);
     }
 
-    private _getNumberFromLocalStorage(key: string): number {
-        return toNumber(window.localStorage.getItem(key) || '0');
-    }
-
-    private _updateLastRegisteredFunctionsTooltip() {
+    updateLastRegisteredFunctionsTooltip() {
         let currentlyRunningLastUpdated = this._getNumberFromLocalStorage(
             localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
         if (currentlyRunningLastUpdated === 0) {
@@ -181,7 +175,22 @@ export class Editor implements AfterViewInit {
         }
 
         const momentText = moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow();
+
         this.lastRegisteredFunctionsTooltip = `${this.strings.customFunctionsLastReloaded} ${momentText}`;
+    }
+
+    private _getTimeElapsedSinceLastCustomFunctionsHeartbeat(): number {
+        const lastSeenHeartbeat = this._getNumberFromLocalStorage(
+            localStorageKeys.customFunctionsLastHeartbeatTimestamp);
+        return new Date().getTime() - lastSeenHeartbeat;
+    }
+
+    private _getNumberFromLocalStorage(key: string): number {
+        // Due to bug in IE (https://stackoverflow.com/a/40770399),
+        // Local Storage may get out of sync across tabs.  To fix this,
+        // set a value of some key, and this will ensure that localStorage is refreshed.
+        window.localStorage.setItem(localStorageKeys.dummyUnusedKey, null);
+        return toNumber(window.localStorage.getItem(key) || '0');
     }
 
     private _createTabs() {

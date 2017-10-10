@@ -45,8 +45,6 @@ class Environment {
         if (!this._current) {
             let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
             delete cachedEnvironment.runtimeSessionTimestamp;
-            // Once ready to use experimentation flags, use them like this:
-            // let experimentationFlags = JSON.parse(this.getExperimentationFlagsString())
 
             this._current = {
                 devMode,
@@ -54,6 +52,7 @@ class Environment {
                 config: this._config,
 
                 supportsCustomFunctions: false,
+                customFunctionsShowDebugLog: this.getExperimentationFlagValue('customFunctionsShowDebugLog'),
 
                 isAddinCommands: false,
                 isTryIt: false,
@@ -92,7 +91,7 @@ class Environment {
         this._current = this.cache.insert('environment', updatedEnv);
     }
 
-    getExperimentationFlagValue(name: 'customFunctions'): any {
+    getExperimentationFlagValue(name: 'customFunctions' | 'customFunctionsShowDebugLog'): any {
         return JSON.parse(this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/))[name];
     }
 

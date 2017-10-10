@@ -14,8 +14,11 @@ const POLLING_INTERVAL = 1000;
         // Can do partial initialization, since host is guaranteed to be known
         environment.initializePartial({ host: 'EXCEL' });
 
-        const clientTimestamp = params.clientTimestamp;
         messenger = new Messenger(environment.current.config.runnerUrl);
+
+        messenger.send(window.parent, CustomFunctionsMessageType.SEND_DEBUG_MESSAGE, 'Custom Functions heartbeat started');
+
+        const clientTimestamp = params.clientTimestamp;
 
         if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {
             sendRefreshRequest();
@@ -26,14 +29,17 @@ const POLLING_INTERVAL = 1000;
             localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
             params.clientTimestamp.toString());
 
-        setInterval(() => {
+        const interval = setInterval(() => {
             // "I'm still alive"
+            const now = new Date();
             window.localStorage.setItem(
                 localStorageKeys.customFunctionsLastHeartbeatTimestamp,
-                new Date().getTime().toString());
+                now.getTime().toString());
+            console.log(now.toString());
 
             // And check whether I should reload...
             if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {
+                clearInterval(interval);
                 sendRefreshRequest();
             }
 

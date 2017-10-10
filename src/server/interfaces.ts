@@ -52,6 +52,8 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
      * false if used for registration only (but as such, will be showing UI) */
     isRunMode: boolean;
 
+    showDebugLog: boolean;
+
     snippetNames: Array<string>;
     snippetIframesBase64Texts: Array<string>;
     clientTimestamp: number;

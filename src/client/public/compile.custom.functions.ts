@@ -1,4 +1,5 @@
 import * as $ from 'jquery';
+import * as moment from 'moment';
 import { isNil } from 'lodash';
 import { UI } from '@microsoft/office-js-helpers';
 import { environment, instantiateRibbon, generateUrl, navigateToCompileCustomFunctions } from '../app/helpers';
@@ -12,8 +13,10 @@ interface InitializationParams {
     heartbeatParams: ICustomFunctionsHeartbeatParams
     explicitlySetDisplayLanguageOrNull: string;
     returnUrl: string;
+    showDebugLog: boolean;
 }
 
+const LOG_SHEET_NAME = 'Custom Functions Log';
 const CSS_CLASSES = {
     inProgress: 'in-progress',
     error: 'error',
@@ -21,14 +24,20 @@ const CSS_CLASSES = {
 };
 
 (() => {
+    let isRunMode: boolean;
     let showUI: boolean;
+    let showDebugLog: boolean;
+    let allSuccessful = true;
+    let queue: WorkQueue<ILogEntry>;
 
     (() => {
         let params: InitializationParams = (window as any).customFunctionParams;
 
         try {
             environment.initializePartial({ host: 'EXCEL' });
-            showUI = !params.isRunMode; /* show UI for registration, not when running in invisible pane */
+            isRunMode = params.isRunMode;
+            showUI = !isRunMode; /* show UI for registration, not when running in invisible pane */
+            showDebugLog = params.showDebugLog;
 
             if (showUI) {
                 // Apply the host theming by adding this attribute on the "body" element:
@@ -41,7 +50,7 @@ const CSS_CLASSES = {
             }
 
             Office.initialize = async () => {
-                // Need separate try/catch, since Office.initialize is a callback
+                // Need a separate try/catch, since Office.initialize is in a callback
                 try {
                     // Set initialize to an empty function -- that way, doesn't cause
                     // re-initialization of this page in case of a page like the error dialog,
@@ -61,6 +70,8 @@ const CSS_CLASSES = {
     })();
 
     async function initializeRunnerHelper(initialParams: InitializationParams) {
+        await sendDebugInfo('Initialization started');
+
         if (initialParams.explicitlySetDisplayLanguageOrNull) {
             setDisplayLanguage(initialParams.explicitlySetDisplayLanguageOrNull);
             document.cookie = `displayLanguage=${encodeURIComponent(initialParams.explicitlySetDisplayLanguageOrNull)};path=/;`;
@@ -76,8 +87,6 @@ const CSS_CLASSES = {
         // (which is assume to already exist and be initialized in the
         // "custom-functions" runtime helpers)
         (Excel as any).Script.CustomFunctions = {};
-
-        let allSuccessful = true;
 
         const actualCount = initialParams.snippetIframesBase64Texts.length - 1;
         /* Last one is always null, set in the template for ease of trailing commas... */
@@ -110,11 +119,13 @@ const CSS_CLASSES = {
             await context.sync();
         });
 
+        await sendDebugInfo('Registrations completed');
+
         if (showUI && !allSuccessful) {
             $('.ms-progress-component__footer').css('visibility', 'hidden');
         }
 
-        if (initialParams.isRunMode) {
+        if (isRunMode) {
             // Note that only establish heartbeat at end,
             // once registration code has completed and was SUCCESSFUL
             // (heartbeat sets variables to show its last success time)
@@ -176,22 +187,136 @@ const CSS_CLASSES = {
         heartbeat.messenger = new Messenger(environment.current.config.editorUrl);
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        heartbeat.messenger.listen<{ }>()
+        heartbeat.messenger.listen<{}>()
             .filter(({ type }) => type === CustomFunctionsMessageType.NEED_TO_REFRESH)
-            .subscribe(input => {
+            .subscribe(async input => {
+                await sendDebugInfo('Request received for refreshing Custom Functions runner!');
                 navigateToCompileCustomFunctions('run', input.message);
+            });
+
+        heartbeat.messenger.listen<string>()
+            .filter(({ type }) => type === CustomFunctionsMessageType.SEND_DEBUG_MESSAGE)
+            .subscribe(input => {
+                sendDebugInfo(input.message);
             });
     }
 
+    function sendDebugInfo(message: string, skipErrorHandling: boolean = false) {
+        if (!showDebugLog) {
+            return;
+        }
+
+        if (!queue) {
+            queue = new WorkQueue(writeLog);
+        }
+
+        queue.add({
+            dateTime: new Date(),
+            message
+        });
+
+        return;
+
+
+        // Helper
+
+        async function writeLog(backlog: ILogEntry[]) {
+            try {
+                await Excel.run(async context => {
+                    let sheetOrNullObj = context.workbook.worksheets.getItemOrNullObject(LOG_SHEET_NAME);
+                    const usedRangeOrNullObj = sheetOrNullObj.getRange('A:A').getUsedRangeOrNullObject();
+
+                    await context.sync();
+
+                    let startCell: Excel.Range;
+                    if (sheetOrNullObj.isNullObject) {
+                        sheetOrNullObj = context.workbook.worksheets.getActiveWorksheet(); // context.workbook.worksheets.add(LOG_SHEET_NAME);
+                        startCell = sheetOrNullObj.getRange('A1');
+                    } else {
+                        if (usedRangeOrNullObj.isNullObject) {
+                            startCell = sheetOrNullObj.getRange('A1');
+                        } else {
+                            startCell = usedRangeOrNullObj.getLastCell().getOffsetRange(1, 0);
+                        }
+                    }
+
+                    backlog.forEach(item => {
+                        let row = startCell.getResizedRange(0, 1);
+                        if (!isRunMode) {
+                            row = row.getOffsetRange(0, 2);
+                        }
+
+                        const timeText = moment(item.dateTime).format('h:mm:ss a');
+                        row.numberFormat = [['@']];
+                        row.values = [[timeText, message]];
+                        row.format.fill.color = '#DDDDDD';
+
+                        startCell = startCell.getOffsetRange(1, 0);
+
+                        row.format.autofitColumns();
+                    });
+
+                    debugger;
+                    await context.sync();
+                });
+            }
+            catch (e) {
+                if (!skipErrorHandling) {
+                    handleError(e);
+                }
+            }
+        }
+    }
+
     function handleError(error: Error) {
+        allSuccessful = false;
+
         let candidateErrorString = error.message || error.toString();
         if (candidateErrorString === '[object Object]') {
             candidateErrorString = Strings().unexpectedError;
         }
 
-        UI.notify(error);
+        sendDebugInfo(candidateErrorString, true /*skipHandleErrors*/);
 
-        // FIXME: may want a back button of sorts, too...
+        UI.notify(error);
     }
 
+    //////////////////////////////
+
+    interface ILogEntry {
+        dateTime: Date;
+        message: string;
+    }
+
+    class WorkQueue<T> {
+        private _requestIsPending = false;
+        private _items: T[] = [];
+
+        constructor(private _processor: (data: T[]) => Promise<any>) { }
+
+        add(item: T) {
+            this._items.push(item);
+
+            if (this._requestIsPending) {
+                return;
+            }
+
+            this.processWorkBacklog();
+        }
+
+        private async processWorkBacklog() {
+            this._requestIsPending = true;
+
+            const currentWork = this._items;
+            this._items = [];
+
+            await this._processor(currentWork);
+
+            this._requestIsPending = false;
+
+            if (this._items.length > 0) {
+                setTimeout(() => this.processWorkBacklog(), 0);
+            }
+        }
+    }
 })();

@@ -57,5 +57,10 @@ export enum CustomFunctionsMessageType {
      * Message is the full payload to be posted to compile/custom-functions
      * (generated using "getCompileCustomFunctionsPayload")
      */
-    NEED_TO_REFRESH
+    NEED_TO_REFRESH,
+
+    /** Message to send back to custom functions runner for debugging.
+     * Message is the text.
+    */
+    SEND_DEBUG_MESSAGE
 };
