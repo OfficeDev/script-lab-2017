@@ -162,7 +162,7 @@ export class Editor implements AfterViewInit {
                 this.isWaitingOnCustomFunctionsUpdate = false;
                 clearInterval(interval);
                 this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
-                this.updateLastRegisteredFunctionsTooltip();                
+                this.updateLastRegisteredFunctionsTooltip();
             }
         }, 2000);
     }

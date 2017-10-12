@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, storage, environment } from '../helpers';
+import { AI, storage, environment, getVersionedPackageUrl } from '../helpers';
 import { Strings } from '../strings';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
@@ -41,9 +41,7 @@ export class MonacoEffects {
             }
             else if (tabName === 'customFunctions') {
                 additionalLibraries.push(`${location.origin}/libs/custom-functions.d.ts`);
-                let privateOfficeJsUrl =
-                    `${location.origin}/libs/${(window as any).versionedPackageNames['@microsoft/office-js']}/office.d.ts`;
-                additionalLibraries.push(privateOfficeJsUrl);
+                additionalLibraries.push(getVersionedPackageUrl(location.origin, '@microsoft/office-js', 'office.d.ts'));
             }
             else {
                 throw new Error('Invalid tab name');

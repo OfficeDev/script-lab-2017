@@ -1,8 +1,7 @@
 import * as $ from 'jquery';
-import * as moment from 'moment';
 import { isNil } from 'lodash';
 import { UI } from '@microsoft/office-js-helpers';
-import { environment, instantiateRibbon, generateUrl, navigateToCompileCustomFunctions } from '../app/helpers';
+import { environment, instantiateRibbon, generateUrl, navigateToCompileCustomFunctions, pushToLogQueue } from '../app/helpers';
 import { Strings, setDisplayLanguage } from '../app/strings';
 import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
@@ -16,7 +15,6 @@ interface InitializationParams {
     showDebugLog: boolean;
 }
 
-const LOG_SHEET_NAME = 'Custom Functions Log';
 const CSS_CLASSES = {
     inProgress: 'in-progress',
     error: 'error',
@@ -28,7 +26,6 @@ const CSS_CLASSES = {
     let showUI: boolean;
     let showDebugLog: boolean;
     let allSuccessful = true;
-    let queue: WorkQueue<ILogEntry>;
 
     (() => {
         let params: InitializationParams = (window as any).customFunctionParams;
@@ -206,66 +203,18 @@ const CSS_CLASSES = {
             return;
         }
 
-        if (!queue) {
-            queue = new WorkQueue(writeLog);
-        }
-
-        queue.add({
-            dateTime: new Date(),
+        // FIXME, wrong domain?
+        pushToLogQueue({
+            timestamp: new Date().getTime(),
+            source: 'system',
+            type: 'customFunctions',
+            subtype: isRunMode ? 'runner' : 'registrationFunction',
+            severity: 'info',
             message
         });
 
-        return;
-
-
-        // Helper
-
-        async function writeLog(backlog: ILogEntry[]) {
-            try {
-                await Excel.run(async context => {
-                    let sheetOrNullObj = context.workbook.worksheets.getItemOrNullObject(LOG_SHEET_NAME);
-                    const usedRangeOrNullObj = sheetOrNullObj.getRange('A:A').getUsedRangeOrNullObject();
-
-                    await context.sync();
-
-                    let startCell: Excel.Range;
-                    if (sheetOrNullObj.isNullObject) {
-                        sheetOrNullObj = context.workbook.worksheets.getActiveWorksheet(); // context.workbook.worksheets.add(LOG_SHEET_NAME);
-                        startCell = sheetOrNullObj.getRange('A1');
-                    } else {
-                        if (usedRangeOrNullObj.isNullObject) {
-                            startCell = sheetOrNullObj.getRange('A1');
-                        } else {
-                            startCell = usedRangeOrNullObj.getLastCell().getOffsetRange(1, 0);
-                        }
-                    }
-
-                    backlog.forEach(item => {
-                        let row = startCell.getResizedRange(0, 1);
-                        if (!isRunMode) {
-                            row = row.getOffsetRange(0, 2);
-                        }
-
-                        const timeText = moment(item.dateTime).format('h:mm:ss a');
-                        row.numberFormat = [['@']];
-                        row.values = [[timeText, message]];
-                        row.format.fill.color = '#DDDDDD';
-
-                        startCell = startCell.getOffsetRange(1, 0);
-
-                        row.format.autofitColumns();
-                    });
-
-                    debugger;
-                    await context.sync();
-                });
-            }
-            catch (e) {
-                if (!skipErrorHandling) {
-                    handleError(e);
-                }
-            }
-        }
+        // Try to launch dialog (will no-op if already opened)
+        Office.context.ui.displayDialogAsync(`${environment.current.config.editorUrl}/log.html`);
     }
 
     function handleError(error: Error) {
@@ -278,45 +227,10 @@ const CSS_CLASSES = {
 
         sendDebugInfo(candidateErrorString, true /*skipHandleErrors*/);
 
-        UI.notify(error);
-    }
-
-    //////////////////////////////
-
-    interface ILogEntry {
-        dateTime: Date;
-        message: string;
-    }
-
-    class WorkQueue<T> {
-        private _requestIsPending = false;
-        private _items: T[] = [];
-
-        constructor(private _processor: (data: T[]) => Promise<any>) { }
-
-        add(item: T) {
-            this._items.push(item);
-
-            if (this._requestIsPending) {
-                return;
-            }
-
-            this.processWorkBacklog();
-        }
-
-        private async processWorkBacklog() {
-            this._requestIsPending = true;
-
-            const currentWork = this._items;
-            this._items = [];
-
-            await this._processor(currentWork);
-
-            this._requestIsPending = false;
-
-            if (this._items.length > 0) {
-                setTimeout(() => this.processWorkBacklog(), 0);
-            }
+        if (error instanceof Error) {
+            UI.notify(error);
+        } else {
+            UI.notify(Strings().error, candidateErrorString);
         }
     }
 })();

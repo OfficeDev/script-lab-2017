@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Request, ResponseTypes } from './request';
-import { AI } from '../helpers';
+import { AI, getVersionedPackageUrl } from '../helpers';
 
 const Regex = {
     STARTS_WITH_TYPINGS: /^.types\/.+|^dt~.+/i,
@@ -101,7 +101,7 @@ export class MonacoService {
                 let event = AI.trackTimedEvent('[Perf] Monaco loaded');
                 let require = (<any>window).require;
                 if (require) {
-                    let path = `${location.origin}/libs/${(window as any).versionedPackageNames['monaco-editor']}/vs`;
+                    let path = getVersionedPackageUrl(location.origin, 'monaco-editor', 'vs');
 
                     const requireConfig = {
                         paths: {

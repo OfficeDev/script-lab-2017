@@ -137,6 +137,8 @@ interface ICompiledPlaygroundInfo {
         /** A dummy key used simply for getting localStorage to refresh (see https://stackoverflow.com/a/40770399) */
         dummyUnusedKey: string;
 
+        log: string;
+
         hostSnippets_parameterized: string;
         settings: string;        
         originEnvironmentUrl: string;
@@ -247,4 +249,13 @@ interface AuthRequestParamData {
     resource: string;
     client_id: string;
     is_office_host: boolean;
+}
+
+interface LogData {
+    timestamp: number;
+    source: 'system' | 'user';
+    type: string;
+    subtype: string;
+    message: string;
+    severity: 'info' | 'warn' | 'error'
 }

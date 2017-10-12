@@ -138,6 +138,10 @@ export function generateUrl(base: string, queryParams: any) {
     return `${base}?${result.join('&')}`;
 }
 
+export function getVersionedPackageUrl(editorUrl: string, packageName: string, filename: string) {
+    return `${editorUrl}/libs/${(window as any).versionedPackageNames[packageName]}/${filename}`;
+}
+
 export function setUpMomentJsDurationDefaults(momentInstance: {
     relativeTimeThreshold(threshold: string, limit: number): boolean;
 }) {
@@ -215,4 +219,15 @@ export function stripSpaces(text: string) {
         }
     }
     return finalSetOfLines;
+}
+
+export function pushToLogQueue(entry: LogData) {
+    let currentLog = window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
+    let prefix = currentLog.length === 0 ? '' : '\n';
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.log,
+        currentLog + prefix + JSON.stringify(entry));
+}
+
+export function chooseRandomly<T>(items: T[]) {
+    return items[Math.floor(Math.random() * items.length)];
 }

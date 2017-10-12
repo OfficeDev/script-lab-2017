@@ -20,6 +20,7 @@ const versionedPackageNames = getVersionedPackageNames([
     'office-ui-fabric-js',
     'jquery',
     'jquery-resizable-dom',
+    'jsgrid',
     '@microsoft/office-js' /* Need Office.js temporarily for custom-function support,
         which is only available on a "1.1.2-private.0" version for now */
 ]);
@@ -48,7 +49,9 @@ module.exports = (prodMode) =>
             tryIt: './public/try.it.ts',
             customFunctions: './public/custom.functions.ts',
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
-            compileCustomFunctions: './public/compile.custom.functions.ts'
+            compileCustomFunctions: './public/compile.custom.functions.ts',
+
+            log: './public/log.ts',
         },
 
         resolve: {
@@ -162,6 +165,10 @@ module.exports = (prodMode) =>
                     to: './libs/' + versionedPackageNames['jquery-resizable-dom']
                 },
                 {
+                    from: '../../node_modules/jsgrid/dist',
+                    to: './libs/' + versionedPackageNames['jsgrid']
+                },
+                {
                     from: '../../node_modules/@microsoft/office-js/dist',
                     to: './libs/' + versionedPackageNames['@microsoft/office-js']
                 }
@@ -185,6 +192,11 @@ module.exports = (prodMode) =>
                 filename: 'heartbeat.html',
                 template: './views/empty.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'log.html',
+                template: './views/log.html',
+                chunks: ['polyfills', 'vendor', 'log'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',

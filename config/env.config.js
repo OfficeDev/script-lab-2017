@@ -4,6 +4,7 @@ const { startCase } = require('lodash');
 
 const localStorageKeys = {
     dummyUnusedKey: 'plyaground_dummy_unused_key',
+    log: 'playground_log',
     hostSnippets_parameterized: 'playground_{0}_snippets',
     settings: 'playground_settings',
     originEnvironmentUrl: 'playground_origin_environment_url',

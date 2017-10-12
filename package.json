@@ -73,6 +73,7 @@
     "jquery": "3.2.1",
     "jquery-resizable-dom": "0.20.0",
     "js-yaml": "3.8.2",
+    "jsgrid": "1.5.3",
     "lodash": "4.17.4",
     "moment": "2.18.1",
     "monaco-editor": "0.10.0",
