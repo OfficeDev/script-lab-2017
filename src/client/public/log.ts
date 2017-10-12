@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
-import { environment, pushToLogQueue, chooseRandomly } from '../app/helpers';
+import { environment } from '../app/helpers';
 
 
 const { localStorageKeys } = PLAYGROUND;
@@ -55,24 +55,25 @@ class LogGridController {
         let starterData = dequeueLocalStorageLogData();
         gridControllerInstance.entries = starterData;
 
-        if (environment.current.devMode && starterData.length === 0) {
-            setInterval(() => {
-                pushToLogQueue({
-                    timestamp: new Date().getTime(),
-                    source: chooseRandomly(gridControllerInstance.itemEnumerations.sources) as any,
-                    type: 'TestEntry',
-                    subtype: chooseRandomly(['subtype1', 'subtype3', 'subtype3']),
-                    severity: chooseRandomly(gridControllerInstance.itemEnumerations.severity) as any,
-                    message: chooseRandomly([
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                        'Sed auctor ipsum vitae risus vulputate, vel dapibus lacus tristique.',
-                        'Vivamus accumsan nunc nec ipsum vehicula blandit.',
-                        'Praesent quis augue ac ex dapibus commodo ac vitae velit.',
-                        'Nam at eros laoreet, pharetra leo et, sodales elit.',
-                    ])
-                });
-            }, 1000);
-        }
+        // Enable when want to debug grid functionality:
+        // if (environment.current.devMode && starterData.length === 0) {
+        //     setInterval(() => {
+        //         pushToLogQueue({
+        //             timestamp: new Date().getTime(),
+        //             source: chooseRandomly(gridControllerInstance.itemEnumerations.sources) as any,
+        //             type: 'TestEntry',
+        //             subtype: chooseRandomly(['subtype1', 'subtype3', 'subtype3']),
+        //             severity: chooseRandomly(gridControllerInstance.itemEnumerations.severity) as any,
+        //             message: chooseRandomly([
+        //                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        //                 'Sed auctor ipsum vitae risus vulputate, vel dapibus lacus tristique.',
+        //                 'Vivamus accumsan nunc nec ipsum vehicula blandit.',
+        //                 'Praesent quis augue ac ex dapibus commodo ac vitae velit.',
+        //                 'Nam at eros laoreet, pharetra leo et, sodales elit.',
+        //             ])
+        //         });
+        //     }, 1000);
+        // }
 
         createGrid(GRID_DOM_SELECTOR, gridControllerInstance);
 
