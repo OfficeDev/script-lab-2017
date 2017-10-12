@@ -77,6 +77,7 @@ class LogGridController {
 
         createGrid(GRID_DOM_SELECTOR, gridControllerInstance);
 
+        $('body').css('display', 'block');
         setTimeout(startPollingLogData, READ_INTERVAL);
     }
     catch (error) {
