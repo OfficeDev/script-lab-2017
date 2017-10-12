@@ -31,19 +31,59 @@
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid-theme.min.css">
 
 	<style>
+		body {
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-box-orient: vertical;
+			-webkit-box-direction: normal;
+			    -ms-flex-direction: column;
+			        flex-direction: column;
+		}
+
+		#header {
+			-webkit-box-flex: 0;
+			    -ms-flex: 0 0 auto;
+			        flex: 0 0 auto;
+			margin-bottom: 10px;
+			padding: 10px;
+		}
+
 		#grid {
-			height: 100% !important;
-			width: 100% !important;
+			-webkit-box-flex: 1;
+			    -ms-flex: 1 1 auto;
+			        flex: 1 1 auto;
+		}
+
+		#clear {
+			margin-right: 10px;
+		}
+
+		#add-test-log-item {
+			margin-left: 20px;
 		}
 	</style>
 </head>
 
-<body class="ms-font-m" style="display:none">
-	<div id="header"></div>
+<body class="ms-font-m">
+
+	<!-- Not localizing these strings yet, since it's experimental for now -->
+	<div id="header">
+		<button class="ms-Button" id="clear">
+			<span class="ms-Button-label">Clear</span>
+		</button>
+		<label>
+			<input id="scroll-to-bottom" type="checkbox" checked="checked" />
+			<span id="scroll-to-bottom-label">Scroll to bottom</span>
+		</label>
+		<button class="ms-Button" id="add-test-log-item" style="display:none">
+			<span class="ms-Button-label">(DEV MODE) Add test log item</span>
+		</button>
+	</div>
 	<div id="grid"></div>
 
 	<script src="libs/{{{versionedPackageNames['jquery']}}}/jquery.min.js"></script>
-	<script src="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.js"></script>	
+	<script src="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.js"></script>
 </body>
 
 </html>

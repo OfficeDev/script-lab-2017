@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
-import { environment } from '../app/helpers';
+import { environment, pushToLogQueue, chooseRandomly } from '../app/helpers';
 
 
 const { localStorageKeys } = PLAYGROUND;
@@ -19,7 +19,39 @@ interface TransformedLogData {
 }
 
 class LogGridController {
-    entries: TransformedLogData[];
+    constructor(private _entries: TransformedLogData[]) {
+        ($(GRID_DOM_SELECTOR) as any).jsGrid({
+            width: '100%',
+            height: '400px' /* realistically gets overwritten by flex, but needed for jsgrid layout */,
+            filtering: true,
+            sorting: true,
+            autoload: true,
+            editing: false,
+            paging: false,
+
+            controller: this,
+
+            fields: [
+                { name: 'timestamp', type: 'text', autosearch: true, width: '100px' },
+                {
+                    name: 'source', type: 'select', autosearch: true,
+                    items: [''].concat(this.itemEnumerations.sources).map(item => ({ name: item })),
+                    valueField: 'name', textField: 'name',
+                    widht: '70px'
+                },
+                { name: 'type', type: 'text', autosearch: true, width: '80px'},
+                { name: 'subtype', type: 'text', autosearch: true, width: '100px' },
+                { name: 'message', type: 'text', autosearch: true, width: 'auto' },
+                {
+                    name: 'severity', type: 'select', autosearch: true,
+                    items: [''].concat(this.itemEnumerations.severity).map(item => ({ name: item })),
+                    valueField: 'name', textField: 'name',
+                    width: '80px'
+                },
+                { type: 'control' }
+            ].map(item => ({ ...item, editButton: false, deleteButton: false }))
+        });
+    }
 
     itemEnumerations = {
         sources: ['system', 'user'],
@@ -27,7 +59,7 @@ class LogGridController {
     };
 
     loadData(filter: TransformedLogData) {
-        return $.grep(this.entries, (entry: TransformedLogData) => {
+        return $.grep(this._entries, (entry: TransformedLogData) => {
             // TODO: maybe regex?
             const include = (
                 (!filter.timestamp || entry.timestamp.toLowerCase().indexOf(filter.timestamp.toLowerCase()) > -1) &&
@@ -42,7 +74,12 @@ class LogGridController {
     }
 
     insertItem(entry: TransformedLogData) {
-        this.entries.push(entry);
+        this._entries.push(entry);
+    }
+
+    clear() {
+        this._entries.splice(0, this._entries.length);
+        $(GRID_DOM_SELECTOR).jsGrid('search');
     }
 }
 
@@ -50,34 +87,12 @@ class LogGridController {
     try {
         environment.initializePartial();
 
-        let gridControllerInstance = new LogGridController();
-
         let starterData = dequeueLocalStorageLogData();
-        gridControllerInstance.entries = starterData;
 
-        // Enable when want to debug grid functionality:
-        // if (environment.current.devMode && starterData.length === 0) {
-        //     setInterval(() => {
-        //         pushToLogQueue({
-        //             timestamp: new Date().getTime(),
-        //             source: chooseRandomly(gridControllerInstance.itemEnumerations.sources) as any,
-        //             type: 'TestEntry',
-        //             subtype: chooseRandomly(['subtype1', 'subtype3', 'subtype3']),
-        //             severity: chooseRandomly(gridControllerInstance.itemEnumerations.severity) as any,
-        //             message: chooseRandomly([
-        //                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        //                 'Sed auctor ipsum vitae risus vulputate, vel dapibus lacus tristique.',
-        //                 'Vivamus accumsan nunc nec ipsum vehicula blandit.',
-        //                 'Praesent quis augue ac ex dapibus commodo ac vitae velit.',
-        //                 'Nam at eros laoreet, pharetra leo et, sodales elit.',
-        //             ])
-        //         });
-        //     }, 1000);
-        // }
+        let gridController = new LogGridController(starterData);
 
-        createGrid(GRID_DOM_SELECTOR, gridControllerInstance);
+        initializeHeader(gridController);
 
-        $('body').css('display', 'block');
         setTimeout(startPollingLogData, READ_INTERVAL);
     }
     catch (error) {
@@ -85,45 +100,53 @@ class LogGridController {
     }
 })();
 
-function createGrid(selector: string, controller: LogGridController) {
-    ($(selector) as any).jsGrid({
-        height: '700px',
-        filtering: true,
-        sorting: true,
-        autoload: true,
-        editing: false,
-        paging: false,
+function initializeHeader(gridController: LogGridController) {
+    $('#clear').click(() => gridController.clear());
 
-        controller,
-
-        fields: [
-            { name: 'timestamp', type: 'text', autosearch: true },
-            { name: 'source', type: 'select', autosearch: true, items: [''].concat(controller.itemEnumerations.sources).map(item => ({ name: item })), valueField: 'name', textField: 'name' },
-            { name: 'type', type: 'text', autosearch: true },
-            { name: 'subtype', type: 'text', autosearch: true },
-            { name: 'message', type: 'text', autosearch: true },
-            { name: 'severity', type: 'select', autosearch: true, items: [''].concat(controller.itemEnumerations.severity).map(item => ({ name: item })), valueField: 'name', textField: 'name' },
-            { type: 'control' }
-        ].map(item => ({ ...item, editButton: false, deleteButton: false }))
-    });
+    // Enable when want to debug grid functionality:
+    if (environment.current.devMode) {
+        $('#add-test-log-item')
+            .show()
+            .click(() => {
+                pushToLogQueue({
+                    timestamp: new Date().getTime(),
+                    source: chooseRandomly(gridController.itemEnumerations.sources) as any,
+                    type: 'TestEntry',
+                    subtype: chooseRandomly(['subtype1', 'subtype3', 'subtype3']),
+                    severity: chooseRandomly(gridController.itemEnumerations.severity) as any,
+                    message: chooseRandomly([
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                        'Sed auctor ipsum vitae risus vulputate, vel dapibus lacus tristique.',
+                        'Vivamus accumsan nunc nec ipsum vehicula blandit.',
+                        'Praesent quis augue ac ex dapibus commodo ac vitae velit.',
+                        'Nam at eros laoreet, pharetra leo et, sodales elit.',
+                    ])
+                });
+            });
+    }
 }
 
-function startPollingLogData() {
+async function startPollingLogData() {
     try {
-        const $tableBody = $(`${GRID_DOM_SELECTOR} .jsgrid-grid-body`);
-        let isScrolledAllTheWayToBottom = ($tableBody.scrollTop() + $tableBody.innerHeight() >= $tableBody[0].scrollHeight);
-
-        dequeueLocalStorageLogData().forEach(item => {
+        const items = dequeueLocalStorageLogData();
+        items.forEach(item => {
             $(GRID_DOM_SELECTOR).jsGrid('insertItem', item);
         });
 
-        $(GRID_DOM_SELECTOR).jsGrid('search').then(() => {
-            if (isScrolledAllTheWayToBottom) {
+        if (items.length > 0) {
+            await new Promise((resolve, reject) => {
+                $(GRID_DOM_SELECTOR).jsGrid('search')
+                    .then(resolve).fail(reject);
+            });
+
+            if ((document.getElementById('scroll-to-bottom') as HTMLInputElement).checked) {
+                const $tableBody = $(`${GRID_DOM_SELECTOR} .jsgrid-grid-body`);
                 $tableBody.scrollTop(Number.MAX_SAFE_INTEGER);
             }
+        }
 
-            setTimeout(startPollingLogData, READ_INTERVAL);
-        }).fail(handleError);
+        setTimeout(startPollingLogData, READ_INTERVAL);
+
     }
     catch (error) {
         handleError(error);
