@@ -53,14 +53,20 @@ export enum RunnerMessageType {
 };
 
 export enum CustomFunctionsMessageType {
+    /** From heartbeat to runner, once it's initialized */
+    HEARTBEAT_READY,
+
     /** Message sent from heartbeat to custom-functions, telling that page that it needs to reload.
      * Message is the full payload to be posted to compile/custom-functions
      * (generated using "getCompileCustomFunctionsPayload")
      */
     NEED_TO_REFRESH,
 
-    /** Message to send back to custom functions runner for debugging.
-     * Message is the text.
+    /** Message sent from runner to hearbeat to inform it that it's now running.  Message is { timestamp: number } */
+    LOADED_AND_RUNNING,
+
+    /** A Request to log some data (from runner to heartbeat, since need to be on editor domain)
+     * Message is of type LogData
     */
-    SEND_DEBUG_MESSAGE
+    LOG
 };

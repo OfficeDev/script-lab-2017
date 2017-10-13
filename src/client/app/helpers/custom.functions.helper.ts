@@ -22,10 +22,10 @@ export function getCompileCustomFunctionsPayload(mode: 'run' | 'register') {
 
     let options: ICompileCustomFunctionsState = {
         snippets: uniqBy(allSnippetsToRegisterWithPossibleDuplicate, item => item.id),
-        showDebugLog: environment.getExperimentationFlagValue('customFunctionsShowDebugLog'),
         mode,
         heartbeatParams: {
-            clientTimestamp: new Date().getTime()
+            clientTimestamp: new Date().getTime(),
+            showDebugLog: environment.getExperimentationFlagValue('customFunctionsShowDebugLog'),
         },
 
         displayLanguage: getDisplayLanguage()

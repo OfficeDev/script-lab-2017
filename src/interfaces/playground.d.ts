@@ -76,13 +76,13 @@ interface ICompileCustomFunctionsState {
     snippets: Array<ICustomFunctionsRelevantData>;
     mode: 'register' | 'run';
     heartbeatParams: ICustomFunctionsHeartbeatParams;
-    showDebugLog: boolean;
-
+    
     displayLanguage: string;
 }
 
 interface ICustomFunctionsHeartbeatParams {
     clientTimestamp: number;
+    showDebugLog: boolean;
 }
 
 interface IExportState {
@@ -256,6 +256,6 @@ interface LogData {
     source: 'system' | 'user';
     type: string;
     subtype: string;
-    message: string;
+    message: any;
     severity: 'info' | 'warn' | 'error'
 }

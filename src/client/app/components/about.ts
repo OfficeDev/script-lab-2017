@@ -37,7 +37,7 @@ const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
                             </label>
                         </div>
                         <div *ngIf="showExperimentationFlags" class="ms-TextField ms-TextField--multiline">
-                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags"></textarea>
+                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags" (keyup)="onExperimentationFlagsChange()"></textarea>
                         </div>
                     </div>
                 </div>
@@ -147,6 +147,12 @@ export class About implements AfterViewInit {
         this.showChange.emit(false);
 
         await this._handleEnvironmentSwitching();
+    }
+
+    onExperimentationFlagsChange() {
+        if (this.experimentationFlags.trim().length === 0) {
+            this.experimentationFlags = JSON.stringify(PLAYGROUND.experimentationFlagsDefaults, null, 4);
+        }
     }
 
     async _handleEnvironmentSwitching() {

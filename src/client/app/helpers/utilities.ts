@@ -1,5 +1,6 @@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
+import { isString, isArray } from 'lodash';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
@@ -221,13 +222,73 @@ export function stripSpaces(text: string) {
     return finalSetOfLines;
 }
 
+export function chooseRandomly<T>(items: T[]) {
+    return items[Math.floor(Math.random() * items.length)];
+}
+
 export function pushToLogQueue(entry: LogData) {
     let currentLog = window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
     let prefix = currentLog.length === 0 ? '' : '\n';
     window.localStorage.setItem(PLAYGROUND.localStorageKeys.log,
-        currentLog + prefix + JSON.stringify(entry));
+        currentLog + prefix + JSON.stringify({
+            ...entry,
+            message: stringifyPlusPlus(entry.message)
+        }));
 }
 
-export function chooseRandomly<T>(items: T[]) {
-    return items[Math.floor(Math.random() * items.length)];
+export function stringifyPlusPlus(object) {
+    if (object === null) {
+        return 'null';
+    }
+
+    if (typeof object === 'undefined') {
+        return 'undefined';
+    }
+
+    // Don't JSON.stringify strings, because we don't want quotes in the output
+    if (isString(object)) {
+        return object;
+    }
+
+    if (object.toString() !== '[object Object]') {
+        return object.toString();
+    }
+
+    // Otherwise, stringify the object
+
+    return JSON.stringify(object, (key, value) => {
+        if (value && typeof value === 'object' && !isArray(value)) {
+            return getStringifiableSnapshot(value);
+        }
+        return value;
+    }, 4);
+
+    function getStringifiableSnapshot(object: any) {
+        const snapshot: any = {};
+
+        try {
+            let current = object;
+
+            do {
+                Object.keys(current).forEach(tryAddName);
+                current = Object.getPrototypeOf(current);
+            } while (current);
+
+            return snapshot;
+        } catch (e) {
+            return object;
+        }
+
+        function tryAddName(name: string) {
+            const hasOwnProperty = Object.prototype.hasOwnProperty;
+            if (name.indexOf(' ') < 0 &&
+                !hasOwnProperty.call(snapshot, name)) {
+                Object.defineProperty(snapshot, name, {
+                    configurable: true,
+                    enumerable: true,
+                    get: () => object[name]
+                });
+            }
+        }
+    }
 }

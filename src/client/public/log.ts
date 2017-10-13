@@ -29,6 +29,8 @@ class LogGridController {
             editing: false,
             paging: false,
 
+            noDataContent: '',
+
             controller: this,
 
             fields: [

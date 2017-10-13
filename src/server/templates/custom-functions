@@ -23,12 +23,8 @@
         /** On this particular page, adjust progress so that it keeps the header visible */        
         #progress {
             top: 40px;
-            height: calc(100vh - 40px - 300px);
+            height: calc(100vh - 40px);
             border-top: white 5px solid; /* white = initially invisible */
-        }
-
-        #FirebugUI  {
-            height: 300px !important;
         }
 
         /* Also, if an Office JS Helpers notification is invoked, move it down below the header */
@@ -110,7 +106,6 @@
     <script type="text/javascript">
         window.customFunctionParams = {
 			isRunMode: {{isRunMode}},
-            showDebugLog: {{showDebugLog}},
 			snippetIframesBase64Texts: [
 {{#each snippetIframesBase64Texts}}
                 '{{{this}}}',
@@ -118,7 +113,8 @@
                 null
             ],
             heartbeatParams: {
-		        clientTimestamp: {{clientTimestamp}}
+		        clientTimestamp: {{clientTimestamp}},
+                showDebugLog: {{showDebugLog}}
             },
 			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
             returnUrl: '{{{returnUrl}}}'

@@ -264,7 +264,7 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
 
     const html = customFunctionsRunnerGenerator({
         isRunMode: mode === 'run',
-        showDebugLog: params.showDebugLog,
+        showDebugLog: params.heartbeatParams.showDebugLog,
         snippetNames: snippets.map(snippet => snippet.name),
         snippetIframesBase64Texts,
         clientTimestamp: params.heartbeatParams.clientTimestamp,
