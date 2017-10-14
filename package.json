@@ -36,7 +36,8 @@
     "start": "npm-run-all clean -p build:runtime_helpers:dev build:dev dev:*",
     "build": "npm-run-all clean -p build:runtime_helpers:prod build:prod prod:*",
     "deploy": "node config/deploy.js",
-    "sideload:excel": "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-local.xml"
+    "sideload:excel:local": "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-local.xml",
+    "sideload:excel:prod": "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-prod.xml"
   },
   "license": "MIT",
   "dependencies": {
