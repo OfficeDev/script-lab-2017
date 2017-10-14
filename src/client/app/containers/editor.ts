@@ -175,9 +175,10 @@ export class Editor implements AfterViewInit {
             return;
         }
 
-        const momentText = moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow();
-
-        this.lastRegisteredFunctionsTooltip = `${this.strings.customFunctionsLastUpdated} ${momentText}`;
+        this.lastRegisteredFunctionsTooltip = this.strings.getTextForCustomFunctionsLastUpdated(
+            moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow(),
+            moment(new Date(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp))).locale(getDisplayLanguageOrFake()).fromNow()
+        );
     }
 
     private _createTabs() {

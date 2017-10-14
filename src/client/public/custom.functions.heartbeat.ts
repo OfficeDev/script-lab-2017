@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { toNumber } from 'lodash';
 import { environment, Messenger, CustomFunctionsMessageType, getCompileCustomFunctionsPayload, pushToLogQueue } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
@@ -28,11 +29,17 @@ function setupMessenger(clientTimestamp: number) {
     messenger.listen<{ timestamp: number }>()
         .filter(({ type }) => type === CustomFunctionsMessageType.LOADED_AND_RUNNING)
         .subscribe(input => tryCatch(() => {
+            // TODO CUSTOM FUNCTIONS STRINGS
+
+            const message = 'Custom functions requested on ' +
+                moment(getLocalStorageLastUpdateTimestamp()).format('MMM Do, h:mm:ss a') +
+                ' are now loaded & running';
+
             logToConsole({
                 source: 'system',
                 type: 'custom functions',
                 subtype: 'runner',
-                message: 'Loaded & running',
+                message,
                 severity: 'info',
                 ...input.message
             });

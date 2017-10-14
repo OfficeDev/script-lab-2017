@@ -32,6 +32,10 @@ let isRunMode: boolean;
 let showUI: boolean;
 let allSuccessful = true;
 
+
+// Note: Office.initialize is already handled outside in the html page,
+// setting "window.playground_host_ready = true;""
+
 (async () => {
     let params: InitializationParams = (window as any).customFunctionParams;
 
@@ -40,9 +44,6 @@ let allSuccessful = true;
 
         isRunMode = params.isRunMode;
         showUI = !isRunMode; /* show UI for registration, not when running in invisible pane */
-
-        // Establish heartbeat for all cases (even registration-mode runner, since will still need the heartbeat to communicate with log)
-        await establishHeartbeat(params.heartbeatParams);
 
         if (showUI) {
             // Apply the host theming by adding this attribute on the "body" element:
@@ -54,19 +55,21 @@ let allSuccessful = true;
             }
         }
 
-        Office.initialize = async () => {
-            // Need a separate try/catch, since Office.initialize is in a callback
-            try {
-                // Set initialize to an empty function -- that way, doesn't cause
-                // re-initialization of this page in case of a page like the error dialog,
-                // which doesn't defined (override) Office.initialize.
-                Office.initialize = () => { };
+        await new Promise((resolve) => {
+            const interval = setInterval(() => {
+                if ((window as any).playground_host_ready) {
+                    clearInterval(interval);
+                    return resolve();
+                }
+            }, 100);
+        });
 
-                await initializeRunnerHelper(params);
-            } catch (e) {
-                handleError(e);
-            }
-        };
+        // Set initialize to an empty function -- that way, doesn't cause
+        // re-initialization of this page in case of a page like the error dialog,
+        // which doesn't defined (override) Office.initialize.
+        Office.initialize = () => { };
+
+        await initializeRunnerHelper(params);
 
     }
     catch (error) {
@@ -74,10 +77,13 @@ let allSuccessful = true;
     }
 })();
 
-async function initializeRunnerHelper(initialParams: InitializationParams) {
-    if (initialParams.explicitlySetDisplayLanguageOrNull) {
-        setDisplayLanguage(initialParams.explicitlySetDisplayLanguageOrNull);
-        document.cookie = `displayLanguage=${encodeURIComponent(initialParams.explicitlySetDisplayLanguageOrNull)};path=/;`;
+async function initializeRunnerHelper(params: InitializationParams) {
+    // Establish heartbeat for all cases (even registration-mode runner, since will still need the heartbeat to communicate with log)
+    await establishHeartbeat(params.heartbeatParams);
+
+    if (params.explicitlySetDisplayLanguageOrNull) {
+        setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
+        document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
     }
 
     const $snippetNames = showUI ? $('#snippet-names') : null;
@@ -87,11 +93,11 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
     // "custom-functions" runtime helpers)
     (Excel as any).Script.CustomFunctions = {};
 
-    const actualCount = initialParams.snippetIframesBase64Texts.length - 1;
+    const actualCount = params.snippetIframesBase64Texts.length - 1;
     /* Last one is always null, set in the template for ease of trailing commas... */
 
     for (let i = 0; i < actualCount; i++) {
-        const snippetBase64OrNull = initialParams.snippetIframesBase64Texts[i];
+        const snippetBase64OrNull = params.snippetIframesBase64Texts[i];
         let $entry = showUI ? $snippetNames.children().eq(i) : null;
 
         if (isNil(snippetBase64OrNull) || snippetBase64OrNull.length === 0) {
@@ -105,7 +111,7 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
                     subtype: 'runner',
                     severity: 'error',
                     // TODO CUSTOM FUNCTIONS localization
-                    message: `Could NOT load function "${initialParams.snippetNames[i]}"`
+                    message: `Could NOT load function "${params.snippetNames[i]}"`
                 });
             }
 
@@ -116,7 +122,7 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
                 $entry.addClass(CSS_CLASSES.inProgress);
             }
 
-            let success = await runSnippetCode(atob(initialParams.snippetIframesBase64Texts[i]));
+            let success = await runSnippetCode(atob(params.snippetIframesBase64Texts[i]));
             if (showUI) {
                 $entry.removeClass(CSS_CLASSES.inProgress)
                     .addClass(success ? CSS_CLASSES.success : CSS_CLASSES.error);
@@ -129,7 +135,7 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
                         subtype: 'runner',
                         severity: 'info',
                         // TODO CUSTOM FUNCTIONS localization
-                        message: `Sucessfully loaded "${initialParams.snippetNames[i]}"`
+                        message: `Sucessfully loaded "${params.snippetNames[i]}"`
                     });
                 } else {
                     heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
@@ -139,7 +145,7 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
                         subtype: 'runner',
                         severity: 'error',
                         // TODO CUSTOM FUNCTIONS localization
-                        message: `Could NOT load function "${initialParams.snippetNames[i]}"`
+                        message: `Could NOT load function "${params.snippetNames[i]}"`
                     });
                 }
             }
@@ -165,7 +171,7 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
     }
     else {
         if (allSuccessful) {
-            window.location.href = initialParams.returnUrl;
+            window.location.href = params.returnUrl;
         }
     }
 }
@@ -185,9 +191,8 @@ function runSnippetCode(html: string): Promise<boolean> {
             officeNamespacesForIframe.forEach(namespace => {
                 contentWindow[namespace] = window[namespace];
             });
+            monkeyPatchConsole(contentWindow);
         };
-
-        monkeyPatchConsole(contentWindow);
 
         (window as any).scriptRunnerEndInit = () => {
             // Call Office.initialize(), which now initializes the snippet.

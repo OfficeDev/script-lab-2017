@@ -148,7 +148,7 @@ export function setUpMomentJsDurationDefaults(momentInstance: {
 }) {
     momentInstance.relativeTimeThreshold('s', 40);
     // Note, per documentation, "ss" must be set after "s"
-    momentInstance.relativeTimeThreshold('ss', 2);
+    momentInstance.relativeTimeThreshold('ss', 1);
     momentInstance.relativeTimeThreshold('m', 40);
     momentInstance.relativeTimeThreshold('h', 20);
     momentInstance.relativeTimeThreshold('d', 25);

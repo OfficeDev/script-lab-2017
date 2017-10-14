@@ -55,6 +55,11 @@
 			        flex: 1 1 auto;
 		}
 
+		#time {
+			margin-right: 25px;
+			font-weight: bold;
+		}
+
 		#clear {
 			margin-right: 10px;
 		}
@@ -78,6 +83,9 @@
 
 	<!-- Not localizing these strings yet, since it's experimental for now -->
 	<div id="header">
+		<span>Time:</span>
+		<span id="time"></span>
+
 		<button class="ms-Button" id="clear">
 			<span class="ms-Button-label">Clear</span>
 		</button>

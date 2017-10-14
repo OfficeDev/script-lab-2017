@@ -5,10 +5,12 @@ import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import { environment, pushToLogQueue, LOG_READ_INTERVAL, chooseRandomly } from '../app/helpers';
 
-
 const { localStorageKeys } = PLAYGROUND;
 
+
 const GRID_DOM_SELECTOR = '#grid';
+const HOURS_MINUTES_SECOND_FORMAT = 'h:mm:ss a';
+
 
 interface TransformedLogData {
     timestamp: string;
@@ -92,7 +94,7 @@ class LogGridController {
     try {
         environment.initializePartial();
 
-        let starterData = dequeueLocalStorageLogData();
+        let starterData = tickAndDequeueLocalStorageData();
 
         let gridController = new LogGridController(starterData);
 
@@ -133,7 +135,7 @@ function initializeHeader(gridController: LogGridController) {
 
 async function startPollingLogData() {
     try {
-        const items = dequeueLocalStorageLogData();
+        const items = tickAndDequeueLocalStorageData();
         items.forEach(item => {
             $(GRID_DOM_SELECTOR).jsGrid('insertItem', item);
         });
@@ -160,7 +162,9 @@ async function startPollingLogData() {
     }
 }
 
-function dequeueLocalStorageLogData(): TransformedLogData[] {
+function tickAndDequeueLocalStorageData(): TransformedLogData[] {
+    $('#time').text(moment(new Date()).format(HOURS_MINUTES_SECOND_FORMAT));
+
     // Due to bug in IE (https://stackoverflow.com/a/40770399),
     // Local Storage may get out of sync across tabs.  To fix this,
     // set a value of some key, and this will ensure that localStorage is refreshed.
@@ -192,7 +196,7 @@ function dequeueLocalStorageLogData(): TransformedLogData[] {
         })
         .map((entry: LogData) => ({
             ...entry,
-            timestamp: moment(new Date(entry.timestamp)).format('hh:mm:ss a')
+            timestamp: moment(new Date(entry.timestamp)).format(HOURS_MINUTES_SECOND_FORMAT)
         }));
 
     window.localStorage.setItem(localStorageKeys.log, '');

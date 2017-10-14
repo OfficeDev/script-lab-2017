@@ -167,7 +167,10 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: 'Register Custom Functions',
-        customFunctionsLastUpdated: 'The currently-running Custom Functions code was last updated ' /* ___ seconds ago */,
+        getTextForCustomFunctionsLastUpdated: (lastUpdatesXSecondsAgo: string, lastAliveXSecondsAgo: string) => {
+            return 'The currently-running custom functions code was last updated ' + lastUpdatesXSecondsAgo +
+                '\n' + 'The runner itself was alive as of ' + lastAliveXSecondsAgo;
+        },
 
         // Gallery.view strings
 

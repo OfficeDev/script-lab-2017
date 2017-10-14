@@ -146,7 +146,7 @@ interface ClientStringsPerLanguage {
     };
 
     registerCustomFunctions: string;
-    customFunctionsLastUpdated: string;
+    getTextForCustomFunctionsLastUpdated: (lastUpdatesXSecondsAgo: string, lastAliveXSecondsAgo: string) => string;
 
     // view.mode.ts strings
 

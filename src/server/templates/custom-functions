@@ -57,6 +57,12 @@
 {{/if}}
     {{!-- TODO CUSTOM FUNCTIONS: FIX CORS issue with {{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js --}}
     <script src="https://unpkg.com/@microsoft/office-js@1.1.2-private.0/dist/office.debug.js"></script>
+
+    <script>
+        Office.initialize = function() {
+            window.playground_host_ready = true;
+        }
+    </script>
 </head>
 
 <body class="ms-font-m">

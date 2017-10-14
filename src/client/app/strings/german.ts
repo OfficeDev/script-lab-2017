@@ -169,7 +169,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
-        customFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated().customFunctionsLastUpdated,
+        getTextForCustomFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated().getTextForCustomFunctionsLastUpdated,
 
         // Gallery.view strings
 
