@@ -57,6 +57,10 @@
     lodash "4.17.4"
     rxjs "5.2.0"
 
+"@microsoft/office-js@1.1.2-private.0":
+  version "1.1.2-private.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.2-private.0.tgz#5ff58f8f54630c262afde55f4e66fd3241c1e9ee"
+
 "@ngrx/core@1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@ngrx/core/-/core-1.2.0.tgz#882b46abafa2e0e6d887cb71a1b2c2fa3e6d0dc6"
@@ -3600,6 +3604,10 @@ jschardet@^1.4.2:
 jsesc@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
+
+jsgrid@1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/jsgrid/-/jsgrid-1.5.3.tgz#b15fc426483153bee2b6b567312f675d92834a0d"
 
 json-loader@^0.5.4:
   version "0.5.7"

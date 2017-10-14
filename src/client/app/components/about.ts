@@ -2,8 +2,8 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterV
 import { environment, storageSize, storage } from '../helpers';
 import { Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
-import { attempt, isError } from 'lodash';
-let { config, localStorageKeys } = PLAYGROUND;
+import { attempt, isError, isEqual } from 'lodash';
+const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ let { config, localStorageKeys } = PLAYGROUND;
                             </label>
                         </div>
                         <div *ngIf="showExperimentationFlags" class="ms-TextField ms-TextField--multiline">
-                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags" placeholder=""></textarea>
+                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags" (keyup)="onExperimentationFlagsChange()"></textarea>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@ let { config, localStorageKeys } = PLAYGROUND;
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="okClicked()">
-                        <span class="ms-Button-label">{{strings.okButtonLabel}}</span>
+                        <span class="ms-Button-label">{{strings.ok}}</span>
                     </button>
                 </div>
             </div>
@@ -57,17 +57,19 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
+    strings = Strings();
+
+    private _hostSnippetsStorageKey = localStorageKeys.hostSnippets_parameterized
+        .replace('{0}', environment.current.host);
     cache = [
         `${Strings().aboutStorage}`,
-        `${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings().aboutSnippets)}`,
-        `${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}`,
+        `${storageSize(localStorage, this._hostSnippetsStorageKey, Strings().aboutSnippets)}`,
+        `${storageSize(sessionStorage, sessionStorageKeys.intelliSenseCache, Strings().aboutIntellisense)}`,
     ].join('\n');
 
     config = {
         build: environment.current.build,
     };
-
-    strings = Strings();
 
     availableLanguages = [] as { name: string, value: string }[];
     currentChosenLanguage = '';
@@ -101,8 +103,9 @@ export class About implements AfterViewInit {
 
         this.selectedConfig = this.configs.find(c => c.value.toUpperCase() === environment.current.config.name).value;
 
-        this.experimentationFlags = environment.getExperimentationFlagsString();
-        this.showExperimentationFlags = JSON.stringify(JSON.parse(this.experimentationFlags)).length > '{}'.length;
+        this.experimentationFlags = environment.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/);
+        const isEffectivelyEmpty = isEqual(JSON.parse(this.experimentationFlags), PLAYGROUND.experimentationFlagsDefaults);
+        this.showExperimentationFlags = !isEffectivelyEmpty;
     }
 
     async okClicked() {
@@ -118,13 +121,13 @@ export class About implements AfterViewInit {
             attempt(() => environment.updateExperimentationFlags(this.experimentationFlags));
 
         if (isError(experimentationUpdateResultOrError)) {
-            await this._effects.alert(experimentationUpdateResultOrError.message, this.strings.error, this.strings.okButtonLabel);
+            await this._effects.alert(experimentationUpdateResultOrError.message, this.strings.error, this.strings.ok);
             return;
         } else if (experimentationUpdateResultOrError === true) {
             needsWindowReload = true;
         } else {
             // If this component gets re-opened, want to have a re-formatted string, in case it changed.
-            this.experimentationFlags = environment.getExperimentationFlagsString();
+            this.experimentationFlags = environment.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/);
         }
 
 
@@ -146,6 +149,12 @@ export class About implements AfterViewInit {
         await this._handleEnvironmentSwitching();
     }
 
+    onExperimentationFlagsChange() {
+        if (this.experimentationFlags.trim().length === 0) {
+            this.experimentationFlags = JSON.stringify(PLAYGROUND.experimentationFlagsDefaults, null, 4);
+        }
+    }
+
     async _handleEnvironmentSwitching() {
         let currentConfigName = environment.current.config.name.toLowerCase();
         if (this.selectedConfig === currentConfigName) {
@@ -158,10 +167,10 @@ export class About implements AfterViewInit {
         let changeEnvironmentResult = await this._effects.alert(
             this.strings.changeEnvironmentConfirm,
             changeEnvironmentMessage,
-            this.strings.okButtonLabel,
-            this.strings.cancelButtonLabel
+            this.strings.ok,
+            this.strings.cancel
         );
-        if (changeEnvironmentResult === this.strings.cancelButtonLabel) {
+        if (changeEnvironmentResult === this.strings.cancel) {
             this.selectedConfig = this.configs.find(c => c.value === currentConfigName).value;
             return;
         }

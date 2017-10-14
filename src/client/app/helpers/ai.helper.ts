@@ -10,6 +10,7 @@ class TelemetryError extends CustomError {
 }
 
 class ApplicationInsights {
+    private _basicInfo: {};
     private _current = AppInsights;
     private _disable = false;
 
@@ -29,6 +30,14 @@ class ApplicationInsights {
             this._current.config.enableDebug = this._current.config.verboseLogging = !environment.current.devMode;
             this._current.config.disableAjaxTracking = true;
             this.setAuthenticatedUserContext();
+
+            this._basicInfo = {
+                user: storage.user,
+                host: environment.current.host,
+                platform: environment.current.platform,
+                runtimeSessionTimestamp: environment.current.runtimeSessionTimestamp,
+                ...environment.current.build
+            };
         }
         catch (e) {
             Utilities.log(new TelemetryError('Could not initialize application insights', e));
@@ -104,9 +113,7 @@ class ApplicationInsights {
                 innerError: error.innerError,
                 message: error.message,
                 location: location,
-                host: environment.current.host,
-                platform: environment.current.platform,
-                ...environment.current.build
+                ...this._basicInfo
             });
         }
         catch (e) {
@@ -126,17 +133,12 @@ class ApplicationInsights {
                 console.info(name, {
                     ...properties,
                     user: storage.user,
-                    host: environment.current.host,
-                    platform: environment.current.platform,
-                    ...environment.current.build
+                    ...this._basicInfo
                 }, measurement);
             }
             this._current.trackEvent(name, {
                 ...properties,
-                user: storage.user,
-                host: environment.current.host,
-                platform: environment.current.platform,
-                ...environment.current.build
+                ...this._basicInfo
             }, measurement);
         }
         catch (e) {
@@ -164,17 +166,12 @@ class ApplicationInsights {
                 console.info(name, average, sampleCount, min, max, {
                     ...properties,
                     user: storage.user,
-                    host: environment.current.host,
-                    platform: environment.current.platform,
-                    ...environment.current.build
+                    ...this._basicInfo
                 });
             }
             this._current.trackMetric(name, average, sampleCount, min, max, {
                 ...properties,
-                user: storage.user,
-                host: environment.current.host,
-                platform: environment.current.platform,
-                ...environment.current.build
+                ...this._basicInfo
             });
         }
         catch (e) {

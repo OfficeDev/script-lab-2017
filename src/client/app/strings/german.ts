@@ -2,15 +2,28 @@
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
 
-// import { getEnglishSubstitutesForNotYetTranslated } from './index';
+import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ClientStringsPerLanguage {
-    const playgroundName = 'Script Lab';
-
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
 
+        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
+
+        snippetNotTrusted: 'Dieses Schnipsel stammt aus einer externen Quelle. Sie müssen dem Schnipsel vertrauen, bevor Sie dieses ausführen können.',
+        trust: 'Vertrauen',
+
+        error: 'Fehler',
+        cancel: 'Abbrechen',
+        dismiss: 'Schließen',
+    };
+
+    const { playgroundName } = sharedBetweenServerAndClient;
+
+    return {
         alpha: 'Alpha',
         beta: 'Beta',
         production: 'Produktiv',
@@ -25,16 +38,14 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         close: 'Schließen',
         about: 'Info',
         feedback: 'Feedback',
-        error: 'Fehler',
         errors: 'Fehler',
-        dismiss: 'Schließen',
+        trustSnippetQuestionMark: getEnglishSubstitutesForNotYetTranslated().trustSnippetQuestionMark,
 
-        okButtonLabel: 'OK',
-        logoutButtonLabel: 'Abmelden',
-        cancelButtonLabel: 'Abbrechen',
-        saveButtonLabel: 'Speichern',
-        moreInfoButtonLabel: 'Mehr Infos',
-        importButtonLabel: 'Importieren',
+        ok: 'OK',
+        logout: 'Abmelden',
+        save: 'Speichern',
+        moreInfo: 'Mehr Infos',
+        import: 'Importieren',
         snippetImportExistingButtonLabel: 'Zum bestehenden Schnipsel wechseln',
         overwriteExistingButtonLabel: 'Bestehendes Schnipsel überschreiben',
         createNewCopyButtonLabel: 'Eine neue Kopie erstellen',
@@ -112,7 +123,6 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         // Components strings
         // about.ts
         // Syntax of {0}, {1}... is used for placeholders and should not be localized
-        aboutUpdated: 'Letztes Update:',
         aboutStorage: 'Speicher:',
         aboutSnippets: 'Lokale Schnipsel',
         aboutIntellisense: 'IntelliSense',
@@ -154,8 +164,12 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             'script': 'Script',
             'template': 'HTML',
             'style': 'CSS',
-            'libraries': 'Bibliotheken'
+            'libraries': 'Bibliotheken',
+            'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
+
+        registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+        getTextForCustomFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated().getTextForCustomFunctionsLastUpdated,
 
         // Gallery.view strings
 
@@ -294,6 +308,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: 'Es wurden ungültige Parameter zur Authentifizierung übergeben',
             invalidAuthResponseReceived: 'Der Authentifizierungsdienst hat eine ungültige Antwort zurückgeliefert',
             yourAccessTokenIs: 'Ihr Zugangstoken ist'
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

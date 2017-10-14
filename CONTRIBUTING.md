@@ -81,8 +81,8 @@ The project consists of two separate components: the client (editor) and the ser
 At the root level of the repo, the folders of interest (and skipping over the others) are:
 
 * `client`: This is the playground editor UI.
-* `config`: Configuration related to webpack & deployment
-* `dist`: The generated files for `client` and `server` (it has subfolders for each), which are the compiled and minified html/js/css/etc. (TODO: Add why generate and check in, and which commands generate these files)
+* `config`: Configuration related to webpack & deployment.
+* `dist`: The generated files for `client` and `server` (it has subfolders for each), which are the compiled and minified html/js/css/etc.  If you do a `npm run build`, you will get the full `dist` folder; otherwise, with an `npm start`, you'll only get a partial one (since `client` files will mostly be served from in-memory).
 * `manifests`: Add-in manifests (both localhost and production) for side-loading the Add-in into Office applications.
 * `node_modules`: The folder with all the node module dependencies that get installed as part of `yarn install`.
 * `server`: A stateless Node backend that receives a POST request with the snippet's HTML, TypeScript, CSS, and Libraries, and creates a web-browser-servable web page out of them. The server makes extensive use of [Handlebars.js](http://handlebarsjs.com/) for templates, which are located in the `server/templates` directory.

@@ -63,7 +63,7 @@ export class SnippetEffects {
                         this._uiEffects.alert(
                             message,
                             Strings().snippetImportErrorTitle,
-                            Strings().okButtonLabel);
+                            Strings().ok);
                     }
                     return Observable.from([]);
                 });
@@ -146,7 +146,7 @@ export class SnippetEffects {
         .map((snippet: ISnippet) => {
             if (Utilities.host === HostType.OUTLOOK) {
                 this._store.dispatch(new UI.ShowAlertAction({
-                    actions: [Strings().okButtonLabel],
+                    actions: [Strings().ok],
                     title: Strings().snippetRunError,
                     message: Strings().noRunInOutlook
                 }));
@@ -381,7 +381,7 @@ export class SnippetEffects {
                     this._uiEffects.alert(
                         Strings().requestedSnippetNoLongerExists,
                         Strings().cannotOpenSnippet,
-                        Strings().okButtonLabel);
+                        Strings().ok);
                     return Observable.of(null);
                 }
 
@@ -509,12 +509,12 @@ export class SnippetEffects {
                     Strings().snippetImportExistingButtonLabel,
                     (snippetsWithSameGistId.length === 1) ? Strings().overwriteExistingButtonLabel : null,
                     Strings().createNewCopyButtonLabel,
-                    Strings().cancelButtonLabel /* user options */
+                    Strings().cancel /* user options */
                 ].filter(item => item !== null);
 
                 importResult = await this._uiEffects.alert(
                     Strings().snippetGistIdDuplicationError,
-                    `${Strings().importButtonLabel} ${snippet.name}`,
+                    `${Strings().import} ${snippet.name}`,
                     ...options
                 );
             }
@@ -535,7 +535,7 @@ export class SnippetEffects {
                     ];
                 }
 
-                case Strings().cancelButtonLabel: {
+                case Strings().cancel: {
                     return [];
                 }
 
@@ -569,7 +569,7 @@ export class SnippetEffects {
             return;
         }
 
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.

@@ -1,22 +1,34 @@
+import * as moment from 'moment';
 import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs/Subscription';
+import { debounce, isNil } from 'lodash';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
-import { Store } from '@ngrx/store';
-import { AI } from '../helpers';
-import { Strings } from '../strings';
+import {
+    AI, environment, trustedSnippetManager, getSnippetDefaults,
+    navigateToCompileCustomFunctions,
+    getNumberFromLocalStorage, getElapsedTime
+} from '../helpers';
+import { UIEffects } from '../effects/ui';
+import { Strings, getDisplayLanguageOrFake } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
-import { debounce } from 'lodash';
-import { Subscription } from 'rxjs/Subscription';
+const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor',
-    template: `
+    template: `   
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
                 {{tab.displayName}}
             </li>
         </ul>
+        <section class="custom-functions" *ngIf="showRegisterCustomFunctions">
+            <button (mouseover)="updateLastRegisteredFunctionsTooltip()" title="{{lastRegisteredFunctionsTooltip}}" class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()" style="height: auto">
+                <span class="ms-Button-label">{{registerCustomFunctionsButtonText}}</span>
+            </button>
+        </section>
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
@@ -29,15 +41,29 @@ export class Editor implements AfterViewInit {
     private themeSub: Subscription;
     private snippetSub: Subscription;
     private tabSub: Subscription;
+    private tabNames: string[];
+
+    strings = Strings();
 
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
     hide: boolean = true;
+    showRegisterCustomFunctions = false;
+    registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
+    lastRegisteredFunctionsTooltip = '';
+    isWaitingOnCustomFunctionsUpdate = false;
 
     constructor(
         private _store: Store<fromRoot.State>,
+        private _uiEffects: UIEffects,
         private _monaco: MonacoService
     ) {
+        this.tabNames = ['script', 'template', 'style', 'libraries'];
+        if (environment.current.supportsCustomFunctions) {
+            this.tabNames.push('customFunctions');
+
+            this.updateLastRegisteredFunctionsTooltip();
+        }
     }
 
     /**
@@ -87,18 +113,76 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
     }
 
-    updateIntellisense() {
+    updateIntellisense(tabName: 'script' | 'customFunctions') {
         if (this.snippet == null) {
             return;
         }
 
         this._store.dispatch(new Monaco.UpdateIntellisenseAction(
-            { libraries: this.snippet.libraries.split('\n'), language: 'typescript' }
+            { libraries: this.snippet.libraries.split('\n'), language: 'typescript', tabName }
         ));
     }
 
+    async registerCustomFunctions() {
+        if (!trustedSnippetManager.isSnippetTrusted(this.snippet.id, this.snippet.gist, this.snippet.gistOwnerId)) {
+            let alertResult = await this._uiEffects.alert(
+                this.strings.snippetNotTrusted,
+                this.strings.trustSnippetQuestionMark,
+                this.strings.trust,
+                this.strings.cancel
+            );
+            if (alertResult === this.strings.cancel) {
+                return;
+            }
+        }
+
+        let startOfRequestTime = new Date().getTime();
+        window.localStorage.setItem(
+            localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+            startOfRequestTime.toString()
+        );
+
+        // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
+        let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
+            getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
+        if (updateImmediately) {
+            navigateToCompileCustomFunctions('register');
+            return;
+        }
+
+        // It seems like the heartbeat is running.  So give it a chance to pick up
+
+        // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
+        this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
+        this.isWaitingOnCustomFunctionsUpdate = true;
+
+        let interval = setInterval(() => {
+            let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
+                localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+            if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
+                this.isWaitingOnCustomFunctionsUpdate = false;
+                clearInterval(interval);
+                this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
+                this.updateLastRegisteredFunctionsTooltip();
+            }
+        }, 2000);
+    }
+
+    updateLastRegisteredFunctionsTooltip() {
+        let currentlyRunningLastUpdated = getNumberFromLocalStorage(
+            localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+        if (currentlyRunningLastUpdated === 0) {
+            return;
+        }
+
+        this.lastRegisteredFunctionsTooltip = this.strings.getTextForCustomFunctionsLastUpdated(
+            moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow(),
+            moment(new Date(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp))).locale(getDisplayLanguageOrFake()).fromNow()
+        );
+    }
+
     private _createTabs() {
-        ['script', 'template', 'style', 'libraries'].forEach(name => {
+        this.tabNames.forEach(name => {
             const displayName = Strings().tabDisplayNames[name];
             if (!displayName) {
                 throw new Error(`No display name for tab "${name}"`);
@@ -150,9 +234,10 @@ export class Editor implements AfterViewInit {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
                     let timer = AI.trackPageView(this.currentState.displayName, `/edit/${this.currentState.name}`);
-                    if (this.currentState.name === 'script') {
-                        this.updateIntellisense();
+                    if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
+                        this.updateIntellisense(this.currentState.name);
                     }
+                    this.showRegisterCustomFunctions = newTab === 'customFunctions';
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();
@@ -171,23 +256,30 @@ export class Editor implements AfterViewInit {
                 item.model.dispose();
             }
 
-            let content, language, model, viewState = null;
+            let content: string;
+            let language: string;
 
             if (item.name === 'libraries') {
                 [content, language] = [snippet[item.name], item.name];
             }
             else {
-                content = snippet[item.name].content;
-                language = snippet[item.name].language;
+                content = (snippet[item.name] || {}).content;
+                language = (snippet[item.name] || {}).language;
             }
-            model = monaco.editor.createModel(content, language);
+
+            if (isNil(content) || isNil(language)) {
+                const defaults: IContentLanguagePair = getSnippetDefaults()[item.name];
+                [content, language] = [defaults.content, defaults.language];
+            }
+
+            let model = monaco.editor.createModel(content, language);
 
             model.onDidChangeContent(() => this._debouncedInput());
 
             item.model = model;
             item.content = content;
             item.language = language;
-            item.viewState = viewState;
+            item.viewState = null;
         });
 
         this._snippet = snippet;
@@ -214,7 +306,7 @@ export class Editor implements AfterViewInit {
             return null;
         }
 
-        ['script', 'template', 'style', 'libraries'].forEach(name => {
+        this.tabNames.forEach(name => {
             let { content, language } = this.tabs.get(name);
             if (name === 'libraries') {
                 this._snippet.libraries = content;

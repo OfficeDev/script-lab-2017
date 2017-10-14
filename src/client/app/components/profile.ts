@@ -17,10 +17,10 @@ import { Strings } from '../strings';
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
-                        <span class="ms-Button-label">{{strings.cancelButtonLabel}}</span>
+                        <span class="ms-Button-label">{{strings.cancel}}</span>
                     </button>
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
-                        <span class="ms-Button-label">{{strings.logoutButtonLabel}}</span>
+                        <span class="ms-Button-label">{{strings.logout}}</span>
                     </button>
                 </div>
             </div>

@@ -3,9 +3,24 @@ const moment = require('moment');
 const { startCase } = require('lodash');
 
 const localStorageKeys = {
+    dummyUnusedKey: 'plyaground_dummy_unused_key',
+    log: 'playground_log',
+    hostSnippets_parameterized: 'playground_{0}_snippets',
+    settings: 'playground_settings',
     originEnvironmentUrl: 'playground_origin_environment_url',
     redirectEnvironmentUrl: 'playground_redirect_environment_url',
-    playgroundCache: 'playground_cache'
+    wacUrl: 'playground_wac_url',
+    experimentationFlags: 'playground_experimentation_flags',
+    trustedSnippets: 'playground_trusted_snippets',
+    customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
+    customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
+    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
+    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp'
+};
+
+const sessionStorageKeys = {
+    environmentCache: 'playground_cache',
+    intelliSenseCache: 'playground_intellisense'
 };
 
 const build = (() => {
@@ -73,6 +88,11 @@ const safeExternalUrls = {
     powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
     project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
     generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+};
+
+const experimentationFlagsDefaults = {
+    customFunctions: false,
+    customFunctionsShowDebugLog: false
 };
 
 class RedirectPlugin {
@@ -191,10 +211,12 @@ exports.build = build;
 exports.config = config;
 exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
+exports.sessionStorageKeys = sessionStorageKeys;
+exports.experimentationFlagsDefaults = experimentationFlagsDefaults;
 exports.RedirectPlugin = RedirectPlugin;
 
 // NOTE: Data in this file gets propagated to JS on client pages
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition
 // in "webpack.common.js".  If you add anything to these exports
 // that you want other parts of the system to import, be sure
-// to modify the PLAYGROUN definition in "webpack.common.js".
+// to modify the PLAYGROUND definition in "webpack.common.js".

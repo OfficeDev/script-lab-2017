@@ -4,12 +4,26 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getSpanishStrings(): ClientStringsPerLanguage {
-    const playgroundName = 'Script Lab';
 
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: 'Codifica ● Ejecuta ● Comparte',
 
+        unexpectedError: 'Ocurrió un error inesperado',
+
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+
+        error: 'Error',
+        cancel: 'Cancelar',
+        dismiss: 'Ignorar',
+    };
+
+    const { playgroundName } = sharedBetweenServerAndClient;
+
+    return {
         userId: 'ID de usuario',
 
         alpha: 'Alfa',
@@ -24,16 +38,14 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         close: 'Cerrar',
         about: 'Acerca de',
         feedback: 'Retroalimentación',
-        error: getEnglishSubstitutesForNotYetTranslated().error,
         errors: 'Errores',
-        dismiss: 'Ignorar',
+        trustSnippetQuestionMark: getEnglishSubstitutesForNotYetTranslated().trustSnippetQuestionMark,
 
-        okButtonLabel: 'OK',
-        logoutButtonLabel: 'Cerrar sesión',
-        cancelButtonLabel: 'Cancelar',
-        saveButtonLabel: 'Guardar',
-        moreInfoButtonLabel: 'Más información',
-        importButtonLabel: 'Importar',
+        ok: 'OK',
+        logout: 'Cerrar sesión',
+        save: 'Guardar',
+        moreInfo: 'Más información',
+        import: 'Importar',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
         overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
         createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
@@ -106,7 +118,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
 
         // Components strings
         // about.ts
-        aboutUpdated: 'Última actualización:',
         aboutStorage: 'Almacenamiento:',
         aboutSnippets: 'Fragmentos de código locales',
         aboutIntellisense: 'IntelliSense',
@@ -146,10 +157,14 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
 
         tabDisplayNames: {
             'script': 'Código ',
-            'template': 'Plantilla',
+            'template': 'HTML',
             'style': 'Estilo',
-            'libraries': 'Librerías'
+            'libraries': 'Librerías',
+            'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
+
+        registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+        getTextForCustomFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated().getTextForCustomFunctionsLastUpdated,
 
         // Gallery.view strings
 
@@ -204,7 +219,6 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
                */,
         exampleAbbreviation: 'ejemplo',
 
-        unexpectedError: 'Ocurrió un error inesperado',
         pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
         scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
@@ -288,6 +302,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

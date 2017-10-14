@@ -1,10 +1,24 @@
 export function getEnglishStrings(): ClientStringsPerLanguage {
-    const playgroundName = 'Script Lab';
 
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: 'Code ● Run ● Share',
 
+        unexpectedError: 'An unexpected error has occurred',
+
+        snippetNotTrusted: 'This snippet comes from an external source. You need to trust it before you can run it.',
+        trust: 'Trust',
+
+        error: 'Error',
+        cancel: 'Cancel',
+        dismiss: 'Dismiss',
+    };
+
+    const { playgroundName } = sharedBetweenServerAndClient;
+
+    return {
         // Environment names
         alpha: 'Alpha',
         beta: 'Beta',
@@ -20,16 +34,16 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         close: 'Close',
         about: 'About',
         feedback: 'Feedback',
-        error: 'Error',
         errors: 'Errors',
         dismiss: 'Dismiss',
+        trustSnippetQuestionMark: 'Trust snippet?',
 
-        okButtonLabel: 'OK',
-        logoutButtonLabel: 'Sign out',
-        cancelButtonLabel: 'Cancel',
-        saveButtonLabel: 'Save',
-        moreInfoButtonLabel: 'More info',
-        importButtonLabel: 'Import',
+        ok: 'OK',
+        logout: 'Sign out',
+        cancel: 'Cancel',
+        save: 'Save',
+        moreInfo: 'More info',
+        import: 'Import',
         snippetImportExistingButtonLabel: 'Go to existing snippet',
         overwriteExistingButtonLabel: 'Overwrite existing snippet',
         createNewCopyButtonLabel: 'Create a new copy',
@@ -107,7 +121,6 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         // Components strings
         // about.ts
         // Syntax of {0}, {1}... is used for placeholders and should not be localized
-        aboutUpdated: 'Last updated:',
         aboutStorage: 'Storage:',
         aboutSnippets: 'Local snippets',
         aboutIntellisense: 'IntelliSense',
@@ -147,9 +160,16 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
 
         tabDisplayNames: {
             'script': 'Script',
-            'template': 'Template',
+            'template': 'HTML',
             'style': 'Style',
-            'libraries': 'Libraries'
+            'libraries': 'Libraries',
+            'customFunctions': 'Custom Functions'
+        },
+
+        registerCustomFunctions: 'Register Custom Functions',
+        getTextForCustomFunctionsLastUpdated: (lastUpdatesXSecondsAgo: string, lastAliveXSecondsAgo: string) => {
+            return 'The currently-running custom functions code was last updated ' + lastUpdatesXSecondsAgo +
+                '\n' + 'The runner itself was alive as of ' + lastAliveXSecondsAgo;
         },
 
         // Gallery.view strings
@@ -200,7 +220,6 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         importUrlOrYamlLabel: `Snippet URL or YAML`,
         exampleAbbreviation: `e.g.:`,
 
-        unexpectedError: 'An unexpected error has occurred',
         pleaseWait: 'Please wait',
         scriptLabIsReloading: 'Script Lab is reloading...',
 
@@ -284,6 +303,8 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: 'Invalid parameters passed in for establishing app authentication',
             invalidAuthResponseReceived: 'Invalid response received from the authentication service',
             yourAccessTokenIs: 'Your access token is'
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

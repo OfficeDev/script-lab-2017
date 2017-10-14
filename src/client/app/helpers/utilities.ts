@@ -1,5 +1,6 @@
-import { Dictionary } from '@microsoft/office-js-helpers';
+import { Dictionary, HostType, Utilities } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
+import { isString, isArray, toNumber } from 'lodash';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
@@ -138,55 +139,20 @@ export function generateUrl(base: string, queryParams: any) {
     return `${base}?${result.join('&')}`;
 }
 
-export function processLibraries(snippet: ISnippet) {
-    let linkReferences = [];
-    let scriptReferences = [];
-    let officeJS: string = null;
+export function getVersionedPackageUrl(editorUrl: string, packageName: string, filename: string) {
+    return `${editorUrl}/libs/${(window as any).versionedPackageNames[packageName]}/${filename}`;
+}
 
-    snippet.libraries.split('\n').forEach(processLibrary);
-
-    return { linkReferences, scriptReferences, officeJS };
-
-
-    function processLibrary(text: string) {
-        if (text == null || text.trim() === '') {
-            return null;
-        }
-
-        text = text.trim();
-
-        let isNotScriptOrStyle =
-            /^#.*|^\/\/.*|^\/\*.*|.*\*\/$.*/im.test(text) ||
-            /^@types/.test(text) ||
-            /^dt~/.test(text) ||
-            /\.d\.ts$/i.test(text);
-
-        if (isNotScriptOrStyle) {
-            return null;
-        }
-
-        let resolvedUrlPath = (/^https?:\/\/|^ftp? :\/\//i.test(text)) ? text : `https://unpkg.com/${text}`;
-
-        if (/\.css$/i.test(resolvedUrlPath)) {
-            return linkReferences.push(resolvedUrlPath);
-        }
-
-        if (/\.ts$|\.js$/i.test(resolvedUrlPath)) {
-            /*
-            * Don't add Office.js to the rest of the script references --
-            * it is special because of how it needs to be *outside* of the iframe,
-            * whereas the rest of the script references need to be inside the iframe.
-            */
-            if (/(?:office|office.debug).js$/.test(resolvedUrlPath.toLowerCase())) {
-                officeJS = resolvedUrlPath;
-                return null;
-            }
-
-            return scriptReferences.push(resolvedUrlPath);
-        }
-
-        return scriptReferences.push(resolvedUrlPath);
-    }
+export function setUpMomentJsDurationDefaults(momentInstance: {
+    relativeTimeThreshold(threshold: string, limit: number): boolean;
+}) {
+    momentInstance.relativeTimeThreshold('s', 40);
+    // Note, per documentation, "ss" must be set after "s"
+    momentInstance.relativeTimeThreshold('ss', 1);
+    momentInstance.relativeTimeThreshold('m', 40);
+    momentInstance.relativeTimeThreshold('h', 20);
+    momentInstance.relativeTimeThreshold('d', 25);
+    momentInstance.relativeTimeThreshold('M', 10);
 }
 
 export function stripSpaces(text: string) {
@@ -254,4 +220,125 @@ export function stripSpaces(text: string) {
         }
     }
     return finalSetOfLines;
+}
+
+export function chooseRandomly<T>(items: T[]) {
+    return items[Math.floor(Math.random() * items.length)];
+}
+
+export function getElapsedTime(time: number) {
+    return new Date().getTime() - time;
+}
+
+export function getNumberFromLocalStorage(key: string): number {
+    // Due to bug in IE (https://stackoverflow.com/a/40770399),
+    // Local Storage may get out of sync across tabs.  To fix this,
+    // set a value of some key, and this will ensure that localStorage is refreshed.
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.dummyUnusedKey, null);
+    return toNumber(window.localStorage.getItem(key) || '0');
+}
+
+export function pushToLogQueue(entry: LogData) {
+    // Due to bug in IE (https://stackoverflow.com/a/40770399),
+    // Local Storage may get out of sync across tabs.  To fix this,
+    // set a value of some key, and this will ensure that localStorage is refreshed.
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.dummyUnusedKey, null);
+
+    let currentLog = window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
+    let prefix = currentLog.length === 0 ? '' : '\n';
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.log,
+        currentLog + prefix + JSON.stringify({
+            ...entry,
+            message: stringifyPlusPlus(entry.message)
+        }));
+}
+
+export const LOG_READ_INTERVAL = 1000;
+
+export function displayLogDialog(editorUrl: string) {
+    const threshold = 5 * LOG_READ_INTERVAL;
+
+    const lastSeen = getNumberFromLocalStorage(PLAYGROUND.localStorageKeys.logLastHeartbeatTimestamp);
+    if (getElapsedTime(lastSeen) > threshold) {
+        launchDialog();
+        return;
+    }
+
+    // Set timer to make sure that if heartbeat was recent-ish, that it does in fact move:
+    setTimeout(() => {
+        if (getNumberFromLocalStorage(PLAYGROUND.localStorageKeys.logLastHeartbeatTimestamp) === lastSeen) {
+            launchDialog();
+        }
+    }, threshold);
+
+    return;
+
+
+    function launchDialog() {
+        if (Utilities.host === HostType.WEB) {
+            window.open(`${editorUrl}/log.html`);
+        } else {
+            Office.context.ui.displayDialogAsync(`${editorUrl}/log.html`, {
+                height: 60,
+                width: 60
+            });
+        }
+    }
+}
+
+export function stringifyPlusPlus(object) {
+    if (object === null) {
+        return 'null';
+    }
+
+    if (typeof object === 'undefined') {
+        return 'undefined';
+    }
+
+    // Don't JSON.stringify strings, because we don't want quotes in the output
+    if (isString(object)) {
+        return object;
+    }
+
+    if (object.toString() !== '[object Object]') {
+        return object.toString();
+    }
+
+    // Otherwise, stringify the object
+
+    return JSON.stringify(object, (key, value) => {
+        if (value && typeof value === 'object' && !isArray(value)) {
+            return getStringifiableSnapshot(value);
+        }
+        return value;
+    }, 4);
+
+    function getStringifiableSnapshot(object: any) {
+        const snapshot: any = {};
+
+        try {
+            let current = object;
+
+            do {
+                Object.keys(current).forEach(tryAddName);
+                current = Object.getPrototypeOf(current);
+            } while (current);
+
+            return snapshot;
+        } catch (e) {
+            return object;
+        }
+
+        function tryAddName(name: string) {
+            const hasOwnProperty = Object.prototype.hasOwnProperty;
+            if (name.indexOf(' ') < 0 &&
+                !hasOwnProperty.call(snapshot, name)) {
+                Object.defineProperty(snapshot, name, {
+                    configurable: true,
+                    enumerable: true,
+                    get: () => object[name]
+                });
+            }
+        }
+    }
 }

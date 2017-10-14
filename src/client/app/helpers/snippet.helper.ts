@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////
 /// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///
-///       Script Lab Samples project.  Please be sure that any changes that you  ///
+///       office-js-snippets project.  Please be sure that any changes that you  ///
 ///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
-///       in https://github.com/OfficeDev/script-lab-samples                     ///
+///       in https://github.com/OfficeDev/office-js-snippets                     ///
 ///                                                                              ///
 ///       That same shared portion is also used in the "server" portion of this  ///
 ///       project (src\server\core\snippet.helper.ts). Please ensure that these  ///
@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 import * as jsyaml from 'js-yaml';
-import { forIn } from 'lodash';
+import { forIn, isUndefined } from 'lodash';
 import { environment } from './environment';
 import { Strings } from '../strings';
 
@@ -44,7 +44,8 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     script: SnippetFieldType.PUBLIC,
     template: SnippetFieldType.PUBLIC,
     style: SnippetFieldType.PUBLIC,
-    libraries: SnippetFieldType.PUBLIC
+    libraries: SnippetFieldType.PUBLIC,
+    customFunctions: SnippetFieldType.PUBLIC
 };
 
 export const snippetFieldSortingOrder: { [key: string]: number } = {
@@ -64,6 +65,7 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
     template: 111,
     style: 112,
     libraries: 113,
+    customFunctions: 114,
 
     /* And within scripts / templates / styles, content should always be before language */
     content: 1000,
@@ -71,7 +73,7 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
 };
 
 export function getSnippetDefaults(): ISnippet {
-    return {
+    let defaults: ISnippet = {
         id: '',
         gist: '',
         name: Strings().defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
@@ -88,27 +90,35 @@ export function getSnippetDefaults(): ISnippet {
         style: { content: '', language: 'css' },
         libraries: ''
     };
+
+    if (environment.current.supportsCustomFunctions) {
+        defaults.customFunctions = { content: '', language: 'typescript' };
+    }
+
+    return defaults;
 }
 
-/** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
-export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
-    let copy = {};
-    forIn(snippetFields, (fieldType, fieldName) => {
-        if (fieldType & keep) {
-            copy[fieldName] = snippet[fieldName];
-        }
-    });
+    /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
+    export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
+        let copy = {};
+        forIn(snippetFields, (fieldType, fieldName) => {
+            if (fieldType & keep) {
+                if (!isUndefined(snippet[fieldName])) {
+                    copy[fieldName] = snippet[fieldName];
+                }
+            }
+        });
 
-    return copy as ISnippet;
-}
+        return copy as ISnippet;
+    }
 
-export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
-    const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
+    export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
+        const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
 
-    return jsyaml.safeDump(snippet, {
-        indent: 4,
-        lineWidth: -1,
-        sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
-        skipInvalid: true
-    });
-}
+        return jsyaml.safeDump(snippet, {
+            indent: 4,
+            lineWidth: -1,
+            sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
+            skipInvalid: true
+        });
+    }

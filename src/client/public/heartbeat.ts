@@ -1,21 +1,21 @@
 import { toNumber } from 'lodash';
-import { environment, storage, Messenger, MessageType, trustedSnippetManager } from '../app/helpers';
+import { environment, storage, Messenger, RunnerMessageType, trustedSnippetManager } from '../app/helpers';
 import { Strings } from '../app/strings';
 import { Authenticator } from '@microsoft/office-js-helpers';
 
 (() => {
-    let messenger: Messenger;
+    let messenger: Messenger<RunnerMessageType>;
     let trackingSnippet: {
         id: string;
         lastModified: number;
     };
 
 
-    (async () => {
+    (() => {
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
         // Can do partial initialization, since host is guaranteed to be known
-        await environment.initializePartial({ host: params.host });
+        environment.initializePartial({ host: params.host });
 
         // In case the params have had a different runner URL passed in, update the environment config.
         // Note that for reasons unbeknown, just updating the environment *even with the same URL*
@@ -40,7 +40,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             /* Note: toNumber returns NaN on empty, but NaN || 0 gives 0. */
         };
 
-        messenger.send(window.parent, MessageType.HEARTBEAT_INITIALIZED, {
+        messenger.send(window.parent, RunnerMessageType.HEARTBEAT_INITIALIZED, {
             lastOpenedId: storage.lastOpened ? storage.lastOpened.id : null
         });
 
@@ -61,7 +61,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
 
         if (lastOpened) {
             if (lastOpened.id !== trackingSnippet.id) {
-                messenger.send(window.parent, MessageType.INFORM_SWITCHED_SNIPPET, {
+                messenger.send(window.parent, RunnerMessageType.INFORM_SWITCHED_SNIPPET, {
                     id: lastOpened.id,
                     name: lastOpened.name
                 });
@@ -103,7 +103,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 trackingSnippet.id = storage.lastOpened.id;
                 snippet = storage.lastOpened;
             } else {
-                messenger.send(window.parent, MessageType.ERROR, Strings().Runner.noSnippetIsCurrentlyOpened);
+                messenger.send(window.parent, RunnerMessageType.ERROR, Strings().Runner.noSnippetIsCurrentlyOpened);
                 return;
             }
         }
@@ -114,7 +114,7 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 lastModified: 0
             };
 
-            messenger.send(window.parent, MessageType.ERROR, Strings().Runner.snippetNoLongerExists);
+            messenger.send(window.parent, RunnerMessageType.ERROR, Strings().Runner.snippetNoLongerExists);
             return;
         }
 
@@ -131,18 +131,18 @@ import { Authenticator } from '@microsoft/office-js-helpers';
             if (sendImmediately) {
                 trackingSnippet.lastModified = snippet.modified_at;
                 isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
-                messenger.send(window.parent, MessageType.REFRESH_RESPONSE, { snippet: snippet, isTrustedSnippet: isTrustedSnippet });
+                messenger.send(window.parent, RunnerMessageType.REFRESH_RESPONSE, { snippet: snippet, isTrustedSnippet: isTrustedSnippet });
             } else {
-                messenger.send<{ name: string }>(window.parent, MessageType.INFORM_STALE, {
+                messenger.send<{ name: string }>(window.parent, RunnerMessageType.INFORM_STALE, {
                     name: snippet.name
                 });
             }
         }
     }
 
-    function setupRequestReloadListener(messenger: Messenger) {
+    function setupRequestReloadListener(messenger: Messenger<RunnerMessageType>) {
         messenger.listen<{ id: string, isTrustedSnippet: boolean }>()
-            .filter(({ type }) => type === MessageType.REFRESH_REQUEST)
+            .filter(({ type }) => type === RunnerMessageType.REFRESH_REQUEST)
             .subscribe((input) => {
                 trackingSnippet = {
                     id: input.message.id,
