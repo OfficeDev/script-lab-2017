@@ -158,6 +158,10 @@ interface ICompiledPlaygroundInfo {
         /** The last timestamp that succeeded in registering (on runner side) and that
          * the custom functions heartbeat was aware of */
         customFunctionsCurrentlyRunningTimestamp: string;
+
+
+        /** Last seen timestamp at which the log dialog reported itself as alive */
+        logLastHeartbeatTimestamp: string;
     };
     sessionStorageKeys: {
         environmentCache: string;

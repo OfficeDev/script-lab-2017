@@ -1,14 +1,15 @@
 import * as $ from 'jquery';
 import { isNil } from 'lodash';
 import { UI } from '@microsoft/office-js-helpers';
-import { environment, instantiateRibbon, generateUrl, navigateToCompileCustomFunctions } from '../app/helpers';
+import { environment, instantiateRibbon, generateUrl, navigateToCompileCustomFunctions, displayLogDialog } from '../app/helpers';
 import { Strings, setDisplayLanguage } from '../app/strings';
 import { officeNamespacesForIframe } from './runner.common';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 
 interface InitializationParams {
     isRunMode: boolean;
-    snippetIframesBase64Texts: Array<string>;
+    snippetNames: string[];
+    snippetIframesBase64Texts: string[];
     heartbeatParams: ICustomFunctionsHeartbeatParams
     explicitlySetDisplayLanguageOrNull: string;
     returnUrl: string;
@@ -31,17 +32,17 @@ let isRunMode: boolean;
 let showUI: boolean;
 let allSuccessful = true;
 
-(() => {
+(async () => {
     let params: InitializationParams = (window as any).customFunctionParams;
 
     try {
         environment.initializePartial({ host: 'EXCEL' });
+
         isRunMode = params.isRunMode;
         showUI = !isRunMode; /* show UI for registration, not when running in invisible pane */
 
-        if (isRunMode) {
-            establishHeartbeat(params.heartbeatParams);
-        }
+        // Establish heartbeat for all cases (even registration-mode runner, since will still need the heartbeat to communicate with log)
+        await establishHeartbeat(params.heartbeatParams);
 
         if (showUI) {
             // Apply the host theming by adding this attribute on the "body" element:
@@ -93,21 +94,58 @@ async function initializeRunnerHelper(initialParams: InitializationParams) {
         const snippetBase64OrNull = initialParams.snippetIframesBase64Texts[i];
         let $entry = showUI ? $snippetNames.children().eq(i) : null;
 
-        if (isNil(snippetBase64OrNull)) {
+        if (isNil(snippetBase64OrNull) || snippetBase64OrNull.length === 0) {
             if (showUI) {
                 $entry.addClass(CSS_CLASSES.error);
+            } else {
+                heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                    timestamp: new Date().getTime(),
+                    source: 'system',
+                    type: 'custom functions',
+                    subtype: 'runner',
+                    severity: 'error',
+                    // TODO CUSTOM FUNCTIONS localization
+                    message: `Could NOT load function "${initialParams.snippetNames[i]}"`
+                });
             }
-        } else {
+
+            allSuccessful = false;
+        }
+        else {
             if (showUI) {
                 $entry.addClass(CSS_CLASSES.inProgress);
             }
 
             let success = await runSnippetCode(atob(initialParams.snippetIframesBase64Texts[i]));
-            allSuccessful = allSuccessful && success;
             if (showUI) {
                 $entry.removeClass(CSS_CLASSES.inProgress)
                     .addClass(success ? CSS_CLASSES.success : CSS_CLASSES.error);
+            } else {
+                if (success) {
+                    heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                        timestamp: new Date().getTime(),
+                        source: 'system',
+                        type: 'custom functions',
+                        subtype: 'runner',
+                        severity: 'info',
+                        // TODO CUSTOM FUNCTIONS localization
+                        message: `Sucessfully loaded "${initialParams.snippetNames[i]}"`
+                    });
+                } else {
+                    heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                        timestamp: new Date().getTime(),
+                        source: 'system',
+                        type: 'custom functions',
+                        subtype: 'runner',
+                        severity: 'error',
+                        // TODO CUSTOM FUNCTIONS localization
+                        message: `Could NOT load function "${initialParams.snippetNames[i]}"`
+                    });
+                }
             }
+
+            allSuccessful = allSuccessful && success;
+
         }
     }
 
@@ -247,10 +285,14 @@ function establishHeartbeat(heartbeatParams: ICustomFunctionsHeartbeatParams): P
             navigateToCompileCustomFunctions('run', input.message);
         });
 
+    heartbeat.messenger.listen<{}>()
+        .filter(({ type }) => type === CustomFunctionsMessageType.SHOW_LOG_DIALOG)
+        .subscribe(async input => displayLogDialog(environment.current.config.editorUrl));
+
     return new Promise(resolve => {
         heartbeat.messenger.listen<string>()
             .filter(({ type }) => type === CustomFunctionsMessageType.HEARTBEAT_READY)
-            .subscribe(input => resolve);
+            .subscribe(resolve);
     });
 }
 

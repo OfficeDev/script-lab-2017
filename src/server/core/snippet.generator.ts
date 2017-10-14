@@ -24,14 +24,14 @@ export function compileScript(
 
             if (result.diagnostics.length) {
                 throw new InformationalError(
-                    this._strings.getSyntaxErrorsTitle(result.diagnostics.length),
+                    strings.getSyntaxErrorsTitle(result.diagnostics.length),
                     result.diagnostics.map(item => {
                         let upThroughError = content.substr(0, item.start);
                         let afterError = content.substr(item.start + 1);
                         let lineNumber = upThroughError.split('\n').length;
                         let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
                         let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
-                        return `${this._strings.line} #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
+                        return `${strings.line} #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
                     }).join('\n\n')
                 );
             }
@@ -43,6 +43,6 @@ export function compileScript(
             return content;
 
         default:
-            throw new BadRequestError(`${this._strings.unrecognizedScriptLanguage} ${language}`);
+            throw new BadRequestError(`${strings.unrecognizedScriptLanguage} ${language}`);
     }
 }

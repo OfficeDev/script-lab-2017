@@ -1,6 +1,6 @@
-import { Dictionary } from '@microsoft/office-js-helpers';
+import { Dictionary, HostType, Utilities } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
-import { isString, isArray } from 'lodash';
+import { isString, isArray, toNumber } from 'lodash';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = ['ACCESS', 'EXCEL', 'ONENOTE', 'OUTLOOK', 'POWERPOINT', 'PROJECT', 'WORD'];
@@ -226,7 +226,24 @@ export function chooseRandomly<T>(items: T[]) {
     return items[Math.floor(Math.random() * items.length)];
 }
 
+export function getElapsedTime(time: number) {
+    return new Date().getTime() - time;
+}
+
+export function getNumberFromLocalStorage(key: string): number {
+    // Due to bug in IE (https://stackoverflow.com/a/40770399),
+    // Local Storage may get out of sync across tabs.  To fix this,
+    // set a value of some key, and this will ensure that localStorage is refreshed.
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.dummyUnusedKey, null);
+    return toNumber(window.localStorage.getItem(key) || '0');
+}
+
 export function pushToLogQueue(entry: LogData) {
+    // Due to bug in IE (https://stackoverflow.com/a/40770399),
+    // Local Storage may get out of sync across tabs.  To fix this,
+    // set a value of some key, and this will ensure that localStorage is refreshed.
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.dummyUnusedKey, null);
+
     let currentLog = window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
     let prefix = currentLog.length === 0 ? '' : '\n';
     window.localStorage.setItem(PLAYGROUND.localStorageKeys.log,
@@ -234,6 +251,39 @@ export function pushToLogQueue(entry: LogData) {
             ...entry,
             message: stringifyPlusPlus(entry.message)
         }));
+}
+
+export const LOG_READ_INTERVAL = 1000;
+
+export function displayLogDialog(editorUrl: string) {
+    const threshold = 5 * LOG_READ_INTERVAL;
+
+    const lastSeen = getNumberFromLocalStorage(PLAYGROUND.localStorageKeys.logLastHeartbeatTimestamp);
+    if (getElapsedTime(lastSeen) > threshold) {
+        launchDialog();
+        return;
+    }
+
+    // Set timer to make sure that if heartbeat was recent-ish, that it does in fact move:
+    setTimeout(() => {
+        if (getNumberFromLocalStorage(PLAYGROUND.localStorageKeys.logLastHeartbeatTimestamp) === lastSeen) {
+            launchDialog();
+        }
+    }, threshold);
+
+    return;
+
+
+    function launchDialog() {
+        if (Utilities.host === HostType.WEB) {
+            window.open(`${editorUrl}/log.html`);
+        } else {
+            Office.context.ui.displayDialogAsync(`${editorUrl}/log.html`, {
+                height: 60,
+                width: 60
+            });
+        }
+    }
 }
 
 export function stringifyPlusPlus(object) {

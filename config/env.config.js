@@ -14,7 +14,8 @@ const localStorageKeys = {
     trustedSnippets: 'playground_trusted_snippets',
     customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
     customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
-    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp'
+    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
+    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp'
 };
 
 const sessionStorageKeys = {

@@ -167,7 +167,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
-        customFunctionsLastReloaded: getEnglishSubstitutesForNotYetTranslated().customFunctionsLastReloaded,
+        customFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated().customFunctionsLastUpdated,
 
         // Gallery.view strings
 

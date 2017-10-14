@@ -167,7 +167,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         },
 
         registerCustomFunctions: 'Register Custom Functions',
-        customFunctionsLastReloaded: 'Custom Functions last reloaded' /* ___ seconds ago */,
+        customFunctionsLastUpdated: 'The currently-running Custom Functions code was last updated ' /* ___ seconds ago */,
 
         // Gallery.view strings
 

@@ -2,12 +2,13 @@ import * as moment from 'moment';
 import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs/Subscription';
-import { debounce, isNil, toNumber } from 'lodash';
+import { debounce, isNil } from 'lodash';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
     navigateToCompileCustomFunctions,
+    getNumberFromLocalStorage, getElapsedTime
 } from '../helpers';
 import { UIEffects } from '../effects/ui';
 import { Strings, getDisplayLanguageOrFake } from '../strings';
@@ -143,7 +144,7 @@ export class Editor implements AfterViewInit {
 
         // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
         let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
-            this._getTimeElapsedSinceLastCustomFunctionsHeartbeat() > 3000;
+            getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
         if (updateImmediately) {
             navigateToCompileCustomFunctions('register');
             return;
@@ -156,7 +157,7 @@ export class Editor implements AfterViewInit {
         this.isWaitingOnCustomFunctionsUpdate = true;
 
         let interval = setInterval(() => {
-            let heartbeatCurrentlyRunningTimestamp = this._getNumberFromLocalStorage(
+            let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
                 localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
             if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
                 this.isWaitingOnCustomFunctionsUpdate = false;
@@ -168,7 +169,7 @@ export class Editor implements AfterViewInit {
     }
 
     updateLastRegisteredFunctionsTooltip() {
-        let currentlyRunningLastUpdated = this._getNumberFromLocalStorage(
+        let currentlyRunningLastUpdated = getNumberFromLocalStorage(
             localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
         if (currentlyRunningLastUpdated === 0) {
             return;
@@ -176,21 +177,7 @@ export class Editor implements AfterViewInit {
 
         const momentText = moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow();
 
-        this.lastRegisteredFunctionsTooltip = `${this.strings.customFunctionsLastReloaded} ${momentText}`;
-    }
-
-    private _getTimeElapsedSinceLastCustomFunctionsHeartbeat(): number {
-        const lastSeenHeartbeat = this._getNumberFromLocalStorage(
-            localStorageKeys.customFunctionsLastHeartbeatTimestamp);
-        return new Date().getTime() - lastSeenHeartbeat;
-    }
-
-    private _getNumberFromLocalStorage(key: string): number {
-        // Due to bug in IE (https://stackoverflow.com/a/40770399),
-        // Local Storage may get out of sync across tabs.  To fix this,
-        // set a value of some key, and this will ensure that localStorage is refreshed.
-        window.localStorage.setItem(localStorageKeys.dummyUnusedKey, null);
-        return toNumber(window.localStorage.getItem(key) || '0');
+        this.lastRegisteredFunctionsTooltip = `${this.strings.customFunctionsLastUpdated} ${momentText}`;
     }
 
     private _createTabs() {

@@ -68,5 +68,10 @@ export enum CustomFunctionsMessageType {
     /** A Request to log some data (from runner to heartbeat, since need to be on editor domain)
      * Message is of type LogData
     */
-    LOG
+    LOG,
+
+    /** Message from heartbeat to runner, since heartbeat can't open the dialog on its own.
+     * Message is null
+     */
+    SHOW_LOG_DIALOG
 };

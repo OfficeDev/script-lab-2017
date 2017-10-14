@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const commonConfig = require('./webpack.common.js');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const { TRAVIS } = process.env;

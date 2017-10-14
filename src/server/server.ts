@@ -645,6 +645,7 @@ async function generateSnippetHtmlData(
             ai.trackEvent('Server - Script compile error', { snippetId: compileData.id, part: whichScriptPart });
             return { succeeded: false, html: await generateErrorHtml(e, strings), officeJS: null };
         }
+        throw e;
     }
 
     let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries);

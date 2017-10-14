@@ -12,41 +12,20 @@ let showDebugLog: boolean;
     const params: ICustomFunctionsHeartbeatParams =
         Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
+    showDebugLog = params.showDebugLog;
+
     // Can do partial initialization, since host is guaranteed to be known
     environment.initializePartial({ host: 'EXCEL' });
 
     setupMessenger(params.clientTimestamp);
 
-    const interval = setInterval(() => {
-        tryCatch(() => {
-            const now = new Date();
-            window.localStorage.setItem(
-                localStorageKeys.customFunctionsLastHeartbeatTimestamp,
-                now.getTime().toString());
-
-            logToConsole({
-                timestamp: new Date().getTime(),
-                source: 'system',
-                type: 'custom functions',
-                subtype: 'heartbeat',
-                message: 'Tick',
-                severity: 'info',
-            });
-
-            // And check whether I should reload...
-            if (getLocalStorageLastUpdateTimestamp() > params.clientTimestamp) {
-                clearInterval(interval);
-                sendRefreshRequest();
-            }
-        });
-    }, POLLING_INTERVAL);
-
+    messenger.send(window.parent, CustomFunctionsMessageType.HEARTBEAT_READY, null);
 })();
 
 function setupMessenger(clientTimestamp: number) {
     messenger = new Messenger(environment.current.config.runnerUrl);
 
-    messenger.listen<{timestamp: number}>()
+    messenger.listen<{ timestamp: number }>()
         .filter(({ type }) => type === CustomFunctionsMessageType.LOADED_AND_RUNNING)
         .subscribe(input => tryCatch(() => {
             logToConsole({
@@ -57,6 +36,31 @@ function setupMessenger(clientTimestamp: number) {
                 severity: 'info',
                 ...input.message
             });
+
+            const interval = setInterval(() => {
+                tryCatch(() => {
+                    const now = new Date();
+                    window.localStorage.setItem(
+                        localStorageKeys.customFunctionsLastHeartbeatTimestamp,
+                        now.getTime().toString());
+
+                    // Just for debugging:
+                    // logToConsole({
+                    //     timestamp: new Date().getTime(),
+                    //     source: 'system',
+                    //     type: 'custom functions',
+                    //     subtype: 'heartbeat',
+                    //     message: 'Tick, client timestamp ' + clientTimestamp,
+                    //     severity: 'info',
+                    // });
+
+                    // And check whether I should reload...
+                    if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {
+                        clearInterval(interval);
+                        sendRefreshRequest();
+                    }
+                });
+            }, POLLING_INTERVAL);
 
             window.localStorage.setItem(
                 localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
@@ -85,8 +89,7 @@ function logToConsole(data: LogData) {
 
     pushToLogQueue(data);
 
-    // Try to launch dialog (will no-op if already opened)
-    Office.context.ui.displayDialogAsync(`${environment.current.config.editorUrl}/log.html`);
+    messenger.send(window.parent, CustomFunctionsMessageType.SHOW_LOG_DIALOG, null);
 }
 
 function tryCatch(action: () => void) {

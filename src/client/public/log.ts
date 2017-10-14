@@ -1,13 +1,14 @@
 import * as moment from 'moment';
+import { attempt } from 'lodash';
+
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
-import { environment, pushToLogQueue, chooseRandomly } from '../app/helpers';
+import { environment, pushToLogQueue, LOG_READ_INTERVAL, chooseRandomly } from '../app/helpers';
 
 
 const { localStorageKeys } = PLAYGROUND;
 
 const GRID_DOM_SELECTOR = '#grid';
-const READ_INTERVAL = 1000;
 
 interface TransformedLogData {
     timestamp: string;
@@ -34,6 +35,9 @@ class LogGridController {
             controller: this,
 
             fields: [
+                { name: 'type', type: 'text', autosearch: true, width: '120px' },
+                { name: 'subtype', type: 'text', autosearch: true, width: '120px' },
+                { name: 'message', type: 'text', autosearch: true, width: '200px' },
                 { name: 'timestamp', type: 'text', autosearch: true, width: '100px' },
                 {
                     name: 'source', type: 'select', autosearch: true,
@@ -41,9 +45,6 @@ class LogGridController {
                     valueField: 'name', textField: 'name',
                     widht: '70px'
                 },
-                { name: 'type', type: 'text', autosearch: true, width: '80px'},
-                { name: 'subtype', type: 'text', autosearch: true, width: '100px' },
-                { name: 'message', type: 'text', autosearch: true, width: 'auto' },
                 {
                     name: 'severity', type: 'select', autosearch: true,
                     items: [''].concat(this.itemEnumerations.severity).map(item => ({ name: item })),
@@ -51,7 +52,9 @@ class LogGridController {
                     width: '80px'
                 },
                 { type: 'control' }
-            ].map(item => ({ ...item, editButton: false, deleteButton: false }))
+            ].map(item => ({ ...item, editButton: false, deleteButton: false })),
+
+            rowClass: (entry: TransformedLogData) => entry.severity
         });
     }
 
@@ -95,7 +98,7 @@ class LogGridController {
 
         initializeHeader(gridController);
 
-        setTimeout(startPollingLogData, READ_INTERVAL);
+        setTimeout(startPollingLogData, LOG_READ_INTERVAL);
     }
     catch (error) {
         handleError(error);
@@ -142,12 +145,14 @@ async function startPollingLogData() {
             });
 
             if ((document.getElementById('scroll-to-bottom') as HTMLInputElement).checked) {
-                const $tableBody = $(`${GRID_DOM_SELECTOR} .jsgrid-grid-body`);
-                $tableBody.scrollTop(Number.MAX_SAFE_INTEGER);
+                // Note, for some reason, using the ${GRID_DOM_SELECTOR} prefix in front of the class
+                // makes scrollTop not work in IE.  So call it on the global ".jsgrid-grid-body" selector instead
+                const $tableBody = $(`.jsgrid-grid-body`);
+                $tableBody.scrollTop($tableBody[0].scrollHeight + 1000);
             }
         }
 
-        setTimeout(startPollingLogData, READ_INTERVAL);
+        setTimeout(startPollingLogData, LOG_READ_INTERVAL);
 
     }
     catch (error) {
@@ -159,7 +164,8 @@ function dequeueLocalStorageLogData(): TransformedLogData[] {
     // Due to bug in IE (https://stackoverflow.com/a/40770399),
     // Local Storage may get out of sync across tabs.  To fix this,
     // set a value of some key, and this will ensure that localStorage is refreshed.
-    window.localStorage.setItem(localStorageKeys.dummyUnusedKey, null);
+    // Conveniently, here, rather than a dummy unused key, we actually do want to set something real anyway:
+    window.localStorage.setItem(localStorageKeys.logLastHeartbeatTimestamp, new Date().getTime().toString());
 
     let text = window.localStorage.getItem(localStorageKeys.log) || '';
     if (text.length === 0) {
@@ -167,8 +173,24 @@ function dequeueLocalStorageLogData(): TransformedLogData[] {
     }
 
     let results = text.split('\n')
-        .map(item => JSON.parse(item) as LogData)
-        .map(entry => ({
+        .filter(item => !(item === null || item.trim().length === 0))
+        .map(item => attempt(() => JSON.parse(item) as LogData))
+        .map(logDataOrError => {
+            if (logDataOrError === null || logDataOrError instanceof Error) {
+                let errorReport: LogData = {
+                    timestamp: new Date().getTime(),
+                    source: 'system',
+                    severity: 'error',
+                    type: 'uncaught exception',
+                    subtype: 'log.ts',
+                    message: 'Could not parse the log entry: ' + ((logDataOrError === null ) ? '"null"' : logDataOrError.toString())
+                };
+                return errorReport;
+            } else {
+                return logDataOrError;
+            }
+        })
+        .map((entry: LogData) => ({
             ...entry,
             timestamp: moment(new Date(entry.timestamp)).format('hh:mm:ss a')
         }));
