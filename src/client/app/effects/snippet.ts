@@ -63,7 +63,7 @@ export class SnippetEffects {
                         this._uiEffects.alert(
                             message,
                             Strings().snippetImportErrorTitle,
-                            Strings().okButtonLabel);
+                            Strings().ok);
                     }
                     return Observable.from([]);
                 });
@@ -146,7 +146,7 @@ export class SnippetEffects {
         .map((snippet: ISnippet) => {
             if (Utilities.host === HostType.OUTLOOK) {
                 this._store.dispatch(new UI.ShowAlertAction({
-                    actions: [Strings().okButtonLabel],
+                    actions: [Strings().ok],
                     title: Strings().snippetRunError,
                     message: Strings().noRunInOutlook
                 }));
@@ -256,8 +256,8 @@ export class SnippetEffects {
             return Observable.from([]);
         });
 
-    private _gistIdExists(id: string) {
-        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
+    private _getSnippetsWithMatchingGistID(id: string): ISnippet[] {
+        return storage.snippets.values().filter(item => item.gist && item.gist.trim() === id.trim());
     }
 
     private _nameExists(name: string) {
@@ -381,7 +381,7 @@ export class SnippetEffects {
                     this._uiEffects.alert(
                         Strings().requestedSnippetNoLongerExists,
                         Strings().cannotOpenSnippet,
-                        Strings().okButtonLabel);
+                        Strings().ok);
                     return Observable.of(null);
                 }
 
@@ -499,36 +499,62 @@ export class SnippetEffects {
          * If the user is importing a gist that already exists, ask the user if they want
          * to navigate to the existing one or create a new one in their local storage.
          */
+
+        let snippetsWithSameGistId: ISnippet[];
         let importResult: string = null;
-        if (mode !== Snippet.ImportType.OPEN && snippet.gist && this._gistIdExists(snippet.gist)) {
-            importResult = await this._uiEffects.alert(
-                Strings().snippetGistIdDuplicationError,
-                `${Strings().importButtonLabel} ${snippet.name}`,
-                Strings().snippetImportExistingButtonLabel, Strings().defaultSnippetTitle, Strings().cancelButtonLabel /* user options */
-            );
+        if (mode !== Snippet.ImportType.OPEN && snippet.gist) {
+            snippetsWithSameGistId = this._getSnippetsWithMatchingGistID(snippet.gist);
+            if (snippetsWithSameGistId.length > 0) {
+                let options = [
+                    Strings().snippetImportExistingButtonLabel,
+                    (snippetsWithSameGistId.length === 1) ? Strings().overwriteExistingButtonLabel : null,
+                    Strings().createNewCopyButtonLabel,
+                    Strings().cancel /* user options */
+                ].filter(item => item !== null);
+
+                importResult = await this._uiEffects.alert(
+                    Strings().snippetGistIdDuplicationError,
+                    `${Strings().import} ${snippet.name}`,
+                    ...options
+                );
+            }
         }
 
-        let actions: Action[] = [];
-        if (importResult === Strings().snippetImportExistingButtonLabel) {
-            for (let item of storage.snippets.values()) {
-                if (item.gist && item.gist.trim() === snippet.gist.trim()) {
-                    actions.push(new Snippet.ImportSuccessAction(item));
-                    break;
+        let getActionsFunc = (): Action[] => {
+            switch (importResult) {
+                case Strings().snippetImportExistingButtonLabel: {
+                    return [new Snippet.ImportSuccessAction(snippetsWithSameGistId[0])];
+                }
+
+                case Strings().overwriteExistingButtonLabel: {
+                    snippet.id = snippetsWithSameGistId[0].id;
+                    trustedSnippetManager.untrustSnippet(snippet.id);
+                    return [
+                        new Snippet.ImportSuccessAction(snippet),
+                        new Snippet.SaveAction(snippet)
+                    ];
+                }
+
+                case Strings().cancel: {
+                    return [];
+                }
+
+                default: {
+                    this._updateSnippetNameIfNeeded(snippet, mode, additionalParameters.isReadOnlyViewMode);
+
+                    const actions: Action[] = [new Snippet.ImportSuccessAction(snippet)];
+
+                    if (this._shouldSaveImportedSnippet(mode, additionalParameters.isReadOnlyViewMode)) {
+                        actions.push(new Snippet.SaveAction(snippet));
+                    }
+                    return actions;
                 }
             }
-        } else if (importResult !== Strings().cancelButtonLabel) {
-            this._updateSnippetNameIfNeeded(snippet, mode, additionalParameters.isReadOnlyViewMode);
-
-            actions.push(new Snippet.ImportSuccessAction(snippet));
-
-            if (this._shouldSaveImportedSnippet(mode, additionalParameters.isReadOnlyViewMode)) {
-                actions.push(new Snippet.SaveAction(snippet));
-            }
-        }
+        };
 
         return {
             snippet,
-            actions: Observable.from(actions)
+            actions: Observable.from(getActionsFunc())
         };
     }
 
@@ -543,7 +569,7 @@ export class SnippetEffects {
             return;
         }
 
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.

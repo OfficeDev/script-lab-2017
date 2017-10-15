@@ -4,18 +4,25 @@ const fs = require('fs');
 const AssetsWebpackPlugin = require('assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const autoprefixer = require('autoprefixer');
 const perfectionist = require('perfectionist');
-const { build, config, RedirectPlugin, localStorageKeys } = require('./env.config');
-const { getVersionedPackageNames, VersionedPackageSubstitutionsPlugin } = require('./package.version.substitutions.plugin.js');
+const { build, config, RedirectPlugin,
+    localStorageKeys, sessionStorageKeys,
+    safeExternalUrls, experimentationFlagsDefaults } = require('./env.config');
+const { getVersionedPackageNames,
+    VersionedPackageSubstitutionsPlugin } =require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
 
 const versionedPackageNames = getVersionedPackageNames([
     'monaco-editor',
     'office-ui-fabric-js',
     'jquery',
-    'jquery-resizable-dom'
+    'jquery-resizable-dom',
+    'jsgrid',
+    '@microsoft/office-js' /* Need Office.js temporarily for custom-function support,
+        which is only available on a "1.1.2-private.0" version for now */
 ]);
 
 fs.writeFileSync(path.resolve('./dist/server/versionPackageNames.json'), JSON.stringify(versionedPackageNames));
@@ -28,6 +35,7 @@ module.exports = (prodMode) =>
             indexScript: './public/index.script.ts',
             runScript: './public/run.script.ts',
             tutorialScript: './public/tutorial.script.ts',
+            externalPageScript: './public/external.page.script.ts', 
 
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
@@ -38,7 +46,12 @@ module.exports = (prodMode) =>
             runner: './public/runner.ts',
             error: './public/error.ts',
             auth: './public/auth.ts',
-            tryIt: './public/try.it.ts'
+            tryIt: './public/try.it.ts',
+            customFunctions: './public/custom.functions.ts',
+            customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
+            compileCustomFunctions: './public/compile.custom.functions.ts',
+
+            log: './public/log.ts',
         },
 
         resolve: {
@@ -76,7 +89,10 @@ module.exports = (prodMode) =>
                     devMode: !prodMode,
                     build: build,
                     config: config,
-                    localStorageKeys: localStorageKeys
+                    localStorageKeys: localStorageKeys,
+                    sessionStorageKeys: sessionStorageKeys,
+                    safeExternalUrls: safeExternalUrls,
+                    experimentationFlagsDefaults: experimentationFlagsDefaults
                 })
             }),
             new webpack.LoaderOptionsPlugin({
@@ -109,10 +125,6 @@ module.exports = (prodMode) =>
                     from: './public',
                     to: '',
                     ignore: ['*.ts']
-                },
-                {
-                    from: './views/external-page.html',
-                    to: 'external-page.html',
                 },
                 {
                     from: '../../config/env.config.js',
@@ -151,6 +163,14 @@ module.exports = (prodMode) =>
                 {
                     from: '../../node_modules/jquery-resizable-dom/dist',
                     to: './libs/' + versionedPackageNames['jquery-resizable-dom']
+                },
+                {
+                    from: '../../node_modules/jsgrid/dist',
+                    to: './libs/' + versionedPackageNames['jsgrid']
+                },
+                {
+                    from: '../../node_modules/@microsoft/office-js/dist',
+                    to: './libs/' + versionedPackageNames['@microsoft/office-js']
                 }
             ]),
             new HtmlWebpackPlugin({
@@ -170,17 +190,45 @@ module.exports = (prodMode) =>
             }),
             new HtmlWebpackPlugin({
                 filename: 'heartbeat.html',
-                template: './views/heartbeat.html',
+                template: './views/empty.html',
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'log.html',
+                template: './views/log.html',
+                chunks: ['polyfills', 'vendor', 'log'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'custom-functions.html',
+                template: './views/empty.html',
+                chunks: ['polyfills', 'vendor', 'customFunctions'],
+            }),
+            new HtmlWebpackPlugin({
+                filename: 'custom-functions-heartbeat.html',
+                template: './views/empty.html',
+                chunks: ['polyfills', 'vendor', 'customFunctionsHeartbeat'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'tutorial.html',
                 template: './views/tutorial.html',
                 chunks: ['polyfills', 'vendor', 'tutorialScript'],
             }),
+            new HtmlWebpackPlugin({
+                filename: 'external-page.html',
+                template: './views/external-page.html',
+                chunks: ['polyfills', 'vendor', 'externalPageScript'],
+            }),
             
             new RedirectPlugin(),
 
-            new VersionedPackageSubstitutionsPlugin(versionedPackageNames)
-        ]
+            new VersionedPackageSubstitutionsPlugin(versionedPackageNames),
+
+            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css')
+        ],
+
+        output: {
+            path: path.resolve('./dist/client'),
+            filename: 'bundles/[name].[chunkhash].bundle.js',
+            chunkFilename: 'bundles/[id].[chunkhash].chunk.js'
+        }
     });

@@ -3,55 +3,62 @@
 
 <head>
     <base href="/">
-    <title>{{strings.run}}: {{name}}</title>
+    <title>{{strings.run}}: {{snippet.name}}</title>
 
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="{{author}}" />
 
     <!-- For purposes of experimentation, disable caching, so that can make changes and see results immediately on reload: -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
 
-    {{#if isOfficeSnippet}}
+{{#if isOfficeSnippet}}
     {{#if isExternalExport}}
     <!-- Office.js Reference -->
-    <script src="{{{officeJS}}}"></script>
+    <script src="{{{snippet.officeJS}}}"></script>
     {{else}}
     {{!-- Add a comment about Office.js, just in case someone inspects the inner frame (snippet) code --}}
     <!-- Outside of the playground (which references office.js differently), you would need to include: -->
-    <!-- <script src="{{{officeJS}}}"></script> -->
+    <!-- <script src="{{{snippet.officeJS}}}"></script> -->
     {{/if}}
-    {{/if}}
+{{/if}}
 
+{{#if snippet.linkReferences.length}}
     <!-- CSS Libraries -->
-    {{#each linkReferences}}
+    {{#each snippet.linkReferences}}
     <link rel="stylesheet" href="{{this}}" />
     {{/each}}
 
+{{/if}}
+{{#if snippet.style.length}}
     <!-- Style -->
     <style type="text/css">
-        {{{indent style 2}}}
+        {{{indent snippet.style 2}}}
     </style>
+{{/if}}
 </head>
 
 <body>
     <!-- HTML -->
-    {{{indent template 1}}}
+    {{{indent snippet.template 1}}}
 
     <!-- ScriptLab-Specific Runtime Helpers -->
-    <script src="{{{runtimeHelpersUrl}}}"></script>
+{{#each runtimeHelpersUrls}}
+    <script src="{{{this}}}"></script>
+{{/each}}
     <script>
         ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
     </script>
-    
+
+{{#if snippet.scriptReferences.length}}
     <!-- JS Libraries -->
-    {{#each scriptReferences}}
+    {{#each snippet.scriptReferences}}
     <script crossorigin="anonymous" src="{{this}}"></script>
     {{/each}}
 
+{{/if}}
     <!-- Script -->
     <script type="text/javascript">
         {{#if isExternalExport}}
@@ -61,12 +68,12 @@
         window.parent.scriptRunnerBeginInit();
 
         {{/if}}
-        {{#if officeJS}}
+        {{#if snippet.officeJS}}
         Office.initialize = function() {
-            {{{indent script 3}}}
+            {{{indent snippet.script 3}}}
         };
         {{else}}
-        {{{indent script 2}}}
+        {{{indent snippet.script 2}}}
         {{/if}}
 
         {{#if isExternalExport}}

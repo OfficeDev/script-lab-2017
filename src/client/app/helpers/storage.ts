@@ -1,8 +1,38 @@
 import { Storage, StorageType } from '@microsoft/office-js-helpers';
 import { environment } from './environment';
 import * as cuid from 'cuid';
+const { localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 class StorageHelper {
+    private _settings: Storage<ISettings>;
+    get settings(): Storage<ISettings> {
+        if (!this._settings) {
+            this._settings = new Storage<ISettings>(localStorageKeys.settings);
+        }
+        return this._settings;
+    }
+
+    private _intellisenseCache: Storage<string>;
+    get intellisenseCache(): Storage<string> {
+        if (!this._intellisenseCache) {
+            this._intellisenseCache = new Storage<string>(sessionStorageKeys.intelliSenseCache, StorageType.SessionStorage);
+            if (environment.current.devMode) {
+                this._intellisenseCache.clear();
+            }
+        }
+        return this._intellisenseCache;
+    }
+
+    private _snippets: Storage<ISnippet> = null;
+    get snippets(): Storage<ISnippet> {
+        if (this._snippets == null && environment.current && environment.current.host) {
+            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
+                .replace('{0}', environment.current.host);
+            this._snippets = new Storage<ISnippet>(hostStorageKey);
+        }
+        return this._snippets;
+    }
+
     private _user: string;
     get user(): string {
         if (this._user == null) {
@@ -13,17 +43,6 @@ class StorageHelper {
             }
         }
         return this._user;
-    }
-
-    settings = new Storage<ISettings>('playground_settings');
-    intellisenseCache = new Storage<string>('playground_intellisense', StorageType.SessionStorage);
-
-    private _snippets: Storage<ISnippet> = null;
-    get snippets() {
-        if (this._snippets == null && environment.current && environment.current.host) {
-            this._snippets = new Storage<ISnippet>(`playground_${environment.current.host}_snippets`);
-        }
-        return this._snippets;
     }
 
     get lastOpened() {

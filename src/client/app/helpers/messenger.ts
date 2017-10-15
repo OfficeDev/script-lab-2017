@@ -1,15 +1,15 @@
 import { Observable } from 'rxjs/Observable';
 import { AI } from './ai.helper';
 
-export class Messenger {
+export class Messenger<T> {
     constructor(public source: string) { }
 
-    send<T>(recepient: Window, type: MessageType, message: T) {
+    send<M>(recepient: Window, type: T, message: M) {
         return recepient.postMessage({ type, message }, this.source);
     }
 
-    listen<T>() {
-        return new Observable<{ type: MessageType, message: T }>(observer => {
+    listen<M>() {
+        return new Observable<{ type: T, message: M }>(observer => {
             function _listener(event: MessageEvent) {
                 try {
                     if (event.origin !== this._origin) {
@@ -32,7 +32,7 @@ export class Messenger {
     }
 }
 
-export enum MessageType {
+export enum RunnerMessageType {
     /** Error. Also carries a string message */
     ERROR,
 
@@ -50,4 +50,28 @@ export enum MessageType {
 
     /** A message sent by the heartbeat, once it has initialized.  Message is { lastOpenedId: string } */
     HEARTBEAT_INITIALIZED,
+};
+
+export enum CustomFunctionsMessageType {
+    /** From heartbeat to runner, once it's initialized */
+    HEARTBEAT_READY,
+
+    /** Message sent from heartbeat to custom-functions, telling that page that it needs to reload.
+     * Message is the full payload to be posted to compile/custom-functions
+     * (generated using "getCompileCustomFunctionsPayload")
+     */
+    NEED_TO_REFRESH,
+
+    /** Message sent from runner to hearbeat to inform it that it's now running.  Message is { timestamp: number } */
+    LOADED_AND_RUNNING,
+
+    /** A Request to log some data (from runner to heartbeat, since need to be on editor domain)
+     * Message is of type LogData
+    */
+    LOG,
+
+    /** Message from heartbeat to runner, since heartbeat can't open the dialog on its own.
+     * Message is null
+     */
+    SHOW_LOG_DIALOG
 };

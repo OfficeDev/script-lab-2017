@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
-import { groupBy, isEmpty } from 'lodash';
 import * as moment from 'moment';
-
+import { groupBy, isEmpty } from 'lodash';
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
+import { setUpMomentJsDurationDefaults } from '../helpers';
 import { Strings, getDisplayLanguageOrFake } from '../strings';
 
 @Component({
@@ -39,6 +39,10 @@ export class GalleryList {
     groupedItems: any;
     empty: boolean;
 
+    constructor() {
+        setUpMomentJsDurationDefaults(moment);
+    }
+
     ngOnChanges(changes) {
         if (changes['items']) {
             this.groupedItems = groupBy(changes['items'].currentValue, 'group');
@@ -51,15 +55,4 @@ export class GalleryList {
         (item as any).lastUpdatedText = item.modified_at ? `${Strings().HtmlPageStrings.lastUpdated} ${momentText}` : '';
     }
 
-    static setUpMomentJsDurationDefaults() {
-        moment.relativeTimeThreshold('s', 40);
-        // Note, per documentation, "ss" must be set after "s"
-        moment.relativeTimeThreshold('ss', 2);
-        moment.relativeTimeThreshold('m', 40);
-        moment.relativeTimeThreshold('h', 20);
-        moment.relativeTimeThreshold('d', 25);
-        moment.relativeTimeThreshold('M', 10);
-    }
 };
-
-GalleryList.setUpMomentJsDurationDefaults();

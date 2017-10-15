@@ -1,6 +1,10 @@
 import * as $ from 'jquery';
+import { attempt, isError, isPlainObject, isNil, isEqual } from 'lodash';
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
-let { devMode, build, config } = PLAYGROUND;
+import { Strings } from '../strings';
+import { isValidHost } from '../helpers';
+
+const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
@@ -8,7 +12,8 @@ const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
 const TIMEOUT_BEFORE_SHOWING_HOST_BUTTONS = 2000;
 
 class Environment {
-    cache = new Storage<any>(PLAYGROUND.localStorageKeys.playgroundCache, StorageType.SessionStorage);
+    cache = new Storage<any>(
+      orageKeys.environmentCache, StorageType.SessionStorage);
     private _config: IEnvironmentConfig;
     private _current: ICurrentPlaygroundInfo;
 
@@ -45,25 +50,28 @@ class Environment {
 
     private _setupCurrentDefaultsIfEmpty() {
         if (!this._current) {
-            let host: string;
-            let platform: string;
-            let environment = this.cache.get('environment') as ICurrentPlaygroundInfo;
-            if (environment) {
-                host = environment.host;
-                platform = environment.platform;
-            }
+            let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
+            delete cachedEnvironment.runtimeSessionTimestamp;
 
             this._current = {
                 devMode,
                 build,
                 config: this._config,
-                host: host,
-                platform: platform,
+
+                supportsCustomFunctions: false,
+                customFunctionsShowDebugLog: this.getExperimentationFlagValue('customFunctionsShowDebugLog'),
 
                 isAddinCommands: false,
                 isTryIt: false,
-                wacUrl: window.localStorage[WAC_URL_STORAGE_KEY] || ''
+                wacUrl: window.localStorage[localStorageKeys.wacUrl] || '',
+
+                host: null,
+                platform: null,
+
+                runtimeSessionTimestamp: (new Date()).getTime().toString()
             };
+
+            this.appendCurrent(cachedEnvironment);
 
             this.cache.insert('environment', this._current);
         }
@@ -77,7 +85,65 @@ class Environment {
     appendCurrent(value: Partial<ICurrentPlaygroundInfo>) {
         this._setupCurrentDefaultsIfEmpty();
         let updatedEnv = { ...this._current, ...value };
+
+        if (!isNil(value.host)) {
+            if (value.host.toUpperCase() === 'EXCEL') {
+                updatedEnv = {
+                    ...updatedEnv,
+                    supportsCustomFunctions: this.getExperimentationFlagValue('customFunctions')
+                };
+            }
+        }
+
         this._current = this.cache.insert('environment', updatedEnv);
+    }
+
+    getExperimentationFlagValue(name: 'customFunctions' | 'customFunctionsShowDebugLog'): any {
+        return JSON.parse(this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/))[name];
+    }
+
+    /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */
+    getExperimentationFlagsString(onEmptyReturnDefaults: boolean): string {
+        const objectToReturn = (() => {
+            const flagSetInStorage = window.localStorage[localStorageKeys.experimentationFlags];
+            const flagsOrError: IExperimentationFlags | Error = attempt(() => JSON.parse(flagSetInStorage));
+
+            let value = isError(flagsOrError) ? {} : flagsOrError;
+            value = {
+                ...PLAYGROUND.experimentationFlagsDefaults,
+                ...value
+            };
+
+            if (isEqual(value, PLAYGROUND.experimentationFlagsDefaults)) {
+                return onEmptyReturnDefaults ? PLAYGROUND.experimentationFlagsDefaults : {};
+            } else {
+                return value;
+            }
+        })();
+
+        return JSON.stringify(objectToReturn, null, 4);
+    }
+
+    /** Sets experimentation flags; will throw an error if the value provided is not a valid JSON-ifiable string.
+     * Returns true if update is different than what it was before (while ignoring formatting) */
+    updateExperimentationFlags(value: string): boolean {
+        let objectAttempt = attempt(() => JSON.parse(value));
+        if (isError(objectAttempt) || !isPlainObject(objectAttempt)) {
+            throw new Error(Strings().invalidExperimentationFlags);
+        }
+
+        if (isEqual(objectAttempt, PLAYGROUND.experimentationFlagsDefaults)) {
+            objectAttempt = {};
+        }
+        const previousSetting = JSON.parse(this.getExperimentationFlagsString(
+            false /*onEmptyReturnDefaults = false; instead want actual empty */));
+        const identicalToPreviousSettings = isEqual(previousSetting, objectAttempt);
+
+        // Reset the local storage just in case, but to stringified object attempt rather than straight-up value,
+        // since objectAttempt may have gotten adjusted.
+        window.localStorage[localStorageKeys.experimentationFlags] = JSON.stringify(objectAttempt);
+
+        return !identicalToPreviousSettings;
     }
 
     /** Performs a full initialization (and returns quickly out if already initialized
@@ -107,7 +173,7 @@ class Environment {
 
         if (pageParams.wacUrl) {
             this.appendCurrent({ wacUrl: decodeURIComponent(pageParams.wacUrl) });
-            window.localStorage.setItem(WAC_URL_STORAGE_KEY, this.current.wacUrl);
+            window.localStorage.setItem(localStorageKeys.wacUrl, this.current.wacUrl);
         }
 
         if (pageParams.tryIt) {
@@ -128,8 +194,16 @@ class Environment {
         }
 
         if (pageParams.mode) {
-            this.appendCurrent({ host: pageParams.mode.toUpperCase() });
-            return true;
+            if (pageParams.mode.endsWith('/')) {
+                pageParams.mode = pageParams.mode.substr(0, pageParams.mode.length - 1);
+            }
+            if (pageParams.mode.endsWith('#')) {
+                pageParams.mode = pageParams.mode.substr(0, pageParams.mode.length - 1);
+            }
+            if (isValidHost(pageParams.mode)) {
+                this.appendCurrent({ host: pageParams.mode.toUpperCase() });
+                return true;
+            }
         }
 
         if (location.hash) {

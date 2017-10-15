@@ -36,7 +36,8 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     script: SnippetFieldType.PUBLIC,
     template: SnippetFieldType.PUBLIC,
     style: SnippetFieldType.PUBLIC,
-    libraries: SnippetFieldType.PUBLIC
+    libraries: SnippetFieldType.PUBLIC,
+    customFunctions: SnippetFieldType.PUBLIC
 };
 
 export const snippetFieldSortingOrder: { [key: string]: number } = {
@@ -56,6 +57,7 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
     template: 111,
     style: 112,
     libraries: 113,
+    customFunctions: 114,
 
     /* And within scripts / templates / styles, content should always be before language */
     content: 1000,

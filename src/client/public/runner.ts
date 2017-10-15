@@ -2,9 +2,11 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries, environment, instantiateRibbon } from '../app/helpers';
+import { generateUrl, processLibraries, environment, instantiateRibbon,
+    setUpMomentJsDurationDefaults } from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
-import { Messenger, MessageType } from '../app/helpers/messenger';
+import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
+import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 
 import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
@@ -23,9 +25,6 @@ interface InitializationParams {
 }
 
 (() => {
-    /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
-
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
      * for where to insert the rendered snippet iframe
@@ -46,13 +45,13 @@ interface InitializationParams {
     assign(isListeningTo, defaultIsListeningTo);
 
     const heartbeat: {
-        messenger: Messenger,
+        messenger: Messenger<RunnerMessageType>,
         window: Window
     } = <any>{};
 
     let isInTryItMode = checkIfInTryItMode();
 
-    async function initializeRunner(params: InitializationParams): Promise<void> {
+    (window as any).initializeRunner = async (params: InitializationParams): Promise<void> => {
         try {
             await environment.initializePartial({ host: params.host });
             instantiateRibbon('ribbon');
@@ -87,7 +86,7 @@ interface InitializationParams {
         catch (error) {
             handleError(error);
         }
-    }
+    };
 
     async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
         // Even though already did a partial initialization, do a more thorough
@@ -169,9 +168,6 @@ interface InitializationParams {
         (new MutationObserver(mutations => mutations.forEach(snippetAndConsoleRefreshSize)))
             .observe(document.getElementById('FirebugUI'), { attributes: true });
     }
-
-    (window as any).initializeRunner = initializeRunner;
-
 
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
@@ -283,22 +279,6 @@ interface InitializationParams {
         $('#notify-error').show();
     }
 
-    function loadFirebug(origin: string): Promise<void> {
-        return new Promise<any>((resolve, reject) => {
-            (window as any).origin = origin;
-            const firebugUrl = `${origin}/assets/firebug/firebug-lite-debug.js#startOpened`;
-            const script = $(`<script type="text/javascript" src="${firebugUrl}"></script>`);
-            script.appendTo('head');
-
-            const interval = setInterval(() => {
-                if ((window as any).firebugLiteIsLoaded) {
-                    clearInterval(interval);
-                    return resolve((window as any).Firebug);
-                }
-            }, 100);
-        });
-    }
-
     async function ensureHostInitialized(): Promise<any> {
         if (isInTryItMode) {
             (window as any).Office = {
@@ -328,7 +308,7 @@ interface InitializationParams {
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
         heartbeat.messenger.listen<{ lastOpenedId: string }>()
-            .filter(({ type }) => type === MessageType.HEARTBEAT_INITIALIZED)
+            .filter(({ type }) => type === RunnerMessageType.HEARTBEAT_INITIALIZED)
             .subscribe(input => {
                 if (input.message.lastOpenedId !== heartbeatParams.id) {
                     isListeningTo.snippetSwitching = false;
@@ -336,12 +316,12 @@ interface InitializationParams {
             });
 
         heartbeat.messenger.listen<string>()
-            .filter(({ type }) => type === MessageType.ERROR)
+            .filter(({ type }) => type === RunnerMessageType.ERROR)
             .map(input => new Error(input.message))
             .subscribe(handleError);
 
         heartbeat.messenger.listen<{ name: string }>()
-            .filter(({ type }) => type === MessageType.INFORM_STALE)
+            .filter(({ type }) => type === RunnerMessageType.INFORM_STALE)
             .subscribe(input => {
                 if (isListeningTo.currentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
@@ -353,7 +333,7 @@ interface InitializationParams {
             });
 
         heartbeat.messenger.listen<{ id: string, name: string }>()
-            .filter(({ type }) => type === MessageType.INFORM_SWITCHED_SNIPPET)
+            .filter(({ type }) => type === RunnerMessageType.INFORM_SWITCHED_SNIPPET)
             .subscribe(input => {
                 const $anotherSnippetSelected = $('#notify-another-snippet-selected');
                 // if switched back to the snippet that was already being tracked,
@@ -373,7 +353,7 @@ interface InitializationParams {
             });
 
         heartbeat.messenger.listen<{ snippet: ISnippet, isTrustedSnippet: boolean }>()
-            .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
+            .filter(({ type }) => type === RunnerMessageType.REFRESH_RESPONSE)
             .subscribe(input => {
                 const snippet = input.message.snippet;
                 const data = JSON.stringify({
@@ -409,7 +389,7 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
         currentSnippet = {
@@ -433,7 +413,8 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
+        let replacedSuccessfully = replaceSnippetIframe(
+            html, processLibraries(snippet.libraries).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
@@ -461,7 +442,7 @@ interface InitializationParams {
             assign(isListeningTo, defaultIsListeningTo);
         }
 
-        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
+        heartbeat.messenger.send(heartbeat.window, RunnerMessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
     }
 
     function generateRefreshUrl(desiredOfficeJS: string) {
@@ -496,13 +477,7 @@ interface InitializationParams {
     }
 
     function initializeTooltipUpdater() {
-        moment.relativeTimeThreshold('s', 40);
-        // Note, per documentation, "ss" must be set after "s"
-        moment.relativeTimeThreshold('ss', 2);
-        moment.relativeTimeThreshold('m', 40);
-        moment.relativeTimeThreshold('h', 20);
-        moment.relativeTimeThreshold('d', 25);
-        moment.relativeTimeThreshold('M', 10);
+        setUpMomentJsDurationDefaults(moment);
 
         const $headerTitle = $('#header .command__center');
 

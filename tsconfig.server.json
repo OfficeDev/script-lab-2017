@@ -8,6 +8,8 @@
     "exclude": [
         "node_modules",
         "compiled",
+        "dist/**/*.ts",
+        "src/runtime-helpers/**/*.ts",
         "src/client/**/*.ts"
     ]
 }
