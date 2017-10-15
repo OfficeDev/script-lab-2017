@@ -62,7 +62,7 @@ interface InitializationParams {
 
             if (isInTryItMode) {
                 // Nothing to wait on, playground is ready:
-                setPlaygroundHostIsReady();
+                environment.setPlaygroundHostIsReady();
             }
             else if (params.currentSnippet.officeJS) {
                 let script = document.createElement('script');
@@ -73,13 +73,13 @@ interface InitializationParams {
                         // re-initialization of this page in case of a page like the error dialog,
                         // which doesn't defined (override) Office.initialize.
                         Office.initialize = () => { };
-                        setPlaygroundHostIsReady();
+                        environment.setPlaygroundHostIsReady();
                     };
                 });
                 document.getElementsByTagName('head')[0].appendChild(script);
             }
             else {
-                setPlaygroundHostIsReady();
+                environment.setPlaygroundHostIsReady();
             }
 
             await initializeRunnerHelper(params);
@@ -315,20 +315,7 @@ interface InitializationParams {
             return Promise.resolve();
         }
 
-        // window.playground_host_ready is set within the runner template (embedded in html code)
-        // when the host is ready (i.e., in Office.initialized callback, if Office host)
-        if (getIsPlaygroundHostReady()) {
-            return Promise.resolve();
-        }
-
-        return new Promise((resolve) => {
-            const interval = setInterval(() => {
-                if (getIsPlaygroundHostReady()) {
-                    clearInterval(interval);
-                    return resolve();
-                }
-            }, 100);
-        });
+        await environment.createPlaygroundHostReadyTimer().promise;
     }
 
     function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {
@@ -562,14 +549,6 @@ interface InitializationParams {
         } catch (e) {
             return false;
         }
-    }
-
-    function setPlaygroundHostIsReady() {
-        (window as any).playground_host_ready = true;
-    }
-
-    function getIsPlaygroundHostReady(): boolean {
-        return (window as any).playground_host_ready;
     }
 
 })();
