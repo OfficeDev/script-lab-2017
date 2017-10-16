@@ -6,14 +6,12 @@ import { isValidHost } from '../helpers';
 
 const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
-const WAC_URL_STORAGE_KEY = 'playground_wac_url';
 const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
 
 const TIMEOUT_BEFORE_SHOWING_HOST_BUTTONS = 2000;
 
 class Environment {
-    cache = new Storage<any>(
-      orageKeys.environmentCache, StorageType.SessionStorage);
+    cache = new Storage<any>(sessionStorageKeys.environmentCache, StorageType.SessionStorage);
     private _config: IEnvironmentConfig;
     private _current: ICurrentPlaygroundInfo;
 
