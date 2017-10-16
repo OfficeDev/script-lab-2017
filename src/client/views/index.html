@@ -3,7 +3,7 @@
 
 <head>
 	<base href="/">
-	
+
 	<!--Note: title below will get localized at runtime-->
 	<title>Code</title>
 
@@ -33,6 +33,12 @@
 
 <body class="ms-font-m">
 	<script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+	<script>
+		Office.initialize = function () {
+			window.playground_host_ready = true;
+		}
+	</script>
+
 	<app class="app">
 		<div id="progress" class="ms-progress-component">
 			<div id="ribbon" class="ribbon"></div>
