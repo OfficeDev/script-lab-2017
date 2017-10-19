@@ -14,6 +14,7 @@
 </head>
 
 <body class="app">
+    <script src="{{{origin}}}/libs/{{{versionedPackageNames_jquery}}}/jquery.min.js"></script>
     <script src="{{{origin}}}/libs/{{{versionedPackageNames_jquery_resizable_dom}}}/jquery-resizable.min.js"></script>
 
     <div class="panel-container vertical">

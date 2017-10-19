@@ -13,6 +13,7 @@ export interface IDefaultHandlebarsContext {
     origin: string;
     assets: { [key: string]: any };
     versionedPackageNames_office_ui_fabric_js: string;
+    versionedPackageNames_jquery: string;
     versionedPackageNames_jquery_resizable_dom: string;
 }
 
