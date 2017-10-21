@@ -22,7 +22,7 @@ const versionedPackageNames = getVersionedPackageNames([
     'jquery-resizable-dom',
     'jsgrid',
     '@microsoft/office-js' /* Need Office.js temporarily for custom-function support,
-        which is only available on a "1.1.2-private.2" version for now */
+        which is only available on a "1.1.2-beta-next.0" version for now */
 ]);
 
 fs.writeFileSync(path.resolve('./dist/server/versionPackageNames.json'), JSON.stringify(versionedPackageNames));
