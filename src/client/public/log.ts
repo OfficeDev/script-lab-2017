@@ -165,12 +165,9 @@ async function startPollingLogData() {
 function tickAndDequeueLocalStorageData(): TransformedLogData[] {
     $('#time').text(moment(new Date()).format(HOURS_MINUTES_SECOND_FORMAT));
 
-    // Due to bug in IE (https://stackoverflow.com/a/40770399),
-    // Local Storage may get out of sync across tabs.  To fix this,
-    // set a value of some key, and this will ensure that localStorage is refreshed.
-    // Conveniently, here, rather than a dummy unused key, we actually do want to set something real anyway:
     window.localStorage.setItem(localStorageKeys.logLastHeartbeatTimestamp, new Date().getTime().toString());
 
+    // Note: don't need ensureFreshLocalStorage() here, because the localStorage.setItem above does the equivalent.
     let text = window.localStorage.getItem(localStorageKeys.log) || '';
     if (text.length === 0) {
         return [];
@@ -187,7 +184,7 @@ function tickAndDequeueLocalStorageData(): TransformedLogData[] {
                     severity: 'error',
                     type: 'uncaught exception',
                     subtype: 'log.ts',
-                    message: 'Could not parse the log entry: ' + ((logDataOrError === null ) ? '"null"' : logDataOrError.toString())
+                    message: 'Could not parse the log entry: ' + ((logDataOrError === null) ? '"null"' : logDataOrError.toString())
                 };
                 return errorReport;
             } else {

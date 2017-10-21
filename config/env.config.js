@@ -15,7 +15,8 @@ const localStorageKeys = {
     customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
     customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
     customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
-    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp'
+    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
+    language: 'playground_language'
 };
 
 const sessionStorageKeys = {
@@ -166,6 +167,10 @@ class RedirectPlugin {
                 }
 
                 // Redirect origin environment to target
+                // Note: Due to bug in IE (https://stackoverflow.com/a/40770399),
+                // Local Storage may get out of sync across tabs.  To fix this,
+                // set a value of some key, and this will ensure that localStorage is refreshed.
+                window.localStorage.setItem("${localStorageKeys.dummyUnusedKey}", null);
                 var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
                 if (redirectUrl) {
                     var originParam = [

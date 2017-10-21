@@ -2,7 +2,7 @@ import * as $ from 'jquery';
 import { attempt, isError, isPlainObject, isNil, isEqual } from 'lodash';
 import { Authenticator, Utilities, Storage, StorageType } from '@microsoft/office-js-helpers';
 import { Strings } from '../strings';
-import { isValidHost } from '../helpers';
+import { isValidHost, ensureFreshLocalStorage } from '../helpers';
 const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 class Environment {
@@ -46,6 +46,8 @@ class Environment {
             let cachedEnvironment = (this.cache.get('environment') || {}) as ICurrentPlaygroundInfo;
             delete cachedEnvironment.runtimeSessionTimestamp;
 
+            ensureFreshLocalStorage();
+
             this._current = {
                 devMode,
                 build,
@@ -56,7 +58,7 @@ class Environment {
 
                 isAddinCommands: false,
                 isTryIt: false,
-                wacUrl: window.localStorage[localStorageKeys.wacUrl] || '',
+                wacUrl: window.localStorage.getItem(localStorageKeys.wacUrl) || '' /* ensureFreshLocalStorage is called above */,
 
                 host: null,
                 platform: null,
@@ -98,7 +100,8 @@ class Environment {
     /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */
     getExperimentationFlagsString(onEmptyReturnDefaults: boolean): string {
         const objectToReturn = (() => {
-            const flagSetInStorage = window.localStorage[localStorageKeys.experimentationFlags];
+            ensureFreshLocalStorage();
+            const flagSetInStorage = window.localStorage.getItem(localStorageKeys.experimentationFlags);
             const flagsOrError: IExperimentationFlags | Error = attempt(() => JSON.parse(flagSetInStorage));
 
             let value = isError(flagsOrError) ? {} : flagsOrError;
@@ -134,7 +137,7 @@ class Environment {
 
         // Reset the local storage just in case, but to stringified object attempt rather than straight-up value,
         // since objectAttempt may have gotten adjusted.
-        window.localStorage[localStorageKeys.experimentationFlags] = JSON.stringify(objectAttempt);
+        window.localStorage.setItem(localStorageKeys.experimentationFlags, JSON.stringify(objectAttempt));
 
         return !identicalToPreviousSettings;
     }

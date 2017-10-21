@@ -1,9 +1,10 @@
-import { storage } from '../helpers';
+import { storage, ensureFreshLocalStorage } from '../helpers';
 const { localStorageKeys } = PLAYGROUND;
 
 class TrustedSnippetManager {
     cleanUpTrustedSnippets(): void {
         try {
+            ensureFreshLocalStorage();
             let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
             for (let snippetId of Object.keys(trustedSnippets)) {
                 if (!storage.snippets.get(snippetId)) {
@@ -28,6 +29,7 @@ class TrustedSnippetManager {
         }
 
         try {
+            ensureFreshLocalStorage();
             let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
             if (!trustedSnippets) {
                 trustedSnippets = {};
@@ -40,6 +42,7 @@ class TrustedSnippetManager {
 
     trustSnippet(snippetId: string): void {
         try {
+            ensureFreshLocalStorage();
             let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
             if (!trustedSnippets) {
                 trustedSnippets = {};
@@ -51,6 +54,7 @@ class TrustedSnippetManager {
 
     untrustSnippet(snippetId: string): void {
         try {
+            ensureFreshLocalStorage();
             let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
             delete trustedSnippets[snippetId];
             window.localStorage.setItem(localStorageKeys.trustedSnippets, JSON.stringify(trustedSnippets));

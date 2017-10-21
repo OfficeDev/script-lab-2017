@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterViewInit } from '@angular/core';
-import { environment, storageSize, storage } from '../helpers';
+import { environment, storageSize, storage, ensureFreshLocalStorage } from '../helpers';
 import { Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
 import { attempt, isError, isEqual } from 'lodash';
@@ -95,6 +95,7 @@ export class About implements AfterViewInit {
         this.originalLanguage = this.currentChosenLanguage;
 
         // User can only navigate to localhost if they've sideloaded local manifest
+        ensureFreshLocalStorage();
         let showLocalConfig = (environment.current.config.name === config.local.name ||
             /localhost/.test(window.localStorage.getItem(localStorageKeys.originEnvironmentUrl)));
         if (showLocalConfig) {
@@ -175,6 +176,7 @@ export class About implements AfterViewInit {
             return;
         }
 
+        ensureFreshLocalStorage();
         let originEnvironment = window.localStorage.getItem(localStorageKeys.originEnvironmentUrl);
         let targetEnvironment = config[this.selectedConfig].editorUrl;
 

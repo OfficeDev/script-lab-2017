@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import {
     PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager, ensureFreshLocalStorage
 } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -81,6 +81,7 @@ export class SnippetEffects {
             delete scrubbedSnippet.modified_at;
 
             // Bug #593, stopgap fix until more performant solution is implemented
+            ensureFreshLocalStorage();
             storage.snippets.load();
             if (storage.snippets.contains(scrubbedSnippet.id)) {
                 const originalRawSnippet = storage.snippets.get(scrubbedSnippet.id);

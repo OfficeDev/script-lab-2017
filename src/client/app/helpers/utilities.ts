@@ -230,20 +230,20 @@ export function getElapsedTime(time: number) {
     return new Date().getTime() - time;
 }
 
-export function getNumberFromLocalStorage(key: string): number {
+export function ensureFreshLocalStorage(): void {
     // Due to bug in IE (https://stackoverflow.com/a/40770399),
     // Local Storage may get out of sync across tabs.  To fix this,
     // set a value of some key, and this will ensure that localStorage is refreshed.
     window.localStorage.setItem(PLAYGROUND.localStorageKeys.dummyUnusedKey, null);
+}
+
+export function getNumberFromLocalStorage(key: string): number {
+    ensureFreshLocalStorage();
     return toNumber(window.localStorage.getItem(key) || '0');
 }
 
 export function pushToLogQueue(entry: LogData) {
-    // Due to bug in IE (https://stackoverflow.com/a/40770399),
-    // Local Storage may get out of sync across tabs.  To fix this,
-    // set a value of some key, and this will ensure that localStorage is refreshed.
-    window.localStorage.setItem(PLAYGROUND.localStorageKeys.dummyUnusedKey, null);
-
+    ensureFreshLocalStorage();
     let currentLog = window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
     let prefix = currentLog.length === 0 ? '' : '\n';
     window.localStorage.setItem(PLAYGROUND.localStorageKeys.log,

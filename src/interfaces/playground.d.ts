@@ -147,6 +147,10 @@ interface ICompiledPlaygroundInfo {
         experimentationFlags: string;
         trustedSnippets: string;
 
+        /** Localstorage key for playground language. Will get set both on the client domain
+         * (as expected), and also on the runner domain (due to its use in runner.ts) */
+        language: string;
+
 
         /** The last seen custom functions heartbeat timestamp (i.e., the invisible pane's
          * once per second "I'm still alive" notice) */

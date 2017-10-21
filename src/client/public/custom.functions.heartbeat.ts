@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import { toNumber } from 'lodash';
-import { environment, Messenger, CustomFunctionsMessageType, getCompileCustomFunctionsPayload, pushToLogQueue } from '../app/helpers';
+import { environment, Messenger, CustomFunctionsMessageType, getCompileCustomFunctionsPayload,
+    pushToLogQueue, ensureFreshLocalStorage } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
 const { localStorageKeys } = PLAYGROUND;
 
@@ -81,6 +82,7 @@ function setupMessenger(clientTimestamp: number) {
 }
 
 function getLocalStorageLastUpdateTimestamp(): number {
+    ensureFreshLocalStorage();
     return toNumber(window.localStorage.getItem(localStorageKeys.customFunctionsLastUpdatedCodeTimestamp) || '0');
 }
 
