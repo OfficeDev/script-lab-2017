@@ -19,7 +19,7 @@ const ClientIdParamName: keyof AuthRequestParamData = 'client_id';
 
 let strings: ClientStrings;
 
-tryCatch(() => {
+tryCatch(async () => {
     strings = Strings();
 
     document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect;
@@ -54,11 +54,10 @@ tryCatch(() => {
 
 
     if (authRequestParams.is_office_host) {
-        // Wait for Office.initialize before proceeding with the flow
-        Office.initialize = () => proceedWithAuthInit(authRequestParams);
-    } else {
-        proceedWithAuthInit(authRequestParams);
+        await environment.createPlaygroundHostReadyTimer().promise;
     }
+
+    proceedWithAuthInit(authRequestParams);
 });
 
 function proceedWithAuthInit(authRequest: AuthRequestParamData) {
