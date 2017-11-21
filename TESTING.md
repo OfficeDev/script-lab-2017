@@ -26,4 +26,7 @@
   * Update option should not appear in share menu after importing a gist that you do not own
   * Update option appears in share menu after initial publish of a new gist or a gist that you did not previously own
   * Deleting a gist and then trying to update it via local copy should prompt full refresh
+* Ribbon buttons:
+  * The Script Lab tab is visible with its buttons
+  * The buttons aside from Run and Code open web pages
   
