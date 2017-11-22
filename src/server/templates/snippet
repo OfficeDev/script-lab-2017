@@ -49,7 +49,8 @@
     <script src="{{{this}}}"></script>
 {{/each}}
     <script>
-        ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
+        window.ScriptLab = window.ScriptLab || {};
+        window.ScriptLab._strings = {{{runtimeHelperStringifiedStrings}}};
     </script>
 
 {{#if snippet.scriptReferences.length}}

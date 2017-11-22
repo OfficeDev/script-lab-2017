@@ -55,8 +55,7 @@
     </style>
 
 {{/if}}
-    {{!-- TODO CUSTOM FUNCTIONS: FIX CORS issue with {{{origin}}}/libs/{{{versionedPackageNames_office_js}}}/office.js --}}
-    <script src="https://unpkg.com/@microsoft/office-js@1.1.2-beta-next.0/dist/office.debug.js"></script>
+    <script src="https://appsforoffice.edog.officeapps.live.com/lib/beta/hosted/office.debug.js"></script>
 
     <script>
         Office.initialize = function() {

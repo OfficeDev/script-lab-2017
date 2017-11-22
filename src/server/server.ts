@@ -818,8 +818,7 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
             assets: getFileAsJson('assets.json'),
             versionedPackageNames_office_ui_fabric_js: versionedPackageNames['office-ui-fabric-js'],
             versionedPackageNames_jquery: versionedPackageNames['jquery'],
-            versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom'],
-            versionedPackageNames_office_js: versionedPackageNames['@microsoft/office-js']
+            versionedPackageNames_jquery_resizable_dom: versionedPackageNames['jquery-resizable-dom']
         };
     }
 

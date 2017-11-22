@@ -21,8 +21,6 @@ const versionedPackageNames = getVersionedPackageNames([
     'jquery',
     'jquery-resizable-dom',
     'jsgrid',
-    '@microsoft/office-js' /* Need Office.js temporarily for custom-function support,
-        which is only available on a "1.1.2-beta-next.0" version for now */
 ]);
 
 fs.writeFileSync(path.resolve('./dist/server/versionPackageNames.json'), JSON.stringify(versionedPackageNames));
@@ -167,10 +165,6 @@ module.exports = (prodMode) =>
                 {
                     from: '../../node_modules/jsgrid/dist',
                     to: './libs/' + versionedPackageNames['jsgrid']
-                },
-                {
-                    from: '../../node_modules/@microsoft/office-js/dist',
-                    to: './libs/' + versionedPackageNames['@microsoft/office-js']
                 }
             ]),
             new HtmlWebpackPlugin({
