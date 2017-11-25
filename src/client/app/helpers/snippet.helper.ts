@@ -98,27 +98,54 @@ export function getSnippetDefaults(): ISnippet {
     return defaults;
 }
 
-    /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
-    export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
-        let copy = {};
-        forIn(snippetFields, (fieldType, fieldName) => {
-            if (fieldType & keep) {
-                if (!isUndefined(snippet[fieldName])) {
-                    copy[fieldName] = snippet[fieldName];
-                }
+function scrubCarriageReturns(snippet: ISnippet) {
+    removeCarriageReturns(snippet, 'template');
+    removeCarriageReturns(snippet, 'script');
+    removeCarriageReturns(snippet, 'style');
+    removeCarriageReturns(snippet, 'libraries');
+
+    function removeCarriageReturns(snippet: ISnippet, field: 'template' | 'script' | 'style' | 'libraries') {
+        if (!snippet[field]) {
+            return;
+        }
+
+        if (field === 'libraries') {
+            snippet.libraries = removeCarriageReturnsHelper(snippet.libraries);
+        } else {
+            snippet[field].content = removeCarriageReturnsHelper(snippet[field].content);
+        }
+
+        function removeCarriageReturnsHelper(text) {
+            return text
+                .split('\n')
+                .map(line => line.replace(/\r/, ''))
+                .join('\n');
+        }
+    }
+}
+
+/** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
+export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
+    let copy = {};
+    forIn(snippetFields, (fieldType, fieldName) => {
+        if (fieldType & keep) {
+            if (!isUndefined(snippet[fieldName])) {
+                copy[fieldName] = snippet[fieldName];
             }
-        });
+        }
+    });
 
-        return copy as ISnippet;
-    }
+    return copy as ISnippet;
+}
 
-    export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
-        const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
+export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
+    const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
+    scrubCarriageReturns(snippet);
 
-        return jsyaml.safeDump(snippet, {
-            indent: 4,
-            lineWidth: -1,
-            sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
-            skipInvalid: true
-        });
-    }
+    return jsyaml.safeDump(snippet, {
+        indent: 4,
+        lineWidth: -1,
+        sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
+        skipInvalid: true
+    });
+}

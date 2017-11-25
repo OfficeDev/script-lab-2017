@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 import * as jsyaml from 'js-yaml';
-import { forIn } from 'lodash';
+import { forIn, isUndefined } from 'lodash';
 
 export enum SnippetFieldType {
     /** PUBLIC = Store internally, and also include in copy-to-clipboard */
@@ -64,12 +64,40 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
     language: 1001
 };
 
+function scrubCarriageReturns(snippet: ISnippet) {
+    removeCarriageReturns(snippet, 'template');
+    removeCarriageReturns(snippet, 'script');
+    removeCarriageReturns(snippet, 'style');
+    removeCarriageReturns(snippet, 'libraries');
+
+    function removeCarriageReturns(snippet: ISnippet, field: 'template' | 'script' | 'style' | 'libraries') {
+        if (!snippet[field]) {
+            return;
+        }
+
+        if (field === 'libraries') {
+            snippet.libraries = removeCarriageReturnsHelper(snippet.libraries);
+        } else {
+            snippet[field].content = removeCarriageReturnsHelper(snippet[field].content);
+        }
+
+        function removeCarriageReturnsHelper(text) {
+            return text
+                .split('\n')
+                .map(line => line.replace(/\r/, ''))
+                .join('\n');
+        }
+    }
+}
+
 /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
 export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
     let copy = {};
     forIn(snippetFields, (fieldType, fieldName) => {
         if (fieldType & keep) {
-            copy[fieldName] = snippet[fieldName];
+            if (!isUndefined(snippet[fieldName])) {
+                copy[fieldName] = snippet[fieldName];
+            }
         }
     });
 
@@ -78,6 +106,7 @@ export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): I
 
 export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
     const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
+    scrubCarriageReturns(snippet);
 
     return jsyaml.safeDump(snippet, {
         indent: 4,
