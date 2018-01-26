@@ -149,7 +149,7 @@ registerRoute('get', ['/', '/run', '/compile', '/compile/page', '/compile/snippe
     }, Strings(req), res)
 );
 
-registerRoute('get', ['/compile/custom-functions'], (req, res) => Promise.resolve().then(() => respondWithHtml(res, '')));
+registerRoute('get', ['/compile/custom-functions'], (req, res) => Promise.resolve().then(() => respondWith(res, '', 'text/html')));
 
 /**
  * HTTP GET: /run
@@ -277,7 +277,7 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
     });
 
     timer.stop();
-    return respondWithHtml(res, html);
+    return respondWith(res, html, 'text/html');
 });
 
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
@@ -439,7 +439,7 @@ registerRoute('get', ['/try', '/try/:host', '/try/:host/:type/:id'], (req, res) 
                 wacUrl: decodeURIComponent(req.query.wacUrl || '')
             });
 
-            return respondWithHtml(res, html);
+            return respondWith(res, html, 'text/html');
         });
 });
 
@@ -459,8 +459,23 @@ registerRoute('get', '/version', (req, res) => {
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/snippet/auth',
-    async (req, res) => respondWithHtml(res, (await loadTemplate('snippet-auth'))({}))
+    async (req, res) => respondWith(res, (await loadTemplate('snippet-auth'))({}), 'text/html')
 );
+
+registerRoute('get', '/lib/worker', async (req, res) => {
+    let worker = fs.readFileSync(path.resolve(__dirname, './maker/maker-worker.js')).toString();
+    return respondWith(res, worker, 'application/javascript');
+});
+
+registerRoute('get', '/lib/sync-office-js', async (req, res) => {
+  let syncOfficeJS = [
+      fs.readFileSync(path.resolve(__dirname, './maker/sync-office-js/Office.Runtime.js')).toString(),
+      fs.readFileSync(path.resolve(__dirname, './maker/sync-office-js/office.core.js')).toString(),
+      fs.readFileSync(path.resolve(__dirname, './maker/sync-office-js/Excel.js')).toString()
+  ].join('\n');
+
+  return respondWith(res, syncOfficeJS, 'application/javascript');
+});
 
 
 // HELPERS
@@ -507,7 +522,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
             }
 
             timer.stop();
-            return respondWithHtml(res, html);
+            return respondWith(res, html, 'text/html');
         });
 }
 
@@ -548,7 +563,7 @@ function runCommon(
                 explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull
             });
 
-            return respondWithHtml(res, html);
+            return respondWith(res, html, 'text/html');
         });
 
     /**
@@ -574,10 +589,10 @@ function runCommon(
     }
 }
 
-function respondWithHtml(res: express.Response, html: string) {
+function respondWith(res: express.Response, content: string, type: 'text/html' | 'application/javascript') {
     res.setHeader('Cache-Control', 'no-cache, no-store');
     res.setHeader('X-XSS-Protection', '0');
-    return res.contentType('text/html').status(200).send(replaceTabsWithSpaces(html));
+    return res.contentType(type).status(200).send(replaceTabsWithSpaces(content));
 }
 
 function parseXmlString(xml): Promise<JSON> {
@@ -677,13 +692,13 @@ async function generateSnippetHtmlData(
 
 
     // Helper
-    function getHelperUrlNamesForPart(): Array<'auth-helpers' | 'custom-functions'> {
-        let common: Array<'auth-helpers' | 'custom-functions'> =
+    function getHelperUrlNamesForPart(): Array<'auth-helpers' | 'custom-functions' | 'maker'> {
+        let common: Array<'auth-helpers' | 'custom-functions' | 'maker'> =
             ['auth-helpers'];
 
         switch (whichScriptPart) {
             case 'script':
-                return common;
+                return common.concat(['maker']);
             case 'customFunctions':
                 return common.concat(['custom-functions']);
             default:
@@ -764,7 +779,7 @@ async function errorHandler(res: express.Response, error: Error, strings: Server
     }
 
     const html = await generateErrorHtml(error, strings);
-    return respondWithHtml(res, html);
+    return respondWith(res, html, 'text/html');
 }
 
 async function generateErrorHtml(error: Error, strings: ServerStrings): Promise<string> {
@@ -834,7 +849,7 @@ function loadTemplate<T>(templateName: string) {
 }
 
 let _runnerHashIfAny: string;
-function getRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions') {
+function getRuntimeHelpersUrl(filename: 'auth-helpers' | 'custom-functions' | 'maker' ) {
     if (!_runnerHashIfAny) {
         let assetPaths = getDefaultHandlebarsContext().assets;
         // Some assets, like the runtime helpers, are not compiled with webpack.
