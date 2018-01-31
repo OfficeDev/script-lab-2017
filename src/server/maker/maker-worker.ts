@@ -17,6 +17,7 @@ async function createSession(accessToken: string, documentUrl: string) {
                 reject('Request failed.  Returned status of ' + xhr.status);
             }
         };
+
         xhr.send(null);
     });
 };
@@ -38,6 +39,7 @@ async function closeSession(accessToken: string, documentUrl: string, sessionId:
                 reject('Request failed.  Returned status of ' + xhr.status);
             }
         };
+
         xhr.send(null);
     });
 };
@@ -48,7 +50,7 @@ async function runMakerFunction(accessToken: string, documentUrl: string, sessio
         url: string;
         /** Request headers */
         headers?: { [name: string]: string };
-    }   // TODO: fix?
+    }
 
     let sessionInfo: RequestUrlAndHeaderInfo = {
         url: documentUrl,
@@ -61,6 +63,8 @@ async function runMakerFunction(accessToken: string, documentUrl: string, sessio
     await Excel.run(sessionInfo as any, async ctx => {
         console.log('inside excel.run');
         let makerFunc: (workbook: Excel.Workbook) => any;
+        // TODO:  figure out if there are any reprecussions to using eval
+        // tslint:disable-next-line:no-eval
         eval(`makerFunc = ${makerCode};`);
         makerFunc(ctx.workbook);
     });
@@ -70,9 +74,7 @@ async function runMakerFunction(accessToken: string, documentUrl: string, sessio
 self.addEventListener('message', async (message: MessageEvent) => {
     console.log('----- message posted to worker -----');
 
-    let accessToken: string = message.data[0];
-    let documentUrl: string = message.data[1];
-    let makerCode: string = message.data[2];
+    const [accessToken, documentUrl, makerCode]: [string, string, string] = message.data;
 
     console.log(`documentUrl: ${documentUrl}`);
 
