@@ -74,6 +74,8 @@ self.addEventListener('message', async (message: MessageEvent) => {
     let documentUrl: string = message.data[1];
     let makerCode: string = message.data[2];
 
+    console.log(`documentUrl: ${documentUrl}`);
+
     let sessionId = await createSession(accessToken, documentUrl);
     console.log('session created');
     await runMakerFunction(accessToken, documentUrl, sessionId, makerCode);
