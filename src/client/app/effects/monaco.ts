@@ -38,6 +38,7 @@ export class MonacoEffects {
             let additionalLibraries = [];
             if (tabName === 'script') {
                 additionalLibraries.push(`${location.origin}/libs/auth-helpers.d.ts`);
+                additionalLibraries.push(`${location.origin}/libs/maker.d.ts`);
             }
             else if (tabName === 'customFunctions') {
                 additionalLibraries.push(`${location.origin}/libs/custom-functions.d.ts`);
