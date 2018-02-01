@@ -3,7 +3,7 @@
 module Experimental {
     export module ExcelMaker {
         let _clientId: string;
-        const worker = new Worker('./lib/worker');
+        let worker: Worker;
 
         export function setup(clientId: string) {
             _clientId = clientId;
@@ -12,6 +12,10 @@ module Experimental {
         export function tinker(documentUrl: string, makerCode: (workbook: Excel.Workbook) => any): Promise<void>;
         export function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<void>;
         export async function tinker(arg1: (string | ((workbook: Excel.Workbook) => any)), arg2?: (workbook: Excel.Workbook) => any): Promise<void> {
+            if (!worker) {
+                worker = new Worker('./lib/worker');
+            }
+
             let makerCode: (workbook: Excel.Workbook) => any;
             let documentUrl: string;
             const accessToken = await ScriptLab.getAccessToken(_clientId);
