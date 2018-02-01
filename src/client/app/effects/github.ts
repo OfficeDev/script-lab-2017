@@ -94,11 +94,11 @@ export class GitHubEffects {
     @Effect()
     shareGist$: Observable<Action> = this.actions$
         .ofType(
-            GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST,
-            GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST,
-            GitHub.GitHubActionTypes.UPDATE_GIST
+        GitHub.GitHubActionTypes.SHARE_PRIVATE_GIST,
+        GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST,
+        GitHub.GitHubActionTypes.UPDATE_GIST
         )
-        .mergeMap(action =>  {
+        .mergeMap(action => {
             let { payload, type } = action;
             let { id, name, description, gist, gistOwnerId } = payload;
             let files: IGistFiles = {};
@@ -120,57 +120,58 @@ export class GitHubEffects {
             return (this._github.createOrUpdateGist(
                 description, files, gistId, type === GitHub.GitHubActionTypes.SHARE_PUBLIC_GIST
             )
-            .map((gist: IGist) => ({ type: type, gist: gist, snippetId: id }))
-            .catch(exception => {
-                if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
-                    throw new PlaygroundError(JSON.stringify({ type: type, snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
-                }
-                throw exception;
-            }))
-            .mergeMap(async ({ type, gist, snippetId }) => {
-                let gistUrl = getGistUrl((gist as IGist).id);
-                let messageBody =
-                    type === GitHub.GitHubActionTypes.UPDATE_GIST ?
-                        `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
-                        `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
-                let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
-
-                let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().ok); // the URL should be a hyperlink and the text should wrap
-
-                if (result === Strings().gistSharedDialogViewButton) {
-                    window.open(gistUrl);
-                }
-
-                return { gist: gist as IGist, snippetId: snippetId };
-            })
-            .mergeMap(({ gist, snippetId }) => Observable.from([
-                new GitHub.LoadGistsAction(),
-                new GitHub.ShareSuccessAction(gist),
-                new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
-            )
-            .catch(exception => {
-                let actions: Action[] = [new GitHub.ShareFailedAction(exception)];
-                if (exception instanceof PlaygroundError) {
-                    try {
-                        let message = JSON.parse(exception.message);
-                        if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
-                            actions.push(new Snippet.UpdateInfoAction({id: message.snippetId, gistOwnerId: message.gistOwnerId}));
-                        }
-                    } catch (e) {
-                        return Observable.from(actions);
+                .map((gist: IGist) => ({ type: type, gist: gist, snippetId: id }))
+                .catch(exception => {
+                    if (!gistOwnerId && exception.status >= 400 && exception.status <= 499) {
+                        throw new PlaygroundError(JSON.stringify({ type: type, snippetId: id, gistOwnerId: UNKNOWN_GIST_OWNER_ID }));
                     }
-                }
+                    throw exception;
+                }))
+                .mergeMap(async (item: { type: any, gist: IGist, snippetId: string }) => {
+                    const { type, gist, snippetId } = item;
+                    let gistUrl = getGistUrl((gist as IGist).id);
+                    let messageBody =
+                        type === GitHub.GitHubActionTypes.UPDATE_GIST ?
+                            `${Strings().gistUpdateUrlIsSameAsBefore}\n\n${gistUrl}` :
+                            `${Strings().gistSharedDialogStart}\n\n${gistUrl}\n\n${Strings().gistSharedDialogEnd}`;
+                    let messageTitle = type === GitHub.GitHubActionTypes.UPDATE_GIST ? Strings().gistUpdateSuccess : Strings().gistSharedDialogTitle;
 
-                this._uiEffects.alert(
-                    Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
-                    Strings().gistShareFailedTitle,
-                    Strings().ok);
-                return Observable.from(actions);
-            });
+                    let result = await this._uiEffects.alert(messageBody, messageTitle, Strings().gistSharedDialogViewButton, Strings().ok); // the URL should be a hyperlink and the text should wrap
+
+                    if (result === Strings().gistSharedDialogViewButton) {
+                        window.open(gistUrl);
+                    }
+
+                    return { gist: gist as IGist, snippetId: snippetId };
+                })
+                .mergeMap(({ gist, snippetId }) => Observable.from([
+                    new GitHub.LoadGistsAction(),
+                    new GitHub.ShareSuccessAction(gist),
+                    new Snippet.UpdateInfoAction({ id: snippetId, gist: gist.id, gistOwnerId: gist.owner.login })])
+                )
+                .catch(exception => {
+                    let actions: Action[] = [new GitHub.ShareFailedAction(exception)];
+                    if (exception instanceof PlaygroundError) {
+                        try {
+                            let message = JSON.parse(exception.message);
+                            if (message.type === GitHub.GitHubActionTypes.UPDATE_GIST) {
+                                actions.push(new Snippet.UpdateInfoAction({ id: message.snippetId, gistOwnerId: message.gistOwnerId }));
+                            }
+                        } catch (e) {
+                            return Observable.from(actions);
+                        }
+                    }
+
+                    this._uiEffects.alert(
+                        Strings().gistShareFailedBody + '\n\n' + Strings().reloadPrompt,
+                        Strings().gistShareFailedTitle,
+                        Strings().ok);
+                    return Observable.from(actions);
+                });
         });
 
     @Effect({ dispatch: false })
-    shareCopy$: Observable<Action> = this.actions$
+    shareCopy$: Observable<Action | void> = this.actions$
         .ofType(GitHub.GitHubActionTypes.SHARE_COPY)
         .map(action => action.payload)
         .filter(snippet => !(snippet == null))
@@ -181,7 +182,7 @@ export class GitHubEffects {
                 text: () => {
                     return yaml;
                 }
-            }).on('success', async() => {
+            }).on('success', async () => {
                 await this._uiEffects.alert(Strings().snippetCopiedConfirmation, null, Strings().ok);
                 this._store.dispatch(new GitHub.ShareSuccessAction(null));
             });
@@ -201,7 +202,7 @@ export class GitHubEffects {
             if (Utilities.platform === PlatformType.MAC || Utilities.platform === PlatformType.IOS) {
                 AI.trackEvent('Unsupported share export', { id: snippet.id });
                 this._store.dispatch(this._createShowErrorAction(Strings().snippetExportNotSupported, null));
-                return;
+                return null;
             }
 
             AI.trackEvent('Share export initiated', { id: snippet.id });

@@ -141,7 +141,7 @@ export class SnippetEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })
-    run$: Observable<Action> = this.actions$
+    run$: Observable<Action | void> = this.actions$
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {

@@ -24,7 +24,9 @@
         "typeRoots": [
             "node_modules/@types",
             "src/interfaces"
-        ]
+        ],
+        "skipLibCheck": true,
+        "noStrictGenericChecks": true
     },
     "exclude": [
         "node_modules",

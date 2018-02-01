@@ -247,7 +247,7 @@ class Environment {
             return { cancel: () => { }, promise: Promise.resolve(true) };
         }
 
-        let interval: NodeJS.Timer;
+        let interval: any;
         let cancel: () => void;
 
         let promise: Promise<any> = new Promise((resolve) => {
