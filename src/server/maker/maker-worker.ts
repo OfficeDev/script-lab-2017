@@ -1,5 +1,39 @@
 self.importScripts('sync-office-js'); // import sync office js code
 
+enum MakerWorkerMessageTypes {
+    ConsoleInfo,
+    ConsoleLog,
+    ConsoleError,
+    Output,
+}
+
+interface MakerWorkerMessage {
+    type: MakerWorkerMessageTypes,
+    content: string;
+}
+
+console = {
+    ...console,
+    log: (stuff) => {
+        postMessage({
+            type: MakerWorkerMessageTypes.ConsoleLog,
+            content: stuff
+        });
+    },
+    info: (stuff) => {
+        postMessage({
+            type: MakerWorkerMessageTypes.ConsoleInfo,
+            content: stuff
+        });
+    },
+    error: (stuff) => {
+        postMessage({
+            type: MakerWorkerMessageTypes.ConsoleError,
+            content: stuff
+        });
+    },
+};
+
 async function createSession(accessToken: string, documentUrl: string) {
     return new Promise((resolve: (sessionId: string) => any, reject) => {
         let xhr = new XMLHttpRequest();
@@ -13,8 +47,8 @@ async function createSession(accessToken: string, documentUrl: string) {
                 let response = JSON.parse(xhr.responseText);
                 resolve(response.id);
             } else {
-                console.error('Request failed.  Returned status of ' + xhr.status);
-                reject('Request failed.  Returned status of ' + xhr.status);
+                console.error('Request failed to create session.  Returned status of ' + xhr.status);
+                reject('Request failed to create session.  Returned status of ' + xhr.status);
             }
         };
 
@@ -35,8 +69,8 @@ async function closeSession(accessToken: string, documentUrl: string, sessionId:
             if (xhr.readyState === 4 && xhr.status === 204) {
                 resolve(null);
             } else {
-                console.error('Request failed.  Returned status of ' + xhr.status);
-                reject('Request failed.  Returned status of ' + xhr.status);
+                console.error('Request failed to close session.  Returned status of ' + xhr.status);
+                reject('Request failed to close session.  Returned status of ' + xhr.status);
             }
         };
 
@@ -60,13 +94,13 @@ async function runMakerFunction(accessToken: string, documentUrl: string, sessio
         }
     };
 
-    await Excel.run(sessionInfo as any, async ctx => {
+    return await Excel.run(sessionInfo as any, async ctx => {
         console.log('inside excel.run');
         let makerFunc: (workbook: Excel.Workbook) => any;
         // TODO:  figure out if there are any reprecussions to using eval
         // tslint:disable-next-line:no-eval
         eval(`makerFunc = ${makerCode};`);
-        makerFunc(ctx.workbook);
+        return makerFunc(ctx.workbook);
     });
 };
 
@@ -80,10 +114,14 @@ self.addEventListener('message', async (message: MessageEvent) => {
 
     let sessionId = await createSession(accessToken, documentUrl);
     console.log('session created');
-    await runMakerFunction(accessToken, documentUrl, sessionId, makerCode);
+    let result = await runMakerFunction(accessToken, documentUrl, sessionId, makerCode);
     console.log('maker code finished execution');
     await closeSession(accessToken, documentUrl, sessionId);
     console.log('session closed');
 
     console.log('----- worker finished processing message -----');
+    postMessage({
+        type: MakerWorkerMessageTypes.Output,
+        content: result,
+    });
 });
