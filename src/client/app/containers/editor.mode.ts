@@ -143,7 +143,9 @@ export class EditorMode {
         }
 
         if (isOfficeHost(this.snippet.host)) {
-            if (!isInsideOfficeApp()) {
+            const canRun = isInsideOfficeApp() ||
+                (this.snippet && this.snippet.script.content.indexOf('Experimental.ExcelMaker') >= 0);
+            if (!canRun) {
                 this._store.dispatch(new UI.ShowAlertAction({
                     actions: [this.strings.ok],
                     title: this.strings.snippetNoOfficeTitle,

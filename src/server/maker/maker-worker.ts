@@ -6,15 +6,12 @@ self.importScripts('sync-office-js'); // import sync office js code
 
 // TODO: move these.
 
-enum MakerWorkerMessageTypes {
-    ConsoleInfo,
-    ConsoleLog,
-    ConsoleError,
-    Output,
-}
+const consoleMethods = ['log', 'info', 'error'];
+type ConsoleMethodType = 'log' | 'info' | 'error';
+type MakerWorkerMessageType = ConsoleMethodType | 'result';
 
 interface MakerWorkerMessage {
-    type: MakerWorkerMessageTypes,
+    type: MakerWorkerMessageType,
     content: string;
 }
 
@@ -27,30 +24,56 @@ interface RequestUrlAndHeaderInfo {
 
 
 // TODO:  foreach.
-// TODO:  keep old console too
 
 // By setting "console", overwriting "self.console" which TS thinks is a read-only variable...
+const oldConsole = console;
 console = {
-    ...console,
-    log: (stuff) => {
-        postMessage({
-            type: MakerWorkerMessageTypes.ConsoleLog,
-            content: stuff
-        });
-    },
-    info: (stuff) => {
-        postMessage({
-            type: MakerWorkerMessageTypes.ConsoleInfo,
-            content: stuff
-        });
-    },
-    error: (stuff) => {
-        postMessage({
-            type: MakerWorkerMessageTypes.ConsoleError,
-            content: stuff
-        });
-    },
+    ...oldConsole,
+    log: item => processAndSendMessage(item, 'log'),
+    info: item => processAndSendMessage(item, 'info'),
+    error: item => processAndSendMessage(item, 'error')
 };
+
+function processAndSendMessage(content: any, type: MakerWorkerMessageType) {
+    if (consoleMethods.indexOf(type) >= 0) {
+        oldConsole[type](content);
+    }
+
+    postMessage({
+        type,
+        content: getHappilySerializeableContent()
+    });
+
+
+    // Helper:
+    function getHappilySerializeableContent() {
+        if (typeof content === 'undefined') {
+            return undefined;
+        }
+        if (typeof content === 'string') {
+            return content;
+        }
+
+        try {
+            return JSON.parse(JSON.stringify(content, replaceErrors));
+        } catch (e) {
+            // Just in case
+            return content;
+        }
+
+
+        // Helper:
+        function replaceErrors(key, value) {
+            if (value instanceof Error) {
+                const error = {};
+                Object.getOwnPropertyNames(value).forEach(key => error[key] = value[key]);
+                return error;
+            }
+
+            return value;
+        }
+    }
+}
 
 
 module Experimental {
@@ -121,8 +144,9 @@ module Experimental {
 
                 contexts.forEach(ctx => {
                     try {
-                        var itemsToRemove = ctx.trackedObjects._retrieveAndClearAutoCleanupList();
-                        for (var key in itemsToRemove) {
+                        const itemsToRemove = ctx.trackedObjects._retrieveAndClearAutoCleanupList();
+                        // tslint:disable-next-line:forin
+                        for (const key in itemsToRemove) {
                             ctx.trackedObjects.remove(itemsToRemove[key]);
                         }
 
@@ -201,8 +225,5 @@ self.addEventListener('message', (message: MessageEvent) => {
     // console.log('session closed');
 
     console.log('----- worker finished processing message -----');
-    postMessage({
-        type: MakerWorkerMessageTypes.Output,
-        content: result,
-    });
+    processAndSendMessage(result, 'result');
 });

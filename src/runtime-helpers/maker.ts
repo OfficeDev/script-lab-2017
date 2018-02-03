@@ -3,15 +3,11 @@
 module Experimental {
     export module ExcelMaker {
 
-        enum MakerWorkerMessageTypes {
-            ConsoleInfo,
-            ConsoleLog,
-            ConsoleError,
-            Output,
-        }
+        type ConsoleMethodType = 'log' | 'info' | 'error';
+        type MakerWorkerMessageType = ConsoleMethodType | 'result';
 
         interface MakerWorkerMessage {
-            type: MakerWorkerMessageTypes,
+            type: MakerWorkerMessageType,
             content: string;
         }
 
@@ -44,17 +40,12 @@ module Experimental {
 
                 worker.onmessage = (message: MessageEvent) => {
                     let msg: MakerWorkerMessage = message.data;
-                    if (msg.type === MakerWorkerMessageTypes.Output) {
+                    if (msg.type === 'result') {
                         resolve(msg.content);
-                    } else if (msg.type === MakerWorkerMessageTypes.ConsoleInfo) {
-                        console.info(msg.content);
-                    } else if (msg.type === MakerWorkerMessageTypes.ConsoleLog) {
-                        console.log(msg.content);
-                    } else if (msg.type === MakerWorkerMessageTypes.ConsoleError) {
-                        console.error(msg.content);
+                        return;
                     }
+                    console[msg.type](msg.content);
                 };
-                // TODO:  ensure that you're returning a Promise once the window completes
 
                 worker.postMessage([accessToken, null, arg1.toString()]);
 
