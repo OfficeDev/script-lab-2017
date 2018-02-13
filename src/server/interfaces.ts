@@ -45,6 +45,7 @@ export interface IRunnerHandlebarsContext {
 
     strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;
+    isInMakerMode: boolean;
 }
 
 export interface ICustomFunctionsRunnerHandlebarsContext {

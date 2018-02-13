@@ -20,7 +20,7 @@ import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.g
 import { compileScript } from './core/snippet.generator';
 import { processLibraries } from './core/libraries.processor';
 import { ApplicationInsights } from './core/ai.helper';
-import { getShareableYaml } from './core/snippet.helper';
+import { getShareableYaml, isMakerScript } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
@@ -253,7 +253,8 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
                         libraries: snippet.libraries,
                         style: null,
                         template: null,
-                        host
+                        host,
+                        isMakerScript: isMakerScript(snippet as ISnippet)
                     },
                     'customFunctions', false /*isExternalExport*/, strings);
             })
@@ -385,7 +386,7 @@ registerRoute('post', '/export', (req, res) => {
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
         generateSnippetHtmlData(
-            { scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) },
+            {scriptToCompile: snippet.script, isMakerScript: isMakerScript(snippet), ...extractCommonCompileData(snippet) },
             'script',
             true /*isExternalExport*/, strings),
         generateReadme(snippet),
@@ -483,13 +484,16 @@ registerRoute('get', '/lib/sync-office-js', async (req, res) => {
 function compileSnippetCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
     const { snippet, returnUrl } = data;
+
+    const isInMakerMode = isMakerScript(snippet);
+
     let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
 
     const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
 
     const strings = Strings(req);
 
-    let snippetDataToCompile = { scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) };
+    let snippetDataToCompile = { scriptToCompile: snippet.script, isMakerScript: isInMakerMode, ...extractCommonCompileData(snippet) };
 
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
@@ -510,6 +514,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
                         lastModified: snippet.modified_at,
                         content: base64encode(html),
                     },
+                    // officeJS: isInMakerMode ? '' : snippetHtmlData.officeJS,
                     officeJS: snippetHtmlData.officeJS,
                     returnUrl: returnUrl,
                     host: snippet.host,
@@ -517,7 +522,8 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
-                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
+                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+                    isInMakerMode
                 });
             }
 
@@ -553,14 +559,15 @@ function runCommon(
                 snippet: {
                     id: id
                 },
-                officeJS: determineOfficeJS(options.query, host),
+                officeJS: determineOfficeJS(options.query, host, null),
                 returnUrl: '',
                 host: host,
                 isTrustedSnippet: false, /* Default to snippet not being trusted */
                 initialLoadSubtitle: strings.playgroundTagline,
                 headerTitle: strings.scriptLabRunner,
                 strings,
-                explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull
+                explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull,
+                isInMakerMode: false // FIXME: might need a better solution for going to runner directly.
             });
 
             return respondWith(res, html, 'text/html');
@@ -570,9 +577,13 @@ function runCommon(
      * Helper function to return the OfficeJS URL (from query parameter,
      * or from guessing based on host), or empty string
      **/
-    function determineOfficeJS(query: { [key: string]: string }, host: string): string {
+    function determineOfficeJS(query: { [key: string]: string }, host: string, snippet: ISnippet): string {
         const queryParamsLowercase: { officejs: string } = <any>{};
         forIn(query, (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
+
+        // if (snippet && isMakerScript(snippet)){
+        //     return '';
+        // }
 
         if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
             return queryParamsLowercase.officejs.trim();
@@ -646,6 +657,7 @@ async function generateSnippetHtmlData(
         style: IContentLanguagePair;
         template: IContentLanguagePair;
         host: string;
+        isMakerScript: boolean;
     },
     whichScriptPart: 'script' | 'customFunctions',
     isExternalExport: boolean,
@@ -665,6 +677,11 @@ async function generateSnippetHtmlData(
 
     let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries);
 
+    // debugger;
+    if (compileData.isMakerScript) {
+        officeJS = '';
+    }
+    // TODO:  in maker world, don't include Office.js
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
             name: compileData.name,

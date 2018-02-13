@@ -22,6 +22,7 @@ interface InitializationParams {
         lastModified: string;
     }
     explicitlySetDisplayLanguageOrNull: string;
+    isInMakerMode: boolean;
 }
 
 (() => {
@@ -63,7 +64,9 @@ interface InitializationParams {
                 // Nothing to wait on, playground is ready:
                 environment.setPlaygroundHostIsReady();
             }
-            else if (params.currentSnippet.officeJS) {
+            else if (params.currentSnippet.officeJS && !params.isInMakerMode) {
+                // If Office.js is specified, BUT in maker mode, don't load Office.js.
+                // Maker will already load its own copy of Excel.js
                 let script = document.createElement('script');
                 script.src = params.currentSnippet.officeJS;
                 script.addEventListener('load', (event) => {
@@ -88,7 +91,7 @@ interface InitializationParams {
         }
     };
 
-    async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
+    async function initializeRunnerHelper(initialParams: InitializationParams) {
         // Even though already did a partial initialization, do a more thorough
         // one here that will let the user choose the host, if one isn't specified:
         await environment.initialize({ host: initialParams.host });

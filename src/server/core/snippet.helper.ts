@@ -115,3 +115,7 @@ export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippe
         skipInvalid: true
     });
 }
+
+export function isMakerScript(snippet: ISnippet) {
+    return snippet.script.content.indexOf('Experimental.ExcelMaker') >= 0;
+}

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
+import { environment, isOfficeHost, isInsideOfficeApp, isMakerScript } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
@@ -143,8 +143,7 @@ export class EditorMode {
         }
 
         if (isOfficeHost(this.snippet.host)) {
-            const canRun = isInsideOfficeApp() ||
-                (this.snippet && this.snippet.script.content.indexOf('Experimental.ExcelMaker') >= 0);
+            const canRun = isInsideOfficeApp() || (this.snippet && isMakerScript(this.snippet));
             if (!canRun) {
                 this._store.dispatch(new UI.ShowAlertAction({
                     actions: [this.strings.ok],
