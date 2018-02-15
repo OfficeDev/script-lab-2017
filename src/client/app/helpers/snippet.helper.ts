@@ -99,8 +99,8 @@ export function getSnippetDefaults(): ISnippet {
     return defaults;
 }
 
-export function isMakerScript(snippet: ISnippet) {
-    return snippet.script.content.indexOf('Experimental.ExcelMaker') >= 0;
+export function isMakerScript(script: IContentLanguagePair) {
+    return script.content.indexOf('Experimental.ExcelMaker') >= 0;
 }
 
 function scrubCarriageReturns(snippet: ISnippet) {

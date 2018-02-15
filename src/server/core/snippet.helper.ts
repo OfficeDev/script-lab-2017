@@ -116,6 +116,6 @@ export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippe
     });
 }
 
-export function isMakerScript(snippet: ISnippet) {
-    return snippet.script.content.indexOf('Experimental.ExcelMaker') >= 0;
+export function isMakerScript(script: IContentLanguagePair) {
+    return script.content.indexOf('Experimental.ExcelMaker') >= 0;
 }

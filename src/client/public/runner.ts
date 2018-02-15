@@ -3,13 +3,18 @@ import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
 import { generateUrl, processLibraries, environment, instantiateRibbon,
-    setUpMomentJsDurationDefaults } from '../app/helpers';
+    setUpMomentJsDurationDefaults,
+    isMakerScript,
+    isInsideOfficeApp} from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
 import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 
 import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
+
+// Must match the value in "server.ts"
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = "<none>";
 
 interface InitializationParams {
     host: string;
@@ -22,7 +27,6 @@ interface InitializationParams {
         lastModified: string;
     }
     explicitlySetDisplayLanguageOrNull: string;
-    isInMakerMode: boolean;
 }
 
 (() => {
@@ -64,9 +68,7 @@ interface InitializationParams {
                 // Nothing to wait on, playground is ready:
                 environment.setPlaygroundHostIsReady();
             }
-            else if (params.currentSnippet.officeJS && !params.isInMakerMode) {
-                // If Office.js is specified, BUT in maker mode, don't load Office.js.
-                // Maker will already load its own copy of Excel.js
+            else if (isRealOfficeJsReference(params.currentSnippet.officeJS)) {
                 let script = document.createElement('script');
                 script.src = params.currentSnippet.officeJS;
                 script.addEventListener('load', (event) => {
@@ -217,7 +219,8 @@ interface InitializationParams {
         };
 
         (window as any).scriptRunnerEndInit = () => {
-            if (officeJS) {
+            // if (isRealOfficeJsReference(officeJS)) {
+            if (officeJS && officeJS !== "<none>" && Office) {
                 // Call Office.initialize(), which now initializes the snippet.
                 // The parameter, initializationReason, is not used in the playground.
                 Office.initialize(null /*initializationReason*/);
@@ -392,8 +395,9 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
-        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
+        debugger;
 
         currentSnippet = {
             id: snippet.id,
@@ -417,7 +421,7 @@ interface InitializationParams {
         $('#header-refresh').attr('href', refreshUrl);
 
         let replacedSuccessfully = replaceSnippetIframe(
-            html, processLibraries(snippet.libraries).officeJS, isTrustedSnippet);
+            html, processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS, isTrustedSnippet);
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
@@ -527,6 +531,10 @@ interface InitializationParams {
         } catch (e) {
             return false;
         }
+    }
+
+    function isRealOfficeJsReference(officeJS: string) {
+        return officeJS && officeJS !== EXPLICIT_NONE_OFFICE_JS_REFERENCE;
     }
 
 })();

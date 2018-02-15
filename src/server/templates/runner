@@ -201,8 +201,7 @@
                 id: '{{{snippet.id}}}',
                 officeJS: '{{{officeJS}}}',
             },
-            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
-            isInMakerMode: {{{isInMakerMode}}}
+            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
         });
     </script>
 </body>

@@ -143,7 +143,7 @@ export class EditorMode {
         }
 
         if (isOfficeHost(this.snippet.host)) {
-            const canRun = isInsideOfficeApp() || (this.snippet && isMakerScript(this.snippet));
+            const canRun = isInsideOfficeApp() || (this.snippet && isMakerScript(this.snippet.script));
             if (!canRun) {
                 this._store.dispatch(new UI.ShowAlertAction({
                     actions: [this.strings.ok],

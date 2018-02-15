@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
 import { storage, environment, applyTheme, post,
-    trustedSnippetManager, setUpMomentJsDurationDefaults } from '../app/helpers';
+    trustedSnippetManager, setUpMomentJsDurationDefaults, isInsideOfficeApp } from '../app/helpers';
 import { Strings, getDisplayLanguage } from '../app/strings';
 import '../assets/styles/extras.scss';
 
@@ -156,7 +156,8 @@ export class Gallery {
         const state: IRunnerState = {
             snippet: { ...snippet, ...overrides },
             returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`,
-            displayLanguage: getDisplayLanguage()
+            displayLanguage: getDisplayLanguage(),
+            isInsideOfficeApp: isInsideOfficeApp()
         };
         const data = JSON.stringify(state);
         const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);

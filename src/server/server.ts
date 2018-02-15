@@ -26,6 +26,7 @@ import {
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
+import { isInsideOfficeApp } from '../client/app/helpers/index';
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
@@ -42,6 +43,9 @@ const SCRIPT_LAB_STORE_ID = 'wa104380862';
 
 const ONE_HOUR_MS = 3600000;
 const THREE_HOUR_MS = 10800000;
+
+// Must match the value in "runner.ts"
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = "<none>";
 
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
@@ -253,8 +257,7 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
                         libraries: snippet.libraries,
                         style: null,
                         template: null,
-                        host,
-                        isMakerScript: isMakerScript(snippet as ISnippet)
+                        host
                     },
                     'customFunctions', false /*isExternalExport*/, strings);
             })
@@ -386,7 +389,7 @@ registerRoute('post', '/export', (req, res) => {
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
         generateSnippetHtmlData(
-            {scriptToCompile: snippet.script, isMakerScript: isMakerScript(snippet), ...extractCommonCompileData(snippet) },
+            {scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) },
             'script',
             true /*isExternalExport*/, strings),
         generateReadme(snippet),
@@ -483,9 +486,7 @@ registerRoute('get', '/lib/sync-office-js', async (req, res) => {
 
 function compileSnippetCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
-    const { snippet, returnUrl } = data;
-
-    const isInMakerMode = isMakerScript(snippet);
+    const { snippet, returnUrl, isInsideOfficeApp } = data;
 
     let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
 
@@ -493,7 +494,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
 
     const strings = Strings(req);
 
-    let snippetDataToCompile = { scriptToCompile: snippet.script, isMakerScript: isInMakerMode, ...extractCommonCompileData(snippet) };
+    let snippetDataToCompile = { scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) };
 
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
@@ -507,6 +508,11 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
 
             let html = snippetHtmlData.html;
 
+            let officeJS = snippetHtmlData.officeJS;
+            if (isMakerScript(snippet.script) && !isInsideOfficeApp) {
+                officeJS = EXPLICIT_NONE_OFFICE_JS_REFERENCE;
+            }
+
             if (wrapWithRunnerChrome) {
                 html = runnerHtmlGenerator({
                     snippet: {
@@ -514,16 +520,14 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
                         lastModified: snippet.modified_at,
                         content: base64encode(html),
                     },
-                    // officeJS: isInMakerMode ? '' : snippetHtmlData.officeJS,
-                    officeJS: snippetHtmlData.officeJS,
+                    officeJS,
                     returnUrl: returnUrl,
                     host: snippet.host,
                     isTrustedSnippet,
                     initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
                     headerTitle: snippet.name,
                     strings,
-                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-                    isInMakerMode
+                    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req)
                 });
             }
 
@@ -559,15 +563,14 @@ function runCommon(
                 snippet: {
                     id: id
                 },
-                officeJS: determineOfficeJS(options.query, host, null),
+                officeJS: determineOfficeJS(options.query, host),
                 returnUrl: '',
                 host: host,
                 isTrustedSnippet: false, /* Default to snippet not being trusted */
                 initialLoadSubtitle: strings.playgroundTagline,
                 headerTitle: strings.scriptLabRunner,
                 strings,
-                explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull,
-                isInMakerMode: false // FIXME: might need a better solution for going to runner directly.
+                explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull
             });
 
             return respondWith(res, html, 'text/html');
@@ -577,13 +580,9 @@ function runCommon(
      * Helper function to return the OfficeJS URL (from query parameter,
      * or from guessing based on host), or empty string
      **/
-    function determineOfficeJS(query: { [key: string]: string }, host: string, snippet: ISnippet): string {
+    function determineOfficeJS(query: { [key: string]: string }, host: string): string {
         const queryParamsLowercase: { officejs: string } = <any>{};
         forIn(query, (value, key) => queryParamsLowercase[key.toLowerCase()] = value);
-
-        // if (snippet && isMakerScript(snippet)){
-        //     return '';
-        // }
 
         if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
             return queryParamsLowercase.officejs.trim();
@@ -657,7 +656,6 @@ async function generateSnippetHtmlData(
         style: IContentLanguagePair;
         template: IContentLanguagePair;
         host: string;
-        isMakerScript: boolean;
     },
     whichScriptPart: 'script' | 'customFunctions',
     isExternalExport: boolean,
@@ -675,13 +673,8 @@ async function generateSnippetHtmlData(
         throw e;
     }
 
-    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries);
+    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries, isMakerScript(compileData.scriptToCompile), isInsideOfficeApp());
 
-    // debugger;
-    if (compileData.isMakerScript) {
-        officeJS = '';
-    }
-    // TODO:  in maker world, don't include Office.js
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
             name: compileData.name,
