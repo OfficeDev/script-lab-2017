@@ -1,6 +1,14 @@
 /* tslint:disable:no-namespace */
 self.importScripts('sync-office-js'); // import sync office js code
 
+const VERBOSE_LOG = false;
+
+function ifVerbose(callback: () => void) {
+    if (VERBOSE_LOG) {
+        callback();
+    }
+}
+
 // TODO: import any script that the user feels like.
 
 
@@ -49,7 +57,6 @@ function processAndSendMessage(content: any, type: MakerWorkerMessageType) {
         type,
         content: getHappilySerializeableContent()
     });
-
 
     // Helper:
     function getHappilySerializeableContent() {
@@ -214,21 +221,21 @@ module Experimental {
 
 
 self.addEventListener('message', (message: MessageEvent) => {
-    console.log('----- message posted to worker -----');
-
+    ifVerbose(() => console.log('----- message posted to worker -----'));
 
     const {accessToken, activeDocumentUrl, makerCode}: ExecuteMakerScriptMessage = message.data;
 
     Experimental.ExcelMaker.setAccessToken(accessToken);
     Experimental.ExcelMaker.setActiveDocumentUrl(activeDocumentUrl);
 
-    console.log(`documentUrl: ${activeDocumentUrl}`);
+    ifVerbose(() => console.log(`documentUrl: ${activeDocumentUrl}`));
 
     let result = Experimental.ExcelMaker._Internal.runMakerFunction(makerCode);
 
-    console.log('maker code finished execution');
+    ifVerbose(() => {
+        console.log('maker code finished execution');
+        console.log('----- worker finished processing message -----');
+    });
 
-
-    console.log('----- worker finished processing message -----');
     processAndSendMessage(result, 'result');
 });
