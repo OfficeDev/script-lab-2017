@@ -26,7 +26,6 @@ import {
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
-import { isInsideOfficeApp } from '../client/app/helpers/index';
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
@@ -259,7 +258,7 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
                         template: null,
                         host
                     },
-                    'customFunctions', false /*isExternalExport*/, strings);
+                    'customFunctions', false /*isExternalExport*/, strings, true /*isInsideOffice*/);
             })
         )).map(result => result.succeeded ? base64encode(result.html) : null);
 
@@ -391,7 +390,7 @@ registerRoute('post', '/export', (req, res) => {
         generateSnippetHtmlData(
             {scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) },
             'script',
-            true /*isExternalExport*/, strings),
+            true /*isExternalExport*/, strings, true /*isInsideOffice*/),
         generateReadme(snippet),
         isOfficeHost(snippet.host) ?
             generateManifest(snippet, additionalFields, filenames.html, strings) : null
@@ -499,7 +498,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippetDataToCompile, 'script', false /*isExternalExport*/, strings),
+        generateSnippetHtmlData(snippetDataToCompile, 'script', false /*isExternalExport*/, strings, isInsideOfficeApp),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
         .then(values => {
@@ -659,7 +658,8 @@ async function generateSnippetHtmlData(
     },
     whichScriptPart: 'script' | 'customFunctions',
     isExternalExport: boolean,
-    strings: ServerStrings
+    strings: ServerStrings,
+    isInsideOfficeApp: boolean,
 ): Promise<{ succeeded: boolean; html: string, officeJS: string }> {
 
     let script: string;
@@ -673,7 +673,12 @@ async function generateSnippetHtmlData(
         throw e;
     }
 
-    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries, isMakerScript(compileData.scriptToCompile), isInsideOfficeApp());
+    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries, isMakerScript(compileData.scriptToCompile), isInsideOfficeApp);
+
+    let shouldPutSnippetIntoOfficeInitialize = false;
+    if (officeJS && officeJS != EXPLICIT_NONE_OFFICE_JS_REFERENCE) {
+        shouldPutSnippetIntoOfficeInitialize = true;
+    }
 
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
@@ -694,7 +699,8 @@ async function generateSnippetHtmlData(
 
         editorUrl: currentConfig.editorUrl,
         runtimeHelperStringifiedStrings: JSON.stringify(
-            strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
+            strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */,
+        shouldPutSnippetIntoOfficeInitialize
     };
 
     const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');

@@ -156,7 +156,7 @@ export class SnippetEffects {
                 const state: IRunnerState = {
                     snippet: snippet,
                     displayLanguage: getDisplayLanguage(),
-                    isInsideOfficeApp: isInsideOfficeApp()
+                    isInsideOfficeApp: isInsideOfficeApp(),
                 };
                 const data = JSON.stringify(state);
                 const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);

@@ -16,6 +16,7 @@ export interface ISnippetHandlebarsContext {
     runtimeHelpersUrls: Array<string>;
     editorUrl: string;
     runtimeHelperStringifiedStrings: string;
+    shouldPutSnippetIntoOfficeInitialize: boolean;
 }
 
 export interface IRunnerHandlebarsContext {

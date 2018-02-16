@@ -397,7 +397,6 @@ interface InitializationParams {
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
         const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
-        debugger;
 
         currentSnippet = {
             id: snippet.id,

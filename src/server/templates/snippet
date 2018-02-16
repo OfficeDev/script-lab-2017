@@ -69,7 +69,7 @@
         window.parent.scriptRunnerBeginInit();
 
         {{/if}}
-        {{#if Office }}
+        {{#if shouldPutSnippetIntoOfficeInitialize}}
         Office.initialize = function() {
             {{{indent snippet.script 3}}}
         };
