@@ -219,8 +219,7 @@ interface InitializationParams {
         };
 
         (window as any).scriptRunnerEndInit = () => {
-            // if (isRealOfficeJsReference(officeJS)) {
-            if (officeJS && officeJS !== "<none>" && Office) {
+            if (isRealOfficeJsReference(officeJS) && Office) {
                 // Call Office.initialize(), which now initializes the snippet.
                 // The parameter, initializationReason, is not used in the playground.
                 Office.initialize(null /*initializationReason*/);
