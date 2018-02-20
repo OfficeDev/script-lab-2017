@@ -14,7 +14,7 @@ import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
 
 // Must match the value in "server.ts"
-const EXPLICIT_NONE_OFFICE_JS_REFERENCE = "<none>";
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 
 interface InitializationParams {
     host: string;

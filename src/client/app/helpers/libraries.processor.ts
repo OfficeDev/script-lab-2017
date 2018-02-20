@@ -17,7 +17,7 @@ export function processLibraries(libraries: string, isMakerScript: boolean, isIn
     libraries.split('\n').forEach(processLibrary);
 
     if (isMakerScript && !isInsideOffice) {
-        officeJS = "<none>";
+        officeJS = '<none>';
     }
 
     return { linkReferences, scriptReferences, officeJS };
