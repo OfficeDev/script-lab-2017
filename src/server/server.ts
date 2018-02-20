@@ -44,7 +44,7 @@ const ONE_HOUR_MS = 3600000;
 const THREE_HOUR_MS = 10800000;
 
 // Must match the value in "runner.ts"
-const EXPLICIT_NONE_OFFICE_JS_REFERENCE = "<none>";
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
@@ -676,7 +676,7 @@ async function generateSnippetHtmlData(
     let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries, isMakerScript(compileData.scriptToCompile), isInsideOfficeApp);
 
     let shouldPutSnippetIntoOfficeInitialize = false;
-    if (officeJS && officeJS != EXPLICIT_NONE_OFFICE_JS_REFERENCE) {
+    if (officeJS && officeJS !== EXPLICIT_NONE_OFFICE_JS_REFERENCE) {
         shouldPutSnippetIntoOfficeInitialize = true;
     }
 

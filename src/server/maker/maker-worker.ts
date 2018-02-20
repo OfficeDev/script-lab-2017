@@ -112,7 +112,7 @@ module Experimental {
             }
 
             export function runMakerFunction(makerCode: string) {
-                var result: any;
+                let result: any;
 
                 // TODO EVENTUALLY: figure out if eval is evil.
 
@@ -211,7 +211,7 @@ module Experimental {
 
         export function getActiveWorkbook(): Excel.Workbook {
             if (_Internal._activeDocumentUrl === null) {
-                throw new Error('You cannot use getActiveWorkbook() outside of Excel.')
+                throw new Error('You cannot use getActiveWorkbook() outside of Excel.');
             }
             return _Internal.getWorkbook(_Internal._activeDocumentUrl);
         }
