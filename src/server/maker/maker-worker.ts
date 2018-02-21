@@ -27,6 +27,7 @@ interface ExecuteMakerScriptMessage {
     accessToken: string;
     makerCode: string;
     activeDocumentUrl: string;
+    scriptReferences: string[];
 }
 
 interface RequestUrlAndHeaderInfo {
@@ -218,12 +219,27 @@ module Experimental {
     }
 }
 
+function importScriptsFromReferences(scriptReferences: string[]) {
+    debugger;
+    scriptReferences.forEach(script => {
+        if (script) {
+            try {
+                ifVerbose(() => console.log(`attempting to load ${script}`));
+                self.importScripts(script);
+            } catch (error) {
+                console.error(`Failed to load '${script}' for tinker() block!`);
+            }
+        }
+    })
+}
 
 
 self.addEventListener('message', (message: MessageEvent) => {
     ifVerbose(() => console.log('----- message posted to worker -----'));
 
-    const {accessToken, activeDocumentUrl, makerCode}: ExecuteMakerScriptMessage = message.data;
+    const {accessToken, activeDocumentUrl, makerCode, scriptReferences}: ExecuteMakerScriptMessage = message.data;
+
+    importScriptsFromReferences(scriptReferences);
 
     Experimental.ExcelMaker.setAccessToken(accessToken);
     Experimental.ExcelMaker.setActiveDocumentUrl(activeDocumentUrl);

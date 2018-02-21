@@ -200,6 +200,7 @@
                 {{/if}}
                 id: '{{{snippet.id}}}',
                 officeJS: '{{{officeJS}}}',
+                isMakerScript: {{{snippet.isMakerScript}}}
             },
             explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}'
         });

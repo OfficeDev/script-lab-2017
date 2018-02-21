@@ -506,9 +506,9 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
             const runnerHtmlGenerator: (context: IRunnerHandlebarsContext) => string = values[1];
 
             let html = snippetHtmlData.html;
-
+            const isMaker = isMakerScript(snippet.script);
             let officeJS = snippetHtmlData.officeJS;
-            if (isMakerScript(snippet.script) && !isInsideOfficeApp) {
+            if (isMaker && !isInsideOfficeApp) {
                 officeJS = EXPLICIT_NONE_OFFICE_JS_REFERENCE;
             }
 
@@ -518,6 +518,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
                         id: snippet.id,
                         lastModified: snippet.modified_at,
                         content: base64encode(html),
+                        isMakerScript: isMaker
                     },
                     officeJS,
                     returnUrl: returnUrl,
@@ -560,7 +561,8 @@ function runCommon(
         .then(runnerHtmlGenerator => {
             const html = runnerHtmlGenerator({
                 snippet: {
-                    id: id
+                    id: id,
+                    isMakerScript: false
                 },
                 officeJS: determineOfficeJS(options.query, host),
                 returnUrl: '',

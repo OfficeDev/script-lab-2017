@@ -2,7 +2,6 @@
 
 module Experimental {
     export module ExcelMaker {
-
         type ConsoleMethodType = 'log' | 'info' | 'error';
         type MakerWorkerMessageType = ConsoleMethodType | 'result';
 
@@ -15,13 +14,26 @@ module Experimental {
             accessToken: string;
             makerCode: string;
             activeDocumentUrl: string;
+            scriptReferences: string[];
         }
 
         let _clientId: string;
+        let _scriptReferences: string[];
         let worker: Worker;
 
         export declare function getWorkbook(workbookUrl: string): Excel.Workbook;
         export declare function getActiveWorkbook(): Excel.Workbook;
+
+        // todo figure out if this method can be hidden from intellisense
+        /** Initializes the script references to pass to the worker.
+         *  DO NOT CALL THIS METHOD, INTERNAL USE ONLY.
+         * @param scriptReferences
+         */
+        export function _init(params: {
+            scriptReferences: string[]
+        }) {
+            _scriptReferences = params.scriptReferences;
+        };
 
         export function setup(clientId: string) {
             _clientId = clientId;
@@ -54,7 +66,8 @@ module Experimental {
                 worker.postMessage({
                     accessToken,
                     makerCode: makerCode.toString(),
-                    activeDocumentUrl
+                    activeDocumentUrl,
+                    scriptReferences: _scriptReferences
                 });
             });
         }

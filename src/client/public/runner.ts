@@ -2,10 +2,15 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries, environment, instantiateRibbon,
+import {
+    generateUrl, 
+    processLibraries, 
+    environment, 
+    instantiateRibbon,
     setUpMomentJsDurationDefaults,
     isMakerScript,
-    isInsideOfficeApp} from '../app/helpers';
+    isInsideOfficeApp
+} from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
 import { loadFirebug, officeNamespacesForIframe } from './runner.common';
@@ -25,6 +30,7 @@ interface InitializationParams {
         officeJS: string;
         id: string;
         lastModified: string;
+        isMakerScript: boolean;
     }
     explicitlySetDisplayLanguageOrNull: string;
 }
@@ -39,7 +45,7 @@ interface InitializationParams {
     let returnUrl = '';
     let host: string;
 
-    let currentSnippet: { id: string, lastModified: number, officeJS: string };
+    let currentSnippet: { id: string, lastModified: number, officeJS: string, isMakerScript: boolean };
 
     const defaultIsListeningTo = {
         snippetSwitching: true,
@@ -150,7 +156,12 @@ interface InitializationParams {
             // so that can keep adding the snippet frame relative to its position
             $snippetContent.text('');
 
-            replaceSnippetIframe(atob(snippetHtml), initialParams.currentSnippet.officeJS, isTrustedSnippet);
+            replaceSnippetIframe({
+                html: atob(snippetHtml),
+                officeJS: initialParams.currentSnippet.officeJS,
+                isTrustedSnippet,
+                isMaker: initialParams.currentSnippet.isMakerScript
+            });
         }
 
         let runnerUrlWithCorrectPrefix = (() => {
@@ -176,7 +187,9 @@ interface InitializationParams {
 
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
-    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): boolean {
+    function replaceSnippetIframe(params: { html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }): boolean {
+        const { html, officeJS, isTrustedSnippet, isMaker } = params;
+
         showHeader();
 
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
@@ -201,9 +214,19 @@ interface InitializationParams {
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
 
-        (window as any).scriptRunnerBeginInit = () => {
+        (window as any).scriptRunnerBeginInit = (options: { scriptReferences: string[] } = { scriptReferences: [] }) => {
             (contentWindow as any).console = window.console;
             contentWindow.onerror = (...args) => console.error(args);
+
+            if (!options.scriptReferences) {
+                options.scriptReferences = [];
+            }
+
+            if (isMaker) {
+                ((contentWindow as any).Experimental.ExcelMaker as any)._init({
+                    scriptReferences: options.scriptReferences
+                });
+            }
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
@@ -394,13 +417,15 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
-        const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
+        const isMaker = isMakerScript(snippet.script);
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
         currentSnippet = {
             id: snippet.id,
             lastModified: snippet.modified_at,
-            officeJS: desiredOfficeJS
+            officeJS: desiredOfficeJS,
+            isMakerScript: isMaker
         };
 
         isListeningTo.currentSnippetContentChange = true;
@@ -418,8 +443,8 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        let replacedSuccessfully = replaceSnippetIframe(
-            html, processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS, isTrustedSnippet);
+        const officeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS;
+        let replacedSuccessfully = replaceSnippetIframe({ html, officeJS, isTrustedSnippet, isMaker });
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;

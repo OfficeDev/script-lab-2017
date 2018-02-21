@@ -5,7 +5,7 @@ export interface ISnippetHandlebarsContext {
         linkReferences;
         style: string;
         template: string;
-        scriptReferences;
+        scriptReferences: string[];
         script: string;
     };
 
@@ -29,6 +29,8 @@ export interface IRunnerHandlebarsContext {
 
         /** Snippet contents (or empty, if want to read it off of the ID using the heartbeat) */
         content?: string;
+
+        isMakerScript: boolean;
     }
 
     host: string;
