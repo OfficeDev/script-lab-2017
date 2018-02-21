@@ -220,7 +220,6 @@ module Experimental {
 }
 
 function importScriptsFromReferences(scriptReferences: string[]) {
-    debugger;
     scriptReferences.forEach(script => {
         if (script) {
             try {
@@ -230,7 +229,7 @@ function importScriptsFromReferences(scriptReferences: string[]) {
                 console.error(`Failed to load '${script}' for tinker() block!`);
             }
         }
-    })
+    });
 }
 
 

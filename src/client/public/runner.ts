@@ -3,9 +3,9 @@ import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
 import {
-    generateUrl, 
-    processLibraries, 
-    environment, 
+    generateUrl,
+    processLibraries,
+    environment,
     instantiateRibbon,
     setUpMomentJsDurationDefaults,
     isMakerScript,
