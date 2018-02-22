@@ -20207,6 +20207,187 @@ var Excel;
     })(ErrorCodes = Excel.ErrorCodes || (Excel.ErrorCodes = {}));
 })(Excel || (Excel = {}));
 ﻿
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingAddColumns;
+		Excel._V1Api.prototype.bindingAddColumns = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingAddFromNamedItem;
+		Excel._V1Api.prototype.bindingAddFromNamedItem = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingAddFromPrompt;
+		Excel._V1Api.prototype.bindingAddFromPrompt = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingAddFromSelection;
+		Excel._V1Api.prototype.bindingAddFromSelection = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingAddRows;
+		Excel._V1Api.prototype.bindingAddRows = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingClearFormats;
+		Excel._V1Api.prototype.bindingClearFormats = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingDeleteAllDataValues;
+		Excel._V1Api.prototype.bindingDeleteAllDataValues = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingGetAll;
+		Excel._V1Api.prototype.bindingGetAll = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingGetById;
+		Excel._V1Api.prototype.bindingGetById = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingGetData;
+		Excel._V1Api.prototype.bindingGetData = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingReleaseById;
+		Excel._V1Api.prototype.bindingReleaseById = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingSetData;
+		Excel._V1Api.prototype.bindingSetData = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingSetFormats;
+		Excel._V1Api.prototype.bindingSetFormats = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.bindingSetTableOptions;
+		Excel._V1Api.prototype.bindingSetTableOptions = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.getFilePropertiesAsync;
+		Excel._V1Api.prototype.getFilePropertiesAsync = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.getSelectedData;
+		Excel._V1Api.prototype.getSelectedData = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.gotoById;
+		Excel._V1Api.prototype.gotoById = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel._V1Api) {
+	(function () {
+		var oldMethod = Excel._V1Api.prototype.setSelectedData;
+		Excel._V1Api.prototype.setSelectedData = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+
 if (Excel.Application) {
 	Object.defineProperty(Excel.Application.prototype, "calculationMode", {
 		get: function () {
@@ -20218,7 +20399,16 @@ if (Excel.Application) {
 		configurable: true
 	});
 }
-		// ASDFASDF AreaCollection
+if (Excel.AreaCollection) {
+	(function () {
+		var oldMethod = Excel.AreaCollection.prototype.getCount;
+		Excel.AreaCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.AreaCollection) {
 	Object.defineProperty(Excel.AreaCollection.prototype, "items", {
 		get: function () {
@@ -20254,7 +20444,16 @@ if (Excel.Binding) {
 		configurable: true
 	});
 }
-		// ASDFASDF BindingCollection
+if (Excel.Binding) {
+	(function () {
+		var oldMethod = Excel.Binding.prototype.getText;
+		Excel.Binding.prototype.getText = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 
 if (Excel.BindingCollection) {
 	Object.defineProperty(Excel.BindingCollection.prototype, "count", {
@@ -20268,6 +20467,16 @@ if (Excel.BindingCollection) {
 	});
 }
 if (Excel.BindingCollection) {
+	(function () {
+		var oldMethod = Excel.BindingCollection.prototype.getCount;
+		Excel.BindingCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.BindingCollection) {
 	Object.defineProperty(Excel.BindingCollection.prototype, "items", {
 		get: function () {
 			this.load("$none");
@@ -20278,7 +20487,16 @@ if (Excel.BindingCollection) {
 		configurable: true
 	});
 }
-		// ASDFASDF CalculatedFieldCollection
+if (Excel.CalculatedFieldCollection) {
+	(function () {
+		var oldMethod = Excel.CalculatedFieldCollection.prototype.getCount;
+		Excel.CalculatedFieldCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.CalculatedFieldCollection) {
 	Object.defineProperty(Excel.CalculatedFieldCollection.prototype, "items", {
 		get: function () {
@@ -20397,6 +20615,16 @@ if (Excel.Chart) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.Chart) {
+	(function () {
+		var oldMethod = Excel.Chart.prototype.getImage;
+		Excel.Chart.prototype.getImage = function (arg0, arg1, arg2) {
+			var result = oldMethod.call(this, arg0, arg1, arg2);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 
 if (Excel.ChartAxis) {
@@ -20806,7 +21034,6 @@ if (Excel.ChartBorder) {
 		configurable: true
 	});
 }
-		// ASDFASDF ChartCollection
 
 if (Excel.ChartCollection) {
 	Object.defineProperty(Excel.ChartCollection.prototype, "count", {
@@ -20818,6 +21045,16 @@ if (Excel.ChartCollection) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.ChartCollection) {
+	(function () {
+		var oldMethod = Excel.ChartCollection.prototype.getCount;
+		Excel.ChartCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 if (Excel.ChartCollection) {
 	Object.defineProperty(Excel.ChartCollection.prototype, "items", {
@@ -21214,7 +21451,16 @@ if (Excel.ChartLegendEntry) {
 		configurable: true
 	});
 }
-		// ASDFASDF ChartLegendEntryCollection
+if (Excel.ChartLegendEntryCollection) {
+	(function () {
+		var oldMethod = Excel.ChartLegendEntryCollection.prototype.getCount;
+		Excel.ChartLegendEntryCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.ChartLegendEntryCollection) {
 	Object.defineProperty(Excel.ChartLegendEntryCollection.prototype, "items", {
 		get: function () {
@@ -21334,7 +21580,6 @@ if (Excel.ChartPoint) {
 		configurable: true
 	});
 }
-		// ASDFASDF ChartPointsCollection
 
 if (Excel.ChartPointsCollection) {
 	Object.defineProperty(Excel.ChartPointsCollection.prototype, "count", {
@@ -21346,6 +21591,16 @@ if (Excel.ChartPointsCollection) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.ChartPointsCollection) {
+	(function () {
+		var oldMethod = Excel.ChartPointsCollection.prototype.getCount;
+		Excel.ChartPointsCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 if (Excel.ChartPointsCollection) {
 	Object.defineProperty(Excel.ChartPointsCollection.prototype, "items", {
@@ -21514,7 +21769,6 @@ if (Excel.ChartSeries) {
 		configurable: true
 	});
 }
-		// ASDFASDF ChartSeriesCollection
 
 if (Excel.ChartSeriesCollection) {
 	Object.defineProperty(Excel.ChartSeriesCollection.prototype, "count", {
@@ -21526,6 +21780,16 @@ if (Excel.ChartSeriesCollection) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.ChartSeriesCollection) {
+	(function () {
+		var oldMethod = Excel.ChartSeriesCollection.prototype.getCount;
+		Excel.ChartSeriesCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 if (Excel.ChartSeriesCollection) {
 	Object.defineProperty(Excel.ChartSeriesCollection.prototype, "items", {
@@ -21802,7 +22066,16 @@ if (Excel.ChartTrendline) {
 		configurable: true
 	});
 }
-		// ASDFASDF ChartTrendlineCollection
+if (Excel.ChartTrendlineCollection) {
+	(function () {
+		var oldMethod = Excel.ChartTrendlineCollection.prototype.getCount;
+		Excel.ChartTrendlineCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.ChartTrendlineCollection) {
 	Object.defineProperty(Excel.ChartTrendlineCollection.prototype, "items", {
 		get: function () {
@@ -21970,7 +22243,16 @@ if (Excel.ConditionalFormat) {
 		configurable: true
 	});
 }
-		// ASDFASDF ConditionalFormatCollection
+if (Excel.ConditionalFormatCollection) {
+	(function () {
+		var oldMethod = Excel.ConditionalFormatCollection.prototype.getCount;
+		Excel.ConditionalFormatCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.ConditionalFormatCollection) {
 	Object.defineProperty(Excel.ConditionalFormatCollection.prototype, "items", {
 		get: function () {
@@ -22054,7 +22336,6 @@ if (Excel.ConditionalRangeBorder) {
 		configurable: true
 	});
 }
-		// ASDFASDF ConditionalRangeBorderCollection
 
 if (Excel.ConditionalRangeBorderCollection) {
 	Object.defineProperty(Excel.ConditionalRangeBorderCollection.prototype, "count", {
@@ -22282,7 +22563,16 @@ if (Excel.CustomFunction) {
 		configurable: true
 	});
 }
-		// ASDFASDF CustomFunctionCollection
+if (Excel.CustomFunctionCollection) {
+	(function () {
+		var oldMethod = Excel.CustomFunctionCollection.prototype.getCount;
+		Excel.CustomFunctionCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.CustomFunctionCollection) {
 	Object.defineProperty(Excel.CustomFunctionCollection.prototype, "items", {
 		get: function () {
@@ -22330,7 +22620,16 @@ if (Excel.CustomProperty) {
 		configurable: true
 	});
 }
-		// ASDFASDF CustomPropertyCollection
+if (Excel.CustomPropertyCollection) {
+	(function () {
+		var oldMethod = Excel.CustomPropertyCollection.prototype.getCount;
+		Excel.CustomPropertyCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.CustomPropertyCollection) {
 	Object.defineProperty(Excel.CustomPropertyCollection.prototype, "items", {
 		get: function () {
@@ -22366,7 +22665,26 @@ if (Excel.CustomXmlPart) {
 		configurable: true
 	});
 }
-		// ASDFASDF CustomXmlPartCollection
+if (Excel.CustomXmlPart) {
+	(function () {
+		var oldMethod = Excel.CustomXmlPart.prototype.getXml;
+		Excel.CustomXmlPart.prototype.getXml = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.CustomXmlPartCollection) {
+	(function () {
+		var oldMethod = Excel.CustomXmlPartCollection.prototype.getCount;
+		Excel.CustomXmlPartCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.CustomXmlPartCollection) {
 	Object.defineProperty(Excel.CustomXmlPartCollection.prototype, "items", {
 		get: function () {
@@ -22378,7 +22696,16 @@ if (Excel.CustomXmlPartCollection) {
 		configurable: true
 	});
 }
-		// ASDFASDF CustomXmlPartScopedCollection
+if (Excel.CustomXmlPartScopedCollection) {
+	(function () {
+		var oldMethod = Excel.CustomXmlPartScopedCollection.prototype.getCount;
+		Excel.CustomXmlPartScopedCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.CustomXmlPartScopedCollection) {
 	Object.defineProperty(Excel.CustomXmlPartScopedCollection.prototype, "items", {
 		get: function () {
@@ -22762,6 +23089,36 @@ if (Excel.IconSetConditionalFormat) {
 		configurable: true
 	});
 }
+if (Excel.InternalTest) {
+	(function () {
+		var oldMethod = Excel.InternalTest.prototype.compareTempFilesAreIdentical;
+		Excel.InternalTest.prototype.compareTempFilesAreIdentical = function (arg0, arg1) {
+			var result = oldMethod.call(this, arg0, arg1);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.InternalTest) {
+	(function () {
+		var oldMethod = Excel.InternalTest.prototype.delay;
+		Excel.InternalTest.prototype.delay = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.InternalTest) {
+	(function () {
+		var oldMethod = Excel.InternalTest.prototype.serializeCustomFunctions;
+		Excel.InternalTest.prototype.serializeCustomFunctions = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 
 if (Excel.NamedItem) {
 	Object.defineProperty(Excel.NamedItem.prototype, "comment", {
@@ -22882,7 +23239,16 @@ if (Excel.NamedItemArrayValues) {
 		configurable: true
 	});
 }
-		// ASDFASDF NamedItemCollection
+if (Excel.NamedItemCollection) {
+	(function () {
+		var oldMethod = Excel.NamedItemCollection.prototype.getCount;
+		Excel.NamedItemCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.NamedItemCollection) {
 	Object.defineProperty(Excel.NamedItemCollection.prototype, "items", {
 		get: function () {
@@ -22990,7 +23356,16 @@ if (Excel.PivotCache) {
 		configurable: true
 	});
 }
-		// ASDFASDF PivotCacheCollection
+if (Excel.PivotCacheCollection) {
+	(function () {
+		var oldMethod = Excel.PivotCacheCollection.prototype.getCount;
+		Excel.PivotCacheCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.PivotCacheCollection) {
 	Object.defineProperty(Excel.PivotCacheCollection.prototype, "items", {
 		get: function () {
@@ -23218,7 +23593,16 @@ if (Excel.PivotField) {
 		configurable: true
 	});
 }
-		// ASDFASDF PivotFieldCollection
+if (Excel.PivotFieldCollection) {
+	(function () {
+		var oldMethod = Excel.PivotFieldCollection.prototype.getCount;
+		Excel.PivotFieldCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.PivotFieldCollection) {
 	Object.defineProperty(Excel.PivotFieldCollection.prototype, "items", {
 		get: function () {
@@ -23338,7 +23722,16 @@ if (Excel.PivotItem) {
 		configurable: true
 	});
 }
-		// ASDFASDF PivotItemCollection
+if (Excel.PivotItemCollection) {
+	(function () {
+		var oldMethod = Excel.PivotItemCollection.prototype.getCount;
+		Excel.PivotItemCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.PivotItemCollection) {
 	Object.defineProperty(Excel.PivotItemCollection.prototype, "items", {
 		get: function () {
@@ -23986,7 +24379,26 @@ if (Excel.PivotTable) {
 		configurable: true
 	});
 }
-		// ASDFASDF PivotTableCollection
+if (Excel.PivotTable) {
+	(function () {
+		var oldMethod = Excel.PivotTable.prototype.refreshTable;
+		Excel.PivotTable.prototype.refreshTable = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.PivotTableCollection) {
+	(function () {
+		var oldMethod = Excel.PivotTableCollection.prototype.getCount;
+		Excel.PivotTableCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.PivotTableCollection) {
 	Object.defineProperty(Excel.PivotTableCollection.prototype, "items", {
 		get: function () {
@@ -24274,6 +24686,16 @@ if (Excel.Range) {
 		configurable: true
 	});
 }
+if (Excel.Range) {
+	(function () {
+		var oldMethod = Excel.Range.prototype.getImage;
+		Excel.Range.prototype.getImage = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 
 if (Excel.RangeBorder) {
 	Object.defineProperty(Excel.RangeBorder.prototype, "color", {
@@ -24322,7 +24744,6 @@ if (Excel.RangeBorder) {
 		configurable: true
 	});
 }
-		// ASDFASDF RangeBorderCollection
 
 if (Excel.RangeBorderCollection) {
 	Object.defineProperty(Excel.RangeBorderCollection.prototype, "count", {
@@ -24658,7 +25079,16 @@ if (Excel.RangeView) {
 		configurable: true
 	});
 }
-		// ASDFASDF RangeViewCollection
+if (Excel.RangeViewCollection) {
+	(function () {
+		var oldMethod = Excel.RangeViewCollection.prototype.getCount;
+		Excel.RangeViewCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.RangeViewCollection) {
 	Object.defineProperty(Excel.RangeViewCollection.prototype, "items", {
 		get: function () {
@@ -24706,7 +25136,16 @@ if (Excel.Setting) {
 		configurable: true
 	});
 }
-		// ASDFASDF SettingCollection
+if (Excel.SettingCollection) {
+	(function () {
+		var oldMethod = Excel.SettingCollection.prototype.getCount;
+		Excel.SettingCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.SettingCollection) {
 	Object.defineProperty(Excel.SettingCollection.prototype, "items", {
 		get: function () {
@@ -24958,7 +25397,6 @@ if (Excel.Style) {
 		configurable: true
 	});
 }
-		// ASDFASDF StyleCollection
 if (Excel.StyleCollection) {
 	Object.defineProperty(Excel.StyleCollection.prototype, "items", {
 		get: function () {
@@ -25090,7 +25528,6 @@ if (Excel.Table) {
 		configurable: true
 	});
 }
-		// ASDFASDF TableCollection
 
 if (Excel.TableCollection) {
 	Object.defineProperty(Excel.TableCollection.prototype, "count", {
@@ -25102,6 +25539,16 @@ if (Excel.TableCollection) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.TableCollection) {
+	(function () {
+		var oldMethod = Excel.TableCollection.prototype.getCount;
+		Excel.TableCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 if (Excel.TableCollection) {
 	Object.defineProperty(Excel.TableCollection.prototype, "items", {
@@ -25162,7 +25609,6 @@ if (Excel.TableColumn) {
 		configurable: true
 	});
 }
-		// ASDFASDF TableColumnCollection
 
 if (Excel.TableColumnCollection) {
 	Object.defineProperty(Excel.TableColumnCollection.prototype, "count", {
@@ -25174,6 +25620,16 @@ if (Excel.TableColumnCollection) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.TableColumnCollection) {
+	(function () {
+		var oldMethod = Excel.TableColumnCollection.prototype.getCount;
+		Excel.TableColumnCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 if (Excel.TableColumnCollection) {
 	Object.defineProperty(Excel.TableColumnCollection.prototype, "items", {
@@ -25210,7 +25666,6 @@ if (Excel.TableRow) {
 		configurable: true
 	});
 }
-		// ASDFASDF TableRowCollection
 
 if (Excel.TableRowCollection) {
 	Object.defineProperty(Excel.TableRowCollection.prototype, "count", {
@@ -25222,6 +25677,16 @@ if (Excel.TableRowCollection) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.TableRowCollection) {
+	(function () {
+		var oldMethod = Excel.TableRowCollection.prototype.getCount;
+		Excel.TableRowCollection.prototype.getCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 if (Excel.TableRowCollection) {
 	Object.defineProperty(Excel.TableRowCollection.prototype, "items", {
@@ -25306,7 +25771,26 @@ if (Excel.Visual) {
 		configurable: true
 	});
 }
-		// ASDFASDF VisualCollection
+if (Excel.VisualCollection) {
+	(function () {
+		var oldMethod = Excel.VisualCollection.prototype.getDefinitions;
+		Excel.VisualCollection.prototype.getDefinitions = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.VisualCollection) {
+	(function () {
+		var oldMethod = Excel.VisualCollection.prototype.getPreview;
+		Excel.VisualCollection.prototype.getPreview = function (arg0, arg1, arg2, arg3) {
+			var result = oldMethod.call(this, arg0, arg1, arg2, arg3);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.VisualCollection) {
 	Object.defineProperty(Excel.VisualCollection.prototype, "items", {
 		get: function () {
@@ -25353,6 +25837,36 @@ if (Excel.Workbook) {
 		enumerable: true,
 		configurable: true
 	});
+}
+if (Excel.Workbook) {
+	(function () {
+		var oldMethod = Excel.Workbook.prototype._GetObjectByReferenceId;
+		Excel.Workbook.prototype._GetObjectByReferenceId = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.Workbook) {
+	(function () {
+		var oldMethod = Excel.Workbook.prototype._GetObjectTypeNameByReferenceId;
+		Excel.Workbook.prototype._GetObjectTypeNameByReferenceId = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
+if (Excel.Workbook) {
+	(function () {
+		var oldMethod = Excel.Workbook.prototype._GetReferenceCount;
+		Excel.Workbook.prototype._GetReferenceCount = function () {
+			var result = oldMethod.call(this);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
 }
 
 if (Excel.WorkbookProtection) {
@@ -25474,7 +25988,16 @@ if (Excel.Worksheet) {
 		configurable: true
 	});
 }
-		// ASDFASDF WorksheetCollection
+if (Excel.WorksheetCollection) {
+	(function () {
+		var oldMethod = Excel.WorksheetCollection.prototype.getCount;
+		Excel.WorksheetCollection.prototype.getCount = function (arg0) {
+			var result = oldMethod.call(this, arg0);
+			this.context.syncSynchronous();
+			return result;
+		}
+	})();
+}
 if (Excel.WorksheetCollection) {
 	Object.defineProperty(Excel.WorksheetCollection.prototype, "items", {
 		get: function () {
