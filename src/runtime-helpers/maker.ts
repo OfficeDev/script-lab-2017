@@ -7,7 +7,7 @@ module Experimental {
 
         interface MakerWorkerMessage {
             type: MakerWorkerMessageType;
-            content: string;
+            content: any;
         }
 
         interface ExecuteMakerScriptMessage {
@@ -55,7 +55,8 @@ module Experimental {
                 worker.onmessage = (message: MessageEvent) => {
                     let msg: MakerWorkerMessage = message.data;
                     if (msg.type === 'result') {
-                        resolve(msg.content);
+                        resolve(msg.content.result);
+                        // todo msg.content.perfInfo
                         return;
                     }
                     console[msg.type](msg.content);

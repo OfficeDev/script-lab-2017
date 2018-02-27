@@ -20,7 +20,7 @@ type MakerWorkerMessageType = ConsoleMethodType | 'result';
 
 interface MakerWorkerMessage {
     type: MakerWorkerMessageType,
-    content: string;
+    content: any;
 }
 
 interface ExecuteMakerScriptMessage {
@@ -162,21 +162,29 @@ module Experimental {
             }
 
             export function createSession(accessToken: string, documentUrl: string): string {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', `${documentUrl}/createSession`, false);
-
-                xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
-                xhr.setRequestHeader('content-type', 'application/json');
-
-                xhr.send(null);
-
-                if (xhr.readyState === 4 && xhr.status === 201) {
-                    let response = JSON.parse(xhr.responseText);
-                    return response.id;
-                } else {
-                    console.error('Request failed to create session.  Returned status of ' + xhr.status);
-                    return null;
+                function sleepFor( sleepDuration ){
+                    var now = new Date().getTime();
+                    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
                 }
+                for(let i=0; i<10; i++) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', `${documentUrl}/createSession`, false);
+
+                    xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+                    xhr.setRequestHeader('content-type', 'application/json');
+
+                    xhr.send(null);
+
+                    if (xhr.readyState === 4 && xhr.status === 201) {
+                        let response = JSON.parse(xhr.responseText);
+                        return response.id;
+                    } else {
+                        console.error('Request failed to create session.  Returned status of ' + xhr.status);
+                        sleepFor(2000);
+                        // return null;
+                    }
+                }
+                return null;
             };
 
             export function closeSession(accessToken: string, documentUrl: string, sessionId: string): null {
@@ -219,6 +227,21 @@ module Experimental {
     }
 }
 
+let perfInfo = {};
+let activeTimers = {};
+
+function start_perf_timer(line_no: number){
+    activeTimers[line_no] = Date.now();
+}
+
+function stop_perf_timer(line_no: number){
+    const timeElapsed = Date.now() - activeTimers[line_no];
+
+    let current = perfInfo[line_no] || 0;
+
+    perfInfo[line_no] = current + timeElapsed;
+}
+
 function importScriptsFromReferences(scriptReferences: string[]) {
     scriptReferences.forEach(script => {
         if (script) {
@@ -251,6 +274,6 @@ self.addEventListener('message', (message: MessageEvent) => {
         console.log('maker code finished execution');
         console.log('----- worker finished processing message -----');
     });
-
-    processAndSendMessage(result, 'result');
+    console.log(perfInfo);
+    processAndSendMessage({result, perfInfo}, 'result');
 });
