@@ -3,11 +3,11 @@
 module Experimental {
     export module ExcelMaker {
         type ConsoleMethodType = 'log' | 'info' | 'error';
-        type MakerWorkerMessageType = ConsoleMethodType | 'result';
+        type MakerWorkerMessageType = ConsoleMethodType | 'result' | 'perfInfo';
 
-        interface MakerWorkerMessage {
+        interface MakerWorkerMessage<T> {
             type: MakerWorkerMessageType;
-            content: any;
+            content: T;
         }
 
         interface ExecuteMakerScriptMessage {
@@ -53,13 +53,15 @@ module Experimental {
                 };
 
                 worker.onmessage = (message: MessageEvent) => {
-                    let msg: MakerWorkerMessage = message.data;
+                    let msg: MakerWorkerMessage<any> = message.data;
                     if (msg.type === 'result') {
-                        resolve(msg.content.result);
-                        // todo msg.content.perfInfo
+                        resolve(msg.content);
                         return;
-                    }
+                    } else if (msg.type === 'perfInfo') {
+                        console.log("I am ready to inject perf info!"); // FIXME
+                    } else {
                     console[msg.type](msg.content);
+                    }
                 };
 
                 let activeDocumentUrl = await getActiveDocumentUrl(accessToken);

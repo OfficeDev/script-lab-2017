@@ -2,6 +2,7 @@ const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
 
+/** NOTE: when adding local storage keys here, remember to add them for IntelliSense's sake in "ICompiledPlaygroundInfo" in playground.d.ts */
 const localStorageKeys = {
     dummyUnusedKey: 'plyaground_dummy_unused_key',
     log: 'playground_log',
@@ -16,6 +17,7 @@ const localStorageKeys = {
     customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
     customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
     logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
+    lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
     language: 'playground_language'
 };
 
@@ -174,7 +176,7 @@ class RedirectPlugin {
                 var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
                 if (redirectUrl) {
                     var originParam = [
-                        (window.location.search ? "&" : "?"), 
+                        (window.location.search ? "&" : "?"),
                         "originEnvironment=",
                         encodeURIComponent(window.location.origin)
                     ].join("");

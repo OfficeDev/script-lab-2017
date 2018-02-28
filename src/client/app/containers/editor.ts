@@ -8,7 +8,7 @@ import * as fromRoot from '../reducers';
 import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
     navigateToCompileCustomFunctions,
-    getNumberFromLocalStorage, getElapsedTime
+    getNumberFromLocalStorage, getElapsedTime, ensureFreshLocalStorage, storage
 } from '../helpers';
 import { UIEffects } from '../effects/ui';
 import { Strings, getDisplayLanguageOrFake } from '../strings';
@@ -18,7 +18,7 @@ const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor',
-    template: `   
+    template: `
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
                 {{tab.displayName}}
@@ -42,6 +42,8 @@ export class Editor implements AfterViewInit {
     private snippetSub: Subscription;
     private tabSub: Subscription;
     private tabNames: string[];
+    private currentDecorations: any[] = [];
+    private perfInfoPoller: any;
 
     strings = Strings();
 
@@ -64,6 +66,26 @@ export class Editor implements AfterViewInit {
 
             this.updateLastRegisteredFunctionsTooltip();
         }
+
+        this.startPerfInfoTimer();
+    }
+
+    startPerfInfoTimer() {
+        let previousPerfInfoTimestamp: number;
+        this.perfInfoPoller = setInterval(() => {
+            ensureFreshLocalStorage();
+            const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
+            if (newPerfNums > previousPerfInfoTimestamp) {
+                storage.snippets.load();
+                let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
+                if (perfInfo) {
+                    if (perfInfo.timestamp === this.snippet.modified_at) {
+                        this.setPerformanceMarkers(perfInfo.data);
+                    }
+                }
+                window.localStorage.setItem(localStorageKeys.lastPerfNumbersTimestamp, newPerfNums.toString());
+            }
+        }, 500);
     }
 
     /**
@@ -102,6 +124,8 @@ export class Editor implements AfterViewInit {
         if (this.tabSub) {
             this.tabSub.unsubscribe();
         }
+
+        clearInterval(this.perfInfoPoller);
     }
 
     changeTab = (name: string = 'script') => {
@@ -121,6 +145,21 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.UpdateIntellisenseAction(
             { libraries: this.snippet.libraries.split('\n'), language: 'typescript', tabName }
         ));
+    }
+
+    setPerformanceMarkers(perfInfo: PerfInfoItem[]) {
+        // check tabName??
+        const newDecorations = perfInfo.map(({line_no, frequency, duration}) => {
+            return {
+                range: new monaco.Range(line_no, 1, line_no, 1),
+                options: {
+                    isWholeLine: true,
+                    glyphMarginClassName: 'myGlyphMarginClass',  // todo fix with real class
+                    glyphMarginHoverMessage: [`Ran ${frequency} times`, `Total Duration: ${duration} ms`]
+                }
+            };
+        });
+        this.currentDecorations = this._monacoEditor.deltaDecorations(this.currentDecorations, newDecorations);
     }
 
     async registerCustomFunctions() {

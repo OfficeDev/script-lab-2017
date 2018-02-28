@@ -1,3 +1,6 @@
+// tslint:disable-next-line:no-reference
+/// <reference path="./maker-interfaces.d.ts" />
+
 /* tslint:disable:no-namespace */
 self.importScripts('sync-office-js'); // import sync office js code
 
@@ -9,14 +12,11 @@ function ifVerbose(callback: () => void) {
     }
 }
 
-// TODO: import any script that the user feels like.
-
-
 // TODO: move these.
 
 const consoleMethods = ['log', 'info', 'error'];
 type ConsoleMethodType = 'log' | 'info' | 'error';
-type MakerWorkerMessageType = ConsoleMethodType | 'result';
+type MakerWorkerMessageType = ConsoleMethodType | 'result' | 'perfInfo';
 
 interface MakerWorkerMessage {
     type: MakerWorkerMessageType,
@@ -37,19 +37,16 @@ interface RequestUrlAndHeaderInfo {
     headers?: { [name: string]: string };
 }
 
-
-// TODO:  foreach.
-
 // By setting "console", overwriting "self.console" which TS thinks is a read-only variable...
 const oldConsole = console;
 console = {
     ...oldConsole,
-    log: item => processAndSendMessage(item, 'log'),
-    info: item => processAndSendMessage(item, 'info'),
-    error: item => processAndSendMessage(item, 'error')
+    log: item => processAndSendMessage('log', item),
+    info: item => processAndSendMessage('info', item),
+    error: item => processAndSendMessage('error', item)
 };
 
-function processAndSendMessage(content: any, type: MakerWorkerMessageType) {
+function processAndSendMessage(type: MakerWorkerMessageType, content: any) {
     if (consoleMethods.indexOf(type) >= 0) {
         oldConsole[type](content);
     }
@@ -106,6 +103,8 @@ module Experimental {
             export let _activeDocumentUrl: string;
             export const contexts: MockExcelContext[] = [];
 
+            let sessions: { documentUrl: string, sessionId: string }[] = [];
+
             export function getWorkbook(workbookUrl: string): Excel.Workbook {
                 let context = getExcelContext(_accessToken, workbookUrl);
                 contexts.push(context);
@@ -115,12 +114,11 @@ module Experimental {
             export function runMakerFunction(makerCode: string) {
                 let result: any;
 
-                // TODO EVENTUALLY: figure out if eval is evil.
-
                 // tslint:disable-next-line:no-eval
                 eval(`result = ${makerCode}();`);
 
                 cleanUpContexts();
+                closeSessions();
 
                 return result;
             };
@@ -162,11 +160,13 @@ module Experimental {
             }
 
             export function createSession(accessToken: string, documentUrl: string): string {
-                function sleepFor( sleepDuration ){
-                    var now = new Date().getTime();
-                    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
+                // Busy-wait so that can do this synchronously...
+                function sleepFor(sleepDuration) {
+                    const now = new Date().getTime();
+                    while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
                 }
-                for(let i=0; i<10; i++) {
+
+                for (let i = 0; i < 10; i++) {
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', `${documentUrl}/createSession`, false);
 
@@ -177,6 +177,7 @@ module Experimental {
 
                     if (xhr.readyState === 4 && xhr.status === 201) {
                         let response = JSON.parse(xhr.responseText);
+                        sessions.push({ documentUrl, sessionId: response.id })
                         return response.id;
                     } else {
                         console.error('Request failed to create session.  Returned status of ' + xhr.status);
@@ -184,8 +185,15 @@ module Experimental {
                         // return null;
                     }
                 }
-                return null;
-            };
+
+                throw new Error('Could not create a workbook session. Try again in a minute, or logout and try on another tenant?');
+            }
+
+            export function closeSessions() {
+                sessions.forEach(({ documentUrl, sessionId }) => {
+                    closeSession(_accessToken, documentUrl, sessionId);
+                });
+            }
 
             export function closeSession(accessToken: string, documentUrl: string, sessionId: string): null {
                 const xhr = new XMLHttpRequest();
@@ -227,19 +235,19 @@ module Experimental {
     }
 }
 
-let perfInfo = {};
+let rawPerfInfo: { [line_no: number]: { duration: number, frequency: number } } = {};
 let activeTimers = {};
 
-function start_perf_timer(line_no: number){
+function start_perf_timer(line_no: number) {
     activeTimers[line_no] = Date.now();
 }
 
-function stop_perf_timer(line_no: number){
+function stop_perf_timer(line_no: number) {
     const timeElapsed = Date.now() - activeTimers[line_no];
 
-    let current = perfInfo[line_no] || 0;
-
-    perfInfo[line_no] = current + timeElapsed;
+    const current = rawPerfInfo[line_no] || { duration: 0, frequency: 0 };
+    // TODO add frquence
+    current.duration += timeElapsed;
 }
 
 function importScriptsFromReferences(scriptReferences: string[]) {
@@ -259,7 +267,7 @@ function importScriptsFromReferences(scriptReferences: string[]) {
 self.addEventListener('message', (message: MessageEvent) => {
     ifVerbose(() => console.log('----- message posted to worker -----'));
 
-    const {accessToken, activeDocumentUrl, makerCode, scriptReferences}: ExecuteMakerScriptMessage = message.data;
+    const { accessToken, activeDocumentUrl, makerCode, scriptReferences }: ExecuteMakerScriptMessage = message.data;
 
     importScriptsFromReferences(scriptReferences);
 
@@ -274,6 +282,24 @@ self.addEventListener('message', (message: MessageEvent) => {
         console.log('maker code finished execution');
         console.log('----- worker finished processing message -----');
     });
-    console.log(perfInfo);
-    processAndSendMessage({result, perfInfo}, 'result');
+
+    sendPerfInfo();
+    processAndSendMessage('result', result);
+
+    rawPerfInfo = {};
 });
+
+function sendPerfInfo() {
+    const sendablePerfInfo: PerfInfoItem[] = [];
+    // tslint:disable-next-line:forin
+    for (const line_no in rawPerfInfo) {
+        const { duration, frequency } = rawPerfInfo[line_no];
+        sendablePerfInfo.push({
+            line_no: Number(line_no),
+            duration,
+            frequency
+        });
+    }
+
+    processAndSendMessage('perfInfo', sendablePerfInfo);
+}

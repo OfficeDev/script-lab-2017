@@ -1,3 +1,5 @@
+// import { storage } from '../client/app/helpers/storage';
+
 /* tslint:disable:no-namespace */
 
 // NOTE: At initialization, the ScriptLab namespace also expects
@@ -22,6 +24,25 @@ module ScriptLab {
             expiry: number;
         }
     } = {};
+
+    /** [PREVIEW] Gets a graph access token on behalf of the user
+    */
+    export function getGraphAccessToken(): Promise<string> {
+        // console.log(storage.current);
+        // const cachedAccessToken = _getCachedAccessToken(clientId, resource);
+        // if (cachedAccessToken) {
+        //     return Promise.resolve(cachedAccessToken);
+        // } else {
+        //     if (_isPlainWeb()) {
+        //         return _getAccessTokenViaWindowOpen(clientId, resource);
+        //     }
+        //     if (_isDialogApiSupported()) {
+        //         return _getAccessTokenViaDialogApi(clientId, resource);
+        //     }
+        //     throw new Error((ScriptLab as any)._strings.officeVersionDoesNotSupportAuthentication);
+        // }
+        return Promise.resolve('asdfa');
+    }
 
     /** [PREVIEW] Gets an access token on behalf of the user for a particular service
      * @param resource: The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
