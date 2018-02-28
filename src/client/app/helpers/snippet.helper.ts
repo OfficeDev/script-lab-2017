@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////
-/// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///
-///       office-js-snippets project.  Please be sure that any changes that you  ///
-///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
+/// NOTE: A portion (everything except "getSnippetDefaults" and "isMakerScript") ///
+///       is also used in the office-js-snippets project.                        ///
+///       Please be sure that any changes that you make here                     ///
+///       are also copied to there. See "config/snippet.helpers.ts"              ///
 ///       in https://github.com/OfficeDev/office-js-snippets                     ///
 ///                                                                              ///
 ///       That same shared portion is also used in the "server" portion of this  ///
@@ -96,6 +97,10 @@ export function getSnippetDefaults(): ISnippet {
     }
 
     return defaults;
+}
+
+export function isMakerScript(script: IContentLanguagePair) {
+    return script.content.indexOf('Experimental.ExcelMaker') >= 0;
 }
 
 function scrubCarriageReturns(snippet: ISnippet) {

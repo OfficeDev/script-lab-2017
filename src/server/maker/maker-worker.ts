@@ -1,6 +1,14 @@
 /* tslint:disable:no-namespace */
 self.importScripts('sync-office-js'); // import sync office js code
 
+const VERBOSE_LOG = false;
+
+function ifVerbose(callback: () => void) {
+    if (VERBOSE_LOG) {
+        callback();
+    }
+}
+
 // TODO: import any script that the user feels like.
 
 
@@ -13,6 +21,13 @@ type MakerWorkerMessageType = ConsoleMethodType | 'result';
 interface MakerWorkerMessage {
     type: MakerWorkerMessageType,
     content: string;
+}
+
+interface ExecuteMakerScriptMessage {
+    accessToken: string;
+    makerCode: string;
+    activeDocumentUrl: string;
+    scriptReferences: string[];
 }
 
 interface RequestUrlAndHeaderInfo {
@@ -44,7 +59,6 @@ function processAndSendMessage(content: any, type: MakerWorkerMessageType) {
         content: getHappilySerializeableContent()
     });
 
-
     // Helper:
     function getHappilySerializeableContent() {
         if (typeof content === 'undefined') {
@@ -60,7 +74,6 @@ function processAndSendMessage(content: any, type: MakerWorkerMessageType) {
             // Just in case
             return content;
         }
-
 
         // Helper:
         function replaceErrors(key, value) {
@@ -90,6 +103,7 @@ module Experimental {
             }
 
             export let _accessToken: string;
+            export let _activeDocumentUrl: string;
             export const contexts: MockExcelContext[] = [];
 
             export function getWorkbook(workbookUrl: string): Excel.Workbook {
@@ -99,27 +113,16 @@ module Experimental {
             }
 
             export function runMakerFunction(makerCode: string) {
-                let makerFunc: () => any;
+                let result: any;
 
                 // TODO EVENTUALLY: figure out if eval is evil.
 
                 // tslint:disable-next-line:no-eval
-                eval(`makerFunc = ${makerCode};`);
-
-                let result = makerFunc();
+                eval(`result = ${makerCode}();`);
 
                 cleanUpContexts();
 
                 return result;
-
-                // return await Excel.run(sessionInfo as any, async ctx => {
-                //     console.log('inside excel.run');
-                //     let makerFunc: (workbook: Excel.Workbook) => any;
-                //     // TODO:  figure out if there are any reprecussions to using eval
-                //     // tslint:disable-next-line:no-eval
-                //     eval(`makerFunc = ${makerCode};`);
-                //     return makerFunc(ctx.workbook);
-                // });
             };
 
             export function getExcelContext(accessToken: string, documentUrl: string): MockExcelContext {
@@ -199,31 +202,55 @@ module Experimental {
             _Internal._accessToken = accessToken;
         }
 
-        // TODO: make synchronous and return
+        export function setActiveDocumentUrl(activeDocumentUrl: string) {
+            _Internal._activeDocumentUrl = activeDocumentUrl;
+        }
+
         export function getWorkbook(workbookUrl: string): Excel.Workbook {
             return _Internal.getWorkbook(workbookUrl);
+        }
+
+        export function getActiveWorkbook(): Excel.Workbook {
+            if (_Internal._activeDocumentUrl === null) {
+                throw new Error('You cannot use getActiveWorkbook() outside of Excel.');
+            }
+            return _Internal.getWorkbook(_Internal._activeDocumentUrl);
         }
     }
 }
 
+function importScriptsFromReferences(scriptReferences: string[]) {
+    scriptReferences.forEach(script => {
+        if (script) {
+            try {
+                ifVerbose(() => console.log(`attempting to load ${script}`));
+                self.importScripts(script);
+            } catch (error) {
+                console.error(`Failed to load '${script}' for tinker() block!`);
+            }
+        }
+    });
+}
 
 
 self.addEventListener('message', (message: MessageEvent) => {
-    console.log('----- message posted to worker -----');
+    ifVerbose(() => console.log('----- message posted to worker -----'));
 
-    const [accessToken, documentUrl, makerCode]: string[] = message.data;
+    const {accessToken, activeDocumentUrl, makerCode, scriptReferences}: ExecuteMakerScriptMessage = message.data;
+
+    importScriptsFromReferences(scriptReferences);
 
     Experimental.ExcelMaker.setAccessToken(accessToken);
+    Experimental.ExcelMaker.setActiveDocumentUrl(activeDocumentUrl);
 
-    console.log(`documentUrl: ${documentUrl}`);
+    ifVerbose(() => console.log(`documentUrl: ${activeDocumentUrl}`));
 
-    // let sessionId = await createSession(accessToken, documentUrl);
-    // console.log('session created');
     let result = Experimental.ExcelMaker._Internal.runMakerFunction(makerCode);
-    console.log('maker code finished execution');
-    // await closeSession(accessToken, documentUrl, sessionId);
-    // console.log('session closed');
 
-    console.log('----- worker finished processing message -----');
+    ifVerbose(() => {
+        console.log('maker code finished execution');
+        console.log('----- worker finished processing message -----');
+    });
+
     processAndSendMessage(result, 'result');
 });

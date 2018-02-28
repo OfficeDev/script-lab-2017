@@ -9,12 +9,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export function processLibraries(libraries: string) {
+export function processLibraries(libraries: string, isMakerScript: boolean, isInsideOffice: boolean) {
     let linkReferences: string[] = [];
     let scriptReferences: string[] = [];
     let officeJS: string = null;
 
     libraries.split('\n').forEach(processLibrary);
+
+    if (isMakerScript && !isInsideOffice) {
+        officeJS = '<none>';
+    }
 
     return { linkReferences, scriptReferences, officeJS };
 

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import {
     PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager, ensureFreshLocalStorage
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager, ensureFreshLocalStorage, isMakerScript
 } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -155,7 +155,8 @@ export class SnippetEffects {
             } else {
                 const state: IRunnerState = {
                     snippet: snippet,
-                    displayLanguage: getDisplayLanguage()
+                    displayLanguage: getDisplayLanguage(),
+                    isInsideOfficeApp: isInsideOfficeApp(),
                 };
                 const data = JSON.stringify(state);
                 const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
@@ -570,7 +571,7 @@ export class SnippetEffects {
             return;
         }
 
-        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
+    const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.

@@ -20,7 +20,7 @@ import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.g
 import { compileScript } from './core/snippet.generator';
 import { processLibraries } from './core/libraries.processor';
 import { ApplicationInsights } from './core/ai.helper';
-import { getShareableYaml } from './core/snippet.helper';
+import { getShareableYaml, isMakerScript } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
@@ -42,6 +42,9 @@ const SCRIPT_LAB_STORE_ID = 'wa104380862';
 
 const ONE_HOUR_MS = 3600000;
 const THREE_HOUR_MS = 10800000;
+
+// Must match the value in "runner.ts"
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 
 // Note: a similar mapping exists in the client Utilities as well:
 // src/client/app/helpers/utilities.ts
@@ -255,7 +258,7 @@ registerRoute('post', '/compile/custom-functions', async (req, res) => {
                         template: null,
                         host
                     },
-                    'customFunctions', false /*isExternalExport*/, strings);
+                    'customFunctions', false /*isExternalExport*/, strings, true /*isInsideOffice*/);
             })
         )).map(result => result.succeeded ? base64encode(result.html) : null);
 
@@ -385,9 +388,9 @@ registerRoute('post', '/export', (req, res) => {
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
         generateSnippetHtmlData(
-            { scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) },
+            {scriptToCompile: snippet.script, ...extractCommonCompileData(snippet) },
             'script',
-            true /*isExternalExport*/, strings),
+            true /*isExternalExport*/, strings, true /*isInsideOffice*/),
         generateReadme(snippet),
         isOfficeHost(snippet.host) ?
             generateManifest(snippet, additionalFields, filenames.html, strings) : null
@@ -482,7 +485,8 @@ registerRoute('get', '/lib/sync-office-js', async (req, res) => {
 
 function compileSnippetCommon(req: express.Request, res: express.Response, wrapWithRunnerChrome?: boolean) {
     const data: IRunnerState = JSON.parse(req.body.data);
-    const { snippet, returnUrl } = data;
+    const { snippet, returnUrl, isInsideOfficeApp } = data;
+
     let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
 
     const timer = ai.trackTimedEvent('[Runner] Compile Snippet', { id: snippet.id });
@@ -494,7 +498,7 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
     // NOTE: using Promise-based code instead of async/await
     // to avoid unhandled exception-pausing on debugging.
     return Promise.all([
-        generateSnippetHtmlData(snippetDataToCompile, 'script', false /*isExternalExport*/, strings),
+        generateSnippetHtmlData(snippetDataToCompile, 'script', false /*isExternalExport*/, strings, isInsideOfficeApp),
         wrapWithRunnerChrome ? loadTemplate<IRunnerHandlebarsContext>('runner') : null,
     ])
         .then(values => {
@@ -502,6 +506,11 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
             const runnerHtmlGenerator: (context: IRunnerHandlebarsContext) => string = values[1];
 
             let html = snippetHtmlData.html;
+            const isMaker = isMakerScript(snippet.script);
+            let officeJS = snippetHtmlData.officeJS;
+            if (isMaker && !isInsideOfficeApp) {
+                officeJS = EXPLICIT_NONE_OFFICE_JS_REFERENCE;
+            }
 
             if (wrapWithRunnerChrome) {
                 html = runnerHtmlGenerator({
@@ -509,8 +518,9 @@ function compileSnippetCommon(req: express.Request, res: express.Response, wrapW
                         id: snippet.id,
                         lastModified: snippet.modified_at,
                         content: base64encode(html),
+                        isMakerScript: isMaker
                     },
-                    officeJS: snippetHtmlData.officeJS,
+                    officeJS,
                     returnUrl: returnUrl,
                     host: snippet.host,
                     isTrustedSnippet,
@@ -551,7 +561,8 @@ function runCommon(
         .then(runnerHtmlGenerator => {
             const html = runnerHtmlGenerator({
                 snippet: {
-                    id: id
+                    id: id,
+                    isMakerScript: false
                 },
                 officeJS: determineOfficeJS(options.query, host),
                 returnUrl: '',
@@ -649,7 +660,8 @@ async function generateSnippetHtmlData(
     },
     whichScriptPart: 'script' | 'customFunctions',
     isExternalExport: boolean,
-    strings: ServerStrings
+    strings: ServerStrings,
+    isInsideOfficeApp: boolean,
 ): Promise<{ succeeded: boolean; html: string, officeJS: string }> {
 
     let script: string;
@@ -663,7 +675,12 @@ async function generateSnippetHtmlData(
         throw e;
     }
 
-    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries);
+    let { officeJS, linkReferences, scriptReferences } = processLibraries(compileData.libraries, isMakerScript(compileData.scriptToCompile), isInsideOfficeApp);
+
+    let shouldPutSnippetIntoOfficeInitialize = false;
+    if (officeJS && officeJS !== EXPLICIT_NONE_OFFICE_JS_REFERENCE) {
+        shouldPutSnippetIntoOfficeInitialize = true;
+    }
 
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
@@ -684,7 +701,8 @@ async function generateSnippetHtmlData(
 
         editorUrl: currentConfig.editorUrl,
         runtimeHelperStringifiedStrings: JSON.stringify(
-            strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */
+            strings.RuntimeHelpers) /* stringify so that it gets written correctly into "snippets" template */,
+        shouldPutSnippetIntoOfficeInitialize
     };
 
     const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');

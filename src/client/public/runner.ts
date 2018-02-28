@@ -2,14 +2,24 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 import { toNumber, assign, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries, environment, instantiateRibbon,
-    setUpMomentJsDurationDefaults } from '../app/helpers';
+import {
+    generateUrl,
+    processLibraries,
+    environment,
+    instantiateRibbon,
+    setUpMomentJsDurationDefaults,
+    isMakerScript,
+    isInsideOfficeApp
+} from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
 import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 
 import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
+
+// Must match the value in "server.ts"
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 
 interface InitializationParams {
     host: string;
@@ -20,6 +30,7 @@ interface InitializationParams {
         officeJS: string;
         id: string;
         lastModified: string;
+        isMakerScript: boolean;
     }
     explicitlySetDisplayLanguageOrNull: string;
 }
@@ -34,7 +45,7 @@ interface InitializationParams {
     let returnUrl = '';
     let host: string;
 
-    let currentSnippet: { id: string, lastModified: number, officeJS: string };
+    let currentSnippet: { id: string, lastModified: number, officeJS: string, isMakerScript: boolean };
 
     const defaultIsListeningTo = {
         snippetSwitching: true,
@@ -63,7 +74,7 @@ interface InitializationParams {
                 // Nothing to wait on, playground is ready:
                 environment.setPlaygroundHostIsReady();
             }
-            else if (params.currentSnippet.officeJS) {
+            else if (isRealOfficeJsReference(params.currentSnippet.officeJS)) {
                 let script = document.createElement('script');
                 script.src = params.currentSnippet.officeJS;
                 script.addEventListener('load', (event) => {
@@ -88,7 +99,7 @@ interface InitializationParams {
         }
     };
 
-    async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
+    async function initializeRunnerHelper(initialParams: InitializationParams) {
         // Even though already did a partial initialization, do a more thorough
         // one here that will let the user choose the host, if one isn't specified:
         await environment.initialize({ host: initialParams.host });
@@ -145,7 +156,12 @@ interface InitializationParams {
             // so that can keep adding the snippet frame relative to its position
             $snippetContent.text('');
 
-            replaceSnippetIframe(atob(snippetHtml), initialParams.currentSnippet.officeJS, isTrustedSnippet);
+            replaceSnippetIframe({
+                html: atob(snippetHtml),
+                officeJS: initialParams.currentSnippet.officeJS,
+                isTrustedSnippet,
+                isMaker: initialParams.currentSnippet.isMakerScript
+            });
         }
 
         let runnerUrlWithCorrectPrefix = (() => {
@@ -171,7 +187,9 @@ interface InitializationParams {
 
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
-    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): boolean {
+    function replaceSnippetIframe(params: { html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }): boolean {
+        const { html, officeJS, isTrustedSnippet, isMaker } = params;
+
         showHeader();
 
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
@@ -196,9 +214,19 @@ interface InitializationParams {
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
 
-        (window as any).scriptRunnerBeginInit = () => {
+        (window as any).scriptRunnerBeginInit = (options: { scriptReferences: string[] } = { scriptReferences: [] }) => {
             (contentWindow as any).console = window.console;
             contentWindow.onerror = (...args) => console.error(args);
+
+            if (!options.scriptReferences) {
+                options.scriptReferences = [];
+            }
+
+            if (isMaker) {
+                ((contentWindow as any).Experimental.ExcelMaker as any)._init({
+                    scriptReferences: options.scriptReferences
+                });
+            }
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
@@ -214,7 +242,7 @@ interface InitializationParams {
         };
 
         (window as any).scriptRunnerEndInit = () => {
-            if (officeJS) {
+            if (isRealOfficeJsReference(officeJS) && Office) {
                 // Call Office.initialize(), which now initializes the snippet.
                 // The parameter, initializationReason, is not used in the playground.
                 Office.initialize(null /*initializationReason*/);
@@ -389,13 +417,15 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
-        const desiredOfficeJS = processLibraries(snippet.libraries).officeJS || '';
+        const isMaker = isMakerScript(snippet.script);
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
         currentSnippet = {
             id: snippet.id,
             lastModified: snippet.modified_at,
-            officeJS: desiredOfficeJS
+            officeJS: desiredOfficeJS,
+            isMakerScript: isMaker
         };
 
         isListeningTo.currentSnippetContentChange = true;
@@ -413,8 +443,8 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        let replacedSuccessfully = replaceSnippetIframe(
-            html, processLibraries(snippet.libraries).officeJS, isTrustedSnippet);
+        const officeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS;
+        let replacedSuccessfully = replaceSnippetIframe({ html, officeJS, isTrustedSnippet, isMaker });
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
@@ -524,6 +554,10 @@ interface InitializationParams {
         } catch (e) {
             return false;
         }
+    }
+
+    function isRealOfficeJsReference(officeJS: string) {
+        return officeJS && officeJS !== EXPLICIT_NONE_OFFICE_JS_REFERENCE;
     }
 
 })();

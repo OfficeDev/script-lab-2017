@@ -66,10 +66,17 @@
         {{else}}
         {{!-- It appears that doing document.body.onload from the runner can sometimes be --}}
         {{!-- unreliable and fail to fire. So, do a safer (albeit polluting) approach --}}
-        window.parent.scriptRunnerBeginInit();
+        window.parent.scriptRunnerBeginInit({
+            scriptReferences: [
+{{#each snippet.scriptReferences}}
+                "{{{this}}}",
+{{/each}}
+                null
+            ]
+        });
 
         {{/if}}
-        {{#if snippet.officeJS}}
+        {{#if shouldPutSnippetIntoOfficeInitialize}}
         Office.initialize = function() {
             {{{indent snippet.script 3}}}
         };

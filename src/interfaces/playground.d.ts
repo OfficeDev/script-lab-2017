@@ -53,6 +53,8 @@ interface ILibraryDefinition {
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
+
+    isInsideOfficeApp: boolean;
     displayLanguage: string;
 
     /** URL to return to in case of the gallery (or something else custom).
@@ -76,7 +78,7 @@ interface ICompileCustomFunctionsState {
     snippets: Array<ICustomFunctionsRelevantData>;
     mode: 'register' | 'run';
     heartbeatParams: ICustomFunctionsHeartbeatParams;
-    
+
     displayLanguage: string;
 }
 
@@ -140,7 +142,7 @@ interface ICompiledPlaygroundInfo {
         log: string;
 
         hostSnippets_parameterized: string;
-        settings: string;        
+        settings: string;
         originEnvironmentUrl: string;
         redirectEnvironmentUrl: string;
         wacUrl: string;
@@ -199,7 +201,7 @@ interface ICurrentPlaygroundInfo {
 
     supportsCustomFunctions: boolean;
     customFunctionsShowDebugLog: boolean;
-    
+
     isAddinCommands: boolean;
     isTryIt: boolean;
     wacUrl: string;
