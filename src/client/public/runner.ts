@@ -35,6 +35,12 @@ interface InitializationParams {
     explicitlySetDisplayLanguageOrNull: string;
 }
 
+// Interface must match the parameters of function "_init" in "maker.ts".
+interface MakerInitializationParams {
+    scriptReferences: string[];
+    onPerfAnalysisReady: (perfInfo: PerfInfoItem[]) => void;
+}
+
 (() => {
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
@@ -221,11 +227,12 @@ interface InitializationParams {
             if (!options.scriptReferences) {
                 options.scriptReferences = [];
             }
-
             if (isMaker) {
-                ((contentWindow as any).Experimental.ExcelMaker as any)._init({
-                    scriptReferences: options.scriptReferences
-                });
+                let params: MakerInitializationParams = {
+                    scriptReferences: options.scriptReferences,
+                    onPerfAnalysisReady: onPerfAnalysisReady
+                };
+                ((contentWindow as any).Experimental.ExcelMaker as any)._init(params);
             }
 
             if (officeJS) {
@@ -269,6 +276,10 @@ interface InitializationParams {
         contentWindow.document.close();
 
         return true;
+    }
+
+    function onPerfAnalysisReady(perf: PerfInfoItem[]) {
+        heartbeat.messenger.send<{ perf: PerfInfoItem[] }>(heartbeat.window, RunnerMessageType.SNIPPET_PERF_DATA, { perf: perf });
     }
 
     function handleError(error: Error) {

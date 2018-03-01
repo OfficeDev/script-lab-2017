@@ -44,6 +44,7 @@ export class Editor implements AfterViewInit {
     private tabNames: string[];
     private currentDecorations: any[] = [];
     private perfInfoPoller: any;
+    private previousPerfInfoTimestamp: number;
 
     strings = Strings();
 
@@ -66,24 +67,23 @@ export class Editor implements AfterViewInit {
 
             this.updateLastRegisteredFunctionsTooltip();
         }
-
+        this.previousPerfInfoTimestamp = 0;
         this.startPerfInfoTimer();
     }
 
     startPerfInfoTimer() {
-        let previousPerfInfoTimestamp: number;
         this.perfInfoPoller = setInterval(() => {
             ensureFreshLocalStorage();
             const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
-            if (newPerfNums > previousPerfInfoTimestamp) {
+            if (newPerfNums > this.previousPerfInfoTimestamp) {
                 storage.snippets.load();
                 let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
                 if (perfInfo) {
-                    if (perfInfo.timestamp === this.snippet.modified_at) {
+                    if (perfInfo.timestamp >= this.snippet.modified_at) {
                         this.setPerformanceMarkers(perfInfo.data);
                     }
                 }
-                window.localStorage.setItem(localStorageKeys.lastPerfNumbersTimestamp, newPerfNums.toString());
+                this.previousPerfInfoTimestamp= newPerfNums;
             }
         }, 500);
     }
@@ -92,7 +92,11 @@ export class Editor implements AfterViewInit {
      * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
-        let _overrides = { theme: 'vs' };
+        let _overrides = {
+            theme: 'vs',
+            glyphMargin: true // TODO, maybe only for script tab.
+        };
+
         if (this.isViewMode) {
             _overrides['readOnly'] = true;
         }
@@ -333,6 +337,7 @@ export class Editor implements AfterViewInit {
         if (!this.isViewMode) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
+            this._monacoEditor.deltaDecorations(this.currentDecorations, []);
         }
     }, 300);
 

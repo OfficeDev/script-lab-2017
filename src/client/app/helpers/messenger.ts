@@ -50,6 +50,9 @@ export enum RunnerMessageType {
 
     /** A message sent by the heartbeat, once it has initialized.  Message is { lastOpenedId: string } */
     HEARTBEAT_INITIALIZED,
+
+    /** A message sent to the heartbeat, containing perf info for it to write into the snippet (to show up in the editor).  Message is { perf: PerfInfoItem[] } */
+    SNIPPET_PERF_DATA,
 };
 
 export enum CustomFunctionsMessageType {

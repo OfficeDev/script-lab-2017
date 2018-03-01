@@ -30,6 +30,7 @@ interface IContentLanguagePair {
     language: string;
 }
 
+// Note, this interface is copied in several places.  Search for it.
 interface PerfInfoItem {
     line_no: number;
     frequency: number;

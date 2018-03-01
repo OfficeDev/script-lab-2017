@@ -17,8 +17,16 @@ module Experimental {
             scriptReferences: string[];
         }
 
+        interface PerfInfoItem {
+            line_no: number;
+            frequency: number;
+            duration: number;
+        };
+
         let _clientId: string;
         let _scriptReferences: string[];
+        let _onPerfAnalysisReady: (perfInfo: PerfInfoItem[]) => void;
+
         let worker: Worker;
 
         export declare function getWorkbook(workbookUrl: string): Excel.Workbook;
@@ -30,9 +38,11 @@ module Experimental {
          * @param scriptReferences
          */
         export function _init(params: {
-            scriptReferences: string[]
+            scriptReferences: string[],
+            onPerfAnalysisReady: (perfInfo: any[] /*aka PerfInfoItem[]*/) => void;
         }) {
             _scriptReferences = params.scriptReferences;
+            _onPerfAnalysisReady = params.onPerfAnalysisReady;
         };
 
         export function setup(clientId: string) {
@@ -58,9 +68,9 @@ module Experimental {
                         resolve(msg.content);
                         return;
                     } else if (msg.type === 'perfInfo') {
-                        console.log("I am ready to inject perf info!"); // FIXME
+                        _onPerfAnalysisReady(msg.content);
                     } else {
-                    console[msg.type](msg.content);
+                        console[msg.type](msg.content);
                     }
                 };
 

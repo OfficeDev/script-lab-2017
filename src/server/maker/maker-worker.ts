@@ -4,7 +4,7 @@
 /* tslint:disable:no-namespace */
 self.importScripts('sync-office-js'); // import sync office js code
 
-const VERBOSE_LOG = false;
+const VERBOSE_LOG = true;
 
 function ifVerbose(callback: () => void) {
     if (VERBOSE_LOG) {
@@ -103,7 +103,7 @@ module Experimental {
             export let _activeDocumentUrl: string;
             export const contexts: MockExcelContext[] = [];
 
-            let sessions: { documentUrl: string, sessionId: string }[] = [];
+            let sessions: { [documentUrl: string]: string } = {};
 
             export function getWorkbook(workbookUrl: string): Excel.Workbook {
                 let context = getExcelContext(_accessToken, workbookUrl);
@@ -118,7 +118,7 @@ module Experimental {
                 eval(`result = ${makerCode}();`);
 
                 cleanUpContexts();
-                closeSessions();
+                // closeSessions();
 
                 return result;
             };
@@ -166,7 +166,13 @@ module Experimental {
                     while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
                 }
 
+                if (sessions[documentUrl]) {
+                    ifVerbose(() => console.log(`found session id in cache ${sessions[documentUrl]}`));
+                    return sessions[documentUrl];
+                }
+
                 for (let i = 0; i < 10; i++) {
+                    ifVerbose(() => console.log(`attempting to createSession for '${documentUrl}'`));
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', `${documentUrl}/createSession`, false);
 
@@ -177,7 +183,8 @@ module Experimental {
 
                     if (xhr.readyState === 4 && xhr.status === 201) {
                         let response = JSON.parse(xhr.responseText);
-                        sessions.push({ documentUrl, sessionId: response.id })
+                        ifVerbose(() => console.log(`obtained a session id: ${response.id}`));
+                        sessions[documentUrl] = response.id;
                         return response.id;
                     } else {
                         console.error('Request failed to create session.  Returned status of ' + xhr.status);
@@ -190,9 +197,6 @@ module Experimental {
             }
 
             export function closeSessions() {
-                sessions.forEach(({ documentUrl, sessionId }) => {
-                    closeSession(_accessToken, documentUrl, sessionId);
-                });
             }
 
             export function closeSession(accessToken: string, documentUrl: string, sessionId: string): null {
@@ -207,6 +211,8 @@ module Experimental {
 
                 if (!(xhr.readyState === 4 && xhr.status === 204)) {
                     console.error('Request failed to close session.  Returned status of ' + xhr.status);
+                } else {
+                    console.log(`successfully closed session ${sessionId}`)
                 }
 
                 return null;
@@ -248,6 +254,7 @@ function stop_perf_timer(line_no: number) {
     const current = rawPerfInfo[line_no] || { duration: 0, frequency: 0 };
     // TODO add frquence
     current.duration += timeElapsed;
+    rawPerfInfo[line_no] = current;
 }
 
 function importScriptsFromReferences(scriptReferences: string[]) {
@@ -263,6 +270,19 @@ function importScriptsFromReferences(scriptReferences: string[]) {
     });
 }
 
+function sendPerfInfo() {
+    const sendablePerfInfo: PerfInfoItem[] = [];
+    // tslint:disable-next-line:forin
+    for (const line_no in rawPerfInfo) {
+        const { duration, frequency } = rawPerfInfo[line_no];
+        sendablePerfInfo.push({
+            line_no: Number(line_no),
+            duration,
+            frequency
+        });
+    }
+    processAndSendMessage('perfInfo', sendablePerfInfo);
+}
 
 self.addEventListener('message', (message: MessageEvent) => {
     ifVerbose(() => console.log('----- message posted to worker -----'));
@@ -289,17 +309,3 @@ self.addEventListener('message', (message: MessageEvent) => {
     rawPerfInfo = {};
 });
 
-function sendPerfInfo() {
-    const sendablePerfInfo: PerfInfoItem[] = [];
-    // tslint:disable-next-line:forin
-    for (const line_no in rawPerfInfo) {
-        const { duration, frequency } = rawPerfInfo[line_no];
-        sendablePerfInfo.push({
-            line_no: Number(line_no),
-            duration,
-            frequency
-        });
-    }
-
-    processAndSendMessage('perfInfo', sendablePerfInfo);
-}

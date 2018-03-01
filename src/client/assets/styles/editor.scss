@@ -76,7 +76,7 @@
         tab {
             display: none;
             height: 100% !important;
-        }    
+        }
 
         .collapse {
             &__info {
@@ -89,4 +89,8 @@
             }
         }
     }
+}
+
+.myGlyphMarginClass {
+	background: red !important;
 }
