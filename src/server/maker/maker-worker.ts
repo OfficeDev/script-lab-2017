@@ -252,7 +252,8 @@ function stop_perf_timer(line_no: number) {
     const timeElapsed = Date.now() - activeTimers[line_no];
 
     const current = rawPerfInfo[line_no] || { duration: 0, frequency: 0 };
-    // TODO add frquence
+
+    current.frequency += 1;
     current.duration += timeElapsed;
     rawPerfInfo[line_no] = current;
 }
@@ -272,14 +273,17 @@ function importScriptsFromReferences(scriptReferences: string[]) {
 
 function sendPerfInfo() {
     const sendablePerfInfo: PerfInfoItem[] = [];
+    ifVerbose(() => console.log(JSON.stringify(rawPerfInfo, null, 4)));
     // tslint:disable-next-line:forin
     for (const line_no in rawPerfInfo) {
         const { duration, frequency } = rawPerfInfo[line_no];
-        sendablePerfInfo.push({
-            line_no: Number(line_no),
-            duration,
-            frequency
-        });
+        if (duration >= 5) { // todo remove
+            sendablePerfInfo.push({
+                line_no: Number(line_no),
+                duration,
+                frequency
+            });
+        }
     }
     processAndSendMessage('perfInfo', sendablePerfInfo);
 }

@@ -1,3 +1,4 @@
+import * as $ from 'jquery';
 import * as moment from 'moment';
 import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -43,6 +44,7 @@ export class Editor implements AfterViewInit {
     private tabSub: Subscription;
     private tabNames: string[];
     private currentDecorations: any[] = [];
+    private currentCodeLensProvider: any;
     private perfInfoPoller: any;
     private previousPerfInfoTimestamp: number;
 
@@ -83,7 +85,7 @@ export class Editor implements AfterViewInit {
                         this.setPerformanceMarkers(perfInfo.data);
                     }
                 }
-                this.previousPerfInfoTimestamp= newPerfNums;
+                this.previousPerfInfoTimestamp = newPerfNums;
             }
         }, 500);
     }
@@ -94,7 +96,6 @@ export class Editor implements AfterViewInit {
     async ngAfterViewInit() {
         let _overrides = {
             theme: 'vs',
-            glyphMargin: true // TODO, maybe only for script tab.
         };
 
         if (this.isViewMode) {
@@ -113,7 +114,7 @@ export class Editor implements AfterViewInit {
         });
         this._createTabs();
         this._subscribeToState();
-    }
+   }
 
     ngOnDestroy() {
         if (this.menuSub) {
@@ -152,18 +153,45 @@ export class Editor implements AfterViewInit {
     }
 
     setPerformanceMarkers(perfInfo: PerfInfoItem[]) {
-        // check tabName??
         const newDecorations = perfInfo.map(({line_no, frequency, duration}) => {
             return {
                 range: new monaco.Range(line_no, 1, line_no, 1),
                 options: {
                     isWholeLine: true,
-                    glyphMarginClassName: 'myGlyphMarginClass',  // todo fix with real class
-                    glyphMarginHoverMessage: [`Ran ${frequency} times`, `Total Duration: ${duration} ms`]
+                    linesDecorationsClassName: 'perf-decorator',
                 }
             };
         });
         this.currentDecorations = this._monacoEditor.deltaDecorations(this.currentDecorations, newDecorations);
+        this.setCodeLensPerfNumbers(perfInfo);
+   }
+
+   clearPerformanceMakers() {
+       this.setPerformanceMarkers([]);
+   }
+
+    setCodeLensPerfNumbers(perfInfo: PerfInfoItem[]) {
+        if (this.currentCodeLensProvider) {
+            this.currentCodeLensProvider.dispose();
+        }
+        this.currentCodeLensProvider = monaco.languages.registerCodeLensProvider('typescript', {
+            provideCodeLenses: function(model, token) {
+                return perfInfo.map(({line_no, duration, frequency}) => {
+                    return {
+                        range: new monaco.Range(line_no, 1, line_no, 1),
+                        id: `line_no${line_no}`,
+                        command: {
+                            id: null,
+                            title: frequency === 1 ? `Duration: ${duration} ms.` : `Ran ${frequency} times. Total Duration: ${duration} ms.`
+                        }
+                    }
+
+                });
+            },
+            resolveCodeLens: function(model, codeLens, token) {
+                return codeLens;
+            }
+        });
     }
 
     async registerCustomFunctions() {
@@ -337,7 +365,7 @@ export class Editor implements AfterViewInit {
         if (!this.isViewMode) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
-            this._monacoEditor.deltaDecorations(this.currentDecorations, []);
+            this.clearPerformanceMakers();
         }
     }, 300);
 
