@@ -35,7 +35,6 @@ module Experimental {
         // todo figure out if this method can be hidden from intellisense
         /** Initializes the script references to pass to the worker.
          *  DO NOT CALL THIS METHOD, INTERNAL USE ONLY.
-         * @param scriptReferences
          */
         export function _init(params: {
             scriptReferences: string[],
@@ -50,7 +49,7 @@ module Experimental {
         }
 
         export async function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<any> {
-            const accessToken = await ScriptLab.getAccessToken(_clientId);
+            const accessToken = await ScriptLab.getAccessToken();
 
             return new Promise(async (resolve, reject) => {
                 if (!worker) {

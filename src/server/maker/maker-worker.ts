@@ -124,7 +124,13 @@ module Experimental {
             };
 
             export function getExcelContext(accessToken: string, documentUrl: string): MockExcelContext {
-                let sessionId = createSession(accessToken, documentUrl);
+                let sessionId: string;
+                if (sessions[documentUrl]) {
+                    ifVerbose(() => console.log(`found session id in cache ${sessions[documentUrl]}`));
+                    sessionId = sessions[documentUrl];
+                } else {
+                    sessionId = createSession(accessToken, documentUrl);
+                }
 
                 let sessionInfo: RequestUrlAndHeaderInfo = {
                     url: documentUrl,
@@ -164,11 +170,6 @@ module Experimental {
                 function sleepFor(sleepDuration) {
                     const now = new Date().getTime();
                     while (new Date().getTime() < now + sleepDuration) { /* do nothing */ }
-                }
-
-                if (sessions[documentUrl]) {
-                    ifVerbose(() => console.log(`found session id in cache ${sessions[documentUrl]}`));
-                    return sessions[documentUrl];
                 }
 
                 for (let i = 0; i < 10; i++) {
@@ -212,7 +213,7 @@ module Experimental {
                 if (!(xhr.readyState === 4 && xhr.status === 204)) {
                     console.error('Request failed to close session.  Returned status of ' + xhr.status);
                 } else {
-                    console.log(`successfully closed session ${sessionId}`)
+                    console.log(`successfully closed session ${sessionId}`);
                 }
 
                 return null;

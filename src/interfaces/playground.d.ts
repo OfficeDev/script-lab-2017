@@ -242,7 +242,8 @@ interface IEnvironmentConfig {
     tokenUrl: string,
     runnerUrl: string,
     feedbackUrl: string,
-    samplesUrl: string
+    samplesUrl: string,
+    thirdPartyAADAppClientId: string,
 }
 
 interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
@@ -278,6 +279,12 @@ interface AuthRequestParamData {
     resource: string;
     client_id: string;
     is_office_host: boolean;
+    snippet_id: string;
+}
+
+interface DefaultAuthRequestParamData {
+    snippet_id: string;
+    auth_url: string;
 }
 
 interface LogData {

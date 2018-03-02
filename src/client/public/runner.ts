@@ -163,6 +163,7 @@ interface MakerInitializationParams {
             $snippetContent.text('');
 
             replaceSnippetIframe({
+                snippetId: initialParams.currentSnippet.id,
                 html: atob(snippetHtml),
                 officeJS: initialParams.currentSnippet.officeJS,
                 isTrustedSnippet,
@@ -193,8 +194,10 @@ interface MakerInitializationParams {
 
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
-    function replaceSnippetIframe(params: { html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }): boolean {
-        const { html, officeJS, isTrustedSnippet, isMaker } = params;
+    function replaceSnippetIframe(
+        { snippetId, html, officeJS, isTrustedSnippet, isMaker }:
+            { snippetId: string, html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }
+    ): boolean {
 
         showHeader();
 
@@ -226,6 +229,10 @@ interface MakerInitializationParams {
 
             if (!options.scriptReferences) {
                 options.scriptReferences = [];
+            }
+
+            if ((contentWindow as any).ScriptLab) {
+                (contentWindow as any).ScriptLab._init({ snippet: { id: snippetId } });
             }
             if (isMaker) {
                 let params: MakerInitializationParams = {
@@ -455,7 +462,8 @@ interface MakerInitializationParams {
         $('#header-refresh').attr('href', refreshUrl);
 
         const officeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS;
-        let replacedSuccessfully = replaceSnippetIframe({ html, officeJS, isTrustedSnippet, isMaker });
+        const snippetId = snippet.id;
+        let replacedSuccessfully = replaceSnippetIframe({ snippetId, html, officeJS, isTrustedSnippet, isMaker });
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
