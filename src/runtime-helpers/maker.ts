@@ -49,39 +49,47 @@ module Experimental {
         }
 
         export async function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<any> {
-            const accessToken = await ScriptLab.getAccessToken();
+            let runCurtain =parent.window.document.getElementById('curtain');
+            runCurtain.style['display'] = 'block';
+            try {
+                const accessToken = await ScriptLab.getAccessToken();
 
-            return new Promise(async (resolve, reject) => {
-                if (!worker) {
-                    worker = new Worker('./lib/worker');
-                }
-
-                worker.onerror = (...args) => {
-                    console.error(args);
-                    reject(args);
-                };
-
-                worker.onmessage = (message: MessageEvent) => {
-                    let msg: MakerWorkerMessage<any> = message.data;
-                    if (msg.type === 'result') {
-                        resolve(msg.content);
-                        return;
-                    } else if (msg.type === 'perfInfo') {
-                        _onPerfAnalysisReady(msg.content);
-                    } else {
-                        console[msg.type](msg.content);
+                return new Promise(async (resolve, reject) => {
+                    if (!worker) {
+                        worker = new Worker('./lib/worker');
                     }
-                };
 
-                let activeDocumentUrl = await getActiveDocumentUrl(accessToken);
+                    worker.onerror = (...args) => {
+                        console.error(args);
+                        reject(args);
+                    };
 
-                worker.postMessage({
-                    accessToken,
-                    makerCode: makerCode.toString(),
-                    activeDocumentUrl,
-                    scriptReferences: _scriptReferences
+                    worker.onmessage = (message: MessageEvent) => {
+                        let msg: MakerWorkerMessage<any> = message.data;
+                        if (msg.type === 'result') {
+                            runCurtain.style['display'] = 'none';
+                            resolve(msg.content);
+                            return;
+                        } else if (msg.type === 'perfInfo') {
+                            _onPerfAnalysisReady(msg.content);
+                        } else {
+                            console[msg.type](msg.content);
+                        }
+                    };
+
+                    let activeDocumentUrl = await getActiveDocumentUrl(accessToken);
+
+                    worker.postMessage({
+                        accessToken,
+                        makerCode: makerCode.toString(),
+                        activeDocumentUrl,
+                        scriptReferences: _scriptReferences
+                    });
                 });
-            });
+            } catch (e) {
+                console.error(e);
+                runCurtain.style['display'] = 'none';
+            }
         }
 
         async function getActiveDocumentUrl(accessToken: string) {

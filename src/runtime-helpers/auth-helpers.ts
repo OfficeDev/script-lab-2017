@@ -49,7 +49,7 @@ module ScriptLab {
         }
 
         if (!clientId) {
-            clientId = 'default'; // todo factor out
+            clientId = 'default';
         }
 
         const cachedAccessToken = _getCachedAccessToken(clientId, resource);

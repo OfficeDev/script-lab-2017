@@ -120,7 +120,8 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 let clientId = authRequest.client_id;
                 const isDefaultClientId = clientId === 'default';
                 if (isDefaultClientId) {
-                    clientId = environment.current.config.thirdPartyAADAppClientId;
+                    // clientId = environment.current.config.thirdPartyAADAppClientId; // fixme
+                    clientId = 'd56fb06a-74be-4bd7-8ede-cbf2ea737328';
                 }
 
                 const generatedAuthRequestUrl = generateUrl(AzureADAuthorizeUrl, {
