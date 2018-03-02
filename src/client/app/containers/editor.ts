@@ -1,4 +1,3 @@
-import * as $ from 'jquery';
 import * as moment from 'moment';
 import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Store } from '@ngrx/store';
