@@ -40,6 +40,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
 
         ok: 'OK',
         logout: 'Sign out',
+        logoutFromGraph: 'Sign out from Microsoft Graph',
         cancel: 'Cancel',
         save: 'Save',
         moreInfo: 'More info',

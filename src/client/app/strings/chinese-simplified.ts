@@ -44,6 +44,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
         ok: getEnglishSubstitutesForNotYetTranslated().ok,
         logout: '退出',
+        logoutFromGraph: getEnglishSubstitutesForNotYetTranslated().logoutFromGraph,
         save: '保存',
         moreInfo: '更多信息',
         import: '输入',
@@ -210,7 +211,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
 
         localStorageWarning: `如果您清除浏览器缓存，则创建的代码片段将被删除。 ` +
-        `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,
+            `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,
         localStorageWarningAction: `不要再显示这个警告了。`,
 
         importInstructions: `进入代码段的URL或粘贴下面的YAML，然后选择`,
@@ -273,8 +274,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
             chooseYourHost: '选择你的主机:',
 
             localStorageUnavailableMessage:
-            '无法初始化Script Lab，因为浏览器的本地存储已禁用。 ' +
-            ' 请尝试在不同的浏览器或者电脑，或者检查你的网络设置。',
+                '无法初始化Script Lab，因为浏览器的本地存储已禁用。 ' +
+                ' 请尝试在不同的浏览器或者电脑，或者检查你的网络设置。',
 
             loadingRunnerDotDotDot: '加载运行...',
             running: '运行',

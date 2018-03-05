@@ -232,6 +232,7 @@ module ScriptLab {
         });
     }
 
+    // This function is also duplicated in "about.ts" for logout of the default graph snippet registration.
     function _generateAuthUrl(params: {
         auth_action: 'login' | 'logout';
         resource: string;
