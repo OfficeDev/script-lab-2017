@@ -125,6 +125,7 @@ module Experimental {
 
             export function getExcelContext(accessToken: string, documentUrl: string): MockExcelContext {
                 let sessionId: string;
+
                 if (sessions[documentUrl]) {
                     ifVerbose(() => console.log(`found session id in cache ${sessions[documentUrl]}`));
                     sessionId = sessions[documentUrl];
@@ -142,6 +143,18 @@ module Experimental {
 
                 let ctx: any = new Excel.RequestContext(sessionInfo as any);
                 ctx._autoCleanup = true;
+
+                try {
+                    ctx.workbook.load('$none');
+                    ctx.syncSynchronous();
+                } catch (e) {
+                    ifVerbose(() => {
+                        console.error(e);
+                        console.log('clearing cache of sessions');
+                    });
+                    delete sessions[documentUrl]; // removing from cache in case it exists
+                    return getExcelContext(accessToken, documentUrl); // potential infinite loop if network goes down or something of that nature
+                }
 
                 return ctx;
             }
@@ -274,7 +287,7 @@ function importScriptsFromReferences(scriptReferences: string[]) {
 
 function sendPerfInfo() {
     const sendablePerfInfo: PerfInfoItem[] = [];
-    ifVerbose(() => console.log(JSON.stringify(rawPerfInfo, null, 4)));
+    // ifVerbose(() => console.log(JSON.stringify(rawPerfInfo, null, 4)));
     // tslint:disable-next-line:forin
     for (const line_no in rawPerfInfo) {
         const { duration, frequency } = rawPerfInfo[line_no];
