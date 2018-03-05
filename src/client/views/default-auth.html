@@ -28,34 +28,78 @@
 	<link rel="manifest" href="favicon/manifest.json">
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.min.css">
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.components.min.css">
+	<style>
+		.container {
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+			-ms-flex-direction: column;
+				flex-direction: column;
+		width: 500px;
+		margin: auto;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		-webkit-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+		}
+		.container>* {
+		margin-top: 14pt;
+		margin-bottom: 14pt;
+		}
+		.container h1 {
+		text-align: center;
+		}
+		.container h3 {
+		font-weight: bold;
+		}
+		.container li {
+		position: relative;
+		left: 30pt;
+		}
+		.container #button-container {
+		width: 100%;
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-pack: space-evenly;
+			-ms-flex-pack: space-evenly;
+				justify-content: space-evenly;
+		height: 32pt;
+		margin-top: 32pt;
+		}
+		.container #button-container button {
+		height: 100%;
+		min-width: 120pt;
+		}
+		.container .ms-Button--primary {
+		color: #fff;
+		}
+	</style>
 </head>
 
-<body class="ms-font-m">
-	<app class="app">
-		<div id="progress" class="ms-progress-component">
-			<div id="ribbon" class="ribbon"></div>
-			<main class="ms-progress-component__main">
-				<img class="ms-progress-component__logo" src="../assets/images/icon-large.svg" />
-				<h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
-
-				<!--Note: text below will get localized at runtime, and is hidden (but still taking up screen layout space) until then:-->
-				<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Authy things go here...</p>
-			</main>
-			<footer class="ms-progress-component__footer">
-				<div class="ms-progress">
-					<div class="cs-loader">
-						<div class="cs-loader-inner">
-							<label class="ms-Icon ms-Icon--LocationDot"></label>
-							<label class="ms-Icon ms-Icon--LocationDot"></label>
-							<label class="ms-Icon ms-Icon--LocationDot"></label>
-							<label class="ms-Icon ms-Icon--LocationDot"></label>
-							<label class="ms-Icon ms-Icon--LocationDot"></label>
-						</div>
-					</div>
-				</div>
-			</footer>
+<body>
+	<div class="container ms-Fabric">
+		<h1 class="ms-font-su ms-fontColor-themePrimary">Authorize Script Lab Snippet</h1>
+		<h3 class="ms-font-l" id="snippetId">Snippet ID: </h3>
+		<p class="ms-font-l">This snippet is requesting access to Microsoft Graph on your behalf.</p>
+		<p class="ms-font-l">By clicking Authorize, you are allowing this snippet to:</p>
+		<ul class="ms-font-l">
+		  <li>Access Documents in your OneDrive</li>
+		  <li>Read/Write/Send Emails</li>
+		  <li>Access/Add Events to your Calendar</li>
+		</ul>
+		<div id="button-container">
+		  <button class="ms-Button ms-Button--default" id="cancel">
+			<div class="ms-Button-textContainer ms-fontWeight-semibold ms-fontSize-l">Cancel</div>
+		  </button>
+		  <button class="ms-Button ms-Button--primary" id="authorize">
+			<div class="ms-Button-textContainer ms-fontWeight-semibold ms-fontSize-l">Authorize</div>
+		  </button>
 		</div>
-	</app>
+	  </div>
 </body>
 
 </html>
