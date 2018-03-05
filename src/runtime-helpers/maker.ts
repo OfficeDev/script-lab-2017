@@ -49,7 +49,7 @@ module Experimental {
         }
 
         export async function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<any> {
-            let runCurtain =parent.window.document.getElementById('curtain');
+            let runCurtain = parent.window.document.getElementById('curtain');
             runCurtain.style['display'] = 'block';
             try {
                 const accessToken = await ScriptLab.getAccessToken();
