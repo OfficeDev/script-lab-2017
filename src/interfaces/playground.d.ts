@@ -139,7 +139,6 @@ interface IEvent<T> {
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition)
 declare var PLAYGROUND: ICompiledPlaygroundInfo;
 
-
 interface ICompiledPlaygroundInfo {
     devMode: boolean;
     build: IBuildInfo;

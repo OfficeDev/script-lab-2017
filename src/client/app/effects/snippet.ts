@@ -74,7 +74,6 @@ export class SnippetEffects {
         .ofType(Snippet.SnippetActionTypes.SAVE, Snippet.SnippetActionTypes.CREATE)
         .map((action: Snippet.SaveAction) => action.payload)
         .map(rawSnippet => {
-            // TODO ?? clear markers in the snippet
             this._validate(rawSnippet);
 
             const publicOrInternal = SnippetFieldType.PUBLIC | SnippetFieldType.INTERNAL;

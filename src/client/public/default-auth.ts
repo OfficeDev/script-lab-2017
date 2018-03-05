@@ -14,6 +14,6 @@ import '../assets/styles/extras.scss';
             localStorage.setItem(localStorageKey, 'true');
             window.location.assign(authRequestParams.auth_url);
         };
-        document.getElementById('cancel').onclick = () => {window.close(); };
+        document.getElementById('cancel').onclick = () => { window.close(); };
     }
 })();

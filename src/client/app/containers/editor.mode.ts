@@ -142,9 +142,6 @@ export class EditorMode {
             return;
         }
 
-        // todo
-        // if (localStorage.getItem(`consent_${this.snippet.id}`) === 'true') {
-
         if (isOfficeHost(this.snippet.host)) {
             const canRun = isInsideOfficeApp() || (this.snippet && isMakerScript(this.snippet.script));
             if (!canRun) {
@@ -158,10 +155,6 @@ export class EditorMode {
         }
 
         this._store.dispatch(new Snippet.RunAction(this.snippet));
-
-        // } else {
-
-        // }
     }
 
     runSideBySide() {
@@ -376,7 +369,7 @@ export class EditorMode {
                 }));
                 break;
 
-            // todo
+            // todo <-- what was this for?
             case Snippet.ImportType.OPEN:
                 this._store.dispatch(new Snippet.ImportAction({
                     ...commonImportActionParams, saveToLocalStorage: true, data: id

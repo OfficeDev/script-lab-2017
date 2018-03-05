@@ -150,7 +150,7 @@ module Experimental {
                 } catch (e) {
                     ifVerbose(() => {
                         console.error(e);
-                        console.log('clearing cache of sessions');
+                        console.info('clearing cache of sessions');
                     });
                     delete sessions[documentUrl]; // removing from cache in case it exists
                     return getExcelContext(accessToken, documentUrl); // potential infinite loop if network goes down or something of that nature
@@ -186,7 +186,7 @@ module Experimental {
                 }
 
                 for (let i = 0; i < 10; i++) {
-                    ifVerbose(() => console.log(`attempting to createSession for '${documentUrl}'`));
+                    ifVerbose(() => console.info(`attempting to createSession for '${documentUrl}'`));
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', `${documentUrl}/createSession`, false);
 
@@ -197,7 +197,7 @@ module Experimental {
 
                     if (xhr.readyState === 4 && xhr.status === 201) {
                         let response = JSON.parse(xhr.responseText);
-                        ifVerbose(() => console.log(`obtained a session id: ${response.id}`));
+                        ifVerbose(() => console.info(`obtained a session id: ${response.id}`));
                         sessions[documentUrl] = response.id;
                         return response.id;
                     } else {
@@ -226,7 +226,7 @@ module Experimental {
                 if (!(xhr.readyState === 4 && xhr.status === 204)) {
                     console.error('Request failed to close session.  Returned status of ' + xhr.status);
                 } else {
-                    console.log(`successfully closed session ${sessionId}`);
+                    console.info(`successfully closed session ${sessionId}`);
                 }
 
                 return null;
@@ -276,7 +276,7 @@ function importScriptsFromReferences(scriptReferences: string[]) {
     scriptReferences.forEach(script => {
         if (script) {
             try {
-                ifVerbose(() => console.log(`attempting to load ${script}`));
+                ifVerbose(() => console.info(`attempting to load ${script}`));
                 self.importScripts(script);
             } catch (error) {
                 console.error(`Failed to load '${script}' for tinker() block!`);
@@ -303,7 +303,7 @@ function sendPerfInfo() {
 }
 
 self.addEventListener('message', (message: MessageEvent) => {
-    ifVerbose(() => console.log('----- message posted to worker -----'));
+    ifVerbose(() => console.info('--------- starting tinker block ----------'));
 
     const { accessToken, activeDocumentUrl, makerCode, scriptReferences }: ExecuteMakerScriptMessage = message.data;
 
@@ -312,13 +312,12 @@ self.addEventListener('message', (message: MessageEvent) => {
     Experimental.ExcelMaker.setAccessToken(accessToken);
     Experimental.ExcelMaker.setActiveDocumentUrl(activeDocumentUrl);
 
-    ifVerbose(() => console.log(`documentUrl: ${activeDocumentUrl}`));
+    // ifVerbose(() => console.info(`documentUrl: ${activeDocumentUrl}`));
 
     let result = Experimental.ExcelMaker._Internal.runMakerFunction(makerCode);
 
     ifVerbose(() => {
-        console.log('maker code finished execution');
-        console.log('----- worker finished processing message -----');
+        console.info('---------- finished tinker block ----------');
     });
 
     sendPerfInfo();
