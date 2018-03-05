@@ -174,7 +174,7 @@ export class Editor implements AfterViewInit {
             this.currentCodeLensProvider.dispose();
         }
         this.currentCodeLensProvider = monaco.languages.registerCodeLensProvider('typescript', {
-            provideCodeLenses: function(model, token) {
+            provideCodeLenses: (model, token) => {
                 return perfInfo.map(({line_no, duration, frequency}) => {
                     return {
                         range: new monaco.Range(line_no, 1, line_no, 1),
@@ -183,11 +183,10 @@ export class Editor implements AfterViewInit {
                             id: null,
                             title: frequency === 1 ? `Duration: ${duration} ms.` : `Ran ${frequency} times. Total Duration: ${duration} ms.`
                         }
-                    }
-
+                    };
                 });
             },
-            resolveCodeLens: function(model, codeLens, token) {
+            resolveCodeLens: (model, codeLens, token) => {
                 return codeLens;
             }
         });
