@@ -74,17 +74,19 @@ export class Editor implements AfterViewInit {
 
     startPerfInfoTimer() {
         this.perfInfoPoller = setInterval(() => {
-            ensureFreshLocalStorage();
-            const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
-            if (newPerfNums > this.previousPerfInfoTimestamp) {
-                storage.snippets.load();
-                let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
-                if (perfInfo) {
-                    if (perfInfo.timestamp >= this.snippet.modified_at) {
-                        this.setPerformanceMarkers(perfInfo.data);
+            if (this.currentState.name === 'script') {
+                ensureFreshLocalStorage();
+                const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
+                if (newPerfNums > this.previousPerfInfoTimestamp) {
+                    storage.snippets.load();
+                    let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
+                    if (perfInfo) {
+                        if (perfInfo.timestamp >= this.snippet.modified_at) {
+                            this.setPerformanceMarkers(perfInfo.data);
+                        }
                     }
+                    this.previousPerfInfoTimestamp = newPerfNums;
                 }
-                this.previousPerfInfoTimestamp = newPerfNums;
             }
         }, 500);
     }
@@ -163,11 +165,11 @@ export class Editor implements AfterViewInit {
         });
         this.currentDecorations = this._monacoEditor.deltaDecorations(this.currentDecorations, newDecorations);
         this.setCodeLensPerfNumbers(perfInfo);
-   }
+    }
 
-   clearPerformanceMakers() {
+    clearPerformanceMakers() {
        this.setPerformanceMarkers([]);
-   }
+    }
 
     setCodeLensPerfNumbers(perfInfo: PerfInfoItem[]) {
         if (this.currentCodeLensProvider) {
@@ -312,6 +314,7 @@ export class Editor implements AfterViewInit {
                     this._monacoEditor.focus();
                     this._resize();
                     timer.stop();
+                    this.previousPerfInfoTimestamp = 0;
                 }
             });
     }
@@ -352,6 +355,8 @@ export class Editor implements AfterViewInit {
         });
 
         this._snippet = snippet;
+        this.clearPerformanceMakers();
+        this.previousPerfInfoTimestamp = 0;
         this.changeTab();
     }
 
