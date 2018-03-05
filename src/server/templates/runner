@@ -41,8 +41,9 @@
             width: 100%;
             height: 100%;
             position: absolute;
-            top:0;
-            left:0;
+            top: 40px;
+            left: 0;
+            z-index: 40000;
         }
         #curtain .spinner {
             position: absolute;
@@ -50,7 +51,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            margin: auto;
+            margin: 40px auto;
             width: 70px;
             height: 20px;
             text-align: center;

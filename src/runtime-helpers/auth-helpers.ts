@@ -1,5 +1,3 @@
-// import { storage } from '../client/app/helpers/storage';
-
 /* tslint:disable:no-namespace */
 
 // NOTE: At initialization, the ScriptLab namespace also expects

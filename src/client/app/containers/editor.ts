@@ -68,28 +68,8 @@ export class Editor implements AfterViewInit {
 
             this.updateLastRegisteredFunctionsTooltip();
         }
-        this.previousPerfInfoTimestamp = 0;
-        this.startPerfInfoTimer();
     }
 
-    startPerfInfoTimer() {
-        this.perfInfoPoller = setInterval(() => {
-            if (this.currentState.name === 'script') {
-                ensureFreshLocalStorage();
-                const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
-                if (newPerfNums > this.previousPerfInfoTimestamp) {
-                    storage.snippets.load();
-                    let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
-                    if (perfInfo) {
-                        if (perfInfo.timestamp >= this.snippet.modified_at) {
-                            this.setPerformanceMarkers(perfInfo.data);
-                        }
-                    }
-                    this.previousPerfInfoTimestamp = newPerfNums;
-                }
-            }
-        }, 500);
-    }
 
     /**
      * Initialize the component and subscribe to all the necessary actions.
@@ -115,7 +95,7 @@ export class Editor implements AfterViewInit {
         });
         this._createTabs();
         this._subscribeToState();
-   }
+    }
 
     ngOnDestroy() {
         if (this.menuSub) {
@@ -153,8 +133,30 @@ export class Editor implements AfterViewInit {
         ));
     }
 
+    startPerfInfoTimer() {
+        if (this.perfInfoPoller) {
+            return;
+        }
+
+        this.previousPerfInfoTimestamp = 0;
+        this.perfInfoPoller = setInterval(() => {
+            ensureFreshLocalStorage();
+            const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
+            if (newPerfNums > this.previousPerfInfoTimestamp) {
+                storage.snippets.load();
+                let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
+                if (perfInfo) {
+                    if (perfInfo.timestamp >= this.snippet.modified_at) {
+                        this.setPerformanceMarkers(perfInfo.data);
+                    }
+                }
+                this.previousPerfInfoTimestamp = newPerfNums;
+            }
+        }, 500);
+    }
+
     setPerformanceMarkers(perfInfo: PerfInfoItem[]) {
-        const newDecorations = perfInfo.map(({line_no, frequency, duration}) => {
+        const newDecorations = perfInfo.map(({ line_no, frequency, duration }) => {
             return {
                 range: new monaco.Range(line_no, 1, line_no, 1),
                 options: {
@@ -168,7 +170,12 @@ export class Editor implements AfterViewInit {
     }
 
     clearPerformanceMakers() {
-       this.setPerformanceMarkers([]);
+        this.previousPerfInfoTimestamp = 0;
+        if (this.perfInfoPoller) {
+            this.perfInfoPoller = clearInterval(this.perfInfoPoller);
+        }
+
+        this.setPerformanceMarkers([]);
     }
 
     setCodeLensPerfNumbers(perfInfo: PerfInfoItem[]) {
@@ -177,7 +184,7 @@ export class Editor implements AfterViewInit {
         }
         this.currentCodeLensProvider = monaco.languages.registerCodeLensProvider('typescript', {
             provideCodeLenses: (model, token) => {
-                return perfInfo.map(({line_no, duration, frequency}) => {
+                return perfInfo.map(({ line_no, duration, frequency }) => {
                     return {
                         range: new monaco.Range(line_no, 1, line_no, 1),
                         id: `line_no${line_no}`,
@@ -308,13 +315,17 @@ export class Editor implements AfterViewInit {
                     if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
                         this.updateIntellisense(this.currentState.name);
                     }
+                    if (this.currentState.name === 'script') {
+                        this.startPerfInfoTimer();
+                    } else {
+                        this.clearPerformanceMakers();
+                    }
                     this.showRegisterCustomFunctions = newTab === 'customFunctions';
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();
                     this._resize();
                     timer.stop();
-                    this.previousPerfInfoTimestamp = 0;
                 }
             });
     }
@@ -356,7 +367,6 @@ export class Editor implements AfterViewInit {
 
         this._snippet = snippet;
         this.clearPerformanceMakers();
-        this.previousPerfInfoTimestamp = 0;
         this.changeTab();
     }
 

@@ -62,8 +62,6 @@
 {{/if}}
     <!-- Script -->
     <script type="text/javascript">
-        window.start_perf_timer = function() {};    // todo: scope the perf injection to only inject inside tinker block,
-        window.stop_perf_timer = function() {};     // or at least make it so that it conditionally injects these based on isMakerScript
         {{#if isExternalExport}}
         {{else}}
         {{!-- It appears that doing document.body.onload from the runner can sometimes be --}}

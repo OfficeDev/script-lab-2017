@@ -17,6 +17,7 @@ module Experimental {
             scriptReferences: string[];
         }
 
+        // NOTE: this is a duplicated interface located in maker-interfaces.d.ts
         interface PerfInfoItem {
             line_no: number;
             frequency: number;

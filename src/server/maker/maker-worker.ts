@@ -312,7 +312,7 @@ self.addEventListener('message', (message: MessageEvent) => {
     Experimental.ExcelMaker.setAccessToken(accessToken);
     Experimental.ExcelMaker.setActiveDocumentUrl(activeDocumentUrl);
 
-    // ifVerbose(() => console.info(`documentUrl: ${activeDocumentUrl}`));
+    // ifVerbose(() => console.info(`documentUrl: ${activeDocumentUrl}`)); // for debugging
 
     let result = Experimental.ExcelMaker._Internal.runMakerFunction(makerCode);
 

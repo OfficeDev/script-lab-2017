@@ -369,7 +369,6 @@ export class EditorMode {
                 }));
                 break;
 
-            // todo <-- what was this for?
             case Snippet.ImportType.OPEN:
                 this._store.dispatch(new Snippet.ImportAction({
                     ...commonImportActionParams, saveToLocalStorage: true, data: id

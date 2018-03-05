@@ -240,6 +240,10 @@ interface MakerInitializationParams {
                     onPerfAnalysisReady: onPerfAnalysisReady
                 };
                 ((contentWindow as any).Experimental.ExcelMaker as any)._init(params);
+
+                // timer only works on maker snippets inside the worker, so setting to empty
+                (contentWindow as any).start_perf_timer = () => {};
+                (contentWindow as any).stop_perf_timer = () => {};
             }
 
             if (officeJS) {

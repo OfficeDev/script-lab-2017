@@ -21,6 +21,8 @@ const SnippetIdParamName: keyof AuthRequestParamData = 'snippet_id';
 let strings: ClientStrings;
 
 tryCatch(async () => {
+    environment.initializePartial();
+
     strings = Strings();
 
     document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect;
@@ -120,8 +122,7 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 let clientId = authRequest.client_id;
                 const isDefaultClientId = clientId === 'default';
                 if (isDefaultClientId) {
-                    // clientId = environment.current.config.thirdPartyAADAppClientId; // fixme
-                    clientId = 'd56fb06a-74be-4bd7-8ede-cbf2ea737328';
+                    clientId = environment.current.config.thirdPartyAADAppClientId;
                 }
 
                 const generatedAuthRequestUrl = generateUrl(AzureADAuthorizeUrl, {
