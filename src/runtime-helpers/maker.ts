@@ -58,6 +58,7 @@ module Experimental {
 
                     worker.onerror = (...args) => {
                         console.error(args);
+                        runCurtain.style['display'] = 'none';
                         reject(args);
                     };
 
