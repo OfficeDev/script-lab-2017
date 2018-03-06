@@ -45,10 +45,6 @@ module Experimental {
             _onPerfAnalysisReady = params.onPerfAnalysisReady;
         };
 
-        export function setup(clientId: string) {
-            _clientId = clientId;
-        }
-
         export async function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<any> {
             let runCurtain = parent.window.document.getElementById('curtain');
             runCurtain.style['display'] = 'block';
@@ -62,6 +58,7 @@ module Experimental {
 
                     worker.onerror = (...args) => {
                         console.error(args);
+                        runCurtain.style['display'] = 'none';
                         reject(args);
                     };
 
