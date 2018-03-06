@@ -33,8 +33,7 @@ module.exports = (prodMode) =>
             indexScript: './public/index.script.ts',
             runScript: './public/run.script.ts',
             tutorialScript: './public/tutorial.script.ts',
-            externalPageScript: './public/external.page.script.ts', 
-
+            externalPageScript: './public/external.page.script.ts',
             polyfills: './polyfills.ts',
             vendor: './vendor.ts',
             main: './main.ts',
@@ -44,11 +43,11 @@ module.exports = (prodMode) =>
             runner: './public/runner.ts',
             error: './public/error.ts',
             auth: './public/auth.ts',
+            defaultAuth: './public/default-auth.ts',
             tryIt: './public/try.it.ts',
             customFunctions: './public/custom.functions.ts',
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
             compileCustomFunctions: './public/compile.custom.functions.ts',
-
             log: './public/log.ts',
         },
 
@@ -212,7 +211,12 @@ module.exports = (prodMode) =>
                 template: './views/external-page.html',
                 chunks: ['polyfills', 'vendor', 'externalPageScript'],
             }),
-            
+            new HtmlWebpackPlugin({
+                filename: 'default-auth.html',
+                template: './views/default-auth.html',
+                chunks: ['polyfills', 'vendor', 'defaultAuth'],
+            }),
+
             new RedirectPlugin(),
 
             new VersionedPackageSubstitutionsPlugin(versionedPackageNames),

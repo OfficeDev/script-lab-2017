@@ -15,11 +15,14 @@ const DefaultResourceMap = {
 const ActionParamName: keyof AuthRequestParamData = 'auth_action';
 const ResourceParamName: keyof AuthRequestParamData = 'resource';
 const ClientIdParamName: keyof AuthRequestParamData = 'client_id';
+const SnippetIdParamName: keyof AuthRequestParamData = 'snippet_id';
 
 
 let strings: ClientStrings;
 
 tryCatch(async () => {
+    environment.initializePartial();
+
     strings = Strings();
 
     document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect;
@@ -115,13 +118,30 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                 }
 
                 window.sessionStorage[AuthRequestSessionStorageKey] = JSON.stringify(authRequest);
-                const url = generateUrl(AzureADAuthorizeUrl, {
+
+                let clientId = authRequest.client_id;
+                const isDefaultClientId = clientId === 'default';
+                if (isDefaultClientId) {
+                    clientId = environment.current.config.thirdPartyAADAppClientId;
+                }
+
+                const generatedAuthRequestUrl = generateUrl(AzureADAuthorizeUrl, {
                     'response_type': 'token',
-                    'client_id': authRequest.client_id,
+                    'client_id': clientId,
                     'resource': resource,
                     'redirect_uri': getCurrentPageBaseUrl()
                 });
-                window.location.assign(url);
+
+                if (isDefaultClientId) {
+                    const intermediaryUrl = generateUrl(`${environment.current.config.editorUrl}/default-auth.html`, {
+                        snippet_id: authRequest[SnippetIdParamName],
+                        auth_url: generatedAuthRequestUrl
+                    });
+
+                    window.location.assign(intermediaryUrl);
+                } else {
+                    window.location.assign(generatedAuthRequestUrl);
+                }
 
                 return;
             }

@@ -35,6 +35,12 @@ interface InitializationParams {
     explicitlySetDisplayLanguageOrNull: string;
 }
 
+// Interface must match the parameters of function "_init" in "maker.ts".
+interface MakerInitializationParams {
+    scriptReferences: string[];
+    onPerfAnalysisReady: (perfInfo: PerfInfoItem[]) => void;
+}
+
 (() => {
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
@@ -157,6 +163,7 @@ interface InitializationParams {
             $snippetContent.text('');
 
             replaceSnippetIframe({
+                snippetId: initialParams.currentSnippet.id,
                 html: atob(snippetHtml),
                 officeJS: initialParams.currentSnippet.officeJS,
                 isTrustedSnippet,
@@ -187,8 +194,10 @@ interface InitializationParams {
 
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
-    function replaceSnippetIframe(params: { html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }): boolean {
-        const { html, officeJS, isTrustedSnippet, isMaker } = params;
+    function replaceSnippetIframe(
+        { snippetId, html, officeJS, isTrustedSnippet, isMaker }:
+            { snippetId: string, html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }
+    ): boolean {
 
         showHeader();
 
@@ -222,10 +231,19 @@ interface InitializationParams {
                 options.scriptReferences = [];
             }
 
+            if ((contentWindow as any).ScriptLab) {
+                (contentWindow as any).ScriptLab._init({ snippet: { id: snippetId } });
+            }
             if (isMaker) {
-                ((contentWindow as any).Experimental.ExcelMaker as any)._init({
-                    scriptReferences: options.scriptReferences
-                });
+                let params: MakerInitializationParams = {
+                    scriptReferences: options.scriptReferences,
+                    onPerfAnalysisReady: onPerfAnalysisReady
+                };
+                ((contentWindow as any).Experimental.ExcelMaker as any)._init(params);
+
+                // timer only works on maker snippets inside the worker, so setting to empty
+                (contentWindow as any).start_perf_timer = () => {};
+                (contentWindow as any).stop_perf_timer = () => {};
             }
 
             if (officeJS) {
@@ -269,6 +287,10 @@ interface InitializationParams {
         contentWindow.document.close();
 
         return true;
+    }
+
+    function onPerfAnalysisReady(perf: PerfInfoItem[]) {
+        heartbeat.messenger.send<{ perf: PerfInfoItem[] }>(heartbeat.window, RunnerMessageType.SNIPPET_PERF_DATA, { perf: perf });
     }
 
     function handleError(error: Error) {
@@ -444,7 +466,8 @@ interface InitializationParams {
         $('#header-refresh').attr('href', refreshUrl);
 
         const officeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS;
-        let replacedSuccessfully = replaceSnippetIframe({ html, officeJS, isTrustedSnippet, isMaker });
+        const snippetId = snippet.id;
+        let replacedSuccessfully = replaceSnippetIframe({ snippetId, html, officeJS, isTrustedSnippet, isMaker });
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;

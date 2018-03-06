@@ -1,7 +1,8 @@
 import { toNumber } from 'lodash';
-import { environment, storage, Messenger, RunnerMessageType, trustedSnippetManager } from '../app/helpers';
+import { environment, storage, Messenger, RunnerMessageType, trustedSnippetManager, ensureFreshLocalStorage } from '../app/helpers';
 import { Strings } from '../app/strings';
 import { Authenticator } from '@microsoft/office-js-helpers';
+const { localStorageKeys } = PLAYGROUND;
 
 (() => {
     let messenger: Messenger<RunnerMessageType>;
@@ -153,6 +154,21 @@ import { Authenticator } from '@microsoft/office-js-helpers';
                 // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
                 // will be sure to send the last-opened snippet if the ID is empty
                 sendBackCurrentSnippet(false /*settingsAreFresh*/, input.message.isTrustedSnippet);
+            });
+
+        messenger.listen<{ perf: PerfInfoItem[] }>()
+            .filter(({ type }) => type === RunnerMessageType.SNIPPET_PERF_DATA)
+            .subscribe((input) => {
+                ensureFreshLocalStorage();
+                storage.snippets.load();
+                const snippet = storage.snippets.get(trackingSnippet.id);
+                snippet.perfInfo = {
+                    timestamp: trackingSnippet.lastModified,
+                    data: input.message.perf
+                };
+                storage.snippets.insert(snippet.id, snippet);
+
+                window.localStorage.setItem(localStorageKeys.lastPerfNumbersTimestamp, Date.now().toString());
             });
     }
 

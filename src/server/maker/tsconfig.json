@@ -16,7 +16,9 @@
             "es2015",
             "webworker"
         ],
-        "types": []
+        "typeRoots": [
+            "../../interfaces"
+        ]
     },
     "files": [
         "maker-worker.ts",

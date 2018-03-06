@@ -8,7 +8,7 @@ import * as fromRoot from '../reducers';
 import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
     navigateToCompileCustomFunctions,
-    getNumberFromLocalStorage, getElapsedTime
+    getNumberFromLocalStorage, getElapsedTime, ensureFreshLocalStorage, storage
 } from '../helpers';
 import { UIEffects } from '../effects/ui';
 import { Strings, getDisplayLanguageOrFake } from '../strings';
@@ -18,7 +18,7 @@ const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor',
-    template: `   
+    template: `
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
             <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
                 {{tab.displayName}}
@@ -42,6 +42,10 @@ export class Editor implements AfterViewInit {
     private snippetSub: Subscription;
     private tabSub: Subscription;
     private tabNames: string[];
+    private currentDecorations: any[] = [];
+    private currentCodeLensProvider: any;
+    private perfInfoPoller: any;
+    private previousPerfInfoTimestamp: number;
 
     strings = Strings();
 
@@ -66,11 +70,15 @@ export class Editor implements AfterViewInit {
         }
     }
 
+
     /**
      * Initialize the component and subscribe to all the necessary actions.
      */
     async ngAfterViewInit() {
-        let _overrides = { theme: 'vs' };
+        let _overrides = {
+            theme: 'vs',
+        };
+
         if (this.isViewMode) {
             _overrides['readOnly'] = true;
         }
@@ -102,6 +110,8 @@ export class Editor implements AfterViewInit {
         if (this.tabSub) {
             this.tabSub.unsubscribe();
         }
+
+        clearInterval(this.perfInfoPoller);
     }
 
     changeTab = (name: string = 'script') => {
@@ -121,6 +131,74 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.UpdateIntellisenseAction(
             { libraries: this.snippet.libraries.split('\n'), language: 'typescript', tabName }
         ));
+    }
+
+    startPerfInfoTimer() {
+        if (this.perfInfoPoller) {
+            return;
+        }
+
+        this.previousPerfInfoTimestamp = 0;
+        this.perfInfoPoller = setInterval(() => {
+            ensureFreshLocalStorage();
+            const newPerfNums = Number(window.localStorage.getItem(localStorageKeys.lastPerfNumbersTimestamp));
+            if (newPerfNums > this.previousPerfInfoTimestamp) {
+                storage.snippets.load();
+                let perfInfo = storage.snippets.get(this.snippet.id).perfInfo;
+                if (perfInfo) {
+                    if (perfInfo.timestamp >= this.snippet.modified_at) {
+                        this.setPerformanceMarkers(perfInfo.data);
+                    }
+                }
+                this.previousPerfInfoTimestamp = newPerfNums;
+            }
+        }, 500);
+    }
+
+    setPerformanceMarkers(perfInfo: PerfInfoItem[]) {
+        const newDecorations = perfInfo.map(({ line_no, frequency, duration }) => {
+            return {
+                range: new monaco.Range(line_no, 1, line_no, 1),
+                options: {
+                    isWholeLine: true,
+                    linesDecorationsClassName: 'perf-decorator',
+                }
+            };
+        });
+        this.currentDecorations = this._monacoEditor.deltaDecorations(this.currentDecorations, newDecorations);
+        this.setCodeLensPerfNumbers(perfInfo);
+    }
+
+    clearPerformanceMakers() {
+        this.previousPerfInfoTimestamp = 0;
+        if (this.perfInfoPoller) {
+            this.perfInfoPoller = clearInterval(this.perfInfoPoller);
+        }
+
+        this.setPerformanceMarkers([]);
+    }
+
+    setCodeLensPerfNumbers(perfInfo: PerfInfoItem[]) {
+        if (this.currentCodeLensProvider) {
+            this.currentCodeLensProvider.dispose();
+        }
+        this.currentCodeLensProvider = monaco.languages.registerCodeLensProvider('typescript', {
+            provideCodeLenses: (model, token) => {
+                return perfInfo.map(({ line_no, duration, frequency }) => {
+                    return {
+                        range: new monaco.Range(line_no, 1, line_no, 1),
+                        id: `line_no${line_no}`,
+                        command: {
+                            id: null,
+                            title: frequency === 1 ? `Duration: ${duration} ms.` : `Ran ${frequency} times. Total Duration: ${duration} ms.`
+                        }
+                    };
+                });
+            },
+            resolveCodeLens: (model, codeLens, token) => {
+                return codeLens;
+            }
+        });
     }
 
     async registerCustomFunctions() {
@@ -237,6 +315,11 @@ export class Editor implements AfterViewInit {
                     if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
                         this.updateIntellisense(this.currentState.name);
                     }
+                    if (this.currentState.name === 'script') {
+                        this.startPerfInfoTimer();
+                    } else {
+                        this.clearPerformanceMakers();
+                    }
                     this.showRegisterCustomFunctions = newTab === 'customFunctions';
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
@@ -283,6 +366,7 @@ export class Editor implements AfterViewInit {
         });
 
         this._snippet = snippet;
+        this.clearPerformanceMakers();
         this.changeTab();
     }
 
@@ -294,6 +378,7 @@ export class Editor implements AfterViewInit {
         if (!this.isViewMode) {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
+            this.clearPerformanceMakers();
         }
     }, 300);
 

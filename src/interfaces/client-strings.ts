@@ -24,6 +24,7 @@ interface ClientStringsPerLanguage {
 
     ok: string;
     logout: string;
+    logoutFromGraph: string;
     cancel: string;
     save: string;
     moreInfo: string;

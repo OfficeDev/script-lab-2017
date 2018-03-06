@@ -13,7 +13,10 @@ const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
             <div class="about">
                 <div class="about__details">
                     <div class="about__primary-text ms-font-xxl">{{config?.build?.name}}</div>
-                    <div class="profile__tertiary-text ms-font-m">{{strings.userId}}: ${storage.user}</div>
+                    <div class="profile__tertiary-text ms-font-m" style="margin-bottom: 20px;">{{strings.userId}}: ${storage.user}</div>
+                    <button class="ms-Dialog-action ms-Button" style="margin-bottom: 20px;" (click)="logoutSnippets()">
+                        <span class="ms-Button-label">{{strings.logoutFromGraph}}</span>
+                    </button>
                     <div class="about__secondary-text ms-font-l">Version: {{config?.build?.version}}
                         <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadableTimestamp}})</span>
                     </div>
@@ -148,6 +151,28 @@ export class About implements AfterViewInit {
         this.showChange.emit(false);
 
         await this._handleEnvironmentSwitching();
+    }
+
+    logoutSnippets() {
+        window.open(
+            _generateAuthUrl({ client_id: environment.current.config.thirdPartyAADAppClientId, resource: 'graph' }),
+            '_blank',
+            'width=1024,height=768'
+        );
+
+        // This function should remain roughly in sync with "auth-helpers.ts"
+        function _generateAuthUrl(params: {
+            resource: string;
+            client_id: string;
+        }): string {
+            const queryParams = [
+                `auth_action=logout`,
+                `client_id=${encodeURIComponent(params.client_id)}`,
+                `resource=${params.resource}`
+            ].join('&');
+
+            return environment.current.config.runnerUrl + '/snippet/auth?' + queryParams;
+        }
     }
 
     onExperimentationFlagsChange() {

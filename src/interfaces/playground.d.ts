@@ -30,6 +30,18 @@ interface IContentLanguagePair {
     language: string;
 }
 
+// Note, this interface is copied in several places.  Search for it.
+interface PerfInfoItem {
+    line_no: number;
+    frequency: number;
+    duration: number;
+};
+
+interface IPerformanceInformation {
+    data: PerfInfoItem[];
+    timestamp: number;
+}
+
 interface ISnippet extends ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
@@ -39,8 +51,9 @@ interface ISnippet extends ITemplate {
     script?: IContentLanguagePair;
     template?: IContentLanguagePair;
     style?: IContentLanguagePair;
-    customFunctions?: IContentLanguagePair
+    customFunctions?: IContentLanguagePair;
     libraries?: string;
+    perfInfo?: IPerformanceInformation;
 }
 
 interface ILibraryDefinition {
@@ -135,6 +148,8 @@ interface ICompiledPlaygroundInfo {
         insiders: IEnvironmentConfig,
         production: IEnvironmentConfig
     };
+
+    /** NOTE: when adding local storage keys here, also add them to "const localStorageKeys = {...}" in "env.config.js" */
     localStorageKeys: {
         /** A dummy key used simply for getting localStorage to refresh (see https://stackoverflow.com/a/40770399) */
         dummyUnusedKey: string;
@@ -168,6 +183,9 @@ interface ICompiledPlaygroundInfo {
 
         /** Last seen timestamp at which the log dialog reported itself as alive */
         logLastHeartbeatTimestamp: string;
+
+        /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
+        lastPerfNumbersTimestamp: string;
     };
     sessionStorageKeys: {
         environmentCache: string;
@@ -223,7 +241,8 @@ interface IEnvironmentConfig {
     tokenUrl: string,
     runnerUrl: string,
     feedbackUrl: string,
-    samplesUrl: string
+    samplesUrl: string,
+    thirdPartyAADAppClientId: string,
 }
 
 interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
@@ -259,6 +278,12 @@ interface AuthRequestParamData {
     resource: string;
     client_id: string;
     is_office_host: boolean;
+    snippet_id: string;
+}
+
+interface DefaultAuthRequestParamData {
+    snippet_id: string;
+    auth_url: string;
 }
 
 interface LogData {

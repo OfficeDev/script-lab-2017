@@ -41,6 +41,8 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     created_at: SnippetFieldType.INTERNAL,
     modified_at: SnippetFieldType.INTERNAL,
 
+    perf_info: SnippetFieldType.INTERNAL,
+
     /* ISnippet */
     script: SnippetFieldType.PUBLIC,
     template: SnippetFieldType.PUBLIC,
@@ -79,13 +81,13 @@ export function getSnippetDefaults(): ISnippet {
         gist: '',
         name: Strings().defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
         description: '',
-        // author: export-only, always want to generate on the fly, so skip altogether
+        // [author]: export-only, always want to generate on the fly, so skip altogether
         host: environment.current.host,
-        // api_set: export-only, always want to generate on the fly, so skip altogether
+        // [api_set]: export-only, always want to generate on the fly, so skip altogether
         platform: environment.current.platform,
         created_at: Date.now(),
         modified_at: Date.now(),
-
+        // [perfInfo]: explicitly not setting perf info because it is optional
         script: { content: '', language: 'typescript' },
         template: { content: '', language: 'html' },
         style: { content: '', language: 'css' },

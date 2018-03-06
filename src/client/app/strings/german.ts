@@ -43,6 +43,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
 
         ok: 'OK',
         logout: 'Abmelden',
+        logoutFromGraph: getEnglishSubstitutesForNotYetTranslated().logoutFromGraph,
         save: 'Speichern',
         moreInfo: 'Mehr Infos',
         import: 'Importieren',

@@ -3,11 +3,11 @@
 module Experimental {
     export module ExcelMaker {
         type ConsoleMethodType = 'log' | 'info' | 'error';
-        type MakerWorkerMessageType = ConsoleMethodType | 'result';
+        type MakerWorkerMessageType = ConsoleMethodType | 'result' | 'perfInfo';
 
-        interface MakerWorkerMessage {
+        interface MakerWorkerMessage<T> {
             type: MakerWorkerMessageType;
-            content: string;
+            content: T;
         }
 
         interface ExecuteMakerScriptMessage {
@@ -17,8 +17,17 @@ module Experimental {
             scriptReferences: string[];
         }
 
+        // NOTE: this is a duplicated interface located in maker-interfaces.d.ts
+        interface PerfInfoItem {
+            line_no: number;
+            frequency: number;
+            duration: number;
+        };
+
         let _clientId: string;
         let _scriptReferences: string[];
+        let _onPerfAnalysisReady: (perfInfo: PerfInfoItem[]) => void;
+
         let worker: Worker;
 
         export declare function getWorkbook(workbookUrl: string): Excel.Workbook;
@@ -27,12 +36,13 @@ module Experimental {
         // todo figure out if this method can be hidden from intellisense
         /** Initializes the script references to pass to the worker.
          *  DO NOT CALL THIS METHOD, INTERNAL USE ONLY.
-         * @param scriptReferences
          */
         export function _init(params: {
-            scriptReferences: string[]
+            scriptReferences: string[],
+            onPerfAnalysisReady: (perfInfo: any[] /*aka PerfInfoItem[]*/) => void;
         }) {
             _scriptReferences = params.scriptReferences;
+            _onPerfAnalysisReady = params.onPerfAnalysisReady;
         };
 
         export function setup(clientId: string) {
@@ -40,36 +50,47 @@ module Experimental {
         }
 
         export async function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<any> {
-            const accessToken = await ScriptLab.getAccessToken(_clientId);
+            let runCurtain = parent.window.document.getElementById('curtain');
+            runCurtain.style['display'] = 'block';
+            try {
+                const accessToken = await ScriptLab.getAccessToken();
 
-            return new Promise(async (resolve, reject) => {
-                if (!worker) {
-                    worker = new Worker('./lib/worker');
-                }
-
-                worker.onerror = (...args) => {
-                    console.error(args);
-                    reject(args);
-                };
-
-                worker.onmessage = (message: MessageEvent) => {
-                    let msg: MakerWorkerMessage = message.data;
-                    if (msg.type === 'result') {
-                        resolve(msg.content);
-                        return;
+                return new Promise(async (resolve, reject) => {
+                    if (!worker) {
+                        worker = new Worker('./lib/worker');
                     }
-                    console[msg.type](msg.content);
-                };
 
-                let activeDocumentUrl = await getActiveDocumentUrl(accessToken);
+                    worker.onerror = (...args) => {
+                        console.error(args);
+                        reject(args);
+                    };
 
-                worker.postMessage({
-                    accessToken,
-                    makerCode: makerCode.toString(),
-                    activeDocumentUrl,
-                    scriptReferences: _scriptReferences
+                    worker.onmessage = (message: MessageEvent) => {
+                        let msg: MakerWorkerMessage<any> = message.data;
+                        if (msg.type === 'result') {
+                            runCurtain.style['display'] = 'none';
+                            resolve(msg.content);
+                            return;
+                        } else if (msg.type === 'perfInfo') {
+                            _onPerfAnalysisReady(msg.content);
+                        } else {
+                            console[msg.type](msg.content);
+                        }
+                    };
+
+                    let activeDocumentUrl = await getActiveDocumentUrl(accessToken);
+
+                    worker.postMessage({
+                        accessToken,
+                        makerCode: makerCode.toString(),
+                        activeDocumentUrl,
+                        scriptReferences: _scriptReferences
+                    });
                 });
-            });
+            } catch (e) {
+                console.error(e);
+                runCurtain.style['display'] = 'none';
+            }
         }
 
         async function getActiveDocumentUrl(accessToken: string) {
