@@ -27,6 +27,7 @@ tryCatch(async () => {
 
     document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect;
 
+    debugger;
     let authRequestParams: AuthRequestParamData = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
     let hasActionAndServiceAndClientIdInfo =
         authRequestParams[ActionParamName] &&
@@ -90,8 +91,8 @@ function proceedWithAuthInit(authRequest: AuthRequestParamData) {
                     if (authRequest.is_office_host) {
                         Office.context.ui.messageParent(JSON.stringify(message));
                     } else {
-                        if (window.opener) {
-                            window.opener.postMessage(JSON.stringify(message), environment.current.config.runnerUrl);
+                        if (window.parent) {
+                            window.parent.postMessage(JSON.stringify(message), environment.current.config.runnerUrl);
                         } else {
                             setSubtitleText(strings.Auth.yourAccessTokenIs);
                             const accessTokenInputBox = (document.getElementById('access-token-if-no-redirect') as HTMLInputElement);
