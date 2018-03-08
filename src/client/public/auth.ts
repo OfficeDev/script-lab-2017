@@ -27,7 +27,6 @@ tryCatch(async () => {
 
     document.title = strings.playgroundName + ' - ' + strings.Auth.authenticationRedirect;
 
-    debugger;
     let authRequestParams: AuthRequestParamData = Authenticator.extractParams(window.location.href.split('?')[1]) || {};
     let hasActionAndServiceAndClientIdInfo =
         authRequestParams[ActionParamName] &&
