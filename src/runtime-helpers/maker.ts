@@ -24,7 +24,6 @@ module Experimental {
             duration: number;
         };
 
-        let _clientId: string;
         let _scriptReferences: string[];
         let _onPerfAnalysisReady: (perfInfo: PerfInfoItem[]) => void;
 
@@ -96,7 +95,6 @@ module Experimental {
                     // get document url
                     let tempUrl = Office.context.document.url.replace('https://', '');
                     let graphBaseUrl = 'https://graph.microsoft.com/v1.0';
-
                     let xhr = new XMLHttpRequest();
                     xhr.open('GET', `${graphBaseUrl}/me/drive`);
                     xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
@@ -109,7 +107,7 @@ module Experimental {
                                 throw new Error('Currently, ScriptLab can only find urls for files stored on OneDrive consumer and business.');
                             }
 
-                            let sliceIndex = driveType === 'business' ? 4 : 3;
+                            let sliceIndex = driveType === 'business' ? 4 : 2;
                             let path = tempUrl.split('/').slice(sliceIndex).join('/');
                             let documentUrl = `${graphBaseUrl}/me/drive/root:/${path}:/workbook`;
 

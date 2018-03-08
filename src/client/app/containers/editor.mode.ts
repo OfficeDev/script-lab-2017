@@ -143,7 +143,15 @@ export class EditorMode {
         }
 
         if (isOfficeHost(this.snippet.host)) {
-            const canRun = isInsideOfficeApp() || (this.snippet && isMakerScript(this.snippet.script));
+            let canRun = isInsideOfficeApp();
+
+            // Additionally, for a maker script:
+            if (this.snippet && isMakerScript(this.snippet.script)) {
+                if (this.snippet.script.content.indexOf('ExcelMaker.getActiveWorkbook()') < 0) {
+                    canRun = true;
+                }
+            }
+
             if (!canRun) {
                 this._store.dispatch(new UI.ShowAlertAction({
                     actions: [this.strings.ok],

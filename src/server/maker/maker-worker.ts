@@ -91,6 +91,7 @@ module Experimental {
 
         export module _Internal {
             export interface MockExcelContext {
+                originalSyncSynchronous(): void;
                 syncSynchronous(): void;
                 trackedObjects: {
                     _retrieveAndClearAutoCleanupList(): OfficeExtension.ClientObject;
@@ -257,26 +258,46 @@ module Experimental {
 
 let rawPerfInfo: { [line_no: number]: { duration: number, frequency: number } } = {};
 let activeTimers = {};
+// todo clean up perf stuff
+// let originalSyncSynchronous = (OfficeExtension.ClientRequestContext.prototype as any).syncSynchronous;
 
 function start_perf_timer(line_no: number) {
-    activeTimers[line_no] = Date.now();
+    // activeTimers[line_no] = Date.now();
+
+    // Experimental.ExcelMaker._Internal.contexts.forEach(context => {
+    //     if (!context.originalSyncSynchronous) {
+    //         context.originalSyncSynchronous = context.syncSynchronous;
+    //     }
+
+    //     context.syncSynchronous = () => {
+    //         const current = rawPerfInfo[line_no] || { duration: 0, frequency: 0 };
+    //         current.frequency += 1;
+    //         rawPerfInfo[line_no] = current;
+
+    //         context.originalSyncSynchronous();
+    //     };
+    // });
 }
 
 function stop_perf_timer(line_no: number) {
-    const timeElapsed = Date.now() - activeTimers[line_no];
+    // const timeElapsed = Date.now() - activeTimers[line_no];
 
-    const current = rawPerfInfo[line_no] || { duration: 0, frequency: 0 };
+    // const current = rawPerfInfo[line_no] || { duration: 0, frequency: 0 };
+    // current.duration += timeElapsed;
+    // rawPerfInfo[line_no] = current;
 
-    current.frequency += 1;
-    current.duration += timeElapsed;
-    rawPerfInfo[line_no] = current;
+    // Experimental.ExcelMaker._Internal.contexts.forEach(context => {
+    //     if (context.originalSyncSynchronous) {
+    //         context.syncSynchronous = context.originalSyncSynchronous;
+    //     }
+    // });
 }
 
 function importScriptsFromReferences(scriptReferences: string[]) {
     scriptReferences.forEach(script => {
         if (script) {
             try {
-                ifVerbose(() => console.info(`attempting to load ${script}`));
+                // ifVerbose(() => console.info(`attempting to load ${script}`));
                 self.importScripts(script);
             } catch (error) {
                 console.error(`Failed to load '${script}' for tinker() block!`);
@@ -291,7 +312,7 @@ function sendPerfInfo() {
     // tslint:disable-next-line:forin
     for (const line_no in rawPerfInfo) {
         const { duration, frequency } = rawPerfInfo[line_no];
-        if (duration >= 5) { // todo remove
+        if (frequency > 0) { // todo remove
             sendablePerfInfo.push({
                 line_no: Number(line_no),
                 duration,
@@ -299,7 +320,8 @@ function sendPerfInfo() {
             });
         }
     }
-    processAndSendMessage('perfInfo', sendablePerfInfo);
+
+    // processAndSendMessage('perfInfo', sendablePerfInfo);
 }
 
 self.addEventListener('message', (message: MessageEvent) => {
@@ -320,7 +342,7 @@ self.addEventListener('message', (message: MessageEvent) => {
         console.info('---------- finished tinker block ----------');
     });
 
-    sendPerfInfo();
+    // sendPerfInfo();
     processAndSendMessage('result', result);
 
     rawPerfInfo = {};
