@@ -115,10 +115,24 @@ module Experimental {
             export function runMakerFunction(makerCode: string) {
                 let result: any;
 
-                // tslint:disable-next-line:no-eval
-                eval(`result = ${makerCode}();`);
+                try {
+                    // tslint:disable-next-line:no-eval
+                    eval(`result = ${makerCode}();`);
 
-                cleanUpContexts();
+                    cleanUpContexts();
+                } catch (e) {
+                    console.error(e);
+                    if (e instanceof OfficeExtension.Error) {
+                        const errorParts = [
+                            'Code: ' + e.code,
+                            e.message
+                        ];
+                        if (e.debugInfo.errorLocation) {
+                            errorParts.push('Location: ' + e.debugInfo.errorLocation);
+                        }
+                        console.error(errorParts.join('\n'));
+                    }
+                }
                 // closeSessions();
 
                 return result;

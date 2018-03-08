@@ -44,7 +44,7 @@ module Experimental {
             _onPerfAnalysisReady = params.onPerfAnalysisReady;
         };
 
-        export async function tinker(makerCode: (workbook: Excel.Workbook) => any): Promise<any> {
+        export async function tinker(makerCode:() => any): Promise<any> {
             let runCurtain = parent.window.document.getElementById('curtain');
             runCurtain.style['display'] = 'block';
             try {
