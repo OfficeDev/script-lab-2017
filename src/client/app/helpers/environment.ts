@@ -7,8 +7,6 @@ const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGRO
 
 const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
 
-// const TIMEOUT_BEFORE_SHOWING_HOST_BUTTONS = 2000;
-
 class Environment {
     cache = new Storage<any>(sessionStorageKeys.environmentCache, StorageType.SessionStorage);
     private _config: IEnvironmentConfig;
