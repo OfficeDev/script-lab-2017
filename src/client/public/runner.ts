@@ -345,7 +345,7 @@ interface MakerInitializationParams {
             return Promise.resolve();
         }
 
-        await environment.createPlaygroundHostReadyTimer().promise;
+        await environment.createPlaygroundHostReadyTimer();
     }
 
     function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {

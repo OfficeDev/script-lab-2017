@@ -57,7 +57,7 @@ tryCatch(async () => {
 
 
     if (authRequestParams.is_office_host) {
-        await environment.createPlaygroundHostReadyTimer().promise;
+        await environment.createPlaygroundHostReadyTimer();
     }
 
     proceedWithAuthInit(authRequestParams);
