@@ -287,10 +287,7 @@ class Environment {
             return new Promise<{ host: string, platform: string }>(async resolve => {
                 await this.createPlaygroundHostReadyTimer();
 
-                // Now wait for playground host-ready timer to return itself as ready.
-                // If it does, then clear off the previous timeout, and resolve immediately.
-
-                let { host, platform } = Utilities;
+                let { host } = Utilities;
                 if (host === 'WEB') {
                     $('#hosts').show();
                     $('.ms-progress-component__footer').hide();
@@ -300,6 +297,7 @@ class Environment {
                         resolve({ host: $(this).data('host'), platform: null });
                     });
                 } else {
+                    let { platform } = Utilities;
                     return resolve({ host, platform });
                 }
             });
