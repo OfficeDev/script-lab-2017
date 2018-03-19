@@ -7,8 +7,6 @@ const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGRO
 
 const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
 
-const TIMEOUT_BEFORE_SHOWING_HOST_BUTTONS = 2000;
-
 class Environment {
     cache = new Storage<any>(sessionStorageKeys.environmentCache, StorageType.SessionStorage);
     private _config: IEnvironmentConfig;
@@ -240,17 +238,16 @@ class Environment {
     }
 
     // For pages that have an "Office.initialize" on them directly
-    createPlaygroundHostReadyTimer(): { cancel: () => void, promise: Promise<any> }
+    createPlaygroundHostReadyTimer(): Promise<any>
     // tslint:disable-next-line:one-line
     {
         if (getIsPlaygroundHostReady()) {
-            return { cancel: () => { }, promise: Promise.resolve(true) };
+            return Promise.resolve(true);
         }
 
         let interval: any;
-        let cancel: () => void;
 
-        let promise: Promise<any> = new Promise((resolve) => {
+        return new Promise((resolve) => {
             interval = setInterval(() => {
                 if (getIsPlaygroundHostReady()) {
                     clearInterval(interval);
@@ -258,14 +255,7 @@ class Environment {
                 }
             }, 100);
 
-            cancel = () => {
-                clearInterval(interval);
-                return resolve();
-            };
         });
-
-        return { cancel, promise };
-
 
         // Helper
         function getIsPlaygroundHostReady(): boolean {
@@ -295,26 +285,21 @@ class Environment {
 
         const hostInfo = await (async (): Promise<{ host: string, platform: string }> => {
             return new Promise<{ host: string, platform: string }>(async resolve => {
-                let timer = this.createPlaygroundHostReadyTimer();
+                await this.createPlaygroundHostReadyTimer();
 
-                let hostButtonsTimeout = setTimeout(() => {
+                let { host } = Utilities;
+                if (host === 'WEB') {
                     $('#hosts').show();
                     $('.ms-progress-component__footer').hide();
                     $('.hostButton').click(function hostButtonClick() {
                         $('#hosts').hide();
                         $('.ms-progress-component__footer').show();
-                        timer.cancel();
                         resolve({ host: $(this).data('host'), platform: null });
                     });
-                }, TIMEOUT_BEFORE_SHOWING_HOST_BUTTONS);
-
-                // Now wait for playground host-ready timer to return itself as ready.
-                // If it does, then clear off the previous timeout, and resolve immediately.
-                await timer.promise;
-                clearTimeout(hostButtonsTimeout);
-
-                let { host, platform } = Utilities;
-                return resolve({ host, platform });
+                } else {
+                    let { platform } = Utilities;
+                    return resolve({ host, platform });
+                }
             });
         })();
 
