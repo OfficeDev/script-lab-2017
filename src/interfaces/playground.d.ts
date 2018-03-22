@@ -186,6 +186,8 @@ interface ICompiledPlaygroundInfo {
 
         /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
         lastPerfNumbersTimestamp: string;
+
+        editorLastChanged: string;
     };
     sessionStorageKeys: {
         environmentCache: string;

@@ -17,6 +17,7 @@ import * as fromRoot from '../reducers';
 import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
+const { localStorageKeys } = PLAYGROUND;
 
 @Injectable()
 export class SnippetEffects {
@@ -98,6 +99,9 @@ export class SnippetEffects {
         .map(scrubbedSnippet => {
             scrubbedSnippet.modified_at = Date.now();
             storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
+            // FIXME maybe.
+            localStorage.setItem(localStorageKeys.editorLastChanged, Date.now().toString());
+
             return new Snippet.StoreUpdatedAction();
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetSaveError, exception)));

@@ -10,6 +10,7 @@ import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 import { Subscription } from 'rxjs/Subscription';
+const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor-mode',
@@ -70,6 +71,7 @@ export class EditorMode {
         private _route: ActivatedRoute
     ) {
         this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
+            localStorage.setItem(localStorageKeys.editorLastChanged, Date.now().toString());
             this.isEmpty = snippet == null;
             this.snippet = snippet;
         });

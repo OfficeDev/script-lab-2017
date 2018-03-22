@@ -11,6 +11,8 @@ const { localStorageKeys } = PLAYGROUND;
         lastModified: number;
     };
 
+    let previousEditorLastChanged: number = 0;
+    // let editorChangePoller: number;
 
     (() => {
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
@@ -51,12 +53,24 @@ const { localStorageKeys } = PLAYGROUND;
                 false /*isTrustedSnippet: only trust snippet through user action*/);
         }
 
-        storage.snippets.notify().subscribe(validateSnippet);
-        storage.settings.notify().subscribe(validateSnippet);
+        // storage.snippets.notify().subscribe(validateSnippet);
+        // storage.settings.notify().subscribe(validateSnippet);
+
+        // TODO where to clean up the poller?
+        // editorChangePoller = setInterval(() => {
+        setInterval(() => {
+                ensureFreshLocalStorage();
+            const newTimestamp = Number(window.localStorage.getItem(localStorageKeys.editorLastChanged));
+            if (newTimestamp > previousEditorLastChanged) {
+                validateSnippet();
+                previousEditorLastChanged = newTimestamp;
+            }
+        }, 1000);
     })();
 
 
     function validateSnippet() {
+        // FIXME maybe
         storage.settings.load();
         const lastOpened = storage.current.lastOpened;
 
