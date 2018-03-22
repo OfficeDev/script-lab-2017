@@ -211,6 +211,7 @@ interface ICurrentPlaygroundInfo {
     config: Readonly<IEnvironmentConfig>;
     host: Readonly<string>;
     platform: Readonly<string>;
+    endpoint: Readonly<string>;
 
     /** A timestamp specifically for the in-memory session (i.e.,
      * even more short-term than sessionStorage, which has a lifetime-of-tab duration;

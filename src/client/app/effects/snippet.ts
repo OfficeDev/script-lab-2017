@@ -18,6 +18,14 @@ import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 
+function playlistUrl() {
+    let host = environment.current.host.toLowerCase();
+    if (environment.current.endpoint !== null) {
+        host += `-${environment.current.endpoint}`;
+    }
+    return `${environment.current.config.samplesUrl}/playlists/${host}.yaml`;
+}
+
 @Injectable()
 export class SnippetEffects {
     constructor(
@@ -173,7 +181,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${environment.current.config.samplesUrl}/playlists/${environment.current.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = playlistUrl();
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {

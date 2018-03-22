@@ -64,6 +64,7 @@ class Environment {
 
                 host: null,
                 platform: null,
+                endpoint: null,
 
                 runtimeSessionTimestamp: (new Date()).getTime().toString()
             };
@@ -164,6 +165,7 @@ class Environment {
             commands: any/* whether app-commands are available, relevant for Office Add-ins */,
             mode: string /* and older way of opening Script Lab to a particular host */,
             host: string /* same as "mode", also needed here so that overrides can also have this parameter */,
+            endpoint: string /* Defines which type of outlook experience is active */,
             wacUrl: string,
             tryIt: any,
         };
@@ -200,6 +202,9 @@ class Environment {
             }
             if (isValidHost(pageParams.mode)) {
                 this.appendCurrent({ host: pageParams.mode.toUpperCase() });
+                if (pageParams.endpoint) {
+                    this.appendCurrent({endpoint: pageParams.endpoint.toLowerCase()});
+                }
                 return true;
             }
         }

@@ -3,7 +3,11 @@ const { safeExternalUrls } = PLAYGROUND;
 
 Office.initialize = () => {
     const tutorialUrl = `${window.location.origin}/tutorial.html`;
-    const codeUrl = `${window.location.origin}/?mode=${Utilities.host}`;
+    function codeUrl() {
+            const item = Office.context.mailbox.item as Office.MessageRead;
+            const endpoint = `${item.itemType}${item.itemId !== undefined ? 'read' : 'compose'}`;
+            return `${window.location.origin}/?mode=${Utilities.host}&endpoint=${endpoint}`;
+        }
 
     const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
         options = options || {};
@@ -34,7 +38,7 @@ Office.initialize = () => {
         launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
     };
 
-    (window as any).launchCode = (event) => launchInDialog(codeUrl, event, { width: 75, height: 75, displayInIframe: false });
+    (window as any).launchCode = (event) => launchInDialog(codeUrl(), event, { width: 75, height: 75, displayInIframe: false });
 
     (window as any).launchTutorial = (event) => launchInDialog(tutorialUrl, event, { width: 35, height: 45 });
 
