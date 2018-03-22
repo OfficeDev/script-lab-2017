@@ -11,7 +11,7 @@ const { localStorageKeys } = PLAYGROUND;
         lastModified: number;
     };
 
-    let previousEditorLastChanged: number = 0;
+    let previousEditorLastChanged: number = Number(window.localStorage.getItem(localStorageKeys.editorLastChanged));
     // let editorChangePoller: number;
 
     (() => {
@@ -59,13 +59,13 @@ const { localStorageKeys } = PLAYGROUND;
         // TODO where to clean up the poller?
         // editorChangePoller = setInterval(() => {
         setInterval(() => {
-                ensureFreshLocalStorage();
+            ensureFreshLocalStorage();
             const newTimestamp = Number(window.localStorage.getItem(localStorageKeys.editorLastChanged));
             if (newTimestamp > previousEditorLastChanged) {
                 validateSnippet();
                 previousEditorLastChanged = newTimestamp;
             }
-        }, 1000);
+        }, 500);
     })();
 
 

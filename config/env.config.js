@@ -19,7 +19,7 @@ const localStorageKeys = {
     logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
     lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
     language: 'playground_language',
-    editorLastChanged: 'editor_last_changed',
+    editorLastChanged: 'editor_last_changed'
 };
 
 const sessionStorageKeys = {
