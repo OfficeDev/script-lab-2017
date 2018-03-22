@@ -4,7 +4,11 @@ Office.initialize = () => {
     const urls = {
         //tutorial: `${window.location.origin}/assets/documents/script-lab-tutorial.xlsx`,
         tutorial: `${window.location.origin}/tutorial.html`,
-        code: `${window.location.origin}/?mode=${Utilities.host}`,
+        code: () => {
+            const item = Office.context.mailbox.item as Office.MessageRead;
+            const endpoint = `${item.itemType}${item.itemId !== undefined ? 'read' : 'compose'}`;
+            return `${window.location.origin}/?mode=${Utilities.host}&endpoint=${endpoint}`;
+        },
         playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
         ask: 'https://stackoverflow.com/questions/tagged/office-js',
         excel_api: 'https://dev.office.com/docs/add-ins/excel/excel-add-ins-javascript-programming-overview',
@@ -45,7 +49,7 @@ Office.initialize = () => {
         launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
     };
 
-    (window as any).launchCode = (event) => launchInDialog(urls.code, event, { width: 75, height: 75, displayInIframe: false });
+    (window as any).launchCode = (event) => launchInDialog(urls.code(), event, { width: 75, height: 75, displayInIframe: false });
 
     (window as any).launchTutorial = (event) => launchInDialog(urls.tutorial, event, { width: 35, height: 45 });
 

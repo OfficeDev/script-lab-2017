@@ -60,14 +60,10 @@ class Environment {
             return Promise.resolve({ currHost, currPlatform });
         }
 
-        if (this.current && this.current.host) {
-            return this.current;
-        }
-
-        let { host, platform } = await new Promise<{ host: string, platform: string }>(resolve => {
+        let { host, platform, endpoint } = await new Promise<{ host: string, platform: string, endpoint?: string }>(resolve => {
             if (window.location.search.toLowerCase().indexOf('mode') > 0) {
-                let { mode } = Authenticator.getUrlParams(window.location.search, '', '?') as any;
-                return resolve({ host: mode.toUpperCase(), platform: null });
+                let { mode, endpoint } = Authenticator.getUrlParams(window.location.search, '', '?') as any;
+                return resolve({ host: mode.toUpperCase(), platform: null, endpoint });
             } else if (/#\/view/.test(location.hash)) {
                 const [view, type, host] = location.hash.toLowerCase().replace('#/', '').split('/');
                 if (view && type && host) {
@@ -94,7 +90,7 @@ class Environment {
             }
         });
 
-        this.current = { host, platform };
+        this.current = { host, platform, endpoint };
         return this.current;
     }
 }

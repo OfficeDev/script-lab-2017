@@ -116,6 +116,7 @@ interface IEnvironment {
     config?: IEnvironmentConfig
     host?: string,
     platform?: string,
+    endpoint?: string,
     PLAYGROUND_ORIGIN?: string,
     PLAYGROUND_REDIRECT?: string
 }
