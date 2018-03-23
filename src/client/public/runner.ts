@@ -392,13 +392,12 @@ interface MakerInitializationParams {
                     $('.runner-overlay').hide();
                     $anotherSnippetSelected.hide();
                 } else {
-                    if (isListeningTo.snippetSwitching) {
-                        $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
-                        showReloadNotification($anotherSnippetSelected,
-                            () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
-                            () => isListeningTo.snippetSwitching = false,
-                            true /*allowShowLoadingDots*/);
-                    }
+                    // TODO: remove snippetSwitching if possible
+                    $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
+                    showReloadNotification($anotherSnippetSelected,
+                        () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
+                        () => isListeningTo.snippetSwitching = false,
+                        true /*allowShowLoadingDots*/);
                 }
             });
 

@@ -97,10 +97,29 @@ export class SnippetEffects {
         })
         .filter(snippet => snippet != null)
         .map(scrubbedSnippet => {
+            // note: removed the use of storage.snippets.insert as there was a bug where it wasn't writing to local storage in IE
+            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
+                .replace('{0}', environment.current.host);
+
+            // update snippets
             scrubbedSnippet.modified_at = Date.now();
-            storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
-            // FIXME maybe.
-            localStorage.setItem(localStorageKeys.editorLastChanged, Date.now().toString());
+            let snippets = JSON.parse(window.localStorage.getItem(hostStorageKey));
+            snippets[scrubbedSnippet.id] = scrubbedSnippet;
+            window.localStorage.setItem(hostStorageKey, JSON.stringify(snippets));
+
+            // update lastOpened
+            let settings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings));
+            settings[environment.current.host].lastOpened = {
+                created_at: scrubbedSnippet.created_at,
+                host: scrubbedSnippet.host,
+                id: scrubbedSnippet.id,
+                libraries: scrubbedSnippet.libraries,
+                modified_at: scrubbedSnippet.modified_at,
+                name: scrubbedSnippet.name,
+                description: scrubbedSnippet.description
+            };
+
+            window.localStorage.setItem(localStorageKeys.settings, JSON.stringify(settings));
 
             return new Snippet.StoreUpdatedAction();
         })
@@ -575,7 +594,7 @@ export class SnippetEffects {
             return;
         }
 
-    const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.
