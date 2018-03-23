@@ -18,8 +18,7 @@ const localStorageKeys = {
     customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
     logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
     lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
-    language: 'playground_language',
-    editorLastChanged: 'editor_last_changed'
+    language: 'playground_language'
 };
 
 const sessionStorageKeys = {

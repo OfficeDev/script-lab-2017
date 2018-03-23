@@ -357,14 +357,6 @@ interface MakerInitializationParams {
         heartbeat.messenger = new Messenger(origin);
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        heartbeat.messenger.listen<{ lastOpenedId: string }>()
-            .filter(({ type }) => type === RunnerMessageType.HEARTBEAT_INITIALIZED)
-            .subscribe(input => {
-                if (input.message.lastOpenedId !== heartbeatParams.id) {
-                    isListeningTo.snippetSwitching = false;
-                }
-            });
-
         heartbeat.messenger.listen<string>()
             .filter(({ type }) => type === RunnerMessageType.ERROR)
             .map(input => new Error(input.message))
@@ -396,7 +388,7 @@ interface MakerInitializationParams {
                     $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                     showReloadNotification($anotherSnippetSelected,
                         () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
-                        () => isListeningTo.snippetSwitching = false,
+                        () => {},
                         true /*allowShowLoadingDots*/);
                 }
             });
