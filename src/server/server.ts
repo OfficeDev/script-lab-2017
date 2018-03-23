@@ -237,40 +237,21 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
  * Returns a page for rendering in the UI-less control for custom functions.
  * Note that all snippets passed to this page are already expected to be trusted.
  */
-registerRoute('post', '/compile/custom-functions', async (req, res) => {
-    const params: ICompileCustomFunctionsState = JSON.parse(req.body.data);
-    const { snippets, mode } = params;
+registerRoute('post', '/register/custom-functions', async (req, res) => {
+    const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
+    const { snippets } = params;
     const host = 'EXCEL';
 
-    const timer = ai.trackTimedEvent('[Runner] Compile Custom Functions');
+    const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
 
     let strings = Strings(req);
-    let snippetIframesBase64Texts: string[] =
-        (await Promise.all(
-            snippets.map(snippet => {
-                return generateSnippetHtmlData(
-                    {
-                        scriptToCompile: snippet.customFunctions,
-                        id: snippet.id,
-                        name: snippet.name,
-                        libraries: snippet.libraries,
-                        style: null,
-                        template: null,
-                        host
-                    },
-                    'customFunctions', false /*isExternalExport*/, strings, true /*isInsideOffice*/);
-            })
-        )).map(result => result.succeeded ? base64encode(result.html) : null);
 
     const customFunctionsRunnerGenerator =
-        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions');
+        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions-register');
 
     const html = customFunctionsRunnerGenerator({
-        isRunMode: mode === 'run',
-        showDebugLog: params.heartbeatParams.showDebugLog,
-        snippetNames: snippets.map(snippet => snippet.name),
-        snippetIframesBase64Texts,
-        clientTimestamp: params.heartbeatParams.clientTimestamp,
+        snippets: snippets,
+        snippetsDataBase64: base64encode(JSON.stringify(snippets)),
 
         strings,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),

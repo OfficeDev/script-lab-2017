@@ -76,28 +76,46 @@ interface IRunnerState {
     returnUrl?: string;
 }
 
-interface ICustomFunctionsRelevantData {
-    id: string;
+interface IParameterMetadata {
     name: string;
-    customFunctions: {
-        content: string;
-        language: string;
+    description: string;
+    type: string;
+    dimensionality: string;
+}
+
+interface ICustomFunctionMetadata{
+    name: string;
+    description: string;
+    result: {
+        type: string;
+        dimensionality: string;
     }
-    libraries: string;
+    parameters: IParameterMetadata[];
+    options: {
+        sync: boolean;
+        stream: boolean;
+        volatile: boolean;
+    }
+}
+
+interface ICustomFunctionsSnippetRegistrationData {
+    namespace: string;
+    functions: ICustomFunctionMetadata[];
+}
+
+interface ICustomFunctionsRegistrationApiMetadata {
+    functions: ICustomFunctionMetadata[];
+}
+
+interface ICustomFunctionsRegistrationRelevantData {
+    name: string; //of snippet
+    data: ICustomFunctionsSnippetRegistrationData;
 }
 
 /** Request body passed to the custom functions compile route in a POST */
-interface ICompileCustomFunctionsState {
-    snippets: Array<ICustomFunctionsRelevantData>;
-    mode: 'register' | 'run';
-    heartbeatParams: ICustomFunctionsHeartbeatParams;
-
+interface IRegisterCustomFunctionsPostData {
+    snippets: ICustomFunctionsRegistrationRelevantData[];
     displayLanguage: string;
-}
-
-interface ICustomFunctionsHeartbeatParams {
-    clientTimestamp: number;
-    showDebugLog: boolean;
 }
 
 interface IExportState {

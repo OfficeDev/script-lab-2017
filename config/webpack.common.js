@@ -47,7 +47,7 @@ module.exports = (prodMode) =>
             tryIt: './public/try.it.ts',
             customFunctions: './public/custom.functions.ts',
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
-            compileCustomFunctions: './public/compile.custom.functions.ts',
+            customFunctionsRegister: './public/custom.functions.register.ts',
             log: './public/log.ts',
         },
 

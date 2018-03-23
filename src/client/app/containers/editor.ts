@@ -7,8 +7,8 @@ import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
-    navigateToCompileCustomFunctions,
-    getNumberFromLocalStorage, getElapsedTime, ensureFreshLocalStorage, storage
+    navigateToRegisterCustomFunctions,
+    getNumberFromLocalStorage, ensureFreshLocalStorage, storage
 } from '../helpers';
 import { UIEffects } from '../effects/ui';
 import { Strings, getDisplayLanguageOrFake } from '../strings';
@@ -123,14 +123,15 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
     }
 
-    updateIntellisense(tabName: 'script' | 'customFunctions') {
+    updateIntellisense(tabName: string) {
         if (this.snippet == null) {
             return;
         }
 
         this._store.dispatch(new Monaco.UpdateIntellisenseAction(
-            { libraries: this.snippet.libraries.split('\n'), language: 'typescript', tabName }
+            { libraries: this.snippet.libraries.split('\n'), language: 'typescript' }
         ));
+
     }
 
     startPerfInfoTimer() {
@@ -220,30 +221,32 @@ export class Editor implements AfterViewInit {
             startOfRequestTime.toString()
         );
 
-        // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
-        let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
-            getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
-        if (updateImmediately) {
-            navigateToCompileCustomFunctions('register');
-            return;
-        }
+        navigateToRegisterCustomFunctions();
 
-        // It seems like the heartbeat is running.  So give it a chance to pick up
+        // // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
+        // let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
+        //     getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
+        // if (updateImmediately) {
+        //     navigateToCompileCustomFunctions('register');
+        //     return;
+        // }
 
-        // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
-        this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
-        this.isWaitingOnCustomFunctionsUpdate = true;
+        // // It seems like the heartbeat is running.  So give it a chance to pick up
 
-        let interval = setInterval(() => {
-            let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
-                localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
-            if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
-                this.isWaitingOnCustomFunctionsUpdate = false;
-                clearInterval(interval);
-                this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
-                this.updateLastRegisteredFunctionsTooltip();
-            }
-        }, 2000);
+        // // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
+        // this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
+        // this.isWaitingOnCustomFunctionsUpdate = true;
+
+        // let interval = setInterval(() => {
+        //     let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
+        //         localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+        //     if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
+        //         this.isWaitingOnCustomFunctionsUpdate = false;
+        //         clearInterval(interval);
+        //         this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
+        //         this.updateLastRegisteredFunctionsTooltip();
+        //     }
+        // }, 2000);
     }
 
     updateLastRegisteredFunctionsTooltip() {
@@ -344,6 +347,10 @@ export class Editor implements AfterViewInit {
 
             if (item.name === 'libraries') {
                 [content, language] = [snippet[item.name], item.name];
+            }
+            else if (item.name === 'customFunctions') {
+                content = (snippet[item.name] || {}).content;
+                language = 'json';
             }
             else {
                 content = (snippet[item.name] || {}).content;

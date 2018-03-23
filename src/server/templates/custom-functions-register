@@ -11,8 +11,6 @@
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="0"/>
 
-{{#if isRunMode}}
-{{else}}
 	<link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
@@ -54,7 +52,6 @@
         }
     </style>
 
-{{/if}}
     <script src="https://appsforoffice.edog.officeapps.live.com/lib/beta/hosted/office.debug.js"></script>
 
     <script>
@@ -65,8 +62,6 @@
 </head>
 
 <body class="ms-font-m">
-{{#if isRunMode}}
-{{else}}
     <header id="header" class="command__bar" style="visibility: hidden">
         <a id="header-back" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="{{strings.back}}">
             <i class="ms-Icon ms-Icon--Back"></i>
@@ -85,8 +80,16 @@
                 <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
 
                 <ul id="snippet-names">
-{{#each snippetNames}}
-                    <li>{{this}}</li>
+{{#each snippet}}
+                    <li>
+                        <div>{{this.name}}</div>
+                        <div>{{this.data.namespace}}</div>
+                        <ul>
+{{#each this.data.functions}}
+                            <li>{{this.name}}</li>
+{{/each}}
+                        </ul>
+                    </li>
 {{/each}}
                 </ul>
             </main>
@@ -105,29 +108,12 @@
             </footer>
         </div>
     </app>
-{{/if}}
 
 
     <script type="text/javascript">
         window.customFunctionParams = {
-			isRunMode: {{isRunMode}},
-            snippetNames: [
-{{#each snippetNames}}
-                '{{{this}}}',
-{{/each}}
-                null
-            ],
-            snippetIframesBase64Texts: [
-{{#each snippetIframesBase64Texts}}
-                '{{{this}}}',
-{{/each}}
-                null
-            ],
-            heartbeatParams: {
-		        clientTimestamp: {{clientTimestamp}},
-                showDebugLog: {{showDebugLog}}
-            },
-			explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
+            snippetsDataBase64: '{{{snippetsDataBase64}}}',
+            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
             returnUrl: '{{{returnUrl}}}'
         };
     </script>
@@ -135,7 +121,7 @@
 
     <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
     <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
-    <script src="{{{origin}}}/{{{assets.compileCustomFunctions.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.customFunctionsRegister.js}}}"></script>
 
 </body>
 
