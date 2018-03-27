@@ -2,30 +2,33 @@
 <html>
 
 <head>
-	<title>{{strings.registeringCustomFunctions}}</title>
-	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{strings.registeringCustomFunctions}}</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-    <meta http-equiv="Pragma" content="no-cache"/>
-    <meta http-equiv="Expires" content="0"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
-	<link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" />
-    {{!-- Re-use the same CSS as the runner, since almost all of it is the same anyway --}}
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css"
+    />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" /> {{!-- Re-use the same CSS as the runner, since almost all of it is the same anyway --}}
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
 
     <style>
-        /** On this particular page, adjust progress so that it keeps the header visible */        
+        /** On this particular page, adjust progress so that it keeps the header visible */
+
         #progress {
             top: 40px;
             height: calc(100vh - 40px);
-            border-top: white 5px solid; /* white = initially invisible */
+            border-top: white 5px solid;
+            /* white = initially invisible */
         }
 
         /* Also, if an Office JS Helpers notification is invoked, move it down below the header */
+
         .office-js-helpers-notification {
             top: 40px !important;
         }
@@ -44,9 +47,11 @@
         .snippet-name.in-progress {
             color: gold;
         }
+
         .snippet-name.error {
             color: red;
         }
+
         .snippet-name.success {
             color: green;
         }
@@ -54,9 +59,11 @@
         .function-name.in-progress {
             color: gold;
         }
+
         .function-name.error {
             color: red;
         }
+
         .function-name.success {
             color: green;
         }
@@ -64,9 +71,11 @@
         .parameter-name.in-progress {
             color: gold;
         }
+
         .parameter-name.error {
             color: red;
         }
+
         .parameter-name.success {
             color: green;
         }
@@ -74,10 +83,10 @@
 
     <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.15/dist/office.debug.js"></script>
     <!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script> -->
-    
+
 
     <script>
-        Office.initialize = function() {
+        Office.initialize = function () {
             window.playground_host_ready = true;
         }
     </script>
@@ -90,7 +99,7 @@
         </a>
         <div class="command__icon command__center ms-u-slideLeftIn10 pointer-events-none">
             <span class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
-        </a>
+            </a>
     </header>
 
     <app id="progress" class="app">
@@ -102,22 +111,26 @@
                 <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
 
                 <ul id="snippet-names">
-{{#each snippets}}
+                    {{#each snippets}}
                     <li style="margin-bottom: 25px;">
                         <div>{{this.name}}</div>
                         <div class="snippet-name" style="margin-left: 20px;">{{this.data.namespace}}</div>
                         <ul class="function-names">
-{{#each this.data.functions}}
-                            <li class="function-name" style="margin-left: 60px;">{{this.name}}</li>
-                            <ul class="parameter-names">
-{{#each this.parameters}}
-                                <li class="parameter-name" style="margin-left: 90px;">{{this.name}}</li>
-{{/each}}
-                            </ul>
-{{/each}}
+                            {{#each this.data.functions}}
+                            <li style="margin-left: 60px;">
+                                <div class="function-name">{{this.name}}</div>
+                                <ul class="parameter-names">
+                                    {{#each this.parameters}}
+                                    <li style="margin-left: 90px;">
+                                        <div class="parameter-name">{{this.name}}</div>
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                            </li>
+                            {{/each}}
                         </ul>
                     </li>
-{{/each}}
+                    {{/each}}
                 </ul>
             </main>
             <footer class="ms-progress-component__footer">

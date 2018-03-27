@@ -105,13 +105,11 @@ function validatesnippetsDataArray(snippetsDataArray: ICustomFunctionsRegistrati
         const functionDictionary: { [key: string]: boolean } = {};
         let $snippetEntry = $snippetNames.children().eq(snippetIndex);
 
-        if (snippetDictionary[currentSnippet.name]) {
-            // TODO color namespace red, and stop execution
+        if (snippetDictionary[currentSnippet.data.namespace]) {
             $snippetEntry.find('.snippet-name').first().addClass(CSS_CLASSES.error);
-            throw new Error(`Error in snippet namespace`);
+            throw new Error(`The snippet namespace is already in use`);
         }
-        snippetDictionary[currentSnippet.name] = true;
-        // TODO Color the namespace text green
+        snippetDictionary[currentSnippet.data.namespace] = true;
         $snippetEntry.find('.snippet-name').first().addClass(CSS_CLASSES.success);
 
         const $functionNames = $snippetEntry.find('.function-names').first();
@@ -120,24 +118,20 @@ function validatesnippetsDataArray(snippetsDataArray: ICustomFunctionsRegistrati
             let $functionEntry = $functionNames.children().eq(functionIndex);
 
             if (functionDictionary[currentFunction.name]) {
-                // TODO color function name red, and stop execution
                 $functionEntry.find('.function-name').first().addClass(CSS_CLASSES.error);
-                throw new Error(`Error in function name`);
+                throw new Error(`The function name is already in use`);
             }
             functionDictionary[currentFunction.name] = true;
-            // TODO color function name green
             $functionEntry.find('.function-name').first().addClass(CSS_CLASSES.success);
 
             const $parameterNames = $functionEntry.find('.parameter-names').first();
             currentFunction.parameters.forEach((currentParameter, parameterIndex) => {
                 let $parameterEntry = $parameterNames.children().eq(parameterIndex);
                 if (parameterDictionary[currentParameter.name]) {
-                    // TODO color parameter name red, and stop execution
-                    $parameterEntry.find('.parameter-name').addClass(CSS_CLASSES.error);
-                    throw new Error(`Error in parameter name`);
+                    $parameterEntry.find('.parameter-name').first().addClass(CSS_CLASSES.error);
+                    throw new Error(`The parameter name is already in use`);
                 }
                 parameterDictionary[currentParameter.name] = true;
-                // TODO color parameter name green
                 $parameterEntry.find('.parameter-name').first().addClass(CSS_CLASSES.success);
             });
 
