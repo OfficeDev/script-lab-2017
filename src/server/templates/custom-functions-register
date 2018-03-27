@@ -41,18 +41,40 @@
             width: 100%;
         }
 
-        #snippet-names > .in-progress {
+        .snippet-name.in-progress {
             color: gold;
         }
-        #snippet-names > .error {
+        .snippet-name.error {
             color: red;
         }
-        #snippet-names > .success {
+        .snippet-name.success {
+            color: green;
+        }
+
+        .function-name.in-progress {
+            color: gold;
+        }
+        .function-name.error {
+            color: red;
+        }
+        .function-name.success {
+            color: green;
+        }
+
+        .parameter-name.in-progress {
+            color: gold;
+        }
+        .parameter-name.error {
+            color: red;
+        }
+        .parameter-name.success {
             color: green;
         }
     </style>
 
-    <script src="https://appsforoffice.edog.officeapps.live.com/lib/beta/hosted/office.debug.js"></script>
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.15/dist/office.debug.js"></script>
+    <!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script> -->
+    
 
     <script>
         Office.initialize = function() {
@@ -80,13 +102,18 @@
                 <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
 
                 <ul id="snippet-names">
-{{#each snippet}}
-                    <li>
+{{#each snippets}}
+                    <li style="margin-bottom: 25px;">
                         <div>{{this.name}}</div>
-                        <div>{{this.data.namespace}}</div>
-                        <ul>
+                        <div class="snippet-name" style="margin-left: 20px;">{{this.data.namespace}}</div>
+                        <ul class="function-names">
 {{#each this.data.functions}}
-                            <li>{{this.name}}</li>
+                            <li class="function-name" style="margin-left: 60px;">{{this.name}}</li>
+                            <ul class="parameter-names">
+{{#each this.parameters}}
+                                <li class="parameter-name" style="margin-left: 90px;">{{this.name}}</li>
+{{/each}}
+                            </ul>
 {{/each}}
                         </ul>
                     </li>

@@ -17,6 +17,7 @@ const { GH_SECRETS } = process.env;
 
 const versionedPackageNames = getVersionedPackageNames([
     'monaco-editor',
+    '@microsoft/office-js',
     'office-ui-fabric-js',
     'jquery',
     'jquery-resizable-dom',
@@ -193,7 +194,7 @@ module.exports = (prodMode) =>
             }),
             new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',
-                template: './views/empty.html',
+                template: './views/custom-functions.html',
                 chunks: ['polyfills', 'vendor', 'customFunctions'],
             }),
             new HtmlWebpackPlugin({

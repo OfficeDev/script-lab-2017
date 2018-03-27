@@ -221,7 +221,11 @@ export class Editor implements AfterViewInit {
             startOfRequestTime.toString()
         );
 
-        navigateToRegisterCustomFunctions();
+        try {
+            navigateToRegisterCustomFunctions();
+        } catch (e) {
+            await this._uiEffects.alert(e, 'Error registering custom functions', this.strings.ok);
+        }
 
         // // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
         // let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||

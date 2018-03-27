@@ -9,6 +9,11 @@ interface InitializationParams {
     returnUrl: string;
 }
 
+const CSS_CLASSES = {
+    inProgress: 'in-progress',
+    error: 'error',
+    success: 'success'
+};
 
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
@@ -60,25 +65,29 @@ async function initializeRegistration(params: InitializationParams) {
 
     let customFunctionsMetadata: ICustomFunctionsRegistrationApiMetadata = validatesnippetsDataArray(snippetsDataArray);
 
-    // Complete any function registrations
-    await Excel.run(async (context) => {
-        context.workbook.worksheets.getActiveWorksheet().getCell(0, 0).values = [[JSON.stringify(customFunctionsMetadata, null, 4)]];
-        await context.sync();
-    });
+    if (Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
+        await Excel.run(async (context) => {
+            (context.workbook as any).registerCustomFunctions('ScriptLab', JSON.stringify(customFunctionsMetadata));
+            await context.sync();
+        });
 
-    // if (showUI && !allSuccessful) {
-    //     $('.ms-progress-component__footer').css('visibility', 'hidden');
-    // }
+        // TODO
+        // if (showUI && !allSuccessful) {
+        //     $('.ms-progress-component__footer').css('visibility', 'hidden');
+        // }
 
-    // if (isRunMode) {
-    //     heartbeat.messenger.send<{ timestamp: number }>(heartbeat.window,
-    //         CustomFunctionsMessageType.LOADED_AND_RUNNING, { timestamp: new Date().getTime() });
-    // }
-    // else {
-    //     if (allSuccessful) {
-    //         window.location.href = params.returnUrl;
-    //     }
-    // }
+        // if (isRunMode) {
+        //     heartbeat.messenger.send<{ timestamp: number }>(heartbeat.window,
+        //         CustomFunctionsMessageType.LOADED_AND_RUNNING, { timestamp: new Date().getTime() });
+        // }
+        // else {
+        //     if (allSuccessful) {
+        //         window.location.href = params.returnUrl;
+        //     }
+        // }
+    } else {
+        throw new Error('Registering custom functions is unsupported on this version of Excel.')
+    }
 }
 
 function validatesnippetsDataArray(snippetsDataArray: ICustomFunctionsRegistrationRelevantData[]): ICustomFunctionsRegistrationApiMetadata {
@@ -90,31 +99,46 @@ function validatesnippetsDataArray(snippetsDataArray: ICustomFunctionsRegistrati
     // None the less, the validation of duplicate names does sound like a logic thing to be done here.
 
     const snippetDictionary: { [key: string]: boolean } = {};
+    const $snippetNames = $('#snippet-names');
 
-    snippetsDataArray.forEach(currentSnippet => {
+    snippetsDataArray.forEach((currentSnippet, snippetIndex) => {
         const functionDictionary: { [key: string]: boolean } = {};
+        let $snippetEntry = $snippetNames.children().eq(snippetIndex);
 
         if (snippetDictionary[currentSnippet.name]) {
-            // Duplicate found, deal with it and break
-            // TODO ricky
+            // TODO color namespace red, and stop execution
+            $snippetEntry.find('.snippet-name').first().addClass(CSS_CLASSES.error);
+            throw new Error(`Error in snippet namespace`);
         }
         snippetDictionary[currentSnippet.name] = true;
+        // TODO Color the namespace text green
+        $snippetEntry.find('.snippet-name').first().addClass(CSS_CLASSES.success);
 
-        currentSnippet.data.functions.forEach(currentFunction => {
+        const $functionNames = $snippetEntry.find('.function-names').first();
+        currentSnippet.data.functions.forEach((currentFunction, functionIndex) => {
             const parameterDictionary: { [key: string]: boolean } = {};
+            let $functionEntry = $functionNames.children().eq(functionIndex);
 
             if (functionDictionary[currentFunction.name]) {
-                // Duplicate found, deal with it and break
-                // TODO
+                // TODO color function name red, and stop execution
+                $functionEntry.find('.function-name').first().addClass(CSS_CLASSES.error);
+                throw new Error(`Error in function name`);
             }
             functionDictionary[currentFunction.name] = true;
+            // TODO color function name green
+            $functionEntry.find('.function-name').first().addClass(CSS_CLASSES.success);
 
-            currentFunction.parameters.forEach(currentParameter => {
+            const $parameterNames = $functionEntry.find('.parameter-names').first();
+            currentFunction.parameters.forEach((currentParameter, parameterIndex) => {
+                let $parameterEntry = $parameterNames.children().eq(parameterIndex);
                 if (parameterDictionary[currentParameter.name]) {
-                    // Duplicate found, deal with it and break
-                    // TODO
+                    // TODO color parameter name red, and stop execution
+                    $parameterEntry.find('.parameter-name').addClass(CSS_CLASSES.error);
+                    throw new Error(`Error in parameter name`);
                 }
                 parameterDictionary[currentParameter.name] = true;
+                // TODO color parameter name green
+                $parameterEntry.find('.parameter-name').first().addClass(CSS_CLASSES.success);
             });
 
             //The function is OKAY, append namespace to function name so that it can be the real custom function name
