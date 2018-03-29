@@ -68,14 +68,14 @@ const { localStorageKeys } = PLAYGROUND;
 
 
     function getLastOpenedSnippet(): ISnippet | null {
-        let settings: ISettings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings))[environment.current.host];
+        let settings: ISettings = (JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) || {})[environment.current.host];
         return settings.lastOpened;
     }
 
     function getSnippetById(id: string): ISnippet | null {
         const hostStorageKey = localStorageKeys.hostSnippets_parameterized
             .replace('{0}', environment.current.host);
-        const snippets: ISnippet[] = JSON.parse(window.localStorage.getItem(hostStorageKey));
+        const snippets: { [key: string] : ISnippet } = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
         return snippets[id];
     }
 

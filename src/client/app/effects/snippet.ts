@@ -103,12 +103,12 @@ export class SnippetEffects {
 
             // update snippets
             scrubbedSnippet.modified_at = Date.now();
-            let snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
+            const snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
             snippets[scrubbedSnippet.id] = scrubbedSnippet;
             window.localStorage.setItem(hostStorageKey, JSON.stringify(snippets));
 
             // update lastOpened
-            let settings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings));
+            const settings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) || {};
             settings[environment.current.host].lastOpened = pick(scrubbedSnippet, ['created_at', 'host', 'id', 'libraries', 'modified_at', 'name', 'description']);
 
             window.localStorage.setItem(localStorageKeys.settings, JSON.stringify(settings));

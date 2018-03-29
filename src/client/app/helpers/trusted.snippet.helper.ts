@@ -5,7 +5,7 @@ class TrustedSnippetManager {
     cleanUpTrustedSnippets(): void {
         try {
             ensureFreshLocalStorage();
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
+            let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets)) || {};
             for (let snippetId of Object.keys(trustedSnippets)) {
                 if (!storage.snippets.get(snippetId)) {
                     delete trustedSnippets[snippetId];
@@ -30,10 +30,7 @@ class TrustedSnippetManager {
 
         try {
             ensureFreshLocalStorage();
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
-            if (!trustedSnippets) {
-                trustedSnippets = {};
-            }
+            const trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets)) || {};
             return trustedSnippets[snippetId] ? true : false;
         } catch (e) {
             return false;
@@ -43,10 +40,7 @@ class TrustedSnippetManager {
     trustSnippet(snippetId: string): void {
         try {
             ensureFreshLocalStorage();
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
-            if (!trustedSnippets) {
-                trustedSnippets = {};
-            }
+            const trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets)) || {};
             trustedSnippets[snippetId] = true;
             window.localStorage.setItem(localStorageKeys.trustedSnippets, JSON.stringify(trustedSnippets));
         } catch (e) { }
@@ -55,7 +49,7 @@ class TrustedSnippetManager {
     untrustSnippet(snippetId: string): void {
         try {
             ensureFreshLocalStorage();
-            let trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets));
+            const trustedSnippets = JSON.parse(window.localStorage.getItem(localStorageKeys.trustedSnippets)) || {};
             delete trustedSnippets[snippetId];
             window.localStorage.setItem(localStorageKeys.trustedSnippets, JSON.stringify(trustedSnippets));
         } catch (e) { }
