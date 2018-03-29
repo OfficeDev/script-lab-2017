@@ -103,7 +103,7 @@ export class SnippetEffects {
 
             // update snippets
             scrubbedSnippet.modified_at = Date.now();
-            let snippets = JSON.parse(window.localStorage.getItem(hostStorageKey));
+            let snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
             snippets[scrubbedSnippet.id] = scrubbedSnippet;
             window.localStorage.setItem(hostStorageKey, JSON.stringify(snippets));
 
