@@ -1,8 +1,9 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, AfterViewInit } from '@angular/core';
-import { environment, storageSize, storage } from '../helpers';
-import {Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
+import { environment, storageSize, storage, ensureFreshLocalStorage } from '../helpers';
+import { Strings, getAvailableLanguages, getDisplayLanguage, setDisplayLanguage } from '../strings';
 import { UIEffects } from '../effects/ui';
-let { config, localStorageKeys } = PLAYGROUND;
+import { attempt, isError, isEqual } from 'lodash';
+const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,7 +13,10 @@ let { config, localStorageKeys } = PLAYGROUND;
             <div class="about">
                 <div class="about__details">
                     <div class="about__primary-text ms-font-xxl">{{config?.build?.name}}</div>
-                    <div class="profile__tertiary-text ms-font-m">{{strings.userId}}: ${storage.user}</div>
+                    <div class="profile__tertiary-text ms-font-m" style="margin-bottom: 20px;">{{strings.userId}}: ${storage.user}</div>
+                    <button class="ms-Dialog-action ms-Button" style="margin-bottom: 20px;" (click)="logoutSnippets()">
+                        <span class="ms-Button-label">{{strings.logoutFromGraph}}</span>
+                    </button>
                     <div class="about__secondary-text ms-font-l">Version: {{config?.build?.version}}
                         <br/><span class="ms-font-m">(Deployed {{config?.build?.humanReadableTimestamp}})</span>
                     </div>
@@ -28,12 +32,23 @@ let { config, localStorageKeys } = PLAYGROUND;
                             <option *ngFor="let conf of configs" [value]="conf.value">{{conf.name}}</option>
                         </select>
                     </div>
+                    <div class="about__special-flags">
+                        <div>
+                            <label class="ms-font-m">
+                                <input type="checkbox" [(ngModel)]="showExperimentationFlags" />
+                                {{strings.showExperimentationFlags}}
+                            </label>
+                        </div>
+                        <div *ngIf="showExperimentationFlags" class="ms-TextField ms-TextField--multiline">
+                            <textarea class="ms-TextField-field" [(ngModel)]="experimentationFlags" (keyup)="onExperimentationFlagsChange()"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="ms-Dialog-actions">
                 <div class="ms-Dialog-actionsRight">
                     <button class="ms-Dialog-action ms-Button" (click)="okClicked()">
-                        <span class="ms-Button-label">{{strings.okButtonLabel}}</span>
+                        <span class="ms-Button-label">{{strings.ok}}</span>
                     </button>
                 </div>
             </div>
@@ -45,17 +60,19 @@ export class About implements AfterViewInit {
     @Input() show: boolean;
     @Output() showChange = new EventEmitter<boolean>();
 
+    strings = Strings();
+
+    private _hostSnippetsStorageKey = localStorageKeys.hostSnippets_parameterized
+        .replace('{0}', environment.current.host);
     cache = [
         `${Strings().aboutStorage}`,
-        `${storageSize(localStorage, `playground_${environment.current.host}_snippets`, Strings().aboutSnippets)}`,
-        `${storageSize(sessionStorage, 'playground_intellisense', Strings().aboutIntellisense)}`,
+        `${storageSize(localStorage, this._hostSnippetsStorageKey, Strings().aboutSnippets)}`,
+        `${storageSize(sessionStorage, sessionStorageKeys.intelliSenseCache, Strings().aboutIntellisense)}`,
     ].join('\n');
 
     config = {
         build: environment.current.build,
     };
-
-    strings = Strings();
 
     availableLanguages = [] as { name: string, value: string }[];
     currentChosenLanguage = '';
@@ -68,9 +85,12 @@ export class About implements AfterViewInit {
     ];
     selectedConfig = '';
 
+    showExperimentationFlags = false;
+    experimentationFlags = '';
+
     constructor(
         private _effects: UIEffects
-    ) {}
+    ) { }
 
     ngAfterViewInit() {
         this.availableLanguages = getAvailableLanguages();
@@ -78,6 +98,7 @@ export class About implements AfterViewInit {
         this.originalLanguage = this.currentChosenLanguage;
 
         // User can only navigate to localhost if they've sideloaded local manifest
+        ensureFreshLocalStorage();
         let showLocalConfig = (environment.current.config.name === config.local.name ||
             /localhost/.test(window.localStorage.getItem(localStorageKeys.originEnvironmentUrl)));
         if (showLocalConfig) {
@@ -85,16 +106,82 @@ export class About implements AfterViewInit {
         }
 
         this.selectedConfig = this.configs.find(c => c.value.toUpperCase() === environment.current.config.name).value;
+
+        this.experimentationFlags = environment.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/);
+        const isEffectivelyEmpty = isEqual(JSON.parse(this.experimentationFlags), PLAYGROUND.experimentationFlagsDefaults);
+        this.showExperimentationFlags = !isEffectivelyEmpty;
     }
 
     async okClicked() {
+        let needsWindowReload = false;
+
+
+        this.experimentationFlags = this.experimentationFlags.trim();
+        if (this.experimentationFlags.length === 0) {
+            this.experimentationFlags = '{}';
+        }
+
+        let experimentationUpdateResultOrError =
+            attempt(() => environment.updateExperimentationFlags(this.experimentationFlags));
+
+        if (isError(experimentationUpdateResultOrError)) {
+            await this._effects.alert(experimentationUpdateResultOrError.message, this.strings.error, this.strings.ok);
+            return;
+        } else if (experimentationUpdateResultOrError === true) {
+            needsWindowReload = true;
+        } else {
+            // If this component gets re-opened, want to have a re-formatted string, in case it changed.
+            this.experimentationFlags = environment.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/);
+        }
+
+
         if (this.currentChosenLanguage !== this.originalLanguage) {
             setDisplayLanguage(this.currentChosenLanguage);
-            window.location.reload();
+            needsWindowReload = true;
         }
+
+
+        if (needsWindowReload) {
+            this._effects.alert(this.strings.scriptLabIsReloading, this.strings.pleaseWait);
+            window.location.reload();
+            return;
+        }
+
 
         this.showChange.emit(false);
 
+        await this._handleEnvironmentSwitching();
+    }
+
+    logoutSnippets() {
+        window.open(
+            _generateAuthUrl({ client_id: environment.current.config.thirdPartyAADAppClientId, resource: 'graph' }),
+            '_blank',
+            'width=1024,height=768'
+        );
+
+        // This function should remain roughly in sync with "auth-helpers.ts"
+        function _generateAuthUrl(params: {
+            resource: string;
+            client_id: string;
+        }): string {
+            const queryParams = [
+                `auth_action=logout`,
+                `client_id=${encodeURIComponent(params.client_id)}`,
+                `resource=${params.resource}`
+            ].join('&');
+
+            return environment.current.config.runnerUrl + '/snippet/auth?' + queryParams;
+        }
+    }
+
+    onExperimentationFlagsChange() {
+        if (this.experimentationFlags.trim().length === 0) {
+            this.experimentationFlags = JSON.stringify(PLAYGROUND.experimentationFlagsDefaults, null, 4);
+        }
+    }
+
+    async _handleEnvironmentSwitching() {
         let currentConfigName = environment.current.config.name.toLowerCase();
         if (this.selectedConfig === currentConfigName) {
             return;
@@ -106,14 +193,15 @@ export class About implements AfterViewInit {
         let changeEnvironmentResult = await this._effects.alert(
             this.strings.changeEnvironmentConfirm,
             changeEnvironmentMessage,
-            this.strings.okButtonLabel,
-            this.strings.cancelButtonLabel
+            this.strings.ok,
+            this.strings.cancel
         );
-        if (changeEnvironmentResult === this.strings.cancelButtonLabel) {
+        if (changeEnvironmentResult === this.strings.cancel) {
             this.selectedConfig = this.configs.find(c => c.value === currentConfigName).value;
             return;
         }
 
+        ensureFreshLocalStorage();
         let originEnvironment = window.localStorage.getItem(localStorageKeys.originEnvironmentUrl);
         let targetEnvironment = config[this.selectedConfig].editorUrl;
 

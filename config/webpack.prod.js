@@ -10,12 +10,6 @@ module.exports = (env) =>
     webpackMerge(commonConfig(env.mode === 'prod'), {
         devtool: 'source-map',
 
-        output: {
-            path: path.resolve('./dist/client'),
-            filename: 'bundles/[name].[chunkhash].bundle.js',
-            chunkFilename: 'bundles/[id].[chunkhash].chunk.js'
-        },
-
         module: {
             rules: [
                 {
@@ -56,7 +50,6 @@ module.exports = (env) =>
         },
 
         plugins: [
-            new ExtractTextPlugin('bundles/[name].[chunkhash].bundle.css'),
             new webpack.optimize.UglifyJsPlugin({
                 sourceMap: true,
                 compress: true,

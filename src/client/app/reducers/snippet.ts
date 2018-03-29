@@ -50,7 +50,6 @@ export function reducer(state = initialState, action: SnippetActions | GitHubAct
             AI.trackEvent(action.type, { id: action.payload.id });
             return {
                 ...state,
-                external: false,
                 lastOpened: action.payload
             };
 

@@ -1,12 +1,13 @@
 import { environment } from './environment';
 import { Strings } from '../strings';
-let { config } = PLAYGROUND;
+const { config } = PLAYGROUND;
 
-export function instantiateRibbon(elementId: string) {
+export function instantiateRibbon(elementId: string): boolean {
     let ribbon = document.getElementById(elementId);
     if (!ribbon) {
-        return;
+        return false;
     }
+
     let strings = Strings();
     switch (environment.current.config.name) {
         // Utilize Office pallet colors for ribbons
@@ -23,10 +24,9 @@ export function instantiateRibbon(elementId: string) {
             ribbon.style.background = 'rgba(33, 115, 70, 1)';
             break;
         default:
-            break;
+            return false;
     }
 
-    if (environment.current.config.name !== config.production.name) {
-        ribbon.style.visibility = 'visible';
-    }
+    ribbon.style.visibility = 'visible';
+    return true;
 }

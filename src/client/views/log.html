@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+
+	<title>Script Lab</title>
+
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+	<link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+	<link rel="manifest" href="favicon/manifest.json">
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.min.css">
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.components.min.css">
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.css">
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid-theme.min.css">
+
+	<style>
+		body {
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-box-orient: vertical;
+			-webkit-box-direction: normal;
+			    -ms-flex-direction: column;
+			        flex-direction: column;
+		}
+
+		#header {
+			-webkit-box-flex: 0;
+			    -ms-flex: 0 0 auto;
+			        flex: 0 0 auto;
+			margin-bottom: 10px;
+			padding: 10px;
+		}
+
+		#grid {
+			-webkit-box-flex: 1;
+			    -ms-flex: 1 1 auto;
+			        flex: 1 1 auto;
+		}
+
+		#time {
+			margin-right: 25px;
+			font-weight: bold;
+		}
+
+		#clear {
+			margin-right: 10px;
+		}
+
+		#add-test-log-item {
+			margin-left: 20px;
+		}
+
+		tr.error td {
+			background: rgb(99, 23, 23) !important;
+			color: white;
+		}
+
+		tr.warn td {
+			background: goldenrod !important;
+		}
+	</style>
+</head>
+
+<body class="ms-font-m">
+
+	<!-- Not localizing these strings yet, since it's experimental for now -->
+	<div id="header">
+		<span>Time:</span>
+		<span id="time"></span>
+
+		<button class="ms-Button" id="clear">
+			<span class="ms-Button-label">Clear</span>
+		</button>
+		<label>
+			<input id="scroll-to-bottom" type="checkbox" checked="checked" />
+			<span id="scroll-to-bottom-label">Scroll to bottom</span>
+		</label>
+		<button class="ms-Button" id="add-test-log-item" style="display:none">
+			<span class="ms-Button-label">(DEV MODE) Add test log item</span>
+		</button>
+	</div>
+	<div id="grid"></div>
+
+	<script src="libs/{{{versionedPackageNames['jquery']}}}/jquery.min.js"></script>
+	<script src="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.js"></script>
+</body>
+
+</html>

@@ -40,6 +40,7 @@ interface ServerStrings {
     editingDifferentSnippet1: string;
     editingDifferentSnippet2: string;
     loadLatestSnippet: string;
+    registeringCustomFunctions: string;
 
     RuntimeHelpers: {
         unexpectedError: string;

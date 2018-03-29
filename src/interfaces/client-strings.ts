@@ -17,16 +17,21 @@ interface ClientStringsPerLanguage {
     close: string;
     about: string;
     feedback: string;
+    error: string;
     errors: string;
     dismiss: string;
+    trustSnippetQuestionMark: string;
 
-    okButtonLabel: string;
-    logoutButtonLabel: string;
-    cancelButtonLabel: string;
-    saveButtonLabel: string;
-    moreInfoButtonLabel: string;
-    importButtonLabel: string;
+    ok: string;
+    logout: string;
+    logoutFromGraph: string;
+    cancel: string;
+    save: string;
+    moreInfo: string;
+    import: string;
     snippetImportExistingButtonLabel: string;
+    overwriteExistingButtonLabel: string;
+    createNewCopyButtonLabel: string;
     editorTriggerSuggestContextMenuLabel: string;
 
     failedToLoadCodeSnippet: string,
@@ -96,13 +101,14 @@ interface ClientStringsPerLanguage {
 
     // Components strings
     // about.ts
-    aboutUpdated: string;
     aboutStorage: string;
     aboutSnippets: string;
     aboutIntellisense: string;
     aboutCurrentEnvironment: string;
     aboutSwitchEnvironment: string;
     changeEnvironmentConfirm: string;
+    showExperimentationFlags: string;
+    invalidExperimentationFlags: string;
 
     //snippet.info.ts
     snippetInfoDialogTitle: string;
@@ -137,7 +143,11 @@ interface ClientStringsPerLanguage {
         'template': string;
         'style': string;
         'libraries': string;
-    },
+        'customFunctions': string;
+    };
+
+    registerCustomFunctions: string;
+    getTextForCustomFunctionsLastUpdated: (lastUpdatesXSecondsAgo: string, lastAliveXSecondsAgo: string) => string;
 
     // view.mode.ts strings
 
@@ -186,7 +196,12 @@ interface ClientStringsPerLanguage {
     importUrlOrYamlLabel: string;
     exampleAbbreviation: string;
 
+    pleaseWait: string;
+    scriptLabIsReloading: string;
     unexpectedError: string;
+
+    snippetNotTrusted: string;
+    trust: string;
 
     Refresh: {
         /** Error if refresh URL is somehow misformed (should essentially never happen) */

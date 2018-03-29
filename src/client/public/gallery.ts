@@ -1,6 +1,7 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { storage, environment, applyTheme, post, trustedSnippetManager } from '../app/helpers';
+import { storage, environment, applyTheme, post,
+    trustedSnippetManager, setUpMomentJsDurationDefaults, isInsideOfficeApp } from '../app/helpers';
 import { Strings, getDisplayLanguage } from '../app/strings';
 import '../assets/styles/extras.scss';
 
@@ -48,7 +49,7 @@ export class Gallery {
     </article>`;
 
     constructor() {
-        this.setUpMomentJsDurationDefaults();
+        setUpMomentJsDurationDefaults(moment);
 
         storage.snippets.notify().subscribe(() => this.render());
         storage.settings.notify().subscribe(() => this.renderLastOpened());
@@ -155,22 +156,13 @@ export class Gallery {
         const state: IRunnerState = {
             snippet: { ...snippet, ...overrides },
             returnUrl: `${location.protocol}//${location.host}${location.pathname}?gallery=true`,
-            displayLanguage: getDisplayLanguage()
+            displayLanguage: getDisplayLanguage(),
+            isInsideOfficeApp: isInsideOfficeApp()
         };
         const data = JSON.stringify(state);
         const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
 
         this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
         return post(environment.current.config.runnerUrl + '/compile/page', { data, isTrustedSnippet });
-    }
-
-    private setUpMomentJsDurationDefaults() {
-        moment.relativeTimeThreshold('s', 40);
-        // Note, per documentation, "ss" must be set after "s"
-        moment.relativeTimeThreshold('ss', 2);
-        moment.relativeTimeThreshold('m', 40);
-        moment.relativeTimeThreshold('h', 20);
-        moment.relativeTimeThreshold('d', 25);
-        moment.relativeTimeThreshold('M', 10);
     }
 }

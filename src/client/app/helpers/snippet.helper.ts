@@ -1,8 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////
-/// NOTE: A portion (everything except "getSnippetDefaults") is also used in the ///
-///       Script Lab Samples project.  Please be sure that any changes that you  ///
-///       make here are also copied to there. See "config/snippet.helpers.ts"    ///
-///       in https://github.com/OfficeDev/script-lab-samples                     ///
+/// NOTE: A portion (everything except "getSnippetDefaults" and "isMakerScript") ///
+///       is also used in the office-js-snippets project.                        ///
+///       Please be sure that any changes that you make here                     ///
+///       are also copied to there. See "config/snippet.helpers.ts"              ///
+///       in https://github.com/OfficeDev/office-js-snippets                     ///
 ///                                                                              ///
 ///       That same shared portion is also used in the "server" portion of this  ///
 ///       project (src\server\core\snippet.helper.ts). Please ensure that these  ///
@@ -10,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 import * as jsyaml from 'js-yaml';
-import { forIn } from 'lodash';
+import { forIn, isUndefined } from 'lodash';
 import { environment } from './environment';
 import { Strings } from '../strings';
 
@@ -40,11 +41,14 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
     created_at: SnippetFieldType.INTERNAL,
     modified_at: SnippetFieldType.INTERNAL,
 
+    perf_info: SnippetFieldType.INTERNAL,
+
     /* ISnippet */
     script: SnippetFieldType.PUBLIC,
     template: SnippetFieldType.PUBLIC,
     style: SnippetFieldType.PUBLIC,
-    libraries: SnippetFieldType.PUBLIC
+    libraries: SnippetFieldType.PUBLIC,
+    customFunctions: SnippetFieldType.PUBLIC
 };
 
 export const snippetFieldSortingOrder: { [key: string]: number } = {
@@ -64,6 +68,7 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
     template: 111,
     style: 112,
     libraries: 113,
+    customFunctions: 114,
 
     /* And within scripts / templates / styles, content should always be before language */
     content: 1000,
@@ -71,23 +76,59 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
 };
 
 export function getSnippetDefaults(): ISnippet {
-    return {
+    let defaults: ISnippet = {
         id: '',
         gist: '',
         name: Strings().defaultSnippetTitle, // UI unknown (TODO: clarify what this comment meant)
         description: '',
-        // author: export-only, always want to generate on the fly, so skip altogether
+        // [author]: export-only, always want to generate on the fly, so skip altogether
         host: environment.current.host,
-        // api_set: export-only, always want to generate on the fly, so skip altogether
+        // [api_set]: export-only, always want to generate on the fly, so skip altogether
         platform: environment.current.platform,
         created_at: Date.now(),
         modified_at: Date.now(),
-
+        // [perfInfo]: explicitly not setting perf info because it is optional
         script: { content: '', language: 'typescript' },
         template: { content: '', language: 'html' },
         style: { content: '', language: 'css' },
         libraries: ''
     };
+
+    if (environment.current.supportsCustomFunctions) {
+        defaults.customFunctions = { content: '', language: 'typescript' };
+    }
+
+    return defaults;
+}
+
+export function isMakerScript(script: IContentLanguagePair) {
+    return script.content.indexOf('Experimental.ExcelMaker') >= 0;
+}
+
+function scrubCarriageReturns(snippet: ISnippet) {
+    removeCarriageReturns(snippet, 'template');
+    removeCarriageReturns(snippet, 'script');
+    removeCarriageReturns(snippet, 'style');
+    removeCarriageReturns(snippet, 'libraries');
+
+    function removeCarriageReturns(snippet: ISnippet, field: 'template' | 'script' | 'style' | 'libraries') {
+        if (!snippet[field]) {
+            return;
+        }
+
+        if (field === 'libraries') {
+            snippet.libraries = removeCarriageReturnsHelper(snippet.libraries);
+        } else {
+            snippet[field].content = removeCarriageReturnsHelper(snippet[field].content);
+        }
+
+        function removeCarriageReturnsHelper(text) {
+            return text
+                .split('\n')
+                .map(line => line.replace(/\r/, ''))
+                .join('\n');
+        }
+    }
 }
 
 /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
@@ -95,7 +136,9 @@ export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): I
     let copy = {};
     forIn(snippetFields, (fieldType, fieldName) => {
         if (fieldType & keep) {
-            copy[fieldName] = snippet[fieldName];
+            if (!isUndefined(snippet[fieldName])) {
+                copy[fieldName] = snippet[fieldName];
+            }
         }
     });
 
@@ -104,6 +147,7 @@ export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): I
 
 export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
     const snippet = { ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC), ...additionalFields };
+    scrubCarriageReturns(snippet);
 
     return jsyaml.safeDump(snippet, {
         indent: 4,

@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="/">
+
+	<!--Note: title below will get localized at runtime-->
+	<title>Default Snippet Authentication</title>
+
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+	<link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+	<link rel="manifest" href="favicon/manifest.json">
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.min.css">
+	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.components.min.css">
+	<style>
+		.container {
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+			-ms-flex-direction: column;
+				flex-direction: column;
+		width: 500px;
+		margin: auto;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		-webkit-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+		}
+		.container>* {
+		margin-top: 14pt;
+		margin-bottom: 14pt;
+		}
+		.container h1 {
+		text-align: center;
+		}
+		.container h3 {
+		font-weight: bold;
+		}
+		.container li {
+		position: relative;
+		left: 30pt;
+		}
+		.container #button-container {
+		width: 100%;
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-webkit-box-pack: space-evenly;
+			-ms-flex-pack: space-evenly;
+				justify-content: space-evenly;
+		height: 32pt;
+		margin-top: 32pt;
+		}
+		.container #button-container button {
+		height: 100%;
+		min-width: 120pt;
+		}
+		.container .ms-Button--primary {
+		color: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="main" class="container ms-Fabric" style="display: none;">
+		<h1 class="ms-font-su ms-fontColor-themePrimary">Authorize Script Lab Snippet</h1>
+		<h3 class="ms-font-l" id="snippetId">Your Snippet</h3>
+		<p class="ms-font-l">This snippet is requesting access to Microsoft Graph on your behalf.</p>
+		<p class="ms-font-l">By clicking Authorize, you are allowing this snippet to:</p>
+		<ul class="ms-font-l">
+		  <li>Access Documents in your OneDrive</li>
+		  <li>Read/Write/Send Emails</li>
+		  <li>Access/Add Events to your Calendar</li>
+		</ul>
+		<p class="ms-font-l">Once you have consented, you will not be asked again for this snippet. Please be cognisant of this if you make changes to this snippet.</p>
+		<div id="button-container">
+		  <button class="ms-Button ms-Button--default" id="cancel">
+			<div class="ms-Button-textContainer ms-fontWeight-semibold ms-fontSize-l">Cancel</div>
+		  </button>
+		  <button class="ms-Button ms-Button--primary" id="authorize">
+			<div class="ms-Button-textContainer ms-fontWeight-semibold ms-fontSize-l">Authorize</div>
+		  </button>
+		</div>
+	  </div>
+</body>
+
+</html>

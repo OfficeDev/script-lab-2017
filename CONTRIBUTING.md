@@ -15,11 +15,7 @@ There are several ways in which you can contribute to the project:
 * Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
   * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
 * Download & install Node, version 6.9+.  In our experience, the LTS version of 6.10 and 6.11 works, whereas 8.1.2 did not, so mileage may vary. <https://nodejs.org/en>.
-* Download & install Yarn, for use as an alternative for `npm install`.  Download from  <https://yarnpkg.com/en/docs/install>.  The documentation also describes why Yarn is preferable to `npm install`.
-* Install `nodemon` for global use, using
-~~~
-    yarn global add nodemon
-~~~
+* Download & install Yarn, for use as an alternative for `npm install`.  Download from <https://yarnpkg.com/en/docs/install> (or bootstrap Yarn installation by running once `npm install -g yarn`).  The documentation also describes why Yarn is preferable to `npm install`.
 
 Note: the installation of Node JS and Yarn add paths to your operating system's PATH variable. Therefore, in some cases you may log off and log in from your System to get Node JS and Yarn work withing Visual Studio Code.
 
@@ -50,9 +46,7 @@ Note: the installation of Node JS and Yarn add paths to your operating system's 
 
 6. **Importantly**, *once the `npm start` has completed and you see the message above*, **start the runner (server) by pressing `F5` within VS Code**.  Failure to do this will cause the "run" button to lead to an error (since the server, which is where the "run" code is running, is offline).  Ditto for auth, export, and other scenarios.
 
->>> NOTE: If you get an error that `nodemon` is not installed, be sure that you've installed it globally `yarn global add nodemon`, and that Node is part of your path.  
-
-7.	Trust the certificates for both <https://localhost:3000>, <https://localhost:3100>, and <https://localhost:3200>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
+7. Trust the certificates for both <https://localhost:3000>, <https://localhost:3100>, and <https://localhost:3200>.  For purposes of running add-ins on a PC, do this within Internet Explorer. See the gif below for a step-by-step animation:
 
 ![](.github/images/trust-ssl-internet-explorer.gif).
 
@@ -61,11 +55,23 @@ The website is now running.  To try it out in an Add-in, see the next section.
 > Note:  To **stop debugging**, first press the "stop" button on the debugger (shift + F5). You will see an error on the server terminal window (`[nodemon] app crashed - waiting for file changes before starting...`); that's ok, just close that terminal instance (trash icon on top-right of terminal).  If you want to restart debugging later, just re-press F5 again.
 
 
+## Troubleshooting:
+
+1. If you need to configure BrowserSync settings (including making it stop syncing automatically, if you get into a recursive reload loop...), go to <http://localhost:3001/sync-options>.
+
+2. If you get an error like `modules 14/14 modules 0 activeError: listen EADDRINUSE 127.0.0.1:3100`:
+  - In a `git bash` shell, type out `netstat -a -o | grep 3100` (or whatever the port number is)
+    You will get a response like:
+    `TCP    127.0.0.1:3100         <computer-name>:0       LISTENING       12220`
+  - In a regular command prompt, run
+    `taskkill /pid 12220 /F`  (where `12220` is the process ID from rightmost column)
+
+
 ## Testing inside of an add-in
 
 1. Locate the add-in manifest (which you'll find in the `manifests` folder in the root of the repo).  For purposes of running against localhost, use `script-lab-local.xml`.
 
-2. Sideload the manifest into your office host application.  See <https://aka.ms/sideload-addins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
+2. Sideload the manifest into your office host application.  Simplest option, on the desktop (tested on PC), is to run `npm run sideload:excel`.  Otherwise, see <https://aka.ms/sideload-addins>, which includes instructions and a step-by-step video for sideloading on the desktop, as well as links for the other platforms.
 
 
 ## General structure
@@ -75,8 +81,8 @@ The project consists of two separate components: the client (editor) and the ser
 At the root level of the repo, the folders of interest (and skipping over the others) are:
 
 * `client`: This is the playground editor UI.
-* `config`: Configuration related to webpack & deployment
-* `dist`: The generated files for `client` and `server` (it has subfolders for each), which are the compiled and minified html/js/css/etc. (TODO: Add why generate and check in, and which commands generate these files)
+* `config`: Configuration related to webpack & deployment.
+* `dist`: The generated files for `client` and `server` (it has subfolders for each), which are the compiled and minified html/js/css/etc.  If you do a `npm run build`, you will get the full `dist` folder; otherwise, with an `npm start`, you'll only get a partial one (since `client` files will mostly be served from in-memory).
 * `manifests`: Add-in manifests (both localhost and production) for side-loading the Add-in into Office applications.
 * `node_modules`: The folder with all the node module dependencies that get installed as part of `yarn install`.
 * `server`: A stateless Node backend that receives a POST request with the snippet's HTML, TypeScript, CSS, and Libraries, and creates a web-browser-servable web page out of them. The server makes extensive use of [Handlebars.js](http://handlebarsjs.com/) for templates, which are located in the `server/templates` directory.

@@ -5,15 +5,24 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ServerStrings {
-    const playgroundName = 'Script Lab';
-    const unexpectedError = 'Es ist ein unerwarteter Fehler aufgetreten.';
 
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: 'Programmieren ● Ausführen ● Teilen',
 
+        unexpectedError: 'Es ist ein unerwarteter Fehler aufgetreten.',
+
+        snippetNotTrusted: 'Dieses Schnipsel stammt aus einer externen Quelle. Sie müssen dem Schnipsel vertrauen, bevor Sie dieses ausführen können.',
+        trust: 'Vertrauen',
+
         error: 'Fehler',
-        unexpectedError: unexpectedError,
+        cancel: 'Abbrechen',
+        dismiss: 'Schließen',
+    };
+
+    return {
         invalidHost: 'Ungültiger Host',
         invalidId: 'Ungültige ID',
         receivedInvalidAuthCode: 'Ungültiger Authentifizerungscode.',
@@ -29,7 +38,7 @@ export function getGermanStrings(): ServerStrings {
         createdWithScriptLab: 'Erstellt mit Script Lab',
 
         scriptLabRunner: 'Script Lab Runner',
-        tryItPageTitle: getEnglishSubstitutesForNotYetTranslated().tryItPageTitle,
+        tryItPageTitle: 'Ausprobieren',
 
         versionInfo: 'Versionsinformationen',
 
@@ -41,21 +50,21 @@ export function getGermanStrings(): ServerStrings {
         run: 'Ausführen',
         runPageTitle: 'Schnipsel ausführen',
         back: 'Zurück',
-        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
-        trust: getEnglishSubstitutesForNotYetTranslated().trust,
-        cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
+
         switchToSnippet: `Zu dem Schnipsel wechseln, welches Sie gerade editieren.`,
         snippetCodeChanged: 'Sie haben den Code zu diesem Schnipsel verändert. Aktualisieren Sie diese Seite, um die neue Version auszuführen.',
         refresh: 'Aktualisieren',
-        dismiss: 'Abbrechen',
         editingDifferentSnippet1: `Sie editieren zurzeit ein anderes Schnipsel`,
         editingDifferentSnippet2: `Aktualisieren Sie diese Seite, um das Schnipsel auszuführen`,
         loadLatestSnippet: 'Das zuletzt verwendete Schnipsel laden.',
+        registeringCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registeringCustomFunctions,
 
         RuntimeHelpers: {
-            unexpectedError: unexpectedError,
-            authenticationWasCancelledByTheUser: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.authenticationWasCancelledByTheUser,
-            officeVersionDoesNotSupportAuthentication: getEnglishSubstitutesForNotYetTranslated().RuntimeHelpers.officeVersionDoesNotSupportAuthentication
-        }
+            unexpectedError: sharedBetweenServerAndClient.unexpectedError,
+            authenticationWasCancelledByTheUser: 'Die Authentifizierung wurde vom Benutzer abgebrochen',
+            officeVersionDoesNotSupportAuthentication: 'Ihre aktuelle Office-Version unterstützt nicht die Anzeige eines Authentifizierungsdialogs. Aktualisieren Sie Office auf eine neuere Version oder verwenden Sie Office-Online, um dieses Schnipsel ausführen zu können.'
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

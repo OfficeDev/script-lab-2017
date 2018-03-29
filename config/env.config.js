@@ -1,10 +1,29 @@
 const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
+
+/** NOTE: when adding local storage keys here, remember to add them for IntelliSense's sake in "ICompiledPlaygroundInfo" in playground.d.ts */
 const localStorageKeys = {
+    dummyUnusedKey: 'plyaground_dummy_unused_key',
+    log: 'playground_log',
+    hostSnippets_parameterized: 'playground_{0}_snippets',
+    settings: 'playground_settings',
     originEnvironmentUrl: 'playground_origin_environment_url',
     redirectEnvironmentUrl: 'playground_redirect_environment_url',
-    playgroundCache: 'playground_cache'
+    wacUrl: 'playground_wac_url',
+    experimentationFlags: 'playground_experimentation_flags',
+    trustedSnippets: 'playground_trusted_snippets',
+    customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
+    customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
+    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
+    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
+    lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
+    language: 'playground_language'
+};
+
+const sessionStorageKeys = {
+    environmentCache: 'playground_cache',
+    intelliSenseCache: 'playground_intellisense'
 };
 
 const build = (() => {
@@ -17,6 +36,8 @@ const build = (() => {
     };
 })();
 
+const thirdPartyAADAppClientId = 'd56fb06a-74be-4bd7-8ede-cbf2ea737328';
+
 const config = {
     local: {
         name: 'LOCAL',
@@ -28,6 +49,7 @@ const config = {
         runnerUrl: 'https://localhost:3200',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        thirdPartyAADAppClientId,
     },
     edge: {
         name: 'EDGE',
@@ -38,6 +60,7 @@ const config = {
         runnerUrl: 'https://bornholm-runner-edge.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        thirdPartyAADAppClientId,
     },
     insiders: {
         name: 'INSIDERS',
@@ -48,6 +71,7 @@ const config = {
         runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
         feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
+        thirdPartyAADAppClientId,
     },
     production: {
         name: 'PRODUCTION',
@@ -58,77 +82,135 @@ const config = {
         runnerUrl: 'https://script-lab-runner.azureedge.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        thirdPartyAADAppClientId,
     }
+};
+
+// NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
+const safeExternalUrls = {
+    playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+    ask: 'https://stackoverflow.com/questions/tagged/office-js',
+    excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
+    word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
+    onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
+    outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
+    powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+    project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
+    generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+};
+
+const experimentationFlagsDefaults = {
+    customFunctions: false,
+    customFunctionsShowDebugLog: false
 };
 
 class RedirectPlugin {
     apply(compiler) {
         compiler.plugin('compilation', (compilation) => {
             compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-                let headOpeningTag = '<head>'; 
+                let headOpeningTag = '<head>';
                 let htmlHead = htmlPluginData.html.match(headOpeningTag);
 
                 let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
+
+                const validRedirectLocations = [];
+                for (var envName in config) {
+                    validRedirectLocations.push(config[envName].editorUrl);
+                }
 
                 if (htmlHead && htmlHead.length > 0) {
                     htmlHead = htmlHead.index;
                     htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
                         headOpeningTag +
                         `
-                        <script>
-                        (function() {
-                            function getParameterByName(name) {
-                                var url = window.location.search;
-                                var queryExp = new RegExp("[\\?&]"+name+"=([^&#]*)", "i");
-                                var match = queryExp.exec(url);
-                                if (match && match.length > 1) {
-                                    return match[1];
-                                }
-                                return null;
-                            };
-                            var originUrl = (getParameterByName("originEnvironment") || "").toLowerCase();
-                            var targetUrl = (getParameterByName("targetEnvironment") || "").toLowerCase();
+    <script>
+        (function() {
+            try {
+                // Taken and slightly tweaked from office-js-helpers Authenticator class:
+                // https://github.com/OfficeDev/office-js-helpers/blob/master/src/authentication/authenticator.ts
+                function extractParams(segment) {
+                    if (segment == null || segment.trim() === '') {
+                        return null;
+                    }
+                    var params = {};
+                    var regex = /([^&=]+)=([^&]*)/g;
+                    var matchParts;
+                    while ((matchParts = regex.exec(segment)) !== null) {
+                        params[decodeURIComponent(matchParts[1])] = decodeURIComponent(matchParts[2]);
+                    }
+                    return params;
+                }
 
-                            // Set target environment for origin environment to redirect to
-                            if (targetUrl.length > 0) {
-                                targetUrl = decodeURIComponent(targetUrl)
-                                // Clear origin environment's local storage if target = origin
-                                if (window.location.href.toLowerCase().indexOf(targetUrl) != -1) {
-                                    window.localStorage.removeItem("${redirectEnvironmentUrl}");
-                                    return;
-                                }
+                function isAllowedUrl(url) {
+                    if (url.length === 0) {
+                        return true;
+                    }
 
-                                window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
-                            }
+                    var validRedirectLocations = ${JSON.stringify(validRedirectLocations)};
 
-                            // Redirect origin environment to target
-                            var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
-                            if (redirectUrl) {
-                                var originParam = [
-                                    (window.location.search ? "&" : "?"), 
-                                    "originEnvironment=",
-                                    encodeURIComponent(window.location.origin)
-                                ].join("");
+                    return validRedirectLocations.some(function(location) {
+                        return location.indexOf(url) === 0;
+                    });
+                }
 
-                                window.location.replace([
-                                    redirectUrl,
-                                    window.location.pathname,
-                                    window.location.search,
-                                    originParam,
-                                    window.location.hash
-                                ].join(""));
-                            }
+                var params = extractParams(window.location.href.split('?')[1]) || {};
+                var originUrl = (params["originEnvironment"] || "").trim();
+                var targetUrl = (params["targetEnvironment"] || "").trim();
 
-                            // Point app environment back to origin if user is not in origin
-                            if (originUrl.length > 0) {
-                                window.localStorage.setItem("${originEnvironmentUrl}",
-                                    decodeURIComponent(originUrl).toLowerCase());
-                            }
+                let urlsAreOk = isAllowedUrl(originUrl) && isAllowedUrl(targetUrl);
+                if (!urlsAreOk) {
+                    throw new Error("Invalid query parameters for target or origin environments");
+                }
 
-                            // If reached here, environment is already configured
-                        })();
-                        </script>
-                        ` + 
+                // Set target environment for origin environment to redirect to
+                if (targetUrl.length > 0) {
+                    targetUrl = decodeURIComponent(targetUrl)
+                    // Clear origin environment's local storage if target = origin
+                    if (window.location.href.toLowerCase().indexOf(targetUrl) === 0) {
+                        window.localStorage.removeItem("${redirectEnvironmentUrl}");
+                        return;
+                    }
+
+                    window.localStorage.setItem("${redirectEnvironmentUrl}", targetUrl);
+                }
+
+                // Redirect origin environment to target
+                // Note: Due to bug in IE (https://stackoverflow.com/a/40770399),
+                // Local Storage may get out of sync across tabs.  To fix this,
+                // set a value of some key, and this will ensure that localStorage is refreshed.
+                window.localStorage.setItem("${localStorageKeys.dummyUnusedKey}", null);
+                var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
+                if (redirectUrl) {
+                    var originParam = [
+                        (window.location.search ? "&" : "?"),
+                        "originEnvironment=",
+                        encodeURIComponent(window.location.origin)
+                    ].join("");
+
+                    window.location.replace([
+                        redirectUrl,
+                        window.location.pathname,
+                        window.location.search,
+                        originParam,
+                        window.location.hash
+                    ].join(""));
+                }
+
+                // Point app environment back to origin if user is not in origin
+                if (originUrl.length > 0) {
+                    window.localStorage.setItem("${originEnvironmentUrl}",
+                        decodeURIComponent(originUrl).toLowerCase());
+                }
+
+                // If reached here, environment is already configured
+                return;
+
+            } catch (e) {
+                console.error("Error redirecting the environments, staying on current page", e);
+            }
+        })();
+    </script>
+                        ` +
                         htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
                 }
                 callback(null, htmlPluginData);
@@ -140,5 +222,14 @@ class RedirectPlugin {
 
 exports.build = build;
 exports.config = config;
+exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
+exports.sessionStorageKeys = sessionStorageKeys;
+exports.experimentationFlagsDefaults = experimentationFlagsDefaults;
 exports.RedirectPlugin = RedirectPlugin;
+
+// NOTE: Data in this file gets propagated to JS on client pages
+// via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition
+// in "webpack.common.js".  If you add anything to these exports
+// that you want other parts of the system to import, be sure
+// to modify the PLAYGROUND definition in "webpack.common.js".

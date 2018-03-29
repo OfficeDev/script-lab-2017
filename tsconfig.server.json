@@ -8,6 +8,9 @@
     "exclude": [
         "node_modules",
         "compiled",
-        "src/client/**/*.ts"
+        "dist/**/*.ts",
+        "src/runtime-helpers/**/*.ts",
+        "src/client/**/*.ts",
+        "src/server/maker/*-worker.ts"
     ]
 }
