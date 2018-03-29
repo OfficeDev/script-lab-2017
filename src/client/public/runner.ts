@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber, assign, isNil } from 'lodash';
+import { toNumber, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
 import {
     generateUrl,
@@ -53,13 +53,7 @@ interface MakerInitializationParams {
 
     let currentSnippet: { id: string, lastModified: number, officeJS: string, isMakerScript: boolean };
 
-    const defaultIsListeningTo = {
-        snippetSwitching: true,
-        currentSnippetContentChange: true
-    };
-
-    const isListeningTo = {} as any;
-    assign(isListeningTo, defaultIsListeningTo);
+    let isListeningToCurrentSnippetContentChange = true;
 
     const heartbeat: {
         messenger: Messenger<RunnerMessageType>,
@@ -365,10 +359,10 @@ interface MakerInitializationParams {
         heartbeat.messenger.listen<{ name: string }>()
             .filter(({ type }) => type === RunnerMessageType.INFORM_STALE)
             .subscribe(input => {
-                if (isListeningTo.currentSnippetContentChange) {
+                if (isListeningToCurrentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
                         () => clearAndRefresh(currentSnippet.id, input.message.name, false /*isTrustedSnippet*/),
-                        () => isListeningTo.currentSnippetContentChange = false,
+                        () => isListeningToCurrentSnippetContentChange = false,
                         true, /*allowShowLoadingDots*/
                     );
                 }
@@ -384,7 +378,6 @@ interface MakerInitializationParams {
                     $('.runner-overlay').hide();
                     $anotherSnippetSelected.hide();
                 } else {
-                    // TODO: remove snippetSwitching if possible
                     $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
                     showReloadNotification($anotherSnippetSelected,
                         () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
@@ -441,7 +434,7 @@ interface MakerInitializationParams {
             isMakerScript: isMaker
         };
 
-        isListeningTo.currentSnippetContentChange = true;
+        isListeningToCurrentSnippetContentChange = true;
 
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
@@ -483,7 +476,7 @@ interface MakerInitializationParams {
         $('.snippet-frame').remove();
 
         if (id == null) {
-            assign(isListeningTo, defaultIsListeningTo);
+            isListeningToCurrentSnippetContentChange = true;
         }
 
         heartbeat.messenger.send(heartbeat.window, RunnerMessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });

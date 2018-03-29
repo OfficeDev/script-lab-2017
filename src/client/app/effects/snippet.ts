@@ -14,7 +14,7 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
+import { isEmpty, isNil, find, assign, reduce, forIn, isEqual, pick } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 const { localStorageKeys } = PLAYGROUND;
@@ -109,15 +109,7 @@ export class SnippetEffects {
 
             // update lastOpened
             let settings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings));
-            settings[environment.current.host].lastOpened = {
-                created_at: scrubbedSnippet.created_at,
-                host: scrubbedSnippet.host,
-                id: scrubbedSnippet.id,
-                libraries: scrubbedSnippet.libraries,
-                modified_at: scrubbedSnippet.modified_at,
-                name: scrubbedSnippet.name,
-                description: scrubbedSnippet.description
-            };
+            settings[environment.current.host].lastOpened = pick(scrubbedSnippet, ['created_at', 'host', 'id', 'libraries', 'modified_at', 'name', 'description']);
 
             window.localStorage.setItem(localStorageKeys.settings, JSON.stringify(settings));
 
