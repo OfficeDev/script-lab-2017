@@ -91,7 +91,7 @@ async function initializeRegistration(params: InitializationParams) {
         //     }
         // }
     } else {
-        throw new Error('Registering custom functions is unsupported on this version of Excel.')
+        throw new Error('Registering custom functions is unsupported on this version of Excel.');
     }
 }
 

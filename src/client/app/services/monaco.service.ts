@@ -39,36 +39,36 @@ export class MonacoService {
     }
 
     private _loadLibrariesIntellisense =
-    this._request.local<ILibraryDefinition[]>('libraries.json', ResponseTypes.JSON)
-        .toPromise()
-        .then((libraries) => libraries.map(
-            (library) => {
-                let insertText = '';
+        this._request.local<ILibraryDefinition[]>('libraries.json', ResponseTypes.JSON)
+            .toPromise()
+            .then((libraries) => libraries.map(
+                (library) => {
+                    let insertText = '';
 
-                if (Array.isArray(library.value)) {
-                    insertText += library.value.join('\n');
-                }
-                else {
-                    insertText += library.value || '';
-                    insertText += '\n';
-                }
+                    if (Array.isArray(library.value)) {
+                        insertText += library.value.join('\n');
+                    }
+                    else {
+                        insertText += library.value || '';
+                        insertText += '\n';
+                    }
 
-                if (Array.isArray(library.typings)) {
-                    insertText += (library.typings as string[]).join('\n');
-                }
-                else {
-                    insertText += library.typings || '';
-                    insertText += '\n';
-                }
+                    if (Array.isArray(library.typings)) {
+                        insertText += (library.typings as string[]).join('\n');
+                    }
+                    else {
+                        insertText += library.typings || '';
+                        insertText += '\n';
+                    }
 
-                return <monaco.languages.CompletionItem>{
-                    label: library.label,
-                    documentation: library.description,
-                    kind: monaco.languages.CompletionItemKind.Module,
-                    insertText: insertText
-                };
-            }
-        ));
+                    return <monaco.languages.CompletionItem>{
+                        label: library.label,
+                        documentation: library.description,
+                        kind: monaco.languages.CompletionItemKind.Module,
+                        insertText: insertText
+                    };
+                }
+            ));
 
     private _libraries: Promise<monaco.languages.CompletionItem[]>;
     get libraries() {
@@ -326,10 +326,10 @@ export class MonacoService {
                         }
                     }
                 },
-        
+
             }]
         });
-        
+
 
         return monaco;
     };

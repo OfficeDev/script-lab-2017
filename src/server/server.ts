@@ -260,7 +260,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
             template: { content: '', language: 'html' },
             style: { content: '', language: 'css' }
         };
-        return generateSnippetHtmlData(data, false /*isExternalExport*/, strings, true /*isInsideOfficeApp*/)
+        return generateSnippetHtmlData(data, false /*isExternalExport*/, strings, true /*isInsideOfficeApp*/);
     }));
 
     const html = customFunctionsRunnerGenerator({
