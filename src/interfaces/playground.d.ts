@@ -100,7 +100,7 @@ interface ICustomFunctionMetadata{
 
 interface ICustomFunctionsSnippetRegistrationData {
     namespace: string;
-    functions: ICustomFunctionMetadata[];
+    functions: ICustomFunctionMetadata[]; // TODO refactor this into metadata: ICustomFunctionsRegistrationApiMetadata
 }
 
 interface ICustomFunctionsRegistrationApiMetadata {
@@ -116,7 +116,8 @@ interface ICustomFunctionsRunnerRelevantData {
     name: string;
     id: string;
     libraries: string,
-    script: string
+    script: IContentLanguagePair,
+    metadata: ICustomFunctionsSnippetRegistrationData;
 }
 
 /** Request body passed to the custom functions compile route in a POST */

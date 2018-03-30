@@ -24,7 +24,7 @@ export function navigateToRegisterCustomFunctions() {
         displayLanguage: getDisplayLanguage()
     };
 
-    const url = environment.current.config.runnerUrl + '/register/custom-functions';
+    const url = environment.current.config.runnerUrl + '/custom-functions/register';
     return post(url, { data: JSON.stringify(data) });
 }
 
@@ -38,7 +38,8 @@ export function navigateToRunCustomFunctions() {
                     id: snippet.id,
                     name: snippet.name,
                     libraries: snippet.libraries,
-                    script: snippet.script.content
+                    script: snippet.script,
+                    metadata: JSON.parse(snippet.customFunctions.content)
                 };
             });
 
@@ -47,7 +48,7 @@ export function navigateToRunCustomFunctions() {
         displayLanguage: getDisplayLanguage()
     };
 
-    const url = environment.current.config.runnerUrl + '/run/custom-functions';
+    const url = environment.current.config.runnerUrl + '/custom-functions/run';
     return post(url, { data: JSON.stringify(data) });
 }
 

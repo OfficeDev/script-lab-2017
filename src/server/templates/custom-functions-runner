@@ -11,7 +11,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
 
-    <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.17/dist/office.debug.js"></script>
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.18/dist/office.debug.js"></script>
 
     <script>
         Office.initialize = function () {
@@ -19,17 +19,16 @@
         };
 
         window.customFunctionParams = {
-            snippetsDataBase64: '{{{snippetsDataBase64}}}'
+            snippetsDataBase64: '{{{snippetsDataBase64}}}',
+            metadataBase64: '{{{metadataBase64}}}'
         };
     </script>
-
-    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
-    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
-    <script src="{{{origin}}}/{{{assets.customFunctionsRunner.js}}}"></script>
-
 </head>
 
 <body>
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.customFunctionsRunner.js}}}"></script>
 </body>
 
 </html>

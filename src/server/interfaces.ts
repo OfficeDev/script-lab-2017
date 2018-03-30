@@ -1,5 +1,17 @@
+export interface SnippetCompileData {
+    id: string;
+    name: string;
+    scriptToCompile: IContentLanguagePair;
+    libraries: string;
+    style: IContentLanguagePair;
+    template: IContentLanguagePair;
+    isOfficeSnippet: boolean;
+    shouldPutSnippetIntoOfficeInitialize: boolean | null;
+}
+
 export interface ISnippetHandlebarsContext {
     snippet: {
+        id: string;
         name: string;
         officeJS: string;
         linkReferences;
@@ -63,6 +75,7 @@ export interface ICustomFunctionsRegisterHandlebarsContext {
 
 export interface ICustomFunctionsRunnerHandlebarsContext {
     snippetsDataBase64: string;
+    metadataBase64: string;
 }
 
 export interface IErrorHandlebarsContext {

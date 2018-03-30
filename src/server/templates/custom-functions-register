@@ -81,7 +81,7 @@
         }
     </style>
 
-    <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.17/dist/office.debug.js"></script>
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.18/dist/office.debug.js"></script>
     <!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script> -->
 
 

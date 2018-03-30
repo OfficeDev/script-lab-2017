@@ -195,7 +195,7 @@ module.exports = (prodMode) =>
             }),
             new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',
-                template: './views/custom-functions.html',
+                template: './views/empty.html',
                 chunks: ['polyfills', 'vendor', 'customFunctions'],
             }),
             new HtmlWebpackPlugin({
