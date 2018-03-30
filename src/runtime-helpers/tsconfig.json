@@ -20,7 +20,6 @@
     },
     "files": [
         "auth-helpers.ts",
-        "custom-functions.ts",
         "maker.ts",
         "../../node_modules/@microsoft/office-js/dist/office.d.ts"
     ],

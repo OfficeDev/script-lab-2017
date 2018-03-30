@@ -49,6 +49,7 @@ module.exports = (prodMode) =>
             customFunctions: './public/custom.functions.ts',
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
             customFunctionsRegister: './public/custom.functions.register.ts',
+            customFunctionsRunner: './public/custom.functions.runner.ts',
             log: './public/log.ts',
         },
 

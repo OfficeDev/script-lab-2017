@@ -112,9 +112,21 @@ interface ICustomFunctionsRegistrationRelevantData {
     data: ICustomFunctionsSnippetRegistrationData;
 }
 
+interface ICustomFunctionsRunnerRelevantData {
+    name: string;
+    id: string;
+    libraries: string,
+    script: string
+}
+
 /** Request body passed to the custom functions compile route in a POST */
 interface IRegisterCustomFunctionsPostData {
     snippets: ICustomFunctionsRegistrationRelevantData[];
+    displayLanguage: string;
+}
+
+interface IRunnerCustomFunctionsPostData {
+    snippets: ICustomFunctionsRunnerRelevantData[];
     displayLanguage: string;
 }
 

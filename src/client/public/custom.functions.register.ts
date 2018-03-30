@@ -71,6 +71,11 @@ async function initializeRegistration(params: InitializationParams) {
             await context.sync();
         });
 
+        // const $pre = $('<pre></pre>');
+        // $pre.text(JSON.stringify(customFunctionsMetadata, null, 4));
+        // $('body').empty().append($pre);
+
+
         // TODO
         // if (showUI && !allSuccessful) {
         //     $('.ms-progress-component__footer').css('visibility', 'hidden');

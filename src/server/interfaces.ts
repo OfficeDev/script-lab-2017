@@ -50,7 +50,7 @@ export interface IRunnerHandlebarsContext {
     explicitlySetDisplayLanguageOrNull: string;
 }
 
-export interface ICustomFunctionsRunnerHandlebarsContext {
+export interface ICustomFunctionsRegisterHandlebarsContext {
     snippets: ICustomFunctionsRegistrationRelevantData[];
     snippetsDataBase64: string;
 
@@ -59,6 +59,10 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
     headerTitle: string;
     returnUrl: string;
     strings: ServerStrings;
+}
+
+export interface ICustomFunctionsRunnerHandlebarsContext {
+    snippetsDataBase64: string;
 }
 
 export interface IErrorHandlebarsContext {

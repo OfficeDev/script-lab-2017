@@ -24,6 +24,7 @@ import { getShareableYaml, isMakerScript } from './core/snippet.helper';
 import {
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
+    ICustomFunctionsRegisterHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
 
@@ -233,8 +234,30 @@ registerRoute('post', '/compile/snippet', compileSnippetCommon);
 registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, res, true /*wrapWithRunnerChrome*/));
 
 /**
- * HTTP POST: /compile/custom-functions
+ * HTTP POST: /run/custom-functions
  * Returns a page for rendering in the UI-less control for custom functions.
+ * Note that all snippets passed to this page are already expected to be trusted.
+ */
+registerRoute('post', '/run/custom-functions', async (req, res) => {
+    const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
+    const { snippets } = params;
+
+    const timer = ai.trackTimedEvent('[Runner] Running Custom Functions');
+
+    const customFunctionsRunnerGenerator =
+        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions-runner');
+
+    const html = customFunctionsRunnerGenerator({
+        snippetsDataBase64: base64encode(JSON.stringify(snippets))
+    });
+
+    timer.stop();
+    return respondWith(res, html, 'text/html');
+});
+
+/**
+ * HTTP POST: /register/custom-functions
+ * Returns the registering page for custom functions.
  * Note that all snippets passed to this page are already expected to be trusted.
  */
 registerRoute('post', '/register/custom-functions', async (req, res) => {
@@ -247,7 +270,7 @@ registerRoute('post', '/register/custom-functions', async (req, res) => {
     let strings = Strings(req);
 
     const customFunctionsRunnerGenerator =
-        await loadTemplate<ICustomFunctionsRunnerHandlebarsContext>('custom-functions-register');
+        await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
 
     const html = customFunctionsRunnerGenerator({
         snippets: snippets,

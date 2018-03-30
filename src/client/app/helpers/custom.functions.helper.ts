@@ -27,3 +27,27 @@ export function navigateToRegisterCustomFunctions() {
     const url = environment.current.config.runnerUrl + '/register/custom-functions';
     return post(url, { data: JSON.stringify(data) });
 }
+
+export function navigateToRunCustomFunctions() {
+    let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRunnerRelevantData[] =
+        uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
+            .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
+            .filter(snippet => snippet.customFunctions && snippet.customFunctions.content && snippet.customFunctions.content.trim().length > 0)
+            .map((snippet): ICustomFunctionsRunnerRelevantData => {
+                return {
+                    id: snippet.id,
+                    name: snippet.name,
+                    libraries: snippet.libraries,
+                    script: snippet.script.content
+                };
+            });
+
+    let data: IRunnerCustomFunctionsPostData = {
+        snippets: allSnippetsToRegisterWithPossibleDuplicate,
+        displayLanguage: getDisplayLanguage()
+    };
+
+    const url = environment.current.config.runnerUrl + '/run/custom-functions';
+    return post(url, { data: JSON.stringify(data) });
+}
+
