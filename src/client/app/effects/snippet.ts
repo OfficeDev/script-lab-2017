@@ -14,9 +14,10 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
+import { isEmpty, isNil, find, assign, reduce, forIn, isEqual, pick } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
+const { localStorageKeys } = PLAYGROUND;
 
 @Injectable()
 export class SnippetEffects {
@@ -96,8 +97,22 @@ export class SnippetEffects {
         })
         .filter(snippet => snippet != null)
         .map(scrubbedSnippet => {
+            // note: removed the use of storage.snippets.insert as there was a bug where it wasn't writing to local storage in IE
+            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
+                .replace('{0}', environment.current.host);
+
+            // update snippets
             scrubbedSnippet.modified_at = Date.now();
-            storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
+            const snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
+            snippets[scrubbedSnippet.id] = scrubbedSnippet;
+            window.localStorage.setItem(hostStorageKey, JSON.stringify(snippets));
+
+            // update lastOpened
+            const settings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) || {};
+            settings[environment.current.host].lastOpened = pick(scrubbedSnippet, ['created_at', 'host', 'id', 'libraries', 'modified_at', 'name', 'description']);
+
+            window.localStorage.setItem(localStorageKeys.settings, JSON.stringify(settings));
+
             return new Snippet.StoreUpdatedAction();
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetSaveError, exception)));
@@ -571,7 +586,7 @@ export class SnippetEffects {
             return;
         }
 
-    const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.
