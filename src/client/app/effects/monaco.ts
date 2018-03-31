@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Dictionary } from '@microsoft/office-js-helpers';
-import { AI, storage, environment, getVersionedPackageUrl } from '../helpers';
+import { AI, storage, environment } from '../helpers';
 import { Strings } from '../strings';
 import { Request, ResponseTypes, MonacoService } from '../services';
 import { Action } from '@ngrx/store';
@@ -34,21 +34,13 @@ export class MonacoEffects {
     updateIntellisense$: Observable<Action> = this.actions$
         .ofType(Monaco.MonacoActionTypes.UPDATE_INTELLISENSE)
         .map((action: Monaco.UpdateIntellisenseAction) => action.payload)
-        .map(({ libraries, language, tabName }) => {
+        .map(({ libraries, language }) => {
             let additionalLibraries = [];
-            if (tabName === 'script') {
-                additionalLibraries.push(`${location.origin}/libs/auth-helpers.d.ts`);
-                additionalLibraries.push(`${location.origin}/libs/maker.d.ts`);
-            }
-            else if (tabName === 'customFunctions') {
-                additionalLibraries.push(`${location.origin}/libs/custom-functions.d.ts`);
-                additionalLibraries.push(getVersionedPackageUrl(location.origin, '@microsoft/office-js', 'office.d.ts'));
-            }
-            else {
-                throw new Error('Invalid tab name');
-            }
 
-            let urlsToInclude = this._parse(libraries, tabName)
+            additionalLibraries.push(`${location.origin}/libs/auth-helpers.d.ts`);
+            additionalLibraries.push(`${location.origin}/libs/maker.d.ts`);
+
+            let urlsToInclude = this._parse(libraries)
                 .concat(additionalLibraries)
                 .filter(url => url && url.trim() !== '');
 
@@ -98,33 +90,21 @@ export class MonacoEffects {
             .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().intellisenseLoadError, exception)));
     }
 
-    private _parse(libraries: string[], tabName: 'script' | 'customFunctions') {
+    private _parse(libraries: string[]) {
         return libraries.map(library => {
             library = library.trim();
 
             if (/^@types/.test(library)) {
-                // For custom functions, don't use the stock Office.js library. Exclude it
-                if (tabName === 'customFunctions' && library.startsWith('@types/office-js')) {
-                    return null;
-                }
                 return `https://unpkg.com/${library}/index.d.ts`;
 
             }
             else if (/^dt~/.test(library)) {
                 let libName = library.split('dt~')[1];
-                // For custom functions, don't use the stock Office.js library. Exclude it
-                if (tabName === 'customFunctions' && library === 'office-js') {
-                    return null;
-                }
                 return `https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/${libName}/index.d.ts`;
 
             }
             else if (/\.d\.ts$/i.test(library)) {
                 // For custom functions, don't use the stock Office.js library. Exclude it
-                if (tabName === 'customFunctions' && /office.d.ts$/i.test(library)) {
-                    return null;
-                }
-
                 if (/^https?:/i.test(library)) {
                     return library;
                 }

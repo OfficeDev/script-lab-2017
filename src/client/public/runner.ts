@@ -214,36 +214,33 @@ interface MakerInitializationParams {
             $('<iframe class="snippet-frame" style="display:none" src="about:blank"></iframe>')
                 .insertAfter($snippetContent);
 
-        const iframe = $iframe[0] as HTMLIFrameElement;
-        let { contentWindow } = iframe;
-
-        (window as any).scriptRunnerBeginInit = (options: { scriptReferences: string[] } = { scriptReferences: [] }) => {
-            (contentWindow as any).console = window.console;
-            contentWindow.onerror = (...args) => console.error(args);
+        (window as any).scriptRunnerBeginInit = (iframeWindow: Window, options: { scriptReferences: string[] } = { scriptReferences: [] }) => {
+            (iframeWindow as any).console = window.console;
+            iframeWindow.onerror = (...args) => console.error(args);
 
             if (!options.scriptReferences) {
                 options.scriptReferences = [];
             }
 
-            if ((contentWindow as any).ScriptLab) {
-                (contentWindow as any).ScriptLab._init({ snippet: { id: snippetId } });
+            if ((iframeWindow as any).ScriptLab) {
+                (iframeWindow as any).ScriptLab._init({ snippet: { id: snippetId } });
             }
             if (isMaker) {
                 let params: MakerInitializationParams = {
                     scriptReferences: options.scriptReferences,
                     onPerfAnalysisReady: onPerfAnalysisReady
                 };
-                ((contentWindow as any).Experimental.ExcelMaker as any)._init(params);
+                ((iframeWindow as any).Experimental.ExcelMaker as any)._init(params);
 
                 // timer only works on maker snippets inside the worker, so setting to empty
-                (contentWindow as any).start_perf_timer = () => {};
-                (contentWindow as any).stop_perf_timer = () => {};
+                (iframeWindow as any).start_perf_timer = () => { };
+                (iframeWindow as any).stop_perf_timer = () => { };
             }
 
             if (officeJS) {
-                contentWindow['Office'] = window['Office'];
+                iframeWindow['Office'] = window['Office'];
                 officeNamespacesForIframe.forEach(namespace => {
-                    contentWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
+                    iframeWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
                 });
             }
 
@@ -253,7 +250,7 @@ interface MakerInitializationParams {
             snippetAndConsoleRefreshSize();
         };
 
-        (window as any).scriptRunnerEndInit = () => {
+        (window as any).scriptRunnerEndInit = (iframeWindow: Window /*unused*/, id: string /*unused*/) => {
             if (isRealOfficeJsReference(officeJS) && Office) {
                 // Call Office.initialize(), which now initializes the snippet.
                 // The parameter, initializationReason, is not used in the playground.
@@ -265,6 +262,9 @@ interface MakerInitializationParams {
         // before setting any window properties). Setting console and onerror here
         // (for any initial logging or error handling from snippet-referenced libraries),
         // but for extra safety also setting them inside of scriptRunnerInitialized.
+
+        const iframe = $iframe[0] as HTMLIFrameElement;
+        const contentWindow = iframe.contentWindow;
         contentWindow.document.open();
         contentWindow.document.write(html);
         (contentWindow as any).console = window.console;

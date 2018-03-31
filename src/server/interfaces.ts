@@ -1,5 +1,17 @@
+export interface SnippetCompileData {
+    id: string;
+    name: string;
+    scriptToCompile: IContentLanguagePair;
+    libraries: string;
+    style: IContentLanguagePair;
+    template: IContentLanguagePair;
+    isOfficeSnippet: boolean;
+    shouldPutSnippetIntoOfficeInitialize: boolean | null;
+}
+
 export interface ISnippetHandlebarsContext {
     snippet: {
+        id: string;
         name: string;
         officeJS: string;
         linkReferences;
@@ -50,22 +62,20 @@ export interface IRunnerHandlebarsContext {
     explicitlySetDisplayLanguageOrNull: string;
 }
 
-export interface ICustomFunctionsRunnerHandlebarsContext {
-    /** isRunMode: true if running inside the hidden frame;
-     * false if used for registration only (but as such, will be showing UI) */
-    isRunMode: boolean;
+export interface ICustomFunctionsRegisterHandlebarsContext {
+    snippets: ICustomFunctionsRegistrationRelevantData[];
+    snippetsDataBase64: string;
 
-    showDebugLog: boolean;
-
-    snippetNames: Array<string>;
-    snippetIframesBase64Texts: Array<string>;
-    clientTimestamp: number;
-
-    strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;
     initialLoadSubtitle: string;
     headerTitle: string;
     returnUrl: string;
+    strings: ServerStrings;
+}
+
+export interface ICustomFunctionsRunnerHandlebarsContext {
+    snippetsDataBase64: string;
+    metadataBase64: string;
 }
 
 export interface IErrorHandlebarsContext {

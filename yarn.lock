@@ -57,9 +57,9 @@
     lodash "4.17.4"
     rxjs "5.2.0"
 
-"@microsoft/office-js@1.1.2-private.15":
-  version "1.1.2-private.15"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.2-private.15.tgz#68a7cff74f5df67a5d31b7cdb4953f1a3ac74e98"
+"@microsoft/office-js@1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.4.tgz#3b720e915fe84eda8ae70c0e56c72afef187621f"
 
 "@ngrx/core@1.2.0":
   version "1.2.0"
