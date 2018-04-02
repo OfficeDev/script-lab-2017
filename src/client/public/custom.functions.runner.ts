@@ -73,6 +73,19 @@ async function initializeRunnableSnippets(params: InitializationParams) {
 
                 // In the meantime, until support namespaces, set the function directly on the window:
                 window[func.name] = window[snippetMetadata.namespace][func.name];
+
+                // Overwrite console.log on every snippet iframe
+                // tslint:disable-next-line:only-arrow-functions
+                iframeWindow['console']['log'] = function(input: any) {
+                    heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                        timestamp: new Date().getTime(),
+                        source: 'user',
+                        type: 'custom functions',
+                        subtype: 'runner',
+                        severity: 'info',
+                        message: input.toString()
+                    });
+                };
             });
 
             successfulRegistrationsCount++;

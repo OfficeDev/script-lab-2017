@@ -100,7 +100,7 @@ interface ICustomFunctionMetadata{
 
 interface ICustomFunctionsSnippetRegistrationData {
     namespace: string;
-    functions: ICustomFunctionMetadata[]; // TODO refactor this into metadata: ICustomFunctionsRegistrationApiMetadata
+    functions: ICustomFunctionMetadata[];
 }
 
 interface ICustomFunctionsRegistrationApiMetadata {
