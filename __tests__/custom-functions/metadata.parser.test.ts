@@ -44,7 +44,13 @@ describe('Custom Functions metadata parser ', () => {
         if (file.startsWith('error.')) {
             it(`should throw an error for the function in ${file}`, () => {
                 const source = fs.readFileSync(`${SAMPLE_DIR}/${file}`).toString();
-                expect(() => parseMetadata(source)).toThrow();
+                expect(() => {
+                    parseMetadata(source).forEach((meta) => {
+                        if (meta.error) {
+                            throw Error();
+                        }
+                    });
+                }).toThrow();
             });
         } else {
             // for each file in the samples directory, parse it and test it
