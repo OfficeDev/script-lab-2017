@@ -189,6 +189,11 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         // Outlook-only strings
 
         noRunInOutlook: getEnglishSubstitutesForNotYetTranslated().noRunInOutlook,
+        extensionPointsLabel: getEnglishSubstitutesForNotYetTranslated().extensionPointsLabel,
+        mailRead:  getEnglishSubstitutesForNotYetTranslated().mailRead,
+        mailCompose: getEnglishSubstitutesForNotYetTranslated().mailCompose,
+        appointmentOrganizer: getEnglishSubstitutesForNotYetTranslated().appointmentOrganizer,
+        appointmentAttendee: getEnglishSubstitutesForNotYetTranslated().appointmentAttendee,
 
         // import.ts strings
 

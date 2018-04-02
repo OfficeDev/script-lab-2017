@@ -200,7 +200,7 @@ export class SnippetEffects {
     updateInfo$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
         .map(({ payload }) => {
-            let { id, name, description, gist, gistOwnerId } = payload;
+            let { id, name, description, gist, gistOwnerId, endpoints } = payload;
             let snippet: ISnippet = storage.lastOpened;
             if (storage.snippets.contains(id)) {
                 snippet = storage.snippets.get(id);
@@ -217,6 +217,9 @@ export class SnippetEffects {
                 }
                 if (!isNil(gistOwnerId)) {
                     snippet.gistOwnerId = gistOwnerId;
+                }
+                if (!isNil(endpoints)) {
+                    snippet.endpoints = endpoints;
                 }
 
                 /* updates snippet */

@@ -16,6 +16,7 @@ interface ITemplate {
     /** author: export-only */
     author?: string;
     host: string;
+    endpoints?: string[];
     /** api_set: export-only (+ check at first level of import) */
     api_set?: {
         [index: string]: number

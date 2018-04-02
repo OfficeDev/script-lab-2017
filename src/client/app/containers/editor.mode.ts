@@ -44,7 +44,7 @@ import { Subscription } from 'rxjs/Subscription';
         </footer>
     </main>
     <about [(show)]="showAbout"></about>
-    <snippet-info [show]="showInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
+    <snippet-info [show]="shouldShowInfo" [snippet]="snippet" (dismiss)="create($event); showInfo=false"></snippet-info>
     <profile [show]="showProfile" [profile]="profile$|async" (dismiss)="logout($event); showProfile=false"></profile>
     <import [hidden]="!(showImport$|async)"></import>
     <alert></alert>
@@ -56,12 +56,14 @@ export class EditorMode {
     snippet: ISnippet;
     isEmpty: boolean;
     isDisabled: boolean;
+    showInfo: boolean;
 
     strings = Strings();
 
     private snippetSub: Subscription;
     private sharingSub: Subscription;
     private errorsSub: Subscription;
+
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -72,6 +74,11 @@ export class EditorMode {
         this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
             this.isEmpty = snippet == null;
             this.snippet = snippet;
+            const inOutlook = this.snippet !== null && this.snippet.host.toLowerCase() === 'outlook';
+            const outlookNeedsEndpoints = inOutlook && (this.snippet.endpoints === undefined || this.snippet.endpoints.length === 0);
+            if (outlookNeedsEndpoints) {
+                this.showInfo = true;
+            }
         });
 
         this.sharingSub = this._store.select(fromRoot.getSharing).subscribe(sharing => {
@@ -81,6 +88,10 @@ export class EditorMode {
         this._store.dispatch(new GitHub.IsLoggedInAction());
 
         this.parseEditorRoutingParams();
+    }
+
+    get shouldShowInfo() {
+        return this.showInfo;
     }
 
     get isAddinCommands() {

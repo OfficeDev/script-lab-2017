@@ -195,6 +195,11 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         // Outlook-only strings
 
         noRunInOutlook: /** NEEDS STRING REVIEW **/ `You cannot run your snippet from the code window in Outlook. Please open the "Run" pane in Outlook to run your snippet.`,
+        extensionPointsLabel:  /** NEEDS STRING REVIEW **/ `Supported Extension Points`,
+        mailRead:  /** NEEDS STRING REVIEW **/ `Mail Read`,
+        mailCompose:  /** NEEDS STRING REVIEW **/ `Mail Compose`,
+        appointmentOrganizer:  /** NEEDS STRING REVIEW **/ `Appointment Organizer`,
+        appointmentAttendee:  /** NEEDS STRING REVIEW **/ `Appointment Attendee`,
 
         // import.ts strings
 
