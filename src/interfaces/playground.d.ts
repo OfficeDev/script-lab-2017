@@ -122,7 +122,7 @@ interface ICustomFunctionsRunnerRelevantData {
 
 /** Request body passed to the custom functions compile route in a POST */
 interface IRegisterCustomFunctionsPostData {
-    snippets: ICustomFunctionsRegistrationRelevantData[];
+    snippets: ISnippet[];
     displayLanguage: string;
 }
 

@@ -32,53 +32,91 @@
         .office-js-helpers-notification {
             top: 40px !important;
         }
+body {
+  font-family: 'Segoe UI';
+}
+#custom-functions-registration {
+  margin: 15%;
+}
+#custom-functions-registration .snippet {
+  margin-top: 10pt;
+}
+#custom-functions-registration .block {
+  border: 1px #808080 solid;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 8pt;
+}
+#custom-functions-registration ul {
+  margin-left: 40pt;
+  padding-left: 0px;
+}
+#custom-functions-registration ul > ul {
+  position: relative;
+}
+#custom-functions-registration ul > ul:before {
+  border-left: 1px solid #808080;
+  content: '';
+  position: absolute;
+  height: 110%;
+  left: -55pt;
+  top: -20pt;
+}
+#custom-functions-registration li {
+  list-style-type: none;
+  position: relative;
+  margin-top: 10pt;
+}
+#custom-functions-registration li:before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  height: 100%;
+  left: -15pt;
+  width: 15pt;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  z-index: -1000;
+}
+#custom-functions-registration li:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -15pt;
+  width: 15pt;
+  border-left: 1px solid #808080;
+  height: 50%;
+}
+#custom-functions-registration li:first-child:before {
+  content: '';
+  position: absolute;
+  top: -10pt;
+  height: calc(50% + 10pt);
+  left: -15pt;
+  width: 15pt;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  z-index: -1000;
+}
+#custom-functions-registration li:last-child:after {
+  display: none;
+}
+#custom-functions-registration .bad {
+  background: #fde7e9 !important;
+  font-weight: 600;
+}
+#custom-functions-registration .warning {
+  background: #fff4ce !important;
+  font-weight: 600;
+}
+#custom-functions-registration .warning span {
+  font-weight: normal;
+  font-style: italic;
+}
+#custom-functions-registration .good {
+  background: #dff6dd;
+}
 
-        #snippet-names {
-            height: 30%;
-            min-height: 60px;
-            overflow-x: hidden;
-            padding: 10px 30px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .snippet-name.in-progress {
-            color: gold;
-        }
-
-        .snippet-name.error {
-            color: red;
-        }
-
-        .snippet-name.success {
-            color: green;
-        }
-
-        .function-name.in-progress {
-            color: gold;
-        }
-
-        .function-name.error {
-            color: red;
-        }
-
-        .function-name.success {
-            color: green;
-        }
-
-        .parameter-name.in-progress {
-            color: gold;
-        }
-
-        .parameter-name.error {
-            color: red;
-        }
-
-        .parameter-name.success {
-            color: green;
-        }
     </style>
 
     <script src="https://unpkg.com/@microsoft/office-js@1.1.5-adhoc.18/dist/office.debug.js"></script>
@@ -102,53 +140,30 @@
             </a>
     </header>
 
-    <app id="progress" class="app">
-        <div class="ms-progress-component">
-            <div id="ribbon" class="ribbon"></div>
-            <main class="ms-progress-component__main">
-                <img class="ms-progress-component__logo" src="{{{origin}}}/assets/images/icon-large.svg">
-                <h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
-                <p id="subtitle" class="ms-progress-component__sub-title ms-font-m">{{initialLoadSubtitle}}</p>
-
-                <ul id="snippet-names">
-                    {{#each snippets}}
-                    <li style="margin-bottom: 25px;">
-                        <div>{{this.name}}</div>
-                        <div class="snippet-name" style="margin-left: 20px;">{{this.data.namespace}}</div>
-                        <ul class="function-names">
-                            {{#each this.data.functions}}
-                            <li style="margin-left: 60px;">
-                                <div class="function-name">{{this.name}}</div>
-                                <ul class="parameter-names">
-                                    {{#each this.parameters}}
-                                    <li style="margin-left: 90px;">
-                                        <div class="parameter-name">{{this.name}}</div>
-                                    </li>
-                                    {{/each}}
-                                </ul>
-                            </li>
-                            {{/each}}
-                        </ul>
-                    </li>
-                    {{/each}}
-                </ul>
-            </main>
-            <footer class="ms-progress-component__footer">
-                <div class="ms-progress">
-                    <div class="cs-loader">
-                        <div class="cs-loader-inner">
-                            <label class="ms-Icon ms-Icon--LocationDot"></label>
-                            <label class="ms-Icon ms-Icon--LocationDot"></label>
-                            <label class="ms-Icon ms-Icon--LocationDot"></label>
-                            <label class="ms-Icon ms-Icon--LocationDot"></label>
-                            <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        </div>
+    <div class="ms-font-m" id="custom-functions-registration">
+        <h1 class="ms-font-su" id="title">Custom Functions Registration</h1>
+            <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt">
+                <div class="cs-loader">
+                    <div class="cs-loader-inner">
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
                     </div>
                 </div>
-            </footer>
-        </div>
-    </app>
-
+            </div>
+        {{#each snippets}}
+        <div class="block ms-font-xl snippet">{{this.name}}</div>
+        <ul>
+            {{#each this.data.functions}}
+            <li>
+                <div class="block ms-font-l">{{this.name}}</div>
+            </li>
+            {{/each}}
+        </ul>
+        {{/each}}
+    </div>
 
     <script type="text/javascript">
         window.customFunctionParams = {

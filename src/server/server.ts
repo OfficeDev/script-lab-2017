@@ -25,9 +25,10 @@ import {
     SnippetCompileData,
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
-    ICustomFunctionsRegisterHandlebarsContext,
+    // ICustomFunctionsRegisterHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
+import { parseMetadata } from './custom-functions/metadata.parser';
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
@@ -273,34 +274,59 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 });
 
 /**
- * HTTP POST: /register/custom-functions
+ * HTTP POST: /custom-functions/register
  * Returns the registering page for custom functions.
  * Note that all snippets passed to this page are already expected to be trusted.
  */
 registerRoute('post', '/custom-functions/register', async (req, res) => {
     const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
     const { snippets } = params;
-    const host = 'EXCEL';
 
-    const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
+    const metadata = {};
 
-    const strings = Strings(req);
+    snippets.forEach((snippet) => {
+        let snippetMetadata;
+        try {
+            if (snippet.script && snippet.name) {
+                const result = parseMetadata(snippet.script.content);
 
-    const customFunctionsRunnerGenerator =
-        await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
+                if (result.length !== 0) {
+                    snippetMetadata = result;
+                }
+            }
+        } catch (e) {
+            snippetMetadata = JSON.parse(e.message);
+        }
 
-    const html = customFunctionsRunnerGenerator({
-        snippets: snippets,
-        snippetsDataBase64: base64encode(JSON.stringify(snippets)),
-
-        strings,
-        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-        initialLoadSubtitle: strings.playgroundTagline,
-        headerTitle: strings.registeringCustomFunctions,
-        returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
+        if (snippetMetadata) {
+            metadata[snippet.name] = snippetMetadata;
+        }
     });
 
-    timer.stop();
+    console.log(JSON.stringify(metadata, null, 4));
+
+    // const host = 'EXCEL';
+
+    // const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
+
+    // const strings = Strings(req);
+
+    // const customFunctionsRunnerGenerator =
+        // await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
+
+    const html = '';
+    // const html = customFunctionsRunnerGenerator({
+    //     snippets: snippets,
+    //     snippetsDataBase64: base64encode(JSON.stringify(snippets)),
+
+    //     strings,
+    //     explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+    //     initialLoadSubtitle: strings.playgroundTagline,
+    //     headerTitle: strings.registeringCustomFunctions,
+    //     returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
+    // });
+
+    // timer.stop();
     return respondWith(res, html, 'text/html');
 });
 
