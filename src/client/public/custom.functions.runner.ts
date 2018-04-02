@@ -1,13 +1,20 @@
 import * as $ from 'jquery';
 import { UI } from '@microsoft/office-js-helpers';
-import { environment } from '../app/helpers';
+import { environment, generateUrl, navigateToRunCustomFunctions } from '../app/helpers';
 import { Strings } from '../app/strings';
 import { officeNamespacesForIframe } from './runner.common';
+import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 
 interface InitializationParams {
     snippetsDataBase64: string;
-    metadataBase64: string
+    metadataBase64: string;
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
 }
+
+let heartbeat: {
+    messenger: Messenger<CustomFunctionsMessageType>,
+    window: Window
+};
 
 interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrationData {
     id: string;
@@ -26,6 +33,10 @@ interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrati
 
         await environment.createPlaygroundHostReadyTimer();
         window['Excel']['CustomFunctions']['initialize']();
+
+        heartbeat.messenger.send<{ timestamp: number }>(heartbeat.window,
+            CustomFunctionsMessageType.LOADED_AND_RUNNING, { timestamp: new Date().getTime() });
+
     }
     catch (error) {
         handleError(error);
@@ -33,6 +44,7 @@ interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrati
 })();
 
 async function initializeRunnableSnippets(params: InitializationParams) {
+    await establishHeartbeat(params.heartbeatParams);
     return new Promise(resolve => {
         let successfulRegistrationsCount = 0;
 
@@ -90,6 +102,43 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             };
             contentWindow.document.close();
         });
+    });
+}
+
+function establishHeartbeat(heartbeatParams: ICustomFunctionsHeartbeatParams): Promise<any> {
+    const $iframe = $('<iframe>', {
+        src: generateUrl(`${environment.current.config.editorUrl}/custom-functions-heartbeat.html`, heartbeatParams),
+        id: 'heartbeat'
+    }).css('display', 'none').appendTo('body');
+
+    heartbeat = {
+        messenger: new Messenger(environment.current.config.editorUrl),
+        window: ($iframe[0] as HTMLIFrameElement).contentWindow
+    };
+
+    heartbeat.messenger.listen<{}>()
+        .filter(({ type }) => type === CustomFunctionsMessageType.NEED_TO_REFRESH)
+        .subscribe(async input => {
+            heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                timestamp: new Date().getTime(),
+                source: 'system',
+                type: 'custom functions',
+                subtype: 'runner',
+                severity: 'info',
+                message: 'Request received for refreshing Custom Functions runner'
+            });
+            // Note, the above might realistically not get logged fast enough, before a refresh.  That's ok...
+            navigateToRunCustomFunctions(input.message);
+        });
+
+    // heartbeat.messenger.listen<{}>()
+    //     .filter(({ type }) => type === CustomFunctionsMessageType.SHOW_LOG_DIALOG)
+    //     .subscribe(async input => displayLogDialog(environment.current.config.editorUrl));
+
+    return new Promise(resolve => {
+        heartbeat.messenger.listen<string>()
+            .filter(({ type }) => type === CustomFunctionsMessageType.HEARTBEAT_READY)
+            .subscribe(resolve);
     });
 }
 

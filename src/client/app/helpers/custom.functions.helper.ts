@@ -28,7 +28,16 @@ export function navigateToRegisterCustomFunctions() {
     return post(url, { data: JSON.stringify(data) });
 }
 
-export function navigateToRunCustomFunctions() {
+export function navigateToRunCustomFunctions(payload?: any) {
+    if (!payload) {
+        payload = getRunnerCustomFunctionsPayload();
+    }
+
+    const url = environment.current.config.runnerUrl + '/custom-functions/run';
+    return post(url, payload);
+}
+
+export function getRunnerCustomFunctionsPayload() {
     let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRunnerRelevantData[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
@@ -45,10 +54,13 @@ export function navigateToRunCustomFunctions() {
 
     let data: IRunnerCustomFunctionsPostData = {
         snippets: allSnippetsToRegisterWithPossibleDuplicate,
-        displayLanguage: getDisplayLanguage()
+        displayLanguage: getDisplayLanguage(),
+        heartbeatParams: {
+            clientTimestamp: new Date().getTime(),
+            showDebugLog: environment.getExperimentationFlagValue('customFunctionsShowDebugLog')
+        }
     };
 
-    const url = environment.current.config.runnerUrl + '/custom-functions/run';
-    return post(url, { data: JSON.stringify(data) });
+    return { data: JSON.stringify(data) };
 }
 

@@ -37,23 +37,18 @@ class LogGridController {
             controller: this,
 
             fields: [
-                { name: 'type', type: 'text', autosearch: true, width: '120px' },
-                { name: 'subtype', type: 'text', autosearch: true, width: '120px' },
-                { name: 'message', type: 'text', autosearch: true, width: '200px' },
-                { name: 'timestamp', type: 'text', autosearch: true, width: '100px' },
+                // { name: 'type', type: 'text', autosearch: true, width: '120px' },
+                // { name: 'subtype', type: 'text', autosearch: true, width: '120px' },
+                { name: 'timestamp', type: 'text', autosearch: true, width: '80px' },
                 {
                     name: 'source', type: 'select', autosearch: true,
                     items: [''].concat(this.itemEnumerations.sources).map(item => ({ name: item })),
                     valueField: 'name', textField: 'name',
-                    widht: '70px'
+                    widht: '50px'
                 },
-                {
-                    name: 'severity', type: 'select', autosearch: true,
-                    items: [''].concat(this.itemEnumerations.severity).map(item => ({ name: item })),
-                    valueField: 'name', textField: 'name',
-                    width: '80px'
-                },
-                { type: 'control' }
+                { name: 'message', type: 'text', autosearch: true, width: '200px' },
+
+                { type: 'control', width: '50px' }
             ].map(item => ({ ...item, editButton: false, deleteButton: false })),
 
             rowClass: (entry: TransformedLogData) => entry.severity

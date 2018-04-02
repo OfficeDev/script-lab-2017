@@ -112,6 +112,11 @@ interface ICustomFunctionsRegistrationRelevantData {
     data: ICustomFunctionsSnippetRegistrationData;
 }
 
+interface ICustomFunctionsHeartbeatParams {
+    clientTimestamp: number;
+    showDebugLog: boolean;
+}
+
 interface ICustomFunctionsRunnerRelevantData {
     name: string;
     id: string;
@@ -120,7 +125,6 @@ interface ICustomFunctionsRunnerRelevantData {
     metadata: ICustomFunctionsSnippetRegistrationData;
 }
 
-/** Request body passed to the custom functions compile route in a POST */
 interface IRegisterCustomFunctionsPostData {
     snippets: ICustomFunctionsRegistrationRelevantData[];
     displayLanguage: string;
@@ -129,6 +133,7 @@ interface IRegisterCustomFunctionsPostData {
 interface IRunnerCustomFunctionsPostData {
     snippets: ICustomFunctionsRunnerRelevantData[];
     displayLanguage: string;
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
 }
 
 interface IExportState {

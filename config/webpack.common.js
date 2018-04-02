@@ -194,6 +194,11 @@ module.exports = (prodMode) =>
                 chunks: ['polyfills', 'vendor', 'log'],
             }),
             new HtmlWebpackPlugin({
+                filename: 'custom-functions-dashboard.html',
+                template: './views/log.html',
+                chunks: ['polyfills', 'vendor', 'log'],
+            }),
+            new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',
                 template: './views/empty.html',
                 chunks: ['polyfills', 'vendor', 'customFunctions'],
