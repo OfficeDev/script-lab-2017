@@ -101,15 +101,15 @@ body {
 #custom-functions-registration li:last-child:after {
   display: none;
 }
-#custom-functions-registration .bad {
+#custom-functions-registration .error {
   background: #fde7e9 !important;
-  font-weight: 600;
+  font-weight: 500;
 }
-#custom-functions-registration .warning {
+#custom-functions-registration .skipped {
   background: #fff4ce !important;
-  font-weight: 600;
+  font-weight: 500;
 }
-#custom-functions-registration .warning span {
+#custom-functions-registration .skipped span {
   font-weight: normal;
   font-style: italic;
 }
@@ -153,12 +153,12 @@ body {
                     </div>
                 </div>
             </div>
-        {{#each snippets}}
-        <div class="block ms-font-xl snippet">{{this.name}}</div>
+        {{#each metadata}}
+        <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
         <ul>
-            {{#each this.data.functions}}
+            {{#each this.metadata}}
             <li>
-                <div class="block ms-font-l">{{this.name}}</div>
+                <div class="block ms-font-l {{this.status}}">{{this.name}}</div>
             </li>
             {{/each}}
         </ul>

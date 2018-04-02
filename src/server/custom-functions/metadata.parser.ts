@@ -84,18 +84,27 @@ function validateArray(a: ts.TypeReferenceNode) {
  * is one of our supported types for custom functions.
  * @param t - The node we are parsing and validating the type of
  */
-function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensionality: Dimensionality; type: string} {
+function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensionality: Dimensionality; type: string; error?: string} {
+
+    const errTypeAndDim = {
+        dimensionality: Dimensionality.Invalid,
+        type: INVALID,
+    };
+
     if (t === undefined) {
-        throw new Error('Parameter was defined without a type.');
+        return { error: 'Parameter was defined without a type.', ...errTypeAndDim };
     }
+
     // tslint:disable-next-line
     const entityName = (t.parent as any).name.getText();
     const startingPhrase = ts.isParameter(t.parent) ?
                                 `Parameter "${entityName}" must be a valid type` :
                                 `Function "${entityName}" must have a valid return type`;
 
-    const invalidTypeError = new Error(
-        `${startingPhrase} (string, number, boolean, or a 2D array of one of these). Type specified: ${t.getText()}`);
+    const invalidTypeError = {
+        error: `${startingPhrase} (string, number, boolean, or a 2D array of one of these). Type specified: ${t.getText()}`,
+        ...errTypeAndDim,
+    };
 
     let dimensionality = Dimensionality.Scalar;
     let kind = t.kind;
@@ -106,7 +115,7 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensio
         const arrTr = t as ts.TypeReferenceNode;
 
         if (arrTr.typeName.getText() !== 'Array') {
-            throw invalidTypeError;
+            return invalidTypeError;
         }
 
         if (validateArray(t) &&
@@ -115,7 +124,7 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensio
             const inner = arrTr.typeArguments[0] as ts.TypeReferenceNode;
 
             if (!validateArray(inner) || inner.typeName.getText() !== 'Array') {
-                throw invalidTypeError;
+                return invalidTypeError;
             }
 
             kind = inner.typeArguments[0].kind;
@@ -127,7 +136,7 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensio
         const inner = (t as ts.ArrayTypeNode).elementType;
 
         if (!ts.isArrayTypeNode(inner)) {
-            throw invalidTypeError;
+            return invalidTypeError;
         }
 
         kind = inner.elementType.kind;
@@ -137,7 +146,7 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensio
     const type = TYPE_MAPPINGS[kind];
 
     if (!type) {
-        throw invalidTypeError;
+        return invalidTypeError;
     }
 
     return {dimensionality, type};
@@ -146,25 +155,20 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensio
 
 function traverseAST(sourceFile: ts.SourceFile): {[key: string] : any}[] {
     const metadata = [];
-    const errors = {};
 
     visitNode(sourceFile);
 
     return metadata;
 
-
-    function addMessageToErrors(message: string, funcName: string) {
-        const functionErrors = errors[funcName] || {funcName, messages: []};
-        functionErrors.messages.push(message);
-        errors[funcName] = functionErrors;
-    }
-
-    function getDimAndTypeHelper(t: ts.TypeNode): {dimensionality: Dimensionality; type: string} {
+    function getDimAndTypeHelper(t: ts.TypeNode): {dimensionality: Dimensionality; type: string, error?: string} {
         try {
             return getTypeAndDimensionalityForParam(t);
         } catch (e) {
-            addMessageToErrors(e.message);
-            return {dimensionality: Dimensionality.Invalid, type: INVALID};
+            return {
+                error: e.message,
+                dimensionality: Dimensionality.Invalid,
+                type: INVALID
+            };
         }
     }
 
@@ -188,7 +192,7 @@ function traverseAST(sourceFile: ts.SourceFile): {[key: string] : any}[] {
                             return {
                                 name,
                                 ...(jsDocParamInfo[name] ? {description: jsDocParamInfo[name]} : {}),
-                                ...getDimAndTypeHelper(p.type, func.name.getText()),
+                                ...getDimAndTypeHelper(p.type),
                             };
                         });
 
@@ -197,20 +201,30 @@ function traverseAST(sourceFile: ts.SourceFile): {[key: string] : any}[] {
 
                         let result;
                         if (func.type) {
-                            result = getDimAndTypeHelper(func.type, func.name.getText());
+                            result = getDimAndTypeHelper(func.type);
                         } else {
-                            addMessageToErrors(`Function "${func.name.getText()}" has no return type.`, func.name.getText());
-                            result = {dimensionality: Dimensionality.Invalid, type: INVALID};
+                            result = {
+                                error: `Function "${func.name.getText()}" has no return type.`,
+                                dimensionality: Dimensionality.Invalid,
+                                type: INVALID
+                            };
                         }
 
-                        metadata.push({
+                        const metadataItem = {
                             name: func.name.text,
                             ...(description ? {description} : {}),
                             helpUrl: DEFAULT_HELP_URL,
                             parameters,
                             result,
                             options: parseCustomFunctionParameters(func),
-                        });
+                        };
+
+                        const funcContainsErrors = result.error || parameters.some(p => p.error !== undefined);
+                        if (funcContainsErrors) {
+                            metadataItem['error'] = true;
+                        }
+
+                        metadata.push(metadataItem);
                     }
                 }
                 break;

@@ -25,7 +25,7 @@ import {
     SnippetCompileData,
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
     IRunnerHandlebarsContext, ISnippetHandlebarsContext, ITryItHandlebarsContext,
-    // ICustomFunctionsRegisterHandlebarsContext,
+    ICustomFunctionsRegisterHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
 import { parseMetadata } from './custom-functions/metadata.parser';
@@ -282,51 +282,63 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
     const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
     const { snippets } = params;
 
-    const metadata = {};
+    enum CustomFunctionsRegistrationStatus {
+        Good = 'good',
+        Skipped = 'skipped',
+        Error = 'error'
+    }
+
+    const visualMetadata = [];
+    const metadata = [];
 
     snippets.forEach((snippet) => {
-        let snippetMetadata;
-        try {
-            if (snippet.script && snippet.name) {
-                const result = parseMetadata(snippet.script.content);
+        if (snippet.script && snippet.name) {
+            let result = parseMetadata(snippet.script.content);
 
-                if (result.length !== 0) {
-                    snippetMetadata = result;
+            if (result.length !== 0) {
+                if (result.some((func) => func.error)) {
+                    result = result.map((func) => {
+                        if (func.error) {
+                            return {...func, status: CustomFunctionsRegistrationStatus.Error};
+                        } else {
+                            return {...func, status: CustomFunctionsRegistrationStatus.Skipped};
+                        }
+                    });
+                    visualMetadata.push({name: snippet.name, status: CustomFunctionsRegistrationStatus.Error, metadata: result});
+                } else {
+                    metadata.push({name: snippet.name, metadata: result});
+
+                    result = result.map((func) => { return {...func, status: CustomFunctionsRegistrationStatus.Good}; });
+                    visualMetadata.push({name: snippet.name, status: CustomFunctionsRegistrationStatus.Good, metadata: result});
                 }
             }
-        } catch (e) {
-            snippetMetadata = JSON.parse(e.message);
-        }
-
-        if (snippetMetadata) {
-            metadata[snippet.name] = snippetMetadata;
         }
     });
 
     console.log(JSON.stringify(metadata, null, 4));
 
-    // const host = 'EXCEL';
+    const host = 'EXCEL';
 
-    // const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
+    const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
 
-    // const strings = Strings(req);
+    const strings = Strings(req);
 
-    // const customFunctionsRunnerGenerator =
-        // await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
+    const customFunctionsRunnerGenerator =
+        await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
 
-    const html = '';
-    // const html = customFunctionsRunnerGenerator({
-    //     snippets: snippets,
-    //     snippetsDataBase64: base64encode(JSON.stringify(snippets)),
+    const html = customFunctionsRunnerGenerator({
+        metadata: visualMetadata,
 
-    //     strings,
-    //     explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-    //     initialLoadSubtitle: strings.playgroundTagline,
-    //     headerTitle: strings.registeringCustomFunctions,
-    //     returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
-    // });
+        // snippetsDataBase64: base64encode(JSON.stringify(snippets)),
 
-    // timer.stop();
+        strings,
+        explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+        initialLoadSubtitle: strings.playgroundTagline,
+        headerTitle: strings.registeringCustomFunctions,
+        returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
+    });
+
+    timer.stop();
     return respondWith(res, html, 'text/html');
 });
 
