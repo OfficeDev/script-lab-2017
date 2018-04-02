@@ -15,6 +15,13 @@ const officeHostsToAppNames = {
     'WORD': 'Word'
 };
 
+export const outlookEndpoints = {
+    MailRead: 'messageread',
+    MailCompose: 'messagecompose',
+    AppointmentOrganizer: 'appointmentcompose',
+    AppointmentAttendee: 'appointmentread',
+};
+
 export function isValidHost(host: string) {
     host = host.toUpperCase();
     return isOfficeHost(host) || (host === 'WEB');

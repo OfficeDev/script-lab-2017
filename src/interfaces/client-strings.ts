@@ -171,6 +171,11 @@ interface ClientStringsPerLanguage {
     // Outlook-only strings
 
     noRunInOutlook: string;
+    extensionPointsLabel: string;
+    mailRead: string;
+    mailCompose: string;
+    appointmentOrganizer: string;
+    appointmentAttendee: string;
 
     // import.ts strings
 

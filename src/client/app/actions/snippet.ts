@@ -72,7 +72,7 @@ export class ImportSuccessAction implements Action {
 export class UpdateInfoAction implements Action {
     readonly type = SnippetActionTypes.UPDATE_INFO;
 
-    constructor(public payload: { id: string, name?: string, description?: string, gist?: string, gistOwnerId?: string }) { }
+    constructor(public payload: { id: string, name?: string, description?: string, gist?: string, gistOwnerId?: string, endpoints?: string[] }) { }
 }
 
 export class RunAction implements Action {

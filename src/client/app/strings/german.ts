@@ -194,6 +194,11 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         // Outlook-only strings
 
         noRunInOutlook: 'Das Code-Schnipsel kann in Outlook nicht aus dem Code-Fenster heraus ausgeführt werden. Bitte öffnen Sie den Aufgabenbereich zur Code-Ausführung und rufen Sie das Schnipsel von dort aus auf.',
+        extensionPointsLabel: getEnglishSubstitutesForNotYetTranslated().extensionPointsLabel,
+        mailRead:  getEnglishSubstitutesForNotYetTranslated().mailRead,
+        mailCompose: getEnglishSubstitutesForNotYetTranslated().mailCompose,
+        appointmentOrganizer: getEnglishSubstitutesForNotYetTranslated().appointmentOrganizer,
+        appointmentAttendee: getEnglishSubstitutesForNotYetTranslated().appointmentAttendee,
 
         // import.ts strings
 

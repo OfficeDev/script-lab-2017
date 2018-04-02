@@ -14,25 +14,32 @@ const localStorageKeys = {
     experimentationFlags: 'playground_experimentation_flags',
     trustedSnippets: 'playground_trusted_snippets',
     customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
-    customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
-    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
+    customFunctionsLastUpdatedCodeTimestamp:
+        'playground_custom_functions_last_updated_code_timestamp',
+    customFunctionsCurrentlyRunningTimestamp:
+        'playground_custom_functions_currently_running_timestamp',
     logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
     lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
-    language: 'playground_language'
+    language: 'playground_language',
 };
 
 const sessionStorageKeys = {
     environmentCache: 'playground_cache',
-    intelliSenseCache: 'playground_intellisense'
+    intelliSenseCache: 'playground_intellisense',
 };
 
 const build = (() => {
     return {
         name: startCase(name),
         version: version,
-        timestamp: moment().utc().valueOf(),
-        humanReadableTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
-        author: author
+        timestamp: moment()
+            .utc()
+            .valueOf(),
+        humanReadableTimestamp:
+            moment()
+                .utc()
+                .format('YYYY-MM-DD HH:mm a') + ' UTC',
+        author: author,
     };
 })();
 
@@ -47,7 +54,7 @@ const config = {
         editorUrl: 'https://localhost:3000',
         tokenUrl: 'https://localhost:3200/auth',
         runnerUrl: 'https://localhost:3200',
-        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
+        samplesUrl: 'https://localhost/snippets',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
         thirdPartyAADAppClientId,
     },
@@ -70,7 +77,8 @@ const config = {
         tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
         runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
+        feedbackUrl:
+            'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
         thirdPartyAADAppClientId,
     },
     production: {
@@ -83,7 +91,7 @@ const config = {
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
         feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
         thirdPartyAADAppClientId,
-    }
+    },
 };
 
 // NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
@@ -92,37 +100,41 @@ const safeExternalUrls = {
     ask: 'https://stackoverflow.com/questions/tagged/office-js',
     excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
     word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
-    onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
+    onenote_api:
+        'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
     outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
     powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
     project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
-    generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+    generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office',
 };
 
 const experimentationFlagsDefaults = {
     customFunctions: false,
-    customFunctionsShowDebugLog: false
+    customFunctionsShowDebugLog: false,
 };
 
 class RedirectPlugin {
     apply(compiler) {
-        compiler.plugin('compilation', (compilation) => {
-            compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-                let headOpeningTag = '<head>';
-                let htmlHead = htmlPluginData.html.match(headOpeningTag);
+        compiler.plugin('compilation', compilation => {
+            compilation.plugin(
+                'html-webpack-plugin-before-html-processing',
+                (htmlPluginData, callback) => {
+                    let headOpeningTag = '<head>';
+                    let htmlHead = htmlPluginData.html.match(headOpeningTag);
 
-                let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
+                    let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
 
-                const validRedirectLocations = [];
-                for (var envName in config) {
-                    validRedirectLocations.push(config[envName].editorUrl);
-                }
+                    const validRedirectLocations = [];
+                    for (var envName in config) {
+                        validRedirectLocations.push(config[envName].editorUrl);
+                    }
 
-                if (htmlHead && htmlHead.length > 0) {
-                    htmlHead = htmlHead.index;
-                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
-                        headOpeningTag +
-                        `
+                    if (htmlHead && htmlHead.length > 0) {
+                        htmlHead = htmlHead.index;
+                        htmlPluginData.html =
+                            htmlPluginData.html.slice(0, htmlHead) +
+                            headOpeningTag +
+                            `
     <script>
         (function() {
             try {
@@ -211,14 +223,14 @@ class RedirectPlugin {
         })();
     </script>
                         ` +
-                        htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
+                            htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
+                    }
+                    callback(null, htmlPluginData);
                 }
-                callback(null, htmlPluginData);
-            });
+            );
         });
     }
 }
-
 
 exports.build = build;
 exports.config = config;
