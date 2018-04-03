@@ -36,10 +36,10 @@ body {
   font-family: 'Segoe UI';
 }
 #custom-functions-registration {
-  margin: 15%;
+  margin: 40pt 15%;
 }
 #custom-functions-registration .snippet {
-  margin-top: 10pt;
+  margin-top: 30pt;
 }
 #custom-functions-registration .block {
   border: 1px #808080 solid;
@@ -58,9 +58,12 @@ body {
   border-left: 1px solid #808080;
   content: '';
   position: absolute;
-  height: 110%;
+  height: 120%;
   left: -55pt;
   top: -20pt;
+}
+#custom-functions-registration ul > ul:last-of-type:before {
+  display: none;
 }
 #custom-functions-registration li {
   list-style-type: none;
@@ -87,7 +90,7 @@ body {
   border-left: 1px solid #808080;
   height: 50%;
 }
-#custom-functions-registration li:first-child:before {
+#custom-functions-registration li:first-of-type:before {
   content: '';
   position: absolute;
   top: -10pt;
@@ -98,12 +101,12 @@ body {
   border-bottom: 1px solid #808080;
   z-index: -1000;
 }
-#custom-functions-registration li:last-child:after {
+#custom-functions-registration li:last-of-type:after {
   display: none;
 }
 #custom-functions-registration .error {
   background: #fde7e9 !important;
-  font-weight: 500;
+  font-weight: 600;
 }
 #custom-functions-registration .skipped {
   background: #fff4ce !important;
@@ -115,6 +118,19 @@ body {
 }
 #custom-functions-registration .good {
   background: #dff6dd;
+}
+
+.block.function.skipped:after {
+    content: '(skipped)';
+    font-style: italic;
+    font-weight: 100;
+    float: right;
+}
+
+.block.ms-font-l.function.error:after {
+    content: 'ERROR';
+    font-style: italic;
+    float: right;
 }
 
     </style>
@@ -142,26 +158,44 @@ body {
 
     <div class="ms-font-m" id="custom-functions-registration">
         <h1 class="ms-font-su" id="title">Custom Functions Registration</h1>
-            <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt">
-                <div class="cs-loader">
-                    <div class="cs-loader-inner">
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                    </div>
+        <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt">
+            <div class="cs-loader">
+                <div class="cs-loader-inner">
+                    <label class="ms-Icon ms-Icon--LocationDot"></label>
+                    <label class="ms-Icon ms-Icon--LocationDot"></label>
+                    <label class="ms-Icon ms-Icon--LocationDot"></label>
+                    <label class="ms-Icon ms-Icon--LocationDot"></label>
+                    <label class="ms-Icon ms-Icon--LocationDot"></label>
                 </div>
             </div>
+        </div>
         {{#each metadata}}
-        <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
-        <ul>
-            {{#each this.metadata}}
-            <li>
-                <div class="block ms-font-l {{this.status}}">{{this.name}}</div>
-            </li>
-            {{/each}}
-        </ul>
+            <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
+            <ul>
+                {{#each this.metadata}}
+                    <li>
+                        <div class="block ms-font-l function {{this.status}}">{{this.name}}(...)</div>
+                    </li>
+                    {{#if this.error}}
+                        <ul>
+                            {{#each this.parameters}}
+                                <li>
+                                    {{#if this.error}}
+                                        <div class="block ms-font-m error">{{this.name}} – {{this.error}}</div>
+                                    {{else}}
+                                        <div class="block ms-font-m skipped">{{this.name}}</div>
+                                    {{/if}}
+                                </li>
+                            {{/each}}
+                            {{#if this.result.error}}
+                                <li>
+                                    <div class="block ms-font-m error">Return – {{this.result.error}}</div>
+                                </li>
+                            {{/if}}
+                        </ul>
+                    {{/if}}
+                {{/each}}
+            </ul>
         {{/each}}
     </div>
 

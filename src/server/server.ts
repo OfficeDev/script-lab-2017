@@ -299,12 +299,19 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
                 if (result.some((func) => func.error)) {
                     result = result.map((func) => {
                         if (func.error) {
+                            // todo remove once sure it can be removed
+                            // func.parameters = func.parameters.map((param) => {
+                            //     param.status = param.error ? CustomFunctionsRegistrationStatus.Error : CustomFunctionsRegistrationStatus.Skipped;
+                            //     return param;
+                            // });
+
                             return {...func, status: CustomFunctionsRegistrationStatus.Error};
                         } else {
+
                             return {...func, status: CustomFunctionsRegistrationStatus.Skipped};
                         }
                     });
-                    visualMetadata.push({name: snippet.name, status: CustomFunctionsRegistrationStatus.Error, metadata: result});
+                    visualMetadata.push({name: snippet.name, error: true, status: CustomFunctionsRegistrationStatus.Error, metadata: result});
                 } else {
                     metadata.push({name: snippet.name, metadata: result});
 
