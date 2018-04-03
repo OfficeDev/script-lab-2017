@@ -16,10 +16,6 @@ function sum2(a: number, b: number[]): number {
     return a + b[0];
 }
 
-// not included
-function sum3(a: number, b: number): number {
-    return a + b;
-}
 
 /**
 * Adds numbers in array
@@ -30,6 +26,11 @@ function sum3(a: number, b: number): number {
 */
 function sumArr(arr: number[][]): number {
     return arr[0].reduce((accumulator, current) => accumulator + current);
+
+    /** @customFunction */
+    function sum3(a: number, b: number): number {
+        return a + b;
+    }
 }
 
 /**
@@ -47,7 +48,6 @@ function isPrime(num: number): boolean {
 [
    {
       "description":"Adds two numbers",
-      "helpUrl":"https://dev.office.com",
       "name":"sum",
       "options":{
          "cancelable":true,
@@ -76,7 +76,6 @@ function isPrime(num: number): boolean {
    },
    {
       "description":"Adds numbers in array",
-      "helpUrl":"https://dev.office.com",
       "name":"sumArr",
       "options":{
          "cancelable":true,
@@ -99,7 +98,6 @@ function isPrime(num: number): boolean {
    },
    {
       "description":"Checks to see if a number is prime",
-      "helpUrl":"https://dev.office.com",
       "name":"isPrime",
       "options":{
          "cancelable":true,

@@ -13,7 +13,6 @@ function foo(a: number[][], b: number, c: number[][]): number[][] {
 [
   {
     "description": "*Insert Description here*",
-    "helpUrl": "https://dev.office.com",
     "name": "foo",
     "options": {
       "cancelable": true,

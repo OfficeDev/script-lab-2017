@@ -58,7 +58,6 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
 [
    {
       "description":"*Insert Description here*",
-      "helpUrl":"https://dev.office.com",
       "name":"getRgb3",
       "options":{
          "cancelable":true,
@@ -80,7 +79,6 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "helpUrl":"https://dev.office.com",
       "name":"getRgb6",
       "options":{
          "cancelable":true,
@@ -102,7 +100,6 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "helpUrl":"https://dev.office.com",
       "name":"getRgb8",
       "options":{
          "cancelable":true,
@@ -124,7 +121,6 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "helpUrl":"https://dev.office.com",
       "name":"getRgb9",
       "options":{
          "cancelable":true,
@@ -146,7 +142,6 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "helpUrl":"https://dev.office.com",
       "name":"getRgb10",
       "options":{
          "cancelable":true,
@@ -173,7 +168,6 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "helpUrl":"https://dev.office.com",
       "name":"functionWith2DArraySyntax",
       "options":{
          "cancelable":true,
