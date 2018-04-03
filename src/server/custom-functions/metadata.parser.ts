@@ -92,17 +92,12 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): {dimensio
     };
 
     if (t === undefined) {
-        return { error: 'Parameter was defined without a type.', ...errTypeAndDim };
+        return { error: 'No type specified.', ...errTypeAndDim };
     }
 
-    // tslint:disable-next-line
-    const entityName = (t.parent as any).name.getText();
-    const startingPhrase = ts.isParameter(t.parent) ?
-                                `Parameter "${entityName}" must be a valid type` :
-                                `Function "${entityName}" must have a valid return type`;
 
     const invalidTypeError = {
-        error: `${startingPhrase} (string, number, boolean, or a 2D array of one of these). Type specified: ${t.getText()}`,
+        error: `Invalid type specified: ${t.getText()}. Supported types include: string, number, boolean, or a 2D array of one of these.`,
         ...errTypeAndDim,
     };
 
@@ -204,7 +199,7 @@ function traverseAST(sourceFile: ts.SourceFile): {[key: string] : any}[] {
                             result = getDimAndTypeHelper(func.type);
                         } else {
                             result = {
-                                error: `Function "${func.name.getText()}" has no return type.`,
+                                error: 'No return type specified.',
                                 dimensionality: Dimensionality.Invalid,
                                 type: INVALID
                             };
