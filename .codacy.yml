@@ -1,2 +1,2 @@
 exclude_paths:
-  - './jest.config.js'
+  - 'jest.config.js'
