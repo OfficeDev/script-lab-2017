@@ -65,6 +65,7 @@ export interface IRunnerHandlebarsContext {
 export interface ICustomFunctionsRegisterHandlebarsContext {
     // snippets: ICustomFunctionsRegistrationRelevantData[];
     // snippetsDataBase64: string;
+    isAnyError: boolean;
     metadata: any;
     explicitlySetDisplayLanguageOrNull: string;
     initialLoadSubtitle: string;

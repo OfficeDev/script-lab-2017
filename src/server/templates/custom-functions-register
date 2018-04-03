@@ -36,7 +36,8 @@ body {
   font-family: 'Segoe UI';
 }
 #custom-functions-registration {
-  margin: 40pt 15%;
+  margin: 40pt 10%;
+  height: 100vh;
 }
 #custom-functions-registration .snippet {
   margin-top: 30pt;
@@ -58,7 +59,7 @@ body {
   border-left: 1px solid #808080;
   content: '';
   position: absolute;
-  height: 120%;
+  height: 140%;
   left: -55pt;
   top: -20pt;
 }
@@ -106,11 +107,11 @@ body {
 }
 #custom-functions-registration .error {
   background: #fde7e9 !important;
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 #custom-functions-registration .skipped {
   background: #fff4ce !important;
-  font-weight: 500;
+  font-weight: 500 !important;
 }
 #custom-functions-registration .skipped span {
   font-weight: normal;
@@ -119,18 +120,45 @@ body {
 #custom-functions-registration .good {
   background: #dff6dd;
 }
-
-.block.function.skipped:after {
-    content: '(skipped)';
-    font-style: italic;
-    font-weight: 100;
-    float: right;
+#custom-functions-registration .block.function {
+    padding: 5pt 8pt;
 }
+#custom-functions-registration .block.parameter {
+    padding: 4pt 8pt;
+}
+#custom-functions-registration .block.snippet {
+    font-weight: 500;
+}
+#metadata {
+    overflow: auto;
+    padding-right: 15pt;
+    height: 70vh;
+    margin-top: 20pt;
+}
+#metadata > .snippet:first-child {
+    margin-top: 0;
+}
+#continue-container {
+    text-align: center;
+    width: 90%;
+    margin: 20pt 5%;
+}
+#continue-container button {
+    margin-top: 15pt;
+}
+@media (min-width: 500px) {
+    .block.function.skipped:after {
+        content: '(skipped)';
+        font-style: italic;
+        font-weight: 100;
+        float: right;
+    }
 
-.block.ms-font-l.function.error:after {
-    content: 'ERROR';
-    font-style: italic;
-    float: right;
+    .block.ms-font-l.function.error:after {
+        content: 'ERROR';
+        font-style: italic;
+        float: right;
+    }
 }
 
     </style>
@@ -140,72 +168,84 @@ body {
 
 
     <script>
-        Office.initialize = function () {
-            window.playground_host_ready = true;
-        }
+        {{#unless this.isAnyError }}
+            Office.initialize = function () {
+                window.playground_host_ready = true;
+            }
+        {{/unless}}
     </script>
 </head>
 
-<body class="ms-font-m">
-    <header id="header" class="command__bar" style="visibility: hidden">
-        <a id="header-back" class="command__icon ms-u-slideLeftIn10" href="{{{returnUrl}}}" title="{{strings.back}}">
-            <i class="ms-Icon ms-Icon--Back"></i>
-        </a>
-        <div class="command__icon command__center ms-u-slideLeftIn10 pointer-events-none">
-            <span class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
-            </a>
-    </header>
-
+<body>
     <div class="ms-font-m" id="custom-functions-registration">
         <h1 class="ms-font-su" id="title">Custom Functions Registration</h1>
-        <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt">
-            <div class="cs-loader">
-                <div class="cs-loader-inner">
-                    <label class="ms-Icon ms-Icon--LocationDot"></label>
-                    <label class="ms-Icon ms-Icon--LocationDot"></label>
-                    <label class="ms-Icon ms-Icon--LocationDot"></label>
-                    <label class="ms-Icon ms-Icon--LocationDot"></label>
-                    <label class="ms-Icon ms-Icon--LocationDot"></label>
+        <div id="metadata">
+            {{#each metadata}}
+                <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
+                <ul>
+                    {{#each this.metadata}}
+                        {{#if this.error}}
+                            <li>
+                                <div class="block ms-font-l function {{this.status}}">{{this.name}}(...)</div>
+                            </li>
+                            <ul>
+                                {{#each this.parameters}}
+                                    <li>
+                                        {{#if this.error}}
+                                            <div class="block ms-font-m parameter error">{{this.name}} – {{this.error}}</div>
+                                        {{else}}
+                                            <div class="block ms-font-m parameter skipped">{{this.name}} : {{this.prettyType}}</div>
+                                        {{/if}}
+                                    </li>
+                                {{/each}}
+                                {{#if this.result.error}}
+                                    <li>
+                                        <div class="block ms-font-m parameter error">Return type – {{this.result.error}}</div>
+                                    </li>
+                                {{/if}}
+                            </ul>
+                        {{else}}
+                            <li>
+                                <div class="block ms-font-l function {{this.status}}">{{this.name}}({{this.paramString}})</div>
+                            </li>
+                        {{/if}}
+                    {{/each}}
+                </ul>
+            {{/each}}
+        </div>
+
+        {{#if this.isAnyError }}
+            <div id="continue-container" class="ms-font-l">
+                <p>There are errors in some of your snippets, shown in above in red. Would you like to proceed to register the green functions anyways?</p>
+                <button class="ms-Button ms-Button--primary">
+                    <span class="ms-Button-label">Register</span>
+                </button>
+            </div>
+        {{else}}
+            <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt;">
+                <div class="cs-loader">
+                    <div class="cs-loader-inner">
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                    </div>
                 </div>
             </div>
-        </div>
-        {{#each metadata}}
-            <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
-            <ul>
-                {{#each this.metadata}}
-                    <li>
-                        <div class="block ms-font-l function {{this.status}}">{{this.name}}(...)</div>
-                    </li>
-                    {{#if this.error}}
-                        <ul>
-                            {{#each this.parameters}}
-                                <li>
-                                    {{#if this.error}}
-                                        <div class="block ms-font-m error">{{this.name}} – {{this.error}}</div>
-                                    {{else}}
-                                        <div class="block ms-font-m skipped">{{this.name}}</div>
-                                    {{/if}}
-                                </li>
-                            {{/each}}
-                            {{#if this.result.error}}
-                                <li>
-                                    <div class="block ms-font-m error">Return – {{this.result.error}}</div>
-                                </li>
-                            {{/if}}
-                        </ul>
-                    {{/if}}
-                {{/each}}
-            </ul>
-        {{/each}}
+
+            <script type="text/javascript">
+                window.customFunctionParams = {
+                    snippetsDataBase64: '{{{snippetsDataBase64}}}',
+                    explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
+                    returnUrl: '{{{returnUrl}}}'
+                };
+            </script>
+
+        {{/if}}
+
     </div>
 
-    <script type="text/javascript">
-        window.customFunctionParams = {
-            snippetsDataBase64: '{{{snippetsDataBase64}}}',
-            explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
-            returnUrl: '{{{returnUrl}}}'
-        };
-    </script>
 
 
     <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>

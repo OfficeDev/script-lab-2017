@@ -288,8 +288,21 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
         Error = 'error'
     }
 
+    const getPrettyType = (parameter) => {
+        const dim = parameter.dimensionality === 'scalar' ? '' : '[][]';
+        return `${parameter.type}${dim}`;
+    };
+
+    const paramStringExtractor = (parameters) => {
+        return parameters.map(p => {
+            return `${p.name}: ${getPrettyType(p)}`;
+        }).join(', ');
+    };
+
     const visualMetadata = [];
     const metadata = [];
+
+    let isAnyError = false;
 
     snippets.forEach((snippet) => {
         if (snippet.script && snippet.name) {
@@ -299,23 +312,25 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
                 if (result.some((func) => func.error)) {
                     result = result.map((func) => {
                         if (func.error) {
-                            // todo remove once sure it can be removed
-                            // func.parameters = func.parameters.map((param) => {
-                            //     param.status = param.error ? CustomFunctionsRegistrationStatus.Error : CustomFunctionsRegistrationStatus.Skipped;
-                            //     return param;
-                            // });
-
+                            isAnyError = true;
+                            func.parameters = func.parameters.map((param) => {
+                                if (!param.error) {
+                                    param.prettyType = getPrettyType(param);
+                                }
+                                return param;
+                            });
                             return {...func, status: CustomFunctionsRegistrationStatus.Error};
                         } else {
-
-                            return {...func, status: CustomFunctionsRegistrationStatus.Skipped};
+                            return {...func, paramString: paramStringExtractor(func.parameters), status: CustomFunctionsRegistrationStatus.Skipped};
                         }
                     });
                     visualMetadata.push({name: snippet.name, error: true, status: CustomFunctionsRegistrationStatus.Error, metadata: result});
                 } else {
                     metadata.push({name: snippet.name, metadata: result});
 
-                    result = result.map((func) => { return {...func, status: CustomFunctionsRegistrationStatus.Good}; });
+                    result = result.map((func) => {
+                        return {...func, paramString: paramStringExtractor(func.parameters), status: CustomFunctionsRegistrationStatus.Good};
+                    });
                     visualMetadata.push({name: snippet.name, status: CustomFunctionsRegistrationStatus.Good, metadata: result});
                 }
             }
@@ -335,6 +350,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
 
     const html = customFunctionsRunnerGenerator({
         metadata: visualMetadata,
+        isAnyError,
 
         // snippetsDataBase64: base64encode(JSON.stringify(snippets)),
 
