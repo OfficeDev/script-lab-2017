@@ -1,0 +1,40 @@
+name: Chocolate factory
+description: ''
+host: EXCEL
+api_set: {}
+script:
+    content: |+
+        function createChocolate() {
+            return Math.random();
+        }
+
+
+    language: typescript
+template:
+    content: |
+        <button id="run" class="ms-Button">
+            <span class="ms-Button-label">Run</span>
+        </button>
+    language: html
+style:
+    content: |
+        /* Your style goes here */
+    language: css
+libraries: |
+    https://appsforoffice.microsoft.com/lib/1/hosted/office.js
+    https://appsforoffice.microsoft.com/lib/1/hosted/office.d.ts
+
+    office-ui-fabric-js@1.4.0/dist/css/fabric.min.css
+    office-ui-fabric-js@1.4.0/dist/css/fabric.components.min.css
+
+    core-js@2.4.1/client/core.min.js
+    @types/core-js
+
+    @microsoft/office-js-helpers@0.7.4/dist/office.helpers.min.js
+    @microsoft/office-js-helpers@0.7.4/dist/office.helpers.d.ts
+
+    jquery@3.1.1
+    @types/jquery
+customFunctions:
+    content: "{\r\n    \"namespace\": \"chocolateFactory\",\r\n    \"functions\": [\r\n        {\r\n            \"name\": \"createChocolate\",\r\n            \"description\": \"Gives free chocolate\",\r\n            \"helpUrl\": \"http://dev.office.com\",\r\n            \"result\": {\r\n                \"type\": \"number\",\r\n                \"dimensionality\": \"scalar\"\r\n            },\r\n            \"parameters\": [\r\n                {\r\n                    \"name\": \"chocolateAmountArray\",\r\n                    \"description\": \"The amount of chocolate to create\",\r\n                    \"type\": \"number\",\r\n                    \"dimensionality\": \"scalar\"\r\n                }\r\n            ],\r\n            \"options\": {\r\n                \"sync\": false,\r\n                \"stream\": false,\r\n                \"volatile\": false\r\n            }\r\n        }\r\n    ]\r\n}"
+    language: json

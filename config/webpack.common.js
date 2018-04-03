@@ -17,6 +17,7 @@ const { GH_SECRETS } = process.env;
 
 const versionedPackageNames = getVersionedPackageNames([
     'monaco-editor',
+    '@microsoft/office-js',
     'office-ui-fabric-js',
     'jquery',
     'jquery-resizable-dom',
@@ -47,7 +48,8 @@ module.exports = (prodMode) =>
             tryIt: './public/try.it.ts',
             customFunctions: './public/custom.functions.ts',
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
-            compileCustomFunctions: './public/compile.custom.functions.ts',
+            customFunctionsRegister: './public/custom.functions.register.ts',
+            customFunctionsRunner: './public/custom.functions.runner.ts',
             log: './public/log.ts',
         },
 

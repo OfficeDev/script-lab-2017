@@ -1,6 +1,8 @@
-import { environment, navigateToCompileCustomFunctions } from '../app/helpers';
+
+import { environment, navigateToRunCustomFunctions } from '../app/helpers';
 
 (() => {
     environment.initializePartial({ host: 'EXCEL' });
-    navigateToCompileCustomFunctions('run');
+
+    navigateToRunCustomFunctions();
 })();
