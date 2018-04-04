@@ -32,9 +32,7 @@ function setupMessenger(clientTimestamp: number) {
         .subscribe(input => tryCatch(() => {
             // TODO CUSTOM FUNCTIONS STRINGS
 
-            const message = 'Custom functions requested on ' +
-                moment(getLocalStorageLastUpdateTimestamp()).format('MMM Do, h:mm:ss a') +
-                ' are now loaded & running';
+            const message = 'Custom functions are reloaded';
 
             logToConsole({
                 source: 'system',
@@ -53,14 +51,16 @@ function setupMessenger(clientTimestamp: number) {
                         now.getTime().toString());
 
                     // Just for debugging:
-                    // logToConsole({
-                    //     timestamp: new Date().getTime(),
-                    //     source: 'system',
-                    //     type: 'custom functions',
-                    //     subtype: 'heartbeat',
-                    //     message: 'Tick, client timestamp ' + clientTimestamp,
-                    //     severity: 'info',
-                    // });
+                    logToConsole({
+                        timestamp: new Date().getTime(),
+                        source: 'system',
+                        type: 'custom functions',
+                        subtype: 'heartbeat',
+                        message: 'Tick, client timestamp ' + clientTimestamp,
+                        severity: 'info',
+                    });
+
+
 
                     // And check whether I should reload...
                     if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {

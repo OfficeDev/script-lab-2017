@@ -143,21 +143,8 @@ function establishHeartbeat(heartbeatParams: ICustomFunctionsHeartbeatParams): P
     heartbeat.messenger.listen<{}>()
         .filter(({ type }) => type === CustomFunctionsMessageType.NEED_TO_REFRESH)
         .subscribe(async input => {
-            heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
-                timestamp: new Date().getTime(),
-                source: 'system',
-                type: 'custom functions',
-                subtype: 'runner',
-                severity: 'info',
-                message: 'Request received for refreshing Custom Functions runner'
-            });
-            // Note, the above might realistically not get logged fast enough, before a refresh.  That's ok...
             navigateToRunCustomFunctions(input.message);
         });
-
-    // heartbeat.messenger.listen<{}>()
-    //     .filter(({ type }) => type === CustomFunctionsMessageType.SHOW_LOG_DIALOG)
-    //     .subscribe(async input => displayLogDialog(environment.current.config.editorUrl));
 
     return new Promise(resolve => {
         heartbeat.messenger.listen<string>()

@@ -1,6 +1,9 @@
 import { storage, environment, post, trustedSnippetManager } from './index';
 import { getDisplayLanguage } from '../strings';
 import { uniqBy } from 'lodash';
+// import {
+//     ensureFreshLocalStorage
+// } from '../helpers';
 
 export function navigateToRegisterCustomFunctions() {
     let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRegistrationRelevantData[] =

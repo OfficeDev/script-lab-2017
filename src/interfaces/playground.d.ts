@@ -216,10 +216,6 @@ interface ICompiledPlaygroundInfo {
          * the custom functions heartbeat was aware of */
         customFunctionsCurrentlyRunningTimestamp: string;
 
-
-        /** Last seen timestamp at which the log dialog reported itself as alive */
-        logLastHeartbeatTimestamp: string;
-
         /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
         lastPerfNumbersTimestamp: string;
     };
