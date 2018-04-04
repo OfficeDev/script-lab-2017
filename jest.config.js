@@ -7,7 +7,7 @@ module.exports = {
         'ts',
         'js',
     ],
-    testRegex: '/__tests__/.*\\.test\\.ts$',
+    testRegex: './src/__tests__/.*\\.test\\.ts$',
     coverageDirectory: 'coverage',
     collectCoverageFrom: [
         'src/**/*.{ts,js}',

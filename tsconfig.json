@@ -8,7 +8,7 @@
         "removeComments": false,
         "noImplicitAny": false,
         "noEmitOnError": true,
-        "rootDirs": ["src", "__tests__"],
+        "rootDir": "src",
         "outDir": "dist",
         "allowUnusedLabels": false,
         "noImplicitReturns": true,
