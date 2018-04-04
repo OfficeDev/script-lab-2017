@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { parseMetadata } from '../../src/server/custom-functions/metadata.parser';
+import { parseMetadata } from '../../server/custom-functions/metadata.parser';
 
 const SAMPLE_DIR = './__tests__/custom-functions/samples';
 
