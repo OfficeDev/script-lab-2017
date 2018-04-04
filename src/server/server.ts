@@ -242,7 +242,17 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
  */
 registerRoute('post', '/custom-functions/run', async (req, res) => {
     const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
-    const { snippets } = params;
+    let { snippets } = params;
+    const metadata = [];
+
+    snippets = snippets.filter((snippet) => {
+        let result = parseMetadata(snippet.script.content);
+        const isGoodSnippet = result.length > 0 && !result.some((func) => func.error);
+        if (isGoodSnippet) {
+            metadata.push({id: snippet.id, ...result});
+        }
+        return isGoodSnippet;
+    });
 
     const strings = Strings(req);
     const timer = ai.trackTimedEvent('[Runner] Running Custom Functions');
@@ -266,7 +276,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 
     const html = customFunctionsRunnerGenerator({
         snippetsDataBase64: base64encode(JSON.stringify(snippetCompileResults.map(result => result.html))),
-        metadataBase64: base64encode(JSON.stringify(snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata }))))
+        metadataBase64: base64encode(JSON.stringify(metadata)),
     });
 
     timer.stop();
@@ -299,10 +309,9 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
         }).join(', ');
     };
 
-    const visualMetadata = [];
-    const metadata = [];
-
-    let isAnyError = false;
+    let visualMetadata = [];
+    let metadata = [];
+    const functionNameCount = {};
 
     snippets.forEach((snippet) => {
         if (snippet.script && snippet.name) {
@@ -312,7 +321,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
                 if (result.some((func) => func.error)) {
                     result = result.map((func) => {
                         if (func.error) {
-                            isAnyError = true;
+                            func.error = ' '; // fixme unhackify
                             func.parameters = func.parameters.map((param) => {
                                 if (!param.error) {
                                     param.prettyType = getPrettyType(param);
@@ -326,9 +335,19 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
                     });
                     visualMetadata.push({name: snippet.name, error: true, status: CustomFunctionsRegistrationStatus.Error, metadata: result});
                 } else {
-                    metadata.push({name: snippet.name, metadata: result});
-
+                    metadata = metadata.concat(...result);
                     result = result.map((func) => {
+                        let count = functionNameCount[func.name] || 0;
+                        count++;
+                        functionNameCount[func.name] = count;
+
+                        func.parameters = func.parameters.map((param) => {
+                            if (!param.error) {
+                                param.prettyType = getPrettyType(param);
+                            }
+                            return param;
+                        });
+
                         return {...func, paramString: paramStringExtractor(func.parameters), status: CustomFunctionsRegistrationStatus.Good};
                     });
                     visualMetadata.push({name: snippet.name, status: CustomFunctionsRegistrationStatus.Good, metadata: result});
@@ -336,6 +355,33 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
             }
         }
     });
+
+    // tag duplicate function names
+    visualMetadata = visualMetadata.map((snippetMetadata) => {
+        snippetMetadata.metadata = snippetMetadata.metadata.map((funcMeta) => {
+            if (functionNameCount[funcMeta.name] > 1) {
+                funcMeta.error = ' – Duplicated function name. Must be unique across ALL snippets.';
+                funcMeta.status = CustomFunctionsRegistrationStatus.Error;
+            }
+            return funcMeta;
+        });
+
+        if (snippetMetadata.metadata.some((func) => func.error)) {
+            snippetMetadata.error = true;
+            snippetMetadata.status = CustomFunctionsRegistrationStatus.Error;
+        }
+
+        return snippetMetadata;
+    });
+
+
+    const numOfSnippetsWithErrors = visualMetadata.filter((snippetMetadata) => snippetMetadata.error).length;
+    const numOfSnippetsWithoutErrors = visualMetadata.length - numOfSnippetsWithErrors;
+
+    const isAnyError = numOfSnippetsWithErrors > 0;
+    const isAnySuccess = numOfSnippetsWithoutErrors > 0;
+
+    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify(metadata));
 
     console.log(JSON.stringify(metadata, null, 4));
 
@@ -348,12 +394,13 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
     const customFunctionsRunnerGenerator =
         await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
 
+
+    // todo isAnySuccess
     const html = customFunctionsRunnerGenerator({
-        metadata: visualMetadata,
+        metadata: Object.keys(visualMetadata).map(k => visualMetadata[k]),
+        isAnySuccess,
         isAnyError,
-
-        // snippetsDataBase64: base64encode(JSON.stringify(snippets)),
-
+        registerCustomFunctionsJsonStringBase64,
         strings,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
         initialLoadSubtitle: strings.playgroundTagline,

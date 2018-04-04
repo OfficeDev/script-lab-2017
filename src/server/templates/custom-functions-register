@@ -34,10 +34,21 @@
         }
 body {
   font-family: 'Segoe UI';
+  margin: 0;
 }
 #custom-functions-registration {
-  margin: 40pt 10%;
+  margin: 0pt 10%;
+  padding: 20pt 0pt;
   height: 100vh;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 #custom-functions-registration .snippet {
   margin-top: 30pt;
@@ -132,20 +143,36 @@ body {
 #metadata {
     overflow: auto;
     padding-right: 15pt;
-    height: 70vh;
     margin-top: 20pt;
+    -ms-flex-preferred-size: 1;
+    flex-basis: 1;
 }
 #metadata > .snippet:first-child {
     margin-top: 0;
 }
 #continue-container {
     text-align: center;
-    width: 90%;
-    margin: 20pt 5%;
+    border: 1px solid black;
+    margin: 30pt 0pt;
+    border-radius: 4pt;
+    padding: 10pt 10pt 20pt 10pt;
 }
 #continue-container button {
-    margin-top: 15pt;
+    margin: 0pt 15pt;
+    height: 35pt;
 }
+
+.button-box {
+    margin-top: 15pt;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
 @media (min-width: 500px) {
     .block.function.skipped:after {
         content: '(skipped)';
@@ -168,11 +195,9 @@ body {
 
 
     <script>
-        {{#unless this.isAnyError }}
-            Office.initialize = function () {
-                window.playground_host_ready = true;
-            }
-        {{/unless}}
+        Office.initialize = function () {
+            window.playground_host_ready = true;
+        }
     </script>
 </head>
 
@@ -186,7 +211,7 @@ body {
                     {{#each this.metadata}}
                         {{#if this.error}}
                             <li>
-                                <div class="block ms-font-l function {{this.status}}">{{this.name}}(...)</div>
+                                <div class="block ms-font-l function {{this.status}}">{{this.name}}(...){{this.error}}</div>
                             </li>
                             <ul>
                                 {{#each this.parameters}}
@@ -214,12 +239,17 @@ body {
             {{/each}}
         </div>
 
-        {{#if this.isAnyError }}
-            <div id="continue-container" class="ms-font-l">
+        {{#if isAnyError }}
+            <div id="continue-container" class="ms-font-l" style="display:none">
                 <p>There are errors in some of your snippets, shown in above in red. Would you like to proceed to register the green functions anyways?</p>
-                <button class="ms-Button ms-Button--primary">
-                    <span class="ms-Button-label">Register</span>
-                </button>
+                <div class="button-box">
+                    <button id="btn-dismiss" class="ms-Button">
+                        <span class="ms-Button-label">Dismiss</span>
+                    </button>
+                    <button id="btn-continue" class="ms-Button ms-Button--primary">
+                        <span class="ms-Button-label">Continue</span>
+                    </button>
+                </div>
             </div>
         {{else}}
             <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt;">
@@ -233,20 +263,18 @@ body {
                     </div>
                 </div>
             </div>
-
-            <script type="text/javascript">
-                window.customFunctionParams = {
-                    snippetsDataBase64: '{{{snippetsDataBase64}}}',
-                    explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
-                    returnUrl: '{{{returnUrl}}}'
-                };
-            </script>
-
         {{/if}}
 
+        <script type="text/javascript">
+            window.customFunctionParams = {
+                isAnySuccess: {{{isAnySuccess}}},
+                isAnyError: {{{isAnyError}}},
+                registerCustomFunctionsJsonStringBase64: '{{{registerCustomFunctionsJsonStringBase64}}}',
+                explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
+                returnUrl: '{{{returnUrl}}}'
+            };
+        </script>
     </div>
-
-
 
     <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
     <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>

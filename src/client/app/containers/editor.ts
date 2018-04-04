@@ -20,15 +20,10 @@ const { localStorageKeys } = PLAYGROUND;
     selector: 'editor',
     template: `
         <ul class="tabs ms-Pivot ms-Pivot--tabs" [hidden]="hide">
-            <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name}">
+            <li class="tabs__tab ms-Pivot-link" *ngFor="let tab of tabs.values()" (click)="changeTab(tab.name)" [ngClass]="{'is-selected tabs__tab--active' : tab.name === currentState?.name, tabs__hidden: !showTab(tab.name)}">
                 {{tab.displayName}}
             </li>
         </ul>
-        <section class="custom-functions" *ngIf="showRegisterCustomFunctions">
-            <button (mouseover)="updateLastRegisteredFunctionsTooltip()" title="{{lastRegisteredFunctionsTooltip}}" class="ms-Button ms-Button--primary" (click)="registerCustomFunctions()" style="height: auto">
-                <span class="ms-Button-label">{{registerCustomFunctionsButtonText}}</span>
-            </button>
-        </section>
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
@@ -46,6 +41,9 @@ export class Editor implements AfterViewInit {
     private currentCodeLensProvider: any;
     private perfInfoPoller: any;
     private previousPerfInfoTimestamp: number;
+
+    private _snippet: ISnippet;
+    private _isCustomFunctionSnippet: boolean;
 
     strings = Strings();
 
@@ -112,6 +110,34 @@ export class Editor implements AfterViewInit {
         }
 
         clearInterval(this.perfInfoPoller);
+    }
+
+    /**
+     * Rehydrate the 'snippet' with the content from the various tabs.
+     */
+    public get snippet() {
+        if (this._snippet == null) {
+            return null;
+        }
+
+        this.tabNames.forEach(name => {
+            let { content, language } = this.tabs.get(name);
+            if (name === 'libraries') {
+                this._snippet.libraries = content;
+            }
+            else {
+                this._snippet[name] = { content, language };
+            }
+        });
+
+        return this._snippet;
+    }
+
+    showTab = (tabName: string) => {
+        if (this._isCustomFunctionSnippet) {
+            return ['script', 'libraries'].indexOf(tabName) >= 0;
+        }
+        return true;
     }
 
     changeTab = (name: string = 'script') => {
@@ -324,6 +350,7 @@ export class Editor implements AfterViewInit {
                     }
                     if (this.currentState.name === 'script') {
                         this.startPerfInfoTimer();
+                        this.setFlagForWhetherCustomFunction();
                     } else {
                         this.clearPerformanceMakers();
                     }
@@ -381,6 +408,7 @@ export class Editor implements AfterViewInit {
         this.changeTab();
     }
 
+    static _customFunctionsRegex = /@customfunction/i;
     /**
      * Update the active content property every 300ms.
      * The same update happens even on tab switch.
@@ -390,29 +418,15 @@ export class Editor implements AfterViewInit {
             this.currentState.content = this._monacoEditor.getValue();
             this._store.dispatch(new Snippet.SaveAction(this.snippet));
             this.clearPerformanceMakers();
+
+            if (this.currentState.name === 'script') {
+                this.setFlagForWhetherCustomFunction();
+            }
         }
     }, 300);
 
-    /**
-     * Rehydrate the 'snippet' with the content from the various tabs.
-     */
-    private _snippet: ISnippet;
-    public get snippet() {
-        if (this._snippet == null) {
-            return null;
-        }
-
-        this.tabNames.forEach(name => {
-            let { content, language } = this.tabs.get(name);
-            if (name === 'libraries') {
-                this._snippet.libraries = content;
-            }
-            else {
-                this._snippet[name] = { content, language };
-            }
-        });
-
-        return this._snippet;
+    private setFlagForWhetherCustomFunction() {
+        this._isCustomFunctionSnippet = Editor._customFunctionsRegex.test(this.currentState.content);
     }
 
     /**

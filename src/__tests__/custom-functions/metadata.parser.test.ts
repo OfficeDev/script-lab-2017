@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 
-import { parseMetadata } from '../../src/server/custom-functions/metadata.parser';
+import { parseMetadata } from '../../server/custom-functions/metadata.parser';
 
-const SAMPLE_DIR = './__tests__/custom-functions/samples';
+const SAMPLE_DIR = './src/__tests__/custom-functions/samples';
 
 // To add testcases for the custom functions metadata parser, follow the format of the following
 // and place it in the samples directory

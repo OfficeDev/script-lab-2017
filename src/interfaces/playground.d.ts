@@ -98,13 +98,14 @@ interface ICustomFunctionMetadata{
     }
 }
 
+/** The interface used by Excel to register custom functions (workbook.registerCustomFunctions(...))  */
+interface ICustomFunctionsRegistrationApiMetadata {
+    functions: ICustomFunctionMetadata[];
+}
+
 interface ICustomFunctionsSnippetRegistrationData {
     namespace: string;
     functions: ICustomFunctionMetadata[]; // TODO refactor this into metadata: ICustomFunctionsRegistrationApiMetadata
-}
-
-interface ICustomFunctionsRegistrationApiMetadata {
-    functions: ICustomFunctionMetadata[];
 }
 
 interface ICustomFunctionsRegistrationRelevantData {

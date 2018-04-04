@@ -8,6 +8,10 @@ editor {
     .tabs {
         flex: 0 0 auto;
         padding-bottom: 3px;
+
+        &__hidden {
+            display: none;
+        }
     }
     .ms-Pivot.ms-Pivot--tabs .ms-Pivot-link {
         line-height: 38px;

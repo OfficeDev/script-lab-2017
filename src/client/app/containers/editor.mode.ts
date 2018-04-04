@@ -5,11 +5,12 @@ import { Observable } from 'rxjs/Observable';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment, isOfficeHost, isInsideOfficeApp, isMakerScript } from '../helpers';
+import { environment, isOfficeHost, isInsideOfficeApp, isMakerScript, trustedSnippetManager, navigateToRegisterCustomFunctions } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 import { Subscription } from 'rxjs/Subscription';
+const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor-mode',
@@ -137,8 +138,14 @@ export class EditorMode {
         }
     }
 
+    static _customFunctionsRegex = /@customfunction/i;
     run() {
         if (this.snippet == null) {
+            return;
+        }
+
+        if (this.snippet.script && EditorMode._customFunctionsRegex.test(this.snippet.script.content)) {
+            this.registerCustomFunctions();
             return;
         }
 
@@ -386,5 +393,56 @@ export class EditorMode {
             default:
                 this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
         }
+    }
+
+    async registerCustomFunctions() {
+        if (!trustedSnippetManager.isSnippetTrusted(this.snippet.id, this.snippet.gist, this.snippet.gistOwnerId)) {
+            let alertResult = await this._effects.alert(
+                this.strings.snippetNotTrusted,
+                this.strings.trustSnippetQuestionMark,
+                this.strings.trust,
+                this.strings.cancel
+            );
+            if (alertResult === this.strings.cancel) {
+                return;
+            }
+        }
+
+        let startOfRequestTime = new Date().getTime();
+        window.localStorage.setItem(
+            localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+            startOfRequestTime.toString()
+        );
+
+        try {
+            navigateToRegisterCustomFunctions();
+        } catch (e) {
+            await this._effects.alert(e, 'Error registering custom functions', this.strings.ok);
+        }
+
+        // // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
+        // let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
+        //     getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
+        // if (updateImmediately) {
+        //     navigateToCompileCustomFunctions('register');
+        //     return;
+        // }
+
+        // // It seems like the heartbeat is running.  So give it a chance to pick up
+
+        // // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
+        // this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
+        // this.isWaitingOnCustomFunctionsUpdate = true;
+
+        // let interval = setInterval(() => {
+        //     let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
+        //         localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+        //     if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
+        //         this.isWaitingOnCustomFunctionsUpdate = false;
+        //         clearInterval(interval);
+        //         this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
+        //         this.updateLastRegisteredFunctionsTooltip();
+        //     }
+        // }, 2000);
     }
 }

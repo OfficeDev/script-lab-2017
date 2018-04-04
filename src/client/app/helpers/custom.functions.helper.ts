@@ -2,23 +2,13 @@ import { storage, environment, post, trustedSnippetManager } from './index';
 import { getDisplayLanguage } from '../strings';
 import { uniqBy } from 'lodash';
 
+const isCustomFunctionRegex = /@customfunction/i;
+
 export function navigateToRegisterCustomFunctions() {
     let allSnippetsToRegisterWithPossibleDuplicate: ISnippet[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
-            // .filter(snippet => snippet.script && snippet.script.content.indexOf('@Customfunction')) //todo possible optimization to only send up relevant snippets
-            // .filter(snippet => snippet.customFunctions && snippet.customFunctions.content && snippet.customFunctions.content.trim().length > 0)
-            // .map((snippet): ICustomFunctionsRegistrationRelevantData => {
-            //     try {
-            //         return {
-            //             name: snippet.name,
-            //             data: JSON.parse(snippet.customFunctions.content)
-            //         };
-            //     }
-            //     catch {
-            //         throw new Error(`Error parsing metadata for snippet "${snippet.name}"`);
-            //     }
-            // });
+            .filter(snippet => snippet.script && isCustomFunctionRegex.test(snippet.script.content));
 
     let data: IRegisterCustomFunctionsPostData = {
         snippets: allSnippetsToRegisterWithPossibleDuplicate,

@@ -63,8 +63,8 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface ICustomFunctionsRegisterHandlebarsContext {
-    // snippets: ICustomFunctionsRegistrationRelevantData[];
-    // snippetsDataBase64: string;
+    registerCustomFunctionsJsonStringBase64: string;
+    isAnySuccess: boolean;
     isAnyError: boolean;
     metadata: any;
     explicitlySetDisplayLanguageOrNull: string;
