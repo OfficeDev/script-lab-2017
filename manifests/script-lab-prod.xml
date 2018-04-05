@@ -5,7 +5,7 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>8bc018e3-f345-40d4-8f1d-97951765d531</Id>
-  <Version>1.2.0.0</Version>
+  <Version>1.2.0.1</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
@@ -588,7 +588,6 @@
         <bt:String id="PG.CFCommand.Label" DefaultValue="Custom Functions" />
         <bt:String id="PG.CFCommand.Title" DefaultValue="Custom Functions" />
         <bt:String id="PG.CFCommand.TipTitle" DefaultValue="Launch the Custom Functions dashboard">
-          <Override Locale="es-mx" Value="Lanzar tablero de Funciones Personalizadas"/>
         </bt:String>
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
           <Override Locale="de-de" Value="Ausführen"/>
@@ -869,7 +868,6 @@
           <Override Locale="zh-cn" Value="打开Script Lab代码编辑器"/>
         </bt:String>
         <bt:String id="PG.CFSupertip.Desc" DefaultValue="Launch the Custom Functions dashboard">
-          <Override Locale="es-mx" Value="Lanzar tablero de Funciones Personalizadas"/>
         </bt:String>
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
           <Override Locale="de-de" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>

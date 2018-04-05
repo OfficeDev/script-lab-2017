@@ -75,28 +75,37 @@ async function initializeRunnableSnippets(params: InitializationParams) {
                 window[func.name] = window[snippetMetadata.namespace][func.name];
 
                 // Overwrite console.log on every snippet iframe
-                // tslint:disable-next-line:only-arrow-functions
-                iframeWindow['console']['log'] = function(...args) {
-                    let logMsg: string = '';
-                    let isSuccessfulMsg: boolean = true;
-                    args.forEach(element => {
-                        try {
-                            logMsg += JSON.stringify(element) + ', ';
+                iframeWindow['console']['log'] = consoleMsgTypeImplementation('info');
+                iframeWindow['console']['warn'] = consoleMsgTypeImplementation('warn');
+                iframeWindow['console']['error'] = consoleMsgTypeImplementation('error');
+
+                function consoleMsgTypeImplementation(severityType) {
+                    // tslint:disable-next-line:only-arrow-functions
+                    return function (...args) {
+                        let logMsg: string = '';
+                        let isSuccessfulMsg: boolean = true;
+                        args.forEach((element, index, array) => {
+                            try {
+                                logMsg += JSON.stringify(element) + ', ';
+                            }
+                            catch (e) {
+                                isSuccessfulMsg = false;
+                                logMsg += 'Error on console logging this argument ' + e.toString() + ', ';
+                            }
+                        });
+                        if (logMsg.length > 0) {
+                            logMsg = logMsg.slice(0, -2);
                         }
-                        catch (e) {
-                            isSuccessfulMsg = false;
-                            logMsg = 'Error on console logging ' + e.toString();
-                        }
-                    });
-                    heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
-                        timestamp: new Date().getTime(),
-                        source: 'user',
-                        type: 'custom functions',
-                        subtype: 'runner',
-                        severity: isSuccessfulMsg ? 'info' : 'error',
-                        message: logMsg
-                    });
-                };
+                        heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                            timestamp: new Date().getTime(),
+                            source: 'user',
+                            type: 'custom functions',
+                            subtype: 'runner',
+                            severity: isSuccessfulMsg ? severityType : 'error',
+                            message: logMsg
+                        });
+                    };
+                }
             });
 
             successfulRegistrationsCount++;

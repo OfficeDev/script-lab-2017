@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import { toNumber } from 'lodash';
 import { environment, Messenger, CustomFunctionsMessageType, getRunnerCustomFunctionsPayload,
     pushToLogQueue, ensureFreshLocalStorage } from '../app/helpers';
@@ -51,14 +50,14 @@ function setupMessenger(clientTimestamp: number) {
                         now.getTime().toString());
 
                     // Just for debugging:
-                    logToConsole({
-                        timestamp: new Date().getTime(),
-                        source: 'system',
-                        type: 'custom functions',
-                        subtype: 'heartbeat',
-                        message: 'Tick, client timestamp ' + clientTimestamp,
-                        severity: 'info',
-                    });
+                    // logToConsole({
+                    //     timestamp: new Date().getTime(),
+                    //     source: 'system',
+                    //     type: 'custom functions',
+                    //     subtype: 'heartbeat',
+                    //     message: 'Tick, client timestamp ' + clientTimestamp,
+                    //     severity: 'info',
+                    // });
 
 
 
