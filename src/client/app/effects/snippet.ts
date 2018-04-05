@@ -19,6 +19,14 @@ import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 const { localStorageKeys } = PLAYGROUND;
 
+function playlistUrl() {
+    let host = environment.current.host.toLowerCase();
+    if (environment.current.endpoint !== null) {
+        host += `-${environment.current.endpoint}`;
+    }
+    return `${environment.current.config.samplesUrl}/playlists/${host}.yaml`;
+}
+
 @Injectable()
 export class SnippetEffects {
     constructor(
@@ -188,7 +196,7 @@ export class SnippetEffects {
         .map((action: Snippet.LoadTemplatesAction) => action.payload)
         .mergeMap(source => {
             if (source === 'LOCAL') {
-                let snippetJsonUrl = `${environment.current.config.samplesUrl}/playlists/${environment.current.host.toLowerCase()}.yaml`;
+                let snippetJsonUrl = playlistUrl();
                 return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
             }
             else {
@@ -207,7 +215,7 @@ export class SnippetEffects {
     updateInfo$: Observable<Action> = this.actions$
         .ofType(Snippet.SnippetActionTypes.UPDATE_INFO)
         .map(({ payload }) => {
-            let { id, name, description, gist, gistOwnerId } = payload;
+            let { id, name, description, gist, gistOwnerId, endpoints } = payload;
             let snippet: ISnippet = storage.lastOpened;
             if (storage.snippets.contains(id)) {
                 snippet = storage.snippets.get(id);
@@ -224,6 +232,9 @@ export class SnippetEffects {
                 }
                 if (!isNil(gistOwnerId)) {
                     snippet.gistOwnerId = gistOwnerId;
+                }
+                if (!isNil(endpoints)) {
+                    snippet.endpoints = endpoints;
                 }
 
                 /* updates snippet */

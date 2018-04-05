@@ -16,6 +16,7 @@ interface ITemplate {
     /** author: export-only */
     author?: string;
     host: string;
+    endpoints?: string[];
     /** api_set: export-only (+ check at first level of import) */
     api_set?: {
         [index: string]: number
@@ -242,6 +243,7 @@ interface ICurrentPlaygroundInfo {
     config: Readonly<IEnvironmentConfig>;
     host: Readonly<string>;
     platform: Readonly<string>;
+    endpoint: Readonly<string>;
 
     /** A timestamp specifically for the in-memory session (i.e.,
      * even more short-term than sessionStorage, which has a lifetime-of-tab duration;
