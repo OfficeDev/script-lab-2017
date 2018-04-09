@@ -32,7 +32,8 @@
         "node_modules",
         "compiled",
         "dist",
-        "src/runtime-helpers"
+        "src/runtime-helpers",
+        "__tests__"
     ],
     "awesomeTypescriptLoaderOptions": {
         "useWebpackText": true,
