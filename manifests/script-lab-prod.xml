@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <OfficeApp 
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -482,6 +482,9 @@
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png" />
+		<bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png" />
+        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png" />
+        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png" />
         <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-16.png" />
         <bt:Image id="PG.Icon.Tutorial.32" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-32.png" />
         <bt:Image id="PG.Icon.Tutorial.80" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-80.png" />
