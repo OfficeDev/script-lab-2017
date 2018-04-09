@@ -100,7 +100,7 @@ interface ICustomFunctionMetadata{
 
 interface ICustomFunctionsSnippetRegistrationData {
     namespace: string;
-    functions: ICustomFunctionMetadata[]; // TODO refactor this into metadata: ICustomFunctionsRegistrationApiMetadata
+    functions: ICustomFunctionMetadata[];
 }
 
 interface ICustomFunctionsRegistrationApiMetadata {
@@ -112,6 +112,11 @@ interface ICustomFunctionsRegistrationRelevantData {
     data: ICustomFunctionsSnippetRegistrationData;
 }
 
+interface ICustomFunctionsHeartbeatParams {
+    clientTimestamp: number;
+    showDebugLog: boolean;
+}
+
 interface ICustomFunctionsRunnerRelevantData {
     name: string;
     id: string;
@@ -120,7 +125,6 @@ interface ICustomFunctionsRunnerRelevantData {
     metadata: ICustomFunctionsSnippetRegistrationData;
 }
 
-/** Request body passed to the custom functions compile route in a POST */
 interface IRegisterCustomFunctionsPostData {
     snippets: ICustomFunctionsRegistrationRelevantData[];
     displayLanguage: string;
@@ -129,6 +133,7 @@ interface IRegisterCustomFunctionsPostData {
 interface IRunnerCustomFunctionsPostData {
     snippets: ICustomFunctionsRunnerRelevantData[];
     displayLanguage: string;
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
 }
 
 interface IExportState {
@@ -210,10 +215,6 @@ interface ICompiledPlaygroundInfo {
         /** The last timestamp that succeeded in registering (on runner side) and that
          * the custom functions heartbeat was aware of */
         customFunctionsCurrentlyRunningTimestamp: string;
-
-
-        /** Last seen timestamp at which the log dialog reported itself as alive */
-        logLastHeartbeatTimestamp: string;
 
         /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
         lastPerfNumbersTimestamp: string;

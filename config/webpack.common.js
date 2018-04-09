@@ -50,7 +50,7 @@ module.exports = (prodMode) =>
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
             customFunctionsRegister: './public/custom.functions.register.ts',
             customFunctionsRunner: './public/custom.functions.runner.ts',
-            log: './public/log.ts',
+            customFunctionsDashboard: './public/custom.functions.dashboard.ts',
         },
 
         resolve: {
@@ -189,9 +189,9 @@ module.exports = (prodMode) =>
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
             }),
             new HtmlWebpackPlugin({
-                filename: 'log.html',
-                template: './views/log.html',
-                chunks: ['polyfills', 'vendor', 'log'],
+                filename: 'custom-functions-dashboard.html',
+                template: './views/custom-functions-dashboard.html',
+                chunks: ['polyfills', 'vendor', 'customFunctionsDashboard'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',

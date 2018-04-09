@@ -1,13 +1,20 @@
 import * as $ from 'jquery';
 import { UI } from '@microsoft/office-js-helpers';
-import { environment } from '../app/helpers';
+import { environment, generateUrl, navigateToRunCustomFunctions } from '../app/helpers';
 import { Strings } from '../app/strings';
 import { officeNamespacesForIframe } from './runner.common';
+import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 
 interface InitializationParams {
     snippetsDataBase64: string;
-    metadataBase64: string
+    metadataBase64: string;
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
 }
+
+let heartbeat: {
+    messenger: Messenger<CustomFunctionsMessageType>,
+    window: Window
+};
 
 interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrationData {
     id: string;
@@ -26,6 +33,10 @@ interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrati
 
         await environment.createPlaygroundHostReadyTimer();
         window['Excel']['CustomFunctions']['initialize']();
+
+        heartbeat.messenger.send<{ timestamp: number }>(heartbeat.window,
+            CustomFunctionsMessageType.LOADED_AND_RUNNING, { timestamp: new Date().getTime() });
+
     }
     catch (error) {
         handleError(error);
@@ -33,6 +44,7 @@ interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrati
 })();
 
 async function initializeRunnableSnippets(params: InitializationParams) {
+    await establishHeartbeat(params.heartbeatParams);
     return new Promise(resolve => {
         let successfulRegistrationsCount = 0;
 
@@ -61,6 +73,39 @@ async function initializeRunnableSnippets(params: InitializationParams) {
 
                 // In the meantime, until support namespaces, set the function directly on the window:
                 window[func.name] = window[snippetMetadata.namespace][func.name];
+
+                // Overwrite console.log on every snippet iframe
+                iframeWindow['console']['log'] = consoleMsgTypeImplementation('info');
+                iframeWindow['console']['warn'] = consoleMsgTypeImplementation('warn');
+                iframeWindow['console']['error'] = consoleMsgTypeImplementation('error');
+
+                function consoleMsgTypeImplementation(severityType) {
+                    // tslint:disable-next-line:only-arrow-functions
+                    return function (...args) {
+                        let logMsg: string = '';
+                        let isSuccessfulMsg: boolean = true;
+                        args.forEach((element, index, array) => {
+                            try {
+                                logMsg += JSON.stringify(element) + ', ';
+                            }
+                            catch (e) {
+                                isSuccessfulMsg = false;
+                                logMsg += 'Error on console logging this argument ' + e.toString() + ', ';
+                            }
+                        });
+                        if (logMsg.length > 0) {
+                            logMsg = logMsg.slice(0, -2);
+                        }
+                        heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
+                            timestamp: new Date().getTime(),
+                            source: 'user',
+                            type: 'custom functions',
+                            subtype: 'runner',
+                            severity: isSuccessfulMsg ? severityType : 'error',
+                            message: logMsg
+                        });
+                    };
+                }
             });
 
             successfulRegistrationsCount++;
@@ -90,6 +135,30 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             };
             contentWindow.document.close();
         });
+    });
+}
+
+function establishHeartbeat(heartbeatParams: ICustomFunctionsHeartbeatParams): Promise<any> {
+    const $iframe = $('<iframe>', {
+        src: generateUrl(`${environment.current.config.editorUrl}/custom-functions-heartbeat.html`, heartbeatParams),
+        id: 'heartbeat'
+    }).css('display', 'none').appendTo('body');
+
+    heartbeat = {
+        messenger: new Messenger(environment.current.config.editorUrl),
+        window: ($iframe[0] as HTMLIFrameElement).contentWindow
+    };
+
+    heartbeat.messenger.listen<{}>()
+        .filter(({ type }) => type === CustomFunctionsMessageType.NEED_TO_REFRESH)
+        .subscribe(async input => {
+            navigateToRunCustomFunctions(input.message);
+        });
+
+    return new Promise(resolve => {
+        heartbeat.messenger.listen<string>()
+            .filter(({ type }) => type === CustomFunctionsMessageType.HEARTBEAT_READY)
+            .subscribe(resolve);
     });
 }
 
