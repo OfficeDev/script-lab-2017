@@ -77,6 +77,8 @@ export interface ICustomFunctionsRegisterHandlebarsContext {
 export interface ICustomFunctionsRunnerHandlebarsContext {
     snippetsDataBase64: string;
     metadataBase64: string;
+    showDebugLog: boolean;
+    clientTimestamp: number;
 }
 
 export interface IErrorHandlebarsContext {

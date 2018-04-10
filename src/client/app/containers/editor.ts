@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import { Component, Input, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs/Subscription';
@@ -8,10 +7,10 @@ import * as fromRoot from '../reducers';
 import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
     navigateToRegisterCustomFunctions,
-    getNumberFromLocalStorage, ensureFreshLocalStorage, storage
+    ensureFreshLocalStorage, storage
 } from '../helpers';
 import { UIEffects } from '../effects/ui';
-import { Strings, getDisplayLanguageOrFake } from '../strings';
+import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
 const { localStorageKeys } = PLAYGROUND;
@@ -63,8 +62,6 @@ export class Editor implements AfterViewInit {
         this.tabNames = ['script', 'template', 'style', 'libraries'];
         if (environment.current.supportsCustomFunctions) {
             this.tabNames.push('customFunctions');
-
-            this.updateLastRegisteredFunctionsTooltip();
         }
     }
 
@@ -279,18 +276,19 @@ export class Editor implements AfterViewInit {
         // }, 2000);
     }
 
-    updateLastRegisteredFunctionsTooltip() {
-        let currentlyRunningLastUpdated = getNumberFromLocalStorage(
-            localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
-        if (currentlyRunningLastUpdated === 0) {
-            return;
-        }
+    // FIXME remove uncommented things
+    // updateLastRegisteredFunctionsTooltip() {
+    //     let currentlyRunningLastUpdated = getNumberFromLocalStorage(
+    //         localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
+    //     if (currentlyRunningLastUpdated === 0) {
+    //         return;
+    //     }
 
-        this.lastRegisteredFunctionsTooltip = this.strings.getTextForCustomFunctionsLastUpdated(
-            moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow(),
-            moment(new Date(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp))).locale(getDisplayLanguageOrFake()).fromNow()
-        );
-    }
+    //     this.lastRegisteredFunctionsTooltip = this.strings.getTextForCustomFunctionsLastUpdated(
+    //         moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow(),
+    //         moment(new Date(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp))).locale(getDisplayLanguageOrFake()).fromNow()
+    //     );
+    // }
 
     private _createTabs() {
         this.tabNames.forEach(name => {

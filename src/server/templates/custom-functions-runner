@@ -20,7 +20,11 @@
 
         window.customFunctionParams = {
             snippetsDataBase64: '{{{snippetsDataBase64}}}',
-            metadataBase64: '{{{metadataBase64}}}'
+            metadataBase64: '{{{metadataBase64}}}',
+            heartbeatParams: {
+		        clientTimestamp: {{clientTimestamp}},
+                showDebugLog: {{showDebugLog}}
+            }
         };
     </script>
 </head>

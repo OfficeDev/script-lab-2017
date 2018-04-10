@@ -277,7 +277,9 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 
     const html = customFunctionsRunnerGenerator({
         snippetsDataBase64: base64encode(JSON.stringify(snippetCompileResults.map(result => result.html))),
-        metadataBase64: base64encode(JSON.stringify(metadata)),
+        metadataBase64: base64encode(JSON.stringify(snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata })))),
+        showDebugLog: params.heartbeatParams.showDebugLog,
+        clientTimestamp: params.heartbeatParams.clientTimestamp
     });
 
     timer.stop();
