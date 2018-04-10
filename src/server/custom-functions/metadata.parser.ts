@@ -1,5 +1,10 @@
 import * as ts from 'typescript';
 import { isUndefined } from 'lodash';
+import {
+    ICustomFunctionOptions,
+    CustomFunctionsDimensionality,
+    IFunctionMetadata,
+} from './interfaces';
 
 /* tslint:disable:no-reserved-keywords */
 const CUSTOM_FUNCTION = 'customfunction'; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
@@ -12,22 +17,9 @@ const TYPE_MAPPINGS = {
 
 const INVALID = 'invalid';  // used for type = invalid
 
-enum Dimensionality {
-    Invalid = 'invalid',
-    Scalar = 'scalar',
-    Matrix = 'matrix',
-}
-
-type CustomFunctionOptions = {
-    sync: boolean;
-    stream: boolean;
-    volatile: boolean;
-    cancelable: boolean;
-};
-
 const CUSTOM_FUNCTION_OPTIONS_KEYS = ['sync', 'stream', 'volatile'];
 
-const CUSTOM_FUNCTION_DEFAULT_OPTIONS: CustomFunctionOptions = {
+const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
     sync: false,
     stream: false,
     volatile: false,
@@ -40,14 +32,14 @@ const CUSTOM_FUNCTION_DEFAULT_OPTIONS: CustomFunctionOptions = {
  * It will either either return an array of metadata objects, or throw a JSON.stringified error object if there are errors/unsupported types.
  * @param fileContent - The string content of the typescript file to parse the custom functions metadata out of.
  */
-export function parseMetadata(fileContent: string): { [key: string]: any }[] {
+export function parseMetadata(fileContent: string): IFunctionMetadata[] {
     const sourceFile = ts.createSourceFile('someFileName', fileContent, ts.ScriptTarget.ES2015, true);
 
     return traverseAST(sourceFile);
 }
 
 
-function traverseAST(sourceFile: ts.SourceFile): { [key: string]: any }[] {
+function traverseAST(sourceFile: ts.SourceFile): IFunctionMetadata[] {
     const metadata = [];
     visitNode(sourceFile);
     return metadata;
@@ -88,7 +80,7 @@ function traverseAST(sourceFile: ts.SourceFile): { [key: string]: any }[] {
                         } else {
                             result = {
                                 error: 'No return type specified.',
-                                dimensionality: Dimensionality.Invalid,
+                                dimensionality: CustomFunctionsDimensionality.Invalid,
                                 type: INVALID
                             };
                         }
@@ -125,13 +117,13 @@ function traverseAST(sourceFile: ts.SourceFile): { [key: string]: any }[] {
 
 // helpers
 
-function getDimAndTypeHelper(t: ts.TypeNode): { dimensionality: Dimensionality; type: string, error?: string } {
+function getDimAndTypeHelper(t: ts.TypeNode): { dimensionality: CustomFunctionsDimensionality; type: string, error?: string } {
     try {
         return getTypeAndDimensionalityForParam(t);
     } catch (e) {
         return {
             error: e.message,
-            dimensionality: Dimensionality.Invalid,
+            dimensionality: CustomFunctionsDimensionality.Invalid,
             type: INVALID
         };
     }
@@ -142,7 +134,7 @@ function getDimAndTypeHelper(t: ts.TypeNode): { dimensionality: Dimensionality; 
  * This function parses out the sync, stream, volatile, and cancelable parameters out of the JSDoc.
  * @param func - The @customfunction that we want to parse out the various parameters out of.
  */
-function parseCustomFunctionOptions(func: ts.FunctionDeclaration): CustomFunctionOptions {
+function parseCustomFunctionOptions(func: ts.FunctionDeclaration): ICustomFunctionOptions {
     const params = { ...CUSTOM_FUNCTION_DEFAULT_OPTIONS }; // create a copy of default values
 
     ts.getJSDocTags(func).forEach((tag: ts.JSDocTag) => {
@@ -187,10 +179,10 @@ function validateArray(a: ts.TypeReferenceNode) {
  * is one of our supported types for custom functions.
  * @param t - The node we are parsing and validating the type of
  */
-function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): { dimensionality: Dimensionality; type: string; error?: string } {
+function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): { dimensionality: CustomFunctionsDimensionality; type: string; error?: string } {
 
     const errTypeAndDim = {
-        dimensionality: Dimensionality.Invalid,
+        dimensionality: CustomFunctionsDimensionality.Invalid,
         type: INVALID,
     };
 
@@ -203,11 +195,11 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): { dimensi
         ...errTypeAndDim,
     };
 
-    let dimensionality = Dimensionality.Scalar;
+    let dimensionality = CustomFunctionsDimensionality.Scalar;
     let kind = t.kind;
 
     if (ts.isTypeReferenceNode(t)) {
-        dimensionality = Dimensionality.Matrix;
+        dimensionality = CustomFunctionsDimensionality.Matrix;
 
         const arrTr = t as ts.TypeReferenceNode;
 
@@ -230,7 +222,7 @@ function getTypeAndDimensionalityForParam(t: ts.TypeNode | undefined): { dimensi
         }
 
     } else if (ts.isArrayTypeNode(t)) {
-        dimensionality = Dimensionality.Matrix;
+        dimensionality = CustomFunctionsDimensionality.Matrix;
 
         const inner = (t as ts.ArrayTypeNode).elementType;
 

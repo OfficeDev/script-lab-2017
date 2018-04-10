@@ -153,7 +153,7 @@ body {
 #continue-container {
     text-align: center;
     border: 1px solid black;
-    margin: 30pt 0pt;
+    margin: 40pt 0pt;
     border-radius: 4pt;
     padding: 10pt 10pt 20pt 10pt;
 }
@@ -208,7 +208,7 @@ body {
             {{#each metadata}}
                 <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
                 <ul>
-                    {{#each this.metadata}}
+                    {{#each this.functions}}
                         {{#if this.error}}
                             <li>
                                 <div class="block ms-font-l function {{this.status}}">{{this.name}}(...){{this.error}}</div>

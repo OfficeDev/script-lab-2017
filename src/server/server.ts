@@ -28,6 +28,7 @@ import {
     ICustomFunctionsRegisterHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
+import { getFunctionsAndMetadataForRegistration } from './custom-functions/utilities';
 import { parseMetadata } from './custom-functions/metadata.parser';
 
 const moment = require('moment');
@@ -247,7 +248,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 
     snippets = snippets.filter((snippet) => {
         let result = parseMetadata(snippet.script.content);
-        const isGoodSnippet = result.length > 0 && !result.some((func) => func.error);
+        const isGoodSnippet = result.length > 0 && !result.some((func) => func.error ? true : false);
         if (isGoodSnippet) {
             metadata.push({id: snippet.id, ...result});
         }
@@ -292,98 +293,17 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
     const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
     const { snippets } = params;
 
-    enum CustomFunctionsRegistrationStatus {
-        Good = 'good',
-        Skipped = 'skipped',
-        Error = 'error'
-    }
+    const {visual, functions} = getFunctionsAndMetadataForRegistration(snippets);
 
-    const getPrettyType = (parameter) => {
-        const dim = parameter.dimensionality === 'scalar' ? '' : '[][]';
-        return `${parameter.type}${dim}`;
-    };
-
-    const paramStringExtractor = (parameters) => {
-        return parameters.map(p => {
-            return `${p.name}: ${getPrettyType(p)}`;
-        }).join(', ');
-    };
-
-    let visualMetadata = [];
-    let metadata = [];
-    const functionNameCount = {};
-
-    snippets.forEach((snippet) => {
-        if (snippet.script && snippet.name) {
-            let result = parseMetadata(snippet.script.content);
-
-            if (result.length !== 0) {
-                if (result.some((func) => func.error)) {
-                    result = result.map((func) => {
-                        if (func.error) {
-                            func.error = ' '; // fixme unhackify
-                            func.parameters = func.parameters.map((param) => {
-                                if (!param.error) {
-                                    param.prettyType = getPrettyType(param);
-                                }
-                                return param;
-                            });
-                            return {...func, status: CustomFunctionsRegistrationStatus.Error};
-                        } else {
-                            return {...func, paramString: paramStringExtractor(func.parameters), status: CustomFunctionsRegistrationStatus.Skipped};
-                        }
-                    });
-                    visualMetadata.push({name: snippet.name, error: true, status: CustomFunctionsRegistrationStatus.Error, metadata: result});
-                } else {
-                    metadata = metadata.concat(...result);
-                    result = result.map((func) => {
-                        let count = functionNameCount[func.name] || 0;
-                        count++;
-                        functionNameCount[func.name] = count;
-
-                        func.parameters = func.parameters.map((param) => {
-                            if (!param.error) {
-                                param.prettyType = getPrettyType(param);
-                            }
-                            return param;
-                        });
-
-                        return {...func, paramString: paramStringExtractor(func.parameters), status: CustomFunctionsRegistrationStatus.Good};
-                    });
-                    visualMetadata.push({name: snippet.name, status: CustomFunctionsRegistrationStatus.Good, metadata: result});
-                }
-            }
-        }
-    });
-
-    // tag duplicate function names
-    visualMetadata = visualMetadata.map((snippetMetadata) => {
-        snippetMetadata.metadata = snippetMetadata.metadata.map((funcMeta) => {
-            if (functionNameCount[funcMeta.name] > 1) {
-                funcMeta.error = ' – Duplicated function name. Must be unique across ALL snippets.';
-                funcMeta.status = CustomFunctionsRegistrationStatus.Error;
-            }
-            return funcMeta;
-        });
-
-        if (snippetMetadata.metadata.some((func) => func.error)) {
-            snippetMetadata.error = true;
-            snippetMetadata.status = CustomFunctionsRegistrationStatus.Error;
-        }
-
-        return snippetMetadata;
-    });
-
-
-    const numOfSnippetsWithErrors = visualMetadata.filter((snippetMetadata) => snippetMetadata.error).length;
-    const numOfSnippetsWithoutErrors = visualMetadata.length - numOfSnippetsWithErrors;
+    const numOfSnippetsWithErrors = visual.snippets.filter((snippetMetadata) => snippetMetadata.error).length;
+    const numOfSnippetsWithoutErrors = visual.snippets.length - numOfSnippetsWithErrors;
 
     const isAnyError = numOfSnippetsWithErrors > 0;
     const isAnySuccess = numOfSnippetsWithoutErrors > 0;
 
-    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify(metadata));
+    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify(functions));
 
-    console.log(JSON.stringify(metadata, null, 4));
+    console.log(JSON.stringify(functions, null, 4));
 
     const host = 'EXCEL';
 
@@ -397,7 +317,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
 
     // todo isAnySuccess
     const html = customFunctionsRunnerGenerator({
-        metadata: Object.keys(visualMetadata).map(k => visualMetadata[k]),
+        metadata: visual.snippets,
         isAnySuccess,
         isAnyError,
         registerCustomFunctionsJsonStringBase64,
