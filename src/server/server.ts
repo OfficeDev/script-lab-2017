@@ -303,8 +303,6 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
 
     const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify(functions));
 
-    console.log(JSON.stringify(functions, null, 4));
-
     const host = 'EXCEL';
 
     const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
