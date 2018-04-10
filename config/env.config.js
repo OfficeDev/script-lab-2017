@@ -4,125 +4,124 @@ const { startCase } = require('lodash');
 
 /** NOTE: when adding local storage keys here, remember to add them for IntelliSense's sake in "ICompiledPlaygroundInfo" in playground.d.ts */
 const localStorageKeys = {
-    dummyUnusedKey: 'plyaground_dummy_unused_key',
-    log: 'playground_log',
-    hostSnippets_parameterized: 'playground_{0}_snippets',
-    settings: 'playground_settings',
-    originEnvironmentUrl: 'playground_origin_environment_url',
-    redirectEnvironmentUrl: 'playground_redirect_environment_url',
-    wacUrl: 'playground_wac_url',
-    experimentationFlags: 'playground_experimentation_flags',
-    trustedSnippets: 'playground_trusted_snippets',
-    customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
-    customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
-    customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
-    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
-    lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
-    language: 'playground_language'
+  dummyUnusedKey: 'plyaground_dummy_unused_key',
+  log: 'playground_log',
+  hostSnippets_parameterized: 'playground_{0}_snippets',
+  settings: 'playground_settings',
+  originEnvironmentUrl: 'playground_origin_environment_url',
+  redirectEnvironmentUrl: 'playground_redirect_environment_url',
+  wacUrl: 'playground_wac_url',
+  experimentationFlags: 'playground_experimentation_flags',
+  trustedSnippets: 'playground_trusted_snippets',
+  customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
+  customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
+  customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
+  logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
+  lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
+  language: 'playground_language'
 };
 
 const sessionStorageKeys = {
-    environmentCache: 'playground_cache',
-    intelliSenseCache: 'playground_intellisense'
+  environmentCache: 'playground_cache',
+  intelliSenseCache: 'playground_intellisense'
 };
 
 const build = (() => {
-    return {
-        name: startCase(name),
-        version: version,
-        timestamp: moment().utc().valueOf(),
-        humanReadableTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
-        author: author
-    };
+  return {
+    name: startCase(name),
+    version: version,
+    timestamp: moment().utc().valueOf(),
+    humanReadableTimestamp: moment().utc().format('YYYY-MM-DD HH:mm a') + ' UTC',
+    author: author
+  };
 })();
 
 const thirdPartyAADAppClientId = 'd56fb06a-74be-4bd7-8ede-cbf2ea737328';
 
 const config = {
-    local: {
-        name: 'LOCAL',
-        clientId: '',
-        clientSecretLocalHost: '',
-        instrumentationKey: null,
-        editorUrl: 'https://localhost:3000',
-        tokenUrl: 'https://localhost:3200/auth',
-        runnerUrl: 'https://localhost:3200',
-        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
-        thirdPartyAADAppClientId,
-    },
-    edge: {
-        name: 'EDGE',
-        clientId: 'fb706d86cd846cea7baf',
-        instrumentationKey: '07a066dc-d67f-44af-8f77-59cb6ee246a8',
-        editorUrl: 'https://bornholm-edge.azurewebsites.net',
-        tokenUrl: 'https://bornholm-runner-edge.azurewebsites.net/auth',
-        runnerUrl: 'https://bornholm-runner-edge.azurewebsites.net',
-        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
-        thirdPartyAADAppClientId,
-    },
-    insiders: {
-        name: 'INSIDERS',
-        clientId: '786ba422740568d98ce3',
-        instrumentationKey: 'b3f1f065-02a9-49d3-b75c-4586659f51ef',
-        editorUrl: 'https://bornholm-insiders.azurewebsites.net',
-        tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
-        runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
-        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
-        thirdPartyAADAppClientId,
-    },
-    production: {
-        name: 'PRODUCTION',
-        clientId: '55031174553ee45f92f4',
-        instrumentationKey: '8e0b6b12-8d5e-4710-841d-7996a913f14b',
-        editorUrl: 'https://script-lab.azureedge.net',
-        tokenUrl: 'https://script-lab-runner.azureedge.net/auth',
-        runnerUrl: 'https://script-lab-runner.azureedge.net',
-        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
-        feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
-        thirdPartyAADAppClientId,
-    }
+  local: {
+    name: 'LOCAL',
+    clientId: '',
+    clientSecretLocalHost: '',
+    instrumentationKey: null,
+    editorUrl: 'https://localhost:3000',
+    tokenUrl: 'https://localhost:3200/auth',
+    runnerUrl: 'https://localhost:3200',
+    samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
+    feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+    thirdPartyAADAppClientId,
+  },
+  edge: {
+    name: 'EDGE',
+    clientId: 'fb706d86cd846cea7baf',
+    instrumentationKey: '07a066dc-d67f-44af-8f77-59cb6ee246a8',
+    editorUrl: 'https://bornholm-edge.azurewebsites.net',
+    tokenUrl: 'https://bornholm-runner-edge.azurewebsites.net/auth',
+    runnerUrl: 'https://bornholm-runner-edge.azurewebsites.net',
+    samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
+    feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+    thirdPartyAADAppClientId,
+  },
+  insiders: {
+    name: 'INSIDERS',
+    clientId: '786ba422740568d98ce3',
+    instrumentationKey: 'b3f1f065-02a9-49d3-b75c-4586659f51ef',
+    editorUrl: 'https://bornholm-insiders.azurewebsites.net',
+    tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
+    runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
+    samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
+    feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
+    thirdPartyAADAppClientId,
+  },
+  production: {
+    name: 'PRODUCTION',
+    clientId: '55031174553ee45f92f4',
+    instrumentationKey: '8e0b6b12-8d5e-4710-841d-7996a913f14b',
+    editorUrl: 'https://script-lab.azureedge.net',
+    tokenUrl: 'https://script-lab-runner.azureedge.net/auth',
+    runnerUrl: 'https://script-lab-runner.azureedge.net',
+    samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
+    feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+    thirdPartyAADAppClientId,
+  }
 };
 
 // NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
 const safeExternalUrls = {
-    playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
-    ask: 'https://stackoverflow.com/questions/tagged/office-js',
-    excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
-    word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
-    onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
-    outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
-    powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
-    project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
-    generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+  playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+  ask: 'https://stackoverflow.com/questions/tagged/office-js',
+  excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
+  word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
+  onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
+  outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
+  powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+  project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
+  generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
 };
 
 const experimentationFlagsDefaults = {
-    customFunctions: false,
-    customFunctionsShowDebugLog: false
+  customFunctions: false,
+  customFunctionsShowDebugLog: false
 };
 
 class RedirectPlugin {
-    apply(compiler) {
-        compiler.plugin('compilation', (compilation) => {
-            compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-                let headOpeningTag = '<head>';
-                let htmlHead = htmlPluginData.html.match(headOpeningTag);
+  apply(compiler) {
 
-                let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
+    compiler.hooks.compilation.tap('html-webpack-plugin-before-html-processing', htmlPluginData => {
+      let headOpeningTag = '<head>';
+      let htmlHead = htmlPluginData.html.match(headOpeningTag);
+      let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
 
-                const validRedirectLocations = [];
-                for (var envName in config) {
-                    validRedirectLocations.push(config[envName].editorUrl);
-                }
+      const validRedirectLocations = [];
+      for (var envName in config) {
+        validRedirectLocations.push(config[envName].editorUrl);
+      }
 
-                if (htmlHead && htmlHead.length > 0) {
-                    htmlHead = htmlHead.index;
-                    htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
-                        headOpeningTag +
-                        `
+      if (htmlHead && htmlHead.length > 0) {
+        htmlHead = htmlHead.index;
+        htmlPluginData.html = htmlPluginData.html.slice(0, htmlHead) +
+          headOpeningTag +
+          `
     <script>
         (function() {
             try {
@@ -211,14 +210,12 @@ class RedirectPlugin {
         })();
     </script>
                         ` +
-                        htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
-                }
-                callback(null, htmlPluginData);
-            });
-        });
-    }
+          htmlPluginData.html.slice(htmlHead + headOpeningTag.length);
+      }
+      return htmlPluginData;
+    });
+  }
 }
-
 
 exports.build = build;
 exports.config = config;
@@ -226,7 +223,7 @@ exports.safeExternalUrls = safeExternalUrls;
 exports.localStorageKeys = localStorageKeys;
 exports.sessionStorageKeys = sessionStorageKeys;
 exports.experimentationFlagsDefaults = experimentationFlagsDefaults;
-exports.RedirectPlugin = RedirectPlugin;
+// exports.RedirectPlugin = RedirectPlugin;
 
 // NOTE: Data in this file gets propagated to JS on client pages
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition
