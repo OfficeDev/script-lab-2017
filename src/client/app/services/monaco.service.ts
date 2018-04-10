@@ -10,8 +10,22 @@ const Regex = {
     GLOBAL: /^.*/i
 };
 
+interface NpmPackage {
+    name: string[];
+    description: string[];
+    version: string[];
+}
+
+interface NpmSearchResults {
+    results: NpmPackage[];
+    total: number;
+    from: number;
+}
+
 @Injectable()
 export class MonacoService {
+    private _npmSearchAPI = 'https://npmsearch.com/query?q="@package"&fields=name,description,version';
+
     private _defaults: monaco.editor.IEditorConstructionOptions = {
         value: '',
         language: 'text',
@@ -122,6 +136,32 @@ export class MonacoService {
         });
     }
 
+    private async _queryNpmSearch(name: string) {
+        try {
+            const query = this._npmSearchAPI.replace('@package', name);
+            console.log(`searching for: `, query);
+            return await this._request.get<NpmSearchResults>(query, ResponseTypes.JSON)
+                .flatMap(data => data.results)
+                .filter(result => !(result == null))
+                .map(result => <monaco.languages.CompletionItem>{
+                    label: result.name[0],
+                    documentation: result.description[0],
+                    kind: monaco.languages.CompletionItemKind.Module,
+                    insertText: `${result.name[0]}@${result.version[0]}`,
+                })
+                .scan((result, current, i) => result.concat(current), [])
+                .map(list => <monaco.languages.CompletionList>{
+                    isIncomplete: list.length > 0,
+                    items: list
+                })
+                .toPromise();
+        }
+        catch (exception) {
+            console.log(`error:`, exception);
+            return this.libraries;
+        }
+    }
+
     private async _registerLanguageServices() {
         let monaco = await MonacoService.current;
         monaco.languages.register({ id: 'libraries' });
@@ -152,7 +192,7 @@ export class MonacoService {
                 }
 
                 if (Regex.GLOBAL.test(currentLine)) {
-                    return this.libraries;
+                    return this._queryNpmSearch(currentLine);
                 }
 
                 return Promise.resolve([]);
