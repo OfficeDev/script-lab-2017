@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<OfficeApp 
-  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>8bc018e3-f345-40d4-8f1d-97951765d531</Id>
   <Version>1.2.0.1</Version>
@@ -60,7 +60,7 @@
     <SourceLocation DefaultValue="https://script-lab.azureedge.net" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
-  <VersionOverrides 
+  <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Description resid="PG.Description" />
     <Hosts>
@@ -482,9 +482,9 @@
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png" />
-		<bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png" />
-        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png" />
-        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png" />
+		    <bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-16.png" />
+        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-32.png" />
+        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-80.png" />
         <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-16.png" />
         <bt:Image id="PG.Icon.Tutorial.32" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-32.png" />
         <bt:Image id="PG.Icon.Tutorial.80" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-80.png" />

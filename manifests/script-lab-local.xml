@@ -13,7 +13,7 @@
   </Description>
   <IconUrl DefaultValue="https://localhost:3000/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/images/icon-64.png" />
-  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" />
   <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://stackoverflow.com</AppDomain>
@@ -456,9 +456,9 @@
         <bt:Image id="PG.Icon.Code.16" DefaultValue="https://localhost:3000/assets/images/code-16.png" />
         <bt:Image id="PG.Icon.Code.32" DefaultValue="https://localhost:3000/assets/images/code-32.png" />
         <bt:Image id="PG.Icon.Code.80" DefaultValue="https://localhost:3000/assets/images/code-80.png" />
-        <bt:Image id="PG.Icon.CF.16" DefaultValue="https://localhost:3000/assets/images/code-16.png" />
-        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://localhost:3000/assets/images/code-32.png" />
-        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://localhost:3000/assets/images/code-80.png" />
+        <bt:Image id="PG.Icon.CF.16" DefaultValue="https://localhost:3000/assets/images/fx-16.png" />
+        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://localhost:3000/assets/images/fx-32.png" />
+        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://localhost:3000/assets/images/fx-80.png" />
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://localhost:3000/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://localhost:3000/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://localhost:3000/assets/images/run-80.png" />
@@ -523,7 +523,7 @@
         <bt:String id="PG.CodeSupertip.Desc" DefaultValue="Opens the Script Lab code editor">
         </bt:String>
         <bt:String id="PG.CFSupertip.Desc" DefaultValue="Launch the Custom Functions dashboard">
-        </bt:String> 
+        </bt:String>
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
         </bt:String>
         <bt:String id="PG.TutorialCommand.Desc" DefaultValue="Launches a quick Script Lab tutorial">
