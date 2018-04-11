@@ -19,8 +19,8 @@ const { localStorageKeys } = PLAYGROUND;
         <header class="command__bar">
             <command icon="GlobalNavButton" (click)="showMenu()"></command>
             <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-            <command [hidden]="isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
-            <command [hidden]="!isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}">
+            <command [hidden]="(isAddinCommands&&!isCustomFunctionsSnippet)||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+            <command [hidden]="!isAddinCommands||isEmpty||isEditorTryIt||isCustomFunctionsSnippet" icon="Play" [async]="running$|async" title="{{strings.run}}">
                 <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                 <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
             </command>
@@ -88,6 +88,10 @@ export class EditorMode {
         return environment.current.isAddinCommands;
     }
 
+    get isCustomFunctionsSnippet() {
+        return this.snippet.script && EditorMode._customFunctionsRegex.test(this.snippet.script.content);
+    }
+
     get isEditorTryIt() {
         return environment.current.isTryIt;
     }
@@ -144,9 +148,12 @@ export class EditorMode {
             return;
         }
 
-        if (this.snippet.script && EditorMode._customFunctionsRegex.test(this.snippet.script.content)) {
-            this.registerCustomFunctions();
-            return;
+        if (PLAYGROUND.devMode) {
+            // Temporary to make it easier to load snippets despite BrowserSync issues
+            if (this.isCustomFunctionsSnippet) {
+                this.registerCustomFunctions();
+                return;
+            }
         }
 
         if (isOfficeHost(this.snippet.host)) {
@@ -157,6 +164,15 @@ export class EditorMode {
                 if (this.snippet.script.content.indexOf('ExcelMaker.getActiveWorkbook()') < 0) {
                     canRun = true;
                 }
+            }
+
+            if (this.isCustomFunctionsSnippet) {
+                this._store.dispatch(new UI.ShowAlertAction({
+                    actions: [this.strings.ok],
+                    title: 'This is a Custom Functions snippet.',
+                    message: 'To register your Functions for use, please click the Functions button in the ribbon to bring up the Functions dashboard, and click Register.'
+                }));
+                return;
             }
 
             if (!canRun) {

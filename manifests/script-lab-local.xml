@@ -493,8 +493,8 @@
         <bt:String id="PG.CodeCommand.Title" DefaultValue="Code" />
         <bt:String id="PG.CodeCommand.TipTitle" DefaultValue="Create or edit code snippets">
         </bt:String>
-        <bt:String id="PG.CFCommand.Label" DefaultValue="Custom Functions" />
-        <bt:String id="PG.CFCommand.Title" DefaultValue="Custom Functions" />
+        <bt:String id="PG.CFCommand.Label" DefaultValue="Functions" />
+        <bt:String id="PG.CFCommand.Title" DefaultValue="Functions" />
         <bt:String id="PG.CFCommand.TipTitle" DefaultValue="Launch the Custom Functions dashboard">
         </bt:String>
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
