@@ -1,13 +1,14 @@
 import { storage, environment, post, trustedSnippetManager } from './index';
 import { getDisplayLanguage } from '../strings';
 import { uniqBy } from 'lodash';
-// import {
-//     ensureFreshLocalStorage
-// } from '../helpers';
+import {
+    ensureFreshLocalStorage
+} from '../helpers';
 
 const isCustomFunctionRegex = /@customfunction/i;
 
 export function navigateToRegisterCustomFunctions() {
+    ensureFreshLocalStorage();
     let allSnippetsToRegisterWithPossibleDuplicate: ISnippet[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
@@ -15,7 +16,7 @@ export function navigateToRegisterCustomFunctions() {
 
     let data: IRegisterCustomFunctionsPostData = {
         snippets: allSnippetsToRegisterWithPossibleDuplicate,
-        displayLanguage: getDisplayLanguage()
+        displayLanguage: getDisplayLanguage(),
     };
 
     const url = environment.current.config.runnerUrl + '/custom-functions/register';
@@ -32,17 +33,18 @@ export function navigateToRunCustomFunctions(payload?: any) {
 }
 
 export function getRunnerCustomFunctionsPayload() {
+    ensureFreshLocalStorage();
     let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRunnerRelevantData[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
-            .filter(snippet => snippet.customFunctions && snippet.customFunctions.content && snippet.customFunctions.content.trim().length > 0)
-            .map((snippet): ICustomFunctionsRunnerRelevantData => {
+            .filter(snippet => snippet.script && isCustomFunctionRegex.test(snippet.script.content))
+            .map(snippet => {
                 return {
-                    id: snippet.id,
                     name: snippet.name,
+                    id: snippet.id,
                     libraries: snippet.libraries,
                     script: snippet.script,
-                    metadata: JSON.parse(snippet.customFunctions.content)
+                    metadata: undefined,
                 };
             });
 

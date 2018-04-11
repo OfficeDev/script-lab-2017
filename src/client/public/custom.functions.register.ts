@@ -8,7 +8,6 @@ interface InitializationParams {
     isAnyError: boolean;
     registerCustomFunctionsJsonStringBase64: string;
     explicitlySetDisplayLanguageOrNull: string;
-    returnUrl: string;
 }
 
 // Note: Office.initialize is already handled outside in the html page,
@@ -22,13 +21,16 @@ interface InitializationParams {
 
         // Apply the host theming by adding this attribute on the "body" element:
         $('body').addClass('EXCEL');
+        $('#btn-continue').prop('disabled', true);
+
+        if (params.explicitlySetDisplayLanguageOrNull) {
+            setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
+            document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
+        }
 
         if (params.isAnySuccess) {
             $('#continue-container').css('display', 'block');
         }
-
-        $('#btn-continue').click(async () => { await initializeRegistration(params); });
-        $('#btn-dismiss').click(async () => { $('#continue-container').css('display', 'none'); });
 
         await new Promise((resolve) => {
             const interval = setInterval(() => {
@@ -39,167 +41,50 @@ interface InitializationParams {
             }, 100);
         });
 
+        checkIfCanRegister();
+
+        $('#btn-continue').click(() => {
+            registerMetadata(params.registerCustomFunctionsJsonStringBase64);
+        });
+        $('#btn-continue').prop('disabled', false);
+
+        $('#btn-dismiss').click(() => { hideContinueContainer(); });
         // Set initialize to an empty function -- that way, doesn't cause
         // re-initialization of this page in case of a page like the error dialog,
         // which doesn't defined (override) Office.initialize.
         Office.initialize = () => { };
 
         if (!params.isAnyError) {
-            await initializeRegistration(params);
+            await registerMetadata(params.registerCustomFunctionsJsonStringBase64);
         }
-
-    }
-    catch (error) {
+    } catch (error) {
+        $('#btn-continue').prop('disabled', true);
         handleError(error);
     }
 })();
 
-async function initializeRegistration(params: InitializationParams) {
-    if (params.explicitlySetDisplayLanguageOrNull) {
-        setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
-        document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
-    }
+function hideContinueContainer() {
+    $('#continue-container').css('display', 'none');
+}
 
-    if (Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
-        await Excel.run(async (context) => {
-            (context.workbook as any).registerCustomFunctions('ScriptLab', atob(params.registerCustomFunctionsJsonStringBase64));
-            await context.sync();
-        });
+async function registerMetadata(registerCustomFunctionsJsonStringBase64: string) {
 
-        // const $pre = $('<pre></pre>');
-        // $pre.text(JSON.stringify(customFunctionsMetadata, null, 4));
-        // $('body').empty().append($pre);
+    const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
+    console.info('registering custom functions');
+    await Excel.run(async (context) => {
+        (context.workbook as any).registerCustomFunctions('ScriptLab', registrationPayload);
+        await context.sync();
+    });
+    window.location.href = `${environment.current.config.editorUrl}/custom-functions-dashboard.html`;
+}
 
-
-        // TODO
-        // if (showUI && !allSuccessful) {
-        //     $('.ms-progress-component__footer').css('visibility', 'hidden');
-        // }
-
-        // if (isRunMode) {
-        //     heartbeat.messenger.send<{ timestamp: number }>(heartbeat.window,
-        //         CustomFunctionsMessageType.LOADED_AND_RUNNING, { timestamp: new Date().getTime() });
-        // }
-        // else {
-        //     if (allSuccessful) {
-        //         window.location.href = params.returnUrl;
-        //     }
-        // }
-    } else {
+function checkIfCanRegister() {
+    if (!(Office && Office.context && Office.context.requirements)) {
+        throw new Error('Excel is not available.');
+    } else if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
         throw new Error('Registering custom functions is unsupported on this version of Excel.');
     }
 }
-
-// function validatesnippetsDataArray(snippetsDataArray: ICustomFunctionsRegistrationRelevantData[]): ICustomFunctionsRegistrationApiMetadata {
-//     let customFunctionsMetadata: ICustomFunctionsRegistrationApiMetadata = {
-//         functions: []
-//     };
-
-//     // In the excel side the parser only cared for the required and optional parameters, any extra stuff is jsut ignored, as long as each function contains the required parameters it is okay any info they send
-//     // None the less, the validation of duplicate names does sound like a logic thing to be done here.
-
-//     const snippetDictionary: { [key: string]: boolean } = {};
-//     const $snippetNames = $('#snippet-names');
-
-//     snippetsDataArray.forEach((currentSnippet, snippetIndex) => {
-//         const functionDictionary: { [key: string]: boolean } = {};
-//         let $snippetEntry = $snippetNames.children().eq(snippetIndex);
-
-//         if (snippetDictionary[currentSnippet.data.namespace]) {
-//             $snippetEntry.find('.snippet-name').first().addClass(CSS_CLASSES.error);
-//             throw new Error(`The snippet namespace is already in use`);
-//         }
-//         snippetDictionary[currentSnippet.data.namespace] = true;
-//         $snippetEntry.find('.snippet-name').first().addClass(CSS_CLASSES.success);
-
-//         const $functionNames = $snippetEntry.find('.function-names').first();
-//         currentSnippet.data.functions.forEach((currentFunction, functionIndex) => {
-//             const parameterDictionary: { [key: string]: boolean } = {};
-//             let $functionEntry = $functionNames.children().eq(functionIndex);
-
-//             if (functionDictionary[currentFunction.name]) {
-//                 $functionEntry.find('.function-name').first().addClass(CSS_CLASSES.error);
-//                 throw new Error(`The function name is already in use`);
-//             }
-//             functionDictionary[currentFunction.name] = true;
-//             $functionEntry.find('.function-name').first().addClass(CSS_CLASSES.success);
-
-//             const $parameterNames = $functionEntry.find('.parameter-names').first();
-//             currentFunction.parameters.forEach((currentParameter, parameterIndex) => {
-//                 let $parameterEntry = $parameterNames.children().eq(parameterIndex);
-//                 if (parameterDictionary[currentParameter.name]) {
-//                     $parameterEntry.find('.parameter-name').first().addClass(CSS_CLASSES.error);
-//                     throw new Error(`The parameter name is already in use`);
-//                 }
-//                 parameterDictionary[currentParameter.name] = true;
-//                 $parameterEntry.find('.parameter-name').first().addClass(CSS_CLASSES.success);
-//             });
-
-//             //The function is OKAY, append namespace to function name so that it can be the real custom function name
-//             currentFunction.name = `${currentSnippet.data.namespace}.${currentFunction.name}`;
-//             customFunctionsMetadata.functions.push(currentFunction);
-//         });
-//     });
-
-//     //     const snippetBase64OrNull = params.snippetIframesBase64Texts[i];
-//     //     let $entry = showUI ? $snippetNames.children().eq(i) : null;
-
-//     //     if (isNil(snippetBase64OrNull) || snippetBase64OrNull.length === 0) {
-//     //         if (showUI) {
-//     //             $entry.addClass(CSS_CLASSES.error);
-//     //         } else {
-//     //             heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
-//     //                 timestamp: new Date().getTime(),
-//     //                 source: 'system',
-//     //                 type: 'custom functions',
-//     //                 subtype: 'runner',
-//     //                 severity: 'error',
-//     //                 // TODO CUSTOM FUNCTIONS localization
-//     //                 message: `Could NOT load function "${params.snippetNames[i]}"`
-//     //             });
-//     //         }
-
-//     //         allSuccessful = false;
-//     //     }
-//     //     else {
-//     //         if (showUI) {
-//     //             $entry.addClass(CSS_CLASSES.inProgress);
-//     //         }
-
-//     //         let success = await runSnippetCode(atob(params.snippetIframesBase64Texts[i]));
-//     //         if (showUI) {
-//     //             $entry.removeClass(CSS_CLASSES.inProgress)
-//     //                 .addClass(success ? CSS_CLASSES.success : CSS_CLASSES.error);
-//     //         } else {
-//     //             if (success) {
-//     //                 heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
-//     //                     timestamp: new Date().getTime(),
-//     //                     source: 'system',
-//     //                     type: 'custom functions',
-//     //                     subtype: 'runner',
-//     //                     severity: 'info',
-//     //                     // TODO CUSTOM FUNCTIONS localization
-//     //                     message: `Sucessfully loaded "${params.snippetNames[i]}"`
-//     //                 });
-//     //             } else {
-//     //                 heartbeat.messenger.send<LogData>(heartbeat.window, CustomFunctionsMessageType.LOG, {
-//     //                     timestamp: new Date().getTime(),
-//     //                     source: 'system',
-//     //                     type: 'custom functions',
-//     //                     subtype: 'runner',
-//     //                     severity: 'error',
-//     //                     // TODO CUSTOM FUNCTIONS localization
-//     //                     message: `Could NOT load function "${params.snippetNames[i]}"`
-//     //                 });
-//     //             }
-//     //         }
-
-//     //         allSuccessful = allSuccessful && success;
-
-//     //     }
-
-//     return customFunctionsMetadata;
-// }
 
 
 function handleError(error: Error) {

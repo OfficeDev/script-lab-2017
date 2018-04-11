@@ -63,15 +63,11 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface ICustomFunctionsRegisterHandlebarsContext {
+    metadata: any;
     registerCustomFunctionsJsonStringBase64: string;
     isAnySuccess: boolean;
     isAnyError: boolean;
-    metadata: any;
     explicitlySetDisplayLanguageOrNull: string;
-    initialLoadSubtitle: string;
-    headerTitle: string;
-    returnUrl: string;
-    strings: ServerStrings;
 }
 
 export interface ICustomFunctionsRunnerHandlebarsContext {

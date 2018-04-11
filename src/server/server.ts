@@ -20,7 +20,7 @@ import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.g
 import { compileScript } from './core/snippet.generator';
 import { processLibraries } from './core/libraries.processor';
 import { ApplicationInsights } from './core/ai.helper';
-import { getShareableYaml, isMakerScript } from './core/snippet.helper';
+import { getShareableYaml, isMakerScript, isCustomFunctionScript } from './core/snippet.helper';
 import {
     SnippetCompileData,
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
@@ -244,14 +244,11 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
 registerRoute('post', '/custom-functions/run', async (req, res) => {
     const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
     let { snippets } = params;
-    const metadata = [];
 
     snippets = snippets.filter((snippet) => {
         let result = parseMetadata(snippet.script.content);
         const isGoodSnippet = result.length > 0 && !result.some((func) => func.error ? true : false);
-        if (isGoodSnippet) {
-            metadata.push({id: snippet.id, ...result});
-        }
+        snippet.metadata = {namespace: snippet.name.replace(/\[0-9A-Za-z_/g, ''), functions: result as ICustomFunctionMetadata[]};
         return isGoodSnippet;
     });
 
@@ -299,33 +296,23 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
 
     const numOfSnippetsWithErrors = visual.snippets.filter((snippetMetadata) => snippetMetadata.error).length;
     const numOfSnippetsWithoutErrors = visual.snippets.length - numOfSnippetsWithErrors;
-
     const isAnyError = numOfSnippetsWithErrors > 0;
     const isAnySuccess = numOfSnippetsWithoutErrors > 0;
 
-    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify(functions));
-
-    const host = 'EXCEL';
+    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify({functions}));
 
     const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
 
-    const strings = Strings(req);
-
-    const customFunctionsRunnerGenerator =
+    const customFunctionsRegisterGenerator =
         await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
 
 
-    // todo isAnySuccess
-    const html = customFunctionsRunnerGenerator({
+    const html = customFunctionsRegisterGenerator({
         metadata: visual.snippets,
         isAnySuccess,
         isAnyError,
         registerCustomFunctionsJsonStringBase64,
-        strings,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-        initialLoadSubtitle: strings.playgroundTagline,
-        headerTitle: strings.registeringCustomFunctions,
-        returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
     });
 
     timer.stop();
@@ -730,12 +717,25 @@ async function generateSnippetHtmlData(
         shouldPutSnippetIntoOfficeInitialize = compileData.shouldPutSnippetIntoOfficeInitialize;
     }
 
+
+    let template = (compileData.template || { content: '' }).content;
+    let style = (compileData.style || { content: '' }).content;
+
+    if (isCustomFunctionScript(compileData.scriptToCompile)) {
+        const CFRunnerHeader = 'This snippet is a Custom Functions snippet.';
+        const CFRunnerBody = 'It cannot be run. Instead, open the Functions pane from the ribbon to register it and montior the logs.';
+        const CFTemplate = `<h1>${CFRunnerHeader}</h1><p>${CFRunnerBody}</p>`;
+
+        template = CFTemplate;
+        style = `body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}`;
+    }
+
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
             id: compileData.id,
             name: compileData.name,
-            style: (compileData.style || { content: '' }).content,
-            template: (compileData.template || { content: '' }).content,
+            style,
+            template,
             script,
             officeJS,
             linkReferences,
