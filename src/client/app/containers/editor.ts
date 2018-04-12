@@ -24,6 +24,11 @@ const { localStorageKeys } = PLAYGROUND;
                 {{tab.displayName}}
             </li>
         </ul>
+        <section class="trust-snippet">
+            <button class="ms-Button ms-Button--primary" (click)="trustSnippet()" style="height: auto">
+                <span class="ms-Button-label">{{trustSnippetButtonText}}</span>
+            </button>
+        </section>
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
     `
