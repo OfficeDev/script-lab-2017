@@ -76,36 +76,34 @@ interface IRunnerState {
     returnUrl?: string;
 }
 
-interface IParameterMetadata {
+// Note: I've duplicated these interfaces here from server/custom-functions/interfaces.ts
+// because when trying to import, it broke everything and none of these interfaces could be found
+interface ICFFunctionMetadata {
     name: string;
-    description: string;
-    type: string;
-    dimensionality: string;
-}
+    description?: string;
+    parameters: ICFVisualParameterMetadata[];
+    result: ICFFunctionResultMetadata;
+    options: ICustomFunctionOptions;
+    error?: string;
+};
 
-interface ICustomFunctionMetadata{
+interface ICFParameterMetadata {
     name: string;
-    description: string;
-    result: {
-        type: string;
-        dimensionality: string;
-    }
-    parameters: IParameterMetadata[];
-    options: {
-        sync: boolean;
-        stream: boolean;
-        volatile: boolean;
-    }
-}
+    description?: string;
+    type: CustomFunctionsSupportedTypes;
+    dimensionality: CustomFunctionsDimensionality;
+    error?: string;
+};
+
 
 /** The interface used by Excel to register custom functions (workbook.registerCustomFunctions(...))  */
 interface ICustomFunctionsRegistrationApiMetadata {
-    functions: ICustomFunctionMetadata[];
+    functions: ICFFunctionMetadata[];
 }
 
 interface ICustomFunctionsSnippetRegistrationData {
     namespace: string;
-    functions: ICustomFunctionMetadata[];
+    functions: ICFFunctionMetadata[];
 }
 
 interface ICustomFunctionsRegistrationRelevantData {

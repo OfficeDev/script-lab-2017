@@ -1,21 +1,21 @@
 import { parseMetadata } from './metadata.parser';
 import {
-    IFunctionMetadata,
+    ICFFunctionMetadata,
     CustomFunctionsRegistrationStatus,
-    IVisualSnippetMetadata,
-    IVisualFunctionMetadata,
-    IVisualMetadata,
+    ICFVisualSnippetMetadata,
+    ICFVisualFunctionMetadata,
+    ICFVisualMetadata,
 } from './interfaces';
 
 
-export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): { visual: IVisualMetadata, functions: IFunctionMetadata[] } {
-    const visualMetadata: IVisualSnippetMetadata[] = [];
-    let metadata: IFunctionMetadata[] = [];
+export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): { visual: ICFVisualMetadata, functions: ICFFunctionMetadata[] } {
+    const visualMetadata: ICFVisualSnippetMetadata[] = [];
+    let metadata: ICFFunctionMetadata[] = [];
 
     snippets
         .filter(snippet => snippet.script && snippet.name)
         .forEach(snippet => {
-            let functions: IVisualFunctionMetadata[] = parseMetadata(snippet.script.content) as IVisualFunctionMetadata[];
+            let functions: ICFVisualFunctionMetadata[] = parseMetadata(snippet.script.content) as ICFVisualFunctionMetadata[];
             functions = convertFunctionErrorsToSpace(functions);
             if (functions.length === 0) { return; } // no custom functions found
             const hasErrors = doesSnippetHaveErrors(functions);
@@ -80,7 +80,7 @@ function doesSnippetHaveErrors(snippetMetadata) {
     return snippetMetadata.some(func => func.error);
 };
 
-function tagDuplicatesAsErrors(visualMetadata: IVisualSnippetMetadata[], nonDuplicatedFunctionNames: string[]): IVisualSnippetMetadata[] {
+function tagDuplicatesAsErrors(visualMetadata: ICFVisualSnippetMetadata[], nonDuplicatedFunctionNames: string[]): ICFVisualSnippetMetadata[] {
     return visualMetadata.map(meta => {
         let isError = meta.error;
         meta.functions = meta.functions.map(func => {
@@ -100,7 +100,7 @@ function tagDuplicatesAsErrors(visualMetadata: IVisualSnippetMetadata[], nonDupl
  * to have a truthy value, but not show anything in the UI, and this is the best way I could manage that at this time.
  * @param functions
  */
-function convertFunctionErrorsToSpace(functions: IVisualFunctionMetadata[]): IVisualFunctionMetadata[] {
+function convertFunctionErrorsToSpace(functions: ICFVisualFunctionMetadata[]): ICFVisualFunctionMetadata[] {
     return functions.map(func => {
         if (func.error) {
             func.error = ' ';
@@ -109,7 +109,7 @@ function convertFunctionErrorsToSpace(functions: IVisualFunctionMetadata[]): IVi
     });
 }
 
-function filterOutDuplicates(functions: IFunctionMetadata[]): IFunctionMetadata[] {
+function filterOutDuplicates(functions: ICFFunctionMetadata[]): ICFFunctionMetadata[] {
     return functions.filter(func => {
         return functions.filter(f => f.name === func.name).length === 1;
     });

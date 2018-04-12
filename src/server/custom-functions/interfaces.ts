@@ -1,33 +1,33 @@
-export interface IVisualMetadata {
-    snippets: IVisualSnippetMetadata[];
+export interface ICFVisualMetadata {
+    snippets: ICFVisualSnippetMetadata[];
 };
 
-export interface IVisualSnippetMetadata {
+export interface ICFVisualSnippetMetadata {
     name: string;
-    functions: IVisualFunctionMetadata[];
+    functions: ICFVisualFunctionMetadata[];
     error?: boolean;
     status: CustomFunctionsRegistrationStatus;
 };
 
-export interface IVisualFunctionMetadata extends IFunctionMetadata {
+export interface ICFVisualFunctionMetadata extends ICFFunctionMetadata {
     status: CustomFunctionsRegistrationStatus;
     paramString?: string;
 };
 
-export interface IVisualParameterMetadata extends IParameterMetadata {
+export interface ICFVisualParameterMetadata extends ICFParameterMetadata {
     prettyType?: string;
 };
 
-export interface IFunctionMetadata {
+export interface ICFFunctionMetadata {
     name: string;
     description?: string;
-    parameters: IVisualParameterMetadata[];
-    result: IFunctionResultMetadata;
+    parameters: ICFVisualParameterMetadata[];
+    result: ICFFunctionResultMetadata;
     options: ICustomFunctionOptions;
     error?: string;
 };
 
-export interface IParameterMetadata {
+export interface ICFParameterMetadata {
     name: string;
     description?: string;
     type: CustomFunctionsSupportedTypes;
@@ -35,7 +35,7 @@ export interface IParameterMetadata {
     error?: string;
 };
 
-export interface IFunctionResultMetadata {
+export interface ICFFunctionResultMetadata {
     dimensionality: CustomFunctionsDimensionality;
     type: CustomFunctionsSupportedTypes;
     error?: string;

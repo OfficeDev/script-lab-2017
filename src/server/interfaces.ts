@@ -1,3 +1,7 @@
+import {
+    ICFVisualSnippetMetadata
+} from './custom-functions/interfaces';
+
 export interface SnippetCompileData {
     id: string;
     name: string;
@@ -63,7 +67,7 @@ export interface IRunnerHandlebarsContext {
 }
 
 export interface ICustomFunctionsRegisterHandlebarsContext {
-    metadata: any;
+    visualMetadata: ICFVisualSnippetMetadata[];
     registerCustomFunctionsJsonStringBase64: string;
     isAnySuccess: boolean;
     isAnyError: boolean;

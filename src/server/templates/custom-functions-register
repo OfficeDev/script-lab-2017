@@ -210,7 +210,7 @@
     <div class="ms-font-m" id="custom-functions-registration">
         <h1 class="ms-font-su" id="title">Custom Functions Registration</h1>
         <div id="metadata">
-            {{#each metadata}}
+            {{#each visualMetadata}}
                 <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
                 <ul>
                     {{#each this.functions}}

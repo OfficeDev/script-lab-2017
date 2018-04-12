@@ -3,7 +3,7 @@ import { isUndefined } from 'lodash';
 import {
     ICustomFunctionOptions,
     CustomFunctionsDimensionality,
-    IFunctionMetadata,
+    ICFFunctionMetadata,
 } from './interfaces';
 
 /* tslint:disable:no-reserved-keywords */
@@ -32,14 +32,14 @@ const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
  * It will either either return an array of metadata objects, or throw a JSON.stringified error object if there are errors/unsupported types.
  * @param fileContent - The string content of the typescript file to parse the custom functions metadata out of.
  */
-export function parseMetadata(fileContent: string): IFunctionMetadata[] {
+export function parseMetadata(fileContent: string): ICFFunctionMetadata[] {
     const sourceFile = ts.createSourceFile('someFileName', fileContent, ts.ScriptTarget.ES2015, true);
 
     return traverseAST(sourceFile);
 }
 
 
-function traverseAST(sourceFile: ts.SourceFile): IFunctionMetadata[] {
+function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
     const metadata = [];
     visitNode(sourceFile);
     return metadata;

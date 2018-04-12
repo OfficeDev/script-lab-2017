@@ -4,15 +4,14 @@ import { uniqBy } from 'lodash';
 import {
     ensureFreshLocalStorage
 } from '../helpers';
-
-const isCustomFunctionRegex = /@customfunction/i;
+import { isCustomFunctionScript } from '../../../server/core/snippet.helper';
 
 export function navigateToRegisterCustomFunctions() {
     ensureFreshLocalStorage();
     let allSnippetsToRegisterWithPossibleDuplicate: ISnippet[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
-            .filter(snippet => snippet.script && isCustomFunctionRegex.test(snippet.script.content));
+            .filter(snippet => snippet.script && isCustomFunctionScript(snippet.script.content));
 
     let data: IRegisterCustomFunctionsPostData = {
         snippets: allSnippetsToRegisterWithPossibleDuplicate,
@@ -37,7 +36,7 @@ export function getRunnerCustomFunctionsPayload() {
     let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRunnerRelevantData[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
-            .filter(snippet => snippet.script && isCustomFunctionRegex.test(snippet.script.content))
+            .filter(snippet => snippet.script && isCustomFunctionScript(snippet.script.content))
             .map(snippet => {
                 return {
                     name: snippet.name,
@@ -59,4 +58,3 @@ export function getRunnerCustomFunctionsPayload() {
 
     return { data: JSON.stringify(data) };
 }
-

@@ -10,6 +10,7 @@ import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 import { Subscription } from 'rxjs/Subscription';
+import { isCustomFunctionScript } from '../../../server/core/snippet.helper';
 const { localStorageKeys } = PLAYGROUND;
 
 @Component({
@@ -19,8 +20,8 @@ const { localStorageKeys } = PLAYGROUND;
         <header class="command__bar">
             <command icon="GlobalNavButton" (click)="showMenu()"></command>
             <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-            <command [hidden]="(isAddinCommands&&!isCustomFunctionsSnippet)||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
-            <command [hidden]="!isAddinCommands||isEmpty||isEditorTryIt||isCustomFunctionsSnippet" icon="Play" [async]="running$|async" title="{{strings.run}}">
+            <command [hidden]="(isAddinCommands && !isCustomFunctionsSnippet) || isEmpty || isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+            <command [hidden]="!isAddinCommands || isEmpty || isEditorTryIt || isCustomFunctionsSnippet" icon="Play" [async]="running$|async" title="{{strings.run}}">
                 <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                 <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
             </command>
@@ -89,7 +90,7 @@ export class EditorMode {
     }
 
     get isCustomFunctionsSnippet() {
-        return this.snippet.script && EditorMode._customFunctionsRegex.test(this.snippet.script.content);
+        return this.snippet.script && isCustomFunctionScript(this.snippet.script.content);
     }
 
     get isEditorTryIt() {
@@ -142,7 +143,6 @@ export class EditorMode {
         }
     }
 
-    static _customFunctionsRegex = /@customfunction/i;
     run() {
         if (this.snippet == null) {
             return;
@@ -161,7 +161,7 @@ export class EditorMode {
 
             // Additionally, for a maker script:
             if (this.snippet && isMakerScript(this.snippet.script)) {
-                if (this.snippet.script.content.indexOf('ExcelMaker.getActiveWorkbook()') < 0) {
+                if (!this.snippet.script.content.includes('ExcelMaker.getActiveWorkbook()')) {
                     canRun = true;
                 }
             }
@@ -170,7 +170,7 @@ export class EditorMode {
                 this._store.dispatch(new UI.ShowAlertAction({
                     actions: [this.strings.ok],
                     title: 'This is a Custom Functions snippet.',
-                    message: 'To register your Functions for use, please click the Functions button in the ribbon to bring up the Functions dashboard, and click Register.'
+                    message: 'To register your Functions, please click the Functions button in the ribbon.'
                 }));
                 return;
             }
@@ -435,30 +435,5 @@ export class EditorMode {
         } catch (e) {
             await this._effects.alert(e, 'Error registering custom functions', this.strings.ok);
         }
-
-        // // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
-        // let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
-        //     getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
-        // if (updateImmediately) {
-        //     navigateToCompileCustomFunctions('register');
-        //     return;
-        // }
-
-        // // It seems like the heartbeat is running.  So give it a chance to pick up
-
-        // // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
-        // this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
-        // this.isWaitingOnCustomFunctionsUpdate = true;
-
-        // let interval = setInterval(() => {
-        //     let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
-        //         localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
-        //     if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
-        //         this.isWaitingOnCustomFunctionsUpdate = false;
-        //         clearInterval(interval);
-        //         this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
-        //         this.updateLastRegisteredFunctionsTooltip();
-        //     }
-        // }, 2000);
     }
 }

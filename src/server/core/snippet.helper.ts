@@ -121,6 +121,6 @@ export function isMakerScript(script: IContentLanguagePair) {
 }
 
 const isCustomFunctionRegex = /@customfunction/i;
-export function isCustomFunctionScript(script: IContentLanguagePair) {
-    return isCustomFunctionRegex.test(script.content);
+export function isCustomFunctionScript(content: string) {
+    return isCustomFunctionRegex.test(content);
 }

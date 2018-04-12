@@ -13,6 +13,7 @@ import { UIEffects } from '../effects/ui';
 import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
+import { isCustomFunctionScript } from '../../../server/core/snippet.helper';
 const { localStorageKeys } = PLAYGROUND;
 
 @Component({
@@ -382,7 +383,7 @@ export class Editor implements AfterViewInit {
     }, 300);
 
     private setFlagForWhetherCustomFunction() {
-        this._isCustomFunctionSnippet = Editor._customFunctionsRegex.test(this.currentState.content);
+        this._isCustomFunctionSnippet = isCustomFunctionScript(this.currentState.content);
     }
 
     /**

@@ -248,7 +248,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     snippets = snippets.filter((snippet) => {
         let result = parseMetadata(snippet.script.content);
         const isGoodSnippet = result.length > 0 && !result.some((func) => func.error ? true : false);
-        snippet.metadata = { namespace: snippet.name.replace(/[0-9A-Za-z_]/g, ''), functions: result as ICustomFunctionMetadata[] };
+        snippet.metadata = { namespace: snippet.name.replace(/[0-9A-Za-z_]/g, ''), functions: result};
         return isGoodSnippet;
     });
 
@@ -308,7 +308,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
 
 
     const html = customFunctionsRegisterGenerator({
-        metadata: visual.snippets,
+        visualMetadata: visual.snippets,
         isAnySuccess,
         isAnyError,
         registerCustomFunctionsJsonStringBase64,
@@ -721,7 +721,7 @@ async function generateSnippetHtmlData(
     let template = (compileData.template || { content: '' }).content;
     let style = (compileData.style || { content: '' }).content;
 
-    if (isCustomFunctionScript(compileData.scriptToCompile)) {
+    if (isCustomFunctionScript(compileData.scriptToCompile.content)) {
         const CFRunnerHeader = 'This snippet is a Custom Functions snippet.';
         const CFRunnerBody = 'It cannot be run. Instead, open the Functions pane from the ribbon to register it and montior the logs.';
         const CFTemplate = `<h1>${CFRunnerHeader}</h1><p>${CFRunnerBody}</p>`;
