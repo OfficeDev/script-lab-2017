@@ -21,11 +21,8 @@ editor {
         position: absolute;
         bottom: 2px;
     }
-    .custom-functions > button {
-        margin: 8px 8px 5px 8px;
-        text-align: center;
-        width: calc(100% - 16px);
-        box-sizing: border-box;
+    section.trust-snippet-bar > div > * {
+        margin: 4px 8px !important;
     }
 }
 

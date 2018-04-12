@@ -6,7 +6,6 @@ import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
-    navigateToRegisterCustomFunctions,
     ensureFreshLocalStorage, storage
 } from '../helpers';
 import { UIEffects } from '../effects/ui';
@@ -24,10 +23,36 @@ const { localStorageKeys } = PLAYGROUND;
                 {{tab.displayName}}
             </li>
         </ul>
-        <section class="trust-snippet">
-            <button class="ms-Button ms-Button--primary" (click)="trustSnippet()" style="height: auto">
-                <span class="ms-Button-label">{{trustSnippetButtonText}}</span>
-            </button>
+        <section class="trust-snippet-bar" *ngIf="!isSnippetTrusted">
+            <div class="ms-MessageBar ms-MessageBar--warning ms-MessageBar-singleline" style="
+                width: 100%;
+                box-sizing: border-box;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                padding: 5px 0;
+                ">
+                <div class="ms-MessageBar-content" style="
+                    box-sizing: border-box;
+                    ">
+                    <div class="ms-MessageBar-text" style="
+                        box-sizing: border-box;
+                        padding: 5px 0;
+                        ">
+                        <span class="ms-MessageBar-innerText" role="status" aria-live="polite" style="">
+                        <span>{{strings.snippetNotTrusted}}</span>
+                        </span>
+                    </div>
+                </div>
+                <button type="button" class="ms-Button ms-Button--primary" data-is-focusable="true" (click)="trustSnippet()">
+                    <div class="ms-Button-flexContainer">
+                        <div class="ms-Button-textContainer">
+                            <div class="ms-Button-label">{{strings.trust}}</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
         </section>
         <section id="editor" #editor class="viewport"></section>
         <section [hidden]="!hide" class="viewport__placeholder"></section>
@@ -55,6 +80,7 @@ export class Editor implements AfterViewInit {
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
     hide: boolean = true;
+    isSnippetTrusted = false;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -66,7 +92,6 @@ export class Editor implements AfterViewInit {
             this.tabNames.push('customFunctions');
         }
     }
-
 
     /**
      * Initialize the component and subscribe to all the necessary actions.
@@ -130,6 +155,11 @@ export class Editor implements AfterViewInit {
         });
 
         return this._snippet;
+    }
+
+    trustSnippet() {
+        trustedSnippetManager.trustSnippet(this.snippet.id);
+        this.isSnippetTrusted = true;
     }
 
     showTab = (tabName: string) => {
@@ -227,32 +257,6 @@ export class Editor implements AfterViewInit {
         });
     }
 
-    async registerCustomFunctions() {
-        if (!trustedSnippetManager.isSnippetTrusted(this.snippet.id, this.snippet.gist, this.snippet.gistOwnerId)) {
-            let alertResult = await this._uiEffects.alert(
-                this.strings.snippetNotTrusted,
-                this.strings.trustSnippetQuestionMark,
-                this.strings.trust,
-                this.strings.cancel
-            );
-            if (alertResult === this.strings.cancel) {
-                return;
-            }
-        }
-
-        let startOfRequestTime = new Date().getTime();
-        window.localStorage.setItem(
-            localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
-            startOfRequestTime.toString()
-        );
-
-        try {
-            navigateToRegisterCustomFunctions();
-        } catch (e) {
-            await this._uiEffects.alert(e, 'Error registering custom functions', this.strings.ok);
-        }
-    }
-
     private _createTabs() {
         this.tabNames.forEach(name => {
             const displayName = Strings().tabDisplayNames[name];
@@ -340,12 +344,7 @@ export class Editor implements AfterViewInit {
 
             if (item.name === 'libraries') {
                 [content, language] = [snippet[item.name], item.name];
-            }
-            else if (item.name === 'customFunctions') {
-                content = (snippet[item.name] || {}).content;
-                language = 'json';
-            }
-            else {
+            } else {
                 content = (snippet[item.name] || {}).content;
                 language = (snippet[item.name] || {}).language;
             }
@@ -366,11 +365,11 @@ export class Editor implements AfterViewInit {
         });
 
         this._snippet = snippet;
+        this.isSnippetTrusted = trustedSnippetManager.isSnippetTrusted(this.snippet.id, this.snippet.gist, this.snippet.gistOwnerId);
         this.clearPerformanceMakers();
         this.changeTab();
     }
 
-    static _customFunctionsRegex = /@customfunction/i;
     /**
      * Update the active content property every 300ms.
      * The same update happens even on tab switch.
