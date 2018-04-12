@@ -8,7 +8,7 @@ import {
 } from './interfaces';
 
 
-export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): {visual: IVisualMetadata, functions: IFunctionMetadata[]} {
+export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): { visual: IVisualMetadata, functions: IFunctionMetadata[] } {
     const visualMetadata: IVisualSnippetMetadata[] = [];
     let metadata: IFunctionMetadata[] = [];
 
@@ -27,7 +27,7 @@ export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): {v
             functions = functions.map(func => {
 
                 func.parameters = func.parameters.map(p => {
-                    return {...p, prettyType: getPrettyType(p)};
+                    return { ...p, prettyType: getPrettyType(p) };
                 });
 
                 const status = hasErrors ?
@@ -52,9 +52,9 @@ export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): {v
 
     const functions = filterOutDuplicates(metadata);
     const funcNames = functions.map(f => f.name);
-    const visual = {snippets: tagDuplicatesAsErrors(visualMetadata, funcNames)};
+    const visual = { snippets: tagDuplicatesAsErrors(visualMetadata, funcNames) };
 
-    return {visual, functions};
+    return { visual, functions };
 }
 
 // helpers
@@ -91,7 +91,7 @@ function tagDuplicatesAsErrors(visualMetadata: IVisualSnippetMetadata[], nonDupl
             }
             return func;
         });
-        return {...meta, error: isError, status: isError ? CustomFunctionsRegistrationStatus.Error : CustomFunctionsRegistrationStatus.Good};
+        return { ...meta, error: isError, status: isError ? CustomFunctionsRegistrationStatus.Error : CustomFunctionsRegistrationStatus.Good };
     });
 };
 
@@ -102,11 +102,11 @@ function tagDuplicatesAsErrors(visualMetadata: IVisualSnippetMetadata[], nonDupl
  */
 function convertFunctionErrorsToSpace(functions: IVisualFunctionMetadata[]): IVisualFunctionMetadata[] {
     return functions.map(func => {
-            if (func.error) {
-                func.error = ' ';
-            }
-            return func;
-        });
+        if (func.error) {
+            func.error = ' ';
+        }
+        return func;
+    });
 }
 
 function filterOutDuplicates(functions: IFunctionMetadata[]): IFunctionMetadata[] {

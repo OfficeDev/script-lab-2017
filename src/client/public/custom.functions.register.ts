@@ -13,64 +13,60 @@ interface InitializationParams {
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 
-(async () => {
+tryCatch(async () => {
     let params: InitializationParams = (window as any).customFunctionParams;
 
+    environment.initializePartial({ host: 'EXCEL' });
+
+    // Apply the host theming by adding this attribute on the "body" element:
+    $('body').addClass('EXCEL');
+
+    if (params.explicitlySetDisplayLanguageOrNull) {
+        setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
+        document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
+    }
+
+    await new Promise((resolve) => {
+        const interval = setInterval(() => {
+            if ((window as any).playground_host_ready) {
+                clearInterval(interval);
+                return resolve();
+            }
+        }, 100);
+    });
+
+    checkIfCanRegister();
+
+    $('#btn-continue').click(() => tryCatch(async () => await registerMetadata(params.registerCustomFunctionsJsonStringBase64)));
+    $('#btn-dismiss').click(() => hideContinueContainer());
+
+    if (params.isAnySuccess) {
+        $('#continue-container').css('display', 'block');
+    }
+
+    if (!params.isAnyError) {
+        await registerMetadata(params.registerCustomFunctionsJsonStringBase64);
+    }
+});
+
+
+// Helpers
+
+async function tryCatch(callback: () => void) {
     try {
-        environment.initializePartial({ host: 'EXCEL' });
-
-        // Apply the host theming by adding this attribute on the "body" element:
-        $('body').addClass('EXCEL');
-        $('#btn-continue').prop('disabled', true);
-
-        if (params.explicitlySetDisplayLanguageOrNull) {
-            setDisplayLanguage(params.explicitlySetDisplayLanguageOrNull);
-            document.cookie = `displayLanguage=${encodeURIComponent(params.explicitlySetDisplayLanguageOrNull)};path=/;`;
-        }
-
-        if (params.isAnySuccess) {
-            $('#continue-container').css('display', 'block');
-        }
-
-        await new Promise((resolve) => {
-            const interval = setInterval(() => {
-                if ((window as any).playground_host_ready) {
-                    clearInterval(interval);
-                    return resolve();
-                }
-            }, 100);
-        });
-
-        checkIfCanRegister();
-
-        $('#btn-continue').click(() => {
-            registerMetadata(params.registerCustomFunctionsJsonStringBase64);
-        });
-        $('#btn-continue').prop('disabled', false);
-
-        $('#btn-dismiss').click(() => { hideContinueContainer(); });
-        // Set initialize to an empty function -- that way, doesn't cause
-        // re-initialization of this page in case of a page like the error dialog,
-        // which doesn't defined (override) Office.initialize.
-        Office.initialize = () => { };
-
-        if (!params.isAnyError) {
-            await registerMetadata(params.registerCustomFunctionsJsonStringBase64);
-        }
+        await callback();
     } catch (error) {
         $('#btn-continue').prop('disabled', true);
         handleError(error);
     }
-})();
+}
 
 function hideContinueContainer() {
     $('#continue-container').css('display', 'none');
 }
 
 async function registerMetadata(registerCustomFunctionsJsonStringBase64: string) {
-
     const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
-    console.info('registering custom functions');
     await Excel.run(async (context) => {
         (context.workbook as any).registerCustomFunctions('ScriptLab', registrationPayload);
         await context.sync();
@@ -82,7 +78,7 @@ function checkIfCanRegister() {
     if (!(Office && Office.context && Office.context.requirements)) {
         throw new Error('Excel is not available.');
     } else if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
-        throw new Error('Registering custom functions is unsupported on this version of Excel.');
+        throw new Error('Registering custom functions is not supported in this version of Excel.');
     }
 }
 

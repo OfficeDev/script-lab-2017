@@ -248,7 +248,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     snippets = snippets.filter((snippet) => {
         let result = parseMetadata(snippet.script.content);
         const isGoodSnippet = result.length > 0 && !result.some((func) => func.error ? true : false);
-        snippet.metadata = {namespace: snippet.name.replace(/\[0-9A-Za-z_/g, ''), functions: result as ICustomFunctionMetadata[]};
+        snippet.metadata = { namespace: snippet.name.replace(/[0-9A-Za-z_]/g, ''), functions: result as ICustomFunctionMetadata[] };
         return isGoodSnippet;
     });
 
@@ -292,14 +292,14 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
     const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
     const { snippets } = params;
 
-    const {visual, functions} = getFunctionsAndMetadataForRegistration(snippets);
+    const { visual, functions } = getFunctionsAndMetadataForRegistration(snippets);
 
     const numOfSnippetsWithErrors = visual.snippets.filter((snippetMetadata) => snippetMetadata.error).length;
     const numOfSnippetsWithoutErrors = visual.snippets.length - numOfSnippetsWithErrors;
     const isAnyError = numOfSnippetsWithErrors > 0;
     const isAnySuccess = numOfSnippetsWithoutErrors > 0;
 
-    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify({functions}));
+    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify({ functions }));
 
     const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
 
@@ -727,7 +727,7 @@ async function generateSnippetHtmlData(
         const CFTemplate = `<h1>${CFRunnerHeader}</h1><p>${CFRunnerBody}</p>`;
 
         template = CFTemplate;
-        style = `body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}`;
+        style = `body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif }`;
     }
 
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {

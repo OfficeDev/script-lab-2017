@@ -49,10 +49,6 @@ export class Editor implements AfterViewInit {
     tabs = new Dictionary<IMonacoEditorState>();
     currentState: IMonacoEditorState;
     hide: boolean = true;
-    showRegisterCustomFunctions = false;
-    registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
-    lastRegisteredFunctionsTooltip = '';
-    isWaitingOnCustomFunctionsUpdate = false;
 
     constructor(
         private _store: Store<fromRoot.State>,
@@ -146,7 +142,7 @@ export class Editor implements AfterViewInit {
         this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
     }
 
-    updateIntellisense(tabName: string) {
+    updateIntellisense() {
         if (this.snippet == null) {
             return;
         }
@@ -249,46 +245,7 @@ export class Editor implements AfterViewInit {
         } catch (e) {
             await this._uiEffects.alert(e, 'Error registering custom functions', this.strings.ok);
         }
-
-        // // If was already waiting (in vein) or heartbeat isn't running (not alive for > 3 seconds), update immediately
-        // let updateImmediately = this.isWaitingOnCustomFunctionsUpdate ||
-        //     getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) > 3000;
-        // if (updateImmediately) {
-        //     navigateToCompileCustomFunctions('register');
-        //     return;
-        // }
-
-        // // It seems like the heartbeat is running.  So give it a chance to pick up
-
-        // // TODO CUSTOM FUNCTIONS:  This is a TEMPORARY DESIGN AND HENCE ENGLISH ONLY for the strings
-        // this.registerCustomFunctionsButtonText = 'Attempting to update, this may take 10 or more seconds. Please wait (or click again to redirect to registration page, and see any accumulated errors)';
-        // this.isWaitingOnCustomFunctionsUpdate = true;
-
-        // let interval = setInterval(() => {
-        //     let heartbeatCurrentlyRunningTimestamp = getNumberFromLocalStorage(
-        //         localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
-        //     if (heartbeatCurrentlyRunningTimestamp > startOfRequestTime) {
-        //         this.isWaitingOnCustomFunctionsUpdate = false;
-        //         clearInterval(interval);
-        //         this.registerCustomFunctionsButtonText = this.strings.registerCustomFunctions;
-        //         this.updateLastRegisteredFunctionsTooltip();
-        //     }
-        // }, 2000);
     }
-
-    // FIXME remove uncommented things
-    // updateLastRegisteredFunctionsTooltip() {
-    //     let currentlyRunningLastUpdated = getNumberFromLocalStorage(
-    //         localStorageKeys.customFunctionsCurrentlyRunningTimestamp);
-    //     if (currentlyRunningLastUpdated === 0) {
-    //         return;
-    //     }
-
-    //     this.lastRegisteredFunctionsTooltip = this.strings.getTextForCustomFunctionsLastUpdated(
-    //         moment(new Date(currentlyRunningLastUpdated)).locale(getDisplayLanguageOrFake()).fromNow(),
-    //         moment(new Date(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp))).locale(getDisplayLanguageOrFake()).fromNow()
-    //     );
-    // }
 
     private _createTabs() {
         this.tabNames.forEach(name => {
@@ -343,16 +300,17 @@ export class Editor implements AfterViewInit {
                     // Update the current state to the new tab
                     this.currentState = this.tabs.get(newTab);
                     let timer = AI.trackPageView(this.currentState.displayName, `/edit/${this.currentState.name}`);
-                    if (this.currentState.name === 'script' || this.currentState.name === 'customFunctions') {
-                        this.updateIntellisense(this.currentState.name);
+                    if (this.currentState.name === 'script') {
+                        this.updateIntellisense();
+                        this.setFlagForWhetherCustomFunction();
                     }
+
                     if (this.currentState.name === 'script') {
                         this.startPerfInfoTimer();
-                        this.setFlagForWhetherCustomFunction();
                     } else {
                         this.clearPerformanceMakers();
                     }
-                    this.showRegisterCustomFunctions = newTab === 'customFunctions';
+
                     this._monacoEditor.setModel(this.currentState.model);
                     this._monacoEditor.restoreViewState(this._monacoEditor.saveViewState());
                     this._monacoEditor.focus();
