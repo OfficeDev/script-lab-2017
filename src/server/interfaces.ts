@@ -72,6 +72,7 @@ export interface ICustomFunctionsRegisterHandlebarsContext {
     isAnySuccess: boolean;
     isAnyError: boolean;
     explicitlySetDisplayLanguageOrNull: string;
+    dashboardUrl: string;
 }
 
 export interface ICustomFunctionsRunnerHandlebarsContext {
