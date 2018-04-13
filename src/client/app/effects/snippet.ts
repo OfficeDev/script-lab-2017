@@ -104,8 +104,8 @@ export class SnippetEffects {
             // update snippets.  Note that we'll both update through the "official"
             //    channel of "storage.snippets", and also update the localStorage directly
             //    (otherwise, heartbeat refresh was not working)
-            storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);            
-            
+            storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
+
             scrubbedSnippet.modified_at = Date.now();
             const snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
             snippets[scrubbedSnippet.id] = scrubbedSnippet;
