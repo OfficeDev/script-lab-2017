@@ -88,8 +88,13 @@ class LogGridController {
 
 (async () => {
     try {
-        environment.initializePartial({host: 'EXCEL'});
+        environment.initializePartial({ host: 'EXCEL' });
         setUpMomentJsDurationDefaults(moment);
+
+        if (!sessionStorage.getItem('hasRegistered')) {
+            sessionStorage.setItem('hasRegistered', 'true');
+            navigateToRegisterCustomFunctions();
+        }
 
         let starterData = tickAndDequeueLocalStorageData();
 
@@ -130,14 +135,14 @@ function initializeHeader(gridController: LogGridController) {
     // }
 
     $('#register-custom-functions')
-            .click(() => {
-                let startOfRequestTime = new Date().getTime();
-                window.localStorage.setItem(
-                    localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
-                    startOfRequestTime.toString()
-                );
-                navigateToRegisterCustomFunctions();
-            });
+        .click(() => {
+            let startOfRequestTime = new Date().getTime();
+            window.localStorage.setItem(
+                localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+                startOfRequestTime.toString()
+            );
+            navigateToRegisterCustomFunctions();
+        });
 }
 
 async function startPollingLogData() {

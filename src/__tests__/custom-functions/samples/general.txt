@@ -5,7 +5,6 @@
 * @param a - First number to add
 * @param b - Second number to add
 * @CustomFunction
-* @sync
 */
 function sum(a: number, b: number): number {
     return a + b;
@@ -21,7 +20,6 @@ function sum2(a: number, b: number[]): number {
 * Adds numbers in array
 * @param arr - array of numbers to add
 * @CustomFunction
-* @sync
 * @stream
 */
 function sumArr(arr: number[][]): number {
@@ -36,7 +34,6 @@ function sumArr(arr: number[][]): number {
 /**
 * Checks to see if a number is prime
 * @CustomFunction
-* @sync
 * @stream
 */
 function isPrime(num: number): boolean {

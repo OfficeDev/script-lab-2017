@@ -17,10 +17,10 @@ const TYPE_MAPPINGS = {
 
 const INVALID = 'invalid';  // used for type = invalid
 
-const CUSTOM_FUNCTION_OPTIONS_KEYS = ['sync', 'stream', 'volatile'];
+const CUSTOM_FUNCTION_OPTIONS_KEYS = ['stream', 'volatile'];
 
 const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
-    sync: false,
+    sync: true,
     stream: false,
     volatile: false,
     cancelable: true,
@@ -76,7 +76,15 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
 
                         let result;
                         if (func.type) {
-                            result = getDimAndTypeHelper(func.type);
+                            if (func.type.kind === ts.SyntaxKind.TypeReference &&
+                               (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
+                               (func.type as ts.TypeReferenceNode).typeArguments &&
+                               (func.type as ts.TypeReferenceNode).typeArguments.length === 1) {
+
+                                result = getDimAndTypeHelper((func.type as ts.TypeReferenceNode).typeArguments[0]);
+                            } else {
+                                result = getDimAndTypeHelper(func.type);
+                            }
                         } else {
                             result = {
                                 error: 'No return type specified.',
@@ -85,12 +93,17 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
                             };
                         }
 
+                        let options = parseCustomFunctionOptions(func);
+                        if (func.modifiers && func.modifiers.length > 1 && func.modifiers[0].kind === ts.SyntaxKind.AsyncKeyword) {
+                            options.sync = true;
+                        }
+
                         const metadataItem = {
                             name: func.name.text,
                             description,
                             parameters,
                             result,
-                            options: parseCustomFunctionOptions(func),
+                            options,
                         };
                         if (!metadataItem.description) {
                             delete metadataItem.description;
