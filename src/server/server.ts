@@ -20,7 +20,7 @@ import { loadTemplateHelper, IDefaultHandlebarsContext } from './core/template.g
 import { compileScript } from './core/snippet.generator';
 import { processLibraries } from './core/libraries.processor';
 import { ApplicationInsights } from './core/ai.helper';
-import { getShareableYaml, isMakerScript } from './core/snippet.helper';
+import { getShareableYaml, isMakerScript, isCustomFunctionScript } from './core/snippet.helper';
 import {
     SnippetCompileData,
     IErrorHandlebarsContext, IManifestHandlebarsContext, IReadmeHandlebarsContext,
@@ -28,6 +28,8 @@ import {
     ICustomFunctionsRegisterHandlebarsContext,
     ICustomFunctionsRunnerHandlebarsContext
 } from './interfaces';
+import { getFunctionsAndMetadataForRegistration } from './custom-functions/utilities';
+import { parseMetadata } from './custom-functions/metadata.parser';
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
@@ -241,7 +243,14 @@ registerRoute('post', '/compile/page', (req, res) => compileSnippetCommon(req, r
  */
 registerRoute('post', '/custom-functions/run', async (req, res) => {
     const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
-    const { snippets } = params;
+    let { snippets } = params;
+
+    snippets = snippets.filter((snippet) => {
+        let result = parseMetadata(snippet.script.content);
+        const isGoodSnippet = result.length > 0 && !result.some((func) => func.error ? true : false);
+        snippet.metadata = { namespace: snippet.name.replace(/[0-9A-Za-z_]/g, ''), functions: result};
+        return isGoodSnippet;
+    });
 
     const strings = Strings(req);
     const timer = ai.trackTimedEvent('[Runner] Running Custom Functions');
@@ -275,31 +284,35 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 });
 
 /**
- * HTTP POST: /register/custom-functions
+ * HTTP POST: /custom-functions/register
  * Returns the registering page for custom functions.
  * Note that all snippets passed to this page are already expected to be trusted.
  */
 registerRoute('post', '/custom-functions/register', async (req, res) => {
     const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
     const { snippets } = params;
-    const host = 'EXCEL';
+
+    const { visual, functions } = getFunctionsAndMetadataForRegistration(snippets);
+
+    const numOfSnippetsWithErrors = visual.snippets.filter((snippetMetadata) => snippetMetadata.error).length;
+    const numOfSnippetsWithoutErrors = visual.snippets.length - numOfSnippetsWithErrors;
+    const isAnyError = numOfSnippetsWithErrors > 0;
+    const isAnySuccess = numOfSnippetsWithoutErrors > 0;
+
+    const registerCustomFunctionsJsonStringBase64 = base64encode(JSON.stringify({ functions }));
 
     const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
 
-    const strings = Strings(req);
-
-    const customFunctionsRunnerGenerator =
+    const customFunctionsRegisterGenerator =
         await loadTemplate<ICustomFunctionsRegisterHandlebarsContext>('custom-functions-register');
 
-    const html = customFunctionsRunnerGenerator({
-        snippets: snippets,
-        snippetsDataBase64: base64encode(JSON.stringify(snippets)),
 
-        strings,
+    const html = customFunctionsRegisterGenerator({
+        visualMetadata: visual.snippets,
+        isAnySuccess,
+        isAnyError,
+        registerCustomFunctionsJsonStringBase64,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-        initialLoadSubtitle: strings.playgroundTagline,
-        headerTitle: strings.registeringCustomFunctions,
-        returnUrl: `${currentConfig.editorUrl}/#/edit/${host}`
     });
 
     timer.stop();
@@ -704,12 +717,25 @@ async function generateSnippetHtmlData(
         shouldPutSnippetIntoOfficeInitialize = compileData.shouldPutSnippetIntoOfficeInitialize;
     }
 
+
+    let template = (compileData.template || { content: '' }).content;
+    let style = (compileData.style || { content: '' }).content;
+
+    if (isCustomFunctionScript(compileData.scriptToCompile.content)) {
+        const CFRunnerHeader = 'This snippet is a Custom Functions snippet.';
+        const CFRunnerBody = 'It cannot be run. Instead, open the Functions pane from the ribbon to register it and montior the logs.';
+        const CFTemplate = `<h1>${CFRunnerHeader}</h1><p>${CFRunnerBody}</p>`;
+
+        template = CFTemplate;
+        style = `body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif }`;
+    }
+
     const snippetHandlebarsContext: ISnippetHandlebarsContext = {
         snippet: {
             id: compileData.id,
             name: compileData.name,
-            style: (compileData.style || { content: '' }).content,
-            template: (compileData.template || { content: '' }).content,
+            style,
+            template,
             script,
             officeJS,
             linkReferences,

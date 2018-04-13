@@ -8,6 +8,10 @@ editor {
     .tabs {
         flex: 0 0 auto;
         padding-bottom: 3px;
+
+        &__hidden {
+            display: none;
+        }
     }
     .ms-Pivot.ms-Pivot--tabs .ms-Pivot-link {
         line-height: 38px;
@@ -17,11 +21,8 @@ editor {
         position: absolute;
         bottom: 2px;
     }
-    .custom-functions > button {
-        margin: 8px 8px 5px 8px;
-        text-align: center;
-        width: calc(100% - 16px);
-        box-sizing: border-box;
+    section.trust-snippet-bar > div > * {
+        margin: 4px 8px !important;
     }
 }
 

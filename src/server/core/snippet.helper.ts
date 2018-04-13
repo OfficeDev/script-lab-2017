@@ -119,3 +119,8 @@ export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippe
 export function isMakerScript(script: IContentLanguagePair) {
     return script.content.indexOf('Experimental.ExcelMaker') >= 0;
 }
+
+const isCustomFunctionRegex = /@customfunction/i;
+export function isCustomFunctionScript(content: string) {
+    return isCustomFunctionRegex.test(content);
+}

@@ -1,30 +1,21 @@
 import { storage, environment, post, trustedSnippetManager } from './index';
 import { getDisplayLanguage } from '../strings';
 import { uniqBy } from 'lodash';
-// import {
-//     ensureFreshLocalStorage
-// } from '../helpers';
+import {
+    ensureFreshLocalStorage
+} from '../helpers';
+import { isCustomFunctionScript } from '../../../server/core/snippet.helper';
 
 export function navigateToRegisterCustomFunctions() {
-    let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRegistrationRelevantData[] =
+    ensureFreshLocalStorage();
+    let allSnippetsToRegisterWithPossibleDuplicate: ISnippet[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
-            .filter(snippet => snippet.customFunctions && snippet.customFunctions.content && snippet.customFunctions.content.trim().length > 0)
-            .map((snippet): ICustomFunctionsRegistrationRelevantData => {
-                try {
-                    return {
-                        name: snippet.name,
-                        data: JSON.parse(snippet.customFunctions.content)
-                    };
-                }
-                catch {
-                    throw new Error(`Error parsing metadata for snippet "${snippet.name}"`);
-                }
-            });
+            .filter(snippet => snippet.script && isCustomFunctionScript(snippet.script.content));
 
     let data: IRegisterCustomFunctionsPostData = {
         snippets: allSnippetsToRegisterWithPossibleDuplicate,
-        displayLanguage: getDisplayLanguage()
+        displayLanguage: getDisplayLanguage(),
     };
 
     const url = environment.current.config.runnerUrl + '/custom-functions/register';
@@ -41,17 +32,18 @@ export function navigateToRunCustomFunctions(payload?: any) {
 }
 
 export function getRunnerCustomFunctionsPayload() {
+    ensureFreshLocalStorage();
     let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRunnerRelevantData[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
             .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
-            .filter(snippet => snippet.customFunctions && snippet.customFunctions.content && snippet.customFunctions.content.trim().length > 0)
-            .map((snippet): ICustomFunctionsRunnerRelevantData => {
+            .filter(snippet => snippet.script && isCustomFunctionScript(snippet.script.content))
+            .map(snippet => {
                 return {
-                    id: snippet.id,
                     name: snippet.name,
+                    id: snippet.id,
                     libraries: snippet.libraries,
                     script: snippet.script,
-                    metadata: JSON.parse(snippet.customFunctions.content)
+                    metadata: undefined,
                 };
             });
 
@@ -66,4 +58,3 @@ export function getRunnerCustomFunctionsPayload() {
 
     return { data: JSON.stringify(data) };
 }
-
