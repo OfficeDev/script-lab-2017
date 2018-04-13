@@ -8,7 +8,6 @@ import {
     AI, environment, trustedSnippetManager, getSnippetDefaults,
     ensureFreshLocalStorage, storage
 } from '../helpers';
-import { UIEffects } from '../effects/ui';
 import { Strings } from '../strings';
 import { Monaco, Snippet } from '../actions';
 import { MonacoService } from '../services';
@@ -84,7 +83,6 @@ export class Editor implements AfterViewInit {
 
     constructor(
         private _store: Store<fromRoot.State>,
-        private _uiEffects: UIEffects,
         private _monaco: MonacoService
     ) {
         this.tabNames = ['script', 'template', 'style', 'libraries'];
