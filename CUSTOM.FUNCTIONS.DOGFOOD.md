@@ -11,11 +11,18 @@ Instructions on how to sideload a manifest can be found [here](https://docs.micr
 
 The manifest to sideload can be found [here](https://raw.githubusercontent.com/OfficeDev/script-lab/master/manifests/script-lab-prod.xml).
 
+### Step 3: Switch to Alpha
+For now, the experience is only available in the Alpha branch of Script lab.  So, in addition to sideloading the manifest (that's orthogonal), you also need to switch to Alpha (Code editor ==> About ==> Environment: Alpha)
+
+![Switch to Alpha](./.github/images/switch-to-alpha.png)
+
 ## Usage
 
-Open the `Code` and `Functions` panes.
+Note: For the following steps, if you feel lost, scroll down and peak at the screenshot to see the final result.
 
-Create a new snippet, and replace the existing code with the following:
+Open the `Code` and `Functions` taskpanes, via the Ribbon.
+
+In the code editor, create a new snippet, and replace the existing code with the following:
 
 ```typescript
 /** @CustomFunction */
