@@ -31,5 +31,7 @@ function sum(a: number, b: number): number {
 ## Troubleshooting
 
 **DO NOT CLOSE ANY OF THE PANES AFTER OPENING.**
+
 There is currently a bug that will cause the custom functions runner to die if any of the panes are closed.
+
 If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.
