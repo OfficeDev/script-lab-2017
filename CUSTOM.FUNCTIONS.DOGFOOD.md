@@ -34,7 +34,7 @@ function sum(a: number, b: number): number {
 1. **DO NOT CLOSE ANY OF THE PANES AFTER OPENING.**
 There is currently a bug that will cause the custom functions runner to die if any of the panes are closed.
 
-2. **IF YOU CLOSE AND RE-OPEN EXCEL, YOU WILL NEED TO RE-REGISTER YOUR CUSTOM FUNCTIONS**
+2. If you close and and re-open Excel, remember to re-register your custom functions.
 
 ## Troubleshooting
 If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.
