@@ -2,24 +2,32 @@
 
 ## Setup
 
-### Step 1: Remove the Store version of Script Lab
-If you alredy have Script Lab in your ribbon, please remove it now, so that you can sideload a custom-function-compatible copy.
+### Prereq:  Ensure you have the "DevMain Channel (Dogfood)"
+
+Be sure that your Office installation is on "DevMain Channel (Dogfood)":
+
+![Dogfood channel](./.github/images/dogfood-channel.png)
+
+
+### Step 1: Remove the existing Store version of Script Lab
+If you already have Script Lab in your ribbon, please uninstall the Store version, so that you can sideload a custom-function-compatible version.
 ![Remove Script Lab](./.github/images/remove-add-in.png)
 
 ### Step 2: Sideload Manifest
-Instructions on how to sideload a manifest can be found [here](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins).
+The new manifest to sideload can be found [here](https://raw.githubusercontent.com/OfficeDev/script-lab/master/manifests/script-lab-prod.xml).
 
-The manifest to sideload can be found [here](https://raw.githubusercontent.com/OfficeDev/script-lab/master/manifests/script-lab-prod.xml).
+If you've not sideloaded before via a network share, please refer to the [official documentation](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins).
+
 
 ### Step 3: Switch to Alpha
-For now, the experience is only available in the Alpha branch of Script lab.  So, in addition to sideloading the manifest (that's orthogonal), you also need to switch to Alpha (Code editor ==> About ==> Environment: Alpha)
+For now, the Custom Functions experience is only available in the Alpha deployment of Script lab.  So, in addition to sideloading the manifest (which is orthogonal to this step), you also need to switch to Alpha (**Code editor ==> About ==> Environment: Alpha**)
 
 ![Switch to Alpha](./.github/images/switch-to-alpha.png)
 
 
 ## A picture is worth a thousand recalcs
 
-![Custom Functions in action. Note the console.logs in the dashboard, as well!](./.github/images/custom-functions-dogfood.png)
+![Screenshot](./.github/images/custom-functions-dogfood.png)
 Custom Functions in action. Note the console.logs in the dashboard, as well!
 
 
