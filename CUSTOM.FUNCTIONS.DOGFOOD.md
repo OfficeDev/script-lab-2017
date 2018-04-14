@@ -28,9 +28,7 @@ function sum(a: number, b: number): number {
 }
 ```
 
-<aside class="warning">
-DO NOT CLOSE ANY OF THE PANES AFTER OPENING. There is currently a bug that will cause the custom functions runner to die if any of the panes are closed.
-</aside>
+<aside class="warning">DO NOT CLOSE ANY OF THE PANES AFTER OPENING. There is currently a bug that will cause the custom functions runner to die if any of the panes are closed.</aside>
 
 ## Troubleshooting
 
