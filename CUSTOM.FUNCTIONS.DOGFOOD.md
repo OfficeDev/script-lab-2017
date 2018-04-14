@@ -18,6 +18,15 @@ Open the `Code` and `Functions` panes.
 Create a new snippet, and replace the existing code with the following:
 
 ```typescript
+/** @CustomFunction */
+function sum(a: number, b: number): number {
+    return a + b;
+}
+```
+
+If you want, you can also specify the function description and parameter descriptions in the JSDOC.  **BUT**, no matter what, you must include the **`@CustomFunction`** somewhere in the JSDOC (i.e., inside of a `/** ... */` block -- the double-star is important!)
+
+```typescript
 /**
 * Adds two numbers
 * @param a - First number to add
@@ -29,12 +38,16 @@ function sum(a: number, b: number): number {
 }
 ```
 
+To try a web-service Custom Function, [import](http://aka.ms/scriptlab/import) this GitHub Gist: <https://gist.github.com/c8bbf1dd5c7fb33d5ea262e83e7df399>. Be sure to click "Trust" after importing.
+
+
 ## Friendly advice:
 
+1. Remember to add "@CustomFunction
 1. **DO NOT CLOSE ANY OF THE PANES AFTER OPENING.**
 There is currently a bug that will cause the custom functions runner to die if any of the panes are closed.
 
-2. If you close and and re-open Excel, remember to re-register your custom functions.
+1. If you close and and re-open Excel, remember to re-register your custom functions.
 
 ## Troubleshooting
 If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.
