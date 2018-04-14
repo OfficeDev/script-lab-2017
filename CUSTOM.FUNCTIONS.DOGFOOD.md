@@ -25,8 +25,6 @@ Custom Functions in action. Note the console.logs in the dashboard, as well!
 
 ## Usage
 
-Note: For the following steps, if you feel lost, scroll down and peak at the screenshot to see the final result.
-
 Open the `Code` and `Functions` taskpanes, via the Ribbon.
 
 In the code editor, create a new snippet, and replace the existing code with the following:
