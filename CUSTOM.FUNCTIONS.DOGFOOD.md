@@ -52,6 +52,12 @@ There is currently a bug that will cause the custom functions runner to die if a
 
 1. If you close and and re-open Excel, remember to re-register your custom functions.
 
+
+## Custom Functions screenshot
+
+![Custom Functions in action. Note the console.logs in the dashboard, as well!](./.github/images/custom-functions-dogfood.png)
+Custom Functions in action. Note the console.logs in the dashboard, as well!
+
 ## Troubleshooting
 If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.
 
