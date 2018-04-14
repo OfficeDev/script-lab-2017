@@ -43,7 +43,10 @@ To try a web-service Custom Function, [import](http://aka.ms/scriptlab/import) t
 
 ## Friendly advice:
 
-1. Remember to add "@CustomFunction
+1. Remember to add `/** @CustomFunction */` to any function you want registered.
+
+1. If you want to use `console.log`, do!  It will show up in the Custom Functions dashboard taskpane.
+
 1. **DO NOT CLOSE ANY OF THE PANES AFTER OPENING.**
 There is currently a bug that will cause the custom functions runner to die if any of the panes are closed.
 
