@@ -158,6 +158,7 @@ export class Editor implements AfterViewInit {
     trustSnippet() {
         trustedSnippetManager.trustSnippet(this.snippet.id);
         this.isSnippetTrusted = true;
+        this._resize();
     }
 
     showTab = (tabName: string) => {
