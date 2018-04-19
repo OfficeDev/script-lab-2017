@@ -181,6 +181,7 @@ interface ICompiledPlaygroundInfo {
         local: ILocalHostEnvironmentConfig,
         edge: IEnvironmentConfig,
         insiders: IEnvironmentConfig,
+        staging: IEnvironmentConfig,
         production: IEnvironmentConfig
     };
 
