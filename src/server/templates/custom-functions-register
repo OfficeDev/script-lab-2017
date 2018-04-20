@@ -128,6 +128,9 @@
             font-weight: normal;
             font-style: italic;
         }
+        #custom-functions-registration .untrusted {
+            background: #cccccc;
+        }
         #custom-functions-registration .good {
             background: #dff6dd;
         }

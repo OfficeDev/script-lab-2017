@@ -58,6 +58,7 @@ export enum CustomFunctionsRegistrationStatus {
     Good = 'good',
     Skipped = 'skipped',
     Error = 'error',
+    Untrusted = 'untrusted',
 };
 
 export enum CustomFunctionsDimensionality {

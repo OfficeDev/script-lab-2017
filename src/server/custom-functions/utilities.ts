@@ -7,7 +7,6 @@ import {
     ICFVisualMetadata,
 } from './interfaces';
 
-
 export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): { visual: ICFVisualMetadata, functions: ICFFunctionMetadata[] } {
     const visualMetadata: ICFVisualSnippetMetadata[] = [];
     let metadata: ICFFunctionMetadata[] = [];
@@ -42,10 +41,18 @@ export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): { 
                 };
             });
 
+            // const isTrusted = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
+            // let status;
+            // if (isTrusted) {
+            let status = hasErrors ? CustomFunctionsRegistrationStatus.Error : CustomFunctionsRegistrationStatus.Good;
+            // } else {
+            //     status = CustomFunctionsRegistrationStatus.Untrusted;
+            // }
+
             visualMetadata.push({
                 name: snippet.name,
                 error: hasErrors,
-                status: hasErrors ? CustomFunctionsRegistrationStatus.Error : CustomFunctionsRegistrationStatus.Good,
+                status,
                 functions,
             });
         });
