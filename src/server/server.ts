@@ -246,7 +246,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     let { snippets } = params;
 
     snippets = snippets.filter((snippet) => {
-        let result = parseMetadata(snippet.script.content);
+        let result = parseMetadata(snippet.script.content, snippet.name);
         const isGoodSnippet = result.length > 0 && !result.some((func) => func.error ? true : false);
         snippet.metadata = { namespace: snippet.name.replace(/[^0-9A-Za-z_]/g, ''), functions: result};
         return isGoodSnippet;
