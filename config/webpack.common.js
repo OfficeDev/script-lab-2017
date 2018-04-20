@@ -50,11 +50,11 @@ module.exports = (prodMode) =>
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
             customFunctionsRegister: './public/custom.functions.register.ts',
             customFunctionsRunner: './public/custom.functions.runner.ts',
-            customFunctionsDashboard: './public/custom.functions.dashboard.ts',
+            customFunctionsDashboard: './react/index.tsx',
         },
 
         resolve: {
-            extensions: ['.js', '.ts', '.scss', '.css', '.html']
+            extensions: ['.js', '.ts', '.scss', '.css', '.html', '.tsx']
         },
 
         module: {

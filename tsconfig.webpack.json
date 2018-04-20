@@ -9,7 +9,8 @@
         "compiled",
         "dist/**/*.ts",
         "src/server/**/*.ts",
-        "src/runtime-helpers/**/*.ts"
+        "src/runtime-helpers/**/*.ts",
+        "src/client/react/**/*"
     ],
     "awesomeTypescriptLoaderOptions": {
         "useWebpackText": true,

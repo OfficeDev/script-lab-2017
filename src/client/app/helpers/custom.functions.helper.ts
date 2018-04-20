@@ -10,7 +10,6 @@ export function navigateToRegisterCustomFunctions() {
     ensureFreshLocalStorage();
     let allSnippetsToRegisterWithPossibleDuplicate: ISnippet[] =
         uniqBy([storage.current.lastOpened].concat(storage.snippets.values()), 'id')
-            .filter(snippet => trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId))
             .filter(snippet => snippet.script && isCustomFunctionScript(snippet.script.content));
 
     let data: IRegisterCustomFunctionsPostData = {

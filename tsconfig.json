@@ -33,7 +33,8 @@
         "compiled",
         "dist",
         "src/runtime-helpers",
-        "src/__tests__"
+        "src/__tests__",
+        "src/client/react"
     ],
     "awesomeTypescriptLoaderOptions": {
         "useWebpackText": true,
