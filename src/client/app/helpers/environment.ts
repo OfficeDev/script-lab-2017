@@ -27,12 +27,16 @@ class Environment {
         // can (and does) include files from the editor domain, all the while
         // window.location.origin is in runner domain.
 
+        if (/bornholm-(runner-)?edge\./.test(origin)) {
+            return config.edge;
+        }
+
         if (/bornholm-(runner-)?insiders\./.test(origin)) {
             return config.insiders;
         }
 
-        if (/bornholm-(runner-)?edge\./.test(origin)) {
-            return config.edge;
+        if (/bornholm-(runner-)?staging\./.test(origin)) {
+            return config.staging;
         }
 
         // Production has both the azure website serving the content, and the CDN mirrors
