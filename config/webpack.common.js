@@ -12,7 +12,7 @@ const { build, config, RedirectPlugin,
     localStorageKeys, sessionStorageKeys,
     safeExternalUrls, experimentationFlagsDefaults } = require('./env.config');
 const { getVersionedPackageNames,
-    VersionedPackageSubstitutionsPlugin } =require('./package.version.substitutions.plugin.js');
+    VersionedPackageSubstitutionsPlugin } = require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
 
 const versionedPackageNames = getVersionedPackageNames([
@@ -154,6 +154,10 @@ module.exports = (prodMode) =>
                 {
                     from: '../../node_modules/office-ui-fabric-js/dist/js',
                     to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/js'
+                },
+                {
+                    from: '../../node_modules/@microsoft/office-js/dist',
+                    to: './libs/' + versionedPackageNames['@microsoft/office-js'] + '/dist'
                 },
                 {
                     from: '../../node_modules/jquery/dist',

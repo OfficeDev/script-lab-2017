@@ -21,7 +21,7 @@
     "files": [
         "auth-helpers.ts",
         "maker.ts",
-        "../../node_modules/@microsoft/office-js/dist/office.d.ts"
+        "../../node_modules/@types/office-js/index.d.ts"
     ],
     "compileOnSave": false
 }
