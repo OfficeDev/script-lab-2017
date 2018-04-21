@@ -9,11 +9,25 @@
 </head>
 
 <body>
-	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 	<script>
-		Office.initialize = function () {
-			window.playground_host_ready = true;
-		}
+		["launchCode", "launchTutorial", "launchHelp", "launchAsk", "launchApiDocs"]
+			.forEach(function (commandName) {
+				window[commandName] = function (event) {
+					let interval = setInterval(function () {
+						// the `window["commandExecutor"]` variable will get set by
+						//     functions.ts, once the webpack-ed code loads:
+						if (window["commandExecutor"]) {
+							window["commandExecutor"][commandName](event);
+							clearInterval(interval);
+						}
+					}, 100);
+				};
+			});
+	</script>
+	<script src="libs/{{{versionedPackageNames['@microsoft/office-js']}}}/dist/office.debug.js"></script>
+
+	<script>
+		Office.initialize = function () {};
 	</script>
 </body>
 

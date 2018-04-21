@@ -1,48 +1,48 @@
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 const { safeExternalUrls } = PLAYGROUND;
 
-Office.initialize = () => {
-    const tutorialUrl = `${window.location.origin}/tutorial.html`;
-    const codeUrl = `${window.location.origin}/?mode=${Utilities.host}`;
+const tutorialUrl = `${window.location.origin}/tutorial.html`;
+const codeUrl = `${window.location.origin}/?mode=${Utilities.host}`;
 
-    const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
-        options = options || {};
-        options.width = options.width || 60;
-        options.height = options.height || 60;
-        if (typeof options.displayInIframe === 'undefined') {
-            options.displayInIframe = true;
-        }
-        Office.context.ui.displayDialogAsync(url, options, (result) => {
-            if (Utilities.host === HostType.OUTLOOK) {
-                if (result.status === Office.AsyncResultStatus.Failed) {
+const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+    options = options || {};
+    options.width = options.width || 60;
+    options.height = options.height || 60;
+    if (typeof options.displayInIframe === 'undefined') {
+        options.displayInIframe = true;
+    }
+    Office.context.ui.displayDialogAsync(url, options, (result) => {
+        if (Utilities.host === HostType.OUTLOOK) {
+            if (result.status === Office.AsyncResultStatus.Failed) {
+                event.completed();
+            }
+            let dialog = result.value as Office.DialogHandler;
+            dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
+                if (event) {
                     event.completed();
                 }
-                let dialog = result.value as Office.DialogHandler;
-                dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
-                    if (event) {
-                        event.completed();
-                    }
-                });
-            }
-        });
-        if (event && Utilities.host !== HostType.OUTLOOK) {
-            event.completed();
+            });
         }
-    };
+    });
+    if (event && Utilities.host !== HostType.OUTLOOK) {
+        event.completed();
+    }
+};
 
-    const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
-        launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
-    };
+const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+    launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
+};
 
-    (window as any).launchCode = (event) => launchInDialog(codeUrl, event, { width: 75, height: 75, displayInIframe: false });
+(window as any).commandExecutor = {
+    launchCode: (event) => launchInDialog(codeUrl, event, { width: 75, height: 75, displayInIframe: false }),
 
-    (window as any).launchTutorial = (event) => launchInDialog(tutorialUrl, event, { width: 35, height: 45 });
+    launchTutorial: (event) => launchInDialog(tutorialUrl, event, { width: 35, height: 45 }),
 
-    (window as any).launchHelp = (event) => launchDialogNavigation(safeExternalUrls.playground_help, event, { displayInIframe: false });
+    launchHelp: (event) => launchDialogNavigation(safeExternalUrls.playground_help, event, { displayInIframe: false }),
 
-    (window as any).launchAsk = (event) => launchDialogNavigation(safeExternalUrls.ask, event, { displayInIframe: false });
+    launchAsk: (event) => launchDialogNavigation(safeExternalUrls.ask, event, { displayInIframe: false }),
 
-    (window as any).launchApiDocs = (event) => {
+    launchApiDocs: (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
             return launchDialogNavigation(safeExternalUrls.excel_api, event);
         }
@@ -66,5 +66,5 @@ Office.initialize = () => {
                 return launchDialogNavigation(safeExternalUrls.generic_api, event);
             }
         }
-    };
+    }
 };
