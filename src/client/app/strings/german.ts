@@ -27,6 +27,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         alpha: 'Alpha',
         beta: 'Beta',
         production: 'Produktiv',
+        staging: getEnglishSubstitutesForNotYetTranslated().staging,
 
         userId: 'Benutzer-ID',
 
@@ -63,11 +64,11 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         reloadPrompt: 'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
         cannotImportSnippetCreatedForDifferentHost:
-        (snippetHost: string, currentHost: string) =>
-            `Ein für ${snippetHost} erstelltes Code-Schnipsel kann nicht in ${currentHost} importiert werden.`,
+            (snippetHost: string, currentHost: string) =>
+                `Ein für ${snippetHost} erstelltes Code-Schnipsel kann nicht in ${currentHost} importiert werden.`,
         currentHostDoesNotSupportRequiredApiSet:
-        (currentHost: string, setName: string, setVersion: string) =>
-            `${currentHost} unterstützt nicht die erforderliche API-Version ${setName} @ ${setVersion}`,
+            (currentHost: string, setName: string, setVersion: string) =>
+                `${currentHost} unterstützt nicht die erforderliche API-Version ${setName} @ ${setVersion}`,
 
         snippetSaveError: 'Das aktuelle Schnipsel konnte nicht gespeichert werden.',
         snippetDupeError: 'Das aktuelle Schnipsel konnte nicht dupliziert werden.',
@@ -213,7 +214,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
         importSucceed: 'Das Schnipsel wurde erfolgreich importiert',
 
         localStorageWarning: `Alle lokal gespeicherten Schnipsel werden gelöscht, wenn Sie Ihren Browser-Cache löschen. ` +
-        `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
+            `Um Ihre Schnipsel dauerhaft zu speichern, legen Sie diese anhand der Teilen-Funktion in GitHub-Gists ab.`,
         localStorageWarningAction: `Diese Meldung nicht mehr anzeigen.`,
 
         importInstructions: `Geben Sie die URL zum Schnipsel an oder fügen Sie den YAML-Code in das entsprechende Feld ein. Klicken Sie anschließend auf`,
@@ -282,8 +283,8 @@ export function getGermanStrings(): ClientStringsPerLanguage {
             chooseYourHost: 'Wählen Sie Ihre Host-Anwendung:',
 
             localStorageUnavailableMessage:
-            'Script Lab kann nicht initialisiert werden, da der lokale Speicher des verwendeten Browsers deaktiviert wurde. ' +
-            'Verwenden Sie eine anderen Browser bzw. Computer oder überprüfen Sie Ihre Interneteinstellungen.',
+                'Script Lab kann nicht initialisiert werden, da der lokale Speicher des verwendeten Browsers deaktiviert wurde. ' +
+                'Verwenden Sie eine anderen Browser bzw. Computer oder überprüfen Sie Ihre Interneteinstellungen.',
 
             loadingRunnerDotDotDot: 'Wird geladen...',
             running: 'Ausführung',
