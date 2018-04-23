@@ -235,7 +235,7 @@ interface IBuildInfo {
 }
 
 interface IEnvironmentConfig {
-    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'STAGING' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,

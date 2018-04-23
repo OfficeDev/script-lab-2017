@@ -28,6 +28,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         alpha: 'Alpha',
         beta: 'Beta',
         production: 'Production',
+        staging: getEnglishSubstitutesForNotYetTranslated().staging,
 
         userId: '用户 ID',
 

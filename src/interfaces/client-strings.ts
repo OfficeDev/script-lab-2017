@@ -6,6 +6,7 @@ interface ClientStringsPerLanguage {
     alpha: string,
     beta: string,
     production: string,
+    staging: string,
 
     userId: string;
 
