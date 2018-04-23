@@ -32,9 +32,9 @@
         "js-yaml": "3.8.2",
         "is-plain-object": "^2.0.4",
         "lodash": "4.17.4",
-        "moment": "2.18.1",
+        "moment": "2.19.3",
         "request": "2.80.0",
-        "typescript": "2.2.1",
+        "typescript": "2.6.2",
         "uuid": "^3.0.1",
         "unzip": "^0.1.11",
         "xml2js-parser": "^1.1.1"

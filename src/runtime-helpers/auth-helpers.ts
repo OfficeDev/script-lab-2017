@@ -23,10 +23,33 @@ module ScriptLab {
         }
     } = {};
 
+    let _initializationParams: { snippet: { id: string } };
+
+    /** DO NOT CALL THIS METHOD, INTERNAL USE ONLY.
+     */
+    export function _init(params: { snippet: { id: string } }) {
+        _initializationParams = params;
+    }
+
+    /** [PREVIEW] Gets an access token on behalf of the user for Microsoft Graph using a default Script Lab registration
+     */
+    export function getAccessToken();
+
     /** [PREVIEW] Gets an access token on behalf of the user for a particular service
-     * @param resource: The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
-    */
-    export function getAccessToken(clientId: string, resource: string = 'graph'): Promise<string> {
+     * @param clientId: The client id for the AAD app you wish to get a token for.
+     * @param resource: [optional] The resource provider (default: 'graph' = Microsoft Graph; but could also be custom URI)
+     */
+    export function getAccessToken(clientId: string, resource?: 'graph' | string);
+
+    export function getAccessToken(clientId?: string, resource?: string): Promise<string> {
+        if (!resource) {
+            resource = 'graph';
+        }
+
+        if (!clientId) {
+            clientId = 'default';
+        }
+
         const cachedAccessToken = _getCachedAccessToken(clientId, resource);
         if (cachedAccessToken) {
             return Promise.resolve(cachedAccessToken);
@@ -209,6 +232,7 @@ module ScriptLab {
         });
     }
 
+    // This function is also duplicated in "about.ts" for logout of the default graph snippet registration.
     function _generateAuthUrl(params: {
         auth_action: 'login' | 'logout';
         resource: string;
@@ -219,7 +243,8 @@ module ScriptLab {
             `auth_action=${params.auth_action}`,
             `client_id=${encodeURIComponent(params.client_id)}`,
             `resource=${params.resource}`,
-            `is_office_host=${params.is_office_host}`
+            `is_office_host=${params.is_office_host}`,
+            `snippet_id=${_initializationParams.snippet.id}`,
         ].join('&');
 
         return window.location.origin + '/snippet/auth?' + queryParams;
@@ -242,7 +267,7 @@ module ScriptLab {
     function _extractAndCacheAccessToken(message: any, clientId: string, resource: string): string {
         cachedAuthTokens[_cacheKey(clientId, resource)] = {
             token: message.accessToken,
-            expiry: Date.now() + ((message.expiresIn - 60 * 5 /* five minute of safety margin */ ) * 1000)
+            expiry: Date.now() + ((message.expiresIn - 60 * 5 /* five minute of safety margin */) * 1000)
         };
         return message.accessToken;
     }

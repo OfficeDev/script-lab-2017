@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment, isOfficeHost, isInsideOfficeApp } from '../helpers';
+import { environment, isOfficeHost, isInsideOfficeApp, isMakerScript } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
@@ -143,9 +143,18 @@ export class EditorMode {
         }
 
         if (isOfficeHost(this.snippet.host)) {
-            if (!isInsideOfficeApp()) {
+            let canRun = isInsideOfficeApp();
+
+            // Additionally, for a maker script:
+            if (this.snippet && isMakerScript(this.snippet.script)) {
+                if (this.snippet.script.content.indexOf('ExcelMaker.getActiveWorkbook()') < 0) {
+                    canRun = true;
+                }
+            }
+
+            if (!canRun) {
                 this._store.dispatch(new UI.ShowAlertAction({
-                    actions: [this.strings.okButtonLabel],
+                    actions: [this.strings.ok],
                     title: this.strings.snippetNoOfficeTitle,
                     message: this.strings.snippetNoOfficeMessage
                 }));
@@ -169,8 +178,8 @@ export class EditorMode {
             return;
         }
 
-        let result = await this._effects.alert(this.strings.deleteSnippetConfirm, `${this.strings.delete} ${this.snippet.name}`, this.strings.delete, this.strings.cancelButtonLabel);
-        if (result === this.strings.cancelButtonLabel) {
+        let result = await this._effects.alert(this.strings.deleteSnippetConfirm, `${this.strings.delete} ${this.snippet.name}`, this.strings.delete, this.strings.cancel);
+        if (result === this.strings.cancel) {
             return;
         }
 
@@ -232,10 +241,10 @@ export class EditorMode {
                 }
                 else if (isPublic) {
                     if (isGistOwned && this.snippet.gist) {
-                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePublicSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancel);
                     }
 
-                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                    if (confirmationAlertIfAny !== this.strings.cancel) {
                         this._store.dispatch(new GitHub.SharePublicGistAction(this.snippet));
                     } else {
                         this.isDisabled = false;
@@ -243,10 +252,10 @@ export class EditorMode {
                 }
                 else {
                     if (isGistOwned && this.snippet.gist) {
-                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancelButtonLabel);
+                        confirmationAlertIfAny = await this._effects.alert(this.strings.sharePrivateSnippetConfirm, `${this.strings.share} ${this.snippet.name}`, this.strings.share, this.strings.cancel);
                     }
 
-                    if (confirmationAlertIfAny !== this.strings.cancelButtonLabel) {
+                    if (confirmationAlertIfAny !== this.strings.cancel) {
                         this._store.dispatch(new GitHub.SharePrivateGistAction(this.snippet));
                     } else {
                         this.isDisabled = false;

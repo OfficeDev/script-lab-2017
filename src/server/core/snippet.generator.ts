@@ -1,82 +1,59 @@
 import * as ts from 'typescript';
 import { BadRequestError, InformationalError } from './errors';
-import { processLibraries } from './libraries.processor';
+import { isMakerScript } from './snippet.helper';
+import { injectPerfMarkers } from './perf.injector';
 
-export class SnippetGenerator {
-    constructor(private _strings: ServerStrings) { }
+/**
+ * Compiles script data (which might be the "script" tab on the snippet,
+ * but might also be the "customFunctions").
+ */
+export function compileScript(
+    data: { language: string, content: string },
+    strings: ServerStrings
+): string {
+    const { language, content } = data;
 
-    /**
-     * Compiles the snippet, and returns it as a Promise (Promise<ICompiledSnippet>)
-     * Using a Promise in case some future compilation does need to be promise-ful.
-     **/
-    compile(snippet: ISnippet): Promise<ICompiledSnippet> {
-        return Promise.resolve()
-            .then(() => {
-                if (snippet == null) {
-                    // OK to be English-only, internal error that should never happen.
-                    throw new BadRequestError('Snippet is null');
-                }
+    switch (language.toLowerCase()) {
+        case 'typescript':
+            return compileTypeScript(content, strings);
 
-                let compiledSnippet: ICompiledSnippet = {
-                    id: snippet.id,
-                    gist: snippet.gist,
-                    name: snippet.name,
-                    description: snippet.description,
-                    host: snippet.host,
-                    platform: snippet.platform,
-                    created_at: snippet.created_at,
-                    modified_at: snippet.modified_at,
-                    style: snippet.style.content,
-                    template: snippet.template.content,
-                };
+        case 'javascript':
+            return content;
 
-                const { scriptReferences, linkReferences, officeJS } = processLibraries(snippet);
-
-                const script = this.compileScript(snippet.script);
-
-                // HACK: Need to manually remove es2015 module generation
-                compiledSnippet.script = script.replace('Object.defineProperty(exports, "__esModule", { value: true });', '');
-                compiledSnippet.officeJS = officeJS;
-                compiledSnippet.scriptReferences = scriptReferences;
-                compiledSnippet.linkReferences = linkReferences;
-
-                return compiledSnippet;
-        });
-    }
-
-    compileScript({ language, content }: { language: string, content: string }): string {
-        switch (language.toLowerCase()) {
-            case 'typescript':
-                let result = ts.transpileModule(content, {
-                    reportDiagnostics: true,
-                    compilerOptions: {
-                        target: ts.ScriptTarget.ES5,
-                        allowJs: true,
-                        lib: ['dom', 'es2015']
-                    }
-                });
-
-                if (result.diagnostics.length) {
-                    throw new InformationalError(
-                        this._strings.getSyntaxErrorsTitle(result.diagnostics.length),
-                        result.diagnostics.map(item => {
-                            let upThroughError = content.substr(0, item.start);
-                            let afterError = content.substr(item.start + 1);
-                            let lineNumber = upThroughError.split('\n').length;
-                            let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
-                            let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
-                            return `${this._strings.line} #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
-                        }).join('\n\n')
-                    );
-                }
-
-                return result.outputText;
-
-            case 'javascript':
-                return content;
-
-            default:
-                throw new BadRequestError(`${this._strings.unrecognizedScriptLanguage} ${language}`);
-        }
+        default:
+            throw new BadRequestError(`${strings.unrecognizedScriptLanguage} ${language}`);
     }
 }
+
+function compileTypeScript(content: string, strings: ServerStrings) {
+    const isMaker = isMakerScript({ content, language: 'typescript' });
+    if (isMaker) {
+        content = injectPerfMarkers(content);
+    }
+
+    let result = ts.transpileModule(content, {
+        reportDiagnostics: true,
+        compilerOptions: {
+            target: ts.ScriptTarget.ES5,
+            allowJs: true,
+            lib: ['dom', 'es2015']
+        }
+    });
+
+    if (result.diagnostics.length) {
+        throw new InformationalError(
+            strings.getSyntaxErrorsTitle(result.diagnostics.length),
+            result.diagnostics.map(item => {
+                let upThroughError = content.substr(0, item.start);
+                let afterError = content.substr(item.start + 1);
+                let lineNumber = upThroughError.split('\n').length;
+                let startIndexOfThisLine = upThroughError.lastIndexOf('\n');
+                let lineText = content.substring(startIndexOfThisLine, item.start + Math.max(afterError.indexOf('\n'), 0)).trim();
+                return `${strings.line} #${lineNumber}:  ${item.messageText}` + '\n    ' + lineText;
+            }).join('\n\n')
+        );
+    }
+
+    // HACK: Need to manually remove es2015 module generation
+    return result.outputText.replace('Object.defineProperty(exports, "__esModule", { value: true });', '');
+};

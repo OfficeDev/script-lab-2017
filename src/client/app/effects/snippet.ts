@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import * as jsyaml from 'js-yaml';
 import {
     PlaygroundError, AI, post, environment, isInsideOfficeApp, storage, processLibraries,
-    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager
+    SnippetFieldType, getScrubbedSnippet, getSnippetDefaults, trustedSnippetManager, ensureFreshLocalStorage, isMakerScript
 } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -14,9 +14,10 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import { isEmpty, isNil, find, assign, reduce, forIn, isEqual } from 'lodash';
+import { isEmpty, isNil, find, assign, reduce, forIn, isEqual, pick } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
+const { localStorageKeys } = PLAYGROUND;
 
 @Injectable()
 export class SnippetEffects {
@@ -63,7 +64,7 @@ export class SnippetEffects {
                         this._uiEffects.alert(
                             message,
                             Strings().snippetImportErrorTitle,
-                            Strings().okButtonLabel);
+                            Strings().ok);
                     }
                     return Observable.from([]);
                 });
@@ -81,6 +82,7 @@ export class SnippetEffects {
             delete scrubbedSnippet.modified_at;
 
             // Bug #593, stopgap fix until more performant solution is implemented
+            ensureFreshLocalStorage();
             storage.snippets.load();
             if (storage.snippets.contains(scrubbedSnippet.id)) {
                 const originalRawSnippet = storage.snippets.get(scrubbedSnippet.id);
@@ -95,8 +97,26 @@ export class SnippetEffects {
         })
         .filter(snippet => snippet != null)
         .map(scrubbedSnippet => {
-            scrubbedSnippet.modified_at = Date.now();
+            // note: removed the use of storage.snippets.insert as there was a bug where it wasn't writing to local storage in IE
+            const hostStorageKey = localStorageKeys.hostSnippets_parameterized
+                .replace('{0}', environment.current.host);
+
+            // update snippets.  Note that we'll both update through the "official"
+            //    channel of "storage.snippets", and also update the localStorage directly
+            //    (otherwise, heartbeat refresh was not working)
             storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
+
+            scrubbedSnippet.modified_at = Date.now();
+            const snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
+            snippets[scrubbedSnippet.id] = scrubbedSnippet;
+            window.localStorage.setItem(hostStorageKey, JSON.stringify(snippets));
+
+            // update lastOpened
+            const settings = JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) || {};
+            settings[environment.current.host].lastOpened = pick(scrubbedSnippet, ['created_at', 'host', 'id', 'libraries', 'modified_at', 'name', 'description']);
+
+            window.localStorage.setItem(localStorageKeys.settings, JSON.stringify(settings));
+
             return new Snippet.StoreUpdatedAction();
         })
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetSaveError, exception)));
@@ -140,13 +160,13 @@ export class SnippetEffects {
         .catch(exception => Observable.of(new UI.ReportErrorAction(Strings().snippetLoadAllError, exception)));
 
     @Effect({ dispatch: false })
-    run$: Observable<Action> = this.actions$
+    run$: Observable<Action | void> = this.actions$
         .ofType(Snippet.SnippetActionTypes.RUN)
         .map(action => action.payload)
         .map((snippet: ISnippet) => {
             if (Utilities.host === HostType.OUTLOOK) {
                 this._store.dispatch(new UI.ShowAlertAction({
-                    actions: [Strings().okButtonLabel],
+                    actions: [Strings().ok],
                     title: Strings().snippetRunError,
                     message: Strings().noRunInOutlook
                 }));
@@ -154,7 +174,8 @@ export class SnippetEffects {
             } else {
                 const state: IRunnerState = {
                     snippet: snippet,
-                    displayLanguage: getDisplayLanguage()
+                    displayLanguage: getDisplayLanguage(),
+                    isInsideOfficeApp: isInsideOfficeApp(),
                 };
                 const data = JSON.stringify(state);
                 const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
@@ -256,8 +277,8 @@ export class SnippetEffects {
             return Observable.from([]);
         });
 
-    private _gistIdExists(id: string) {
-        return storage.snippets.values().some(item => item.gist && item.gist.trim() === id.trim());
+    private _getSnippetsWithMatchingGistID(id: string): ISnippet[] {
+        return storage.snippets.values().filter(item => item.gist && item.gist.trim() === id.trim());
     }
 
     private _nameExists(name: string) {
@@ -381,7 +402,7 @@ export class SnippetEffects {
                     this._uiEffects.alert(
                         Strings().requestedSnippetNoLongerExists,
                         Strings().cannotOpenSnippet,
-                        Strings().okButtonLabel);
+                        Strings().ok);
                     return Observable.of(null);
                 }
 
@@ -499,36 +520,62 @@ export class SnippetEffects {
          * If the user is importing a gist that already exists, ask the user if they want
          * to navigate to the existing one or create a new one in their local storage.
          */
+
+        let snippetsWithSameGistId: ISnippet[];
         let importResult: string = null;
-        if (mode !== Snippet.ImportType.OPEN && snippet.gist && this._gistIdExists(snippet.gist)) {
-            importResult = await this._uiEffects.alert(
-                Strings().snippetGistIdDuplicationError,
-                `${Strings().importButtonLabel} ${snippet.name}`,
-                Strings().snippetImportExistingButtonLabel, Strings().defaultSnippetTitle, Strings().cancelButtonLabel /* user options */
-            );
+        if (mode !== Snippet.ImportType.OPEN && snippet.gist) {
+            snippetsWithSameGistId = this._getSnippetsWithMatchingGistID(snippet.gist);
+            if (snippetsWithSameGistId.length > 0) {
+                let options = [
+                    Strings().snippetImportExistingButtonLabel,
+                    (snippetsWithSameGistId.length === 1) ? Strings().overwriteExistingButtonLabel : null,
+                    Strings().createNewCopyButtonLabel,
+                    Strings().cancel /* user options */
+                ].filter(item => item !== null);
+
+                importResult = await this._uiEffects.alert(
+                    Strings().snippetGistIdDuplicationError,
+                    `${Strings().import} ${snippet.name}`,
+                    ...options
+                );
+            }
         }
 
-        let actions: Action[] = [];
-        if (importResult === Strings().snippetImportExistingButtonLabel) {
-            for (let item of storage.snippets.values()) {
-                if (item.gist && item.gist.trim() === snippet.gist.trim()) {
-                    actions.push(new Snippet.ImportSuccessAction(item));
-                    break;
+        let getActionsFunc = (): Action[] => {
+            switch (importResult) {
+                case Strings().snippetImportExistingButtonLabel: {
+                    return [new Snippet.ImportSuccessAction(snippetsWithSameGistId[0])];
+                }
+
+                case Strings().overwriteExistingButtonLabel: {
+                    snippet.id = snippetsWithSameGistId[0].id;
+                    trustedSnippetManager.untrustSnippet(snippet.id);
+                    return [
+                        new Snippet.ImportSuccessAction(snippet),
+                        new Snippet.SaveAction(snippet)
+                    ];
+                }
+
+                case Strings().cancel: {
+                    return [];
+                }
+
+                default: {
+                    this._updateSnippetNameIfNeeded(snippet, mode, additionalParameters.isReadOnlyViewMode);
+
+                    const actions: Action[] = [new Snippet.ImportSuccessAction(snippet)];
+
+                    if (this._shouldSaveImportedSnippet(mode, additionalParameters.isReadOnlyViewMode)) {
+                        actions.push(new Snippet.SaveAction(snippet));
+                    }
+                    return actions;
                 }
             }
-        } else if (importResult !== Strings().cancelButtonLabel) {
-            this._updateSnippetNameIfNeeded(snippet, mode, additionalParameters.isReadOnlyViewMode);
-
-            actions.push(new Snippet.ImportSuccessAction(snippet));
-
-            if (this._shouldSaveImportedSnippet(mode, additionalParameters.isReadOnlyViewMode)) {
-                actions.push(new Snippet.SaveAction(snippet));
-            }
-        }
+        };
 
         return {
             snippet,
-            actions: Observable.from(actions)
+            actions: Observable.from(getActionsFunc())
         };
     }
 
@@ -543,7 +590,7 @@ export class SnippetEffects {
             return;
         }
 
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMakerScript(snippet.script), isInsideOfficeApp()).officeJS || '';
         if (desiredOfficeJS.toLowerCase().indexOf('https://appsforoffice.microsoft.com/lib/1/hosted/') < 0) {
             // Snippets using production Office.js should be checked for API set support.
             // Snippets using the beta endpoint or an NPM package don't need to.

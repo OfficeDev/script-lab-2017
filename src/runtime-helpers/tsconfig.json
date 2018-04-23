@@ -5,7 +5,7 @@
         "removeComments": false,
         "declaration": true,
         "noEmitOnError": true,
-        "outDir": "../../dist/client" /*output into same folder as where editor is served from*/,
+        "outDir": "../../dist/client/libs" /*output into same folder as where editor is served from*/,
         "allowUnusedLabels": false,
         "noImplicitReturns": true,
         "noUnusedLocals": false /* setting to false so that can have a module with an exported (but without "export" keyword) function name */,
@@ -15,8 +15,14 @@
         "lib": [
             "es2015",
             "dom"
-        ]
+        ],
+        "types": []
     },
-    "compileOnSave": false,
-    "buildOnSave": false
+    "files": [
+        "auth-helpers.ts",
+        "custom-functions.ts",
+        "maker.ts",
+        "../../node_modules/@microsoft/office-js/dist/office.d.ts"
+    ],
+    "compileOnSave": false
 }

@@ -10,7 +10,7 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
   <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
-    <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+      <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="de-at" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="es-ar" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
@@ -37,7 +37,7 @@
   <IconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-64.png" />
   <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
-  <AppDomains>
+<AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://stackoverflow.com</AppDomain>
     <AppDomain>https://dev.office.com</AppDomain>
@@ -65,6 +65,13 @@
     <Description resid="PG.Description" />
     <Hosts>
       <Host xsi:type="Workbook">
+        <AllFormFactors>
+          <ExtensionPoint xsi:type="CustomFunctions">
+            <Page>
+              <SourceLocation resid="PG.CustomFunctions.URL"/>
+            </Page>
+          </ExtensionPoint>
+        </AllFormFactors>
         <DesktopFormFactor>
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
@@ -476,6 +483,7 @@
         <bt:Url id="PG.Code.Url" DefaultValue="https://script-lab.azureedge.net?commands=1" />
         <bt:Url id="PG.Run.Url" DefaultValue="https://script-lab.azureedge.net/run.html" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://script-lab.azureedge.net/functions.html" />
+        <bt:Url id="PG.CustomFunctions.URL" DefaultValue="https://bornholm-edge.azurewebsites.net/custom-functions.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="Script Lab" />

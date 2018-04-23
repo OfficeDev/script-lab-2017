@@ -73,7 +73,6 @@
 }
 
 iframe#FirebugUI {
-	z-index: 1000 !important; /* so that can load *beneath* the progress splash-screen (z-index of 10,000) */
 	outline: none;
 	border: none;
 }
@@ -89,7 +88,6 @@ iframe#FirebugUI {
 	box-sizing: border-box;
 	position: absolute;
 	top: 40px;
-	z-index: 50000; /* make sure it shows up above everything, including the progress splash-screen */
 
 	.ms-MessageBar-icon {
 		font-size: 30px;
@@ -108,7 +106,6 @@ iframe#FirebugUI {
 .runner-overlay {
 	display: none;
     position: absolute;
-    z-index: 40000;
     top: 40px;
     left: 0;
     right: 0;

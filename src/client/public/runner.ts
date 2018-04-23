@@ -1,13 +1,25 @@
 import * as $ from 'jquery';
 import * as moment from 'moment';
-import { toNumber, assign, isNil } from 'lodash';
+import { toNumber, isNil } from 'lodash';
 import { Utilities, PlatformType, UI } from '@microsoft/office-js-helpers';
-import { generateUrl, processLibraries, environment, instantiateRibbon } from '../app/helpers';
+import {
+    generateUrl,
+    processLibraries,
+    environment,
+    instantiateRibbon,
+    setUpMomentJsDurationDefaults,
+    isMakerScript,
+    isInsideOfficeApp
+} from '../app/helpers';
 import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
-import { Messenger, MessageType } from '../app/helpers/messenger';
+import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
+import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 
 import '../assets/styles/common.scss';
 import '../assets/styles/extras.scss';
+
+// Must match the value in "server.ts"
+const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 
 interface InitializationParams {
     host: string;
@@ -18,14 +30,18 @@ interface InitializationParams {
         officeJS: string;
         id: string;
         lastModified: string;
+        isMakerScript: boolean;
     }
     explicitlySetDisplayLanguageOrNull: string;
 }
 
-(() => {
-    /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-    const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
+// Interface must match the parameters of function "_init" in "maker.ts".
+interface MakerInitializationParams {
+    scriptReferences: string[];
+    onPerfAnalysisReady: (perfInfo: PerfInfoItem[]) => void;
+}
 
+(() => {
     /**
      * A "pre" tag containing the original snippet content, and acting as a placemarker
      * for where to insert the rendered snippet iframe
@@ -35,24 +51,18 @@ interface InitializationParams {
     let returnUrl = '';
     let host: string;
 
-    let currentSnippet: { id: string, lastModified: number, officeJS: string };
+    let currentSnippet: { id: string, lastModified: number, officeJS: string, isMakerScript: boolean };
 
-    const defaultIsListeningTo = {
-        snippetSwitching: true,
-        currentSnippetContentChange: true
-    };
-
-    const isListeningTo = {} as any;
-    assign(isListeningTo, defaultIsListeningTo);
+    let isListeningToCurrentSnippetContentChange = true;
 
     const heartbeat: {
-        messenger: Messenger,
+        messenger: Messenger<RunnerMessageType>,
         window: Window
     } = <any>{};
 
     let isInTryItMode = checkIfInTryItMode();
 
-    async function initializeRunner(params: InitializationParams): Promise<void> {
+    (window as any).initializeRunner = async (params: InitializationParams): Promise<void> => {
         try {
             await environment.initializePartial({ host: params.host });
             instantiateRibbon('ribbon');
@@ -64,7 +74,7 @@ interface InitializationParams {
                 // Nothing to wait on, playground is ready:
                 environment.setPlaygroundHostIsReady();
             }
-            else if (params.currentSnippet.officeJS) {
+            else if (isRealOfficeJsReference(params.currentSnippet.officeJS)) {
                 let script = document.createElement('script');
                 script.src = params.currentSnippet.officeJS;
                 script.addEventListener('load', (event) => {
@@ -87,9 +97,9 @@ interface InitializationParams {
         catch (error) {
             handleError(error);
         }
-    }
+    };
 
-    async function initializeRunnerHelper(initialParams: Partial<InitializationParams>) {
+    async function initializeRunnerHelper(initialParams: InitializationParams) {
         // Even though already did a partial initialization, do a more thorough
         // one here that will let the user choose the host, if one isn't specified:
         await environment.initialize({ host: initialParams.host });
@@ -146,7 +156,13 @@ interface InitializationParams {
             // so that can keep adding the snippet frame relative to its position
             $snippetContent.text('');
 
-            replaceSnippetIframe(atob(snippetHtml), initialParams.currentSnippet.officeJS, isTrustedSnippet);
+            replaceSnippetIframe({
+                snippetId: initialParams.currentSnippet.id,
+                html: atob(snippetHtml),
+                officeJS: initialParams.currentSnippet.officeJS,
+                isTrustedSnippet,
+                isMaker: initialParams.currentSnippet.isMakerScript
+            });
         }
 
         let runnerUrlWithCorrectPrefix = (() => {
@@ -170,12 +186,13 @@ interface InitializationParams {
             .observe(document.getElementById('FirebugUI'), { attributes: true });
     }
 
-    (window as any).initializeRunner = initializeRunner;
-
-
     /** Creates a snippet iframe and returns it (still hidden). Returns true on success
      * (e.g., snippet indeed shown, in contrast with, say, the Trust dialog being shown, but not the snippet) */
-    function replaceSnippetIframe(html: string, officeJS: string, isTrustedSnippet: boolean): boolean {
+    function replaceSnippetIframe(
+        { snippetId, html, officeJS, isTrustedSnippet, isMaker }:
+            { snippetId: string, html: string, officeJS: string, isTrustedSnippet: boolean, isMaker: boolean }
+    ): boolean {
+
         showHeader();
 
         // Remove any previous iFrames (if any) or the placeholder snippet-frame div
@@ -200,9 +217,28 @@ interface InitializationParams {
         const iframe = $iframe[0] as HTMLIFrameElement;
         let { contentWindow } = iframe;
 
-        (window as any).scriptRunnerBeginInit = () => {
+        (window as any).scriptRunnerBeginInit = (options: { scriptReferences: string[] } = { scriptReferences: [] }) => {
             (contentWindow as any).console = window.console;
             contentWindow.onerror = (...args) => console.error(args);
+
+            if (!options.scriptReferences) {
+                options.scriptReferences = [];
+            }
+
+            if ((contentWindow as any).ScriptLab) {
+                (contentWindow as any).ScriptLab._init({ snippet: { id: snippetId } });
+            }
+            if (isMaker) {
+                let params: MakerInitializationParams = {
+                    scriptReferences: options.scriptReferences,
+                    onPerfAnalysisReady: onPerfAnalysisReady
+                };
+                ((contentWindow as any).Experimental.ExcelMaker as any)._init(params);
+
+                // timer only works on maker snippets inside the worker, so setting to empty
+                (contentWindow as any).start_perf_timer = () => {};
+                (contentWindow as any).stop_perf_timer = () => {};
+            }
 
             if (officeJS) {
                 contentWindow['Office'] = window['Office'];
@@ -218,7 +254,7 @@ interface InitializationParams {
         };
 
         (window as any).scriptRunnerEndInit = () => {
-            if (officeJS) {
+            if (isRealOfficeJsReference(officeJS) && Office) {
                 // Call Office.initialize(), which now initializes the snippet.
                 // The parameter, initializationReason, is not used in the playground.
                 Office.initialize(null /*initializationReason*/);
@@ -245,6 +281,10 @@ interface InitializationParams {
         contentWindow.document.close();
 
         return true;
+    }
+
+    function onPerfAnalysisReady(perf: PerfInfoItem[]) {
+        heartbeat.messenger.send<{ perf: PerfInfoItem[] }>(heartbeat.window, RunnerMessageType.SNIPPET_PERF_DATA, { perf: perf });
     }
 
     function handleError(error: Error) {
@@ -283,22 +323,6 @@ interface InitializationParams {
         $('#notify-error').show();
     }
 
-    function loadFirebug(origin: string): Promise<void> {
-        return new Promise<any>((resolve, reject) => {
-            (window as any).origin = origin;
-            const firebugUrl = `${origin}/assets/firebug/firebug-lite-debug.js#startOpened`;
-            const script = $(`<script type="text/javascript" src="${firebugUrl}"></script>`);
-            script.appendTo('head');
-
-            const interval = setInterval(() => {
-                if ((window as any).firebugLiteIsLoaded) {
-                    clearInterval(interval);
-                    return resolve((window as any).Firebug);
-                }
-            }, 100);
-        });
-    }
-
     async function ensureHostInitialized(): Promise<any> {
         if (isInTryItMode) {
             (window as any).Office = {
@@ -315,7 +339,7 @@ interface InitializationParams {
             return Promise.resolve();
         }
 
-        await environment.createPlaygroundHostReadyTimer().promise;
+        await environment.createPlaygroundHostReadyTimer();
     }
 
     function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {
@@ -327,33 +351,25 @@ interface InitializationParams {
         heartbeat.messenger = new Messenger(origin);
         heartbeat.window = ($iframe[0] as HTMLIFrameElement).contentWindow;
 
-        heartbeat.messenger.listen<{ lastOpenedId: string }>()
-            .filter(({ type }) => type === MessageType.HEARTBEAT_INITIALIZED)
-            .subscribe(input => {
-                if (input.message.lastOpenedId !== heartbeatParams.id) {
-                    isListeningTo.snippetSwitching = false;
-                }
-            });
-
         heartbeat.messenger.listen<string>()
-            .filter(({ type }) => type === MessageType.ERROR)
+            .filter(({ type }) => type === RunnerMessageType.ERROR)
             .map(input => new Error(input.message))
             .subscribe(handleError);
 
         heartbeat.messenger.listen<{ name: string }>()
-            .filter(({ type }) => type === MessageType.INFORM_STALE)
+            .filter(({ type }) => type === RunnerMessageType.INFORM_STALE)
             .subscribe(input => {
-                if (isListeningTo.currentSnippetContentChange) {
+                if (isListeningToCurrentSnippetContentChange) {
                     showReloadNotification($('#notify-current-snippet-changed'),
                         () => clearAndRefresh(currentSnippet.id, input.message.name, false /*isTrustedSnippet*/),
-                        () => isListeningTo.currentSnippetContentChange = false,
+                        () => isListeningToCurrentSnippetContentChange = false,
                         true, /*allowShowLoadingDots*/
                     );
                 }
             });
 
         heartbeat.messenger.listen<{ id: string, name: string }>()
-            .filter(({ type }) => type === MessageType.INFORM_SWITCHED_SNIPPET)
+            .filter(({ type }) => type === RunnerMessageType.INFORM_SWITCHED_SNIPPET)
             .subscribe(input => {
                 const $anotherSnippetSelected = $('#notify-another-snippet-selected');
                 // if switched back to the snippet that was already being tracked,
@@ -362,18 +378,16 @@ interface InitializationParams {
                     $('.runner-overlay').hide();
                     $anotherSnippetSelected.hide();
                 } else {
-                    if (isListeningTo.snippetSwitching) {
-                        $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
-                        showReloadNotification($anotherSnippetSelected,
-                            () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
-                            () => isListeningTo.snippetSwitching = false,
-                            true /*allowShowLoadingDots*/);
-                    }
+                    $anotherSnippetSelected.find('.ms-MessageBar-text .snippet-name').text(input.message.name);
+                    showReloadNotification($anotherSnippetSelected,
+                        () => clearAndRefresh(input.message.id, input.message.name, false /*isTrustedSnippet*/),
+                        () => {},
+                        true /*allowShowLoadingDots*/);
                 }
             });
 
         heartbeat.messenger.listen<{ snippet: ISnippet, isTrustedSnippet: boolean }>()
-            .filter(({ type }) => type === MessageType.REFRESH_RESPONSE)
+            .filter(({ type }) => type === RunnerMessageType.REFRESH_RESPONSE)
             .subscribe(input => {
                 const snippet = input.message.snippet;
                 const data = JSON.stringify({
@@ -409,16 +423,18 @@ interface InitializationParams {
     }
 
     function processSnippetReload(html: string, snippet: ISnippet, isTrustedSnippet: boolean) {
-        const desiredOfficeJS = processLibraries(snippet).officeJS || '';
+        const isMaker = isMakerScript(snippet.script);
+        const desiredOfficeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS || '';
         const reloadDueToOfficeJSMismatch = (desiredOfficeJS !== currentSnippet.officeJS);
 
         currentSnippet = {
             id: snippet.id,
             lastModified: snippet.modified_at,
-            officeJS: desiredOfficeJS
+            officeJS: desiredOfficeJS,
+            isMakerScript: isMaker
         };
 
-        isListeningTo.currentSnippetContentChange = true;
+        isListeningToCurrentSnippetContentChange = true;
 
         const refreshUrl = generateRefreshUrl(desiredOfficeJS);
         if (reloadDueToOfficeJSMismatch) {
@@ -433,7 +449,9 @@ interface InitializationParams {
 
         $('#header-refresh').attr('href', refreshUrl);
 
-        let replacedSuccessfully = replaceSnippetIframe(html, processLibraries(snippet).officeJS, isTrustedSnippet);
+        const officeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS;
+        const snippetId = snippet.id;
+        let replacedSuccessfully = replaceSnippetIframe({ snippetId, html, officeJS, isTrustedSnippet, isMaker });
 
         $('#header-text').text(snippet.name);
         currentSnippet.lastModified = snippet.modified_at;
@@ -458,10 +476,10 @@ interface InitializationParams {
         $('.snippet-frame').remove();
 
         if (id == null) {
-            assign(isListeningTo, defaultIsListeningTo);
+            isListeningToCurrentSnippetContentChange = true;
         }
 
-        heartbeat.messenger.send(heartbeat.window, MessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
+        heartbeat.messenger.send(heartbeat.window, RunnerMessageType.REFRESH_REQUEST, { id: id, isTrustedSnippet: isTrustedSnippet });
     }
 
     function generateRefreshUrl(desiredOfficeJS: string) {
@@ -496,13 +514,7 @@ interface InitializationParams {
     }
 
     function initializeTooltipUpdater() {
-        moment.relativeTimeThreshold('s', 40);
-        // Note, per documentation, "ss" must be set after "s"
-        moment.relativeTimeThreshold('ss', 2);
-        moment.relativeTimeThreshold('m', 40);
-        moment.relativeTimeThreshold('h', 20);
-        moment.relativeTimeThreshold('d', 25);
-        moment.relativeTimeThreshold('M', 10);
+        setUpMomentJsDurationDefaults(moment);
 
         const $headerTitle = $('#header .command__center');
 
@@ -549,6 +561,10 @@ interface InitializationParams {
         } catch (e) {
             return false;
         }
+    }
+
+    function isRealOfficeJsReference(officeJS: string) {
+        return officeJS && officeJS !== EXPLICIT_NONE_OFFICE_JS_REFERENCE;
     }
 
 })();

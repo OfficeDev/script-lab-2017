@@ -61,7 +61,9 @@ export function reducer(state = initialState, action: UIActions): UIState {
 
         case UIActionTypes.CHANGE_LANGUAGE: {
             AI.trackEvent(action.type, { language: action.payload });
-            return { ...state, language: action.payload };
+            // NOT IMPLEMENTED.
+            console.log(`Wanted to switch to "${action.payload}"`);
+            return { ...state };
         }
 
         default: return state;

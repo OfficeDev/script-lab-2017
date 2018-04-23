@@ -31,7 +31,7 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                         <i class="ms-Icon ms-Icon--Dictionary"></i><span>{{strings.samplesLabel}}</span>
                     </li>
                     <li class="gallery__tab ms-Pivot-link" [ngClass]="{'is-selected gallery__tab--active': view === 'import'}" (click)="switch('import')">
-                        <i class="ms-Icon ms-Icon--Download"></i><span>{{strings.importButtonLabel}}</span>
+                        <i class="ms-Icon ms-Icon--Download"></i><span>{{strings.import}}</span>
                     </li>
                 </ul>
                 <section class="gallery__tabs-container">
@@ -78,15 +78,15 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                     </section>
                     <section class="import-tab__section" [hidden]="view !== 'import'">
                         <h1 class="ms-font-xxl import__title">{{strings.importLabel}}</h1>
-                        <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.importButtonLabel}}</b>.</p>
+                        <p class="ms-font-l import__subtitle">{{strings.importInstructions}} <b>{{strings.import}}</b>.</p>
                         <div class="ms-TextField ms-TextField--multiline import__field">
                             <label class="ms-Label">{{strings.importUrlOrYamlLabel}}</label>
-                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}" ></textarea>
+                            <textarea class="ms-TextField-field" [(ngModel)]="urlOrSnippet" placeholder="{{strings.importUrlPlaceholder}}"></textarea>
                         </div>
                         <div class="ms-Dialog-actions ">
                             <div class="ms-Dialog-actionsRight ">
                                 <button class="ms-Dialog-action ms-Button" (click)="import() ">
-                                    <span class="ms-Button-label">{{strings.importButtonLabel}}</span>
+                                    <span class="ms-Button-label">{{strings.import}}</span>
                                 </button>
                             </div>
                         </div>

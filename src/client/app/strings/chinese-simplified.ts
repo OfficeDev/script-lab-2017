@@ -4,16 +4,31 @@
 import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
-    const playgroundName = 'Script Lab';
 
-    return {
-        playgroundName: playgroundName,
+    // NOTE: Be sure to modify in both client and server code when
+    //  adding/changing the shared strings!
+    const sharedBetweenServerAndClient = {
+        playgroundName: 'Script Lab',
         playgroundTagline: '代码 ● 编写 ● 共享',
 
+        unexpectedError: '出现意外错误',
+
+        snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
+        trust: getEnglishSubstitutesForNotYetTranslated().trust,
+
+        error: '错误',
+        cancel: '注销',
+        dismiss: '解散',
+    };
+
+    const { playgroundName } = sharedBetweenServerAndClient;
+
+    return {
         // Environment names
         alpha: 'Alpha',
         beta: 'Beta',
         production: 'Production',
+        staging: getEnglishSubstitutesForNotYetTranslated().staging,
 
         userId: '用户 ID',
 
@@ -26,15 +41,17 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         about: '关于',
         feedback: '回馈',
         errors: '错误',
-        dismiss: '解散',
+        trustSnippetQuestionMark: getEnglishSubstitutesForNotYetTranslated().trustSnippetQuestionMark,
 
-        okButtonLabel: 'OK',
-        logoutButtonLabel: '退出',
-        cancelButtonLabel: '注销',
-        saveButtonLabel: '保存',
-        moreInfoButtonLabel: '更多信息',
-        importButtonLabel: '输入',
+        ok: getEnglishSubstitutesForNotYetTranslated().ok,
+        logout: '退出',
+        logoutFromGraph: getEnglishSubstitutesForNotYetTranslated().logoutFromGraph,
+        save: '保存',
+        moreInfo: '更多信息',
+        import: '输入',
         snippetImportExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().snippetImportExistingButtonLabel,
+        overwriteExistingButtonLabel: getEnglishSubstitutesForNotYetTranslated().overwriteExistingButtonLabel,
+        createNewCopyButtonLabel: getEnglishSubstitutesForNotYetTranslated().createNewCopyButtonLabel,
         editorTriggerSuggestContextMenuLabel: '引发建议',
 
         failedToLoadCodeSnippet: '导入代码段失败。',
@@ -105,13 +122,14 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         // Components strings
         // about.ts
         // Syntax of {0}, {1}... is used for placeholders and should not be localized
-        aboutUpdated: '最新更新:',
         aboutStorage: '储存:',
         aboutSnippets: '本地的代码段',
         aboutIntellisense: 'IntelliSense',
         aboutCurrentEnvironment: '当前环境:',
         aboutSwitchEnvironment: '从 {0} 转换到 {1}:',
         changeEnvironmentConfirm: '您将更改Script Lab工作平台，在返回当前的工作平台之前，将无法访问您保存的本地代码段. 您确定要继续吗?',
+        showExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().showExperimentationFlags,
+        invalidExperimentationFlags: getEnglishSubstitutesForNotYetTranslated().invalidExperimentationFlags,
 
         //snippet.info.ts
         snippetInfoDialogTitle: '信息',
@@ -143,10 +161,15 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
         tabDisplayNames: {
             'script': '脚本',
-            'template': '样本',
+            'template': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
+                /* Changed from "Template" to "HTML" in english; should we use 'HTML' or the original Chinese: //'样本' */,
             'style': '样式',
-            'libraries': '资源库'
+            'libraries': '资源库',
+            'customFunctions': getEnglishSubstitutesForNotYetTranslated().tabDisplayNames.customFunctions
         },
+
+        registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated().registerCustomFunctions,
+        getTextForCustomFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated().getTextForCustomFunctionsLastUpdated,
 
         // Gallery.view strings
 
@@ -189,14 +212,15 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
         importSucceed: getEnglishSubstitutesForNotYetTranslated().importSucceed,
 
         localStorageWarning: `如果您清除浏览器缓存，则创建的代码片段将被删除。 ` +
-        `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,
+            `若要永久保存代码片段，请从共享菜单中将它们导出为GIST。`,
         localStorageWarningAction: `不要再显示这个警告了。`,
 
         importInstructions: `进入代码段的URL或粘贴下面的YAML，然后选择`,
         importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel,
         exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated().exampleAbbreviation,
 
-        unexpectedError: '出现意外错误',
+        pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
+        scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
         Refresh: {
             /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -251,8 +275,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
             chooseYourHost: '选择你的主机:',
 
             localStorageUnavailableMessage:
-            '无法初始化Script Lab，因为浏览器的本地存储已禁用。 ' +
-            ' 请尝试在不同的浏览器或者电脑，或者检查你的网络设置。',
+                '无法初始化Script Lab，因为浏览器的本地存储已禁用。 ' +
+                ' 请尝试在不同的浏览器或者电脑，或者检查你的网络设置。',
 
             loadingRunnerDotDotDot: '加载运行...',
             running: '运行',
@@ -278,6 +302,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
             invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth.invalidParametersPassedInForAuth,
             invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth.invalidAuthResponseReceived,
             yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth.yourAccessTokenIs
-        }
+        },
+
+        ...sharedBetweenServerAndClient
     };
 }

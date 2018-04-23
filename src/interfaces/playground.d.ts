@@ -1,3 +1,7 @@
+interface IExperimentationFlags {
+    testFlag: string;
+}
+
 interface ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
@@ -21,25 +25,35 @@ interface ITemplate {
     modified_at: number;
 }
 
+interface IContentLanguagePair {
+    content: string;
+    language: string;
+}
+
+// Note, this interface is copied in several places.  Search for it.
+interface PerfInfoItem {
+    line_no: number;
+    frequency: number;
+    duration: number;
+};
+
+interface IPerformanceInformation {
+    data: PerfInfoItem[];
+    timestamp: number;
+}
+
 interface ISnippet extends ITemplate {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // NOTE: if you add or remove any top-level fields from this list, be sure
     // to update "snippetFields" and "snippetFieldSortingOrder" and "getSnippetDefaults" in
     // "src\client\app\helpers\snippet.helper.ts"
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    script?: {
-        content: string;
-        language: string;
-    };
-    template?: {
-        content: string;
-        language: string;
-    };
-    style?: {
-        content: string;
-        language: string;
-    };
+    script?: IContentLanguagePair;
+    template?: IContentLanguagePair;
+    style?: IContentLanguagePair;
+    customFunctions?: IContentLanguagePair;
     libraries?: string;
+    perfInfo?: IPerformanceInformation;
 }
 
 interface ILibraryDefinition {
@@ -49,25 +63,41 @@ interface ILibraryDefinition {
     description?: string
 }
 
-interface ICompiledSnippet extends ITemplate {
-    script?: string;
-    style?: string;
-    template?: string;
-    scriptReferences?: string[];
-    linkReferences?: string[];
-    officeJS?: string;
-    typings?: string[];
-}
-
 /** The request body passed to the runner during a POST */
 interface IRunnerState {
     snippet: ISnippet;
+
+    isInsideOfficeApp: boolean;
     displayLanguage: string;
 
     /** URL to return to in case of the gallery (or something else custom).
      * Otherwise, if null, will create a default reference back to editor domain,
      * taking host and snippet ID into account */
-    returnUrl?: string;    
+    returnUrl?: string;
+}
+
+interface ICustomFunctionsRelevantData {
+    id: string;
+    name: string;
+    customFunctions: {
+        content: string;
+        language: string;
+    }
+    libraries: string;
+}
+
+/** Request body passed to the custom functions compile route in a POST */
+interface ICompileCustomFunctionsState {
+    snippets: Array<ICustomFunctionsRelevantData>;
+    mode: 'register' | 'run';
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
+
+    displayLanguage: string;
+}
+
+interface ICustomFunctionsHeartbeatParams {
+    clientTimestamp: number;
+    showDebugLog: boolean;
 }
 
 interface IExportState {
@@ -104,6 +134,9 @@ interface IEvent<T> {
     data: T
 }
 
+// Note: the contents of this injected variable comes from "webpack.common.js"
+// (and in turn derives most of its values from "env.config.js", but
+// via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition)
 declare var PLAYGROUND: ICompiledPlaygroundInfo;
 
 interface ICompiledPlaygroundInfo {
@@ -113,13 +146,64 @@ interface ICompiledPlaygroundInfo {
         local: ILocalHostEnvironmentConfig,
         edge: IEnvironmentConfig,
         insiders: IEnvironmentConfig,
+        staging: IEnvironmentConfig,
         production: IEnvironmentConfig
     };
+
+    /** NOTE: when adding local storage keys here, also add them to "const localStorageKeys = {...}" in "env.config.js" */
     localStorageKeys: {
+        /** A dummy key used simply for getting localStorage to refresh (see https://stackoverflow.com/a/40770399) */
+        dummyUnusedKey: string;
+
+        log: string;
+
+        hostSnippets_parameterized: string;
+        settings: string;
         originEnvironmentUrl: string;
         redirectEnvironmentUrl: string;
-        playgroundCache: string;
+        wacUrl: string;
+        experimentationFlags: string;
+        trustedSnippets: string;
+
+        /** Localstorage key for playground language. Will get set both on the client domain
+         * (as expected), and also on the runner domain (due to its use in runner.ts) */
+        language: string;
+
+
+        /** The last seen custom functions heartbeat timestamp (i.e., the invisible pane's
+         * once per second "I'm still alive" notice) */
+        customFunctionsLastHeartbeatTimestamp: string;
+
+        /** The last time that a custom function was asked to be registered/updated (from editor's side) */
+        customFunctionsLastUpdatedCodeTimestamp: string;
+
+        /** The last timestamp that succeeded in registering (on runner side) and that
+         * the custom functions heartbeat was aware of */
+        customFunctionsCurrentlyRunningTimestamp: string;
+
+
+        /** Last seen timestamp at which the log dialog reported itself as alive */
+        logLastHeartbeatTimestamp: string;
+
+        /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
+        lastPerfNumbersTimestamp: string;
     };
+    sessionStorageKeys: {
+        environmentCache: string;
+        intelliSenseCache: string;
+    };
+    safeExternalUrls: {
+        playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+        ask: 'https://stackoverflow.com/questions/tagged/office-js',
+        excel_api: 'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
+        word_api: 'https://dev.office.com/reference/add-ins/word/word-add-ins-reference-overview',
+        onenote_api: 'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
+        outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
+        powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+        project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
+        generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office'
+    };
+    experimentationFlagsDefaults: {};
 }
 
 interface ICurrentPlaygroundInfo {
@@ -128,6 +212,14 @@ interface ICurrentPlaygroundInfo {
     config: Readonly<IEnvironmentConfig>;
     host: Readonly<string>;
     platform: Readonly<string>;
+
+    /** A timestamp specifically for the in-memory session (i.e.,
+     * even more short-term than sessionStorage, which has a lifetime-of-tab duration;
+     * whereas this one will get generated anew with each reload) */
+    runtimeSessionTimestamp: Readonly<string>;
+
+    supportsCustomFunctions: boolean;
+    customFunctionsShowDebugLog: boolean;
 
     isAddinCommands: boolean;
     isTryIt: boolean;
@@ -143,14 +235,15 @@ interface IBuildInfo {
 }
 
 interface IEnvironmentConfig {
-    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'STAGING' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,
     tokenUrl: string,
     runnerUrl: string,
     feedbackUrl: string,
-    samplesUrl: string
+    samplesUrl: string,
+    thirdPartyAADAppClientId: string,
 }
 
 interface ILocalHostEnvironmentConfig extends IEnvironmentConfig {
@@ -186,4 +279,19 @@ interface AuthRequestParamData {
     resource: string;
     client_id: string;
     is_office_host: boolean;
+    snippet_id: string;
+}
+
+interface DefaultAuthRequestParamData {
+    snippet_id: string;
+    auth_url: string;
+}
+
+interface LogData {
+    timestamp: number;
+    source: 'system' | 'user';
+    type: string;
+    subtype: string;
+    message: any;
+    severity: 'info' | 'warn' | 'error'
 }

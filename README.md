@@ -130,3 +130,6 @@ Script Lab, a Microsoft Garage project, is brought to you by this fabulous group
 Michael Zlatkovsky, Bhargav Krishna, Jakob Nielsen, Michael Saunders, and Daniel M. Galan.
 
 ![Meet the Team](.github/images/team.jpg)
+
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

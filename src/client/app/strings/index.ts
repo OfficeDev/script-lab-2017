@@ -1,10 +1,6 @@
-import { environment } from '../helpers';
+import { environment, ensureFreshLocalStorage } from '../helpers';
 import { createFakeStrings, getStrings } from './common';
 import { importUrlPlaceholder } from './language-agnostic';
-
-/** Localstorage key for playground language. Will get set both on the client domain
-  * (as expected), and also on the runner domain (due to its use in runner.ts) */
-const LANGUAGE_LOCALSTORAGE_KEY = 'playground_language';
 
 ////////////////////////////////////////////////////////////////////////////
 //// To add a new language, just fill in this section and also create   ////
@@ -75,7 +71,7 @@ export function getDisplayLanguageOrFake() {
 }
 
 export function setDisplayLanguage(language) {
-    window.localStorage[LANGUAGE_LOCALSTORAGE_KEY] = language;
+    window.localStorage.setItem(PLAYGROUND.localStorageKeys.language, language);
 }
 
 /** Function for use in non-English files, acting as a marker for text that still needs to be translated.
@@ -91,8 +87,9 @@ function getRawDisplayLanguage() {
         return null;
     }
 
-    if (window.localStorage[LANGUAGE_LOCALSTORAGE_KEY]) {
-        return window.localStorage[LANGUAGE_LOCALSTORAGE_KEY];
+    ensureFreshLocalStorage();
+    if (window.localStorage.getItem(PLAYGROUND.localStorageKeys.language)) {
+        return window.localStorage.getItem(PLAYGROUND.localStorageKeys.language);
     }
 
     const Office = (window as any).Office;
