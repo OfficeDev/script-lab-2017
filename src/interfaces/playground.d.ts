@@ -76,28 +76,63 @@ interface IRunnerState {
     returnUrl?: string;
 }
 
-interface ICustomFunctionsRelevantData {
-    id: string;
+// Note: I've duplicated these interfaces here from server/custom-functions/interfaces.ts
+// because when trying to import, it broke everything and none of these interfaces could be found
+interface ICFFunctionMetadata {
     name: string;
-    customFunctions: {
-        content: string;
-        language: string;
-    }
-    libraries: string;
+    description?: string;
+    parameters: ICFVisualParameterMetadata[];
+    result: ICFFunctionResultMetadata;
+    options: ICustomFunctionOptions;
+    error?: string;
+};
+
+interface ICFParameterMetadata {
+    name: string;
+    description?: string;
+    type: CustomFunctionsSupportedTypes;
+    dimensionality: CustomFunctionsDimensionality;
+    error?: string;
+};
+
+
+/** The interface used by Excel to register custom functions (workbook.registerCustomFunctions(...))  */
+interface ICustomFunctionsRegistrationApiMetadata {
+    functions: ICFFunctionMetadata[];
 }
 
-/** Request body passed to the custom functions compile route in a POST */
-interface ICompileCustomFunctionsState {
-    snippets: Array<ICustomFunctionsRelevantData>;
-    mode: 'register' | 'run';
-    heartbeatParams: ICustomFunctionsHeartbeatParams;
+interface ICustomFunctionsSnippetRegistrationData {
+    namespace: string;
+    functions: ICFFunctionMetadata[];
+}
 
-    displayLanguage: string;
+interface ICustomFunctionsRegistrationRelevantData {
+    name: string; //of snippet
+    data: ICustomFunctionsSnippetRegistrationData;
 }
 
 interface ICustomFunctionsHeartbeatParams {
     clientTimestamp: number;
     showDebugLog: boolean;
+}
+
+interface ICustomFunctionsRunnerRelevantData {
+    name: string;
+    id: string;
+    libraries: string,
+    script: IContentLanguagePair,
+    metadata: ICustomFunctionsSnippetRegistrationData;
+}
+
+interface IRegisterCustomFunctionsPostData {
+    snippets: ISnippet[];
+    displayLanguage: string;
+}
+
+interface IRunnerCustomFunctionsPostData {
+    snippets: ICustomFunctionsRunnerRelevantData[];
+    displayLanguage: string;
+    heartbeatParams: ICustomFunctionsHeartbeatParams;
 }
 
 interface IExportState {
@@ -180,10 +215,6 @@ interface ICompiledPlaygroundInfo {
         /** The last timestamp that succeeded in registering (on runner side) and that
          * the custom functions heartbeat was aware of */
         customFunctionsCurrentlyRunningTimestamp: string;
-
-
-        /** Last seen timestamp at which the log dialog reported itself as alive */
-        logLastHeartbeatTimestamp: string;
 
         /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
         lastPerfNumbersTimestamp: string;

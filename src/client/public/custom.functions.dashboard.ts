@@ -2,11 +2,12 @@ import * as moment from 'moment';
 import { attempt } from 'lodash';
 
 import { UI } from '@microsoft/office-js-helpers';
-import { Strings } from '../app/strings';
-import { environment, pushToLogQueue, LOG_READ_INTERVAL, chooseRandomly } from '../app/helpers';
+import { Strings, getDisplayLanguage } from '../app/strings';
+import { environment, navigateToRegisterCustomFunctions, getElapsedTime, getNumberFromLocalStorage, setUpMomentJsDurationDefaults } from '../app/helpers';
 
 const { localStorageKeys } = PLAYGROUND;
 
+const DASHBOARD_REFRESH_INTERVAL = 1000;
 
 const GRID_DOM_SELECTOR = '#grid';
 const HOURS_MINUTES_SECOND_FORMAT = 'h:mm:ss a';
@@ -37,23 +38,18 @@ class LogGridController {
             controller: this,
 
             fields: [
-                { name: 'type', type: 'text', autosearch: true, width: '120px' },
-                { name: 'subtype', type: 'text', autosearch: true, width: '120px' },
-                { name: 'message', type: 'text', autosearch: true, width: '200px' },
-                { name: 'timestamp', type: 'text', autosearch: true, width: '100px' },
+                // { name: 'type', type: 'text', autosearch: true, width: '120px' },
+                // { name: 'subtype', type: 'text', autosearch: true, width: '120px' },
+                { name: 'timestamp', type: 'text', autosearch: true, width: '80px' },
                 {
                     name: 'source', type: 'select', autosearch: true,
                     items: [''].concat(this.itemEnumerations.sources).map(item => ({ name: item })),
                     valueField: 'name', textField: 'name',
-                    widht: '70px'
+                    widht: '50px'
                 },
-                {
-                    name: 'severity', type: 'select', autosearch: true,
-                    items: [''].concat(this.itemEnumerations.severity).map(item => ({ name: item })),
-                    valueField: 'name', textField: 'name',
-                    width: '80px'
-                },
-                { type: 'control' }
+                { name: 'message', type: 'text', autosearch: true, width: '200px' },
+
+                { type: 'control', width: '50px' }
             ].map(item => ({ ...item, editButton: false, deleteButton: false })),
 
             rowClass: (entry: TransformedLogData) => entry.severity
@@ -92,7 +88,13 @@ class LogGridController {
 
 (async () => {
     try {
-        environment.initializePartial();
+        environment.initializePartial({ host: 'EXCEL' });
+        setUpMomentJsDurationDefaults(moment);
+
+        if (!sessionStorage.getItem('hasRegistered')) {
+            sessionStorage.setItem('hasRegistered', 'true');
+            navigateToRegisterCustomFunctions();
+        }
 
         let starterData = tickAndDequeueLocalStorageData();
 
@@ -100,7 +102,7 @@ class LogGridController {
 
         initializeHeader(gridController);
 
-        setTimeout(startPollingLogData, LOG_READ_INTERVAL);
+        setTimeout(startPollingLogData, DASHBOARD_REFRESH_INTERVAL);
     }
     catch (error) {
         handleError(error);
@@ -110,27 +112,37 @@ class LogGridController {
 function initializeHeader(gridController: LogGridController) {
     $('#clear').click(() => gridController.clear());
 
-    // Enable when want to debug grid functionality:
-    if (environment.current.devMode) {
-        $('#add-test-log-item')
-            .show()
-            .click(() => {
-                pushToLogQueue({
-                    timestamp: new Date().getTime(),
-                    source: chooseRandomly(gridController.itemEnumerations.sources) as any,
-                    type: 'TestEntry',
-                    subtype: chooseRandomly(['subtype1', 'subtype3', 'subtype3']),
-                    severity: chooseRandomly(gridController.itemEnumerations.severity) as any,
-                    message: chooseRandomly([
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                        'Sed auctor ipsum vitae risus vulputate, vel dapibus lacus tristique.',
-                        'Vivamus accumsan nunc nec ipsum vehicula blandit.',
-                        'Praesent quis augue ac ex dapibus commodo ac vitae velit.',
-                        'Nam at eros laoreet, pharetra leo et, sodales elit.',
-                    ])
-                });
-            });
-    }
+    // // Enable when want to debug grid functionality:
+    // if (environment.current.devMode) {
+    //     $('#add-test-log-item')
+    //         .show()
+    //         .click(() => {
+    //             pushToLogQueue({
+    //                 timestamp: new Date().getTime(),
+    //                 source: chooseRandomly(gridController.itemEnumerations.sources) as any,
+    //                 type: 'TestEntry',
+    //                 subtype: chooseRandomly(['subtype1', 'subtype3', 'subtype3']),
+    //                 severity: chooseRandomly(gridController.itemEnumerations.severity) as any,
+    //                 message: chooseRandomly([
+    //                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    //                     'Sed auctor ipsum vitae risus vulputate, vel dapibus lacus tristique.',
+    //                     'Vivamus accumsan nunc nec ipsum vehicula blandit.',
+    //                     'Praesent quis augue ac ex dapibus commodo ac vitae velit.',
+    //                     'Nam at eros laoreet, pharetra leo et, sodales elit.',
+    //                 ])
+    //             });
+    //         });
+    // }
+
+    $('#register-custom-functions')
+        .click(() => {
+            let startOfRequestTime = new Date().getTime();
+            window.localStorage.setItem(
+                localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+                startOfRequestTime.toString()
+            );
+            navigateToRegisterCustomFunctions();
+        });
 }
 
 async function startPollingLogData() {
@@ -154,7 +166,7 @@ async function startPollingLogData() {
             }
         }
 
-        setTimeout(startPollingLogData, LOG_READ_INTERVAL);
+        setTimeout(startPollingLogData, DASHBOARD_REFRESH_INTERVAL);
 
     }
     catch (error) {
@@ -165,7 +177,14 @@ async function startPollingLogData() {
 function tickAndDequeueLocalStorageData(): TransformedLogData[] {
     $('#time').text(moment(new Date()).format(HOURS_MINUTES_SECOND_FORMAT));
 
-    window.localStorage.setItem(localStorageKeys.logLastHeartbeatTimestamp, new Date().getTime().toString());
+    const heartbeatRecentlyAlive = getElapsedTime(getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)) < 3000;
+    const runnerLastUpdated = moment(new Date(getNumberFromLocalStorage(localStorageKeys.customFunctionsCurrentlyRunningTimestamp)))
+        .locale(getDisplayLanguage()).fromNow();
+    if (heartbeatRecentlyAlive) {
+        $('#status').text(`Live. Runner last updated ${runnerLastUpdated}`).css('color', 'darkgreen');
+    } else {
+        $('#status').text(`Not running.  Try clicking "Register Custom Functions", and, on success, entering "=ScriptLab.<XYZ>" into the Excel formula bar.`).css('color', 'gray');
+    }
 
     // Note: don't need ensureFreshLocalStorage() here, because the localStorage.setItem above does the equivalent.
     let text = window.localStorage.getItem(localStorageKeys.log) || '';

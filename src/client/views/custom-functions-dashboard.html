@@ -37,22 +37,22 @@
 			display: flex;
 			-webkit-box-orient: vertical;
 			-webkit-box-direction: normal;
-			    -ms-flex-direction: column;
-			        flex-direction: column;
+			-ms-flex-direction: column;
+			flex-direction: column;
 		}
 
 		#header {
 			-webkit-box-flex: 0;
-			    -ms-flex: 0 0 auto;
-			        flex: 0 0 auto;
+			-ms-flex: 0 0 auto;
+			flex: 0 0 auto;
 			margin-bottom: 10px;
 			padding: 10px;
 		}
 
 		#grid {
 			-webkit-box-flex: 1;
-			    -ms-flex: 1 1 auto;
-			        flex: 1 1 auto;
+			-ms-flex: 1 1 auto;
+			flex: 1 1 auto;
 		}
 
 		#time {
@@ -76,6 +76,17 @@
 		tr.warn td {
 			background: goldenrod !important;
 		}
+
+		#footer {
+			padding: 5px 10px;
+			box-sizing: border-box;
+		}
+
+		#register-custom-functions-frame {
+			display: block;
+			margin: 15px 10px 5px 10px;
+			text-align: center;
+		}
 	</style>
 </head>
 
@@ -83,9 +94,25 @@
 
 	<!-- Not localizing these strings yet, since it's experimental for now -->
 	<div id="header">
-		<span>Time:</span>
-		<span id="time"></span>
+		<div>
+			<span>Time:</span>
+			<span id="time"></span>
+		</div>
+		<div>
+			<span>Status: </span>
+			<span id="status"></span>
+		</div>
 
+		<div id="register-custom-functions-frame">
+			<button class="ms-Button" id="register-custom-functions">
+				<span class="ms-Button-label">Register Custom Functions</span>
+			</button>
+		</div>
+		<p>These functions run asynchronously in Script Lab. You can try running them faster in sync mode with <a href="https://aka.ms/customfunctions">these instructions</a>.</p>
+	</div>
+	<div id="grid"></div>
+
+	<div id="footer">
 		<button class="ms-Button" id="clear">
 			<span class="ms-Button-label">Clear</span>
 		</button>
@@ -93,12 +120,7 @@
 			<input id="scroll-to-bottom" type="checkbox" checked="checked" />
 			<span id="scroll-to-bottom-label">Scroll to bottom</span>
 		</label>
-		<button class="ms-Button" id="add-test-log-item" style="display:none">
-			<span class="ms-Button-label">(DEV MODE) Add test log item</span>
-		</button>
 	</div>
-	<div id="grid"></div>
-
 	<script src="libs/{{{versionedPackageNames['jquery']}}}/jquery.min.js"></script>
 	<script src="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.js"></script>
 </body>

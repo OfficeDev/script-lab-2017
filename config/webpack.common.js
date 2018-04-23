@@ -12,11 +12,12 @@ const { build, config, RedirectPlugin,
     localStorageKeys, sessionStorageKeys,
     safeExternalUrls, experimentationFlagsDefaults } = require('./env.config');
 const { getVersionedPackageNames,
-    VersionedPackageSubstitutionsPlugin } =require('./package.version.substitutions.plugin.js');
+    VersionedPackageSubstitutionsPlugin } = require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
 
 const versionedPackageNames = getVersionedPackageNames([
     'monaco-editor',
+    '@microsoft/office-js',
     'office-ui-fabric-js',
     'jquery',
     'jquery-resizable-dom',
@@ -47,8 +48,9 @@ module.exports = (prodMode) =>
             tryIt: './public/try.it.ts',
             customFunctions: './public/custom.functions.ts',
             customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
-            compileCustomFunctions: './public/compile.custom.functions.ts',
-            log: './public/log.ts',
+            customFunctionsRegister: './public/custom.functions.register.ts',
+            customFunctionsRunner: './public/custom.functions.runner.ts',
+            customFunctionsDashboard: './public/custom.functions.dashboard.ts',
         },
 
         resolve: {
@@ -154,6 +156,10 @@ module.exports = (prodMode) =>
                     to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/js'
                 },
                 {
+                    from: '../../node_modules/@microsoft/office-js/dist',
+                    to: './libs/' + versionedPackageNames['@microsoft/office-js'] + '/dist'
+                },
+                {
                     from: '../../node_modules/jquery/dist',
                     to: './libs/' + versionedPackageNames['jquery']
                 },
@@ -187,9 +193,9 @@ module.exports = (prodMode) =>
                 chunks: ['polyfills', 'vendor', 'heartbeat'],
             }),
             new HtmlWebpackPlugin({
-                filename: 'log.html',
-                template: './views/log.html',
-                chunks: ['polyfills', 'vendor', 'log'],
+                filename: 'custom-functions-dashboard.html',
+                template: './views/custom-functions-dashboard.html',
+                chunks: ['polyfills', 'vendor', 'customFunctionsDashboard'],
             }),
             new HtmlWebpackPlugin({
                 filename: 'custom-functions.html',
