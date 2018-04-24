@@ -23,6 +23,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
         alpha: 'Alpha',
         beta: 'Beta',
         production: 'Production',
+        staging: 'Staging',
 
         userId: 'User ID',
 
