@@ -64,15 +64,19 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             const snippetMetadata = metadataArray.find(item => item.id === id);
             window[snippetMetadata.namespace] = {};
             snippetMetadata.functions.map(func => {
-                console.log(`Mapped function ${func.name} from snippet ${id} on namespace ${snippetMetadata.namespace}`);
+
+                let splitIndex = func.name.lastIndexOf('.');
+                let funcName = func.name.substr(splitIndex + 1);
+
+                console.log(`Mapped function ${funcName} from snippet ${id} on namespace ${snippetMetadata.namespace}`);
 
                 // tslint:disable-next-line:only-arrow-functions
-                window[snippetMetadata.namespace][func.name] = function () {
-                    return iframeWindow[func.name].apply(null, arguments);
+                window[snippetMetadata.namespace][funcName] = function () {
+                    return iframeWindow[funcName].apply(null, arguments);
                 };
 
-                // In the meantime, until support namespaces, set the function directly on the window:
-                window[func.name] = window[snippetMetadata.namespace][func.name];
+                // For older c++ versions that do not support namespace:
+                window[funcName] = window[snippetMetadata.namespace][funcName];
 
                 // Overwrite console.log on every snippet iframe
                 iframeWindow['console']['log'] = consoleMsgTypeImplementation('info');
