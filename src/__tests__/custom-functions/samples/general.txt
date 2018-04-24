@@ -45,7 +45,7 @@ function isPrime(num: number): boolean {
 [
    {
       "description":"Adds two numbers",
-      "name":"sum",
+      "name":"snippetName.sum",
       "options":{
          "cancelable":true,
          "stream":false,
@@ -73,7 +73,7 @@ function isPrime(num: number): boolean {
    },
    {
       "description":"Adds numbers in array",
-      "name":"sumArr",
+      "name":"snippetName.sumArr",
       "options":{
          "cancelable":true,
          "stream":true,
@@ -95,7 +95,7 @@ function isPrime(num: number): boolean {
    },
    {
       "description":"Checks to see if a number is prime",
-      "name":"isPrime",
+      "name":"snippetName.isPrime",
       "options":{
          "cancelable":true,
          "stream":true,
