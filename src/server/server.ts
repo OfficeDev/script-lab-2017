@@ -313,7 +313,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
         isAnyError,
         registerCustomFunctionsJsonStringBase64,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
-        dashboardUrl: req.headers.referer,
+        dashboardUrl: req.headers.referer as string,
     });
 
     timer.stop();

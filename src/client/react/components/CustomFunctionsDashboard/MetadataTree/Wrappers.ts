@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 
 export const TreeContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 30px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
   font-size: 1.5rem;
 
@@ -16,11 +18,11 @@ export const List = styled.ul`
   margin: 0;
   margin-left: 40pt;
   padding: 0;
-`
+`;
 
 export const SnippetWrapper = styled.div`
   margin-bottom: 40pt;
-`
+`;
 
 export const FunctionWrapper = styled.div`
   margin-top: 10pt;
@@ -31,7 +33,7 @@ export const FunctionWrapper = styled.div`
   &::before {
     box-sizing: border-box;
 
-    content:'';
+    content: '';
     position: absolute;
     top: 0;
     height: 100%;

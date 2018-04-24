@@ -27,17 +27,14 @@ const Block = block`
   ${props => props.warning && 'background: #fff4ce;'}
   ${props => props.error   && 'background: #fde7e9;'}
 
-  ${props => props.small &&
-      'padding-top: 6pt; padding-bottom: 6pt; font-size: 1.5rem'
-  };
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 
-  ${props => props.medium &&
-      'padding-top: 8pt; padding-bottom: 8pt; font-size: 1.6rem'
-  };
+  ${props => props.small && 'font-size: 1em'};
 
-  ${props => props.large &&
-      'padding-top: 12pt; padding-bottom: 12pt; font-size: 1.8rem'
-  };
+  ${props => props.medium && 'font-size: 1em'};
+
+  ${props => props.large && 'font-size: 1em'};
 
   &:before {
     ${props => props.noLines && 'display: none;'}

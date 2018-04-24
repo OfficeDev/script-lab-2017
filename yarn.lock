@@ -62,6 +62,10 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
+"@microsoft/load-themed-styles@^1.7.13":
+  version "1.7.53"
+  resolved "https://registry.yarnpkg.com/@microsoft/load-themed-styles/-/load-themed-styles-1.7.53.tgz#27b2a85bcc09768c8ec2b652ffd98804279a87c5"
+
 "@microsoft/office-js-helpers@0.7.4":
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/@microsoft/office-js-helpers/-/office-js-helpers-0.7.4.tgz#c85afbb5a39e15332707e418925af1ec03a97a81"
@@ -298,6 +302,36 @@
     "@types/node" "*"
     "@types/tapable" "*"
     "@types/uglify-js" "*"
+
+"@uifabric/icons@>=5.7.1 <6.0.0":
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/@uifabric/icons/-/icons-5.7.1.tgz#31e0552586213267b3a5871426297795cdb77726"
+  dependencies:
+    "@uifabric/styling" ">=5.23.1 <6.0.0"
+    tslib "^1.7.1"
+
+"@uifabric/merge-styles@>=5.16.0 <6.0.0":
+  version "5.16.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/merge-styles/-/merge-styles-5.16.0.tgz#beb1ee29f2c69161ce29b7fe8909547eb439429e"
+  dependencies:
+    tslib "^1.7.1"
+
+"@uifabric/styling@>=5.23.1 <6.0.0", "@uifabric/styling@>=5.26.0 <6.0.0":
+  version "5.26.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-5.26.0.tgz#40e32ad75453d10a4042b19a18ded24dd77bf70f"
+  dependencies:
+    "@microsoft/load-themed-styles" "^1.7.13"
+    "@uifabric/merge-styles" ">=5.16.0 <6.0.0"
+    "@uifabric/utilities" ">=5.27.0 <6.0.0"
+    tslib "^1.7.1"
+
+"@uifabric/utilities@>=5.27.0 <6.0.0":
+  version "5.27.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-5.27.0.tgz#cb45418475b338065a44bbfce9af27aff535d66a"
+  dependencies:
+    "@uifabric/merge-styles" ">=5.16.0 <6.0.0"
+    prop-types "^15.5.10"
+    tslib "^1.7.1"
 
 abab@^1.0.4:
   version "1.0.4"
@@ -5210,6 +5244,10 @@ monaco-editor@0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.10.0.tgz#6604932585fe9c1f993f000a503d0d20fbe5896a"
 
+monaco-editor@^0.10.0:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.10.1.tgz#8c96c4f15b6b5258bf92cbde93cad8a7e3007e14"
+
 ms@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
@@ -5652,6 +5690,18 @@ office-ui-fabric-js@1.4.0:
   resolved "https://registry.yarnpkg.com/office-ui-fabric-js/-/office-ui-fabric-js-1.4.0.tgz#6200299f7dd101742b0e84968534808afc0cef27"
   dependencies:
     office-ui-fabric-core "5.0.1"
+
+office-ui-fabric-react@^5.88.0:
+  version "5.88.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-5.88.0.tgz#0005e6a9753d853ac28234c1d8a9dd42b0b5e78b"
+  dependencies:
+    "@microsoft/load-themed-styles" "^1.7.13"
+    "@uifabric/icons" ">=5.7.1 <6.0.0"
+    "@uifabric/merge-styles" ">=5.16.0 <6.0.0"
+    "@uifabric/styling" ">=5.26.0 <6.0.0"
+    "@uifabric/utilities" ">=5.27.0 <6.0.0"
+    prop-types "^15.5.10"
+    tslib "^1.7.1"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -6535,7 +6585,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.4, prop-types@^15.6.0:
+prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.6.0:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -6702,6 +6752,13 @@ react-dom@^16.3.2:
 react-is@^16.3.1:
   version "16.3.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
+
+react-monaco-editor@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.14.1.tgz#f5163e119e8a7dc79b992cb3fd7af887547d7efd"
+  dependencies:
+    monaco-editor "^0.10.0"
+    prop-types "^15.5.10"
 
 react@^16.3.2:
   version "16.3.2"
@@ -8236,6 +8293,10 @@ tsickle@^0.21.0:
     mkdirp "^0.5.1"
     source-map "^0.5.6"
     source-map-support "^0.4.2"
+
+tslib@^1.7.1:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
 tslint@4.5.1:
   version "4.5.1"
