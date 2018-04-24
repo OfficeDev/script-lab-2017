@@ -32,14 +32,14 @@ const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
  * It will either either return an array of metadata objects, or throw a JSON.stringified error object if there are errors/unsupported types.
  * @param fileContent - The string content of the typescript file to parse the custom functions metadata out of.
  */
-export function parseMetadata(fileContent: string): ICFFunctionMetadata[] {
+export function parseMetadata(fileContent: string, snippetName: string): ICFFunctionMetadata[] {
     const sourceFile = ts.createSourceFile('someFileName', fileContent, ts.ScriptTarget.ES2015, true);
 
-    return traverseAST(sourceFile);
+    return traverseAST(sourceFile, snippetName);
 }
 
 
-function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
+function traverseAST(sourceFile: ts.SourceFile, snippetName: string): ICFFunctionMetadata[] {
     const metadata = [];
     visitNode(sourceFile);
     return metadata;
@@ -99,7 +99,7 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
                         }
 
                         const metadataItem = {
-                            name: func.name.text,
+                            name: `${snippetName.replace(/[^0-9A-Za-z_]/g, '')}.${func.name.text}`,
                             description,
                             parameters,
                             result,
