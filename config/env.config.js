@@ -85,6 +85,17 @@ const config = {
         feedbackUrl,
         thirdPartyAADAppClientId,
     },
+    productiondirect: { // doesn't need to show up in "about" list or elsewhere, only for being able to quickly test the site before purging the CDN.
+        name: 'PRODUCTIONDIRECT',
+        clientId: '55031174553ee45f92f4', // same as production
+        instrumentationKey: '8e0b6b12-8d5e-4710-841d-7996a913f14b', // same as production
+        editorUrl: 'https://bornholm.azurewebsites.net',
+        tokenUrl: 'https://bornholm-runner.azurewebsites.net/auth',
+        runnerUrl: 'https://bornholm-runner.azurewebsites.net',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
+        feedbackUrl,
+        thirdPartyAADAppClientId,
+    },
     production: {
         name: 'PRODUCTION',
         clientId: '55031174553ee45f92f4',
