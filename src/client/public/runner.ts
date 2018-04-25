@@ -134,10 +134,8 @@ interface MakerInitializationParams {
             lastModified: toNumber(initialParams.currentSnippet.lastModified)
         };
 
-        await Promise.all([
-            loadFirebug(initialParams.origin),
-            ensureHostInitialized()
-        ]);
+        await ensureHostInitialized();
+        await loadFirebug(environment.current.config.editorUrl);
 
         $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
         if (Utilities.platform === PlatformType.PC) {

@@ -78,7 +78,7 @@ export class About implements AfterViewInit {
     currentChosenLanguage = '';
     originalLanguage = '';
 
-    configs: {name: string, value: string }[] = [];
+    configs: { name: string, value: string }[] = [];
     selectedConfig = '';
 
     showExperimentationFlags = false;
@@ -110,7 +110,9 @@ export class About implements AfterViewInit {
 
             // User can only navigate to localhost if they've sideloaded local manifest
             isLocalHost ? { name: config.local.editorUrl, value: config.local.name } : null
-        ].filter(item => item != null);
+        ]
+            .map(item => ({ name: item.name, value: item.value.toLowerCase() }))
+            .filter(item => item != null);
 
         ensureFreshLocalStorage();
 
