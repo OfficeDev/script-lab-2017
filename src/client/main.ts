@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
 
-import { NgModule, enableProdMode } from '@angular/core';
+import { NgModule, /*enableProdMode*/ } from '@angular/core';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -56,11 +56,11 @@ let imports = [
         const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
         AI.initialize(environment.current.config.instrumentationKey);
 
-        if (!environment.current.devMode) {
-            enableProdMode();
-        }
-        else {
+        if (environment.current.devMode) {
             imports.push(StoreDevtoolsModule.instrumentOnlyWithExtension());
+        } else {
+            // TODO temporarily disable prod mode, to see if can catch staging issues
+            // enableProdMode();
         }
 
         await applyTheme(environment.current.host);
