@@ -22,6 +22,7 @@ export const List = styled.ul`
 
 export const SnippetWrapper = styled.div`
   margin-bottom: 40px;
+  margin-right: 5px;
   border: 1px solid #dddddd;
 `;
 
@@ -38,8 +39,8 @@ export const FunctionWrapper = styled.div`
     position: absolute;
     top: 0;
     height: 100%;
-    left: -19px;
-    width: 19px;
+    left: -20px;
+    width: 20px;
 
     border-left: 1px solid #dddddd;
     z-index: -1001;
