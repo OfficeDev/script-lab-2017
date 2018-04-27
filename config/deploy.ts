@@ -1,0 +1,308 @@
+#!/usr/bin/env node --harmony
+
+let path = require('path');
+const fs = require('fs-extra');
+let chalk = require('chalk');
+let _ = require('lodash');
+let { build, config } = require('./env.config');
+let shell = require('shelljs');
+let webpackConfig = require('./webpack.prod');
+let webpack = require('webpack');
+
+let { TRAVIS, TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, AZURE_WA_USERNAME, AZURE_WA_SITE, AZURE_WA_PASSWORD } = process.env;
+let TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env['TRAVIS_COMMIT_MESSAGE'].replace(/\W/g, '_');
+
+const DAYS_TO_KEEP_HISTORY = 90;
+
+process.env.NODE_ENV = process.env.ENV = 'production';
+
+precheck();
+
+/* If running inside of a pull request then skip deploy */
+if (TRAVIS_PULL_REQUEST !== 'false') {
+    exit('Skipping deploy for pull requests');
+}
+
+/* Check if the branch name is valid. */
+let slot = _.isString(TRAVIS_BRANCH) && _.kebabCase(TRAVIS_BRANCH);
+if (slot == null) {
+    exit('Invalid branch name. Skipping deploy.', true);
+}
+
+let buildConfig;
+switch (slot) {
+    case 'master':
+        buildConfig = config.edge;
+        slot = 'edge';
+        break;
+
+    case 'insiders':
+        buildConfig = config.insiders;
+        slot = 'insiders';
+        break;
+
+    case 'production':
+        buildConfig = config.production;
+        slot = 'staging';
+        break;
+
+    default:
+        buildConfig = null;
+        exit('No deployment configuration found for ' + slot + '. Skipping deploy.');
+}
+
+const SITE_URL = 'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
+
+const EDITOR_UsernamePassword_URL = 'https://'
+    + AZURE_WA_USERNAME + ':'
+    + AZURE_WA_PASSWORD + '@'
+    + AZURE_WA_SITE
+    + '-' + slot
+    + '.scm.azurewebsites.net:443/'
+    + AZURE_WA_SITE + '.git';
+
+const RUNNER_UsernamePassword_URL = 'https://'
+    + AZURE_WA_USERNAME + ':'
+    + AZURE_WA_PASSWORD + '@'
+    + AZURE_WA_SITE + '-runner'
+    + '-' + slot
+    + '.scm.azurewebsites.net:443/'
+    + AZURE_WA_SITE + '-runner.git';
+
+// For production, changes are first deployed to staging environment which gets manually swapped into real production.
+// However, sometimes builds can also be rolled back!  To avoid issues with caching (and some files going missing)
+// we always want to copy existing bundle resources from both locations
+let additionalResourcesCopyFromUrl;
+if (slot === 'staging') {
+    additionalResourcesCopyFromUrl = 'https://'
+        + AZURE_WA_USERNAME + ':'
+        + AZURE_WA_PASSWORD + '@'
+        + AZURE_WA_SITE
+        + '.scm.azurewebsites.net:443/'
+        + AZURE_WA_SITE + '.git';
+}
+
+log('Deploying commit: "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '" to ' + AZURE_WA_SITE + '-' + slot + '...');
+deployBuild(EDITOR_UsernamePassword_URL, 'dist/client', [EDITOR_UsernamePassword_URL, additionalResourcesCopyFromUrl]);
+deployBuild(RUNNER_UsernamePassword_URL, 'dist/server', null);
+
+function precheck() {
+    /* Check if the code is running inside of travis.ci. If not abort immediately. */
+    if (!TRAVIS) {
+        exit('Not running inside of Travis. Skipping deploy.', true);
+    }
+
+    /* Check if the username is configured. If not abort immediately. */
+    if (!_.isString(AZURE_WA_USERNAME)) {
+        exit('"AZURE_WA_USERNAME" is a required global variable.', true);
+    }
+
+    /* Check if the password is configured. If not abort immediately. */
+    if (!_.isString(AZURE_WA_PASSWORD)) {
+        exit('"AZURE_WA_PASSWORD" is a required global variable.', true);
+    }
+
+    /* Check if the website name is configured. If not abort immediately. */
+    if (!_.isString(AZURE_WA_SITE)) {
+        exit('"AZURE_WA_SITE" is a required global variable.', true);
+    }
+}
+
+function deployBuild(url, folder, copyDeployedResourcesUrls) {
+    try {
+        let current_path = path.resolve();
+        let next_path = path.resolve(folder);
+        shell.cd(next_path);
+        const start = Date.now();
+
+        if (copyDeployedResourcesUrls) {
+            const historyPath = path.resolve(folder, 'history.json');
+
+            console.log('History before:\n\n');
+            printHistoryDetailsIfAvailable(historyPath);
+            console.log('\n\n\n\n');
+            copyDeployedResourcesUrls.forEach(url => buildAssetAndLibHistory(url, next_path));
+
+            console.log('The appended history is now:\n\n');
+            printHistoryDetailsIfAvailable(historyPath);
+            console.log('\n\n\n\n');
+
+            let appendedHistory = JSON.parse(fs.readFileSync(historyPath).toString());
+            let newHistory = {};
+            let now = (new Date().getTime()) / 1000;
+            for (let key in appendedHistory) {
+                let age = (now - appendedHistory[key].time) / 24 / 60 / 60;
+                if (age < DAYS_TO_KEEP_HISTORY) {
+                    newHistory[key] = appendedHistory[key];
+                }
+            }
+            fs.writeFileSync(historyPath, JSON.stringify(newHistory));
+
+            console.log('Trimming out old entries, we get:\n\n');
+            printHistoryDetailsIfAvailable(path.resolve(folder, 'history.json'));
+            console.log('\n\n\n\n');
+        }
+
+        shell.exec('git init');
+        shell.exec('git config --add user.name "Travis CI"');
+        shell.exec('git config --add user.email "travis.ci@microsoft.com"');
+        let result = shell.exec('git add -A');
+        if (result.code !== 0) {
+            shell.echo(result.stderr);
+            exit('An error occurred while adding files...', true);
+        }
+        result = shell.exec('git commit -m "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '"');
+        if (result.code !== 0) {
+            shell.echo(result.stderr);
+            exit('An error occurred while committing files...', true);
+        }
+        log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
+        result = shell.exec('git push ' + url + ' -q -f -u HEAD:refs/heads/master', { silent: true });
+        if (result.code !== 0) {
+            exit('An error occurred while deploying ' + folder + ' to ' + URL + '...', true);
+        }
+        const end = Date.now();
+        log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
+        shell.cd(current_path);
+    }
+    catch (error) {
+        log('Deployment failed...', 'red');
+        console.log(error);
+    }
+}
+
+function buildAssetAndLibHistory(url, folder) {
+    shell.exec('git clone ' + url + ' existing_build', { silent: true });
+    shell.cp('-n', ['existing_build/*.js', 'existing_build/*.css'], '.');
+
+    let oldLibsPath = path.resolve(folder, 'existing_build/libs');
+    let newLibsPath = path.resolve(folder, 'libs');
+
+    for (let asset of fs.readdirSync(oldLibsPath)) {
+        let libPath = path.resolve(newLibsPath, asset);
+        // Check if old assets don't name-conflict
+        if (fs.existsSync(libPath)) {
+            console.log(`The library "${asset}" is already in current build, so skipping copying it from a previous build`);
+        } else {
+            console.log(`Copying "${asset}" from a previous build into the current "libs" folder`);
+            fs.copySync(path.resolve(oldLibsPath, asset), libPath);
+        }
+    }
+
+    // Note: dividing by 1000 to go from JS dates to UNIX epoch dates
+    let now = (new Date().getTime()) / 1000;
+
+    let oldHistoryPath = path.resolve(folder, 'existing_build/history.json');
+    let newHistoryPath = path.resolve(folder, 'history.json');
+    let oldAssetsPath = path.resolve(folder, 'existing_build/bundles');
+    let newAssetsPath = path.resolve(folder, 'bundles');
+
+    let history = {};
+    if (fs.existsSync(newHistoryPath)) {
+        log('History already exists, re-using it');;
+        history = JSON.parse(fs.readFileSync(newHistoryPath).toString());
+    }
+
+    // Parse old history file if it exists
+
+    if (fs.existsSync(oldHistoryPath)) {
+        log('History of existing build:\n\n');
+        printHistoryDetailsIfAvailable(oldHistoryPath);
+        log('\n\n');
+        let oldHistory = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
+        for (let key in oldHistory) {
+            history[key] = oldHistory[key];
+        }
+    }
+
+    // Add new asset files to history, with current timestamp; exclude chunk files
+    let newAssets = fs.readdirSync(newAssetsPath);
+    for (let asset of newAssets) {
+        if (!(/chunk.js/i.test(asset))) {
+            history[asset] = { time: now };
+        }
+    }
+
+    let existingAssets = fs.readdirSync(oldAssetsPath);
+    for (let asset of existingAssets) {
+        let assetPath = path.resolve(newAssetsPath, asset);
+        // Check if old assets don't name-conflict and are still young enough to keep
+        if (history[asset] && !fs.existsSync(assetPath) && (now - history[asset].time < (60 * 60 * 24 * DAYS_TO_KEEP_HISTORY))) {
+            fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
+        }
+    }
+
+    fs.writeFileSync(newHistoryPath, JSON.stringify(history));
+    shell.rm('-rf', 'existing_build');
+}
+
+function printHistoryDetailsIfAvailable(filename) {
+    if (!fs.existsSync(filename)) {
+        log(`    Cannot print history, file "${filename}" doesn't exist.`);
+        return;
+    }
+
+    let logData = JSON.parse(fs.readFileSync(filename).toString());
+
+    let grouped = {};
+    for (let key in logData) {
+        let regex = /^([^\.]+)\.([a-f0-9]{20})\.(.*)/;
+        let regexParse = regex.exec(key);
+        if (!regexParse) {
+            throw new Error(`${key} doesn't match expected hash pattern`);
+        }
+        let nohash = `${regexParse[1]}.${regexParse[3]}`;
+        let correspondingGroup = grouped[nohash];
+        if (!correspondingGroup) {
+            correspondingGroup = {};
+            grouped[nohash] = correspondingGroup;
+        }
+
+        let time = logData[key].time;
+
+        // Note: dividing by 1000 to go from JS dates to UNIX epoch dates
+        let now = (new Date().getTime()) / 1000;
+        let age = Math.round((now - time) / 24 / 60 / 60 * 100) / 100;
+        correspondingGroup[key] = { key: nohash, filename: key, time, age };
+    }
+
+    let outerArray = [];
+    for (let key in grouped) {
+        let innerArray = [];
+        for (let innerKey in grouped[key]) {
+            innerArray.push(grouped[key][innerKey]);
+        }
+        innerArray.sort((a, b) => b.time - a.time); // reverse-chronological
+        outerArray.push(innerArray);
+    }
+    outerArray.sort((a, b) => compareStrings(a[0].key, b[0].key));
+
+    outerArray.forEach(group => {
+        log('    ' + group[0].key);
+        group.forEach(item => {
+            let isRecent = item.age < DAYS_TO_KEEP_HISTORY;
+            log('        ' + item.filename + '  (' + new Date(item.time * 1000).toISOString() + ')', isRecent ? 'green' : 'red');
+        });
+    });
+
+
+    // Helper
+    function compareStrings(a, b) {
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+
+        return (a < b) ? -1 : (a > b) ? 1 : 0;
+    }
+}
+
+function log(message, color?: string) {
+    console.log(chalk.bold[color || 'cyan'](message));
+}
+
+function exit(reason, abort?: boolean) {
+    if (reason) {
+        abort ? console.log(chalk.bold.red(reason)) : console.log(chalk.bold.yellow(reason));
+    }
+
+    return abort ? process.exit(1) : process.exit(0);
+}
