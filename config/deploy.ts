@@ -199,7 +199,7 @@ function buildAssetAndLibHistory(url, folder) {
 
     let history = {};
     if (fs.existsSync(newHistoryPath)) {
-        log('History already exists, re-using it');;
+        log('History already exists, re-using it');
         history = JSON.parse(fs.readFileSync(newHistoryPath).toString());
     }
 
