@@ -16,16 +16,17 @@ export const TreeContainer = styled.div`
 
 export const List = styled.ul`
   margin: 0;
-  margin-left: 40pt;
+  margin-left: 40px;
   padding: 0;
 `;
 
 export const SnippetWrapper = styled.div`
-  margin-bottom: 40pt;
+  margin-bottom: 40px;
+  border: 1px solid #dddddd;
 `;
 
 export const FunctionWrapper = styled.div`
-  margin-top: 10pt;
+  margin-top: 10px;
   box-sizing: border-box;
 
   position: relative;
@@ -37,10 +38,10 @@ export const FunctionWrapper = styled.div`
     position: absolute;
     top: 0;
     height: 100%;
-    left: -14pt;
-    width: 14pt;
+    left: -19px;
+    width: 19px;
 
-    border-left: 1px solid #808080;
+    border-left: 1px solid #dddddd;
     z-index: -1001;
   }
 

@@ -316,6 +316,12 @@
   dependencies:
     tslib "^1.7.1"
 
+"@uifabric/merge-styles@^5.17.0":
+  version "5.17.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/merge-styles/-/merge-styles-5.17.0.tgz#96de616cb9fa5c05a79ac18ff96db9fe5644f2d2"
+  dependencies:
+    tslib "^1.7.1"
+
 "@uifabric/styling@>=5.23.1 <6.0.0", "@uifabric/styling@>=5.26.0 <6.0.0":
   version "5.26.0"
   resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-5.26.0.tgz#40e32ad75453d10a4042b19a18ded24dd77bf70f"
@@ -5244,10 +5250,6 @@ monaco-editor@0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.10.0.tgz#6604932585fe9c1f993f000a503d0d20fbe5896a"
 
-monaco-editor@^0.10.0:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.10.1.tgz#8c96c4f15b6b5258bf92cbde93cad8a7e3007e14"
-
 ms@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
@@ -6752,13 +6754,6 @@ react-dom@^16.3.2:
 react-is@^16.3.1:
   version "16.3.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
-
-react-monaco-editor@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.14.1.tgz#f5163e119e8a7dc79b992cb3fd7af887547d7efd"
-  dependencies:
-    monaco-editor "^0.10.0"
-    prop-types "^15.5.10"
 
 react@^16.3.2:
   version "16.3.2"

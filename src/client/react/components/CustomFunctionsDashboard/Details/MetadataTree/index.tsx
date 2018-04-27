@@ -8,9 +8,15 @@ import {
   TreeContainer,
 } from './Wrappers';
 
-const SnippetItem = props => <Item {...props} size="large" noLines={true} />;
-const ParameterItem = props => <Item {...props} size="small" />;
-const FunctionItem = props => <Item {...props} size="medium" />;
+const SnippetItem = props => (
+  <Item className="ms-font-m" {...props} size="large" noLines={true} />
+);
+const FunctionItem = props => (
+  <Item className="ms-font-m" {...props} size="medium" />
+);
+const ParameterItem = props => (
+  <Item className="ms-font-s" {...props} size="small" />
+);
 
 const Function = ({ func }) => (
   <FunctionWrapper>
