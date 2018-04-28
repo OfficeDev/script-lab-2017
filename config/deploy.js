@@ -122,7 +122,7 @@ try {
                 }
                 fs.writeFileSync(historyPath, JSON.stringify(newHistory));
                 console.log('Trimming out old entries, we get:\n\n');
-                printHistoryDetailsIfAvailable(path.resolve(folder, 'history.json'));
+                printHistoryDetailsIfAvailable(historyPath);
                 console.log('\n\n\n\n');
             }
             shell.exec('git init');
@@ -250,7 +250,8 @@ try {
             log('    ' + group[0].key);
             group.forEach(function (item) {
                 var isRecent = item.age < DAYS_TO_KEEP_HISTORY;
-                log('        ' + item.filename + '  (' + new Date(item.time * 1000).toISOString() + ')', isRecent ? 'green' : 'red');
+                log('        ' + item.filename);
+                log('            ' + new Date(item.time * 1000).toISOString() + ')', isRecent ? 'green' : 'red');
             });
         });
         // Helper
