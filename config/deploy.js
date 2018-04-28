@@ -39,7 +39,7 @@ switch (slot) {
         buildConfig = null;
         exit('No deployment configuration found for ' + slot + '. Skipping deploy.');
 }
-var SITE_URL = 'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
+var EDITOR_SITE_URL = 'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
 var EDITOR_UsernamePassword_URL = 'https://'
     + AZURE_WA_USERNAME + ':'
     + AZURE_WA_PASSWORD + '@'
@@ -59,15 +59,21 @@ var RUNNER_UsernamePassword_URL = 'https://'
 // we always want to copy existing bundle resources from both locations
 var additionalResourcesCopyFromUrl;
 if (slot === 'staging') {
-    additionalResourcesCopyFromUrl = 'https://'
-        + AZURE_WA_USERNAME + ':'
-        + AZURE_WA_PASSWORD + '@'
-        + AZURE_WA_SITE
-        + '.scm.azurewebsites.net:443/'
-        + AZURE_WA_SITE + '.git';
+    additionalResourcesCopyFromUrl = {
+        friendlyName: "Production site directly (not the slot)",
+        urlWithUsernameAndPassword: 'https://'
+            + AZURE_WA_USERNAME + ':'
+            + AZURE_WA_PASSWORD + '@'
+            + AZURE_WA_SITE
+            + '.scm.azurewebsites.net:443/'
+            + AZURE_WA_SITE + '.git'
+    };
 }
 log('Deploying commit: "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '" to ' + AZURE_WA_SITE + '-' + slot + '...');
-deployBuild(EDITOR_UsernamePassword_URL, 'dist/client', [EDITOR_UsernamePassword_URL, additionalResourcesCopyFromUrl]);
+deployBuild(EDITOR_UsernamePassword_URL, 'dist/client', [
+    { friendlyName: EDITOR_SITE_URL, urlWithUsernameAndPassword: EDITOR_UsernamePassword_URL },
+    additionalResourcesCopyFromUrl
+]);
 deployBuild(RUNNER_UsernamePassword_URL, 'dist/server', null);
 function precheck() {
     /* Check if the code is running inside of travis.ci. If not abort immediately. */
@@ -87,7 +93,7 @@ function precheck() {
         exit('"AZURE_WA_SITE" is a required global variable.', true);
     }
 }
-function deployBuild(url, folder, copyDeployedResourcesUrls) {
+function deployBuild(urlWithUsernameAndPassword, folder, copyDeployedResourcesUrls) {
     try {
         var current_path = path.resolve();
         var next_path_1 = path.resolve(folder);
@@ -95,10 +101,12 @@ function deployBuild(url, folder, copyDeployedResourcesUrls) {
         var start = Date.now();
         if (copyDeployedResourcesUrls) {
             var historyPath = path.resolve(folder, 'history.json');
-            console.log('History before:\n\n');
+            console.log('History before:');
             printHistoryDetailsIfAvailable(historyPath);
-            console.log('\n\n\n\n');
-            copyDeployedResourcesUrls.forEach(function (url) { return buildAssetAndLibHistory(url, next_path_1); });
+            console.log('\n\n' + 'Now will copy the existing resources...' + '\n\n');
+            copyDeployedResourcesUrls
+                .filter(function (item) { return !_.isNil(item); })
+                .forEach(function (copyInfo) { return buildAssetAndLibHistory(copyInfo, next_path_1); });
             console.log('The appended history is now:\n\n');
             printHistoryDetailsIfAvailable(historyPath);
             console.log('\n\n\n\n');
@@ -129,10 +137,10 @@ function deployBuild(url, folder, copyDeployedResourcesUrls) {
             shell.echo(result.stderr);
             exit('An error occurred while committing files...', true);
         }
-        log('Pushing ' + folder + ' to ' + URL + '... Please wait...');
-        result = shell.exec('git push ' + url + ' -q -f -u HEAD:refs/heads/master', { silent: true });
+        log('Pushing ' + folder + ' to ' + EDITOR_SITE_URL + '... Please wait...');
+        result = shell.exec('git push ' + urlWithUsernameAndPassword + ' -q -f -u HEAD:refs/heads/master', { silent: true });
         if (result.code !== 0) {
-            exit('An error occurred while deploying ' + folder + ' to ' + URL + '...', true);
+            exit('An error occurred while deploying ' + folder + ' to ' + EDITOR_SITE_URL + '...', true);
         }
         var end = Date.now();
         log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
@@ -143,8 +151,9 @@ function deployBuild(url, folder, copyDeployedResourcesUrls) {
         console.log(error);
     }
 }
-function buildAssetAndLibHistory(url, folder) {
-    shell.exec('git clone ' + url + ' existing_build', { silent: true });
+function buildAssetAndLibHistory(source, folder) {
+    log('Copying existing assets from ' + source.friendlyName);
+    shell.exec('git clone ' + source.urlWithUsernameAndPassword + ' existing_build', { silent: true });
     shell.cp('-n', ['existing_build/*.js', 'existing_build/*.css'], '.');
     var oldLibsPath = path.resolve(folder, 'existing_build/libs');
     var newLibsPath = path.resolve(folder, 'libs');
@@ -168,11 +177,11 @@ function buildAssetAndLibHistory(url, folder) {
     var newAssetsPath = path.resolve(folder, 'bundles');
     var history = {};
     if (fs.existsSync(newHistoryPath)) {
-        log('History already exists, re-using it');
+        log("The new history path (\"" + newHistoryPath + "\") already exists, re-using it");
         history = JSON.parse(fs.readFileSync(newHistoryPath).toString());
     }
-    // Parse old history file if it exists
     if (fs.existsSync(oldHistoryPath)) {
+        // Parse old history file if it exists
         log('History of existing build:\n\n');
         printHistoryDetailsIfAvailable(oldHistoryPath);
         log('\n\n');
