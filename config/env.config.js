@@ -39,6 +39,12 @@ const build = (() => {
 const thirdPartyAADAppClientId = 'd56fb06a-74be-4bd7-8ede-cbf2ea737328';
 const feedbackUrl = 'https://github.com/OfficeDev/script-lab/issues';
 
+
+// VERY IMPORTANT:  in addition to the keys and URLs here, there is also an 
+// Application Setting called "PG_ENV" in each of the Azure slots where the application
+// is deployed.  Be sure that if you add new environments, that you add this setting
+// to the website configuration.  It seems to be used only in runner ("server.ts"),
+// but you can set it in both the runner and the editor for good measure.
 const config = {
     local: {
         name: 'LOCAL',
