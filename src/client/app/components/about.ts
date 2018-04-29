@@ -111,8 +111,8 @@ export class About implements AfterViewInit {
             // User can only navigate to localhost if they've sideloaded local manifest
             isLocalHost ? { name: config.local.editorUrl, value: config.local.name } : null
         ]
-            .map(item => ({ name: item.name, value: item.value.toLowerCase() }))
-            .filter(item => item != null);
+            .filter(item => item != null)
+            .map(item => ({ name: item.name, value: item.value.toLowerCase() }));
 
         ensureFreshLocalStorage();
 
