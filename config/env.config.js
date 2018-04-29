@@ -16,7 +16,6 @@ const localStorageKeys = {
     customFunctionsLastHeartbeatTimestamp: 'playground_custom_functions_last_heartbeat_timestamp',
     customFunctionsLastUpdatedCodeTimestamp: 'playground_custom_functions_last_updated_code_timestamp',
     customFunctionsCurrentlyRunningTimestamp: 'playground_custom_functions_currently_running_timestamp',
-    logLastHeartbeatTimestamp: 'playground_log_last_heartbeat_timestamp',
     lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
     language: 'playground_language'
 };

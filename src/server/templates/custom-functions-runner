@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Custom Functions runner</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.7-adhoc.3/dist/office.debug.js"></script>
+
+    <script>
+        Office.initialize = function () {
+            window.playground_host_ready = true;
+        };
+
+        window.customFunctionParams = {
+            snippetsDataBase64: '{{{snippetsDataBase64}}}',
+            metadataBase64: '{{{metadataBase64}}}',
+            heartbeatParams: {
+		        clientTimestamp: {{clientTimestamp}},
+                showDebugLog: {{showDebugLog}}
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.customFunctionsRunner.js}}}"></script>
+</body>
+
+</html>

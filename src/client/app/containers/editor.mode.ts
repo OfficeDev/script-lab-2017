@@ -5,11 +5,13 @@ import { Observable } from 'rxjs/Observable';
 import * as fromRoot from '../reducers';
 import { UI, Snippet, GitHub } from '../actions';
 import { UIEffects } from '../effects/ui';
-import { environment, isOfficeHost, isInsideOfficeApp, isMakerScript } from '../helpers';
+import { environment, isOfficeHost, isInsideOfficeApp, isMakerScript, trustedSnippetManager, navigateToRegisterCustomFunctions } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 import { Subscription } from 'rxjs/Subscription';
+import { isCustomFunctionScript } from '../../../server/core/snippet.helper';
+const { localStorageKeys } = PLAYGROUND;
 
 @Component({
     selector: 'editor-mode',
@@ -18,8 +20,8 @@ import { Subscription } from 'rxjs/Subscription';
         <header class="command__bar">
             <command icon="GlobalNavButton" (click)="showMenu()"></command>
             <command class="title" [hidden]="isEmpty" icon="AppForOfficeLogo" [title]="snippet?.name" (click)="showInfo=true"></command>
-            <command [hidden]="isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
-            <command [hidden]="!isAddinCommands||isEmpty||isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}">
+            <command [hidden]="(isAddinCommands && !isCustomFunctionsSnippet) || isEmpty || isEditorTryIt" icon="Play" [async]="running$|async" title="{{strings.run}}" (click)="run()"></command>
+            <command [hidden]="!isAddinCommands || isEmpty || isEditorTryIt || isCustomFunctionsSnippet" icon="Play" [async]="running$|async" title="{{strings.run}}">
                 <command icon="Play" title="{{strings.runInThisPane}}" [async]="running$|async" (click)="run()"></command>
                 <command icon="OpenPaneMirrored" title="{{strings.runSideBySide}}" (click)="runSideBySide()"></command>
             </command>
@@ -87,6 +89,10 @@ export class EditorMode {
         return environment.current.isAddinCommands;
     }
 
+    get isCustomFunctionsSnippet() {
+        return this.snippet.script && isCustomFunctionScript(this.snippet.script.content);
+    }
+
     get isEditorTryIt() {
         return environment.current.isTryIt;
     }
@@ -142,14 +148,31 @@ export class EditorMode {
             return;
         }
 
+        if (PLAYGROUND.devMode) {
+            // Temporary to make it easier to load snippets despite BrowserSync issues
+            if (this.isCustomFunctionsSnippet) {
+                this.registerCustomFunctions();
+                return;
+            }
+        }
+
         if (isOfficeHost(this.snippet.host)) {
             let canRun = isInsideOfficeApp();
 
             // Additionally, for a maker script:
             if (this.snippet && isMakerScript(this.snippet.script)) {
-                if (this.snippet.script.content.indexOf('ExcelMaker.getActiveWorkbook()') < 0) {
+                if (!this.snippet.script.content.includes('ExcelMaker.getActiveWorkbook()')) {
                     canRun = true;
                 }
+            }
+
+            if (this.isCustomFunctionsSnippet) {
+                this._store.dispatch(new UI.ShowAlertAction({
+                    actions: [this.strings.ok],
+                    title: 'This is a Custom Functions snippet.',
+                    message: 'To register your Functions, please click the Functions button in the ribbon.'
+                }));
+                return;
             }
 
             if (!canRun) {
@@ -385,6 +408,32 @@ export class EditorMode {
 
             default:
                 this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
+        }
+    }
+
+    async registerCustomFunctions() {
+        if (!trustedSnippetManager.isSnippetTrusted(this.snippet.id, this.snippet.gist, this.snippet.gistOwnerId)) {
+            let alertResult = await this._effects.alert(
+                this.strings.snippetNotTrusted,
+                this.strings.trustSnippetQuestionMark,
+                this.strings.trust,
+                this.strings.cancel
+            );
+            if (alertResult === this.strings.cancel) {
+                return;
+            }
+        }
+
+        let startOfRequestTime = new Date().getTime();
+        window.localStorage.setItem(
+            localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+            startOfRequestTime.toString()
+        );
+
+        try {
+            navigateToRegisterCustomFunctions();
+        } catch (e) {
+            await this._effects.alert(e, 'Error registering custom functions', this.strings.ok);
         }
     }
 }

@@ -39,7 +39,7 @@ export class ResetAction implements Action {
 export class UpdateIntellisenseAction implements Action {
     readonly type = MonacoActionTypes.UPDATE_INTELLISENSE;
 
-    constructor(public payload: { libraries: string[], language: string, tabName: 'script' | 'customFunctions' }) {}
+    constructor(public payload: { libraries: string[], language: string }) {}
 }
 
 export class AddIntellisenseAction implements Action {

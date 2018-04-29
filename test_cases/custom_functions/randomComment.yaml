@@ -1,0 +1,48 @@
+name: Fetchy custom function
+description: ''
+host: EXCEL
+api_set: {}
+script:
+    content: |
+        async function randomComment(id: number, fieldName: string) {
+            let result = await (await fetch(`https://jsonplaceholder.typicode.com/comments/${id}`)).json();
+            fieldName = (fieldName || "").trim();
+            if (["id", "name", "email", "body"].indexOf(fieldName) >= 0) {
+                return result[fieldName];
+            } else {
+                throw new Error("Invalid field name");
+            }
+        }
+    language: typescript
+template:
+    content: |
+        <button id="run" class="ms-Button">
+            <span class="ms-Button-label">Run</span>
+        </button>
+    language: html
+style:
+    content: |
+        /* Your style goes here */
+    language: css
+libraries: |-
+    https://appsforoffice.microsoft.com/lib/1/hosted/office.js
+    https://appsforoffice.microsoft.com/lib/1/hosted/office.d.ts
+
+    office-ui-fabric-js@1.4.0/dist/css/fabric.min.css
+    office-ui-fabric-js@1.4.0/dist/css/fabric.components.min.css
+
+    core-js@2.4.1/client/core.min.js
+    @types/core-js
+
+    @microsoft/office-js-helpers@0.7.4/dist/office.helpers.min.js
+    @microsoft/office-js-helpers@0.7.4/dist/office.helpers.d.ts
+
+    jquery@3.1.1
+    @types/jquery
+
+    whatwg-fetch
+    @types/whatwg-fetch
+    @types/whatwg-streams
+customFunctions:
+    content: "{\r\n    \"namespace\": \"Random\",\r\n    \"functions\": [\r\n        {\r\n            \"name\": \"randomComment\",\r\n            \"description\": \"Gives a random comment\",\r\n            \"helpUrl\": \"http://dev.office.com\",\r\n            \"result\": {\r\n                \"type\": \"string\",\r\n                \"dimensionality\": \"scalar\"\r\n            },\r\n            \"parameters\": [\r\n                {\r\n                    \"name\": \"id\",\r\n                    \"type\": \"number\",\r\n                    \"dimensionality\": \"scalar\"\r\n                },\r\n                {\r\n                    \"name\": \"fieldName\",\r\n                    \"type\": \"string\",\r\n                    \"dimensionality\": \"scalar\"\r\n                }\r\n            ],\r\n            \"options\": {\r\n                \"sync\": false,\r\n                \"stream\": false,\r\n                \"volatile\": false\r\n            }\r\n        }\r\n    ]\r\n}"
+    language: json

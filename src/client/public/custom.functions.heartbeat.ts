@@ -1,6 +1,5 @@
-import * as moment from 'moment';
 import { toNumber } from 'lodash';
-import { environment, Messenger, CustomFunctionsMessageType, getCompileCustomFunctionsPayload,
+import { environment, Messenger, CustomFunctionsMessageType, getRunnerCustomFunctionsPayload,
     pushToLogQueue, ensureFreshLocalStorage } from '../app/helpers';
 import { Authenticator } from '@microsoft/office-js-helpers';
 const { localStorageKeys } = PLAYGROUND;
@@ -32,9 +31,7 @@ function setupMessenger(clientTimestamp: number) {
         .subscribe(input => tryCatch(() => {
             // TODO CUSTOM FUNCTIONS STRINGS
 
-            const message = 'Custom functions requested on ' +
-                moment(getLocalStorageLastUpdateTimestamp()).format('MMM Do, h:mm:ss a') +
-                ' are now loaded & running';
+            const message = 'Custom functions are reloaded';
 
             logToConsole({
                 source: 'system',
@@ -62,6 +59,8 @@ function setupMessenger(clientTimestamp: number) {
                     //     severity: 'info',
                     // });
 
+
+
                     // And check whether I should reload...
                     if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {
                         clearInterval(interval);
@@ -87,7 +86,7 @@ function getLocalStorageLastUpdateTimestamp(): number {
 }
 
 function sendRefreshRequest() {
-    let payload = getCompileCustomFunctionsPayload('run');
+    let payload = getRunnerCustomFunctionsPayload();
     messenger.send(window.parent, CustomFunctionsMessageType.NEED_TO_REFRESH, payload);
 }
 

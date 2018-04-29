@@ -1,16 +1,16 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <OfficeApp
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>8bc018e3-f345-40d4-8f1d-97951765d531</Id>
-  <Version>1.2.0.0</Version>
+  <Version>1.2.0.3</Version>
   <ProviderName>Microsoft</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Script Lab" />
-  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint." >
-      <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
+  <Description DefaultValue="Create, run, and share your Office Add-in code snippets from within Excel, Word, or PowerPoint.">
+    <Override Locale="de-ch" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="de-at" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="de-de" Value="In Excel, Word oder PowerPoint Code-Schnipsel für Office Add-Ins erstellen, ausführen und teilen."/>
     <Override Locale="es-ar" Value="Codifica, ejecuta y comparte fragmentos de código para tus Add-ins de Excel, Word o PowerPoint."/>
@@ -36,8 +36,8 @@
   </Description>
   <IconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://script-lab.azureedge.net/assets/images/icon-64.png" />
-  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" /> 
-<AppDomains>
+  <SupportUrl DefaultValue="https://github.com/OfficeDev/script-lab/issues" />
+  <AppDomains>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://stackoverflow.com</AppDomain>
     <AppDomain>https://dev.office.com</AppDomain>
@@ -112,8 +112,26 @@
                     <bt:Image size="80" resid="PG.Icon.Run.80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>Run</TaskpaneId>
                     <SourceLocation resid="PG.Run.Url" />
                     <Title resid="PG.RunCommand.Title" />
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PG.CFCommand">
+                  <Label resid="PG.CFCommand.Label" />
+                  <Supertip>
+                    <Title resid="PG.CFCommand.TipTitle" />
+                    <Description resid="PG.CFSupertip.Desc" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PG.Icon.CF.16" />
+                    <bt:Image size="32" resid="PG.Icon.CF.32" />
+                    <bt:Image size="80" resid="PG.Icon.CF.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>CustomFunctions</TaskpaneId>
+                    <SourceLocation resid="PG.CF.Url" />
+                    <Title resid="PG.CFCommand.Title" />
                   </Action>
                 </Control>
               </Group>
@@ -203,7 +221,6 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
-              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -331,7 +348,6 @@
           <FunctionFile resid="PG.Functions.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <CustomTab id="TabPlayground">
-              
               <Group id="PG.PlayGroup">
                 <Label resid="PG.GroupLabel" />
                 <Icon>
@@ -466,6 +482,9 @@
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png" />
+		    <bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-16.png" />
+        <bt:Image id="PG.Icon.CF.32" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-32.png" />
+        <bt:Image id="PG.Icon.CF.80" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-80.png" />
         <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-16.png" />
         <bt:Image id="PG.Icon.Tutorial.32" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-32.png" />
         <bt:Image id="PG.Icon.Tutorial.80" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-80.png" />
@@ -478,12 +497,16 @@
         <bt:Image id="PG.Icon.Ask.16" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-16.png" />
         <bt:Image id="PG.Icon.Ask.32" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-32.png" />
         <bt:Image id="PG.Icon.Ask.80" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-80.png" />
+        <bt:Image id="PG.Icon.Ask.16" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-16.png" />
+        <bt:Image id="PG.Icon.Ask.32" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-32.png" />
+        <bt:Image id="PG.Icon.Ask.80" DefaultValue="https://script-lab.azureedge.net/assets/images/ask-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="PG.Code.Url" DefaultValue="https://script-lab.azureedge.net?commands=1" />
+        <bt:Url id="PG.CF.Url" DefaultValue="https://script-lab.azureedge.net/custom-functions.html" />
         <bt:Url id="PG.Run.Url" DefaultValue="https://script-lab.azureedge.net/run.html" />
         <bt:Url id="PG.Functions.Url" DefaultValue="https://script-lab.azureedge.net/functions.html" />
-        <bt:Url id="PG.CustomFunctions.URL" DefaultValue="https://bornholm-edge.azurewebsites.net/custom-functions.html" />
+        <bt:Url id="PG.CustomFunctions.URL" DefaultValue="https://script-lab.azureedge.net/custom-functions.html" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="PG.TabLabel" DefaultValue="Script Lab" />
@@ -564,6 +587,10 @@
           <Override Locale="es-uy" Value="Crea o edita fragmentos de código"/>
           <Override Locale="es-mx" Value="Crea o edita fragmentos de código"/>
           <Override Locale="zh-cn" Value="创建或编辑代码段"/>
+        </bt:String>
+        <bt:String id="PG.CFCommand.Label" DefaultValue="Functions" />
+        <bt:String id="PG.CFCommand.Title" DefaultValue="Functions" />
+        <bt:String id="PG.CFCommand.TipTitle" DefaultValue="Launch the Custom Functions dashboard">
         </bt:String>
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
           <Override Locale="de-de" Value="Ausführen"/>
@@ -842,6 +869,8 @@
           <Override Locale="es-uy" Value="Abre el editor de código de Script Lab."/>
           <Override Locale="es-mx" Value="Abre el editor de código de Script Lab."/>
           <Override Locale="zh-cn" Value="打开Script Lab代码编辑器"/>
+        </bt:String>
+        <bt:String id="PG.CFSupertip.Desc" DefaultValue="Launch the Custom Functions dashboard">
         </bt:String>
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
           <Override Locale="de-de" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>

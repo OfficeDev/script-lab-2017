@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 
 /** Namespaces for the runner wrapper to share with the inner snippet iframe */
-export const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote'];
+export const officeNamespacesForIframe = ['OfficeExtension', 'OfficeCore', 'Excel', 'Word', 'OneNote', 'ExcelOp'];
 
 export function loadFirebug(editorBaseUrl: string): Promise<void> {
     return new Promise<any>((resolve, reject) => {
