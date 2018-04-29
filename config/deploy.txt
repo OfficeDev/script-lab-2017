@@ -142,7 +142,7 @@ try {
                     .filter(item => !_.isNil(item))
                     .forEach(copyInfo => buildAssetAndLibHistory(copyInfo, next_path));
 
-                console.log('The appended history is now:\n\n');
+                console.log('The appended history is now:');
                 printHistoryDetailsIfAvailable(historyPath);
                 console.log('\n\n\n\n');
 
@@ -157,7 +157,7 @@ try {
                 }
                 fs.writeFileSync(historyPath, JSON.stringify(newHistory));
 
-                console.log('Trimming out old entries, we get:\n\n');
+                console.log('Trimming out old entries, we get:');
                 printHistoryDetailsIfAvailable(historyPath);
                 console.log('\n\n\n\n');
             }
@@ -226,7 +226,7 @@ try {
 
         if (fs.existsSync(oldHistoryPath)) {
             // Parse old history file if it exists
-            log('History of existing build:\n\n');
+            log('History of existing build:');
             printHistoryDetailsIfAvailable(oldHistoryPath);
             log('\n\n');
             let oldHistory = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
@@ -256,7 +256,7 @@ try {
         shell.rm('-rf', 'existing_build');
     }
 
-    function printHistoryDetailsIfAvailable(filename) {
+    function printHistoryDetailsIfAvailable(filename: string) {
         if (!fs.existsSync(filename)) {
             log(`    Cannot print history, file "${filename}" doesn't exist.`);
             return;

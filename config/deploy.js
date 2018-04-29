@@ -108,7 +108,7 @@ try {
                 copyDeployedResourcesUrls
                     .filter(function (item) { return !_.isNil(item); })
                     .forEach(function (copyInfo) { return buildAssetAndLibHistory(copyInfo, next_path_1); });
-                console.log('The appended history is now:\n\n');
+                console.log('The appended history is now:');
                 printHistoryDetailsIfAvailable(historyPath);
                 console.log('\n\n\n\n');
                 var appendedHistory = JSON.parse(fs.readFileSync(historyPath).toString());
@@ -121,7 +121,7 @@ try {
                     }
                 }
                 fs.writeFileSync(historyPath, JSON.stringify(newHistory));
-                console.log('Trimming out old entries, we get:\n\n');
+                console.log('Trimming out old entries, we get:');
                 printHistoryDetailsIfAvailable(historyPath);
                 console.log('\n\n\n\n');
             }
@@ -183,7 +183,7 @@ try {
         }
         if (fs.existsSync(oldHistoryPath)) {
             // Parse old history file if it exists
-            log('History of existing build:\n\n');
+            log('History of existing build:');
             printHistoryDetailsIfAvailable(oldHistoryPath);
             log('\n\n');
             var oldHistory = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
