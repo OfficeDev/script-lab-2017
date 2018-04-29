@@ -11,7 +11,7 @@ const { localStorageKeys } = PLAYGROUND;
         lastModified: number;
     };
 
-    (() => {
+    tryCatch(() => {
         const params: HeartbeatParams = Authenticator.extractParams(window.location.href.split('?')[1]) as any;
 
         // Can do partial initialization, since host is guaranteed to be known
@@ -64,18 +64,21 @@ const { localStorageKeys } = PLAYGROUND;
                 previousLastOpenedIdAndTimestamp = currentLastOpenedIdAndTimestamp;
             }
         }, 300);
-    })();
+    });
 
 
     function getLastOpenedSnippet(): ISnippet | null {
         let settings: ISettings = (JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) || {})[environment.current.host];
+        if (!settings) {
+            return null;
+        }
         return settings.lastOpened;
     }
 
     function getSnippetById(id: string): ISnippet | null {
         const hostStorageKey = localStorageKeys.hostSnippets_parameterized
             .replace('{0}', environment.current.host);
-        const snippets: { [key: string] : ISnippet } = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
+        const snippets: { [key: string]: ISnippet } = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
         return snippets[id];
     }
 
@@ -157,15 +160,17 @@ const { localStorageKeys } = PLAYGROUND;
         messenger.listen<{ id: string, isTrustedSnippet: boolean }>()
             .filter(({ type }) => type === RunnerMessageType.REFRESH_REQUEST)
             .subscribe((input) => {
-                trackingSnippet = {
-                    id: input.message.id,
-                    lastModified: 0 /* Set to last modified, so that refreshes immediately */
-                };
+                tryCatch(() => {
+                    trackingSnippet = {
+                        id: input.message.id,
+                        lastModified: 0 /* Set to last modified, so that refreshes immediately */
+                    };
 
 
-                // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
-                // will be sure to send the last-opened snippet if the ID is empty
-                sendBackCurrentSnippet(input.message.isTrustedSnippet);
+                    // Note: The ID on the input.message was optional. But "sendBackCurrentSnippet"
+                    // will be sure to send the last-opened snippet if the ID is empty
+                    sendBackCurrentSnippet(input.message.isTrustedSnippet);
+                });
             });
 
         // TODO:  Maker script return to this.
@@ -183,6 +188,17 @@ const { localStorageKeys } = PLAYGROUND;
 
         //         window.localStorage.setItem(localStorageKeys.lastPerfNumbersTimestamp, Date.now().toString());
         //     });
+    }
+
+    async function tryCatch(callback: () => any) {
+        try {
+            await callback();
+        } catch (e) {
+            console.error(e);
+            if (messenger) {
+                messenger.send(window.parent, RunnerMessageType.ERROR, Strings().unexpectedError);
+            }
+        }
     }
 
 })();
