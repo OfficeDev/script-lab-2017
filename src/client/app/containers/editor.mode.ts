@@ -90,7 +90,7 @@ export class EditorMode {
     }
 
     get isCustomFunctionsSnippet() {
-        return this.snippet.script && isCustomFunctionScript(this.snippet.script.content);
+        return this.snippet && this.snippet.script && isCustomFunctionScript(this.snippet.script.content);
     }
 
     get isEditorTryIt() {
