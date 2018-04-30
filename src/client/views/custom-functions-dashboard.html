@@ -29,100 +29,30 @@
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.components.min.css">
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.css">
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid-theme.min.css">
+	<script src="https://unpkg.com/@microsoft/office-js@1.1.7-beta-next.0/dist/office.debug.js"></script>
+	<!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script> -->
 
-	<style>
-		body {
-			display: -webkit-box;
-			display: -ms-flexbox;
-			display: flex;
-			-webkit-box-orient: vertical;
-			-webkit-box-direction: normal;
-			-ms-flex-direction: column;
-			flex-direction: column;
-		}
 
-		#header {
-			-webkit-box-flex: 0;
-			-ms-flex: 0 0 auto;
-			flex: 0 0 auto;
-			margin-bottom: 10px;
-			padding: 10px;
+	<script>
+		Office.initialize = function () {
+			window.playground_host_ready = true;
 		}
-
-		#grid {
-			-webkit-box-flex: 1;
-			-ms-flex: 1 1 auto;
-			flex: 1 1 auto;
-		}
-
-		#time {
-			margin-right: 25px;
-			font-weight: bold;
-		}
-
-		#clear {
-			margin-right: 10px;
-		}
-
-		#add-test-log-item {
-			margin-left: 20px;
-		}
-
-		tr.error td {
-			background: rgb(99, 23, 23) !important;
-			color: white;
-		}
-
-		tr.warn td {
-			background: goldenrod !important;
-		}
-
-		#footer {
-			padding: 5px 10px;
-			box-sizing: border-box;
-		}
-
-		#register-custom-functions-frame {
-			display: block;
-			margin: 15px 10px 5px 10px;
-			text-align: center;
-		}
-	</style>
+	</script>
 </head>
 
 <body class="ms-font-m">
-
-	<!-- Not localizing these strings yet, since it's experimental for now -->
-	<div id="header">
-		<div>
-			<span>Time:</span>
-			<span id="time"></span>
+	<div id="loading" class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt; position: absolute; top: 0; bottom: 0;">
+		<div class="cs-loader">
+			<div class="cs-loader-inner">
+				<label class="ms-Icon ms-Icon--LocationDot"></label>
+				<label class="ms-Icon ms-Icon--LocationDot"></label>
+				<label class="ms-Icon ms-Icon--LocationDot"></label>
+				<label class="ms-Icon ms-Icon--LocationDot"></label>
+				<label class="ms-Icon ms-Icon--LocationDot"></label>
+			</div>
 		</div>
-		<div>
-			<span>Status: </span>
-			<span id="status"></span>
-		</div>
-
-		<div id="register-custom-functions-frame">
-			<button class="ms-Button" id="register-custom-functions">
-				<span class="ms-Button-label">Register Custom Functions</span>
-			</button>
-		</div>
-		<p>These functions run asynchronously in Script Lab. You can try running them faster in sync mode with <a href="https://aka.ms/customfunctions">these instructions</a>.</p>
 	</div>
-	<div id="grid"></div>
-
-	<div id="footer">
-		<button class="ms-Button" id="clear">
-			<span class="ms-Button-label">Clear</span>
-		</button>
-		<label>
-			<input id="scroll-to-bottom" type="checkbox" checked="checked" />
-			<span id="scroll-to-bottom-label">Scroll to bottom</span>
-		</label>
-	</div>
-	<script src="libs/{{{versionedPackageNames['jquery']}}}/jquery.min.js"></script>
-	<script src="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.js"></script>
+	<div id="root"></div>
 </body>
 
 </html>

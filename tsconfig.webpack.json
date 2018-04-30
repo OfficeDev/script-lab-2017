@@ -1,21 +1,21 @@
 {
-    "$schema": "http://json.schemastore.org/tsconfig",
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "module": "es2015"
-    },
-    "exclude": [
-        "node_modules",
-        "compiled",
-        "dist/**/*.ts",
-        "src/server/**/*.ts",
-        "src/runtime-helpers/**/*.ts"
-    ],
-    "awesomeTypescriptLoaderOptions": {
-        "useWebpackText": true,
-        "forkChecker": true,
-        "useCache": true
-    },
-    "compileOnSave": false,
-    "buildOnSave": false
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "es2015"
+  },
+  "exclude": [
+    "node_modules",
+    "compiled",
+    "dist/**/*.ts",
+    "src/server/**/*.ts",
+    "src/runtime-helpers/**/*.ts"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "useWebpackText": true,
+    "forkChecker": true,
+    "useCache": true
+  },
+  "compileOnSave": false,
+  "buildOnSave": false
 }
