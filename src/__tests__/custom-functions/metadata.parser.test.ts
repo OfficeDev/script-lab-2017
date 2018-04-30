@@ -45,7 +45,7 @@ describe('Custom Functions metadata parser ', () => {
             it(`should throw an error for the function in ${file}`, () => {
                 const source = fs.readFileSync(`${SAMPLE_DIR}/${file}`).toString();
                 expect(() => {
-                    parseMetadata(source).forEach((meta) => {
+                    parseMetadata(source, 'snippetName').forEach((meta) => {
                         if (meta.error) {
                             throw Error();
                         }
@@ -56,7 +56,7 @@ describe('Custom Functions metadata parser ', () => {
             // for each file in the samples directory, parse it and test it
             const { description, code, meta } = parseSampleFile(file);
             it(description, () => {
-                expect(parseMetadata(code)).toEqual(JSON.parse(meta));
+                expect(parseMetadata(code, 'snippetName')).toEqual(JSON.parse(meta));
             });
         }
     });

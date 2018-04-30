@@ -15,7 +15,7 @@ export function getFunctionsAndMetadataForRegistration(snippets: ISnippet[]): { 
     snippets
         .filter(snippet => snippet.script && snippet.name)
         .forEach(snippet => {
-            let functions: ICFVisualFunctionMetadata[] = parseMetadata(snippet.script.content) as ICFVisualFunctionMetadata[];
+            let functions: ICFVisualFunctionMetadata[] = parseMetadata(snippet.script.content, snippet.name) as ICFVisualFunctionMetadata[];
             functions = convertFunctionErrorsToSpace(functions);
             if (functions.length === 0) { return; } // no custom functions found
             const hasErrors = doesSnippetHaveErrors(functions);

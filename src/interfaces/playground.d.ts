@@ -182,7 +182,8 @@ interface ICompiledPlaygroundInfo {
         edge: IEnvironmentConfig,
         insiders: IEnvironmentConfig,
         staging: IEnvironmentConfig,
-        production: IEnvironmentConfig
+        production: IEnvironmentConfig,
+        productiondirect: IEnvironmentConfig
     };
 
     /** NOTE: when adding local storage keys here, also add them to "const localStorageKeys = {...}" in "env.config.js" */

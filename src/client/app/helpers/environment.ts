@@ -40,7 +40,11 @@ class Environment {
         }
 
         // Production has both the azure website serving the content, and the CDN mirrors
-        if (/bornholm-(runner-)?\./.test(origin) || /script-lab(-runner)?\./.test(origin)) {
+        if (/bornholm(-runner)?\./.test(origin)) {
+            return config.productiondirect;
+        }
+
+        if (/script-lab(-runner)?\./.test(origin)) {
             return config.production;
         }
 
