@@ -29,10 +29,10 @@ const PivotClassName = mergeStyles({
       background: '#217346 !important',
       color: 'white !important',
     },
-    '& .ms-Pivot .ms-Pivot-link.is-selected': {
+    '&& .ms-Pivot .ms-Pivot-link.is-selected': {
       background: '#103822 !important',
       color: 'white',
-      fontWeight: '400 !important',
+      fontWeight: '400',
     },
     '& .ms-Pivot .ms-Pivot-link.is-selected:before': {
       borderBottom: '0px solid white',

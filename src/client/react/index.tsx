@@ -53,39 +53,55 @@ tryCatch(async () => {
   }
 });
 
-function getMetadata() {
+async function getMetadata() {
   return new Promise<{
     metadata: object[];
     registerCustomFunctionsJsonStringBase64: string;
-  }>((resolve, reject) => {
+  }>(async (resolve, reject) => {
     ensureFreshLocalStorage();
+    try {
+      console.log(storage);
 
-    let allSnippetsToRegisterWithPossibleDuplicate = uniqBy(
-      [storage.current.lastOpened].concat(storage.snippets.values()),
-      'id',
-    ).filter(
-      snippet =>
-        snippet.script && isCustomFunctionScript(snippet.script.content),
-    );
-
-    let xhr = new XMLHttpRequest();
-    xhr.open(
-      'POST',
-      `${environment.current.config.runnerUrl}/custom-functions/parse-metadata`,
-    );
-    xhr.setRequestHeader('content-type', 'application/json');
-    xhr.onload = () => {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        resolve(response);
-      } else {
-        reject();
+      if (!storage.snippets) {
+        resolve({ metadata: [], registerCustomFunctionsJsonStringBase64: '' });
+        return;
       }
-    };
 
-    xhr.send(
-      JSON.stringify({ snippets: allSnippetsToRegisterWithPossibleDuplicate }),
-    );
+      let allSnippetsToRegisterWithPossibleDuplicate = uniqBy(
+        // [storage.current.lastOpened].concat(storage.snippets.values()),
+        storage.snippets.values(),
+        'id',
+      ).filter(
+        snippet =>
+          snippet.script && isCustomFunctionScript(snippet.script.content),
+      );
+
+      let xhr = new XMLHttpRequest();
+      xhr.open(
+        'POST',
+        `${
+          environment.current.config.runnerUrl
+        }/custom-functions/parse-metadata`,
+      );
+      xhr.setRequestHeader('content-type', 'application/json');
+
+      xhr.onload = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          resolve(response);
+        } else {
+          reject();
+        }
+      };
+
+      xhr.send(
+        JSON.stringify({
+          snippets: allSnippetsToRegisterWithPossibleDuplicate,
+        }),
+      );
+    } catch (e) {
+      handleError(e);
+    }
   });
 }
 
@@ -94,6 +110,7 @@ async function registerMetadata(
 ) {
   const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
   await Excel.run(async context => {
+    debugger;
     (context.workbook as any).registerCustomFunctions(
       'ScriptLab',
       registrationPayload,

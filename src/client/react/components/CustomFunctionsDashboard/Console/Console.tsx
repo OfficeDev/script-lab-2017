@@ -82,7 +82,7 @@ export default class Console extends React.Component<Props, State> {
 
   scrollToBottom() {
     if (this.state.shouldScrollToBottom) {
-      this.refs.lastLog.scrollIntoView();
+      (this.refs.lastLog as any).scrollIntoView();
     }
   }
 
