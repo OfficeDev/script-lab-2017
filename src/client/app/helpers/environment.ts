@@ -21,7 +21,7 @@ const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
 class Environment {
   cache = new Storage<any>(
     sessionStorageKeys.environmentCache,
-    StorageType.SessionStorage,
+    StorageType.SessionStorage
   );
   private _config: IEnvironmentConfig;
   private _current: ICurrentPlaygroundInfo;
@@ -41,12 +41,25 @@ class Environment {
     // can (and does) include files from the editor domain, all the while
     // window.location.origin is in runner domain.
 
+    if (/bornholm-(runner-)?edge\./.test(origin)) {
+      return config.edge;
+    }
+
     if (/bornholm-(runner-)?insiders\./.test(origin)) {
       return config.insiders;
     }
 
-    if (/bornholm-(runner-)?edge\./.test(origin)) {
-      return config.edge;
+    if (/bornholm-(runner-)?staging\./.test(origin)) {
+      return config.staging;
+    }
+
+    // Production has both the azure website serving the content, and the CDN mirrors
+    if (/bornholm(-runner)?\./.test(origin)) {
+      return config.productiondirect;
+    }
+
+    if (/script-lab(-runner)?\./.test(origin)) {
+      return config.production;
     }
 
     // Production has both the azure website serving the content, and the CDN mirrors
@@ -75,7 +88,7 @@ class Environment {
 
         supportsCustomFunctions: false,
         customFunctionsShowDebugLog: this.getExperimentationFlagValue(
-          'customFunctionsShowDebugLog',
+          'customFunctionsShowDebugLog'
         ),
 
         isAddinCommands: false,
@@ -110,7 +123,7 @@ class Environment {
         updatedEnv = {
           ...updatedEnv,
           supportsCustomFunctions: this.getExperimentationFlagValue(
-            'customFunctions',
+            'customFunctions'
           ),
         };
       }
@@ -120,10 +133,10 @@ class Environment {
   }
 
   getExperimentationFlagValue(
-    name: 'customFunctions' | 'customFunctionsShowDebugLog',
+    name: 'customFunctions' | 'customFunctionsShowDebugLog'
   ): any {
     return JSON.parse(
-      this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/),
+      this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/)
     )[name];
   }
 
@@ -132,10 +145,10 @@ class Environment {
     const objectToReturn = (() => {
       ensureFreshLocalStorage();
       const flagSetInStorage = window.localStorage.getItem(
-        localStorageKeys.experimentationFlags,
+        localStorageKeys.experimentationFlags
       );
       const flagsOrError: IExperimentationFlags | Error = attempt(() =>
-        JSON.parse(flagSetInStorage),
+        JSON.parse(flagSetInStorage)
       );
 
       let value = isError(flagsOrError) ? {} : flagsOrError;
@@ -169,8 +182,8 @@ class Environment {
     }
     const previousSetting = JSON.parse(
       this.getExperimentationFlagsString(
-        false /*onEmptyReturnDefaults = false; instead want actual empty */,
-      ),
+        false /*onEmptyReturnDefaults = false; instead want actual empty */
+      )
     );
     const identicalToPreviousSettings = isEqual(previousSetting, objectAttempt);
 
@@ -178,7 +191,7 @@ class Environment {
     // since objectAttempt may have gotten adjusted.
     window.localStorage.setItem(
       localStorageKeys.experimentationFlags,
-      JSON.stringify(objectAttempt),
+      JSON.stringify(objectAttempt)
     );
 
     return !identicalToPreviousSettings;
@@ -204,7 +217,7 @@ class Environment {
     this._setupCurrentDefaultsIfEmpty();
 
     let pageParams = (Authenticator.extractParams(
-      window.location.href.split('?')[1],
+      window.location.href.split('?')[1]
     ) || {}) as {
       commands: any /* whether app-commands are available, relevant for Office Add-ins */;
       mode: string /* and older way of opening Script Lab to a particular host */;
@@ -281,10 +294,8 @@ class Environment {
   }
 
   // For pages that have an "Office.initialize" on them directly
-  createPlaygroundHostReadyTimer(): Promise<
-    any
-  > // tslint:disable-next-line:one-line
-  {
+  createPlaygroundHostReadyTimer(): Promise<any> {
+    // tslint:disable-next-line:one-line
     if (getIsPlaygroundHostReady()) {
       return Promise.resolve(true);
     }

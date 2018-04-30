@@ -36,7 +36,14 @@ const build = (() => {
 })();
 
 const thirdPartyAADAppClientId = 'd56fb06a-74be-4bd7-8ede-cbf2ea737328';
+const feedbackUrl = 'https://github.com/OfficeDev/script-lab/issues';
 
+
+// VERY IMPORTANT:  in addition to the keys and URLs here, there is also an 
+// Application Setting called "PG_ENV" in each of the Azure slots where the application
+// is deployed.  Be sure that if you add new environments, that you add this setting
+// to the website configuration.  It seems to be used only in runner ("server.ts"),
+// but you can set it in both the runner and the editor for good measure.
 const config = {
     local: {
         name: 'LOCAL',
@@ -47,7 +54,7 @@ const config = {
         tokenUrl: 'https://localhost:3200/auth',
         runnerUrl: 'https://localhost:3200',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        feedbackUrl,
         thirdPartyAADAppClientId,
     },
     edge: {
@@ -58,7 +65,7 @@ const config = {
         tokenUrl: 'https://bornholm-runner-edge.azurewebsites.net/auth',
         runnerUrl: 'https://bornholm-runner-edge.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        feedbackUrl,
         thirdPartyAADAppClientId,
     },
     insiders: {
@@ -69,7 +76,29 @@ const config = {
         tokenUrl: 'https://bornholm-runner-insiders.azurewebsites.net/auth',
         runnerUrl: 'https://bornholm-runner-insiders.azurewebsites.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-beta',
-        feedbackUrl: 'https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR_IQfl6RcdlChED7PZI6qXNURUo2UFBUR1YxMkwxWFBLUTRMUE9HRENOWi4u',
+        feedbackUrl,
+        thirdPartyAADAppClientId,
+    },
+    staging: {
+        name: 'STAGING',
+        clientId: '55031174553ee45f92f4', // same as production
+        instrumentationKey: '8e0b6b12-8d5e-4710-841d-7996a913f14b', // same as production
+        editorUrl: 'https://bornholm-staging.azurewebsites.net',
+        tokenUrl: 'https://bornholm-runner-staging.azurewebsites.net/auth',
+        runnerUrl: 'https://bornholm-runner-staging.azurewebsites.net',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
+        feedbackUrl,
+        thirdPartyAADAppClientId,
+    },
+    productiondirect: { // doesn't need to show up in "about" list or elsewhere, only for being able to quickly test the site before purging the CDN.
+        name: 'PRODUCTIONDIRECT',
+        clientId: '55031174553ee45f92f4', // same as production
+        instrumentationKey: '8e0b6b12-8d5e-4710-841d-7996a913f14b', // same as production
+        editorUrl: 'https://bornholm.azurewebsites.net',
+        tokenUrl: 'https://bornholm-runner.azurewebsites.net/auth',
+        runnerUrl: 'https://bornholm-runner.azurewebsites.net',
+        samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
+        feedbackUrl,
         thirdPartyAADAppClientId,
     },
     production: {
@@ -80,7 +109,7 @@ const config = {
         tokenUrl: 'https://script-lab-runner.azureedge.net/auth',
         runnerUrl: 'https://script-lab-runner.azureedge.net',
         samplesUrl: 'https://raw.githubusercontent.com/OfficeDev/office-js-snippets/deploy-prod',
-        feedbackUrl: 'https://github.com/OfficeDev/script-lab/issues',
+        feedbackUrl,
         thirdPartyAADAppClientId,
     }
 };

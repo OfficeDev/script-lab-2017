@@ -181,7 +181,9 @@ interface ICompiledPlaygroundInfo {
         local: ILocalHostEnvironmentConfig,
         edge: IEnvironmentConfig,
         insiders: IEnvironmentConfig,
-        production: IEnvironmentConfig
+        staging: IEnvironmentConfig,
+        production: IEnvironmentConfig,
+        productiondirect: IEnvironmentConfig
     };
 
     /** NOTE: when adding local storage keys here, also add them to "const localStorageKeys = {...}" in "env.config.js" */
@@ -265,7 +267,7 @@ interface IBuildInfo {
 }
 
 interface IEnvironmentConfig {
-    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'PRODUCTION',
+    name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'STAGING' | 'PRODUCTION',
     clientId: string
     instrumentationKey: string,
     editorUrl: string,

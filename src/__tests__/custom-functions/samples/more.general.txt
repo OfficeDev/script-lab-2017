@@ -58,7 +58,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
 [
    {
       "description":"*Insert Description here*",
-      "name":"getRgb3",
+      "name":"snippetName.getRgb3",
       "options":{
          "cancelable":true,
          "stream":false,
@@ -79,7 +79,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb6",
+      "name":"snippetName.getRgb6",
       "options":{
          "cancelable":true,
          "stream":false,
@@ -100,7 +100,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb8",
+      "name":"snippetName.getRgb8",
       "options":{
          "cancelable":true,
          "stream":false,
@@ -121,7 +121,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb9",
+      "name":"snippetName.getRgb9",
       "options":{
          "cancelable":true,
          "stream":false,
@@ -142,7 +142,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb10",
+      "name":"snippetName.getRgb10",
       "options":{
          "cancelable":true,
          "stream":false,
@@ -168,7 +168,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"functionWith2DArraySyntax",
+      "name":"snippetName.functionWith2DArraySyntax",
       "options":{
          "cancelable":true,
          "stream":false,

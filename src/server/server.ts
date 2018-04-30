@@ -161,15 +161,15 @@ setInterval(() => {
  */
 if (process.env.NODE_ENV === 'production') {
   app.listen(process.env.port || 1337, () =>
-    console.log(`Script Lab Runner listening on port ${process.env.PORT}`),
+    console.log(`Script Lab Runner listening on port ${process.env.PORT}`)
   );
 } else {
   const cert = {
     key: fs.readFileSync(
-      path.resolve('node_modules/browser-sync/lib/server/certs/server.key'),
+      path.resolve('node_modules/browser-sync/lib/server/certs/server.key')
     ),
     cert: fs.readFileSync(
-      path.resolve('node_modules/browser-sync/lib/server/certs/server.crt'),
+      path.resolve('node_modules/browser-sync/lib/server/certs/server.crt')
     ),
   };
   https
@@ -197,16 +197,16 @@ registerRoute(
         id: null,
         query: req.query,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(
-          req,
+          req
         ),
       },
       Strings(req),
-      res,
-    ),
+      res
+    )
 );
 
 registerRoute('get', ['/compile/custom-functions'], (req, res) =>
-  Promise.resolve().then(() => respondWith(res, '', 'text/html')),
+  Promise.resolve().then(() => respondWith(res, '', 'text/html'))
 );
 
 /**
@@ -226,12 +226,12 @@ registerRoute('get', ['/run/:host', '/run/:host/:id'], (req, res) =>
       id: req.params.id,
       query: req.query,
       explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(
-        req,
+        req
       ),
     },
     Strings(req),
-    res,
-  ),
+    res
+  )
 );
 
 /**
@@ -272,19 +272,19 @@ registerRoute('post', '/auth/:user', (req, res) => {
         if (error) {
           ai.trackEvent('[Github] Login failed', { user });
           return reject(
-            new UnauthorizedError(strings.failedToAuthenticateUser, error),
+            new UnauthorizedError(strings.failedToAuthenticateUser, error)
           );
         } else {
           ai.trackEvent('[Github] Login succeeded', { user });
           return resolve(body);
         }
-      },
+      }
     );
   }).then(token =>
     res
       .contentType('application/json')
       .status(200)
-      .send(token),
+      .send(token)
   );
 });
 
@@ -299,7 +299,7 @@ registerRoute('post', '/compile/snippet', compileSnippetCommon);
  * Returns the entire page (with runner chrome) of the compiled snippet
  */
 registerRoute('post', '/compile/page', (req, res) =>
-  compileSnippetCommon(req, res, true /*wrapWithRunnerChrome*/),
+  compileSnippetCommon(req, res, true /*wrapWithRunnerChrome*/)
 );
 
 /**
@@ -312,11 +312,11 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
   let { snippets } = params;
 
   snippets = snippets.filter(snippet => {
-    let result = parseMetadata(snippet.script.content);
+    let result = parseMetadata(snippet.script.content, snippet.name);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
     snippet.metadata = {
-      namespace: snippet.name.replace(/[0-9A-Za-z_]/g, ''),
+      namespace: snippet.name.replace(/[^0-9A-Za-z_]/g, ''),
       functions: result,
     };
     return isGoodSnippet;
@@ -345,19 +345,19 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
         data,
         false /*isExternalExport*/,
         strings,
-        true /*isInsideOfficeApp*/,
+        true /*isInsideOfficeApp*/
       );
-    }),
+    })
   );
 
   const html = customFunctionsRunnerGenerator({
     snippetsDataBase64: base64encode(
-      JSON.stringify(snippetCompileResults.map(result => result.html)),
+      JSON.stringify(snippetCompileResults.map(result => result.html))
     ),
     metadataBase64: base64encode(
       JSON.stringify(
-        snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata })),
-      ),
+        snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata }))
+      )
     ),
     showDebugLog: params.heartbeatParams.showDebugLog,
     clientTimestamp: params.heartbeatParams.clientTimestamp,
@@ -372,11 +372,11 @@ registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
   const { snippets } = req.body;
 
   const { visual, functions } = getFunctionsAndMetadataForRegistration(
-    snippets,
+    snippets
   );
 
   const registerCustomFunctionsJsonStringBase64 = base64encode(
-    JSON.stringify({ functions }),
+    JSON.stringify({ functions })
   );
 
   return respondWith(
@@ -385,7 +385,7 @@ registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
       metadata: visual,
       registerCustomFunctionsJsonStringBase64,
     }),
-    'application/javascript',
+    'application/javascript'
   );
 });
 
@@ -399,11 +399,11 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
   const { snippets } = params;
 
   const { visual, functions } = getFunctionsAndMetadataForRegistration(
-    snippets,
+    snippets
   );
 
   const numOfSnippetsWithErrors = visual.snippets.filter(
-    snippetMetadata => snippetMetadata.error,
+    snippetMetadata => snippetMetadata.error
   ).length;
   const numOfSnippetsWithoutErrors =
     visual.snippets.length - numOfSnippetsWithErrors;
@@ -411,7 +411,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
   const isAnySuccess = numOfSnippetsWithoutErrors > 0;
 
   const registerCustomFunctionsJsonStringBase64 = base64encode(
-    JSON.stringify({ functions }),
+    JSON.stringify({ functions })
   );
 
   const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
@@ -426,7 +426,7 @@ registerRoute('post', '/custom-functions/register', async (req, res) => {
     isAnyError,
     registerCustomFunctionsJsonStringBase64,
     explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(
-      req,
+      req
     ),
     dashboardUrl: req.headers.referer as string,
   });
@@ -552,7 +552,7 @@ registerRoute('post', '/export', (req, res) => {
       },
       true /*isExternalExport*/,
       strings,
-      isOfficeHost(snippet.host),
+      isOfficeHost(snippet.host)
     ),
     generateReadme(snippet),
     isOfficeHost(snippet.host)
@@ -586,7 +586,7 @@ registerRoute(
   ['/try', '/try/:host', '/try/:host/:type/:id'],
   (req, res) => {
     const params = massageParams<{ host: string; type: string; id: string }>(
-      req,
+      req
     );
     if (!params.host) {
       params.host = 'EXCEL';
@@ -613,9 +613,9 @@ registerRoute(
         });
 
         return respondWith(res, html, 'text/html');
-      },
+      }
     );
-  },
+  }
 );
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
@@ -631,14 +631,14 @@ registerRoute('get', '/version', (req, res) => {
         samplesUrl: currentConfig.samplesUrl,
       },
       null,
-      4,
-    ),
+      4
+    )
   );
 });
 
 /** HTTP GET: Gets runner version info (useful for debugging, to match with the info in the Editor "about" view) */
 registerRoute('get', '/snippet/auth', async (req, res) =>
-  respondWith(res, (await loadTemplate('snippet-auth'))({}), 'text/html'),
+  respondWith(res, (await loadTemplate('snippet-auth'))({}), 'text/html')
 );
 
 registerRoute('get', '/lib/worker', async (req, res) => {
@@ -652,12 +652,12 @@ registerRoute('get', '/lib/sync-office-js', async (req, res) => {
   let syncOfficeJS = [
     fs
       .readFileSync(
-        path.resolve(__dirname, './maker/sync-office-js/Office.Runtime.js'),
+        path.resolve(__dirname, './maker/sync-office-js/Office.Runtime.js')
       )
       .toString(),
     fs
       .readFileSync(
-        path.resolve(__dirname, './maker/sync-office-js/office.core.js'),
+        path.resolve(__dirname, './maker/sync-office-js/office.core.js')
       )
       .toString(),
     fs
@@ -673,7 +673,7 @@ registerRoute('get', '/lib/sync-office-js', async (req, res) => {
 function compileSnippetCommon(
   req: express.Request,
   res: express.Response,
-  wrapWithRunnerChrome?: boolean,
+  wrapWithRunnerChrome?: boolean
 ) {
   const data: IRunnerState = JSON.parse(req.body.data);
   const { snippet, returnUrl, isInsideOfficeApp } = data;
@@ -699,7 +699,7 @@ function compileSnippetCommon(
       snippetDataToCompile,
       false /*isExternalExport*/,
       strings,
-      isInsideOfficeApp,
+      isInsideOfficeApp
     ),
     wrapWithRunnerChrome
       ? loadTemplate<IRunnerHandlebarsContext>('runner')
@@ -732,7 +732,7 @@ function compileSnippetCommon(
         headerTitle: snippet.name,
         strings,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(
-          req,
+          req
         ),
       });
     }
@@ -754,7 +754,7 @@ function runCommon(
     explicitlySetDisplayLanguageOrNull: string;
   },
   strings: ServerStrings,
-  res: express.Response,
+  res: express.Response
 ) {
   let { host, id } = massageParams<{ host: string; id: string }>(options);
   id = id || '';
@@ -782,7 +782,7 @@ function runCommon(
       });
 
       return respondWith(res, html, 'text/html');
-    },
+    }
   );
 
   /**
@@ -791,12 +791,12 @@ function runCommon(
    **/
   function determineOfficeJS(
     query: { [key: string]: string },
-    host: string,
+    host: string
   ): string {
     const queryParamsLowercase: { officejs: string } = <any>{};
     forIn(
       query,
-      (value, key) => (queryParamsLowercase[key.toLowerCase()] = value),
+      (value, key) => (queryParamsLowercase[key.toLowerCase()] = value)
     );
 
     if (
@@ -820,7 +820,7 @@ function runCommon(
 function respondWith(
   res: express.Response,
   content: string,
-  type: 'text/html' | 'application/javascript',
+  type: 'text/html' | 'application/javascript'
 ) {
   res.setHeader('Cache-Control', 'no-cache, no-store');
   res.setHeader('X-XSS-Protection', '0');
@@ -857,7 +857,7 @@ function getVersionNumber(): Promise<string> {
           ai.trackEvent('[Snippet] Get version number succeeded', { body });
           return resolve(body);
         }
-      },
+      }
     );
   })
     .then(xml => parseXmlString(xml))
@@ -879,7 +879,7 @@ async function generateSnippetHtmlData(
   compileData: SnippetCompileData,
   isExternalExport: boolean,
   strings: ServerStrings,
-  isInsideOfficeApp: boolean,
+  isInsideOfficeApp: boolean
 ): Promise<{ succeeded: boolean; html: string; officeJS: string }> {
   let script: string;
   try {
@@ -901,7 +901,7 @@ async function generateSnippetHtmlData(
   let { officeJS, linkReferences, scriptReferences } = processLibraries(
     compileData.libraries,
     isMakerScript(compileData.scriptToCompile),
-    isInsideOfficeApp,
+    isInsideOfficeApp
   );
 
   let shouldPutSnippetIntoOfficeInitialize;
@@ -945,18 +945,18 @@ async function generateSnippetHtmlData(
     strings,
 
     runtimeHelpersUrls: ['auth-helpers', 'maker'].map(item =>
-      getRuntimeHelpersUrl(item),
+      getRuntimeHelpersUrl(item)
     ),
 
     editorUrl: currentConfig.editorUrl,
     runtimeHelperStringifiedStrings: JSON.stringify(
-      strings.RuntimeHelpers,
+      strings.RuntimeHelpers
     ) /* stringify so that it gets written correctly into "snippets" template */,
     shouldPutSnippetIntoOfficeInitialize,
   };
 
   const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>(
-    'snippet',
+    'snippet'
   );
   return {
     succeeded: true,
@@ -969,19 +969,17 @@ async function generateManifest(
   snippet: ISnippet,
   additionalFields: ISnippet,
   htmlFilename: string,
-  strings: ServerStrings,
+  strings: ServerStrings
 ): Promise<string> {
   const manifestGenerator = await loadTemplate<IManifestHandlebarsContext>(
-    'manifest',
+    'manifest'
   );
 
   const hostType = officeHostToManifestTypeMap[snippet.host];
   if (!hostType) {
     // OK to be English-only, internal error that should never happen.
     throw new BadRequestError(
-      `Cannot find matching Office host type for snippet host "${
-        snippet.host
-      }"`,
+      `Cannot find matching Office host type for snippet host "${snippet.host}"`
     );
   }
 
@@ -1009,7 +1007,7 @@ async function generateReadme(snippet: ISnippet): Promise<string> {
   // Keeping README as English-only, too many strings in that page to localize otherwise
 
   const readmeGenerator = await loadTemplate<IReadmeHandlebarsContext>(
-    'readme',
+    'readme'
   );
   const isAddin = isOfficeHost(snippet.host);
 
@@ -1029,7 +1027,7 @@ async function generateReadme(snippet: ISnippet): Promise<string> {
 function registerRoute(
   verb: 'get' | 'post',
   path: string | string[],
-  action: (req: express.Request, res: express.Response) => Promise<any>,
+  action: (req: express.Request, res: express.Response) => Promise<any>
 ) {
   app[verb](path, async (req: express.Request, res: express.Response) => {
     try {
@@ -1044,7 +1042,7 @@ function registerRoute(
 async function errorHandler(
   res: express.Response,
   error: Error,
-  strings: ServerStrings,
+  strings: ServerStrings
 ) {
   if (!(error instanceof InformationalError)) {
     ai.trackException(error, 'Server - Per-route handler');
@@ -1056,10 +1054,10 @@ async function errorHandler(
 
 async function generateErrorHtml(
   error: Error,
-  strings: ServerStrings,
+  strings: ServerStrings
 ): Promise<string> {
   const errorHtmlGenerator = await loadTemplate<IErrorHandlebarsContext>(
-    'error',
+    'error'
   );
 
   const title =
@@ -1122,7 +1120,7 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
 
   function getFileAsJson(filename) {
     return JSON.parse(
-      fs.readFileSync(path.resolve(__dirname, filename)).toString(),
+      fs.readFileSync(path.resolve(__dirname, filename)).toString()
     );
   }
 }

@@ -34,7 +34,7 @@ const versionedPackageNames = getVersionedPackageNames([
 
 fs.writeFileSync(
   path.resolve('./dist/server/versionPackageNames.json'),
-  JSON.stringify(versionedPackageNames),
+  JSON.stringify(versionedPackageNames)
 );
 
 module.exports = prodMode => ({
@@ -152,7 +152,7 @@ module.exports = prodMode => ({
           ['local', 'edge', 'insiders', 'production', 'cdn'].forEach(
             (value, index) => {
               mappedSecrets[value] = secrets[index];
-            },
+            }
           );
 
           const data = `\nexports.secrets = ${JSON.stringify(mappedSecrets)};`;
@@ -170,6 +170,10 @@ module.exports = prodMode => ({
       {
         from: '../../node_modules/office-ui-fabric-js/dist/js',
         to: './libs/' + versionedPackageNames['office-ui-fabric-js'] + '/js',
+      },
+      {
+        from: '../../node_modules/@microsoft/office-js/dist',
+        to: './libs/' + versionedPackageNames['@microsoft/office-js'] + '/dist',
       },
       {
         from: '../../node_modules/jquery/dist',

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{strings.registeringCustomFunctions}}</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css"
+    />
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" /> {{!-- Re-use the same CSS as the runner, since almost all of it is the same anyway --}}
+    <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
+
+    <style>
+        /** On this particular page, adjust progress so that it keeps the header visible */
+
+        #progress {
+            top: 40px;
+            height: calc(100vh - 40px);
+            border-top: white 5px solid;
+            /* white = initially invisible */
+        }
+
+        /* Also, if an Office JS Helpers notification is invoked, move it down below the header */
+
+        .office-js-helpers-notification {
+            top: 40px !important;
+        }
+        body {
+            font-family: 'Segoe UI';
+            margin: 0;
+        }
+        #custom-functions-registration {
+            margin: 0pt 10%;
+            padding: 20pt 0pt;
+            height: 100vh;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        }
+        #custom-functions-registration .snippet {
+            margin-top: 30pt;
+        }
+        #custom-functions-registration .block {
+            border: 1px #808080 solid;
+            -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+            padding: 8pt;
+        }
+        #custom-functions-registration ul {
+            margin-left: 40pt;
+            padding-left: 0px;
+        }
+        #custom-functions-registration ul > ul {
+            position: relative;
+        }
+        #custom-functions-registration ul > ul:before {
+            border-left: 1px solid #808080;
+            content: '';
+            position: absolute;
+            height: 140%;
+            left: -55pt;
+            top: -20pt;
+        }
+        #custom-functions-registration ul > ul:last-of-type:before {
+            display: none;
+        }
+        #custom-functions-registration li {
+            list-style-type: none;
+            position: relative;
+            margin-top: 10pt;
+        }
+        #custom-functions-registration li:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            height: 100%;
+            left: -15pt;
+            width: 15pt;
+            border-left: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            z-index: -1000;
+        }
+        #custom-functions-registration li:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -15pt;
+            width: 15pt;
+            border-left: 1px solid #808080;
+            height: 50%;
+        }
+        #custom-functions-registration li:first-of-type:before {
+            content: '';
+            position: absolute;
+            top: -10pt;
+            height: calc(50% + 10pt);
+            left: -15pt;
+            width: 15pt;
+            border-left: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            z-index: -1000;
+        }
+        #custom-functions-registration li:last-of-type:after {
+            display: none;
+        }
+        #custom-functions-registration .error {
+            background: #fde7e9 !important;
+            font-weight: 600 !important;
+        }
+        #custom-functions-registration .skipped {
+            background: #fff4ce !important;
+            font-weight: 500 !important;
+        }
+        #custom-functions-registration .skipped span {
+            font-weight: normal;
+            font-style: italic;
+        }
+        #custom-functions-registration .good {
+            background: #dff6dd;
+        }
+        #custom-functions-registration .block.function {
+            padding: 5pt 8pt;
+        }
+        #custom-functions-registration .block.parameter {
+            padding: 4pt 8pt;
+        }
+        #custom-functions-registration .block.snippet {
+            font-weight: 500;
+        }
+        #metadata {
+            overflow: auto;
+            padding-right: 15pt;
+            margin-top: 20pt;
+            -ms-flex-preferred-size: 1;
+            flex-basis: 1;
+        }
+        #metadata > .snippet:first-child {
+            margin-top: 0;
+        }
+        #continue-container {
+            text-align: center;
+            border: 1px solid black;
+            margin: 40pt 0pt;
+            border-radius: 4pt;
+            padding: 10pt 10pt 20pt 10pt;
+        }
+        #continue-container button {
+            margin: 0pt 8pt;
+            height: 35pt;
+        }
+
+        .button-box {
+            margin-top: 15pt;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            width: 100%;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+        }
+
+        .ms-MessageBar.ms-MessageBar--error {
+            position: absolute;
+            top: 40 !important;
+        }
+
+        @media (min-width: 500px) {
+            .block.function.skipped:after {
+                content: '(skipped)';
+                font-style: italic;
+                font-weight: 100;
+                float: right;
+            }
+
+            .block.ms-font-l.function.error:after {
+                content: 'ERROR';
+                font-style: italic;
+                float: right;
+            }
+        }
+
+    </style>
+
+    <script src="https://unpkg.com/@microsoft/office-js@1.1.7-adhoc.3/dist/office.debug.js"></script>
+    <!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script> -->
+
+
+    <script>
+        Office.initialize = function () {
+            window.playground_host_ready = true;
+        }
+    </script>
+</head>
+
+<body>
+    <header id="header" class="command__bar">
+        <a id="header-back" class="command__icon ms-u-slideLeftIn10" href="{{{dashboardUrl}}}" title="{{strings.back}}">
+            <i class="ms-Icon ms-Icon--Back"></i>
+        </a>
+        <div id="padding-for-personality-menu" style="width: 0px"></div>
+    </header>
+    <div class="ms-font-m" id="custom-functions-registration">
+        <h1 class="ms-font-su" id="title">Custom Functions Registration</h1>
+        <div id="metadata">
+            {{#each visualMetadata}}
+                <div class="block ms-font-xl snippet {{this.status}}">{{this.name}}</div>
+                <ul>
+                    {{#each this.functions}}
+                        {{#if this.error}}
+                            <li>
+                                <div class="block ms-font-l function {{this.status}}">{{this.name}}(...){{this.error}}</div>
+                            </li>
+                            <ul>
+                                {{#each this.parameters}}
+                                    <li>
+                                        {{#if this.error}}
+                                            <div class="block ms-font-m parameter error">{{this.name}} – {{this.error}}</div>
+                                        {{else}}
+                                            <div class="block ms-font-m parameter skipped">{{this.name}} : {{this.prettyType}}</div>
+                                        {{/if}}
+                                    </li>
+                                {{/each}}
+                                {{#if this.result.error}}
+                                    <li>
+                                        <div class="block ms-font-m parameter error">Return type – {{this.result.error}}</div>
+                                    </li>
+                                {{/if}}
+                            </ul>
+                        {{else}}
+                            <li>
+                                <div class="block ms-font-l function {{this.status}}">{{this.name}}({{this.paramString}})</div>
+                            </li>
+                        {{/if}}
+                    {{/each}}
+                </ul>
+            {{/each}}
+        </div>
+
+        {{#if isAnyError }}
+            <div id="continue-container" class="ms-font-l" style="display:none">
+                <p>There are errors in some of your snippets, shown in above in red. Would you like to proceed to register the green functions anyways?</p>
+                <div class="button-box">
+                    <button id="btn-dismiss" class="ms-Button">
+                        <span class="ms-Button-label">Dismiss</span>
+                    </button>
+                    <button id="btn-continue" class="ms-Button ms-Button--primary">
+                        <span class="ms-Button-label">Continue</span>
+                    </button>
+                </div>
+            </div>
+        {{else}}
+            <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt;">
+                <div class="cs-loader">
+                    <div class="cs-loader-inner">
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+
+        <script type="text/javascript">
+            window.customFunctionParams = {
+                isAnySuccess: {{{isAnySuccess}}},
+                isAnyError: {{{isAnyError}}},
+                registerCustomFunctionsJsonStringBase64: '{{{registerCustomFunctionsJsonStringBase64}}}',
+                explicitlySetDisplayLanguageOrNull: '{{{explicitlySetDisplayLanguageOrNull}}}',
+            };
+        </script>
+    </div>
+
+    <script src="{{{origin}}}/{{{assets.polyfills.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.vendor.js}}}"></script>
+    <script src="{{{origin}}}/{{{assets.customFunctionsRegister.js}}}"></script>
+
+</body>
+
+</html>

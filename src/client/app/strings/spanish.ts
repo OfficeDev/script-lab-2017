@@ -29,6 +29,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
         alpha: 'Alfa',
         beta: 'Beta',
         production: 'Producción',
+        staging: getEnglishSubstitutesForNotYetTranslated().staging,
 
         run: 'Ejecutar',
         runInThisPane: 'Ejecuta el código en este panel',
