@@ -4,6 +4,7 @@ import PivotContentContainer from '../PivotContentContainer';
 import List from '../List';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+const { localStorageKeys } = PLAYGROUND;
 
 const FilterWrapper = styled.div`
   display: flex;
@@ -63,13 +64,12 @@ export default class Console extends React.Component<Props, State> {
 
     this.state = { filterQuery: '', shouldScrollToBottom: true, logs: [] };
 
-    setInterval(() => {
-      const currLogs = this.state.logs;
-      currLogs.push(
-        `Log #${currLogs.length} - something random blah blah blah`,
-      );
-      this.setState({ logs: currLogs });
-    }, 250);
+    setInterval(this.getLogs, 500);
+  }
+
+  getLogs() {
+    const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
+    this.setState({ logs: storageLogs.split('\n') });
   }
 
   componentDidMount() {
@@ -95,7 +95,7 @@ export default class Console extends React.Component<Props, State> {
 
   setShouldScrollToBottom = (
     ev: React.FormEvent<HTMLElement>,
-    checked: boolean,
+    checked: boolean
   ) =>
     this.setState({
       shouldScrollToBottom: checked,
