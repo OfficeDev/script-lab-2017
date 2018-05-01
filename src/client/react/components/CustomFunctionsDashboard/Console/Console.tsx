@@ -59,21 +59,29 @@ export interface State {
 }
 
 export default class Console extends React.Component<Props, State> {
+  private interval;
   constructor(props: Props) {
     super(props);
 
     this.state = { filterQuery: '', shouldScrollToBottom: true, logs: [] };
-
-    setInterval(this.getLogs, 500);
   }
 
   getLogs() {
     const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
-    this.setState({ logs: storageLogs.split('\n') });
+    const logs = storageLogs
+      .split('\n')
+      .map(entry => JSON.parse(entry).message);
+    this.setState({ logs });
   }
 
   componentDidMount() {
     this.scrollToBottom();
+
+    this.interval = setInterval(() => this.getLogs(), 500);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   componentDidUpdate() {
@@ -89,6 +97,7 @@ export default class Console extends React.Component<Props, State> {
   updateFilterQuery = () =>
     this.setState({
       filterQuery: (this.refs.filterTextInput as any).value.toLowerCase(),
+      // tslint:disable-next-line:semicolon
     });
 
   clearLogs = () => this.setState({ logs: [] }); // todo
@@ -99,6 +108,7 @@ export default class Console extends React.Component<Props, State> {
   ) =>
     this.setState({
       shouldScrollToBottom: checked,
+      // tslint:disable-next-line:semicolon
     });
 
   render() {

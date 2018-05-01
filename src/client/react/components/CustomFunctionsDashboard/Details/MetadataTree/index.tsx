@@ -43,6 +43,7 @@ const Snippet = ({ snippet }) => (
 const MetadataTree = ({ metadata }) => (
   <TreeContainer>
     {metadata.map(snippet => <Snippet key={snippet.name} snippet={snippet} />)}
+    <div>{JSON.stringify(metadata)}</div>
   </TreeContainer>
 );
 
