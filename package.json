@@ -38,8 +38,10 @@
     "build":
       "npm-run-all clean -p build:runtime_helpers:prod build:server_maker:prod build:prod prod:*",
     "deploy": "node config/deploy.js",
-    "sideload:excel:local": "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-local.xml",
-    "sideload:excel:prod": "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-prod.xml",
+    "sideload:excel:local":
+      "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-local.xml",
+    "sideload:excel:prod":
+      "node_modules/.bin/office-toolbox sideload -a Excel -m manifests/script-lab-prod.xml",
     "test:watch": "node_modules/.bin/jest --watchAll"
   },
   "license": "MIT",
@@ -52,7 +54,7 @@
     "@angular/platform-browser": "4.0.0",
     "@angular/platform-browser-dynamic": "4.0.0",
     "@angular/router": "4.0.0",
-    "@microsoft/office-js": "1.1.7-adhoc.4",
+    "@microsoft/office-js": "1.1.7-adhoc.6",
     "@microsoft/office-js-helpers": "0.7.4",
     "@ngrx/core": "1.2.0",
     "@ngrx/effects": "2.0.2",
