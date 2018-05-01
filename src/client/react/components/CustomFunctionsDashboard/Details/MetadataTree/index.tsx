@@ -25,6 +25,11 @@ const Function = ({ func }) => (
       {func.parameters.map(param => (
         <ParameterItem key={`${func.name}${param.name}`} {...param} />
       ))}
+      <ParameterItem
+        key={`${func.name}return`}
+        name={'return'}
+        {...func.result}
+      />
     </List>
   </FunctionWrapper>
 );
@@ -43,7 +48,6 @@ const Snippet = ({ snippet }) => (
 const MetadataTree = ({ metadata }) => (
   <TreeContainer>
     {metadata.map(snippet => <Snippet key={snippet.name} snippet={snippet} />)}
-    <div>{JSON.stringify(metadata)}</div>
   </TreeContainer>
 );
 

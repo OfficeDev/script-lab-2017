@@ -44,17 +44,17 @@ export function getFunctionsAndMetadataForRegistration(
         func.parameters = func.parameters.map(p => ({
           ...p,
           prettyType: getPrettyType(p),
-          status: func.error
-            ? p.error
-              ? CustomFunctionsRegistrationStatus.Error
-              : CustomFunctionsRegistrationStatus.Skipped
-            : status,
+          status: getFunctionChildNodeStatus(func, status, p),
         }));
 
         return {
           ...func,
-          paramString: paramStringExtractor(func),
+          paramString: paramStringExtractor(func), // todo, i think this can be removed
           status,
+          result: {
+            ...func.result,
+            status: getFunctionChildNodeStatus(func, status, func.result),
+          },
         };
       });
 
@@ -69,7 +69,7 @@ export function getFunctionsAndMetadataForRegistration(
       // }
 
       visualMetadata.push({
-        name: snippet.name,
+        name: snippet.name.replace(/[^0-9A-Za-z_]/g, ''),
         error: hasErrors,
         status,
         functions,
@@ -77,13 +77,22 @@ export function getFunctionsAndMetadataForRegistration(
     });
 
   const functions = filterOutDuplicates(metadata);
-  const funcNames = functions.map(f => f.name);
-  const visual = { snippets: tagDuplicatesAsErrors(visualMetadata, funcNames) };
+  // const funcNames = functions.map(f => f.name);
+  // const visual = { snippets: tagDuplicatesAsErrors(visualMetadata, funcNames) }; // todo see below
+  const visual = { snippets: visualMetadata };
 
   return { visual, functions };
 }
 
 // helpers
+
+function getFunctionChildNodeStatus(func, funcStatus, childNode) {
+  return func.error
+    ? childNode.error
+      ? CustomFunctionsRegistrationStatus.Error
+      : CustomFunctionsRegistrationStatus.Skipped
+    : funcStatus;
+}
 
 function getPrettyType(parameter) {
   if (parameter.error) {
@@ -108,30 +117,31 @@ function doesSnippetHaveErrors(snippetMetadata) {
   return snippetMetadata.some(func => func.error);
 }
 
-function tagDuplicatesAsErrors(
-  visualMetadata: ICFVisualSnippetMetadata[],
-  nonDuplicatedFunctionNames: string[]
-): ICFVisualSnippetMetadata[] {
-  return visualMetadata.map(meta => {
-    let isError = meta.error;
-    meta.functions = meta.functions.map(func => {
-      if (!nonDuplicatedFunctionNames.includes(func.name) && !func.error) {
-        func.error =
-          ' - Duplicated function name. Must be unique across ALL snippets.';
-        func.status = CustomFunctionsRegistrationStatus.Error;
-        isError = true;
-      }
-      return func;
-    });
-    return {
-      ...meta,
-      error: isError,
-      status: isError
-        ? CustomFunctionsRegistrationStatus.Error
-        : CustomFunctionsRegistrationStatus.Good,
-    };
-  });
-}
+// TODO REVISIT
+// function tagDuplicatesAsErrors(
+//   visualMetadata: ICFVisualSnippetMetadata[],
+//   nonDuplicatedFunctionNames: string[]
+// ): ICFVisualSnippetMetadata[] {
+//   return visualMetadata.map(meta => {
+//     let isError = meta.error;
+//     meta.functions = meta.functions.map(func => {
+//       if (!nonDuplicatedFunctionNames.includes(func.name) && !func.error) {
+//         func.error =
+//           ' - Duplicated function name. Must be unique across ALL snippets.';
+//         func.status = CustomFunctionsRegistrationStatus.Error;
+//         isError = true;
+//       }
+//       return func;
+//     });
+//     return {
+//       ...meta,
+//       error: isError,
+//       status: isError
+//         ? CustomFunctionsRegistrationStatus.Error
+//         : CustomFunctionsRegistrationStatus.Good,
+//     };
+//   });
+// }
 
 /**
  * This function converts all the `true` errors on the functions to ' '. This is because we still want it

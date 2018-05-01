@@ -11,6 +11,7 @@ import { mergeStyles } from '@uifabric/merge-styles';
 import Summary from './Summary';
 import Details from './Details';
 import Console from './Console';
+import RefreshBar from './RefreshBar';
 
 // styles
 const Container = styled.div`
@@ -74,18 +75,20 @@ class CustomFunctionsDashboard extends React.Component<
 
   render() {
     const { metadata } = this.props;
+
+    const tabs = [
+      { name: 'Summary', component: <Summary metadata={metadata} /> },
+      { name: 'Details', component: <Details metadata={metadata} /> },
+      { name: 'Console', component: <Console /> },
+    ];
+
     return (
       <Container className={PivotClassName}>
+        <RefreshBar />
         <Pivot linkFormat={PivotLinkFormat.tabs}>
-          <PivotItem linkText="Summary">
-            <Summary metadata={metadata} />
-          </PivotItem>
-          <PivotItem linkText="Details">
-            <Details metadata={metadata} />
-          </PivotItem>
-          <PivotItem linkText="Console">
-            <Console />
-          </PivotItem>
+          {tabs.map(({ name, component }) => (
+            <PivotItem linkText={name}>{component}</PivotItem>
+          ))}
         </Pivot>
       </Container>
     );

@@ -10,10 +10,10 @@ import { ensureFreshLocalStorage } from '../../client/app/helpers';
 import { isCustomFunctionScript } from '../../server/core/snippet.helper';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
+import Welcome from './components/CustomFunctionsDashboard/Welcome';
 
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
-
 tryCatch(async () => {
   environment.initializePartial({ host: 'EXCEL' });
 
@@ -42,10 +42,17 @@ tryCatch(async () => {
     await registerMetadata(registerCustomFunctionsJsonStringBase64);
 
     document.getElementById('loading')!.style.display = 'none';
-    ReactDOM.render(
-      <App metadata={(metadata as any).snippets} />,
-      document.getElementById('root') as HTMLElement
-    );
+
+    if ((metadata as any).snippets.length > 0) {
+      ReactDOM.render(
+        <App metadata={(metadata as any).snippets} />,
+        document.getElementById('root') as HTMLElement
+      );
+    } else {
+      ReactDOM.render(<Welcome />, document.getElementById(
+        'root'
+      ) as HTMLElement);
+    }
   } else {
     ReactDOM.render(<ComingSoon />, document.getElementById(
       'root'

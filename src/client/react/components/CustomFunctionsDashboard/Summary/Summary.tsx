@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+
 import PivotContentContainer from '../PivotContentContainer';
 import List from '../List';
 
@@ -16,17 +17,21 @@ const FunctionsContainer = styled.div`
 
 const Summary = ({ metadata }) => {
   let names = [];
-  metadata.filter(snippet => ~snippet.error).forEach(snippet => {
+  metadata.filter(snippet => !snippet.error).forEach(snippet => {
     const funcNames = snippet.functions.map(
       func =>
-        `=ScriptLab.${snippet.name}.${func.name}(${func.parameters
-          .map(p => p.name)
-          .join(', ')})`,
+        `=ScriptLab.${snippet.name}.${func.name}(${
+          func.parameters.length > 0 ? '…' : ''
+        })`
     );
     names = names.concat(funcNames);
   });
 
-  const items = names.map(item => ({ name: item, key: item }));
+  const items = names.map(item => ({
+    name: item,
+    key: item,
+    iconName: 'TriggerAuto',
+  }));
 
   return (
     <PivotContentContainer>

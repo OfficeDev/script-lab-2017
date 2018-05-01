@@ -3,7 +3,7 @@ import styled, { StyledFunction } from 'styled-components';
 
 interface IBlockProps {
   good?: boolean;
-  warning?: boolean;
+  skipped?: boolean;
   error?: boolean;
   untrusted?: boolean;
   small?: boolean;
@@ -26,7 +26,7 @@ const Block = block`
   position: relative;
 
   ${props => props.good && 'background: #dff6dd;'}
-  ${props => props.warning && 'background: #fff4ce;'}
+  ${props => props.skipped && 'background: #fff4ce;'}
   ${props => props.error && 'background: #fde7e9;'}
   ${props => props.untrusted && 'background: #eeeeee;'}
 

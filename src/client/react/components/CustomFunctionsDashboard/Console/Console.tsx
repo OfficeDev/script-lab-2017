@@ -39,6 +39,7 @@ const ClearButton = styled.button`
 
   &:hover {
     color: #b22222;
+    cursor: pointer;
   }
 
   &:active {
@@ -70,14 +71,24 @@ export default class Console extends React.Component<Props, State> {
     const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
     const logs = storageLogs
       .split('\n')
-      .map(entry => JSON.parse(entry).message);
-    this.setState({ logs });
+      .filter(line => line !== '')
+      .filter(line => !line.includes('Agave.HostCall'))
+      .map(entry => JSON.parse(entry))
+      .map(log => {
+        const ts = new Date(log.timestamp).toTimeString().split(' ')[0];
+        return `[${ts}] ${log.message}`;
+      });
+
+    if (logs.length !== this.state.logs.length) {
+      this.scrollToBottom();
+      this.setState({ logs });
+    }
   }
 
   componentDidMount() {
     this.scrollToBottom();
 
-    this.interval = setInterval(() => this.getLogs(), 500);
+    this.interval = setInterval(() => this.getLogs(), 250);
   }
 
   componentWillUnmount() {
@@ -100,7 +111,11 @@ export default class Console extends React.Component<Props, State> {
       // tslint:disable-next-line:semicolon
     });
 
-  clearLogs = () => this.setState({ logs: [] }); // todo
+  clearLogs = () => {
+    window.localStorage.removeItem(localStorageKeys.log);
+    this.setState({ logs: [] });
+    // tslint:disable-next-line:semicolon
+  };
 
   setShouldScrollToBottom = (
     ev: React.FormEvent<HTMLElement>,
@@ -119,7 +134,7 @@ export default class Console extends React.Component<Props, State> {
     return (
       <PivotContentContainer>
         <FilterWrapper>
-          <ClearButton>
+          <ClearButton onClick={this.clearLogs}>
             <Icon
               style={{
                 position: 'absolute',
