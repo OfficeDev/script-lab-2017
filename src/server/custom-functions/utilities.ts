@@ -27,11 +27,11 @@ export function getFunctionsAndMetadataForRegistration(
 
       if (!hasErrors) {
         const namespace = snippet.name.replace(/[^0-9A-Za-z_]/g, '');
-        functions = functions.map(f => ({
+        const namespacedFunctions = functions.map(f => ({
           ...f,
           name: `${namespace}.${f.name}`,
         }));
-        metadata = metadata.concat(...functions);
+        metadata = metadata.concat(...namespacedFunctions);
       }
 
       functions = functions.map(func => {
