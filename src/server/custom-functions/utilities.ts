@@ -17,8 +17,7 @@ export function getFunctionsAndMetadataForRegistration(
     .filter(snippet => snippet.script && snippet.name)
     .forEach(snippet => {
       let functions: ICFVisualFunctionMetadata[] = parseMetadata(
-        snippet.script.content,
-        snippet.name
+        snippet.script.content
       ) as ICFVisualFunctionMetadata[];
       functions = convertFunctionErrorsToSpace(functions);
       if (functions.length === 0) {
@@ -27,6 +26,11 @@ export function getFunctionsAndMetadataForRegistration(
       const hasErrors = doesSnippetHaveErrors(functions);
 
       if (!hasErrors) {
+        const namespace = snippet.name.replace(/[^0-9A-Za-z_]/g, '');
+        functions = functions.map(f => ({
+          ...f,
+          name: `${namespace}.${f.name}`,
+        }));
         metadata = metadata.concat(...functions);
       }
 

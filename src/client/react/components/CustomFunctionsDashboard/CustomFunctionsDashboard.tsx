@@ -74,7 +74,6 @@ class CustomFunctionsDashboard extends React.Component<
 
   render() {
     const { metadata } = this.props;
-    console.log(PivotClassName);
     return (
       <Container className={PivotClassName}>
         <Pivot linkFormat={PivotLinkFormat.tabs}>

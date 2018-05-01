@@ -312,12 +312,16 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
   let { snippets } = params;
 
   snippets = snippets.filter(snippet => {
-    let result = parseMetadata(snippet.script.content, snippet.name);
+    const result = parseMetadata(snippet.script.content);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
+    const namespace = snippet.name.replace(/[^0-9A-Za-z_]/g, '');
     snippet.metadata = {
-      namespace: snippet.name.replace(/[^0-9A-Za-z_]/g, ''),
-      functions: result,
+      namespace,
+      functions: result.map(func => ({
+        ...func,
+        name: `${namespace}.${func.name}`,
+      })),
     };
     return isGoodSnippet;
   });
