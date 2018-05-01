@@ -23,7 +23,7 @@ const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
   sync: true,
   stream: false,
   volatile: false,
-  cancelable: true,
+  cancelable: false,
 };
 
 /**

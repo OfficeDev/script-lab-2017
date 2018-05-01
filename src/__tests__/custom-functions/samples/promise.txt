@@ -17,7 +17,7 @@ async function randomComment(id: number, fieldName: string): Promise<string> {
    {
       "name":"randomComment",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false

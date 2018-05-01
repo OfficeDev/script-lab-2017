@@ -60,7 +60,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "description":"*Insert Description here*",
       "name":"getRgb3",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -81,7 +81,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "description":"*Insert Description here*",
       "name":"getRgb6",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -102,7 +102,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "description":"*Insert Description here*",
       "name":"getRgb8",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -123,7 +123,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "description":"*Insert Description here*",
       "name":"getRgb9",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -144,7 +144,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "description":"*Insert Description here*",
       "name":"getRgb10",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -170,7 +170,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "description":"*Insert Description here*",
       "name":"functionWith2DArraySyntax",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
