@@ -16,22 +16,35 @@ const FunctionsContainer = styled.div`
 `;
 
 const Summary = ({ metadata }) => {
-  let names = [];
-  metadata.filter(snippet => !snippet.error).forEach(snippet => {
-    const funcNames = snippet.functions.map(
-      func =>
-        `=ScriptLab.${snippet.name}.${func.name}(${
-          func.parameters.length > 0 ? '…' : ''
-        })`
-    );
-    names = names.concat(funcNames);
-  });
+  let items = { success: [], skipped: [], error: [] };
+  metadata.forEach(snippet => {
+    snippet.functions.forEach(func => {
+      const name = `=ScriptLab.${snippet.name}.${func.name}(${
+        func.parameters.length > 0 ? '…' : ''
+      })`;
 
-  const items = names.map(item => ({
-    name: item,
-    key: item,
-    iconName: 'TriggerAuto',
-  }));
+      const item = { name, key: name };
+
+      if (snippet.error) {
+        if (func.error) {
+          items.error.push({
+            ...item,
+            icon: { name: 'ErrorBadge', color: '#f04251' },
+          });
+        } else {
+          items.skipped.push({
+            ...item,
+            icon: { name: 'Unknown', color: '#ffd333' },
+          });
+        }
+      } else {
+        items.success.push({
+          ...item,
+          icon: { name: 'Completed', color: '#55cf4a' },
+        });
+      }
+    });
+  });
 
   return (
     <PivotContentContainer>
@@ -47,12 +60,11 @@ const Summary = ({ metadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were successfully declared. Start using
-          Custom Functions in Excel.
+          The following custom functions were discovered.
         </p>
       </TopInfo>
       <FunctionsContainer>
-        <List items={items} />
+        <List items={items.success.concat(items.error).concat(items.skipped)} />
       </FunctionsContainer>
     </PivotContentContainer>
   );

@@ -46,16 +46,16 @@ tryCatch(async () => {
     if ((metadata as any).snippets.length > 0) {
       ReactDOM.render(
         <App metadata={(metadata as any).snippets} />,
-        document.getElementById('root') as HTMLElement
+        document.getElementById('root') as HTMLElement,
       );
     } else {
       ReactDOM.render(<Welcome />, document.getElementById(
-        'root'
+        'root',
       ) as HTMLElement);
     }
   } else {
     ReactDOM.render(<ComingSoon />, document.getElementById(
-      'root'
+      'root',
     ) as HTMLElement);
   }
 });
@@ -77,10 +77,10 @@ async function getMetadata() {
       let allSnippetsToRegisterWithPossibleDuplicate = uniqBy(
         // [storage.current.lastOpened].concat(storage.snippets.values()),
         storage.snippets.values(),
-        'id'
+        'id',
       ).filter(
         snippet =>
-          snippet.script && isCustomFunctionScript(snippet.script.content)
+          snippet.script && isCustomFunctionScript(snippet.script.content),
       );
 
       let xhr = new XMLHttpRequest();
@@ -88,7 +88,7 @@ async function getMetadata() {
         'POST',
         `${
           environment.current.config.runnerUrl
-        }/custom-functions/parse-metadata`
+        }/custom-functions/parse-metadata`,
       );
       xhr.setRequestHeader('content-type', 'application/json');
 
@@ -104,7 +104,7 @@ async function getMetadata() {
       xhr.send(
         JSON.stringify({
           snippets: allSnippetsToRegisterWithPossibleDuplicate,
-        })
+        }),
       );
     } catch (e) {
       handleError(e);
@@ -113,13 +113,13 @@ async function getMetadata() {
 }
 
 async function registerMetadata(
-  registerCustomFunctionsJsonStringBase64: string
+  registerCustomFunctionsJsonStringBase64: string,
 ) {
   const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
   await Excel.run(async context => {
     (context.workbook as any).registerCustomFunctions(
       'ScriptLab',
-      registrationPayload
+      registrationPayload,
     );
     await context.sync();
   });
