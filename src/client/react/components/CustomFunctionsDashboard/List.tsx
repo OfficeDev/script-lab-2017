@@ -19,6 +19,7 @@ const ListItem = styled.li`
 
 const Text = styled.span`
   flex: 1;
+  line-height: 12px;
 `;
 
 const ListContainer = styled.ul``;
@@ -27,15 +28,14 @@ export default ({ items }) => (
   <ListContainer>
     {items.map(item => (
       <ListItem key={item.key} className="ms-font-s">
-        {item.iconName && (
+        {item.icon && (
           <Icon
-            iconName={item.iconName}
+            className="ms-font-m"
+            iconName={item.icon.name}
             style={{
-              width: '20px',
-              height: '20px',
-              lineHeight: '20px',
-              color: '#2C8EDD',
-              marginRight: '4px',
+              fontSize: '16px',
+              color: item.icon.color,
+              marginRight: '5px',
             }}
           />
         )}
