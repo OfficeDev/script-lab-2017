@@ -65,7 +65,6 @@ export interface IRunnerHandlebarsContext {
 export interface ICustomFunctionsRunnerHandlebarsContext {
     snippetsDataBase64: string;
     metadataBase64: string;
-    showDebugLog: boolean;
     clientTimestamp: number;
 }
 

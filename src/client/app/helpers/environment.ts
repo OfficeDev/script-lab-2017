@@ -86,11 +86,6 @@ class Environment {
         build,
         config: this._config,
 
-        supportsCustomFunctions: false,
-        customFunctionsShowDebugLog: this.getExperimentationFlagValue(
-          'customFunctionsShowDebugLog'
-        ),
-
         isAddinCommands: false,
         isTryIt: false,
         wacUrl:
@@ -121,23 +116,12 @@ class Environment {
     if (!isNil(value.host)) {
       if (value.host.toUpperCase() === 'EXCEL') {
         updatedEnv = {
-          ...updatedEnv,
-          supportsCustomFunctions: this.getExperimentationFlagValue(
-            'customFunctions'
-          ),
+          ...updatedEnv
         };
       }
     }
 
     this._current = this.cache.insert('environment', updatedEnv);
-  }
-
-  getExperimentationFlagValue(
-    name: 'customFunctions' | 'customFunctionsShowDebugLog'
-  ): any {
-    return JSON.parse(
-      this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/)
-    )[name];
   }
 
   /** Returns a string with a JSON-safe experimentation flags string, or "{}" if not valid JSON */

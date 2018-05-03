@@ -362,7 +362,6 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
         snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata }))
       )
     ),
-    showDebugLog: params.heartbeatParams.showDebugLog,
     clientTimestamp: params.heartbeatParams.clientTimestamp,
   });
 

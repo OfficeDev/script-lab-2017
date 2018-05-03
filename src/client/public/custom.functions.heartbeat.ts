@@ -7,13 +7,10 @@ const { localStorageKeys } = PLAYGROUND;
 const POLLING_INTERVAL = 1000;
 
 let messenger: Messenger<CustomFunctionsMessageType>;
-let showDebugLog: boolean;
 
 (() => {
     const params: ICustomFunctionsHeartbeatParams =
         Authenticator.extractParams(window.location.href.split('?')[1]) as any;
-
-    showDebugLog = params.showDebugLog;
 
     // Can do partial initialization, since host is guaranteed to be known
     environment.initializePartial({ host: 'EXCEL' });
@@ -79,10 +76,6 @@ function sendRefreshRequest() {
 }
 
 function logToConsole(data: LogData) {
-    if (!showDebugLog) {
-        return;
-    }
-
     pushToLogQueue(data);
 
     messenger.send(window.parent, CustomFunctionsMessageType.SHOW_LOG_DIALOG, null);
