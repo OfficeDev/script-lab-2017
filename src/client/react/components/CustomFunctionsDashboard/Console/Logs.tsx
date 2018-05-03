@@ -84,7 +84,6 @@ export interface ILog {
 interface Props {
   logs: ILog[];
   clearLogs: () => void;
-  addToLogs: (logs: ILog[]) => void;
 }
 
 interface State {

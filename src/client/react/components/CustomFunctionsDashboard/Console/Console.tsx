@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
-import Logs, { ILog } from './Logs';
+import Logs from './Logs';
 
 import {
   getElapsedTime,
@@ -99,8 +99,6 @@ export default class Console extends React.Component<Props, State> {
 
   clearLogs = () => this.setState({ logs: [] });
 
-  addToLogs = (logs: ILog[]) => {};
-
   componentDidMount() {
     this.interval = setInterval(this.getLogs, 300);
   }
@@ -117,11 +115,7 @@ export default class Console extends React.Component<Props, State> {
           lastUpdated={this.state.runnerLastUpdatedText}
         />
         {this.state.logs.length > 0 ? (
-          <Logs
-            logs={this.state.logs}
-            clearLogs={this.clearLogs}
-            addToLogs={this.addToLogs}
-          />
+          <Logs logs={this.state.logs} clearLogs={this.clearLogs} />
         ) : (
           <NoLogsPlaceholder>
             <p
