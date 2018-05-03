@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import List from '../List';
+import List, { Item } from '../List';
+
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
@@ -50,55 +51,135 @@ const ClearButton = styled.button`
   }
 `;
 
-export default ({
-  items,
-  clearLogs,
-  updateFilterQuery,
-  setShouldScrollToBottom,
-}) => {
-  return (
-    <>
-      <FilterWrapper>
-        <ClearButton onClick={clearLogs}>
-          <Icon
+function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
+  let background;
+  let color = 'black';
+
+  switch (severity) {
+    case 'log':
+      background = 'white';
+      break;
+    case 'warn':
+      background = '#fff4ce';
+      break;
+    case 'error':
+      background = '#fde7e9';
+      break;
+    default:
+      break;
+  }
+
+  return { background, color };
+}
+
+export interface ILog {
+  message: string;
+  severity: 'log' | 'warn' | 'error';
+}
+
+interface Props {
+  logs: ILog[];
+  clearLogs: () => void;
+  addToLogs: (logs: ILog[]) => void;
+}
+
+interface State {
+  filterQuery: string;
+  shouldScrollToBottom: boolean;
+}
+
+export default class Logs extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { filterQuery: '', shouldScrollToBottom: true };
+  }
+
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    if (this.state.shouldScrollToBottom) {
+      (this.refs.lastLog as any).scrollIntoView();
+    }
+  }
+
+  updateFilterQuery = () =>
+    this.setState({
+      filterQuery: (this.refs.filterTextInput as any).value.toLowerCase(),
+      // tslint:disable-next-line:semicolon
+    });
+
+  setShouldScrollToBottom = (
+    ev: React.FormEvent<HTMLElement>,
+    checked: boolean
+  ) =>
+    this.setState({
+      shouldScrollToBottom: checked,
+      // tslint:disable-next-line:semicolon
+    });
+
+  render() {
+    const { clearLogs, logs } = this.props;
+
+    const items: Item[] = logs.map((log, i) => ({
+      name: log.message,
+      key: i,
+      ...getLogPropsBySeverity(log.severity),
+    }));
+
+    return (
+      <>
+        <FilterWrapper>
+          <ClearButton onClick={clearLogs}>
+            <Icon
+              style={{
+                position: 'absolute',
+                top: '0px',
+                bottom: '0px',
+                left: '0px',
+                right: '0px',
+                width: '20px',
+                height: '20px',
+                lineHeight: '20px',
+              }}
+              iconName="Clear"
+            />
+          </ClearButton>
+          <input
+            className="ms-font-m"
+            type="text"
+            placeholder="Filter"
+            onChange={this.updateFilterQuery}
+            ref="filterTextInput"
             style={{
-              position: 'absolute',
-              top: '0px',
-              bottom: '0px',
-              left: '0px',
-              right: '0px',
-              width: '20px',
-              height: '20px',
-              lineHeight: '20px',
+              width: '100%',
+              height: '32px',
+              padding: '6px',
+              boxSizing: 'border-box',
             }}
-            iconName="Clear"
           />
-        </ClearButton>
-        <input
-          className="ms-font-m"
-          type="text"
-          placeholder="Filter"
-          onChange={updateFilterQuery}
-          ref="filterTextInput"
-          style={{
-            width: '100%',
-            height: '32px',
-            padding: '6px',
-            boxSizing: 'border-box',
-          }}
-        />
-      </FilterWrapper>
-      <LogsWrapper>
-        <List items={items} />
-        <div ref="lastLog" />
-      </LogsWrapper>
-      <CheckboxWrapper>
-        <Checkbox
-          label="Auto-scroll"
-          defaultChecked={true}
-          onChange={setShouldScrollToBottom}
-        />
-      </CheckboxWrapper>
-    </>
-  );
-};
+        </FilterWrapper>
+        <LogsWrapper>
+          <List
+            items={items.filter(item =>
+              item.name.toLowerCase().includes(this.state.filterQuery)
+            )}
+          />
+          <div ref="lastLog" />
+        </LogsWrapper>
+        <CheckboxWrapper>
+          <Checkbox
+            label="Auto-scroll"
+            defaultChecked={true}
+            onChange={this.setShouldScrollToBottom}
+          />
+        </CheckboxWrapper>
+      </>
+    );
+  }
+}

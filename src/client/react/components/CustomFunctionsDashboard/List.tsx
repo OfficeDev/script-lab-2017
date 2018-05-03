@@ -21,8 +21,8 @@ const ListItem = LI`
   border-top: 0.5px solid #eeeeee;
   border-bottom: 0.5px solid #eeeeee;
 
-  color: ${props => props.backgroundColor || '#333333'};
-  background: ${props => props.color || 'white'};
+  color: ${props => props.color || '#333333'};
+  background: ${props => props.backgroundColor || 'white'};
 `;
 
 const Text = styled.span`
@@ -32,7 +32,7 @@ const Text = styled.span`
 
 const ListContainer = styled.ul``;
 
-interface Item {
+export interface Item {
   key: any;
   name: string;
   icon?: {

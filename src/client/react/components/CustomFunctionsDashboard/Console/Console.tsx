@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
-import Logs from './Logs';
+import Logs, { ILog } from './Logs';
 
 import {
   getElapsedTime,
@@ -14,18 +14,20 @@ const { localStorageKeys } = PLAYGROUND;
 
 const NoLogsPlaceholder = styled.div`
   flex: 1;
+  position: relative;
 `;
 
 const RunnerLastUpdatedWrapper = styled.div`
   padding: 8px 12px;
   height: 16px;
+  line-height: 16px;
   background: #f4f4f4;
 `;
 
 const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
   <>
     {isAlive ? (
-      <RunnerLastUpdatedWrapper>
+      <RunnerLastUpdatedWrapper className="ms-font-m">
         Runner last updated {lastUpdated}
       </RunnerLastUpdatedWrapper>
     ) : (
@@ -34,35 +36,12 @@ const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
   </>
 );
 
-function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
-  let background;
-  let color = 'black';
+interface Props {}
 
-  switch (severity) {
-    case 'log':
-      background = 'white';
-      break;
-    case 'warn':
-      background = '##fff4ce';
-      break;
-    case 'error':
-      background = '#fde7e9';
-      break;
-    default:
-      break;
-  }
-
-  return { background, color };
-}
-
-export interface Props {}
-
-export interface State {
-  filterQuery: string;
-  shouldScrollToBottom: boolean;
-  logs: { message: string; severity: 'log' | 'warn' | 'error' }[];
-  runnerLastUpdatedText?: string;
-  runnerIsAlive?: boolean;
+interface State {
+  logs: any[];
+  runnerLastUpdatedText: string;
+  runnerIsAlive: boolean;
 }
 
 export default class Console extends React.Component<Props, State> {
@@ -71,15 +50,15 @@ export default class Console extends React.Component<Props, State> {
     super(props);
 
     setUpMomentJsDurationDefaults(moment);
-    this.state = { filterQuery: '', shouldScrollToBottom: true, logs: [] };
+    this.state = { logs: [], runnerIsAlive: false, runnerLastUpdatedText: '' };
   }
 
-  getLogs() {
+  getLogs = () => {
     const runnerIsAlive =
       getElapsedTime(
         getNumberFromLocalStorage(
-          localStorageKeys.customFunctionsLastHeartbeatTimestamp,
-        ),
+          localStorageKeys.customFunctionsLastHeartbeatTimestamp
+        )
       ) < 3000;
 
     let runnerLastUpdatedText = null;
@@ -88,14 +67,13 @@ export default class Console extends React.Component<Props, State> {
       runnerLastUpdatedText = moment(
         new Date(
           getNumberFromLocalStorage(
-            localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
-          ),
-        ),
+            localStorageKeys.customFunctionsCurrentlyRunningTimestamp
+          )
+        )
       )
         .locale(getDisplayLanguage())
         .fromNow();
     }
-
     const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
     const logs = storageLogs
       .split('\n')
@@ -107,89 +85,55 @@ export default class Console extends React.Component<Props, State> {
         severity: log.severity as 'log' | 'warn' | 'error',
       }));
 
-    this.scrollToBottom();
     this.setState({
       logs: [...this.state.logs, ...logs],
-      runnerIsAlive,
       runnerLastUpdatedText,
+      runnerIsAlive,
     });
 
     window.localStorage.removeItem(localStorageKeys.log);
-  }
+    // tslint:disable-next-line:semicolon
+  };
+
+  clearLogs = () => this.setState({ logs: [] });
+
+  addToLogs = (logs: ILog[]) => {};
 
   componentDidMount() {
-    this.scrollToBottom();
-
-    this.interval = setInterval(() => this.getLogs(), 250);
+    this.interval = setInterval(this.getLogs, 300);
   }
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom() {
-    if (this.state.shouldScrollToBottom) {
-      (this.refs.lastLog as any).scrollIntoView();
-    }
-  }
-
-  updateFilterQuery = () =>
-    this.setState({
-      filterQuery: (this.refs.filterTextInput as any).value.toLowerCase(),
-      // tslint:disable-next-line:semicolon
-    });
-
-  clearLogs = () => {
-    window.localStorage.removeItem(localStorageKeys.log);
-    this.setState({ logs: [] });
-    // tslint:disable-next-line:semicolon
-  };
-
-  setShouldScrollToBottom = (
-    ev: React.FormEvent<HTMLElement>,
-    checked: boolean,
-  ) =>
-    this.setState({
-      shouldScrollToBottom: checked,
-      // tslint:disable-next-line:semicolon
-    });
-
   render() {
-    const items = this.state.logs
-      .filter(log => log.message.toLowerCase().includes(this.state.filterQuery))
-      .map((log, i) => ({
-        name: log.message,
-        key: i,
-        ...getLogPropsBySeverity(log.severity),
-      }));
-
     return (
       <PivotContentContainer>
         <RunnerLastUpdated
           isAlive={this.state.runnerIsAlive}
           lastUpdated={this.state.runnerLastUpdatedText}
         />
-        {items.length > 0 ? (
+        {this.state.logs.length > 0 ? (
           <Logs
-            items={items}
+            logs={this.state.logs}
             clearLogs={this.clearLogs}
-            setShouldScrollToBottom={this.setShouldScrollToBottom}
-            updateFilterQuery={this.updateFilterQuery}
+            addToLogs={this.addToLogs}
           />
         ) : (
           <NoLogsPlaceholder>
             <p
               style={{
-                top: '0px',
-                bottom: '0px',
-                left: '0px',
-                right: '0px',
+                position: 'absolute',
+                top: '0',
+                bottom: '0',
+                left: '0',
+                right: '0',
                 margin: 'auto',
                 color: '#333',
+                textAlign: 'center',
+                height: '60px',
+                padding: '20px',
               }}
             >
               There are no logs to display. Use <strong>console.log()</strong>{' '}
