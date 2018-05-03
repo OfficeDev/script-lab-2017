@@ -40,7 +40,6 @@ import {
   IRunnerHandlebarsContext,
   ISnippetHandlebarsContext,
   ITryItHandlebarsContext,
-  ICustomFunctionsRegisterHandlebarsContext,
   ICustomFunctionsRunnerHandlebarsContext,
 } from './interfaces';
 import { getFunctionsAndMetadataForRegistration } from './custom-functions/utilities';
