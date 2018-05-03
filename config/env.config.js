@@ -151,8 +151,6 @@ const safeExternalUrls = {
 };
 
 const experimentationFlagsDefaults = {
-  customFunctions: false,
-  customFunctionsShowDebugLog: false,
 };
 
 class RedirectPlugin {
