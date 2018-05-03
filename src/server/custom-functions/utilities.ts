@@ -6,6 +6,7 @@ import {
   ICFVisualFunctionMetadata,
   ICFVisualMetadata,
 } from './interfaces';
+import { pascalCaseTransformSnippetName } from '../core/snippet.helper';
 
 export function getFunctionsAndMetadataForRegistration(
   snippets: ISnippet[]
@@ -26,7 +27,7 @@ export function getFunctionsAndMetadataForRegistration(
       const hasErrors = doesSnippetHaveErrors(functions);
 
       if (!hasErrors) {
-        const namespace = snippet.name.replace(/[^0-9A-Za-z_]/g, '');
+        const namespace = pascalCaseTransformSnippetName(snippet.name);
         const namespacedFunctions = functions.map(f => ({
           ...f,
           name: `${namespace}.${f.name}`,
@@ -69,7 +70,7 @@ export function getFunctionsAndMetadataForRegistration(
       // }
 
       visualMetadata.push({
-        name: snippet.name.replace(/[^0-9A-Za-z_]/g, ''),
+        name: pascalCaseTransformSnippetName(snippet.name),
         error: hasErrors,
         status,
         functions,
