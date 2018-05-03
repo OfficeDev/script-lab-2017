@@ -5,7 +5,7 @@ import { debounce, isNil } from 'lodash';
 import { Dictionary } from '@microsoft/office-js-helpers';
 import * as fromRoot from '../reducers';
 import {
-    AI, environment, trustedSnippetManager, getSnippetDefaults,
+    AI, trustedSnippetManager, getSnippetDefaults,
     ensureFreshLocalStorage, storage
 } from '../helpers';
 import { Strings } from '../strings';
@@ -86,9 +86,6 @@ export class Editor implements AfterViewInit {
         private _monaco: MonacoService
     ) {
         this.tabNames = ['script', 'template', 'style', 'libraries'];
-        if (environment.current.supportsCustomFunctions) {
-            this.tabNames.push('customFunctions');
-        }
     }
 
     /**

@@ -44,10 +44,7 @@ export function getRunnerCustomFunctionsPayload() {
     snippets: allSnippetsToRegisterWithPossibleDuplicate,
     displayLanguage: getDisplayLanguage(),
     heartbeatParams: {
-      clientTimestamp: new Date().getTime(),
-      showDebugLog: environment.getExperimentationFlagValue(
-        'customFunctionsShowDebugLog'
-      ),
+      clientTimestamp: new Date().getTime()
     },
   };
 

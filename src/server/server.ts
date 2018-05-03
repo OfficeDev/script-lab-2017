@@ -362,7 +362,6 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
         snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata }))
       )
     ),
-    showDebugLog: params.heartbeatParams.showDebugLog,
     clientTimestamp: params.heartbeatParams.clientTimestamp,
   });
 
@@ -878,7 +877,7 @@ async function generateSnippetHtmlData(
   if (isCustomFunctionScript(compileData.scriptToCompile.content)) {
     const CFRunnerHeader = 'This snippet is a Custom Functions snippet.';
     const CFRunnerBody =
-      'It cannot be run. Instead, open the Functions pane from the ribbon to register it and montior the logs.';
+      'Please open the Custom Function dashboard via the "Functions" button in the ribbon.';
     const CFTemplate = `<h1>${CFRunnerHeader}</h1><p>${CFRunnerBody}</p>`;
 
     template = CFTemplate;

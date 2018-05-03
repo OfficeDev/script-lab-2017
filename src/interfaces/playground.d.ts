@@ -112,7 +112,6 @@ interface ICustomFunctionsRegistrationRelevantData {
 
 interface ICustomFunctionsHeartbeatParams {
   clientTimestamp: number;
-  showDebugLog: boolean;
 }
 
 interface ICustomFunctionsRunnerRelevantData {
@@ -250,9 +249,6 @@ interface ICurrentPlaygroundInfo {
    * even more short-term than sessionStorage, which has a lifetime-of-tab duration;
    * whereas this one will get generated anew with each reload) */
   runtimeSessionTimestamp: Readonly<string>;
-
-  supportsCustomFunctions: boolean;
-  customFunctionsShowDebugLog: boolean;
 
   isAddinCommands: boolean;
   isTryIt: boolean;

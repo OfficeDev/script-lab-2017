@@ -48,7 +48,6 @@ const snippetFields: { [key: string]: SnippetFieldType } = {
   template: SnippetFieldType.PUBLIC,
   style: SnippetFieldType.PUBLIC,
   libraries: SnippetFieldType.PUBLIC,
-  customFunctions: SnippetFieldType.PUBLIC,
 };
 
 export const snippetFieldSortingOrder: { [key: string]: number } = {
@@ -68,7 +67,6 @@ export const snippetFieldSortingOrder: { [key: string]: number } = {
   template: 111,
   style: 112,
   libraries: 113,
-  customFunctions: 114,
 
   /* And within scripts / templates / styles, content should always be before language */
   content: 1000,
@@ -93,10 +91,6 @@ export function getSnippetDefaults(): ISnippet {
     style: { content: '', language: 'css' },
     libraries: '',
   };
-
-  if (environment.current.supportsCustomFunctions) {
-    defaults.customFunctions = { content: '', language: 'typescript' };
-  }
 
   return defaults;
 }
