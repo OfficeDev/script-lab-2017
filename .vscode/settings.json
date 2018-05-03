@@ -1,12 +1,8 @@
 {
-    "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.tsdk": "./node_modules/typescript/lib",
 
-    "spellright.notificationClass": "warning",
-    "spellright.ignoreFiles": [
-        "**/.gitignore",
-        "**/.spellignore"
-    ],
-    "cSpell.words": [
-        "bornholm"
-    ]
+  "spellright.notificationClass": "warning",
+  "spellright.ignoreFiles": ["**/.gitignore", "**/.spellignore"],
+  "cSpell.words": ["bornholm"],
+  "editor.formatOnSave": true
 }
