@@ -86,9 +86,6 @@ export class Editor implements AfterViewInit {
         private _monaco: MonacoService
     ) {
         this.tabNames = ['script', 'template', 'style', 'libraries'];
-        if (environment.current.supportsCustomFunctions) {
-            this.tabNames.push('customFunctions');
-        }
     }
 
     /**
