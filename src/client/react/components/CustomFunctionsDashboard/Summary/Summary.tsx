@@ -60,11 +60,14 @@ const Summary = ({ metadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were found in your workspace
+          The following custom functions were found in your workspace. These
+          functions run async in Script Lab. You can run them faster in sync
+          mode with{' '}
+          <a href="https://aka.ms/customfunctions">these instructions</a>.
         </p>
       </TopInfo>
       <FunctionsContainer>
-        <List items={items.success.concat(items.error).concat(items.skipped)} />
+        <List items={[...items.success, ...items.error, ...items.skipped]} />
       </FunctionsContainer>
     </PivotContentContainer>
   );

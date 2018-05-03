@@ -24,6 +24,17 @@ const Text = styled.span`
 
 const ListContainer = styled.ul``;
 
+interface Item {
+  key: any;
+  name: string;
+  icon?: {
+    name: string;
+    color: string;
+  };
+  background?: string;
+  color?: string;
+}
+
 export default ({ items }) => (
   <ListContainer>
     {items.map(item => (
