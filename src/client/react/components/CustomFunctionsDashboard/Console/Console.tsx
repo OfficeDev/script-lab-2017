@@ -22,6 +22,8 @@ const RunnerLastUpdatedWrapper = styled.div`
   height: 16px;
   line-height: 16px;
   background: #f4f4f4;
+  overflow: hidden;
+  overflow-wrap: normal;
 `;
 
 const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (

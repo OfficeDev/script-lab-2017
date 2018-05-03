@@ -10,7 +10,8 @@ const TopInfo = styled.div`
 
 const FunctionsContainer = styled.div`
   height: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   flex-shrink: 2;
   border-top: 1px solid #f4f4f4;
 `;

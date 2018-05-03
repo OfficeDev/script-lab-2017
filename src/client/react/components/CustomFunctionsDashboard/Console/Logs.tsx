@@ -24,7 +24,8 @@ const CheckboxWrapper = styled.div`
 
 const LogsWrapper = styled.div`
   height: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   flex-shrink: 2;
 `;
 
@@ -54,6 +55,7 @@ const ClearButton = styled.button`
 function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
   let background;
   let color = 'black';
+  let icon = null;
 
   switch (severity) {
     case 'log':
@@ -61,15 +63,17 @@ function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
       break;
     case 'warn':
       background = '#fff4ce';
+      icon = { name: 'Warning', color: 'gold' };
       break;
     case 'error':
       background = '#fde7e9';
+      icon = { name: 'Error', color: 'red' };
       break;
     default:
       break;
   }
 
-  return { background, color };
+  return { background, color, icon };
 }
 
 export interface ILog {
