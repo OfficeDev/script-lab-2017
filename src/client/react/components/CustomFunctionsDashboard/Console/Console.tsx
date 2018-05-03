@@ -2,9 +2,8 @@ import * as React from 'react';
 import * as moment from 'moment';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
-import List from '../List';
-import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
-import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import Logs from './Logs';
+
 import {
   getElapsedTime,
   getNumberFromLocalStorage,
@@ -13,49 +12,8 @@ import {
 import { getDisplayLanguage } from '../../../../app/strings';
 const { localStorageKeys } = PLAYGROUND;
 
-const FilterWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  height: 48px;
-  background: #f4f4f4;
-  box-sizing: border-box;
-`;
-
-const CheckboxWrapper = styled.div`
-  height: 38px;
-  background: #f4f4f4;
-  box-sizing: border-box;
-  padding: 9px;
-`;
-
-const LogsWrapper = styled.div`
-  height: 100%;
-  overflow: auto;
-  flex-shrink: 2;
-`;
-
-const ClearButton = styled.button`
-  width: 20px;
-  height: 20px;
-  background: none;
-  border: 0px;
-  position: relative;
-  margin-right: 13px;
-  margin-left: 5px;
-
-  &:hover {
-    color: #b22222;
-    cursor: pointer;
-  }
-
-  &:active {
-    color: red;
-  }
-
-  &:focus {
-    outline: none;
-  }
+const NoLogsPlaceholder = styled.div`
+  flex: 1;
 `;
 
 const RunnerLastUpdatedWrapper = styled.div`
@@ -63,6 +21,7 @@ const RunnerLastUpdatedWrapper = styled.div`
   height: 16px;
   background: #f4f4f4;
 `;
+
 const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
   <>
     {isAlive ? (
@@ -74,6 +33,27 @@ const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
     )}
   </>
 );
+
+function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
+  let background;
+  let color = 'black';
+
+  switch (severity) {
+    case 'log':
+      background = 'white';
+      break;
+    case 'warn':
+      background = '##fff4ce';
+      break;
+    case 'error':
+      background = '#fde7e9';
+      break;
+    default:
+      break;
+  }
+
+  return { background, color };
+}
 
 export interface Props {}
 
@@ -98,8 +78,8 @@ export default class Console extends React.Component<Props, State> {
     const runnerIsAlive =
       getElapsedTime(
         getNumberFromLocalStorage(
-          localStorageKeys.customFunctionsLastHeartbeatTimestamp
-        )
+          localStorageKeys.customFunctionsLastHeartbeatTimestamp,
+        ),
       ) < 3000;
 
     let runnerLastUpdatedText = null;
@@ -108,9 +88,9 @@ export default class Console extends React.Component<Props, State> {
       runnerLastUpdatedText = moment(
         new Date(
           getNumberFromLocalStorage(
-            localStorageKeys.customFunctionsCurrentlyRunningTimestamp
-          )
-        )
+            localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
+          ),
+        ),
       )
         .locale(getDisplayLanguage())
         .fromNow();
@@ -171,7 +151,7 @@ export default class Console extends React.Component<Props, State> {
 
   setShouldScrollToBottom = (
     ev: React.FormEvent<HTMLElement>,
-    checked: boolean
+    checked: boolean,
   ) =>
     this.setState({
       shouldScrollToBottom: checked,
@@ -181,7 +161,11 @@ export default class Console extends React.Component<Props, State> {
   render() {
     const items = this.state.logs
       .filter(log => log.message.toLowerCase().includes(this.state.filterQuery))
-      .map((log, i) => ({ name: log.message, key: i }));
+      .map((log, i) => ({
+        name: log.message,
+        key: i,
+        ...getLogPropsBySeverity(log.severity),
+      }));
 
     return (
       <PivotContentContainer>
@@ -189,47 +173,30 @@ export default class Console extends React.Component<Props, State> {
           isAlive={this.state.runnerIsAlive}
           lastUpdated={this.state.runnerLastUpdatedText}
         />
-        <FilterWrapper>
-          <ClearButton onClick={this.clearLogs}>
-            <Icon
+        {items.length > 0 ? (
+          <Logs
+            items={items}
+            clearLogs={this.clearLogs}
+            setShouldScrollToBottom={this.setShouldScrollToBottom}
+            updateFilterQuery={this.updateFilterQuery}
+          />
+        ) : (
+          <NoLogsPlaceholder>
+            <p
               style={{
-                position: 'absolute',
                 top: '0px',
                 bottom: '0px',
                 left: '0px',
                 right: '0px',
-                width: '20px',
-                height: '20px',
-                lineHeight: '20px',
+                margin: 'auto',
+                color: '#333',
               }}
-              iconName="Clear"
-            />
-          </ClearButton>
-          <input
-            className="ms-font-m"
-            type="text"
-            placeholder="Filter"
-            onChange={this.updateFilterQuery}
-            ref="filterTextInput"
-            style={{
-              width: '100%',
-              height: '32px',
-              padding: '6px',
-              boxSizing: 'border-box',
-            }}
-          />
-        </FilterWrapper>
-        <LogsWrapper>
-          <List items={items} />
-          <div ref="lastLog" />
-        </LogsWrapper>
-        <CheckboxWrapper>
-          <Checkbox
-            label="Auto-scroll"
-            defaultChecked={true}
-            onChange={this.setShouldScrollToBottom}
-          />
-        </CheckboxWrapper>
+            >
+              There are no logs to display. Use <strong>console.log()</strong>{' '}
+              inside your functions to display logs here.
+            </p>
+          </NoLogsPlaceholder>
+        )}
       </PivotContentContainer>
     );
   }

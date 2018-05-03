@@ -1,8 +1,15 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { StyledFunction } from 'styled-components';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
-const ListItem = styled.li`
+interface LIProps {
+  backgroundColor?: string;
+  color?: string;
+}
+
+const LI: StyledFunction<LIProps & React.HTMLProps<HTMLLIElement>> = styled.li;
+
+const ListItem = LI`
   display: flex;
   align-items: center;
 
@@ -14,7 +21,8 @@ const ListItem = styled.li`
   border-top: 0.5px solid #eeeeee;
   border-bottom: 0.5px solid #eeeeee;
 
-  color: #333333;
+  color: ${props => props.backgroundColor || '#333333'};
+  background: ${props => props.color || 'white'};
 `;
 
 const Text = styled.span`
@@ -37,8 +45,13 @@ interface Item {
 
 export default ({ items }) => (
   <ListContainer>
-    {items.map(item => (
-      <ListItem key={item.key} className="ms-font-s">
+    {items.map((item: Item) => (
+      <ListItem
+        key={item.key}
+        className="ms-font-s"
+        backgroundColor={item.background}
+        color={item.color}
+      >
         {item.icon && (
           <Icon
             className="ms-font-m"
