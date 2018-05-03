@@ -58,9 +58,9 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
 [
    {
       "description":"*Insert Description here*",
-      "name":"snippetName.getRgb3",
+      "name":"getRgb3",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -79,9 +79,9 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"snippetName.getRgb6",
+      "name":"getRgb6",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -100,9 +100,9 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"snippetName.getRgb8",
+      "name":"getRgb8",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -121,9 +121,9 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"snippetName.getRgb9",
+      "name":"getRgb9",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -142,9 +142,9 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"snippetName.getRgb10",
+      "name":"getRgb10",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false
@@ -168,9 +168,9 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"snippetName.functionWith2DArraySyntax",
+      "name":"functionWith2DArraySyntax",
       "options":{
-         "cancelable":true,
+         "cancelable":false,
          "stream":false,
          "sync":true,
          "volatile":false

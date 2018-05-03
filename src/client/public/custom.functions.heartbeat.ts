@@ -30,18 +30,6 @@ function setupMessenger(clientTimestamp: number) {
         .filter(({ type }) => type === CustomFunctionsMessageType.LOADED_AND_RUNNING)
         .subscribe(input => tryCatch(() => {
             // TODO CUSTOM FUNCTIONS STRINGS
-
-            const message = 'Custom functions are reloaded';
-
-            logToConsole({
-                source: 'system',
-                type: 'custom functions',
-                subtype: 'runner',
-                message,
-                severity: 'info',
-                ...input.message
-            });
-
             const interval = setInterval(() => {
                 tryCatch(() => {
                     const now = new Date();

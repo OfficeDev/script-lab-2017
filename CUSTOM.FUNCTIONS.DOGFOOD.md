@@ -20,9 +20,9 @@ If you've not sideloaded before via a network share, please refer to the [offici
 
 
 ### Step 3: Switch to Alpha
-For now, the Custom Functions experience is only available in the Alpha deployment of Script lab.  So, in addition to sideloading the manifest (which is orthogonal to this step), you also need to switch to Alpha (**Code editor ==> About ==> Environment: Alpha**)
+For now, the Custom Functions experience is only available in the **Beta** deployment of Script lab.  So, in addition to sideloading the manifest (which is orthogonal to this step), you also need to switch to Beta (**Code editor ==> About ==> Environment: Beta**)
 
-![Switch to Alpha](./.github/images/switch-to-alpha.png)
+![Switch to Beta](./.github/images/switch-to-beta.png)
 
 
 ## A picture is worth a thousand recalcs

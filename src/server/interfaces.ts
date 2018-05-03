@@ -1,7 +1,3 @@
-import {
-    ICFVisualSnippetMetadata
-} from './custom-functions/interfaces';
-
 export interface SnippetCompileData {
     id: string;
     name: string;
@@ -64,15 +60,6 @@ export interface IRunnerHandlebarsContext {
 
     strings: ServerStrings;
     explicitlySetDisplayLanguageOrNull: string;
-}
-
-export interface ICustomFunctionsRegisterHandlebarsContext {
-    visualMetadata: ICFVisualSnippetMetadata[];
-    registerCustomFunctionsJsonStringBase64: string;
-    isAnySuccess: boolean;
-    isAnyError: boolean;
-    explicitlySetDisplayLanguageOrNull: string;
-    dashboardUrl: string;
 }
 
 export interface ICustomFunctionsRunnerHandlebarsContext {

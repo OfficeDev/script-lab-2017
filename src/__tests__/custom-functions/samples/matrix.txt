@@ -13,9 +13,9 @@ function foo(a: number[][], b: number, c: number[][]): number[][] {
 [
   {
     "description": "*Insert Description here*",
-    "name": "snippetName.foo",
+    "name": "foo",
     "options": {
-      "cancelable": true,
+      "cancelable":false,
       "stream": false,
       "sync": true,
       "volatile": false
