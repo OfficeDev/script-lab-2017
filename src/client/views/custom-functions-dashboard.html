@@ -41,17 +41,29 @@
 </head>
 
 <body class="ms-font-m">
-	<div id="loading" class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt; position: absolute; top: 0; bottom: 0;">
-		<div class="cs-loader">
-			<div class="cs-loader-inner">
-				<label class="ms-Icon ms-Icon--LocationDot"></label>
-				<label class="ms-Icon ms-Icon--LocationDot"></label>
-				<label class="ms-Icon ms-Icon--LocationDot"></label>
-				<label class="ms-Icon ms-Icon--LocationDot"></label>
-				<label class="ms-Icon ms-Icon--LocationDot"></label>
+	<div id="progress" class="ms-progress-component">
+		<div id="ribbon" class="ribbon"></div>
+		<main class="ms-progress-component__main">
+			<img class="ms-progress-component__logo" src="../assets/images/icon-large.svg" />
+			<h1 id="title" class="ms-progress-component__title ms-font-xxl">Script Lab</h1>
+
+			<p id="subtitle" class="ms-progress-component__sub-title ms-font-m">Registering custom functions...</p>
+		</main>
+		<footer class="ms-progress-component__footer">
+			<div class="ms-progress">
+				<div class="cs-loader">
+					<div class="cs-loader-inner">
+						<label class="ms-Icon ms-Icon--LocationDot"></label>
+						<label class="ms-Icon ms-Icon--LocationDot"></label>
+						<label class="ms-Icon ms-Icon--LocationDot"></label>
+						<label class="ms-Icon ms-Icon--LocationDot"></label>
+						<label class="ms-Icon ms-Icon--LocationDot"></label>
+					</div>
+				</div>
 			</div>
-		</div>
+		</footer>
 	</div>
+
 	<div id="root"></div>
 </body>
 

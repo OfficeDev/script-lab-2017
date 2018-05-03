@@ -60,7 +60,7 @@ const Summary = ({ metadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were discovered.
+          The following custom functions were found in your workspace
         </p>
       </TopInfo>
       <FunctionsContainer>

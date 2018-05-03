@@ -393,52 +393,6 @@ registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
   );
 });
 
-/**
- * HTTP POST: /custom-functions/register
- * Returns the registering page for custom functions.
- * Note that all snippets passed to this page are already expected to be trusted.
- */
-registerRoute('post', '/custom-functions/register', async (req, res) => {
-  const params: IRegisterCustomFunctionsPostData = JSON.parse(req.body.data);
-  const { snippets } = params;
-
-  const { visual, functions } = getFunctionsAndMetadataForRegistration(
-    snippets
-  );
-
-  const numOfSnippetsWithErrors = visual.snippets.filter(
-    snippetMetadata => snippetMetadata.error
-  ).length;
-  const numOfSnippetsWithoutErrors =
-    visual.snippets.length - numOfSnippetsWithErrors;
-  const isAnyError = numOfSnippetsWithErrors > 0;
-  const isAnySuccess = numOfSnippetsWithoutErrors > 0;
-
-  const registerCustomFunctionsJsonStringBase64 = base64encode(
-    JSON.stringify({ functions })
-  );
-
-  const timer = ai.trackTimedEvent('[Runner] Registering Custom Functions');
-
-  const customFunctionsRegisterGenerator = await loadTemplate<
-    ICustomFunctionsRegisterHandlebarsContext
-  >('custom-functions-register');
-
-  const html = customFunctionsRegisterGenerator({
-    visualMetadata: visual.snippets,
-    isAnySuccess,
-    isAnyError,
-    registerCustomFunctionsJsonStringBase64,
-    explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(
-      req
-    ),
-    dashboardUrl: req.headers.referer as string,
-  });
-
-  timer.stop();
-  return respondWith(res, html, 'text/html');
-});
-
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
   const params = massageParams<{
     host: string;

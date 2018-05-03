@@ -4,25 +4,6 @@ import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../helpers';
 import { isCustomFunctionScript } from '../helpers/snippet.helper';
 
-export function navigateToRegisterCustomFunctions() {
-  ensureFreshLocalStorage();
-  let allSnippetsToRegisterWithPossibleDuplicate: ISnippet[] = uniqBy(
-    [storage.current.lastOpened].concat(storage.snippets.values()),
-    'id'
-  ).filter(
-    snippet => snippet.script && isCustomFunctionScript(snippet.script.content)
-  );
-
-  let data: IRegisterCustomFunctionsPostData = {
-    snippets: allSnippetsToRegisterWithPossibleDuplicate,
-    displayLanguage: getDisplayLanguage(),
-  };
-
-  const url =
-    environment.current.config.runnerUrl + '/custom-functions/register';
-  return post(url, { data: JSON.stringify(data) });
-}
-
 export function navigateToRunCustomFunctions(payload?: any) {
   if (!payload) {
     payload = getRunnerCustomFunctionsPayload();

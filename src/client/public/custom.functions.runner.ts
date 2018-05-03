@@ -68,8 +68,6 @@ async function initializeRunnableSnippets(params: InitializationParams) {
                 let splitIndex = func.name.lastIndexOf('.');
                 let funcName = func.name.substr(splitIndex + 1);
 
-                console.log(`Mapped function ${funcName} from snippet ${id} on namespace ${snippetMetadata.namespace}`);
-
                 // tslint:disable-next-line:only-arrow-functions
                 window[snippetMetadata.namespace][funcName] = function () {
                     return iframeWindow[funcName].apply(null, arguments);

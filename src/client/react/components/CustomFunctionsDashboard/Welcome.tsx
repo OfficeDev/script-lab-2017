@@ -6,12 +6,6 @@ const { localStorageKeys } = PLAYGROUND;
 
 const gray = '#333333';
 
-const sampleFunction = `/** @CustomFunction */
-function add(a: number, b: number): number {
-\u00A0\u00A0\u00A0\u00A0return a + b;
-}
-`;
-
 const ListItem = styled.li`
   margin-bottom: 26px;
 `;
@@ -20,7 +14,7 @@ const Instructions = styled.div`
   text-align: left;
 `;
 
-const CodeBlock = styled.pre`
+const CodeBlock = styled.div`
   white-space: pre-line;
   background: #eeeeee;
   padding: 6px;
@@ -74,10 +68,6 @@ export default class Welcome extends React.Component<{}, State> {
       <div id="progress" className="ms-progress-component">
         <div id="ribbon" className="ribbon" />
         <main className="ms-progress-component__main">
-          <img
-            className="ms-progress-component__logo"
-            src="../assets/images/icon-large.svg"
-          />
           <h1
             id="title"
             className="ms-font-su"
@@ -107,13 +97,18 @@ export default class Welcome extends React.Component<{}, State> {
           />
           <Instructions>
             <p className="ms-font-s-plus" style={{ marginBottom: '19px' }}>
-              Get started with your first custom functions.
+              Get started with your first custom function.
             </p>
             <ol className="ms-font-s" style={{ marginLeft: '10px' }}>
               <ListItem>Open the code editor.</ListItem>
               <ListItem>
                 Copy the following script and paste it into the editor.
-                <CodeBlock className="ms-font-xs">{sampleFunction}</CodeBlock>
+                <CodeBlock className="ms-font-xs">
+                  <pre>/** @CustomFunction */</pre>
+                  <pre>function add(a: number, b: number): number {'{'}</pre>
+                  <pre>    return a + b;</pre>
+                  <pre>{'}'}</pre>
+                </CodeBlock>
               </ListItem>
               <ListItem>
                 After pasting, click the <strong>Refresh</strong> button below.

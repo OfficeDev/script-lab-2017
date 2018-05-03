@@ -56,10 +56,9 @@ module.exports = prodMode => ({
     auth: './public/auth.ts',
     defaultAuth: './public/default-auth.ts',
     tryIt: './public/try.it.ts',
-    customFunctions: './public/custom.functions.ts',
+    customFunctionsRunnerInitialRedirect: './public/custom.functions.runner.initial.redirect.ts' /* for the "custom-functions-run.html" page, for the invisible runner */,
     customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
-    customFunctionsRegister: './public/custom.functions.register.ts',
-    customFunctionsRunner: './public/custom.functions.runner.ts',
+    customFunctionsRunner: './public/custom.functions.runner.ts' /* used in the "custom-functions-runner" handlebars template */,
     customFunctionsDashboard: './react/index.tsx',
   },
 
@@ -209,14 +208,14 @@ module.exports = prodMode => ({
       chunks: ['polyfills', 'vendor', 'heartbeat'],
     }),
     new HtmlWebpackPlugin({
-      filename: 'custom-functions-dashboard.html',
+      filename: 'custom-functions.html',
       template: './views/custom-functions-dashboard.html',
       chunks: ['polyfills', 'vendor', 'customFunctionsDashboard'],
     }),
     new HtmlWebpackPlugin({
-      filename: 'custom-functions.html',
+      filename: 'custom-functions-run.html',
       template: './views/empty.html',
-      chunks: ['polyfills', 'vendor', 'customFunctions'],
+      chunks: ['polyfills', 'vendor', 'customFunctionsRunnerInitialRedirect'],
     }),
     new HtmlWebpackPlugin({
       filename: 'custom-functions-heartbeat.html',

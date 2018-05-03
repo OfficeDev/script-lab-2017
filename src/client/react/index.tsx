@@ -4,13 +4,18 @@ import App from './App';
 import ComingSoon from './components/CustomFunctionsDashboard/ComingSoon';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { storage, environment } from '../../client/app/helpers';
-// import { getDisplayLanguage } from '../../client/app/strings';
 import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
 import { isCustomFunctionScript } from '../../server/core/snippet.helper';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
+
+const {
+  localStorageKeys
+} = PLAYGROUND;
+
+import '../assets/styles/extras.scss';
 
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
@@ -26,12 +31,13 @@ tryCatch(async () => {
     }, 100);
   });
 
-  if (
+  const customFunctionsSupported =
     Office &&
     Office.context &&
     Office.context.requirements &&
-    Office.context.requirements.isSetSupported('CustomFunctions', 1.1)
-  ) {
+    Office.context.requirements.isSetSupported('CustomFunctions', 1.1);
+
+  if (customFunctionsSupported) {
     initializeIcons();
 
     const {
@@ -41,7 +47,14 @@ tryCatch(async () => {
 
     await registerMetadata(registerCustomFunctionsJsonStringBase64);
 
-    document.getElementById('loading')!.style.display = 'none';
+    // Get the custom functions runner to reload as well
+    let startOfRequestTime = new Date().getTime();
+    window.localStorage.setItem(
+        localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+        startOfRequestTime.toString()
+    );
+
+    document.getElementById('progress')!.style.display = 'none';
 
     if ((metadata as any).snippets.length > 0) {
       ReactDOM.render(
