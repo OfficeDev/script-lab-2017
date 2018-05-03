@@ -31,6 +31,7 @@ import {
   getShareableYaml,
   isMakerScript,
   isCustomFunctionScript,
+  pascalCaseTransformSnippetName,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -314,7 +315,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     const result = parseMetadata(snippet.script.content);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
-    const namespace = snippet.name.replace(/[^0-9A-Za-z_]/g, '');
+    const namespace = pascalCaseTransformSnippetName(snippet.name);
     snippet.metadata = {
       namespace,
       functions: result.map(func => ({
