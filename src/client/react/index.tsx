@@ -11,9 +11,7 @@ import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
 
-const {
-  localStorageKeys
-} = PLAYGROUND;
+const { localStorageKeys } = PLAYGROUND;
 
 import '../assets/styles/extras.scss';
 
@@ -50,8 +48,8 @@ tryCatch(async () => {
     // Get the custom functions runner to reload as well
     let startOfRequestTime = new Date().getTime();
     window.localStorage.setItem(
-        localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
-        startOfRequestTime.toString()
+      localStorageKeys.customFunctionsLastUpdatedCodeTimestamp,
+      startOfRequestTime.toString()
     );
 
     document.getElementById('progress')!.style.display = 'none';
@@ -59,16 +57,16 @@ tryCatch(async () => {
     if ((metadata as any).snippets.length > 0) {
       ReactDOM.render(
         <App metadata={(metadata as any).snippets} />,
-        document.getElementById('root') as HTMLElement,
+        document.getElementById('root') as HTMLElement
       );
     } else {
       ReactDOM.render(<Welcome />, document.getElementById(
-        'root',
+        'root'
       ) as HTMLElement);
     }
   } else {
     ReactDOM.render(<ComingSoon />, document.getElementById(
-      'root',
+      'root'
     ) as HTMLElement);
   }
 });
@@ -90,10 +88,10 @@ async function getMetadata() {
       let allSnippetsToRegisterWithPossibleDuplicate = uniqBy(
         // [storage.current.lastOpened].concat(storage.snippets.values()),
         storage.snippets.values(),
-        'id',
+        'id'
       ).filter(
         snippet =>
-          snippet.script && isCustomFunctionScript(snippet.script.content),
+          snippet.script && isCustomFunctionScript(snippet.script.content)
       );
 
       let xhr = new XMLHttpRequest();
@@ -101,7 +99,7 @@ async function getMetadata() {
         'POST',
         `${
           environment.current.config.runnerUrl
-        }/custom-functions/parse-metadata`,
+        }/custom-functions/parse-metadata`
       );
       xhr.setRequestHeader('content-type', 'application/json');
 
@@ -117,7 +115,7 @@ async function getMetadata() {
       xhr.send(
         JSON.stringify({
           snippets: allSnippetsToRegisterWithPossibleDuplicate,
-        }),
+        })
       );
     } catch (e) {
       handleError(e);
@@ -126,13 +124,13 @@ async function getMetadata() {
 }
 
 async function registerMetadata(
-  registerCustomFunctionsJsonStringBase64: string,
+  registerCustomFunctionsJsonStringBase64: string
 ) {
   const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
   await Excel.run(async context => {
     (context.workbook as any).registerCustomFunctions(
       'ScriptLab',
-      registrationPayload,
+      registrationPayload
     );
     await context.sync();
   });
@@ -157,4 +155,6 @@ function handleError(error: Error) {
   } else {
     UI.notify(Strings().error, candidateErrorString);
   }
+  document.getElementById('progress')!.style.display = 'none';
+  document.getElementById('refresh').style.display = 'block';
 }
