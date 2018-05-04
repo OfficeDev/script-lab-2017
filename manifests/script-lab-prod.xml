@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<OfficeApp
-  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+<OfficeApp 
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>8bc018e3-f345-40d4-8f1d-97951765d531</Id>
   <Version>1.2.0.10</Version>
@@ -60,16 +60,23 @@
     <SourceLocation DefaultValue="https://script-lab.azureedge.net" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
-  <VersionOverrides
+  <VersionOverrides 
     xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Description resid="PG.Description" />
     <Hosts>
       <Host xsi:type="Workbook">
         <AllFormFactors>
           <ExtensionPoint xsi:type="CustomFunctions">
+            <Script>
+              <SourceLocation resid="placeholder" />
+            </Script>
             <Page>
               <SourceLocation resid="PG.CFRunner.Url"/>
             </Page>
+            <Metadata>
+              <SourceLocation resid="placeholder" />
+            </Metadata>
+            <Namespace resid="ScriptLab" />
           </ExtensionPoint>
         </AllFormFactors>
         <DesktopFormFactor>
@@ -483,7 +490,7 @@
         <bt:Image id="PG.Icon.Run.16" DefaultValue="https://script-lab.azureedge.net/assets/images/run-16.png" />
         <bt:Image id="PG.Icon.Run.32" DefaultValue="https://script-lab.azureedge.net/assets/images/run-32.png" />
         <bt:Image id="PG.Icon.Run.80" DefaultValue="https://script-lab.azureedge.net/assets/images/run-80.png" />
-		    <bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-16.png" />
+        <bt:Image id="PG.Icon.CF.16" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-16.png" />
         <bt:Image id="PG.Icon.CF.32" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-32.png" />
         <bt:Image id="PG.Icon.CF.80" DefaultValue="https://script-lab.azureedge.net/assets/images/fx-80.png" />
         <bt:Image id="PG.Icon.Tutorial.16" DefaultValue="https://script-lab.azureedge.net/assets/images/tutorial-16.png" />
@@ -591,8 +598,7 @@
         </bt:String>
         <bt:String id="PG.CFCommand.Label" DefaultValue="Functions" />
         <bt:String id="PG.CFCommand.Title" DefaultValue="Functions" />
-        <bt:String id="PG.CFCommand.TipTitle" DefaultValue="Launch the Custom Functions dashboard">
-        </bt:String>
+        <bt:String id="PG.CFCommand.TipTitle" DefaultValue="Launch the Custom Functions dashboard"></bt:String>
         <bt:String id="PG.RunCommand.Label" DefaultValue="Run">
           <Override Locale="de-de" Value="Ausführen"/>
           <Override Locale="de-ch" Value="Ausführen"/>
@@ -871,8 +877,7 @@
           <Override Locale="es-mx" Value="Abre el editor de código de Script Lab."/>
           <Override Locale="zh-cn" Value="打开Script Lab代码编辑器"/>
         </bt:String>
-        <bt:String id="PG.CFSupertip.Desc" DefaultValue="Launch the Custom Functions dashboard">
-        </bt:String>
+        <bt:String id="PG.CFSupertip.Desc" DefaultValue="Launch the Custom Functions dashboard"></bt:String>
         <bt:String id="PG.RunSupertip.Desc" DefaultValue="Opens a task pane that runs the current snippet">
           <Override Locale="de-de" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
           <Override Locale="de-ch" Value="Den Aufgabenbereich zum Ausführen eines Code-Schnipsels aufrufen."/>
