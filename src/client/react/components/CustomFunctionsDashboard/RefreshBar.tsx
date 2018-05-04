@@ -1,9 +1,15 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { Strings } from '../../../app/strings';
+import {
+  getNumberFromLocalStorage,
+  storage,
+  isCustomFunctionScript,
+  ensureFreshLocalStorage,
+} from '../../../app/helpers';
+import { navigateToRunner } from '../../../app/helpers/navigation.helper';
 const { localStorageKeys } = PLAYGROUND;
 // tslint:disable:semicolon
-
 const strings = Strings();
 
 const Curtain = styled.div`
@@ -67,34 +73,49 @@ export default class RefreshBar extends React.Component<{}, State> {
     super(props);
 
     const lastUpdatedTimestamp =
-      Number(
-        window.localStorage.getItem(
-          localStorageKeys.customFunctionsLastEditorUpdateTimestamp
-        )
-      ) || Date.now();
+      getNumberFromLocalStorage(localStorageKeys.editorLastChangedTimestamp) ||
+      Date.now();
     this.state = { isVisible: false, lastUpdatedTimestamp };
   }
 
   showRefreshIfNeeded() {
-    const newTimestamp = Number(
-      window.localStorage.getItem(
-        localStorageKeys.customFunctionsLastEditorUpdateTimestamp
-      )
+    const newTimestamp = getNumberFromLocalStorage(
+      localStorageKeys.editorLastChangedTimestamp
     );
+
     if (newTimestamp > this.state.lastUpdatedTimestamp) {
-      this.setState({ lastUpdatedTimestamp: newTimestamp, isVisible: true });
+      // Don't need "ensureFreshLocalStorage()", since getNumberFromLocalStorage will have called it
+      storage.settings.load();
+      const hasLastOpened = Boolean(
+        storage.current && storage.current.lastOpened
+      );
+      this.setState({
+        lastUpdatedTimestamp: newTimestamp,
+        isVisible: hasLastOpened,
+      });
     }
   }
 
   refresh = () => {
+    ensureFreshLocalStorage();
+    storage.settings.load();
+    const hasLastOpened = storage.current && storage.current.lastOpened;
+    if (hasLastOpened) {
+      const isCF = isCustomFunctionScript(
+        storage.current.lastOpened.script.content
+      );
+      if (!isCF) {
+        navigateToRunner(storage.current.lastOpened, null);
+        return;
+      }
+    }
+
     window.location.reload();
   };
 
   dismiss = () => {
-    const newTimestamp = Number(
-      window.localStorage.getItem(
-        localStorageKeys.customFunctionsLastEditorUpdateTimestamp
-      )
+    const newTimestamp = getNumberFromLocalStorage(
+      localStorageKeys.editorLastChangedTimestamp
     );
     this.setState({
       lastUpdatedTimestamp: newTimestamp,
@@ -118,8 +139,8 @@ export default class RefreshBar extends React.Component<{}, State> {
             <RunnerNotification className="ms-MessageBar ms-MessageBar--info">
               <div className="ms-MessageBar-content">
                 <div className="ms-MessageBar-text">
-                  You changed the code in one or more custom functions. Refresh
-                  this pane to update your custom functions in Excel.
+                  The contents of the Code pane has changed. Would you like to
+                  reload?
                 </div>
 
                 <div className="buttons" style={{ textAlign: 'right' }}>

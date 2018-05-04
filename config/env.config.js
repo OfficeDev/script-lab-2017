@@ -17,11 +17,10 @@ const localStorageKeys = {
     'playground_custom_functions_last_heartbeat_timestamp',
   customFunctionsLastUpdatedCodeTimestamp:
     'playground_custom_functions_last_updated_code_timestamp',
-  customFunctionsLastEditorUpdateTimestamp:
-    'playground_custom_functions_last_editor_update_timestamp',
   customFunctionsCurrentlyRunningTimestamp:
     'playground_custom_functions_currently_running_timestamp',
   lastPerfNumbersTimestamp: 'playground_last_perf_numbers_timestamp',
+  editorLastChangedTimestamp: 'playground_editor_last_changed_timestamp',
   language: 'playground_language',
 };
 
@@ -150,8 +149,7 @@ const safeExternalUrls = {
     'https://dev.office.com/reference/add-ins/javascript-api-for-office',
 };
 
-const experimentationFlagsDefaults = {
-};
+const experimentationFlagsDefaults = {};
 
 class RedirectPlugin {
   apply(compiler) {

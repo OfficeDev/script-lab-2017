@@ -1,4 +1,10 @@
-import { storage, environment, post, trustedSnippetManager } from './index';
+import {
+  storage,
+  environment,
+  post,
+  trustedSnippetManager,
+  isInsideOfficeApp,
+} from './index';
 import { getDisplayLanguage } from '../strings';
 import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../helpers';
@@ -11,6 +17,30 @@ export function navigateToRunCustomFunctions(payload?: any) {
 
   const url = environment.current.config.runnerUrl + '/custom-functions/run';
   return post(url, payload);
+}
+
+export function navigateToRunner(snippet: ISnippet, returnUrl: string) {
+  const overrides = <ISnippet>{
+    host: environment.current.host,
+    platform: environment.current.platform,
+  };
+
+  const state: IRunnerState = {
+    snippet: { ...snippet, ...overrides },
+    displayLanguage: getDisplayLanguage(),
+    isInsideOfficeApp: isInsideOfficeApp(),
+  };
+  const data = JSON.stringify(state);
+  const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(
+    snippet.id,
+    snippet.gist,
+    snippet.gistOwnerId
+  );
+
+  return post(environment.current.config.runnerUrl + '/compile/page', {
+    data,
+    isTrustedSnippet,
+  });
 }
 
 export function getRunnerCustomFunctionsPayload() {
@@ -44,7 +74,7 @@ export function getRunnerCustomFunctionsPayload() {
     snippets: allSnippetsToRegisterWithPossibleDuplicate,
     displayLanguage: getDisplayLanguage(),
     heartbeatParams: {
-      clientTimestamp: new Date().getTime()
+      clientTimestamp: new Date().getTime(),
     },
   };
 
