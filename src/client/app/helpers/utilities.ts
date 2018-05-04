@@ -76,7 +76,7 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
     const platform = Office.context.platform;
     switch (platform) {
       case Office.PlatformType.PC || Office.PlatformType.OfficeOnline:
-        if (semver.lt(threeDotVersion, '16.0.9325')) {
+        if (semver.lt(threeDotVersion, '16.0.9323')) {
           return false;
         }
         break;
@@ -91,6 +91,10 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
 
     return true;
   } catch (e) {
+    console.error(
+      'Could not perform a "getIsCustomFunctionsSupportedOnHost" check'
+    );
+    console.error(e);
     return false;
   }
 }
