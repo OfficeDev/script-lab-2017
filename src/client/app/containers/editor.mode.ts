@@ -10,12 +10,13 @@ import {
   isOfficeHost,
   isInsideOfficeApp,
   isMakerScript,
+  isCustomFunctionScript,
 } from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { isEmpty } from 'lodash';
 import { Subscription } from 'rxjs/Subscription';
-import { isCustomFunctionScript } from '../../../server/core/snippet.helper';
+const { localStorageKeys } = PLAYGROUND;
 
 @Component({
   selector: 'editor-mode',
@@ -79,6 +80,13 @@ export class EditorMode {
       .subscribe(snippet => {
         this.isEmpty = snippet == null;
         this.snippet = snippet;
+
+        if (snippet) {
+          window.localStorage.setItem(
+            localStorageKeys.editorLastChangedTimestamp,
+            new Date().getTime().toString()
+          );
+        }
       });
 
     this.sharingSub = this._store
