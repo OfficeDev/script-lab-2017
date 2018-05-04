@@ -52,7 +52,7 @@
             <Metadata>
               <SourceLocation resid="placeholder" />
             </Metadata>
-            <Namespace resid="SCRIPTLAB" />
+            <Namespace resid="ScriptLab" />
           </ExtensionPoint>
         </AllFormFactors>
         <DesktopFormFactor>
