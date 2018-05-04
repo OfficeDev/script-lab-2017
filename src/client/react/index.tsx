@@ -7,10 +7,11 @@ import {
   storage,
   environment,
   getIsCustomFunctionsSupportedOnHost,
+  uppercaseMaybe,
+  isCustomFunctionScript,
 } from '../../client/app/helpers';
 import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
-import { isCustomFunctionScript } from '../../server/core/snippet.helper';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
@@ -22,16 +23,7 @@ import '../assets/styles/extras.scss';
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
-  environment.initializePartial({ host: 'EXCEL' });
-
-  await new Promise(resolve => {
-    const interval = setInterval(() => {
-      if ((window as any).playground_host_ready) {
-        clearInterval(interval);
-        return resolve();
-      }
-    }, 100);
-  });
+  await environment.initialize();
 
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
@@ -110,9 +102,14 @@ async function getMetadata() {
         }
       };
 
+      const data: ICustomFunctionsMetadataRequestPostData = {
+        snippets: allSnippetsToRegisterWithPossibleDuplicate,
+        experimentationFlags: environment.current.experimentationFlags,
+      };
+
       xhr.send(
         JSON.stringify({
-          snippets: allSnippetsToRegisterWithPossibleDuplicate,
+          data: JSON.stringify(data),
         })
       );
     } catch (e) {
@@ -127,7 +124,10 @@ async function registerMetadata(
   const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
   await Excel.run(async context => {
     (context.workbook as any).registerCustomFunctions(
-      'ScriptLab',
+      uppercaseMaybe(
+        'ScriptLab',
+        environment.current.experimentationFlags.customFunctionsAllUppercase
+      ),
       registrationPayload
     );
     await context.sync();

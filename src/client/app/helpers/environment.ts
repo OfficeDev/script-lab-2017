@@ -96,6 +96,10 @@ class Environment {
         platform: null,
 
         runtimeSessionTimestamp: new Date().getTime().toString(),
+
+        experimentationFlags: JSON.parse(
+          this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/)
+        ),
       };
 
       this.appendCurrent(cachedEnvironment);
@@ -116,7 +120,7 @@ class Environment {
     if (!isNil(value.host)) {
       if (value.host.toUpperCase() === 'EXCEL') {
         updatedEnv = {
-          ...updatedEnv
+          ...updatedEnv,
         };
       }
     }

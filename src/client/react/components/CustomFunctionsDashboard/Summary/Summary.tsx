@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import PivotContentContainer from '../PivotContentContainer';
 import List from '../List';
+import { environment, uppercaseMaybe } from '../../../../app/helpers';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -20,9 +21,13 @@ const Summary = ({ metadata }) => {
   let items = { success: [], skipped: [], error: [] };
   metadata.forEach(snippet => {
     snippet.functions.forEach(func => {
-      const name = `=ScriptLab.${snippet.name}.${func.name}(${
-        func.parameters.length > 0 ? '…' : ''
-      })`;
+      const scriptLabToplevelNamespace = uppercaseMaybe(
+        'ScriptLab',
+        environment.current.experimentationFlags.customFunctionsAllUppercase
+      );
+      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${
+        func.name
+      }(${func.parameters.length > 0 ? '…' : ''})`;
 
       const item = { name, key: name };
 

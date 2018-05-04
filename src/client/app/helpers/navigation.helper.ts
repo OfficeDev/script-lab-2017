@@ -76,6 +76,7 @@ export function getRunnerCustomFunctionsPayload() {
     heartbeatParams: {
       clientTimestamp: new Date().getTime(),
     },
+    experimentationFlags: environment.current.experimentationFlags,
   };
 
   return { data: JSON.stringify(data) };
