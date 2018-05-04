@@ -15,7 +15,6 @@ import {
   trustedSnippetManager,
   ensureFreshLocalStorage,
   isMakerScript,
-  isCustomFunctionScript,
 } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -167,13 +166,6 @@ export class SnippetEffects {
         JSON.stringify(settings)
       );
 
-      if (isCustomFunctionScript(scrubbedSnippet.script.content)) {
-        let startOfRequestTime = new Date().getTime();
-        window.localStorage.setItem(
-          localStorageKeys.customFunctionsLastEditorUpdateTimestamp,
-          startOfRequestTime.toString()
-        );
-      }
       return new Snippet.StoreUpdatedAction();
     })
     .catch(exception =>
@@ -230,6 +222,21 @@ export class SnippetEffects {
         new UI.ReportErrorAction(Strings().snippetDeleteAllError, exception)
       )
     );
+
+  @Effect()
+  editorChanged$: Observable<Action> = this.actions$
+    .ofType(Snippet.SnippetActionTypes.STORE_UPDATED)
+    .mergeMap(() => {
+      try {
+        window.localStorage.setItem(
+          localStorageKeys.editorLastChangedTimestamp,
+          new Date().getTime().toString()
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return Observable.from([]);
+    });
 
   @Effect()
   loadSnippets$: Observable<Action> = this.actions$
