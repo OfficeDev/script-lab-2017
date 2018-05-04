@@ -16,7 +16,7 @@ export default () => (
         style={{ color: '#D83B01', marginTop: '24px', lineHeight: '56px' }}
         className="ms-fontSize-su ms-fontWeight-light"
       >
-        Coming Soon.
+        Custom Functions Preview
       </h1>
       <hr
         style={{
@@ -36,7 +36,9 @@ export default () => (
         }}
         className="ms-fontSize-m ms-fontWeight-regular"
       >
-        Discover what custom functions<br />can do for you!
+        You system configuration does not support Custom Functions, yet. For
+        more info, see{' '}
+        <a href="https://aka.ms/customfunctions">these instructions</a>.
       </p>
     </main>
   </div>

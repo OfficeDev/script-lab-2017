@@ -3,7 +3,11 @@ import * as ReactDOM from 'react-dom';
 import App from './App';
 import ComingSoon from './components/CustomFunctionsDashboard/ComingSoon';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
-import { storage, environment } from '../../client/app/helpers';
+import {
+  storage,
+  environment,
+  getIsCustomFunctionsSupportedOnHost,
+} from '../../client/app/helpers';
 import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
 import { isCustomFunctionScript } from '../../server/core/snippet.helper';
@@ -29,13 +33,7 @@ tryCatch(async () => {
     }, 100);
   });
 
-  const customFunctionsSupported =
-    Office &&
-    Office.context &&
-    Office.context.requirements &&
-    Office.context.requirements.isSetSupported('CustomFunctions', 1.1);
-
-  if (customFunctionsSupported) {
+  if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
 
     const {
