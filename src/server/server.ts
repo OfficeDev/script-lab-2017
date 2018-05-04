@@ -31,7 +31,8 @@ import {
   getShareableYaml,
   isMakerScript,
   isCustomFunctionScript,
-  pascalCaseTransformSnippetName,
+  transformSnippetName,
+  uppercaseMaybe,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -309,18 +310,24 @@ registerRoute('post', '/compile/page', (req, res) =>
  */
 registerRoute('post', '/custom-functions/run', async (req, res) => {
   const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
-  let { snippets } = params;
+  let { snippets, experimentationFlags } = params;
 
   snippets = snippets.filter(snippet => {
     const result = parseMetadata(snippet.script.content);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
-    const namespace = pascalCaseTransformSnippetName(snippet.name);
+    const namespace = uppercaseMaybe(
+      transformSnippetName(snippet.name),
+      experimentationFlags.customFunctionsAllUppercase
+    );
     snippet.metadata = {
       namespace,
       functions: result.map(func => ({
         ...func,
-        name: `${namespace}.${func.name}`,
+        name: uppercaseMaybe(
+          `${namespace}.${func.name}`,
+          experimentationFlags.customFunctionsAllUppercase
+        ),
       })),
     };
     return isGoodSnippet;
@@ -371,11 +378,14 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 });
 
 registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
-  console.log(req.body);
-  const { snippets } = req.body;
+  const params: ICustomFunctionsMetadataRequestPostData = JSON.parse(
+    req.body.data
+  );
+  let { snippets, experimentationFlags } = params;
 
   const { visual, functions } = getFunctionsAndMetadataForRegistration(
-    snippets
+    snippets,
+    experimentationFlags
   );
 
   const registerCustomFunctionsJsonStringBase64 = base64encode(

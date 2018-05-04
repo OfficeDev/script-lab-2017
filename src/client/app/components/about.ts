@@ -32,7 +32,7 @@ const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
                             <option *ngFor="let conf of configs" [value]="conf.value">{{conf.name}}</option>
                         </select>
                     </div>
-                    <div class="about__special-flags" style="display:none">
+                    <div class="about__special-flags">
                         <div>
                             <label class="ms-font-m">
                                 <input type="checkbox" [(ngModel)]="showExperimentationFlags" />
@@ -125,7 +125,6 @@ export class About implements AfterViewInit {
 
     async okClicked() {
         let needsWindowReload = false;
-
 
         this.experimentationFlags = this.experimentationFlags.trim();
         if (this.experimentationFlags.length === 0) {

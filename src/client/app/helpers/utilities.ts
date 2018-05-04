@@ -76,7 +76,7 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
     const platform = Office.context.platform;
     switch (platform) {
       case Office.PlatformType.PC || Office.PlatformType.OfficeOnline:
-        if (semver.lt(threeDotVersion, '16.0.9325')) {
+        if (semver.lt(threeDotVersion, '16.0.9323')) {
           return false;
         }
         break;
@@ -174,6 +174,10 @@ export function stringOrEmpty(text: string): string {
 
 export function isNullOrWhitespace(text: string) {
   return text == null || text.trim().length === 0;
+}
+
+export function uppercaseMaybe(text: string, makeAllUppercase: boolean) {
+  return makeAllUppercase ? text.toUpperCase() : text;
 }
 
 export function indentAll(text: string, indentSize: number) {

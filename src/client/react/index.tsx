@@ -7,10 +7,11 @@ import {
   storage,
   environment,
   getIsCustomFunctionsSupportedOnHost,
+  uppercaseMaybe,
+  isCustomFunctionScript,
 } from '../../client/app/helpers';
 import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
-import { isCustomFunctionScript } from '../../server/core/snippet.helper';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
@@ -110,9 +111,14 @@ async function getMetadata() {
         }
       };
 
+      const data: ICustomFunctionsMetadataRequestPostData = {
+        snippets: allSnippetsToRegisterWithPossibleDuplicate,
+        experimentationFlags: environment.current.experimentationFlags,
+      };
+
       xhr.send(
         JSON.stringify({
-          snippets: allSnippetsToRegisterWithPossibleDuplicate,
+          data: JSON.stringify(data),
         })
       );
     } catch (e) {
@@ -127,7 +133,10 @@ async function registerMetadata(
   const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
   await Excel.run(async context => {
     (context.workbook as any).registerCustomFunctions(
-      'ScriptLab',
+      uppercaseMaybe(
+        'ScriptLab',
+        environment.current.experimentationFlags.customFunctionsAllUppercase
+      ),
       registrationPayload
     );
     await context.sync();

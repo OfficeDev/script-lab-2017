@@ -6,10 +6,11 @@ import {
   ICFVisualFunctionMetadata,
   ICFVisualMetadata,
 } from './interfaces';
-import { pascalCaseTransformSnippetName } from '../core/snippet.helper';
+import { transformSnippetName, uppercaseMaybe } from '../core/snippet.helper';
 
 export function getFunctionsAndMetadataForRegistration(
-  snippets: ISnippet[]
+  snippets: ISnippet[],
+  experimentationFlags: ExperimentationFlags
 ): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[] } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
   let metadata: ICFFunctionMetadata[] = [];
@@ -20,6 +21,14 @@ export function getFunctionsAndMetadataForRegistration(
       let functions: ICFVisualFunctionMetadata[] = parseMetadata(
         snippet.script.content
       ) as ICFVisualFunctionMetadata[];
+      functions.forEach(
+        func =>
+          (func.name = uppercaseMaybe(
+            func.name,
+            experimentationFlags.customFunctionsAllUppercase
+          ))
+      );
+
       functions = convertFunctionErrorsToSpace(functions);
       if (functions.length === 0) {
         return;
@@ -27,7 +36,10 @@ export function getFunctionsAndMetadataForRegistration(
       const hasErrors = doesSnippetHaveErrors(functions);
 
       if (!hasErrors) {
-        const namespace = pascalCaseTransformSnippetName(snippet.name);
+        const namespace = uppercaseMaybe(
+          transformSnippetName(snippet.name),
+          experimentationFlags.customFunctionsAllUppercase
+        );
         const namespacedFunctions = functions.map(f => ({
           ...f,
           name: `${namespace}.${f.name}`,
@@ -70,7 +82,10 @@ export function getFunctionsAndMetadataForRegistration(
       // }
 
       visualMetadata.push({
-        name: pascalCaseTransformSnippetName(snippet.name),
+        name: uppercaseMaybe(
+          transformSnippetName(snippet.name),
+          experimentationFlags.customFunctionsAllUppercase
+        ),
         error: hasErrors,
         status,
         functions,

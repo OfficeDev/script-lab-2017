@@ -149,7 +149,9 @@ const safeExternalUrls = {
     'https://dev.office.com/reference/add-ins/javascript-api-for-office',
 };
 
-const experimentationFlagsDefaults = {};
+const experimentationFlagsDefaults = {
+  customFunctionsAllUppercase: false,
+};
 
 class RedirectPlugin {
   apply(compiler) {

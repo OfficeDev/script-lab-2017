@@ -122,15 +122,16 @@ interface ICustomFunctionsRunnerRelevantData {
   metadata: ICustomFunctionsSnippetRegistrationData;
 }
 
-interface IRegisterCustomFunctionsPostData {
+interface ICustomFunctionsMetadataRequestPostData {
   snippets: ISnippet[];
-  displayLanguage: string;
+  experimentationFlags: ExperimentationFlags;
 }
 
 interface IRunnerCustomFunctionsPostData {
   snippets: ICustomFunctionsRunnerRelevantData[];
   displayLanguage: string;
   heartbeatParams: ICustomFunctionsHeartbeatParams;
+  experimentationFlags: ExperimentationFlags;
 }
 
 interface IExportState {
@@ -235,7 +236,12 @@ interface ICompiledPlaygroundInfo {
     project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument';
     generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office';
   };
-  experimentationFlagsDefaults: {};
+  experimentationFlagsDefaults: ExperimentationFlags;
+}
+
+// Note: actual defaults need to be set in "env.config.js"
+interface ExperimentationFlags {
+  customFunctionsAllUppercase: boolean;
 }
 
 interface ICurrentPlaygroundInfo {
@@ -253,6 +259,8 @@ interface ICurrentPlaygroundInfo {
   isAddinCommands: boolean;
   isTryIt: boolean;
   wacUrl: string;
+
+  experimentationFlags: ExperimentationFlags;
 }
 
 interface IBuildInfo {
