@@ -69,7 +69,7 @@ const Summary = ({ metadata }) => {
           <a href="https://aka.ms/customfunctions">these instructions</a>.
         </p>
       </TopInfo>
-      <FunctionsContainer>
+      <FunctionsContainer style={{ marginTop: '20px' }}>
         <List items={[...items.success, ...items.error, ...items.skipped]} />
       </FunctionsContainer>
     </PivotContentContainer>

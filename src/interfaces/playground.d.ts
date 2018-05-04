@@ -317,10 +317,7 @@ interface DefaultAuthRequestParamData {
 }
 
 interface LogData {
-  timestamp: number;
-  source: 'system' | 'user';
-  type: string;
-  subtype: string;
+  source: string;
   message: any;
   severity: 'info' | 'warn' | 'error';
 }
