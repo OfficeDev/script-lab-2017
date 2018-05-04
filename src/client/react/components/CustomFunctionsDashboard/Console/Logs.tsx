@@ -52,13 +52,13 @@ const ClearButton = styled.button`
   }
 `;
 
-function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
+function getLogPropsBySeverity(severity: 'info' | 'warn' | 'error') {
   let background;
   let color = 'black';
   let icon = null;
 
   switch (severity) {
-    case 'log':
+    case 'info':
       background = 'white';
       break;
     case 'warn':
@@ -78,7 +78,8 @@ function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
 
 export interface ILog {
   message: string;
-  severity: 'log' | 'warn' | 'error';
+  severity: 'info' | 'warn' | 'error';
+  source: string;
 }
 
 interface Props {
@@ -131,6 +132,7 @@ export default class Logs extends React.Component<Props, State> {
 
     const items: Item[] = logs.map((log, i) => ({
       name: log.message,
+      title: log.source,
       key: i,
       ...getLogPropsBySeverity(log.severity),
     }));
