@@ -23,16 +23,7 @@ import '../assets/styles/extras.scss';
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
-  environment.initializePartial({ host: 'EXCEL' });
-
-  await new Promise(resolve => {
-    const interval = setInterval(() => {
-      if ((window as any).playground_host_ready) {
-        clearInterval(interval);
-        return resolve();
-      }
-    }, 100);
-  });
+  await environment.initialize();
 
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();

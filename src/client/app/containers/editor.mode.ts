@@ -186,18 +186,6 @@ export class EditorMode {
         }
       }
 
-      if (this.isCustomFunctionsSnippet) {
-        this._store.dispatch(
-          new UI.ShowAlertAction({
-            actions: [this.strings.ok],
-            title: 'This is a Custom Functions snippet.',
-            message:
-              'To register your Functions, please click the Functions button in the ribbon.',
-          })
-        );
-        return;
-      }
-
       if (!canRun) {
         this._store.dispatch(
           new UI.ShowAlertAction({

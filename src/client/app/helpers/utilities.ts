@@ -91,6 +91,10 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
 
     return true;
   } catch (e) {
+    console.error(
+      'Could not perform a "getIsCustomFunctionsSupportedOnHost" check'
+    );
+    console.error(e);
     return false;
   }
 }
