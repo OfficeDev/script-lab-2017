@@ -1,6 +1,12 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import {
+  getNumberFromLocalStorage,
+  ensureFreshLocalStorage,
+  storage,
+  isCustomFunctionScript,
+} from '../../../app/helpers';
 
 const { localStorageKeys } = PLAYGROUND;
 
@@ -32,24 +38,30 @@ export default class Welcome extends React.Component<{}, State> {
     super(props);
 
     const lastTimestamp =
-      Number(
-        window.localStorage.getItem(
-          localStorageKeys.customFunctionsLastEditorUpdateTimestamp
-        )
-      ) || Date.now();
+      getNumberFromLocalStorage(localStorageKeys.editorLastChangedTimestamp) ||
+      Date.now();
 
     this.state = { lastTimestamp, refreshDisabled: true };
   }
 
   enableRefreshIfReady() {
     const newTimestamp =
-      Number(
-        window.localStorage.getItem(
-          localStorageKeys.customFunctionsLastEditorUpdateTimestamp
-        )
-      ) || 0;
+      getNumberFromLocalStorage(localStorageKeys.editorLastChangedTimestamp) ||
+      0;
     if (newTimestamp > this.state.lastTimestamp) {
-      this.setState({ refreshDisabled: false });
+      ensureFreshLocalStorage();
+      storage.settings.load();
+      const hasLastOpened = storage.current && storage.current.lastOpened;
+      if (hasLastOpened) {
+        const isCF = isCustomFunctionScript(
+          storage.current.lastOpened.script.content
+        );
+        if (isCF) {
+          this.setState({ refreshDisabled: false });
+          clearInterval(this.interval);
+          this.interval = null;
+        }
+      }
     }
   }
 
@@ -60,7 +72,9 @@ export default class Welcome extends React.Component<{}, State> {
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   render() {
@@ -106,7 +120,7 @@ export default class Welcome extends React.Component<{}, State> {
                 <CodeBlock className="ms-font-xs">
                   <pre>/** @CustomFunction */</pre>
                   <pre>function add(a: number, b: number): number {'{'}</pre>
-                  <pre>    return a + b;</pre>
+                  <pre> return a + b;</pre>
                   <pre>{'}'}</pre>
                 </CodeBlock>
               </ListItem>

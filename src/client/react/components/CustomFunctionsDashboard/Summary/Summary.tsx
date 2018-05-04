@@ -10,7 +10,8 @@ const TopInfo = styled.div`
 
 const FunctionsContainer = styled.div`
   height: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   flex-shrink: 2;
   border-top: 1px solid #f4f4f4;
 `;
@@ -30,11 +31,13 @@ const Summary = ({ metadata }) => {
           items.error.push({
             ...item,
             icon: { name: 'ErrorBadge', color: '#f04251' },
+            title: 'See Details tab for more information.',
           });
         } else {
           items.skipped.push({
             ...item,
             icon: { name: 'Unknown', color: '#ffd333' },
+            title: 'See Details tab for more information.',
           });
         }
       } else {
@@ -60,11 +63,14 @@ const Summary = ({ metadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were found in your workspace
+          The following custom functions were found in your workspace. These
+          functions run async in Script Lab. You can run them faster in sync
+          mode with{' '}
+          <a href="https://aka.ms/customfunctions">these instructions</a>.
         </p>
       </TopInfo>
-      <FunctionsContainer>
-        <List items={items.success.concat(items.error).concat(items.skipped)} />
+      <FunctionsContainer style={{ marginTop: '20px' }}>
+        <List items={[...items.success, ...items.error, ...items.skipped]} />
       </FunctionsContainer>
     </PivotContentContainer>
   );

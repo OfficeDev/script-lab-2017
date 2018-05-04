@@ -41,39 +41,60 @@ try {
             exit('No deployment configuration found for ' + slot + '. Skipping deploy.');
     }
     var EDITOR_SITE_URL_1 = 'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
-    var EDITOR_UsernamePassword_URL = 'https://'
-        + AZURE_WA_USERNAME + ':'
-        + AZURE_WA_PASSWORD + '@'
-        + AZURE_WA_SITE
-        + '-' + slot
-        + '.scm.azurewebsites.net:443/'
-        + AZURE_WA_SITE + '.git';
-    var RUNNER_UsernamePassword_URL = 'https://'
-        + AZURE_WA_USERNAME + ':'
-        + AZURE_WA_PASSWORD + '@'
-        + AZURE_WA_SITE + '-runner'
-        + '-' + slot
-        + '.scm.azurewebsites.net:443/'
-        + AZURE_WA_SITE + '-runner.git';
+    var EDITOR_UsernamePassword_URL = 'https://' +
+        AZURE_WA_USERNAME +
+        ':' +
+        AZURE_WA_PASSWORD +
+        '@' +
+        AZURE_WA_SITE +
+        '-' +
+        slot +
+        '.scm.azurewebsites.net:443/' +
+        AZURE_WA_SITE +
+        '.git';
+    var RUNNER_UsernamePassword_URL = 'https://' +
+        AZURE_WA_USERNAME +
+        ':' +
+        AZURE_WA_PASSWORD +
+        '@' +
+        AZURE_WA_SITE +
+        '-runner' +
+        '-' +
+        slot +
+        '.scm.azurewebsites.net:443/' +
+        AZURE_WA_SITE +
+        '-runner.git';
     // For production, changes are first deployed to staging environment which gets manually swapped into real production.
     // However, sometimes builds can also be rolled back!  To avoid issues with caching (and some files going missing)
     // we always want to copy existing bundle resources from both locations
     var additionalResourcesCopyFromUrl = void 0;
     if (slot === 'staging') {
         additionalResourcesCopyFromUrl = {
-            friendlyName: "Production site directly (not the slot)",
-            urlWithUsernameAndPassword: 'https://'
-                + AZURE_WA_USERNAME + ':'
-                + AZURE_WA_PASSWORD + '@'
-                + AZURE_WA_SITE
-                + '.scm.azurewebsites.net:443/'
-                + AZURE_WA_SITE + '.git'
+            friendlyName: 'Production site directly (not the slot)',
+            urlWithUsernameAndPassword: 'https://' +
+                AZURE_WA_USERNAME +
+                ':' +
+                AZURE_WA_PASSWORD +
+                '@' +
+                AZURE_WA_SITE +
+                '.scm.azurewebsites.net:443/' +
+                AZURE_WA_SITE +
+                '.git'
         };
     }
-    log('Deploying commit: "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '" to ' + AZURE_WA_SITE + '-' + slot + '...');
+    log('Deploying commit: "' +
+        TRAVIS_COMMIT_MESSAGE_SANITIZED +
+        '" to ' +
+        AZURE_WA_SITE +
+        '-' +
+        slot +
+        '...');
     deployBuild(EDITOR_UsernamePassword_URL, 'dist/client', [
-        { friendlyName: EDITOR_SITE_URL_1, urlWithUsernameAndPassword: EDITOR_UsernamePassword_URL },
-        additionalResourcesCopyFromUrl
+        {
+            friendlyName: EDITOR_SITE_URL_1,
+            urlWithUsernameAndPassword: EDITOR_UsernamePassword_URL
+        },
+        additionalResourcesCopyFromUrl,
     ]);
     deployBuild(RUNNER_UsernamePassword_URL, 'dist/server', null);
     function precheck() {
@@ -102,18 +123,16 @@ try {
             var start = Date.now();
             if (copyDeployedResourcesUrls) {
                 var historyPath = path.resolve(next_path_1, 'history.json');
-                console.log('History before:');
-                printHistoryDetailsIfAvailable(historyPath);
+                printHistoryDetailsIfAvailable('History before:', historyPath);
                 console.log('\n\n' + 'Now will copy the existing resources...' + '\n\n');
                 copyDeployedResourcesUrls
                     .filter(function (item) { return !_.isNil(item); })
                     .forEach(function (copyInfo) { return buildAssetAndLibHistory(copyInfo, next_path_1); });
-                console.log('The appended history is now:');
-                printHistoryDetailsIfAvailable(historyPath);
+                printHistoryDetailsIfAvailable('The appended history is now:', historyPath);
                 console.log('\n\n\n\n');
                 var appendedHistory = JSON.parse(fs.readFileSync(historyPath).toString());
                 var newHistory = {};
-                var now = (new Date().getTime()) / 1000;
+                var now = new Date().getTime() / 1000;
                 for (var key in appendedHistory) {
                     var age = (now - appendedHistory[key].time) / 24 / 60 / 60;
                     if (age < DAYS_TO_KEEP_HISTORY) {
@@ -121,8 +140,7 @@ try {
                     }
                 }
                 fs.writeFileSync(historyPath, JSON.stringify(newHistory));
-                console.log('Trimming out old entries, we get:');
-                printHistoryDetailsIfAvailable(historyPath);
+                printHistoryDetailsIfAvailable('Trimming out old entries, we get:', historyPath);
                 console.log('\n\n\n\n');
             }
             shell.exec('git init');
@@ -139,9 +157,15 @@ try {
                 exit('An error occurred while committing files...', true);
             }
             log('Pushing ' + folder + ' to ' + EDITOR_SITE_URL_1 + '... Please wait...');
-            result = shell.exec('git push ' + urlWithUsernameAndPassword + ' -q -f -u HEAD:refs/heads/master', { silent: true });
+            result = shell.exec('git push ' +
+                urlWithUsernameAndPassword +
+                ' -q -f -u HEAD:refs/heads/master', { silent: true });
             if (result.code !== 0) {
-                exit('An error occurred while deploying ' + folder + ' to ' + EDITOR_SITE_URL_1 + '...', true);
+                exit('An error occurred while deploying ' +
+                    folder +
+                    ' to ' +
+                    EDITOR_SITE_URL_1 +
+                    '...', true);
             }
             var end = Date.now();
             log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
@@ -171,7 +195,7 @@ try {
             }
         }
         // Note: dividing by 1000 to go from JS dates to UNIX epoch dates
-        var now = (new Date().getTime()) / 1000;
+        var now = new Date().getTime() / 1000;
         var oldHistoryPath = path.resolve(folder, 'existing_build/history.json');
         var newHistoryPath = path.resolve(folder, 'history.json');
         var oldAssetsPath = path.resolve(folder, 'existing_build/bundles');
@@ -183,8 +207,7 @@ try {
         }
         if (fs.existsSync(oldHistoryPath)) {
             // Parse old history file if it exists
-            log('History of existing build:');
-            printHistoryDetailsIfAvailable(oldHistoryPath);
+            printHistoryDetailsIfAvailable('History of existing build:', oldHistoryPath);
             log('\n\n');
             var oldHistory = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
             for (var key in oldHistory) {
@@ -195,7 +218,7 @@ try {
         var newAssets = fs.readdirSync(newAssetsPath);
         for (var _b = 0, newAssets_1 = newAssets; _b < newAssets_1.length; _b++) {
             var asset = newAssets_1[_b];
-            if (!(/chunk.js/i.test(asset))) {
+            if (!/chunk.js/i.test(asset)) {
                 history[asset] = { time: now };
             }
         }
@@ -204,14 +227,21 @@ try {
             var asset = existingAssets_1[_c];
             var assetPath = path.resolve(newAssetsPath, asset);
             // Check if old assets don't name-conflict and are still young enough to keep
-            if (history[asset] && !fs.existsSync(assetPath) && (now - history[asset].time < (60 * 60 * 24 * DAYS_TO_KEEP_HISTORY))) {
+            if (history[asset] &&
+                !fs.existsSync(assetPath) &&
+                now - history[asset].time < 60 * 60 * 24 * DAYS_TO_KEEP_HISTORY) {
                 fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
             }
         }
         fs.writeFileSync(newHistoryPath, JSON.stringify(history));
         shell.rm('-rf', 'existing_build');
     }
-    function printHistoryDetailsIfAvailable(filename) {
+    function printHistoryDetailsIfAvailable(prefix, filename) {
+        if (TRAVIS_BRANCH === 'master') {
+            // Master has too many files and changes too often.  Skip the noise.
+            return;
+        }
+        log(prefix);
         if (!fs.existsSync(filename)) {
             log("    Cannot print history, file \"" + filename + "\" doesn't exist.");
             return;
@@ -232,7 +262,7 @@ try {
             }
             var time = logData[key].time;
             // Note: dividing by 1000 to go from JS dates to UNIX epoch dates
-            var now = (new Date().getTime()) / 1000;
+            var now = new Date().getTime() / 1000;
             var age = Math.round((now - time) / 24 / 60 / 60 * 100) / 100;
             correspondingGroup[key] = { key: nohash, filename: key, time: time, age: age };
         }
@@ -258,7 +288,7 @@ try {
         function compareStrings(a, b) {
             a = a.toLowerCase();
             b = b.toLowerCase();
-            return (a < b) ? -1 : (a > b) ? 1 : 0;
+            return a < b ? -1 : a > b ? 1 : 0;
         }
     }
 }
@@ -273,7 +303,9 @@ function log(message, color) {
 }
 function exit(reason, abort) {
     if (reason) {
-        abort ? console.log(chalk.bold.red(reason)) : console.log(chalk.bold.yellow(reason));
+        abort
+            ? console.log(chalk.bold.red(reason))
+            : console.log(chalk.bold.yellow(reason));
     }
     return abort ? process.exit(1) : process.exit(0);
 }

@@ -210,15 +210,15 @@ interface ICompiledPlaygroundInfo {
     /** The last time that a custom function was asked to be registered/updated (from the dashboard) */
     customFunctionsLastUpdatedCodeTimestamp: string;
 
-    /** The last time that a custom function snippet was edited in the editor (to tell the dashboard)*/
-    customFunctionsLastEditorUpdateTimestamp: string;
-
     /** The last timestamp that succeeded in registering (on runner side) and that
      * the custom functions heartbeat was aware of */
     customFunctionsCurrentlyRunningTimestamp: string;
 
     /** Last time that perf numbers were generated (so that the editor can know to possible refresh) */
     lastPerfNumbersTimestamp: string;
+
+    /** A timestamp to let someone (E.g., Custom Functions dashboard) know that the snippet contents or the currently-edited snippet has changed */
+    editorLastChangedTimestamp: string;
   };
   sessionStorageKeys: {
     environmentCache: string;
@@ -317,10 +317,7 @@ interface DefaultAuthRequestParamData {
 }
 
 interface LogData {
-  timestamp: number;
-  source: 'system' | 'user';
-  type: string;
-  subtype: string;
+  source: string;
   message: any;
   severity: 'info' | 'warn' | 'error';
 }

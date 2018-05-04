@@ -31,6 +31,7 @@ import {
   getShareableYaml,
   isMakerScript,
   isCustomFunctionScript,
+  pascalCaseTransformSnippetName,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -314,7 +315,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     const result = parseMetadata(snippet.script.content);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
-    const namespace = snippet.name.replace(/[^0-9A-Za-z_]/g, '');
+    const namespace = pascalCaseTransformSnippetName(snippet.name);
     snippet.metadata = {
       namespace,
       functions: result.map(func => ({
@@ -875,7 +876,11 @@ async function generateSnippetHtmlData(
   let style = (compileData.style || { content: '' }).content;
 
   if (isCustomFunctionScript(compileData.scriptToCompile.content)) {
+    // QUICK WORKAROUND: this hardcoded string is special, do not remove it!  It will
+    // force the runner to redirect to the Custom Functions dashboard.
+    // It is used inside of "runner.ts"
     const CFRunnerHeader = 'This snippet is a Custom Functions snippet.';
+
     const CFRunnerBody =
       'Please open the Custom Function dashboard via the "Functions" button in the ribbon.';
     const CFTemplate = `<h1>${CFRunnerHeader}</h1><p>${CFRunnerBody}</p>`;
