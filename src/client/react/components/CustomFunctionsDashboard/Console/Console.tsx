@@ -1,71 +1,49 @@
-import * as React from "react";
-import * as moment from "moment";
-import styled from "styled-components";
-import PivotContentContainer from "../PivotContentContainer";
-import List from "../List";
-import { Checkbox } from "office-ui-fabric-react/lib/Checkbox";
-import { Icon } from "office-ui-fabric-react/lib/Icon";
+import * as React from 'react';
+import * as moment from 'moment';
+import styled from 'styled-components';
+import PivotContentContainer from '../PivotContentContainer';
+import Logs from './Logs';
+
 import {
   getElapsedTime,
   getNumberFromLocalStorage,
-  setUpMomentJsDurationDefaults
-} from "../../../../app/helpers";
-import { getDisplayLanguage } from "../../../../app/strings";
+  setUpMomentJsDurationDefaults,
+} from '../../../../app/helpers';
+import { getDisplayLanguage } from '../../../../app/strings';
 const { localStorageKeys } = PLAYGROUND;
 
-const FilterWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  height: 48px;
-  background: #f4f4f4;
-  box-sizing: border-box;
-`;
-
-const CheckboxWrapper = styled.div`
-  height: 38px;
-  background: #f4f4f4;
-  box-sizing: border-box;
-  padding: 9px;
-`;
-
-const LogsWrapper = styled.div`
-  height: 100%;
-  overflow: auto;
-  flex-shrink: 2;
-`;
-
-const ClearButton = styled.button`
-  width: 20px;
-  height: 20px;
-  background: none;
-  border: 0px;
+const NoLogsPlaceholder = styled.div`
+  flex: 1;
   position: relative;
-  margin-right: 13px;
-  margin-left: 5px;
-
-  &:hover {
-    color: #b22222;
-    cursor: pointer;
-  }
-
-  &:active {
-    color: red;
-  }
-
-  &:focus {
-    outline: none;
-  }
 `;
 
-export interface Props {}
+const RunnerLastUpdatedWrapper = styled.div`
+  padding: 8px 12px;
+  height: 16px;
+  line-height: 16px;
+  background: #f4f4f4;
+  overflow: hidden;
+  overflow-wrap: normal;
+`;
 
-export interface State {
-  filterQuery: string;
-  shouldScrollToBottom: boolean;
-  logs: string[];
-  runnerLastUpdatedText?: string;
-  runnerIsAlive?: boolean;
+const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
+  <>
+    {isAlive ? (
+      <RunnerLastUpdatedWrapper className="ms-font-m">
+        Runner last updated {lastUpdated}
+      </RunnerLastUpdatedWrapper>
+    ) : (
+      <div />
+    )}
+  </>
+);
+
+interface Props {}
+
+interface State {
+  logs: any[];
+  runnerLastUpdatedText: string;
+  runnerIsAlive: boolean;
 }
 
 export default class Console extends React.Component<Props, State> {
@@ -74,10 +52,10 @@ export default class Console extends React.Component<Props, State> {
     super(props);
 
     setUpMomentJsDurationDefaults(moment);
-    this.state = { filterQuery: "", shouldScrollToBottom: true, logs: [] };
+    this.state = { logs: [], runnerIsAlive: false, runnerLastUpdatedText: '' };
   }
 
-  getLogs() {
+  getLogs = () => {
     const runnerIsAlive =
       getElapsedTime(
         getNumberFromLocalStorage(
@@ -85,12 +63,10 @@ export default class Console extends React.Component<Props, State> {
         )
       ) < 3000;
 
-    this.setState({
-      runnerIsAlive
-    });
+    let runnerLastUpdatedText = null;
 
     if (runnerIsAlive) {
-      const runnerLastUpdatedText = moment(
+      runnerLastUpdatedText = moment(
         new Date(
           getNumberFromLocalStorage(
             localStorageKeys.customFunctionsCurrentlyRunningTimestamp
@@ -99,124 +75,68 @@ export default class Console extends React.Component<Props, State> {
       )
         .locale(getDisplayLanguage())
         .fromNow();
-      this.setState({ runnerLastUpdatedText });
-    } else {
-      this.setState({ runnerLastUpdatedText: null });
     }
-
-    const storageLogs = window.localStorage.getItem(localStorageKeys.log) || "";
+    const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
     const logs = storageLogs
-      .split("\n")
-      .filter(line => line !== "")
-      .filter(line => !line.includes("Agave.HostCall"))
+      .split('\n')
+      .filter(line => line !== '')
+      .filter(line => !line.includes('Agave.HostCall'))
       .map(entry => JSON.parse(entry))
-      .map(log => {
-        return log.message;
-      });
+      .map(log => ({
+        message: log.message as string,
+        severity: log.severity as 'log' | 'warn' | 'error',
+      }));
 
-    if (logs.length !== this.state.logs.length) {
-      this.scrollToBottom();
-      this.setState({ logs });
-    }
-  }
+    this.setState({
+      logs: [...this.state.logs, ...logs],
+      runnerLastUpdatedText,
+      runnerIsAlive,
+    });
+
+    window.localStorage.removeItem(localStorageKeys.log);
+    // tslint:disable-next-line:semicolon
+  };
+
+  clearLogs = () => this.setState({ logs: [] });
 
   componentDidMount() {
-    this.scrollToBottom();
-
-    this.interval = setInterval(() => this.getLogs(), 250);
+    this.interval = setInterval(this.getLogs, 300);
   }
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom() {
-    if (this.state.shouldScrollToBottom) {
-      (this.refs.lastLog as any).scrollIntoView();
-    }
-  }
-
-  updateFilterQuery = () =>
-    this.setState({
-      filterQuery: (this.refs.filterTextInput as any).value.toLowerCase()
-      // tslint:disable-next-line:semicolon
-    });
-
-  clearLogs = () => {
-    window.localStorage.removeItem(localStorageKeys.log);
-    this.setState({ logs: [] });
-    // tslint:disable-next-line:semicolon
-  };
-
-  setShouldScrollToBottom = (
-    ev: React.FormEvent<HTMLElement>,
-    checked: boolean
-  ) =>
-    this.setState({
-      shouldScrollToBottom: checked
-      // tslint:disable-next-line:semicolon
-    });
-
   render() {
-    const items = this.state.logs
-      .filter(log => log.toLowerCase().includes(this.state.filterQuery))
-      .map((log, i) => ({ name: log, key: i }));
-
-    const runnerLastUpdatedStyle = {
-      padding: "8px 12px",
-      display: this.state.runnerLastUpdatedText ? "block" : "none",
-      color: this.state.runnerIsAlive ? "darkgreen" : "darkred"
-    };
     return (
       <PivotContentContainer>
-        <div style={runnerLastUpdatedStyle}>
-          Runner last updated {this.state.runnerLastUpdatedText}
-        </div>
-        <FilterWrapper>
-          <ClearButton onClick={this.clearLogs}>
-            <Icon
+        <RunnerLastUpdated
+          isAlive={this.state.runnerIsAlive}
+          lastUpdated={this.state.runnerLastUpdatedText}
+        />
+        {this.state.logs.length > 0 ? (
+          <Logs logs={this.state.logs} clearLogs={this.clearLogs} />
+        ) : (
+          <NoLogsPlaceholder>
+            <p
               style={{
-                position: "absolute",
-                top: "0px",
-                bottom: "0px",
-                left: "0px",
-                right: "0px",
-                width: "20px",
-                height: "20px",
-                lineHeight: "20px"
+                position: 'absolute',
+                top: '0',
+                bottom: '0',
+                left: '0',
+                right: '0',
+                margin: 'auto',
+                color: '#333',
+                textAlign: 'center',
+                height: '60px',
+                padding: '20px',
               }}
-              iconName="Clear"
-            />
-          </ClearButton>
-          <input
-            className="ms-font-m"
-            type="text"
-            placeholder="Filter"
-            onChange={this.updateFilterQuery}
-            ref="filterTextInput"
-            style={{
-              width: "100%",
-              height: "32px",
-              padding: "6px",
-              boxSizing: "border-box"
-            }}
-          />
-        </FilterWrapper>
-        <LogsWrapper>
-          <List items={items} />
-          <div ref="lastLog" />
-        </LogsWrapper>
-        <CheckboxWrapper>
-          <Checkbox
-            label="Auto-scroll"
-            defaultChecked={true}
-            onChange={this.setShouldScrollToBottom}
-          />
-        </CheckboxWrapper>
+            >
+              There are no logs to display. Use <strong>console.log()</strong>{' '}
+              inside your functions to display logs here.
+            </p>
+          </NoLogsPlaceholder>
+        )}
       </PivotContentContainer>
     );
   }

@@ -49,9 +49,7 @@ const PivotClassName = mergeStyles({
 });
 
 // interfaces
-interface ICustomFunctionsDashboardState {
-  logs: any[];
-}
+interface ICustomFunctionsDashboardState {}
 
 interface ICustomFunctionsDashboardProps {
   placeholder?: any;
@@ -62,17 +60,6 @@ class CustomFunctionsDashboard extends React.Component<
   ICustomFunctionsDashboardProps,
   ICustomFunctionsDashboardState
 > {
-  constructor(props) {
-    super(props);
-    this.state = { logs: [] };
-
-    setInterval(() => {
-      const l = this.state.logs;
-      l.push(new Date().toISOString());
-      this.setState({ logs: l });
-    }, 100);
-  }
-
   render() {
     const { metadata } = this.props;
 
