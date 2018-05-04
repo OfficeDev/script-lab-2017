@@ -31,11 +31,13 @@ const Summary = ({ metadata }) => {
           items.error.push({
             ...item,
             icon: { name: 'ErrorBadge', color: '#f04251' },
+            title: 'See Details tab for more information.',
           });
         } else {
           items.skipped.push({
             ...item,
             icon: { name: 'Unknown', color: '#ffd333' },
+            title: 'See Details tab for more information.',
           });
         }
       } else {

@@ -41,6 +41,7 @@ export interface Item {
   };
   background?: string;
   color?: string;
+  title?: string;
 }
 
 export default ({ items }) => (
@@ -51,6 +52,7 @@ export default ({ items }) => (
         className="ms-font-s"
         backgroundColor={item.background}
         color={item.color}
+        title={item.title}
       >
         {item.icon && (
           <Icon
