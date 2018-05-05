@@ -91,9 +91,6 @@ async function initializeRunnableSnippets(params: InitializationParams) {
           return iframeWindow[funcName].apply(null, arguments);
         };
 
-        // For older c++ versions that do not support namespace:
-        window[funcName] = window[snippetMetadata.namespace][funcName];
-
         // Overwrite console.log on every snippet iframe
         iframeWindow['console']['log'] = consoleMsgTypeImplementation('info');
         iframeWindow['console']['warn'] = consoleMsgTypeImplementation('warn');

@@ -151,6 +151,7 @@ const safeExternalUrls = {
 
 const experimentationFlagsDefaults = {
   customFunctionsAllUppercase: false,
+  forceCustomFunctionsOn: false,
 };
 
 class RedirectPlugin {

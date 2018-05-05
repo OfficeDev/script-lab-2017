@@ -241,6 +241,7 @@ interface ICompiledPlaygroundInfo {
 
 // Note: actual defaults need to be set in "env.config.js"
 interface ExperimentationFlags {
+  forceCustomFunctionsOn: boolean;
   customFunctionsAllUppercase: boolean;
 }
 

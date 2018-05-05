@@ -85,6 +85,7 @@ export default class Console extends React.Component<Props, State> {
       .map(log => ({
         message: log.message as string,
         severity: log.severity as 'log' | 'warn' | 'error',
+        source: log.source,
       }));
 
     this.setState({

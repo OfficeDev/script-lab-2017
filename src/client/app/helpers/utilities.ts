@@ -2,6 +2,7 @@ import { Dictionary } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
 import { isString, isArray, toNumber } from 'lodash';
 import * as semver from 'semver';
+import { environment } from '.';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = [
@@ -44,51 +45,72 @@ export function isInsideOfficeApp() {
 
 export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
   try {
-    if (!Office.context.requirements.isSetSupported('CustomFunctions')) {
-      return false;
+    if (environment.current.experimentationFlags.forceCustomFunctionsOn) {
+      return true;
     }
+    const platform = Office.context.platform;
 
-    // Additionally, we need some flights
-    let allFlightsOn = await Excel.run(async context => {
-      let features = [
-        'Microsoft.Office.Excel.AddinDefinedFunctionEnabled',
-        'Microsoft.Office.Excel.AddinDefinedFunctionStreamingEnabled',
-        'Microsoft.Office.Excel.AddinDefinedFunctionCachingEnabled',
-        'Microsoft.Office.Excel.AddinDefinedFunctionUseCalcThreadEnabled',
-        'Microsoft.Office.OEP.UdfManifest',
-        'Microsoft.Office.OEP.UdfRuntime',
-      ].map(name =>
-        (context as any).flighting.getFeatureGate(name).load('value')
-      );
-      await context.sync();
-      const firstNonTrueIndex = features.findIndex(item => item.value !== true);
-      const allWereTrue = firstNonTrueIndex < 0;
-      return allWereTrue;
-    });
-
-    if (!allFlightsOn) {
+    // For now, only supporting on PC
+    // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.
+    // On Mac, a number of issues:
+    //   - No way to detect flights, to know if the feature is on.  Also, calling "registerCustomFunctions" when flighted off is successful, so can't key off of a failure.
+    //   - Heartbeat doesn't work due to Mac iframe + localStorage (not really fixable)
+    //   - Other minor things (E.g., copy-paste of starter snippet didn't work for some reason; maybe a general clipboard issue?...)
+    if (platform !== Office.PlatformType.PC) {
       return false;
     }
 
     const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(
       Office.context.diagnostics.version
     )[1];
-    const platform = Office.context.platform;
-    switch (platform) {
-      case Office.PlatformType.PC || Office.PlatformType.OfficeOnline:
-        if (semver.lt(threeDotVersion, '16.0.9323')) {
-          return false;
-        }
-        break;
-      case Office.PlatformType.Mac:
-        if (semver.lt(threeDotVersion, '16.14.429')) {
-          return false;
-        }
-        break;
-      default:
-        return false;
+
+    if (semver.lt(threeDotVersion, '16.0.9323')) {
+      // note 16.0.9323 is the version number for windows
+      // for mac, it is 16.14.429, but
+      return false;
     }
 
+    while (true) {
+      try {
+        // Additionally, we need some flights
+        let allFlightsOn = await Excel.run(async context => {
+          let features = [
+            'Microsoft.Office.Excel.AddinDefinedFunctionEnabled',
+            'Microsoft.Office.Excel.AddinDefinedFunctionStreamingEnabled',
+            'Microsoft.Office.Excel.AddinDefinedFunctionCachingEnabled',
+            'Microsoft.Office.Excel.AddinDefinedFunctionUseCalcThreadEnabled',
+            'Microsoft.Office.OEP.UdfManifest',
+            'Microsoft.Office.OEP.UdfRuntime',
+          ].map(name =>
+            (context as any).flighting.getFeatureGate(name).load('value')
+          );
+          await context.sync();
+          const firstNonTrueIndex = features.findIndex(
+            item => item.value !== true
+          );
+          const allWereTrue = firstNonTrueIndex < 0;
+          return allWereTrue;
+        });
+
+        if (allFlightsOn) {
+          break;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        const isInCellEditMode =
+          e instanceof OfficeExtension.Error &&
+          e.code === Excel.ErrorCodes.invalidOperationInCellEditMode;
+        if (isInCellEditMode) {
+          await pause(2000);
+          continue;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    // If all checks passed:
     return true;
   } catch (e) {
     console.error(
@@ -393,4 +415,8 @@ export function stringifyPlusPlus(object) {
       }
     }
   }
+}
+
+export function pause(ms: number) {
+  return new Promise(r => setTimeout(r, ms));
 }
