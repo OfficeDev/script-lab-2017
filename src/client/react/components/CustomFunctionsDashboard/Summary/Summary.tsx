@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import PivotContentContainer from '../PivotContentContainer';
-import List from '../List';
+import List, { Item } from '../List';
 import { environment, uppercaseMaybe } from '../../../../app/helpers';
 
 const TopInfo = styled.div`
@@ -18,7 +18,11 @@ const FunctionsContainer = styled.div`
 `;
 
 const Summary = ({ metadata }) => {
-  let items = { success: [], skipped: [], error: [] };
+  let items: { success: Item[]; skipped: Item[]; error: Item[] } = {
+    success: [],
+    skipped: [],
+    error: [],
+  };
   metadata.forEach(snippet => {
     snippet.functions.forEach(func => {
       const scriptLabToplevelNamespace = uppercaseMaybe(
@@ -29,7 +33,7 @@ const Summary = ({ metadata }) => {
         func.name
       }(${func.parameters.length > 0 ? '…' : ''})`;
 
-      const item = { name, key: name };
+      const item: Item = { name, key: name, smallCaps: true };
 
       if (snippet.error) {
         if (func.error) {

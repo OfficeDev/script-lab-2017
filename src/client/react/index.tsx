@@ -23,7 +23,19 @@ import '../assets/styles/extras.scss';
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
-  await environment.initialize();
+  environment.initializePartial({ host: 'EXCEL' });
+
+  // Now wait for the host.  The advantage of doing it this way is that you can easily
+  // bypass it for debugging, just by entering "window.playground_host_ready = true;"
+  // in the F12 debug console
+  await new Promise(resolve => {
+    const interval = setInterval(() => {
+      if ((window as any).playground_host_ready) {
+        clearInterval(interval);
+        return resolve();
+      }
+    }, 100);
+  });
 
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
@@ -33,7 +45,12 @@ tryCatch(async () => {
       registerCustomFunctionsJsonStringBase64,
     } = await getMetadata();
 
-    await registerMetadata(registerCustomFunctionsJsonStringBase64);
+    // To allow debugging in a plain web browser, only try to register if the
+    // Excel namespace exists.  It always will for an Add-in,
+    // since it would have waited for Office to load before getting here
+    if (typeof Excel !== 'undefined') {
+      await registerMetadata(registerCustomFunctionsJsonStringBase64);
+    }
 
     // Get the custom functions runner to reload as well
     let startOfRequestTime = new Date().getTime();
