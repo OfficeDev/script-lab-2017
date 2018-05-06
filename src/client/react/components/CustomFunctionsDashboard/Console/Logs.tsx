@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { isEqual } from 'lodash';
 
 import List, { Item } from '../List';
 
@@ -94,6 +95,10 @@ export default class Logs extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { filterQuery: '', shouldScrollToBottom: true };
+  }
+
+  shouldComponentUpdate(nextProps: Props) {
+    return !isEqual(this.props.logs, nextProps.logs);
   }
 
   componentDidMount() {

@@ -48,23 +48,25 @@ interface State {
 
 export default class Console extends React.Component<Props, State> {
   private interval;
+
   constructor(props: Props) {
     super(props);
+    this.keepRefreshingFromLocalStorage = this.keepRefreshingFromLocalStorage.bind(this);
 
     setUpMomentJsDurationDefaults(moment);
     this.state = { logs: [], runnerIsAlive: false, runnerLastUpdatedText: '' };
   }
 
-  getLogs = () => {
-    const runnerIsAlive =
+  keepRefreshingFromLocalStorage() {
+    const pendingState: State = {} as State;
+
+    pendingState.runnerIsAlive =
       getElapsedTime(
         getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)
       ) < 3000;
 
-    let runnerLastUpdatedText = null;
-
-    if (runnerIsAlive) {
-      runnerLastUpdatedText = moment(
+    if (pendingState.runnerIsAlive) {
+      pendingState.runnerLastUpdatedText = moment(
         new Date(
           getNumberFromLocalStorage(
             localStorageKeys.customFunctionsCurrentlyRunningTimestamp
@@ -74,31 +76,26 @@ export default class Console extends React.Component<Props, State> {
         .locale(getDisplayLanguage())
         .fromNow();
     }
-    const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
-    if (storageLogs.length === 0) {
-      return;
+
+    const logsString = window.localStorage.getItem(localStorageKeys.log) || '';
+    if (logsString.length > 0) {
+      window.localStorage.removeItem(localStorageKeys.log);
+
+      const newLogs = logsString
+        .split('\n')
+        .filter(line => line !== '')
+        .filter(line => !line.includes('Agave.HostCall'))
+        .map(entry => JSON.parse(entry) as LogData);
+      pendingState.logs = [...this.state.logs, ...newLogs];
     }
 
-    const logs = storageLogs
-      .split('\n')
-      .filter(line => line !== '')
-      .filter(line => !line.includes('Agave.HostCall'))
-      .map(entry => JSON.parse(entry) as LogData);
-
-    this.setState({
-      logs: [...this.state.logs, ...logs],
-      runnerLastUpdatedText,
-      runnerIsAlive,
-    });
-
-    window.localStorage.removeItem(localStorageKeys.log);
-    // tslint:disable-next-line:semicolon
-  };
+    this.setState(pendingState);
+  }
 
   clearLogs = () => this.setState({ logs: [] });
 
   componentDidMount() {
-    this.interval = setInterval(this.getLogs, 300);
+    this.interval = setInterval(this.keepRefreshingFromLocalStorage, 300);
   }
 
   componentWillUnmount() {
