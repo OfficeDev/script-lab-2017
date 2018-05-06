@@ -169,10 +169,14 @@ export class Gallery {
     }?gallery=true`;
 
     if (isCustomFunctionScript(snippet.script.content)) {
+      // Navigate to the dashboard page. Since it's on the same domain,
+      // navigation should be quick, so don't worry about changing the progress text.
       navigateToCustomFunctionsDashboard(returnUrl);
     } else {
-      // The regular runner can take a
+      // The regular runner can take a moment to load, since it requires
+      // navigating to a different server.  So, show a progress indicator
       this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
+
       navigateToRunner(snippet, returnUrl);
     }
   }
