@@ -266,11 +266,11 @@
             <div class="ms-progress" style="width: 100%; margin-top: 18pt; margin-bottom: 10pt;">
                 <div class="cs-loader">
                     <div class="cs-loader-inner">
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
-                        <label class="ms-Icon ms-Icon--LocationDot"></label>
+                        <label>●</label>
+                        <label>●</label>
+                        <label>●</label>
+                        <label>●</label>
+                        <label>●</label>
                     </div>
                 </div>
             </div>
