@@ -10,12 +10,9 @@ import {
   setUpMomentJsDurationDefaults,
   isMakerScript,
   isInsideOfficeApp,
+  navigateToCustomFunctionsDashboard,
 } from '../app/helpers';
-import {
-  Strings,
-  setDisplayLanguage,
-  getDisplayLanguageOrFake,
-} from '../app/strings';
+import { Strings, setDisplayLanguage, getDisplayLanguageOrFake } from '../app/strings';
 import { Messenger, RunnerMessageType } from '../app/helpers/messenger';
 import { loadFirebug, officeNamespacesForIframe } from './runner.common';
 
@@ -151,10 +148,7 @@ interface MakerInitializationParams {
     await ensureHostInitialized();
     await loadFirebug(environment.current.config.editorUrl);
 
-    $('#header-refresh').attr(
-      'href',
-      generateRefreshUrl(currentSnippet.officeJS)
-    );
+    $('#header-refresh').attr('href', generateRefreshUrl(currentSnippet.officeJS));
     if (Utilities.platform === PlatformType.PC) {
       $('#padding-for-personality-menu').addClass('flex-fixed-width-twenty-px');
     } else if (Utilities.platform === PlatformType.MAC) {
@@ -226,8 +220,8 @@ interface MakerInitializationParams {
     // QUICK WORKAROUND -- but a quick way to get custom functions to redirect to the actual
     // Custom Functions page, if it ends up being shown in the runner pane:
     if (html.indexOf('This snippet is a Custom Functions snippet') >= 0) {
-      window.location.href =
-        environment.current.config.editorUrl + '/custom-functions.html';
+      navigateToCustomFunctionsDashboard(returnUrl);
+      return true;
     }
 
     showHeader();
@@ -235,9 +229,9 @@ interface MakerInitializationParams {
     // Remove any previous iFrames (if any) or the placeholder snippet-frame div
     $('.snippet-frame').remove();
 
-    const $emptySnippetPlaceholder = $(
-      '<div class="snippet-frame"></div>'
-    ).insertAfter($snippetContent);
+    const $emptySnippetPlaceholder = $('<div class="snippet-frame"></div>').insertAfter(
+      $snippetContent
+    );
 
     if (!isTrustedSnippet) {
       showReloadNotification(
@@ -282,9 +276,7 @@ interface MakerInitializationParams {
       if (officeJS) {
         iframeWindow['Office'] = window['Office'];
         officeNamespacesForIframe.forEach(namespace => {
-          iframeWindow[namespace] = (isInTryItMode ? window.parent : window)[
-            namespace
-          ];
+          iframeWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
         });
       }
 
@@ -401,10 +393,7 @@ interface MakerInitializationParams {
     await environment.createPlaygroundHostReadyTimer();
   }
 
-  function establishHeartbeat(
-    origin: string,
-    heartbeatParams: HeartbeatParams
-  ) {
+  function establishHeartbeat(origin: string, heartbeatParams: HeartbeatParams) {
     const $iframe = $('<iframe>', {
       src: generateUrl(`${origin}/heartbeat.html`, heartbeatParams),
       id: 'heartbeat',
@@ -513,10 +502,7 @@ interface MakerInitializationParams {
         dismissAction();
       });
 
-    $('.cs-loader').css(
-      'visibility',
-      allowShowLoadingDots ? 'visible' : 'hidden'
-    );
+    $('.cs-loader').css('visibility', allowShowLoadingDots ? 'visible' : 'hidden');
 
     // Show the current notification (and hide any others)
     $('.runner-notification').hide();
@@ -531,10 +517,8 @@ interface MakerInitializationParams {
   ) {
     const isMaker = isMakerScript(snippet.script);
     const desiredOfficeJS =
-      processLibraries(snippet.libraries, isMaker, isInsideOfficeApp())
-        .officeJS || '';
-    const reloadDueToOfficeJSMismatch =
-      desiredOfficeJS !== currentSnippet.officeJS;
+      processLibraries(snippet.libraries, isMaker, isInsideOfficeApp()).officeJS || '';
+    const reloadDueToOfficeJSMismatch = desiredOfficeJS !== currentSnippet.officeJS;
 
     currentSnippet = {
       id: snippet.id,
@@ -558,11 +542,8 @@ interface MakerInitializationParams {
 
     $('#header-refresh').attr('href', refreshUrl);
 
-    const officeJS = processLibraries(
-      snippet.libraries,
-      isMaker,
-      isInsideOfficeApp()
-    ).officeJS;
+    const officeJS = processLibraries(snippet.libraries, isMaker, isInsideOfficeApp())
+      .officeJS;
     const snippetId = snippet.id;
     let replacedSuccessfully = replaceSnippetIframe({
       snippetId,
@@ -585,11 +566,7 @@ interface MakerInitializationParams {
    * @param id: id of snippet, or null to fetch the last-opened
    * @param name: name of the snippet, or null to use a generic "loading snippet" text
    */
-  function clearAndRefresh(
-    id: string,
-    name: string,
-    isTrustedSnippet: boolean
-  ) {
+  function clearAndRefresh(id: string, name: string, isTrustedSnippet: boolean) {
     $('.runner-overlay').hide();
     $('.runner-notification').hide();
 
@@ -602,17 +579,14 @@ interface MakerInitializationParams {
       isListeningToCurrentSnippetContentChange = true;
     }
 
-    heartbeat.messenger.send(
-      heartbeat.window,
-      RunnerMessageType.REFRESH_REQUEST,
-      { id: id, isTrustedSnippet: isTrustedSnippet }
-    );
+    heartbeat.messenger.send(heartbeat.window, RunnerMessageType.REFRESH_REQUEST, {
+      id: id,
+      isTrustedSnippet: isTrustedSnippet,
+    });
   }
 
   function generateRefreshUrl(desiredOfficeJS: string) {
-    let refreshUrl = `${window.location.origin}/run/${host}/${
-      currentSnippet.id
-    }`;
+    let refreshUrl = `${window.location.origin}/run/${host}/${currentSnippet.id}`;
     if (desiredOfficeJS) {
       refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJS)}`;
     }
@@ -667,8 +641,7 @@ interface MakerInitializationParams {
   }
 
   function snippetAndConsoleRefreshSize() {
-    const heightWithPxSuffix = document.getElementById('FirebugUI').style
-      .height;
+    const heightWithPxSuffix = document.getElementById('FirebugUI').style.height;
     const heightPixels = heightWithPxSuffix.substr(
       0,
       heightWithPxSuffix.length - 'px'.length
@@ -687,9 +660,7 @@ interface MakerInitializationParams {
     setTimeout(() => {
       $shadow.attr(
         'style',
-        flexProperties
-          .map(prefix => `${prefix}: 0 0 ${heightPixels}px`)
-          .join('; ')
+        flexProperties.map(prefix => `${prefix}: 0 0 ${heightPixels}px`).join('; ')
       );
       $snippetFrame.attr(
         'style',

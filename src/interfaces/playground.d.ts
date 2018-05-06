@@ -72,7 +72,6 @@ interface ISnippet extends ITemplate {
   script?: IContentLanguagePair;
   template?: IContentLanguagePair;
   style?: IContentLanguagePair;
-  customFunctions?: IContentLanguagePair;
   libraries?: string;
   perfInfo?: IPerformanceInformation;
 }
