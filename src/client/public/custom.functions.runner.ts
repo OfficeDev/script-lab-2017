@@ -33,15 +33,15 @@ tryCatch(async () => {
 
     await establishHeartbeat(params.heartbeatParams);
 
-    logIfExtraLoggingEnabled('Custom functions runner re-loading, heartbeat established');
+    logIfExtraLoggingEnabled('Custom functions runner is loading, please wait...');
 
     await initializeRunnableSnippets(params);
 
     await environment.createPlaygroundHostReadyTimer();
-    window['Excel']['CustomFunctions']['initialize']();
+    await window['Excel']['CustomFunctions']['initialize']();
 
     logIfExtraLoggingEnabled(
-      'Custom functions runner fully initialized and ready to respond to host request'
+      'Custom functions runner is ready to evaluate your functions!'
     );
   } catch (error) {
     handleError(error);

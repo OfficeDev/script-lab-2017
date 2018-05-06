@@ -5,10 +5,14 @@ import {
   environment,
   applyTheme,
   setUpMomentJsDurationDefaults,
+  isCustomFunctionScript,
 } from '../app/helpers';
 import { Strings } from '../app/strings';
 import '../assets/styles/extras.scss';
-import { navigateToRunner } from '../app/helpers/navigation.helper';
+import {
+  navigateToRunner,
+  navigateToCustomFunctionsDashboard,
+} from '../app/helpers/navigation.helper';
 
 (async () => {
   await environment.initialize();
@@ -114,10 +118,7 @@ export class Gallery {
     }
   }
 
-  insertSnippet(
-    { id, name, description, modified_at }: ISnippet,
-    location: JQuery
-  ) {
+  insertSnippet({ id, name, description, modified_at }: ISnippet, location: JQuery) {
     let $item = $(this._template);
     $item.children('.name').text(name);
     $item.children('.description').text(description);
@@ -130,9 +131,7 @@ export class Gallery {
     $item.on('mouseover', () =>
       $item.attr(
         'title',
-        `${Strings().HtmlPageStrings.lastUpdated} ${moment(
-          modified_at
-        ).fromNow()}`
+        `${Strings().HtmlPageStrings.lastUpdated} ${moment(modified_at).fromNow()}`
       )
     );
 
@@ -165,10 +164,16 @@ export class Gallery {
   }
 
   private _postSnippet(snippet: ISnippet) {
-    this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
     const returnUrl = `${location.protocol}//${location.host}${
       location.pathname
     }?gallery=true`;
-    navigateToRunner(snippet, returnUrl);
+
+    if (isCustomFunctionScript(snippet.script.content)) {
+      navigateToCustomFunctionsDashboard(returnUrl);
+    } else {
+      // The regular runner can take a
+      this.showProgress(`${Strings().HtmlPageStrings.running} "${snippet.name}"`);
+      navigateToRunner(snippet, returnUrl);
+    }
   }
 }
