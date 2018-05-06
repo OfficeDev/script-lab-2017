@@ -52,14 +52,18 @@ const ClearButton = styled.button`
   }
 `;
 
-function getLogPropsBySeverity(severity: 'info' | 'warn' | 'error') {
+function getLogPropsBySeverity(severity: ConsoleLogTypes) {
   let background;
   let color = 'black';
   let icon = null;
 
   switch (severity) {
-    case 'info':
+    case 'log':
       background = 'white';
+      break;
+    case 'info':
+      background = '#cce6ff';
+      icon = { name: 'Info', color: '#002db3' };
       break;
     case 'warn':
       background = '#fff4ce';
@@ -76,14 +80,8 @@ function getLogPropsBySeverity(severity: 'info' | 'warn' | 'error') {
   return { background, color, icon };
 }
 
-export interface ILog {
-  message: string;
-  severity: 'info' | 'warn' | 'error';
-  source: string;
-}
-
 interface Props {
-  logs: ILog[];
+  logs: LogData[];
   clearLogs: () => void;
 }
 
@@ -118,10 +116,7 @@ export default class Logs extends React.Component<Props, State> {
       // tslint:disable-next-line:semicolon
     });
 
-  setShouldScrollToBottom = (
-    ev: React.FormEvent<HTMLElement>,
-    checked: boolean
-  ) =>
+  setShouldScrollToBottom = (ev: React.FormEvent<HTMLElement>, checked: boolean) =>
     this.setState({
       shouldScrollToBottom: checked,
       // tslint:disable-next-line:semicolon
@@ -133,6 +128,7 @@ export default class Logs extends React.Component<Props, State> {
     const items: Item[] = logs.map((log, i) => ({
       name: log.message,
       title: log.source,
+      indent: log.indent,
       key: i,
       ...getLogPropsBySeverity(log.severity),
     }));

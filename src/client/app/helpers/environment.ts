@@ -139,7 +139,7 @@ class Environment {
       const flagSetInStorage = window.localStorage.getItem(
         localStorageKeys.experimentationFlags
       );
-      const flagsOrError: IExperimentationFlags | Error = attempt(() =>
+      const flagsOrError: ExperimentationFlags | Error = attempt(() =>
         JSON.parse(flagSetInStorage)
       );
 

@@ -148,7 +148,3 @@ export function transformSnippetName(snippetName: string) {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join('');
 }
-
-export function uppercaseMaybe(text: string, makeAllUppercase: boolean) {
-  return makeAllUppercase ? text.toUpperCase() : text;
-}

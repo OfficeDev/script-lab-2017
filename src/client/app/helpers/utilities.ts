@@ -60,9 +60,7 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
       return false;
     }
 
-    const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(
-      Office.context.diagnostics.version
-    )[1];
+    const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(Office.context.diagnostics.version)[1];
 
     if (semver.lt(threeDotVersion, '16.0.9323')) {
       // note 16.0.9323 is the version number for windows
@@ -81,13 +79,9 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
             'Microsoft.Office.Excel.AddinDefinedFunctionUseCalcThreadEnabled',
             'Microsoft.Office.OEP.UdfManifest',
             'Microsoft.Office.OEP.UdfRuntime',
-          ].map(name =>
-            (context as any).flighting.getFeatureGate(name).load('value')
-          );
+          ].map(name => (context as any).flighting.getFeatureGate(name).load('value'));
           await context.sync();
-          const firstNonTrueIndex = features.findIndex(
-            item => item.value !== true
-          );
+          const firstNonTrueIndex = features.findIndex(item => item.value !== true);
           const allWereTrue = firstNonTrueIndex < 0;
           return allWereTrue;
         });
@@ -113,9 +107,7 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
     // If all checks passed:
     return true;
   } catch (e) {
-    console.error(
-      'Could not perform a "getIsCustomFunctionsSupportedOnHost" check'
-    );
+    console.error('Could not perform a "getIsCustomFunctionsSupportedOnHost" check');
     console.error(e);
     return false;
   }
@@ -220,9 +212,7 @@ export function generateUrl(base: string, queryParams: any) {
   const result = [];
   for (const key in queryParams) {
     if (queryParams.hasOwnProperty(key)) {
-      result.push(
-        `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`
-      );
+      result.push(`${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`);
     }
   }
 
@@ -343,8 +333,7 @@ export function getNumberFromLocalStorage(key: string): number {
 
 export function pushToLogQueue(entry: LogData) {
   ensureFreshLocalStorage();
-  let currentLog =
-    window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
+  let currentLog = window.localStorage.getItem(PLAYGROUND.localStorageKeys.log) || '';
   let prefix = currentLog.length === 0 ? '' : '\n';
   window.localStorage.setItem(
     PLAYGROUND.localStorageKeys.log,
@@ -371,12 +360,22 @@ export function stringifyPlusPlus(object) {
     return object;
   }
 
+  if (object instanceof Error) {
+    try {
+      return 'ERROR: ' + '\n' + jsonStringify(object);
+    } catch (e) {
+      return stringifyPlusPlus(object.toString());
+    }
+  }
   if (object.toString() !== '[object Object]') {
     return object.toString();
   }
 
   // Otherwise, stringify the object
+  return jsonStringify(object);
+}
 
+function jsonStringify(object) {
   return JSON.stringify(
     object,
     (key, value) => {
@@ -415,6 +414,17 @@ export function stringifyPlusPlus(object) {
       }
     }
   }
+}
+
+export function assertIdentical<T>(...args: T[]): T {
+  const last = args.pop();
+  while (args.length > 0) {
+    const next = args.pop();
+    if (next !== last) {
+      throw new Error('Assert identical failed: ' + stringifyPlusPlus(args));
+    }
+  }
+  return last;
 }
 
 export function pause(ms: number) {

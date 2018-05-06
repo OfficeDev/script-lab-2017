@@ -2,6 +2,11 @@ const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
 
+const experimentationFlagsDefaults = {
+  forceCustomFunctionsOn: false,
+  enableExtraCustomFunctionsLogging: false,
+};
+
 /** NOTE: when adding local storage keys here, remember to add them for IntelliSense's sake in "ICompiledPlaygroundInfo" in playground.d.ts */
 const localStorageKeys = {
   dummyUnusedKey: 'playground_dummy_unused_key',
@@ -147,11 +152,6 @@ const safeExternalUrls = {
     'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
   generic_api:
     'https://dev.office.com/reference/add-ins/javascript-api-for-office',
-};
-
-const experimentationFlagsDefaults = {
-  customFunctionsAllUppercase: false,
-  forceCustomFunctionsOn: false,
 };
 
 class RedirectPlugin {

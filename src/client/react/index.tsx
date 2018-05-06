@@ -7,7 +7,6 @@ import {
   storage,
   environment,
   getIsCustomFunctionsSupportedOnHost,
-  uppercaseMaybe,
   isCustomFunctionScript,
 } from '../../client/app/helpers';
 import { uniqBy } from 'lodash';
@@ -40,16 +39,13 @@ tryCatch(async () => {
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
 
-    const {
-      metadata,
-      registerCustomFunctionsJsonStringBase64,
-    } = await getMetadata();
+    const { visual, functions } = await getMetadata();
 
     // To allow debugging in a plain web browser, only try to register if the
     // Excel namespace exists.  It always will for an Add-in,
     // since it would have waited for Office to load before getting here
     if (typeof Excel !== 'undefined') {
-      await registerMetadata(registerCustomFunctionsJsonStringBase64);
+      await registerMetadata(functions);
     }
 
     // Get the custom functions runner to reload as well
@@ -61,9 +57,9 @@ tryCatch(async () => {
 
     document.getElementById('progress')!.style.display = 'none';
 
-    if ((metadata as any).snippets.length > 0) {
+    if (visual.snippets.length > 0) {
       ReactDOM.render(
-        <App metadata={(metadata as any).snippets} />,
+        <App metadata={visual.snippets} />,
         document.getElementById('root') as HTMLElement
       );
     } else {
@@ -80,15 +76,14 @@ tryCatch(async () => {
 
 async function getMetadata() {
   return new Promise<{
-    metadata: object[];
-    registerCustomFunctionsJsonStringBase64: string;
+    visual: ICFVisualMetadata;
+    functions: ICFFunctionMetadata[];
   }>(async (resolve, reject) => {
-    ensureFreshLocalStorage();
     try {
-      console.log(storage);
+      ensureFreshLocalStorage();
 
       if (!storage.snippets) {
-        resolve({ metadata: [], registerCustomFunctionsJsonStringBase64: '' });
+        resolve({ visual: { snippets: [] }, functions: [] });
         return;
       }
 
@@ -121,7 +116,6 @@ async function getMetadata() {
 
       const data: ICustomFunctionsMetadataRequestPostData = {
         snippets: allSnippetsToRegisterWithPossibleDuplicate,
-        experimentationFlags: environment.current.experimentationFlags,
       };
 
       xhr.send(
@@ -135,17 +129,14 @@ async function getMetadata() {
   });
 }
 
-async function registerMetadata(
-  registerCustomFunctionsJsonStringBase64: string
-) {
-  const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
+async function registerMetadata(functions: ICFFunctionMetadata[]) {
+  // Register functions as ALLCAPS:
+  functions.forEach(fn => (fn.name = fn.name.toUpperCase()));
+
   await Excel.run(async context => {
     (context.workbook as any).registerCustomFunctions(
-      uppercaseMaybe(
-        'ScriptLab',
-        environment.current.experimentationFlags.customFunctionsAllUppercase
-      ),
-      registrationPayload
+      'ScriptLab'.toUpperCase(),
+      JSON.stringify({ functions: functions })
     );
     await context.sync();
   });

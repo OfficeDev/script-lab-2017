@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import PivotContentContainer from '../PivotContentContainer';
 import List, { Item } from '../List';
-import { environment, uppercaseMaybe } from '../../../../app/helpers';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -25,10 +24,7 @@ const Summary = ({ metadata }) => {
   };
   metadata.forEach(snippet => {
     snippet.functions.forEach(func => {
-      const scriptLabToplevelNamespace = uppercaseMaybe(
-        'ScriptLab',
-        environment.current.experimentationFlags.customFunctionsAllUppercase
-      );
+      const scriptLabToplevelNamespace = 'ScriptLab';
       const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${
         func.name
       }(${func.parameters.length > 0 ? '…' : ''})`;
@@ -62,7 +58,7 @@ const Summary = ({ metadata }) => {
     <PivotContentContainer>
       <TopInfo>
         <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
-          Custom Functions
+          Custom Functions (Preview)
         </h1>
         <p
           className="ms-font-m"

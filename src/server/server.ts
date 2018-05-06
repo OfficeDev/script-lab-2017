@@ -32,7 +32,6 @@ import {
   isMakerScript,
   isCustomFunctionScript,
   transformSnippetName,
-  uppercaseMaybe,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -310,24 +309,18 @@ registerRoute('post', '/compile/page', (req, res) =>
  */
 registerRoute('post', '/custom-functions/run', async (req, res) => {
   const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
-  let { snippets, experimentationFlags } = params;
+  let { snippets } = params;
 
   snippets = snippets.filter(snippet => {
     const result = parseMetadata(snippet.script.content);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
-    const namespace = uppercaseMaybe(
-      transformSnippetName(snippet.name),
-      experimentationFlags.customFunctionsAllUppercase
-    );
+    const namespace = transformSnippetName(snippet.name);
     snippet.metadata = {
       namespace,
       functions: result.map(func => ({
         ...func,
-        name: uppercaseMaybe(
-          `${namespace}.${func.name}`,
-          experimentationFlags.customFunctionsAllUppercase
-        ),
+        name: `${namespace}.${func.name}`,
       })),
     };
     return isGoodSnippet;
@@ -381,23 +374,11 @@ registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
   const params: ICustomFunctionsMetadataRequestPostData = JSON.parse(
     req.body.data
   );
-  let { snippets, experimentationFlags } = params;
-
-  const { visual, functions } = getFunctionsAndMetadataForRegistration(
-    snippets,
-    experimentationFlags
-  );
-
-  const registerCustomFunctionsJsonStringBase64 = base64encode(
-    JSON.stringify({ functions })
-  );
+  let { snippets } = params;
 
   return respondWith(
     res,
-    JSON.stringify({
-      metadata: visual,
-      registerCustomFunctionsJsonStringBase64,
-    }),
+    JSON.stringify(getFunctionsAndMetadataForRegistration(snippets)),
     'application/javascript'
   );
 });
@@ -794,7 +775,7 @@ function respondWith(
   return res
     .contentType(type)
     .status(200)
-    .send(replaceTabsWithSpaces(content));
+    .send(type === 'text/html' ? replaceTabsWithSpaces(content) : content);
 }
 
 function parseXmlString(xml): Promise<JSON> {

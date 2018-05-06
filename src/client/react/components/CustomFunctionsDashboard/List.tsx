@@ -19,7 +19,6 @@ const ListItem = LI`
   padding: 13px;
   box-sizing: border-box;
   word-wrap: break-word;
-  word-break: break-all;
 
   border-top: 0.5px solid #eeeeee;
   border-bottom: 0.5px solid #eeeeee;
@@ -36,6 +35,9 @@ const Text = styled.span`
 
 const ListContainer = styled.ul``;
 
+// Note: for any change to this interface, be sure to also consider
+// How it will be mapped in the UI.  See the "render" method of List.tsx,
+// particularly the line starting with "const items: Item[] = logs.map((log, i) => ({"
 export interface Item {
   key: any;
   name: string;
@@ -47,6 +49,7 @@ export interface Item {
   color?: string;
   title?: string;
   smallCaps?: boolean;
+  indent?: number;
 }
 
 export default ({ items }) => (
@@ -71,7 +74,7 @@ export default ({ items }) => (
             }}
           />
         )}
-        <Text>{item.name}</Text>
+        <Text style={{ marginLeft: (item.indent || 0) * 5 + 'px' }}>{item.name}</Text>
       </ListItem>
     ))}
   </ListContainer>

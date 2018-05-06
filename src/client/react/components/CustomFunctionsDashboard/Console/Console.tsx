@@ -41,7 +41,7 @@ const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
 interface Props {}
 
 interface State {
-  logs: any[];
+  logs: LogData[];
   runnerLastUpdatedText: string;
   runnerIsAlive: boolean;
 }
@@ -58,9 +58,7 @@ export default class Console extends React.Component<Props, State> {
   getLogs = () => {
     const runnerIsAlive =
       getElapsedTime(
-        getNumberFromLocalStorage(
-          localStorageKeys.customFunctionsLastHeartbeatTimestamp
-        )
+        getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)
       ) < 3000;
 
     let runnerLastUpdatedText = null;
@@ -77,16 +75,15 @@ export default class Console extends React.Component<Props, State> {
         .fromNow();
     }
     const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
+    if (storageLogs.length === 0) {
+      return;
+    }
+
     const logs = storageLogs
       .split('\n')
       .filter(line => line !== '')
       .filter(line => !line.includes('Agave.HostCall'))
-      .map(entry => JSON.parse(entry))
-      .map(log => ({
-        message: log.message as string,
-        severity: log.severity as 'log' | 'warn' | 'error',
-        source: log.source,
-      }));
+      .map(entry => JSON.parse(entry) as LogData);
 
     this.setState({
       logs: [...this.state.logs, ...logs],
@@ -119,7 +116,7 @@ export default class Console extends React.Component<Props, State> {
           <Logs logs={this.state.logs} clearLogs={this.clearLogs} />
         ) : (
           <NoLogsPlaceholder>
-            <p
+            <div
               style={{
                 position: 'absolute',
                 top: '0',
@@ -133,9 +130,18 @@ export default class Console extends React.Component<Props, State> {
                 padding: '20px',
               }}
             >
-              There are no logs to display. Use <strong>console.log()</strong>{' '}
+              There are no logs to display. Use{' '}
+              <pre
+                style={{
+                  fontFamily: 'Consolas, monaco, monospace',
+                  fontWeight: 'bold',
+                  display: 'inline',
+                }}
+              >
+                console.log()
+              </pre>{' '}
               inside your functions to display logs here.
-            </p>
+            </div>
           </NoLogsPlaceholder>
         )}
       </PivotContentContainer>

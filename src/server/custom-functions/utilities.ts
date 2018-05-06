@@ -1,16 +1,8 @@
 import { parseMetadata } from './metadata.parser';
-import {
-  ICFFunctionMetadata,
-  CustomFunctionsRegistrationStatus,
-  ICFVisualSnippetMetadata,
-  ICFVisualFunctionMetadata,
-  ICFVisualMetadata,
-} from './interfaces';
-import { transformSnippetName, uppercaseMaybe } from '../core/snippet.helper';
+import { transformSnippetName } from '../core/snippet.helper';
 
 export function getFunctionsAndMetadataForRegistration(
-  snippets: ISnippet[],
-  experimentationFlags: ExperimentationFlags
+  snippets: ISnippet[]
 ): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[] } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
   let metadata: ICFFunctionMetadata[] = [];
@@ -21,13 +13,6 @@ export function getFunctionsAndMetadataForRegistration(
       let functions: ICFVisualFunctionMetadata[] = parseMetadata(
         snippet.script.content
       ) as ICFVisualFunctionMetadata[];
-      functions.forEach(
-        func =>
-          (func.name = uppercaseMaybe(
-            func.name,
-            experimentationFlags.customFunctionsAllUppercase
-          ))
-      );
 
       functions = convertFunctionErrorsToSpace(functions);
       if (functions.length === 0) {
@@ -36,10 +21,7 @@ export function getFunctionsAndMetadataForRegistration(
       const hasErrors = doesSnippetHaveErrors(functions);
 
       if (!hasErrors) {
-        const namespace = uppercaseMaybe(
-          transformSnippetName(snippet.name),
-          experimentationFlags.customFunctionsAllUppercase
-        );
+        const namespace = transformSnippetName(snippet.name);
         const namespacedFunctions = functions.map(f => ({
           ...f,
           name: `${namespace}.${f.name}`,
@@ -48,11 +30,11 @@ export function getFunctionsAndMetadataForRegistration(
       }
 
       functions = functions.map(func => {
-        const status = hasErrors
+        const status: CustomFunctionsRegistrationStatus = hasErrors
           ? func.error
-            ? CustomFunctionsRegistrationStatus.Error
-            : CustomFunctionsRegistrationStatus.Skipped
-          : CustomFunctionsRegistrationStatus.Good;
+            ? 'error'
+            : 'skipped'
+          : 'good';
 
         func.parameters = func.parameters.map(p => ({
           ...p,
@@ -71,21 +53,19 @@ export function getFunctionsAndMetadataForRegistration(
         };
       });
 
+      // TODO:  why do we have code commented out?
       // const isTrusted = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
       // let status;
       // if (isTrusted) {
-      let status = hasErrors
-        ? CustomFunctionsRegistrationStatus.Error
-        : CustomFunctionsRegistrationStatus.Good;
+      let status: CustomFunctionsRegistrationStatus = hasErrors
+        ? 'error'
+        : 'good';
       // } else {
       //     status = CustomFunctionsRegistrationStatus.Untrusted;
       // }
 
       visualMetadata.push({
-        name: uppercaseMaybe(
-          transformSnippetName(snippet.name),
-          experimentationFlags.customFunctionsAllUppercase
-        ),
+        name: transformSnippetName(snippet.name),
         error: hasErrors,
         status,
         functions,
@@ -102,12 +82,12 @@ export function getFunctionsAndMetadataForRegistration(
 
 // helpers
 
-function getFunctionChildNodeStatus(func, funcStatus, childNode) {
-  return func.error
-    ? childNode.error
-      ? CustomFunctionsRegistrationStatus.Error
-      : CustomFunctionsRegistrationStatus.Skipped
-    : funcStatus;
+function getFunctionChildNodeStatus(
+  func: ICFVisualFunctionMetadata,
+  funcStatus: CustomFunctionsRegistrationStatus,
+  childNode: { error?: any }
+): CustomFunctionsRegistrationStatus {
+  return func.error ? (childNode.error ? 'error' : 'skipped') : funcStatus;
 }
 
 function getPrettyType(parameter) {

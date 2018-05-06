@@ -14,7 +14,7 @@ const POLLING_INTERVAL = 1000;
 
 let messenger: Messenger<CustomFunctionsMessageType>;
 
-(() => {
+tryCatch(() => {
   const params: ICustomFunctionsHeartbeatParams = Authenticator.extractParams(
     window.location.href.split('?')[1]
   ) as any;
@@ -22,63 +22,48 @@ let messenger: Messenger<CustomFunctionsMessageType>;
   // Can do partial initialization, since host is guaranteed to be known
   environment.initializePartial({ host: 'EXCEL' });
 
-  setupMessenger(params.clientTimestamp);
+  setupMessenger();
+  startPollingForChanges(params.clientTimestamp);
 
   messenger.send(
     window.parent,
     CustomFunctionsMessageType.HEARTBEAT_READY,
     null
   );
-})();
+});
 
-function setupMessenger(clientTimestamp: number) {
+// Helpers from here on down
+
+function setupMessenger() {
   messenger = new Messenger(environment.current.config.runnerUrl);
-
-  messenger
-    .listen<{ timestamp: number }>()
-    .filter(
-      ({ type }) => type === CustomFunctionsMessageType.LOADED_AND_RUNNING
-    )
-    .subscribe(input =>
-      tryCatch(() => {
-        // TODO CUSTOM FUNCTIONS STRINGS
-        const interval = setInterval(() => {
-          tryCatch(() => {
-            const now = new Date();
-            window.localStorage.setItem(
-              localStorageKeys.customFunctionsLastHeartbeatTimestamp,
-              now.getTime().toString()
-            );
-
-            // Just for debugging:
-            // logToConsole({
-            //     timestamp: new Date().getTime(),
-            //     source: 'system',
-            //     type: 'custom functions',
-            //     subtype: 'heartbeat',
-            //     message: 'Tick, client timestamp ' + clientTimestamp,
-            //     severity: 'info',
-            // });
-
-            // And check whether I should reload...
-            if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {
-              clearInterval(interval);
-              sendRefreshRequest();
-            }
-          });
-        }, POLLING_INTERVAL);
-
-        window.localStorage.setItem(
-          localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
-          clientTimestamp.toString()
-        );
-      })
-    );
 
   messenger
     .listen<LogData>()
     .filter(({ type }) => type === CustomFunctionsMessageType.LOG)
     .subscribe(input => tryCatch(() => logToConsole(input.message)));
+}
+
+function startPollingForChanges(clientTimestamp: number) {
+  const interval = setInterval(() => {
+    tryCatch(() => {
+      const now = new Date();
+      window.localStorage.setItem(
+        localStorageKeys.customFunctionsLastHeartbeatTimestamp,
+        now.getTime().toString()
+      );
+
+      // And check whether I should reload...
+      if (getLocalStorageLastUpdateTimestamp() > clientTimestamp) {
+        clearInterval(interval);
+        sendRefreshRequest();
+      }
+    });
+  }, POLLING_INTERVAL);
+
+  window.localStorage.setItem(
+    localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
+    clientTimestamp.toString()
+  );
 }
 
 function getLocalStorageLastUpdateTimestamp(): number {
@@ -102,16 +87,18 @@ function sendRefreshRequest() {
 function logToConsole(data: LogData) {
   pushToLogQueue(data);
 
-  messenger.send(
-    window.parent,
-    CustomFunctionsMessageType.SHOW_LOG_DIALOG,
-    null
-  );
+  if (messenger) {
+    messenger.send(
+      window.parent,
+      CustomFunctionsMessageType.SHOW_LOG_DIALOG,
+      null
+    );
+  }
 }
 
-function tryCatch(action: () => void) {
+async function tryCatch(action: () => void) {
   try {
-    action();
+    await action();
   } catch (e) {
     logToConsole({
       source: '[SYSTEM]',

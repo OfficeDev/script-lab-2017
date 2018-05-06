@@ -1,10 +1,5 @@
 import * as ts from 'typescript';
 import { isUndefined } from 'lodash';
-import {
-  ICustomFunctionOptions,
-  CustomFunctionsDimensionality,
-  ICFFunctionMetadata,
-} from './interfaces';
 
 /* tslint:disable:no-reserved-keywords */
 const CUSTOM_FUNCTION = 'customfunction'; // case insensitive @CustomFunction tag to identify custom functions in JSDoc
@@ -14,8 +9,6 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.StringKeyword]: 'string',
   [ts.SyntaxKind.BooleanKeyword]: 'boolean',
 };
-
-const INVALID = 'invalid'; // used for type = invalid
 
 const CUSTOM_FUNCTION_OPTIONS_KEYS = ['stream', 'volatile'];
 
@@ -84,7 +77,11 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
               description = (func as any).jsDoc[0].comment;
             }
 
-            let result;
+            let result: {
+              dimensionality: CustomFunctionsDimensionality;
+              error?: string;
+              type: CustomFunctionsSupportedTypes;
+            };
             if (func.type) {
               if (
                 func.type.kind === ts.SyntaxKind.TypeReference &&
@@ -102,8 +99,8 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
             } else {
               result = {
                 error: 'No return type specified.',
-                dimensionality: CustomFunctionsDimensionality.Invalid,
-                type: INVALID,
+                dimensionality: 'invalid',
+                type: 'invalid',
               };
             }
 
@@ -153,7 +150,7 @@ function getDimAndTypeHelper(
   t: ts.TypeNode
 ): {
   dimensionality: CustomFunctionsDimensionality;
-  type: string;
+  type: CustomFunctionsSupportedTypes;
   error?: string;
 } {
   try {
@@ -161,8 +158,8 @@ function getDimAndTypeHelper(
   } catch (e) {
     return {
       error: e.message,
-      dimensionality: CustomFunctionsDimensionality.Invalid,
-      type: INVALID,
+      dimensionality: 'invalid',
+      type: 'invalid',
     };
   }
 }
@@ -230,12 +227,12 @@ function getTypeAndDimensionalityForParam(
   t: ts.TypeNode | undefined
 ): {
   dimensionality: CustomFunctionsDimensionality;
-  type: string;
+  type: CustomFunctionsSupportedTypes;
   error?: string;
 } {
   const errTypeAndDim = {
-    dimensionality: CustomFunctionsDimensionality.Invalid,
-    type: INVALID,
+    dimensionality: 'invalid' as CustomFunctionsDimensionality,
+    type: 'invalid' as CustomFunctionsSupportedTypes,
   };
 
   if (isUndefined(t)) {
@@ -247,11 +244,11 @@ function getTypeAndDimensionalityForParam(
     ...errTypeAndDim,
   };
 
-  let dimensionality = CustomFunctionsDimensionality.Scalar;
+  let dimensionality: CustomFunctionsDimensionality = 'scalar';
   let kind = t.kind;
 
   if (ts.isTypeReferenceNode(t)) {
-    dimensionality = CustomFunctionsDimensionality.Matrix;
+    dimensionality = 'matrix';
 
     const arrTr = t as ts.TypeReferenceNode;
 
@@ -272,7 +269,7 @@ function getTypeAndDimensionalityForParam(
       kind = inner.typeArguments[0].kind;
     }
   } else if (ts.isArrayTypeNode(t)) {
-    dimensionality = CustomFunctionsDimensionality.Matrix;
+    dimensionality = 'matrix';
 
     const inner = (t as ts.ArrayTypeNode).elementType;
 
