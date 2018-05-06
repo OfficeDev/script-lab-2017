@@ -253,7 +253,7 @@ function handleError(error: Error | any) {
   });
 }
 function logIfExtraLoggingEnabled(message: string, options?: { indent?: number }) {
-  if (environment.current.experimentationFlags.enableExtraCustomFunctionsLogging) {
+  if (environment.current.experimentationFlags.customFunctions.extraLogging) {
     options = options || {};
     options.indent = options.indent || 0;
 

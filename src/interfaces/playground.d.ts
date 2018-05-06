@@ -17,8 +17,10 @@
 
 // Note: actual defaults need to be set in "env.config.js"
 interface ExperimentationFlags {
-  forceCustomFunctionsOn: boolean;
-  enableExtraCustomFunctionsLogging: boolean;
+  customFunctions: {
+    forceOn: boolean;
+    extraLogging: boolean;
+  };
 }
 
 interface ITemplate {
@@ -286,5 +288,5 @@ interface LogData {
   source: string;
   message: any;
   severity: ConsoleLogTypes;
-  indent?: number
+  indent?: number;
 }

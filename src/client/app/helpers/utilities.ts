@@ -45,7 +45,7 @@ export function isInsideOfficeApp() {
 
 export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
   try {
-    if (environment.current.experimentationFlags.forceCustomFunctionsOn) {
+    if (environment.current.experimentationFlags.customFunctions.forceOn) {
       return true;
     }
     const platform = Office.context.platform;
