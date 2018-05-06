@@ -106,9 +106,9 @@ async function initializeRunnableSnippets(params: InitializationParams) {
               indent: 4,
             });
 
-            // tslint:disable-next-line:only-arrow-functions
             // disable the rule because want to use "arguments",
             //    which isn't allowed in an arrow function
+            // tslint:disable-next-line:only-arrow-functions
             window[uppercaseNamespace][funcNameUppercase] = function() {
               try {
                 return iframeWindow[funcName /*regular, not uppercase*/].apply(
