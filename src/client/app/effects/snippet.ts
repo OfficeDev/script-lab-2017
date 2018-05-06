@@ -15,6 +15,8 @@ import {
   trustedSnippetManager,
   ensureFreshLocalStorage,
   isMakerScript,
+  isCustomFunctionScript,
+  navigateToCustomFunctionsDashboard,
 } from '../helpers';
 import { Strings, getDisplayLanguage } from '../strings';
 import { Request, ResponseTypes, GitHubService } from '../services';
@@ -25,16 +27,7 @@ import { Effect, Actions } from '@ngrx/effects';
 import * as cuid from 'cuid';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../reducers';
-import {
-  isEmpty,
-  isNil,
-  find,
-  assign,
-  reduce,
-  forIn,
-  isEqual,
-  pick,
-} from 'lodash';
+import { isEmpty, isNil, find, assign, reduce, forIn, isEqual, pick } from 'lodash';
 import * as sha1 from 'crypto-js/sha1';
 import { Utilities, HostType } from '@microsoft/office-js-helpers';
 const { localStorageKeys } = PLAYGROUND;
@@ -59,45 +52,43 @@ export class SnippetEffects {
       saveToLocalStorage: action.payload.saveToLocalStorage,
       onSuccess: action.payload.onSuccess,
     }))
-    .mergeMap(
-      ({ data, mode, isReadOnlyViewMode, saveToLocalStorage, onSuccess }) => {
-        let resultingSnippet: ISnippet;
+    .mergeMap(({ data, mode, isReadOnlyViewMode, saveToLocalStorage, onSuccess }) => {
+      let resultingSnippet: ISnippet;
 
-        return this._importRawFromSource(data, mode)
-          .filter(snippet => !isNil(snippet))
-          .mergeMap(async snippet => {
-            let result = await this._massageSnippet(snippet, mode, {
-              isReadOnlyViewMode,
-              saveToLocalStorage,
-            });
-            resultingSnippet = result.snippet;
-            return result.actions;
-          })
-          .mergeMap(actions => {
-            if (onSuccess) {
-              onSuccess(resultingSnippet);
-            }
-
-            return actions; /* resolves the Promise */
-          })
-          .catch((exception: Error) => {
-            if (isReadOnlyViewMode) {
-              location.hash = '/view/error';
-            } else {
-              const message =
-                exception instanceof PlaygroundError
-                  ? exception.message
-                  : Strings().snippetImportErrorBody;
-              this._uiEffects.alert(
-                message,
-                Strings().snippetImportErrorTitle,
-                Strings().ok
-              );
-            }
-            return Observable.from([]);
+      return this._importRawFromSource(data, mode)
+        .filter(snippet => !isNil(snippet))
+        .mergeMap(async snippet => {
+          let result = await this._massageSnippet(snippet, mode, {
+            isReadOnlyViewMode,
+            saveToLocalStorage,
           });
-      }
-    );
+          resultingSnippet = result.snippet;
+          return result.actions;
+        })
+        .mergeMap(actions => {
+          if (onSuccess) {
+            onSuccess(resultingSnippet);
+          }
+
+          return actions; /* resolves the Promise */
+        })
+        .catch((exception: Error) => {
+          if (isReadOnlyViewMode) {
+            location.hash = '/view/error';
+          } else {
+            const message =
+              exception instanceof PlaygroundError
+                ? exception.message
+                : Strings().snippetImportErrorBody;
+            this._uiEffects.alert(
+              message,
+              Strings().snippetImportErrorTitle,
+              Strings().ok
+            );
+          }
+          return Observable.from([]);
+        });
+    });
 
   @Effect()
   save$: Observable<Action> = this.actions$
@@ -106,8 +97,7 @@ export class SnippetEffects {
     .map(rawSnippet => {
       this._validate(rawSnippet);
 
-      const publicOrInternal =
-        SnippetFieldType.PUBLIC | SnippetFieldType.INTERNAL;
+      const publicOrInternal = SnippetFieldType.PUBLIC | SnippetFieldType.INTERNAL;
       const scrubbedSnippet = getScrubbedSnippet(rawSnippet, publicOrInternal);
       delete scrubbedSnippet.modified_at;
 
@@ -142,15 +132,13 @@ export class SnippetEffects {
       storage.snippets.insert(scrubbedSnippet.id, scrubbedSnippet);
 
       scrubbedSnippet.modified_at = Date.now();
-      const snippets =
-        JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
+      const snippets = JSON.parse(window.localStorage.getItem(hostStorageKey)) || {};
       snippets[scrubbedSnippet.id] = scrubbedSnippet;
       window.localStorage.setItem(hostStorageKey, JSON.stringify(snippets));
 
       // update lastOpened
       const settings =
-        JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) ||
-        {};
+        JSON.parse(window.localStorage.getItem(localStorageKeys.settings)) || {};
       settings[environment.current.host].lastOpened = pick(scrubbedSnippet, [
         'created_at',
         'host',
@@ -161,17 +149,12 @@ export class SnippetEffects {
         'description',
       ]);
 
-      window.localStorage.setItem(
-        localStorageKeys.settings,
-        JSON.stringify(settings)
-      );
+      window.localStorage.setItem(localStorageKeys.settings, JSON.stringify(settings));
 
       return new Snippet.StoreUpdatedAction();
     })
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetSaveError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetSaveError, exception))
     );
 
   @Effect()
@@ -190,9 +173,7 @@ export class SnippetEffects {
       return new Snippet.ImportSuccessAction(copy);
     })
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetDupeError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetDupeError, exception))
     );
 
   @Effect()
@@ -201,15 +182,10 @@ export class SnippetEffects {
     .map((action: Snippet.DeleteAction) => action.payload)
     .map(id => storage.snippets.remove(id))
     .mergeMap(() =>
-      Observable.from([
-        new Snippet.StoreUpdatedAction(),
-        new UI.ToggleImportAction(true),
-      ])
+      Observable.from([new Snippet.StoreUpdatedAction(), new UI.ToggleImportAction(true)])
     )
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetDeleteError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetDeleteError, exception))
     );
 
   @Effect()
@@ -218,9 +194,7 @@ export class SnippetEffects {
     .map(() => storage.snippets.clear())
     .map(() => new Snippet.StoreUpdatedAction())
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetDeleteAllError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetDeleteAllError, exception))
     );
 
   @Effect()
@@ -246,9 +220,7 @@ export class SnippetEffects {
     )
     .map(() => new Snippet.LoadSnippetsSuccessAction(storage.snippets.values()))
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetLoadAllError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetLoadAllError, exception))
     );
 
   @Effect({ dispatch: false })
@@ -256,7 +228,9 @@ export class SnippetEffects {
     .ofType(Snippet.SnippetActionTypes.RUN)
     .map(action => action.payload)
     .map((snippet: ISnippet) => {
-      if (Utilities.host === HostType.OUTLOOK) {
+      if (isCustomFunctionScript(snippet.script.content)) {
+        navigateToCustomFunctionsDashboard(window.location.href);
+      } else if (Utilities.host === HostType.OUTLOOK) {
         this._store.dispatch(
           new UI.ShowAlertAction({
             actions: [Strings().ok],
@@ -286,9 +260,7 @@ export class SnippetEffects {
       }
     })
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetRunError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetRunError, exception))
     );
 
   @Effect()
@@ -300,10 +272,7 @@ export class SnippetEffects {
         let snippetJsonUrl = `${
           environment.current.config.samplesUrl
         }/playlists/${environment.current.host.toLowerCase()}.yaml`;
-        return this._request.get<ITemplate[]>(
-          snippetJsonUrl,
-          ResponseTypes.YAML
-        );
+        return this._request.get<ITemplate[]>(snippetJsonUrl, ResponseTypes.YAML);
       } else {
         return this._request.get<ITemplate[]>(source, ResponseTypes.JSON);
       }
@@ -347,9 +316,7 @@ export class SnippetEffects {
     })
     .map(updatedSnippet => new Snippet.SaveAction(updatedSnippet))
     .catch(exception =>
-      Observable.of(
-        new UI.ReportErrorAction(Strings().snippetUpdateError, exception)
-      )
+      Observable.of(new UI.ReportErrorAction(Strings().snippetUpdateError, exception))
     );
 
   @Effect({ dispatch: false })
@@ -377,9 +344,7 @@ export class SnippetEffects {
           throw new Error(`Unsupported host: ${environment.current.host}`);
       }
       AI.trackEvent('Open in playground initiated', { id: correlationId });
-      let filename = `script-lab-playground-${
-        environment.current.host
-      }${extension}`;
+      let filename = `script-lab-playground-${environment.current.host}${extension}`;
       let url = `${environment.current.config.runnerUrl}/open/${
         environment.current.host
       }/${type}/${id}/${filename}?correlationId=${correlationId}`;
@@ -401,9 +366,7 @@ export class SnippetEffects {
   }
 
   private _nameExists(name: string) {
-    return storage.snippets
-      .values()
-      .some(item => item.name.trim() === name.trim());
+    return storage.snippets.values().some(item => item.name.trim() === name.trim());
   }
 
   private _validate(snippet: ISnippet) {
@@ -439,10 +402,7 @@ export class SnippetEffects {
     }
   }
 
-  private _shouldSaveImportedSnippet(
-    mode: string,
-    isReadOnlyViewMode: boolean
-  ): boolean {
+  private _shouldSaveImportedSnippet(mode: string, isReadOnlyViewMode: boolean): boolean {
     // If a imported snippet is a SAMPLE or the app is in view mode, then skip the save
     // (simply to avoid clutter -- the user might be opening a bunch, one after the other).
     // The snippet will get saved as soon as the user makes any changes (if in editor mode).
@@ -517,10 +477,7 @@ export class SnippetEffects {
   }
 
   /** Does a raw import of the snippet.  A subsequent function, _massageSnippet, will clean up any extraneous fields */
-  private _importRawFromSource(
-    data: string,
-    type: string
-  ): Observable<ISnippet> {
+  private _importRawFromSource(data: string, type: string): Observable<ISnippet> {
     AI.trackEvent(type);
     switch (type) {
       /* If creating a new snippet, try to load it from cache */
@@ -535,9 +492,7 @@ export class SnippetEffects {
               }/samples/${environment.current.host.toLowerCase()}/default.yaml`,
               ResponseTypes.YAML
             )
-            .map(snippet =>
-              environment.cache.insert('default_template', snippet)
-            );
+            .map(snippet => environment.cache.insert('default_template', snippet));
         }
 
       /* If importing a local snippet, then load it off the store */
@@ -678,9 +633,7 @@ export class SnippetEffects {
     let snippetsWithSameGistId: ISnippet[];
     let importResult: string = null;
     if (mode !== Snippet.ImportType.OPEN && snippet.gist) {
-      snippetsWithSameGistId = this._getSnippetsWithMatchingGistID(
-        snippet.gist
-      );
+      snippetsWithSameGistId = this._getSnippetsWithMatchingGistID(snippet.gist);
       if (snippetsWithSameGistId.length > 0) {
         let options = [
           Strings().snippetImportExistingButtonLabel,
@@ -728,10 +681,7 @@ export class SnippetEffects {
           const actions: Action[] = [new Snippet.ImportSuccessAction(snippet)];
 
           if (
-            this._shouldSaveImportedSnippet(
-              mode,
-              additionalParameters.isReadOnlyViewMode
-            )
+            this._shouldSaveImportedSnippet(mode, additionalParameters.isReadOnlyViewMode)
           ) {
             actions.push(new Snippet.SaveAction(snippet));
           }

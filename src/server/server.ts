@@ -31,7 +31,7 @@ import {
   getShareableYaml,
   isMakerScript,
   isCustomFunctionScript,
-  pascalCaseTransformSnippetName,
+  transformSnippetName,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -315,7 +315,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     const result = parseMetadata(snippet.script.content);
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
-    const namespace = pascalCaseTransformSnippetName(snippet.name);
+    const namespace = transformSnippetName(snippet.name);
     snippet.metadata = {
       namespace,
       functions: result.map(func => ({
@@ -371,23 +371,14 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 });
 
 registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
-  console.log(req.body);
-  const { snippets } = req.body;
-
-  const { visual, functions } = getFunctionsAndMetadataForRegistration(
-    snippets
+  const params: ICustomFunctionsMetadataRequestPostData = JSON.parse(
+    req.body.data
   );
-
-  const registerCustomFunctionsJsonStringBase64 = base64encode(
-    JSON.stringify({ functions })
-  );
+  let { snippets } = params;
 
   return respondWith(
     res,
-    JSON.stringify({
-      metadata: visual,
-      registerCustomFunctionsJsonStringBase64,
-    }),
+    JSON.stringify(getFunctionsAndMetadataForRegistration(snippets)),
     'application/javascript'
   );
 });
@@ -784,7 +775,7 @@ function respondWith(
   return res
     .contentType(type)
     .status(200)
-    .send(replaceTabsWithSpaces(content));
+    .send(type === 'text/html' ? replaceTabsWithSpaces(content) : content);
 }
 
 function parseXmlString(xml): Promise<JSON> {

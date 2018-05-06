@@ -1,5 +1,26 @@
-interface IExperimentationFlags {
-  testFlag: string;
+/////////////////////////////////////////////////////////////
+//////////////////// A NOTE ABOUT THIS FILE /////////////////
+/////////////////////////////////////////////////////////////
+/// This file may ONLY contain "interface" and "type"     ///
+/// definitions (the latter for strongly-typed strings)   ///
+/// Moreover, they must **NOT** have the "export"         ///
+/// keyword in front of them.  Putting an "export" will   ///
+/// make these interfaces no longer public by default.    ///
+/// Instead, each file will need to "import" them, and    ///
+/// that doesn't work because some of the interfaces are  ///
+/// required by both server and client, but require of    ///
+/// "../../interfaces/" results in file not found         ///
+/// So again: no "export" keywords anywhere in this file! ///
+/// And similarly, no enums -- use "type" instead, which  ///
+/// has no runtime component to it, is pure design-time.  ///
+/////////////////////////////////////////////////////////////
+
+// Note: actual defaults need to be set in "env.config.js"
+interface ExperimentationFlags {
+  customFunctions: {
+    forceOn: boolean;
+    extraLogging: boolean;
+  };
 }
 
 interface ITemplate {
@@ -51,7 +72,6 @@ interface ISnippet extends ITemplate {
   script?: IContentLanguagePair;
   template?: IContentLanguagePair;
   style?: IContentLanguagePair;
-  customFunctions?: IContentLanguagePair;
   libraries?: string;
   perfInfo?: IPerformanceInformation;
 }
@@ -74,63 +94,6 @@ interface IRunnerState {
    * Otherwise, if null, will create a default reference back to editor domain,
    * taking host and snippet ID into account */
   returnUrl?: string;
-}
-
-// Note: I've duplicated these interfaces here from server/custom-functions/interfaces.ts
-// because when trying to import, it broke everything and none of these interfaces could be found
-interface ICFFunctionMetadata {
-  name: string;
-  description?: string;
-  parameters: ICFVisualParameterMetadata[];
-  result: ICFFunctionResultMetadata;
-  options: ICustomFunctionOptions;
-  error?: string;
-}
-
-interface ICFParameterMetadata {
-  name: string;
-  description?: string;
-  type: CustomFunctionsSupportedTypes;
-  dimensionality: CustomFunctionsDimensionality;
-  error?: string;
-}
-
-/** The interface used by Excel to register custom functions (workbook.registerCustomFunctions(...))  */
-interface ICustomFunctionsRegistrationApiMetadata {
-  functions: ICFFunctionMetadata[];
-}
-
-interface ICustomFunctionsSnippetRegistrationData {
-  namespace: string;
-  functions: ICFFunctionMetadata[];
-}
-
-interface ICustomFunctionsRegistrationRelevantData {
-  name: string; //of snippet
-  data: ICustomFunctionsSnippetRegistrationData;
-}
-
-interface ICustomFunctionsHeartbeatParams {
-  clientTimestamp: number;
-}
-
-interface ICustomFunctionsRunnerRelevantData {
-  name: string;
-  id: string;
-  libraries: string;
-  script: IContentLanguagePair;
-  metadata: ICustomFunctionsSnippetRegistrationData;
-}
-
-interface IRegisterCustomFunctionsPostData {
-  snippets: ISnippet[];
-  displayLanguage: string;
-}
-
-interface IRunnerCustomFunctionsPostData {
-  snippets: ICustomFunctionsRunnerRelevantData[];
-  displayLanguage: string;
-  heartbeatParams: ICustomFunctionsHeartbeatParams;
 }
 
 interface IExportState {
@@ -235,7 +198,7 @@ interface ICompiledPlaygroundInfo {
     project_api: 'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument';
     generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office';
   };
-  experimentationFlagsDefaults: {};
+  experimentationFlagsDefaults: ExperimentationFlags;
 }
 
 interface ICurrentPlaygroundInfo {
@@ -253,6 +216,8 @@ interface ICurrentPlaygroundInfo {
   isAddinCommands: boolean;
   isTryIt: boolean;
   wacUrl: string;
+
+  experimentationFlags: ExperimentationFlags;
 }
 
 interface IBuildInfo {
@@ -316,8 +281,11 @@ interface DefaultAuthRequestParamData {
   auth_url: string;
 }
 
+type ConsoleLogTypes = 'log' | 'info' | 'warn' | 'error';
+
 interface LogData {
   source: string;
   message: any;
-  severity: 'info' | 'warn' | 'error';
+  severity: ConsoleLogTypes;
+  indent?: number;
 }

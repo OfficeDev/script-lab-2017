@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { isEqual } from 'lodash';
 
 import List, { Item } from '../List';
 
@@ -52,7 +53,7 @@ const ClearButton = styled.button`
   }
 `;
 
-function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
+function getLogPropsBySeverity(severity: ConsoleLogTypes) {
   let background;
   let color = 'black';
   let icon = null;
@@ -60,6 +61,10 @@ function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
   switch (severity) {
     case 'log':
       background = 'white';
+      break;
+    case 'info':
+      background = '#cce6ff';
+      icon = { name: 'Info', color: '#002db3' };
       break;
     case 'warn':
       background = '#fff4ce';
@@ -76,13 +81,8 @@ function getLogPropsBySeverity(severity: 'log' | 'warn' | 'error') {
   return { background, color, icon };
 }
 
-export interface ILog {
-  message: string;
-  severity: 'log' | 'warn' | 'error';
-}
-
 interface Props {
-  logs: ILog[];
+  logs: LogData[];
   clearLogs: () => void;
 }
 
@@ -95,6 +95,10 @@ export default class Logs extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { filterQuery: '', shouldScrollToBottom: true };
+  }
+
+  shouldComponentUpdate(nextProps: Props) {
+    return !isEqual(this.props.logs, nextProps.logs);
   }
 
   componentDidMount() {
@@ -117,10 +121,7 @@ export default class Logs extends React.Component<Props, State> {
       // tslint:disable-next-line:semicolon
     });
 
-  setShouldScrollToBottom = (
-    ev: React.FormEvent<HTMLElement>,
-    checked: boolean
-  ) =>
+  setShouldScrollToBottom = (ev: React.FormEvent<HTMLElement>, checked: boolean) =>
     this.setState({
       shouldScrollToBottom: checked,
       // tslint:disable-next-line:semicolon
@@ -131,6 +132,8 @@ export default class Logs extends React.Component<Props, State> {
 
     const items: Item[] = logs.map((log, i) => ({
       name: log.message,
+      title: log.source,
+      indent: log.indent,
       key: i,
       ...getLogPropsBySeverity(log.severity),
     }));

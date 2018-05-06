@@ -3,10 +3,14 @@ import * as ReactDOM from 'react-dom';
 import App from './App';
 import ComingSoon from './components/CustomFunctionsDashboard/ComingSoon';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
-import { storage, environment } from '../../client/app/helpers';
+import {
+  storage,
+  environment,
+  getIsCustomFunctionsSupportedOnHost,
+  isCustomFunctionScript,
+} from '../../client/app/helpers';
 import { uniqBy } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
-import { isCustomFunctionScript } from '../../server/core/snippet.helper';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
@@ -20,6 +24,9 @@ import '../assets/styles/extras.scss';
 tryCatch(async () => {
   environment.initializePartial({ host: 'EXCEL' });
 
+  // Now wait for the host.  The advantage of doing it this way is that you can easily
+  // bypass it for debugging, just by entering "window.playground_host_ready = true;"
+  // in the F12 debug console
   await new Promise(resolve => {
     const interval = setInterval(() => {
       if ((window as any).playground_host_ready) {
@@ -29,21 +36,17 @@ tryCatch(async () => {
     }, 100);
   });
 
-  const customFunctionsSupported =
-    Office &&
-    Office.context &&
-    Office.context.requirements &&
-    Office.context.requirements.isSetSupported('CustomFunctions', 1.1);
-
-  if (customFunctionsSupported) {
+  if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
 
-    const {
-      metadata,
-      registerCustomFunctionsJsonStringBase64,
-    } = await getMetadata();
+    const { visual, functions } = await getMetadata();
 
-    await registerMetadata(registerCustomFunctionsJsonStringBase64);
+    // To allow debugging in a plain web browser, only try to register if the
+    // Excel namespace exists.  It always will for an Add-in,
+    // since it would have waited for Office to load before getting here
+    if (typeof Excel !== 'undefined') {
+      await registerMetadata(functions);
+    }
 
     // Get the custom functions runner to reload as well
     let startOfRequestTime = new Date().getTime();
@@ -54,9 +57,9 @@ tryCatch(async () => {
 
     document.getElementById('progress')!.style.display = 'none';
 
-    if ((metadata as any).snippets.length > 0) {
+    if (visual.snippets.length > 0) {
       ReactDOM.render(
-        <App metadata={(metadata as any).snippets} />,
+        <App metadata={visual.snippets} />,
         document.getElementById('root') as HTMLElement
       );
     } else {
@@ -73,15 +76,14 @@ tryCatch(async () => {
 
 async function getMetadata() {
   return new Promise<{
-    metadata: object[];
-    registerCustomFunctionsJsonStringBase64: string;
+    visual: ICFVisualMetadata;
+    functions: ICFFunctionMetadata[];
   }>(async (resolve, reject) => {
-    ensureFreshLocalStorage();
     try {
-      console.log(storage);
+      ensureFreshLocalStorage();
 
       if (!storage.snippets) {
-        resolve({ metadata: [], registerCustomFunctionsJsonStringBase64: '' });
+        resolve({ visual: { snippets: [] }, functions: [] });
         return;
       }
 
@@ -112,9 +114,13 @@ async function getMetadata() {
         }
       };
 
+      const data: ICustomFunctionsMetadataRequestPostData = {
+        snippets: allSnippetsToRegisterWithPossibleDuplicate,
+      };
+
       xhr.send(
         JSON.stringify({
-          snippets: allSnippetsToRegisterWithPossibleDuplicate,
+          data: JSON.stringify(data),
         })
       );
     } catch (e) {
@@ -123,14 +129,14 @@ async function getMetadata() {
   });
 }
 
-async function registerMetadata(
-  registerCustomFunctionsJsonStringBase64: string
-) {
-  const registrationPayload = atob(registerCustomFunctionsJsonStringBase64);
+async function registerMetadata(functions: ICFFunctionMetadata[]) {
+  // Register functions as ALLCAPS:
+  functions.forEach(fn => (fn.name = fn.name.toUpperCase()));
+
   await Excel.run(async context => {
     (context.workbook as any).registerCustomFunctions(
-      'ScriptLab',
-      registrationPayload
+      'ScriptLab'.toUpperCase(),
+      JSON.stringify({ functions: functions })
     );
     await context.sync();
   });

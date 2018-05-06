@@ -77,7 +77,6 @@ class Environment {
     if (!this._current) {
       let cachedEnvironment = (this.cache.get('environment') ||
         {}) as ICurrentPlaygroundInfo;
-      delete cachedEnvironment.runtimeSessionTimestamp;
 
       ensureFreshLocalStorage();
 
@@ -95,10 +94,19 @@ class Environment {
         host: null,
         platform: null,
 
-        runtimeSessionTimestamp: new Date().getTime().toString(),
+        runtimeSessionTimestamp: null,
+        experimentationFlags: null,
       };
 
       this.appendCurrent(cachedEnvironment);
+
+      // Now set some properties anew, that shouldn't be come from the sessionStorage cache:
+      this.appendCurrent({
+        runtimeSessionTimestamp: new Date().getTime().toString(),
+        experimentationFlags: JSON.parse(
+          this.getExperimentationFlagsString(true /*onEmptyReturnDefaults*/)
+        ),
+      });
 
       this.cache.insert('environment', this._current);
     }
@@ -116,7 +124,7 @@ class Environment {
     if (!isNil(value.host)) {
       if (value.host.toUpperCase() === 'EXCEL') {
         updatedEnv = {
-          ...updatedEnv
+          ...updatedEnv,
         };
       }
     }
@@ -131,7 +139,7 @@ class Environment {
       const flagSetInStorage = window.localStorage.getItem(
         localStorageKeys.experimentationFlags
       );
-      const flagsOrError: IExperimentationFlags | Error = attempt(() =>
+      const flagsOrError: ExperimentationFlags | Error = attempt(() =>
         JSON.parse(flagSetInStorage)
       );
 

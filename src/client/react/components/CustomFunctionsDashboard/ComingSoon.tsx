@@ -13,30 +13,39 @@ export default () => (
         Script Lab
       </h2>
       <h1
-        style={{ color: '#D83B01', marginTop: '24px', lineHeight: '56px' }}
+        style={{
+          color: '#D83B01',
+          marginTop: '24px',
+          lineHeight: '56px',
+          maxWidth: '300px',
+          textAlign: 'center',
+        }}
         className="ms-fontSize-su ms-fontWeight-light"
       >
-        Coming Soon.
+        Custom Functions
       </h1>
       <hr
         style={{
           width: '118px',
-          marginTop: '12px',
+          marginTop: '22px',
           marginBottom: '27px',
           color: gray,
         }}
       />
       <p
         style={{
-          marginLeft: '20%',
-          marginRight: '20%',
+          maxWidth: '250px',
           textAlign: 'center',
           lineHeight: '19px',
           color: gray,
         }}
         className="ms-fontSize-m ms-fontWeight-regular"
       >
-        Discover what custom functions<br />can do for you!
+        Currently, Script Lab only supports Custom Functions (Preview) on
+        Windows Desktop, and only on the latest Insider builds.<br />
+        <br />
+        For more info, see{' '}
+        <a href="https://aka.ms/customfunctions">these instructions</a>.
       </p>
     </main>
   </div>

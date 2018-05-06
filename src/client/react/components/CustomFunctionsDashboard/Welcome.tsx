@@ -119,8 +119,8 @@ export default class Welcome extends React.Component<{}, State> {
                 Copy the following script and paste it into the editor.
                 <CodeBlock className="ms-font-xs">
                   <pre>/** @CustomFunction */</pre>
-                  <pre>function add(a: number, b: number): number {'{'}</pre>
-                  <pre> return a + b;</pre>
+                  <pre>function add10(x: number): number {'{'}</pre>
+                  <pre> return x + 10;</pre>
                   <pre>{'}'}</pre>
                 </CodeBlock>
               </ListItem>

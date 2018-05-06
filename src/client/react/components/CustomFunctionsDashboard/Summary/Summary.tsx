@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import PivotContentContainer from '../PivotContentContainer';
-import List from '../List';
+import List, { Item } from '../List';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -17,14 +17,19 @@ const FunctionsContainer = styled.div`
 `;
 
 const Summary = ({ metadata }) => {
-  let items = { success: [], skipped: [], error: [] };
+  let items: { success: Item[]; skipped: Item[]; error: Item[] } = {
+    success: [],
+    skipped: [],
+    error: [],
+  };
   metadata.forEach(snippet => {
     snippet.functions.forEach(func => {
-      const name = `=ScriptLab.${snippet.name}.${func.name}(${
-        func.parameters.length > 0 ? '…' : ''
-      })`;
+      const scriptLabToplevelNamespace = 'ScriptLab';
+      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${
+        func.name
+      }(${func.parameters.length > 0 ? '…' : ''})`;
 
-      const item = { name, key: name };
+      const item: Item = { name, key: name, smallCaps: true };
 
       if (snippet.error) {
         if (func.error) {
@@ -53,7 +58,7 @@ const Summary = ({ metadata }) => {
     <PivotContentContainer>
       <TopInfo>
         <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
-          Custom Functions
+          Custom Functions (Preview)
         </h1>
         <p
           className="ms-font-m"

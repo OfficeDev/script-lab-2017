@@ -2,6 +2,15 @@ const { name, version, author } = require('../package.json');
 const moment = require('moment');
 const { startCase } = require('lodash');
 
+// Note: for any changes made here, please update the types in
+// "playground.d.ts" ("interface ExperimentationFlags {")
+const experimentationFlagsDefaults = {
+  customFunctions: {
+    forceOn: false,
+    extraLogging: false,
+  },
+};
+
 /** NOTE: when adding local storage keys here, remember to add them for IntelliSense's sake in "ICompiledPlaygroundInfo" in playground.d.ts */
 const localStorageKeys = {
   dummyUnusedKey: 'playground_dummy_unused_key',
@@ -131,8 +140,7 @@ const config = {
 
 // NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
 const safeExternalUrls = {
-  playground_help:
-    'https://github.com/OfficeDev/script-lab/blob/master/README.md',
+  playground_help: 'https://github.com/OfficeDev/script-lab/blob/master/README.md',
   ask: 'https://stackoverflow.com/questions/tagged/office-js',
   excel_api:
     'https://dev.office.com/reference/add-ins/excel/excel-add-ins-reference-overview',
@@ -141,15 +149,11 @@ const safeExternalUrls = {
   onenote_api:
     'https://dev.office.com/reference/add-ins/onenote/onenote-add-ins-javascript-reference',
   outlook_api: 'https://docs.microsoft.com/en-us/outlook/add-ins/reference',
-  powepoint_api:
-    'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
+  powepoint_api: 'https://dev.office.com/docs/add-ins/powerpoint/powerpoint-add-ins',
   project_api:
     'https://dev.office.com/reference/add-ins/shared/projectdocument.projectdocument',
-  generic_api:
-    'https://dev.office.com/reference/add-ins/javascript-api-for-office',
+  generic_api: 'https://dev.office.com/reference/add-ins/javascript-api-for-office',
 };
-
-const experimentationFlagsDefaults = {};
 
 class RedirectPlugin {
   apply(compiler) {
@@ -160,10 +164,7 @@ class RedirectPlugin {
           let headOpeningTag = '<head>';
           let htmlHead = htmlPluginData.html.match(headOpeningTag);
 
-          let {
-            originEnvironmentUrl,
-            redirectEnvironmentUrl,
-          } = localStorageKeys;
+          let { originEnvironmentUrl, redirectEnvironmentUrl } = localStorageKeys;
 
           const validRedirectLocations = [];
           for (var envName in config) {
@@ -233,9 +234,7 @@ class RedirectPlugin {
                 // Note: Due to bug in IE (https://stackoverflow.com/a/40770399),
                 // Local Storage may get out of sync across tabs.  To fix this,
                 // set a value of some key, and this will ensure that localStorage is refreshed.
-                window.localStorage.setItem("${
-                  localStorageKeys.dummyUnusedKey
-                }", null);
+                window.localStorage.setItem("${localStorageKeys.dummyUnusedKey}", null);
                 var redirectUrl = window.localStorage.getItem("${redirectEnvironmentUrl}");
                 if (redirectUrl) {
                     var originParam = [

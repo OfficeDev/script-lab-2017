@@ -141,10 +141,10 @@ export function isCustomFunctionScript(content: string) {
 }
 
 const snippetNameRegex = /[^0-9A-Za-z_ ]/g;
-export function pascalCaseTransformSnippetName(snippetName: string) {
+export function transformSnippetName(snippetName: string) {
   return snippetName
     .replace(snippetNameRegex, '')
     .split(' ')
-    .map(word => word.charAt(0).toLocaleUpperCase() + word.slice(1))
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join('');
 }

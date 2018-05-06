@@ -41,32 +41,32 @@ const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
 interface Props {}
 
 interface State {
-  logs: any[];
+  logs: LogData[];
   runnerLastUpdatedText: string;
   runnerIsAlive: boolean;
 }
 
 export default class Console extends React.Component<Props, State> {
   private interval;
+
   constructor(props: Props) {
     super(props);
+    this.keepRefreshingFromLocalStorage = this.keepRefreshingFromLocalStorage.bind(this);
 
     setUpMomentJsDurationDefaults(moment);
     this.state = { logs: [], runnerIsAlive: false, runnerLastUpdatedText: '' };
   }
 
-  getLogs = () => {
-    const runnerIsAlive =
+  keepRefreshingFromLocalStorage() {
+    const pendingState: State = {} as State;
+
+    pendingState.runnerIsAlive =
       getElapsedTime(
-        getNumberFromLocalStorage(
-          localStorageKeys.customFunctionsLastHeartbeatTimestamp
-        )
+        getNumberFromLocalStorage(localStorageKeys.customFunctionsLastHeartbeatTimestamp)
       ) < 3000;
 
-    let runnerLastUpdatedText = null;
-
-    if (runnerIsAlive) {
-      runnerLastUpdatedText = moment(
+    if (pendingState.runnerIsAlive) {
+      pendingState.runnerLastUpdatedText = moment(
         new Date(
           getNumberFromLocalStorage(
             localStorageKeys.customFunctionsCurrentlyRunningTimestamp
@@ -76,31 +76,26 @@ export default class Console extends React.Component<Props, State> {
         .locale(getDisplayLanguage())
         .fromNow();
     }
-    const storageLogs = window.localStorage.getItem(localStorageKeys.log) || '';
-    const logs = storageLogs
-      .split('\n')
-      .filter(line => line !== '')
-      .filter(line => !line.includes('Agave.HostCall'))
-      .map(entry => JSON.parse(entry))
-      .map(log => ({
-        message: log.message as string,
-        severity: log.severity as 'log' | 'warn' | 'error',
-      }));
 
-    this.setState({
-      logs: [...this.state.logs, ...logs],
-      runnerLastUpdatedText,
-      runnerIsAlive,
-    });
+    const logsString = window.localStorage.getItem(localStorageKeys.log) || '';
+    if (logsString.length > 0) {
+      window.localStorage.removeItem(localStorageKeys.log);
 
-    window.localStorage.removeItem(localStorageKeys.log);
-    // tslint:disable-next-line:semicolon
-  };
+      const newLogs = logsString
+        .split('\n')
+        .filter(line => line !== '')
+        .filter(line => !line.includes('Agave.HostCall'))
+        .map(entry => JSON.parse(entry) as LogData);
+      pendingState.logs = [...this.state.logs, ...newLogs];
+    }
+
+    this.setState(pendingState);
+  }
 
   clearLogs = () => this.setState({ logs: [] });
 
   componentDidMount() {
-    this.interval = setInterval(this.getLogs, 300);
+    this.interval = setInterval(this.keepRefreshingFromLocalStorage, 300);
   }
 
   componentWillUnmount() {
@@ -118,7 +113,7 @@ export default class Console extends React.Component<Props, State> {
           <Logs logs={this.state.logs} clearLogs={this.clearLogs} />
         ) : (
           <NoLogsPlaceholder>
-            <p
+            <div
               style={{
                 position: 'absolute',
                 top: '0',
@@ -132,9 +127,18 @@ export default class Console extends React.Component<Props, State> {
                 padding: '20px',
               }}
             >
-              There are no logs to display. Use <strong>console.log()</strong>{' '}
+              There are no logs to display. Use{' '}
+              <pre
+                style={{
+                  fontFamily: 'Consolas, monaco, monospace',
+                  fontWeight: 'bold',
+                  display: 'inline',
+                }}
+              >
+                console.log()
+              </pre>{' '}
               inside your functions to display logs here.
-            </p>
+            </div>
           </NoLogsPlaceholder>
         )}
       </PivotContentContainer>

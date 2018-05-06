@@ -4,6 +4,7 @@ import {
   post,
   trustedSnippetManager,
   isInsideOfficeApp,
+  generateUrl,
 } from './index';
 import { getDisplayLanguage } from '../strings';
 import { uniqBy } from 'lodash';
@@ -19,6 +20,13 @@ export function navigateToRunCustomFunctions(payload?: any) {
   return post(url, payload);
 }
 
+export function navigateToCustomFunctionsDashboard(returnUrl: string) {
+  window.location.href = generateUrl(
+    environment.current.config.editorUrl + '/custom-functions.html',
+    { returnUrl: encodeURIComponent(returnUrl) }
+  );
+}
+
 export function navigateToRunner(snippet: ISnippet, returnUrl: string) {
   const overrides = <ISnippet>{
     host: environment.current.host,
@@ -29,6 +37,7 @@ export function navigateToRunner(snippet: ISnippet, returnUrl: string) {
     snippet: { ...snippet, ...overrides },
     displayLanguage: getDisplayLanguage(),
     isInsideOfficeApp: isInsideOfficeApp(),
+    returnUrl: returnUrl,
   };
   const data = JSON.stringify(state);
   const isTrustedSnippet = trustedSnippetManager.isSnippetTrusted(
@@ -56,10 +65,7 @@ export function getRunnerCustomFunctionsPayload() {
         snippet.gistOwnerId
       )
     )
-    .filter(
-      snippet =>
-        snippet.script && isCustomFunctionScript(snippet.script.content)
-    )
+    .filter(snippet => snippet.script && isCustomFunctionScript(snippet.script.content))
     .map(snippet => {
       return {
         name: snippet.name,
@@ -76,6 +82,7 @@ export function getRunnerCustomFunctionsPayload() {
     heartbeatParams: {
       clientTimestamp: new Date().getTime(),
     },
+    experimentationFlags: environment.current.experimentationFlags,
   };
 
   return { data: JSON.stringify(data) };
