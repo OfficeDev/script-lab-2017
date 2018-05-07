@@ -23,8 +23,6 @@ interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrati
   id: string;
 }
 
-// Note: Office.initialize is already handled outside in the html page,
-// setting "window.playground_host_ready = true;"
 tryCatch(async () => {
   let params: InitializationParams = (window as any).customFunctionParams;
 
@@ -41,10 +39,8 @@ tryCatch(async () => {
     await initializeRunnableSnippets(params);
     logIfExtraLoggingEnabled('Done preparing snippets');
 
-    await environment.createPlaygroundHostReadyTimer();
-
     logIfExtraLoggingEnabled('Calling into Excel to request the pipeline to initialize');
-    await window['Excel']['CustomFunctions']['initialize']();
+    await window['Office']['Preview']['startCustomFunctions']();
 
     logIfExtraLoggingEnabled(
       'Custom functions runner is ready to evaluate your functions!'

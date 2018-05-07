@@ -14,10 +14,6 @@
     <script src="{{{origin}}}/libs/{{{versionedPackageNames_microsoft_office_js}}}/dist/office.js"></script>
 
     <script>
-        Office.initialize = function () {
-            window.playground_host_ready = true;
-        };
-
         window.customFunctionParams = {
             snippetsDataBase64: '{{{snippetsDataBase64}}}',
             metadataBase64: '{{{metadataBase64}}}',
