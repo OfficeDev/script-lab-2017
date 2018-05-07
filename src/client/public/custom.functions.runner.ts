@@ -38,6 +38,7 @@ tryCatch(async () => {
     await initializeRunnableSnippets(params);
 
     await environment.createPlaygroundHostReadyTimer();
+
     await window['Excel']['CustomFunctions']['initialize']();
 
     logIfExtraLoggingEnabled(

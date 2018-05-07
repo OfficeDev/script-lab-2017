@@ -75,9 +75,9 @@
     lodash "4.17.4"
     rxjs "5.2.0"
 
-"@microsoft/office-js@1.1.7-adhoc.6":
-  version "1.1.7-adhoc.6"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.7-adhoc.6.tgz#10659ff3f1ff9c45b33812fed635b2867fc82737"
+"@microsoft/office-js@custom-functions-preview":
+  version "1.1.9-custom-functions-preview.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.9-custom-functions-preview.0.tgz#3ea5dd975f28be2d92ecae0e8afa68194f06ced6"
 
 "@ngrx/core@1.2.0":
   version "1.2.0"

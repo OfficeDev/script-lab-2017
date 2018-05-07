@@ -12,10 +12,11 @@
     <meta http-equiv="Expires" content="0" />
 
     <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.min.css" />
-    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css"
-    />
+    <link rel="stylesheet" href="{{{origin}}}/libs/{{{versionedPackageNames_office_ui_fabric_js}}}/css/fabric.components.min.css" />
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.polyfills.css}}}" /> {{!-- Re-use the same CSS as the runner, since almost all of it is the same anyway --}}
     <link rel="stylesheet" href="{{{origin}}}/{{{assets.runner.css}}}" />
+
+    <script src="{{{origin}}}/libs/{{{versionedPackageNames_microsoft_office_js}}}/dist/office.js"></script>
 
     <style>
         /** On this particular page, adjust progress so that it keeps the header visible */
@@ -194,10 +195,6 @@
         }
 
     </style>
-
-    <script src="https://unpkg.com/@microsoft/office-js@1.1.7-adhoc.3/dist/office.debug.js"></script>
-    <!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script> -->
-
 
     <script>
         Office.initialize = function () {

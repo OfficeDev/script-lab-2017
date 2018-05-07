@@ -23,6 +23,9 @@ const {
 } = require('./package.version.substitutions.plugin.js');
 const { GH_SECRETS } = process.env;
 
+// Note: for any packages that you want to use in a Handlebars template
+// on the server, be sure to add it to "export interface IDefaultHandlebarsContext {"
+// in "template.generator.ts"
 const versionedPackageNames = getVersionedPackageNames([
   'monaco-editor',
   '@microsoft/office-js',
@@ -56,9 +59,11 @@ module.exports = prodMode => ({
     auth: './public/auth.ts',
     defaultAuth: './public/default-auth.ts',
     tryIt: './public/try.it.ts',
-    customFunctionsRunnerInitialRedirect: './public/custom.functions.runner.initial.redirect.ts' /* for the "custom-functions-run.html" page, for the invisible runner */,
+    customFunctionsRunnerInitialRedirect:
+      './public/custom.functions.runner.initial.redirect.ts' /* for the "custom-functions-run.html" page, for the invisible runner */,
     customFunctionsHeartbeat: './public/custom.functions.heartbeat.ts',
-    customFunctionsRunner: './public/custom.functions.runner.ts' /* used in the "custom-functions-runner" handlebars template */,
+    customFunctionsRunner:
+      './public/custom.functions.runner.ts' /* used in the "custom-functions-runner" handlebars template */,
     customFunctionsDashboard: './react/index.tsx',
   },
 
@@ -148,11 +153,9 @@ module.exports = prodMode => ({
 
           const secrets = GH_SECRETS.split(',');
           let mappedSecrets = {};
-          ['local', 'edge', 'insiders', 'production', 'cdn'].forEach(
-            (value, index) => {
-              mappedSecrets[value] = secrets[index];
-            }
-          );
+          ['local', 'edge', 'insiders', 'production', 'cdn'].forEach((value, index) => {
+            mappedSecrets[value] = secrets[index];
+          });
 
           const data = `\nexports.secrets = ${JSON.stringify(mappedSecrets)};`;
           return content + data;
