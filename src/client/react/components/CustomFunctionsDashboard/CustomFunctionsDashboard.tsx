@@ -36,12 +36,6 @@ class CustomFunctionsDashboard extends React.Component<
   render() {
     const { metadata } = this.props;
 
-    const tabs = [
-      { name: 'Summary', component: <Summary metadata={metadata} /> },
-      { name: 'Details', component: <Details metadata={metadata} /> },
-      { name: 'Console', component: <Console /> },
-    ];
-
     // Better design would be to put it on root page, and pass it down to this component.  But this will do for now
     const pageParams: { returnUrl?: string } =
       Authenticator.extractParams(window.location.href.split('?')[1]) || {};
@@ -98,6 +92,27 @@ class CustomFunctionsDashboard extends React.Component<
       },
     });
 
+    let pivotItems: React.ReactElement<PivotItem>[] = [];
+    if (pageParams.returnUrl) {
+      pivotItems.push(
+        <PivotItem key="back" itemIcon={NavigateBackIconName}>
+          {<div />}
+        </PivotItem>
+      );
+    }
+    pivotItems = [
+      ...pivotItems,
+      ...[
+        { name: 'Summary', component: <Summary metadata={metadata} /> },
+        { name: 'Details', component: <Details metadata={metadata} /> },
+        { name: 'Console', component: <Console /> },
+      ].map(({ name, component }) => (
+        <PivotItem linkText={name} key="{name}">
+          {component}
+        </PivotItem>
+      )),
+    ];
+
     return (
       <Container className={PivotClassName}>
         <RefreshBar />
@@ -105,14 +120,7 @@ class CustomFunctionsDashboard extends React.Component<
           initialSelectedIndex={pageParams.returnUrl ? 1 : 0}
           onLinkClick={onLinkClick}
         >
-          {(pageParams.returnUrl
-            ? [<PivotItem itemIcon={NavigateBackIconName}>{<div />}</PivotItem>]
-            : []
-          ).concat(
-            tabs.map(({ name, component }) => (
-              <PivotItem linkText={name}>{component}</PivotItem>
-            ))
-          )}
+          {pivotItems}
         </Pivot>
       </Container>
     );

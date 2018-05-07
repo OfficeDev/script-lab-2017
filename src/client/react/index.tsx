@@ -24,6 +24,9 @@ import '../assets/styles/extras.scss';
 tryCatch(async () => {
   environment.initializePartial({ host: 'EXCEL' });
 
+  // clear out any former logs in the storage -- showing logs from a previous session is confusing
+  window.localStorage.removeItem(localStorageKeys.log);
+
   // Now wait for the host.  The advantage of doing it this way is that you can easily
   // bypass it for debugging, just by entering "window.playground_host_ready = true;"
   // in the F12 debug console
@@ -58,19 +61,14 @@ tryCatch(async () => {
     document.getElementById('progress')!.style.display = 'none';
 
     if (visual.snippets.length > 0) {
-      ReactDOM.render(
-        <App metadata={visual.snippets} />,
-        document.getElementById('root') as HTMLElement
-      );
-    } else {
-      ReactDOM.render(<Welcome />, document.getElementById(
+      ReactDOM.render(<App metadata={visual.snippets} />, document.getElementById(
         'root'
       ) as HTMLElement);
+    } else {
+      ReactDOM.render(<Welcome />, document.getElementById('root') as HTMLElement);
     }
   } else {
-    ReactDOM.render(<ComingSoon />, document.getElementById(
-      'root'
-    ) as HTMLElement);
+    ReactDOM.render(<ComingSoon />, document.getElementById('root') as HTMLElement);
   }
 });
 
@@ -92,16 +90,13 @@ async function getMetadata() {
         storage.snippets.values(),
         'id'
       ).filter(
-        snippet =>
-          snippet.script && isCustomFunctionScript(snippet.script.content)
+        snippet => snippet.script && isCustomFunctionScript(snippet.script.content)
       );
 
       let xhr = new XMLHttpRequest();
       xhr.open(
         'POST',
-        `${
-          environment.current.config.runnerUrl
-        }/custom-functions/parse-metadata`
+        `${environment.current.config.runnerUrl}/custom-functions/parse-metadata`
       );
       xhr.setRequestHeader('content-type', 'application/json');
 

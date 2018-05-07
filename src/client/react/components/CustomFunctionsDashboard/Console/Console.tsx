@@ -51,13 +51,15 @@ export default class Console extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.keepRefreshingFromLocalStorage = this.keepRefreshingFromLocalStorage.bind(this);
+    this.refreshLogAndRunnerStatusFromLocalStorage = this.refreshLogAndRunnerStatusFromLocalStorage.bind(
+      this
+    );
 
     setUpMomentJsDurationDefaults(moment);
     this.state = { logs: [], runnerIsAlive: false, runnerLastUpdatedText: '' };
   }
 
-  keepRefreshingFromLocalStorage() {
+  refreshLogAndRunnerStatusFromLocalStorage() {
     const pendingState: State = {} as State;
 
     pendingState.runnerIsAlive =
@@ -95,7 +97,9 @@ export default class Console extends React.Component<Props, State> {
   clearLogs = () => this.setState({ logs: [] });
 
   componentDidMount() {
-    this.interval = setInterval(this.keepRefreshingFromLocalStorage, 300);
+    this.refreshLogAndRunnerStatusFromLocalStorage();
+
+    this.interval = setInterval(this.refreshLogAndRunnerStatusFromLocalStorage, 300);
   }
 
   componentWillUnmount() {

@@ -23,8 +23,6 @@ interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrati
   id: string;
 }
 
-// Note: Office.initialize is already handled outside in the html page,
-// setting "window.playground_host_ready = true;"
 tryCatch(async () => {
   let params: InitializationParams = (window as any).customFunctionParams;
 
@@ -33,12 +31,16 @@ tryCatch(async () => {
 
     await establishHeartbeat(params.heartbeatParams);
 
+    // Just in case want to log something to the console, overwrite it to redirect to the dashboard logs
+    overwriteConsole('[SYSTEM]', window);
+
     logIfExtraLoggingEnabled('Custom functions runner is loading, please wait...');
 
     await initializeRunnableSnippets(params);
+    logIfExtraLoggingEnabled('Done preparing snippets');
 
-    await environment.createPlaygroundHostReadyTimer();
-    await window['Excel']['CustomFunctions']['initialize']();
+    logIfExtraLoggingEnabled('Calling into Excel to request the pipeline to initialize');
+    await window['Office']['Preview']['startCustomFunctions']();
 
     logIfExtraLoggingEnabled(
       'Custom functions runner is ready to evaluate your functions!'
@@ -79,7 +81,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
       (window as any).scriptRunnerEndInit = (iframeWindow: Window, id: string) =>
         tryCatch(() => {
           const snippetMetadata = metadataArray.find(item => item.id === id);
-          const uppercaseNamespace = snippetMetadata.namespace.toUpperCase();
+          const namespaceUppercase = snippetMetadata.namespace.toUpperCase();
 
           logIfExtraLoggingEnabled(
             `Mapping custom functions from namespace ${
@@ -87,7 +89,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             }, expecting ${snippetMetadata.functions.length} functions`
           );
 
-          window[uppercaseNamespace] = {};
+          window[namespaceUppercase] = {};
           snippetMetadata.functions.map(func => {
             // Expect functions to have one-and-only-one dot, separating
             // the namespace from the function name.
@@ -109,7 +111,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             // disable the rule because want to use "arguments",
             //    which isn't allowed in an arrow function
             // tslint:disable-next-line:only-arrow-functions
-            window[uppercaseNamespace][funcNameUppercase] = function() {
+            window[namespaceUppercase][funcNameUppercase] = function() {
               try {
                 return iframeWindow[funcName /*regular, not uppercase*/].apply(
                   null,
@@ -125,37 +127,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             };
 
             // Overwrite console.log on every snippet iframe
-            let logTypes: ConsoleLogTypes[] = ['log', 'info', 'warn', 'error'];
-            logTypes.forEach(
-              methodName =>
-                (iframeWindow['console'][methodName] = consoleMsgTypeImplementation(
-                  methodName
-                ))
-            );
-
-            function consoleMsgTypeImplementation(severityType: ConsoleLogTypes) {
-              return (...args) => {
-                let logMsg: string = '';
-                let isSuccessfulMsg: boolean = true;
-                args.forEach((element, index, array) => {
-                  try {
-                    logMsg += stringifyPlusPlus(element);
-                  } catch (e) {
-                    isSuccessfulMsg = false;
-                    logMsg += '<Unable to log>';
-                  }
-                  logMsg += '\n';
-                });
-                if (logMsg.length > 0) {
-                  logMsg = logMsg.trim();
-                }
-                tryToSendLog({
-                  source: funcName,
-                  severity: isSuccessfulMsg ? severityType : 'error',
-                  message: logMsg,
-                });
-              };
-            }
+            overwriteConsole(`${namespaceUppercase}.${funcNameUppercase}`, iframeWindow);
           });
 
           successfulRegistrationsCount++;
@@ -252,6 +224,7 @@ function handleError(error: Error | any) {
     source: '[SYSTEM]',
   });
 }
+
 function logIfExtraLoggingEnabled(message: string, options?: { indent?: number }) {
   if (environment.current.experimentationFlags.customFunctions.extraLogging) {
     options = options || {};
@@ -263,5 +236,37 @@ function logIfExtraLoggingEnabled(message: string, options?: { indent?: number }
       source: '[SYSTEM]',
       indent: options.indent,
     });
+  }
+}
+
+function overwriteConsole(source: '[SYSTEM]' | string, windowObject: Window) {
+  let logTypes: ConsoleLogTypes[] = ['log', 'info', 'warn', 'error'];
+  logTypes.forEach(
+    methodName =>
+      (windowObject['console'][methodName] = consoleMsgTypeImplementation(methodName))
+  );
+
+  function consoleMsgTypeImplementation(severityType: ConsoleLogTypes) {
+    return (...args) => {
+      let logMsg: string = '';
+      let isSuccessfulMsg: boolean = true;
+      args.forEach((element, index, array) => {
+        try {
+          logMsg += stringifyPlusPlus(element);
+        } catch (e) {
+          isSuccessfulMsg = false;
+          logMsg += '<Unable to log>';
+        }
+        logMsg += '\n';
+      });
+      if (logMsg.length > 0) {
+        logMsg = logMsg.trim();
+      }
+      tryToSendLog({
+        source: source,
+        severity: isSuccessfulMsg ? severityType : 'error',
+        message: logMsg,
+      });
+    };
   }
 }
