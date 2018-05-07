@@ -49,6 +49,8 @@
     <AppDomain>https://bornholm-runner-edge.azurewebsites.net</AppDomain>
     <AppDomain>https://bornholm-insiders.azurewebsites.net</AppDomain>
     <AppDomain>https://bornholm-runner-insiders.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-staging.azurewebsites.net</AppDomain>
+    <AppDomain>https://bornholm-runner-staging.azurewebsites.net</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
