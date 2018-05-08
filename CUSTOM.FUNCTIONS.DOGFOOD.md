@@ -55,4 +55,4 @@ If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart
 
 ### Script Lab
 
-No known issues at the moment, but only tested on Windows for now.
+No known issues at the moment (though note, for now the experience is for Windows only)
