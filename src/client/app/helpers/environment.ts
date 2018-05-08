@@ -8,13 +8,7 @@ import {
 } from '@microsoft/office-js-helpers';
 import { Strings } from '../strings';
 import { isValidHost, ensureFreshLocalStorage } from '../helpers';
-const {
-  devMode,
-  build,
-  config,
-  localStorageKeys,
-  sessionStorageKeys,
-} = PLAYGROUND;
+const { devMode, build, config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
 
 const WINDOW_PLAYGROUND_HOST_READY_FLAG = 'playground_host_ready';
 
@@ -62,14 +56,6 @@ class Environment {
       return config.production;
     }
 
-    // Production has both the azure website serving the content, and the CDN mirrors
-    if (
-      /bornholm-(runner-)?\./.test(origin) ||
-      /script-lab(-runner)?\./.test(origin)
-    ) {
-      return config.production;
-    }
-
     throw new Error('Unexpected error: invalid Script Lab environment');
   }
 
@@ -109,6 +95,8 @@ class Environment {
       });
 
       this.cache.insert('environment', this._current);
+
+      console.log(JSON.stringify(this._current.build, null, 4));
     }
   }
 
@@ -150,9 +138,7 @@ class Environment {
       };
 
       if (isEqual(value, PLAYGROUND.experimentationFlagsDefaults)) {
-        return onEmptyReturnDefaults
-          ? PLAYGROUND.experimentationFlagsDefaults
-          : {};
+        return onEmptyReturnDefaults ? PLAYGROUND.experimentationFlagsDefaults : {};
       } else {
         return value;
       }
@@ -192,10 +178,7 @@ class Environment {
   /** Performs a full initialization (and returns quickly out if already initialized
    * of course!) based both on synchronously-available data, and on Office.js or user input
    * (if need manual input to determine host) */
-  async initialize(overrides?: {
-    host?: string;
-    tryIt?: boolean;
-  }): Promise<void> {
+  async initialize(overrides?: { host?: string; tryIt?: boolean }): Promise<void> {
     if (this.initializePartial(overrides)) {
       return;
     }
@@ -208,9 +191,8 @@ class Environment {
   initializePartial(overrides?: { host?: string; tryIt?: boolean }): boolean {
     this._setupCurrentDefaultsIfEmpty();
 
-    let pageParams = (Authenticator.extractParams(
-      window.location.href.split('?')[1]
-    ) || {}) as {
+    let pageParams = (Authenticator.extractParams(window.location.href.split('?')[1]) ||
+      {}) as {
       commands: any /* whether app-commands are available, relevant for Office Add-ins */;
       mode: string /* and older way of opening Script Lab to a particular host */;
       host: string /* same as "mode", also needed here so that overrides can also have this parameter */;
