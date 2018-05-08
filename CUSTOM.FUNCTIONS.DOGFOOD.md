@@ -8,22 +8,9 @@ Ensure that you are on **DevMain Channel (Dogfood)**, with build number **9325 o
 
 ![Dogfood channel](./.github/images/dogfood-channel.png)
 
-### Step 1: Remove the existing Store version of Script Lab
+## Refresh the Store version of Script Lab
 
-If you already have Script Lab in your ribbon, please uninstall the Store version, so that you can sideload a custom-function-compatible version.
-![Remove Script Lab](./.github/images/remove-add-in.png)
-
-### Step 2: Sideload Manifest
-
-The new manifest to sideload can be found [here](https://raw.githubusercontent.com/OfficeDev/script-lab/master/manifests/script-lab-prod.xml).
-
-If you've not sideloaded before via a network share, please refer to the [official documentation](https://docs.microsoft.com/en-us/office/dev/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins).
-
-### Step 3: Switch to **BETA**
-
-For now, the Custom Functions experience is only available in the **Beta** deployment of Script lab. So, in addition to sideloading the manifest (which is orthogonal to this step), you also need to switch to Beta (**Code editor ==> About ==> Environment: Beta**).
-
-![Switch to Beta](./.github/images/switch-to-beta.png)
+Until the Store version propagates and automatically updates on everyone's machine (I have an email thread out on that), please **remove Script Lab from "My Add-ins" and re-insert it again from the Store tab**.  This will ensure that you get the updated functionality.  If you now see a "Functions" button as the third button in the Script Lab tab in the ribbon, you know you've got the latest update!
 
 ## A picture is worth a thousand recalcs
 
@@ -64,7 +51,7 @@ If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart
 ### Platform
 
 1.  If you enter a Custom Function into a formula and then remove the function -- or if you restart Excel and before you re-register the custom functions -- the formula bar will show something like `=_xldudf_96323233322223(...)`
-2.  Sometimes, you might get into a `#GETTING_DATA` state. This might be a platform bug, Michael is investigating...
+2.  Sometimes, you might get into a `#GETTING_DATA` state. This is a platform bug that *looks* like has been fixed, but hasn't made it to DevMain yet.
 
 ### Script Lab
 
