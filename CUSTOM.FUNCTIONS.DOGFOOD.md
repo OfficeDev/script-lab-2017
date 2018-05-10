@@ -2,15 +2,20 @@
 
 ## Setup
 
-### Prereq: Ensure you have the "DevMain Channel (Dogfood)"
+### Prereq: Ensure you are on an Office Insider build.
 
-Ensure that you are on **DevMain Channel (Dogfood)**, with build number **9325 or greater** (we're already into the 5-digit numbers now, so for most of you, that should already be the case). Note that for purposes of these instructions and the //build timeline, Script Lab will only support Custom Functions **on Windows Desktop**.
+- Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**)
+- Also be sure that the build number is **9325 or greater**.  If you're already on a 5-digit build numbers, you're good to go!
+
+Note that for purposes of these instructions and the //build timeline, Script Lab will only support Custom Functions **on Windows Desktop**.  And again, remember that you must be on an **Insider** build, the Custom Functions feature is not flighted for folks outside of Insiders!
+
 
 ![Dogfood channel](./.github/images/dogfood-channel.png)
 
 ## Refresh the Store version of Script Lab
 
-Until the Store version propagates and automatically updates on everyone's machine (I have an email thread out on that), please **remove Script Lab from "My Add-ins" and re-insert it again from the Store tab**.  This will ensure that you get the updated functionality.  If you now see a "Functions" button as the third button in the Script Lab tab in the ribbon, you know you've got the latest update!
+If you don't already see the "Functions" button in the ribbon, click on the "Edit" button in the Ribbon.  It should prompt you, letting you know that there is an update.
+Once the update installs, you should see the refreshed ribbon, now with three buttons in the "Script" group.
 
 ## A picture is worth a thousand recalcs
 
@@ -51,7 +56,7 @@ If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart
 ### Platform
 
 1.  If you enter a Custom Function into a formula and then remove the function -- or if you restart Excel and before you re-register the custom functions -- the formula bar will show something like `=_xldudf_96323233322223(...)`
-2.  Sometimes, you might get into a `#GETTING_DATA` state. This is a platform bug that *looks* like has been fixed, but hasn't made it to DevMain yet.
+2.  Sometimes, you might get into a `#GETTING_DATA` state. This is a platform bug that *looks* like has been fixed, but hasn't made it into the Insider builds yet
 
 ### Script Lab
 
