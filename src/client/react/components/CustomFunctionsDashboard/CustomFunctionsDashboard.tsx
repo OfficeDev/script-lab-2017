@@ -22,7 +22,9 @@ const Container = styled.div`
 `;
 
 // interfaces
-interface ICustomFunctionsDashboardState {}
+interface ICustomFunctionsDashboardState {
+  consoleCount: number | undefined;
+}
 
 interface ICustomFunctionsDashboardProps {
   placeholder?: any;
@@ -33,6 +35,11 @@ class CustomFunctionsDashboard extends React.Component<
   ICustomFunctionsDashboardProps,
   ICustomFunctionsDashboardState
 > {
+  constructor(props: ICustomFunctionsDashboardProps) {
+    super(props);
+    this.state = { consoleCount: undefined };
+  }
+
   render() {
     const { metadata } = this.props;
 
@@ -100,17 +107,38 @@ class CustomFunctionsDashboard extends React.Component<
         </PivotItem>
       );
     }
+
+    let tabParts: {
+      name: string;
+      component: JSX.Element;
+      counterStateName?: keyof ICustomFunctionsDashboardState;
+    }[] = [
+      { name: 'Summary', component: <Summary metadata={metadata} /> },
+      { name: 'Details', component: <Details metadata={metadata} /> },
+      {
+        name: 'Console',
+        component: (
+          <Console countSetter={count => this.setState({ consoleCount: count })} />
+        ),
+        counterStateName: 'consoleCount',
+      },
+    ];
     pivotItems = [
       ...pivotItems,
-      ...[
-        { name: 'Summary', component: <Summary metadata={metadata} /> },
-        { name: 'Details', component: <Details metadata={metadata} /> },
-        { name: 'Console', component: <Console /> },
-      ].map(({ name, component }) => (
-        <PivotItem linkText={name} key="{name}">
-          {component}
-        </PivotItem>
-      )),
+      ...tabParts.map(({ name, component, counterStateName }) => {
+        let pivotItem = (
+          <PivotItem
+            linkText={name}
+            key={name}
+            itemCount={
+              counterStateName ? this.state[counterStateName] || undefined : undefined
+            }
+          >
+            {component}
+          </PivotItem>
+        );
+        return pivotItem;
+      }),
     ];
 
     return (

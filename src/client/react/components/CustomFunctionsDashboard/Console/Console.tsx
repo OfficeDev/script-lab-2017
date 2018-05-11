@@ -38,7 +38,9 @@ const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
   </>
 );
 
-interface Props {}
+interface Props {
+  countSetter: (number) => void;
+}
 
 interface State {
   logs: LogData[];
@@ -48,6 +50,7 @@ interface State {
 
 export default class Console extends React.Component<Props, State> {
   private interval;
+  private counter = 0;
 
   constructor(props: Props) {
     super(props);
@@ -89,12 +92,19 @@ export default class Console extends React.Component<Props, State> {
         .filter(line => !line.includes('Agave.HostCall'))
         .map(entry => JSON.parse(entry) as LogData);
       pendingState.logs = [...this.state.logs, ...newLogs];
+
+      this.counter += newLogs.length;
+      this.props.countSetter(this.counter);
     }
 
     this.setState(pendingState);
   }
 
-  clearLogs = () => this.setState({ logs: [] });
+  clearLogs = () => {
+    this.setState({ logs: [] });
+    this.counter = 0;
+    this.props.countSetter(this.counter);
+  };
 
   componentDidMount() {
     this.refreshLogAndRunnerStatusFromLocalStorage();
