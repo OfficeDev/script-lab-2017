@@ -135,17 +135,19 @@ interface IEvent<T> {
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition)
 declare var PLAYGROUND: ICompiledPlaygroundInfo;
 
+interface IEnvironmentConfigsMap {
+  local: ILocalHostEnvironmentConfig;
+  edge: IEnvironmentConfig;
+  insiders: IEnvironmentConfig;
+  staging: IEnvironmentConfig;
+  production: IEnvironmentConfig;
+  productiondirect: IEnvironmentConfig;
+}
+
 interface ICompiledPlaygroundInfo {
   devMode: boolean;
   build: IBuildInfo;
-  config: {
-    local: ILocalHostEnvironmentConfig;
-    edge: IEnvironmentConfig;
-    insiders: IEnvironmentConfig;
-    staging: IEnvironmentConfig;
-    production: IEnvironmentConfig;
-    productiondirect: IEnvironmentConfig;
-  };
+  config: IEnvironmentConfigsMap;
 
   /** NOTE: when adding local storage keys here, also add them to "const localStorageKeys = {...}" in "env.config.js" */
   localStorageKeys: {
@@ -229,7 +231,7 @@ interface IBuildInfo {
 }
 
 interface IEnvironmentConfig {
-  name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'STAGING' | 'PRODUCTION';
+  name: 'LOCAL' | 'EDGE' | 'INSIDERS' | 'STAGING' | 'PRODUCTION' | 'PRODUCTIONDIRECT';
   clientId: string;
   instrumentationKey: string;
   editorUrl: string;

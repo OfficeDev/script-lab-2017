@@ -115,15 +115,31 @@ export class About implements AfterViewInit {
       /localhost/.test(
         window.localStorage.getItem(localStorageKeys.originEnvironmentUrl)
       );
-    const isBeta = environment.current.config.name === config.insiders.name;
-    const isProd = environment.current.config.name === config.production.name;
+
+    let environmentToTest: (keyof IEnvironmentConfigsMap)[] = [
+      'insiders',
+      'production',
+      'productiondirect',
+    ];
+    const [isBeta, isProd, isProdDirect] = environmentToTest.map(
+      env => environment.current.config.name === config[env].name
+    );
+
+    // To avoid clutter, only show staging site if you're not on prod or beta
+    const showStaging = !(isProd || isBeta);
 
     this.configs = [
       { name: this.strings.production, value: config.production.name },
 
-      // To avoid clutter, only show staging site if you're not on prod or beta
-      !(isProd || isBeta)
-        ? { name: this.strings.staging, value: config.staging.name }
+      showStaging ? { name: this.strings.staging, value: config.staging.name } : null,
+
+      // Prod direct will never be shown, except when you're already on it.
+      // Which also means no need to localize its string, this is not a user-facing bit of UI
+      isProdDirect
+        ? {
+            name: this.strings.production + ' (direct)',
+            value: config.productiondirect.name,
+          }
         : null,
 
       { name: this.strings.beta, value: config.insiders.name },
