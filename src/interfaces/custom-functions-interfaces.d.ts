@@ -80,11 +80,6 @@ interface ICustomFunctionsSnippetRegistrationData {
   functions: ICFFunctionMetadata[];
 }
 
-interface ICustomFunctionsRegistrationRelevantData {
-  name: string; //of snippet
-  data: ICustomFunctionsSnippetRegistrationData;
-}
-
 interface ICustomFunctionsHeartbeatParams {
   clientTimestamp: number;
 }
