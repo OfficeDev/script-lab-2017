@@ -4,7 +4,7 @@ const { safeExternalUrls } = PLAYGROUND;
 const tutorialUrl = `${window.location.origin}/tutorial.html`;
 const codeUrl = `${window.location.origin}/?mode=${Utilities.host}`;
 
-const launchInDialog = (url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+function launchInDialog(url: string, event?: any, options?: { width?: number, height?: number, displayInIframe?: boolean }): void {
     options = options || {};
     options.width = options.width || 60;
     options.height = options.height || 60;
@@ -29,41 +29,53 @@ const launchInDialog = (url: string, event?: any, options?: { width?: number, he
     }
 };
 
-const launchDialogNavigation = (url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }) => {
+function launchDialogNavigation(url: string, event: any, options?: { width?: number, height?: number, displayInIframe?: boolean }): void {
     launchInDialog(`${window.location.origin}/external-page.html?destination=${encodeURIComponent(url)}`, event, options);
 };
+
+function launchInStandaloneWindow(url: string, event: any): void {
+    // At least on desktop, it looks like you can't do "window.open" out of the invisible runner.
+    //     Thus, on desktop, still use a dialog API
+    // As for Office Online, set displayInIframe as false, so that it prompts a window to
+    //     have you open a dialog.  If we did "window.open" directly,
+    //     popup blockers would prevent the window from showing.
+    //     And conversely, if had "displayInIframe: true" instead, the docs.microsoft.com
+    //     site doesn't allow embedding, and get an error.  So it has to be a standalone window,
+    //     but created via the Dialog API
+    launchDialogNavigation(url, event, { displayInIframe: false });
+}
 
 (window as any).commandExecutor = {
     launchCode: (event) => launchInDialog(codeUrl, event, { width: 75, height: 75, displayInIframe: false }),
 
     launchTutorial: (event) => launchInDialog(tutorialUrl, event, { width: 35, height: 45 }),
 
-    launchHelp: (event) => launchDialogNavigation(safeExternalUrls.playground_help, event, { displayInIframe: false }),
+    launchHelp: (event) => launchInStandaloneWindow(safeExternalUrls.playground_help, event),
 
-    launchAsk: (event) => launchDialogNavigation(safeExternalUrls.ask, event, { displayInIframe: false }),
+    launchAsk: (event) => launchInStandaloneWindow(safeExternalUrls.ask, event),
 
     launchApiDocs: (event) => {
         if (Office.context.requirements.isSetSupported('ExcelApi')) {
-            return launchDialogNavigation(safeExternalUrls.excel_api, event);
+            return launchInStandaloneWindow(safeExternalUrls.excel_api, event);
         }
         else if (Office.context.requirements.isSetSupported('WordApi')) {
-            return launchDialogNavigation(safeExternalUrls.word_api, event);
+            return launchInStandaloneWindow(safeExternalUrls.word_api, event);
         }
         else if (Office.context.requirements.isSetSupported('OneNoteApi')) {
-            return launchDialogNavigation(safeExternalUrls.onenote_api, event);
+            return launchInStandaloneWindow(safeExternalUrls.onenote_api, event);
         }
         else {
             if (Utilities.host === HostType.POWERPOINT) {
-                return launchDialogNavigation(safeExternalUrls.powepoint_api, event);
+                return launchInStandaloneWindow(safeExternalUrls.powepoint_api, event);
             }
             else if (Utilities.host === HostType.PROJECT) {
-                return launchDialogNavigation(safeExternalUrls.project_api, event);
+                return launchInStandaloneWindow(safeExternalUrls.project_api, event);
             }
             else if (Utilities.host === HostType.OUTLOOK) {
-                return launchDialogNavigation(safeExternalUrls.outlook_api, event);
+                return launchInStandaloneWindow(safeExternalUrls.outlook_api, event);
             }
             else {
-                return launchDialogNavigation(safeExternalUrls.generic_api, event);
+                return launchInStandaloneWindow(safeExternalUrls.generic_api, event);
             }
         }
     }

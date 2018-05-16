@@ -3,6 +3,10 @@
 
   "spellright.notificationClass": "warning",
   "spellright.ignoreFiles": ["**/.gitignore", "**/.spellignore"],
-  "cSpell.words": ["bornholm"],
+  "cSpell.words": [
+    "bornholm",
+    "onenote",
+    "powepoint"
+  ],
   "editor.formatOnSave": true
 }
