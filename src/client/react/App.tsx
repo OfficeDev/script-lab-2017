@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CustomFunctionsDashboard from './components/CustomFunctionsDashboard/';
 
-class App extends React.Component<{ metadata: object[] }, {}> {
+class App extends React.Component<{ metadata: ICFVisualMetadata }, {}> {
   render() {
     return (
       <div>

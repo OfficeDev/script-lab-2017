@@ -16,12 +16,9 @@ const PaddedPivotContentContainer = PivotContentContainer.extend`
   padding: 27px 27px 17px 17px;
 `;
 
-const Details = ({ metadata }) => (
+const Details = ({ metadata }: { metadata: ICFVisualMetadata }) => (
   <PaddedPivotContentContainer>
-    <h1
-      className="ms-font-xl"
-      style={{ lineHeight: '28px', marginBottom: '22px' }}
-    >
+    <h1 className="ms-font-xl" style={{ lineHeight: '28px', marginBottom: '22px' }}>
       Custom Functions
     </h1>
     <TreeWrapper>
