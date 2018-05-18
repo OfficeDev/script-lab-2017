@@ -68,9 +68,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were found in your workspace. These functions run
-          async in Script Lab. You can run them faster in sync mode with{' '}
-          <a href="https://aka.ms/customfunctions">these instructions</a>.
+          The following custom functions were found in your workspace. These
+          functions run async in Script Lab. You can run them faster in sync
+          mode with{' '}
+          <a href="https://aka.ms/customfunctions" target="_blank">these instructions</a>.
         </p>
       </TopInfo>
       <FunctionsContainer style={{ marginTop: '20px' }}>
