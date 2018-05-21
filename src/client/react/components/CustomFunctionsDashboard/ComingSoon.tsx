@@ -45,7 +45,7 @@ export default () => (
         Windows Desktop, and only on the latest Insider builds.<br />
         <br />
         For more info, see{' '}
-        <a href="https://aka.ms/customfunctions">these instructions</a>.
+        <a href="https://aka.ms/customfunctions" target="_blank">these instructions</a>.
       </p>
     </main>
   </div>

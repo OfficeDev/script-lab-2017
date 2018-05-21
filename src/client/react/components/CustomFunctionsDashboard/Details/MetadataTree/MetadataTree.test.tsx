@@ -4,6 +4,6 @@ import MetadataTree from './index';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<MetadataTree metadata={{}} />, div);
+  ReactDOM.render(<MetadataTree metadata={{ snippets: [] }} />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

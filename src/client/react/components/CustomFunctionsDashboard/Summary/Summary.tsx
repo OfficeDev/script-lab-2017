@@ -16,18 +16,18 @@ const FunctionsContainer = styled.div`
   border-top: 1px solid #f4f4f4;
 `;
 
-const Summary = ({ metadata }) => {
+const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   let items: { success: Item[]; skipped: Item[]; error: Item[] } = {
     success: [],
     skipped: [],
     error: [],
   };
-  metadata.forEach(snippet => {
+  metadata.snippets.forEach(snippet => {
     snippet.functions.forEach(func => {
       const scriptLabToplevelNamespace = 'ScriptLab';
-      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${
-        func.name
-      }(${func.parameters.length > 0 ? '…' : ''})`;
+      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${func.name}(${
+        func.parameters.length > 0 ? '…' : ''
+      })`;
 
       const item: Item = { name, key: name, smallCaps: true };
 
@@ -71,7 +71,7 @@ const Summary = ({ metadata }) => {
           The following custom functions were found in your workspace. These
           functions run async in Script Lab. You can run them faster in sync
           mode with{' '}
-          <a href="https://aka.ms/customfunctions">these instructions</a>.
+          <a href="https://aka.ms/customfunctions" target="_blank">these instructions</a>.
         </p>
       </TopInfo>
       <FunctionsContainer style={{ marginTop: '20px' }}>

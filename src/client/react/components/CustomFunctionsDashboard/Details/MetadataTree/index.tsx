@@ -1,22 +1,13 @@
 import * as React from 'react';
 
 import Item from './Item';
-import {
-  FunctionWrapper,
-  List,
-  SnippetWrapper,
-  TreeContainer,
-} from './Wrappers';
+import { FunctionWrapper, List, SnippetWrapper, TreeContainer } from './Wrappers';
 
 const SnippetItem = props => (
   <Item className="ms-font-m" {...props} size="large" noLines={true} />
 );
-const FunctionItem = props => (
-  <Item className="ms-font-m" {...props} size="medium" />
-);
-const ParameterItem = props => (
-  <Item className="ms-font-s" {...props} size="small" />
-);
+const FunctionItem = props => <Item className="ms-font-m" {...props} size="medium" />;
+const ParameterItem = props => <Item className="ms-font-s" {...props} size="small" />;
 
 const Function = ({ func }) => (
   <FunctionWrapper>
@@ -25,11 +16,7 @@ const Function = ({ func }) => (
       {func.parameters.map(param => (
         <ParameterItem key={`${func.name}${param.name}`} {...param} />
       ))}
-      <ParameterItem
-        key={`${func.name}return`}
-        name={'return'}
-        {...func.result}
-      />
+      <ParameterItem key={`${func.name}return`} name={'return'} {...func.result} />
     </List>
   </FunctionWrapper>
 );
@@ -45,9 +32,9 @@ const Snippet = ({ snippet }) => (
   </SnippetWrapper>
 );
 
-const MetadataTree = ({ metadata }) => (
+const MetadataTree = ({ metadata }: { metadata: ICFVisualMetadata }) => (
   <TreeContainer>
-    {metadata.map(snippet => <Snippet key={snippet.name} snippet={snippet} />)}
+    {metadata.snippets.map(snippet => <Snippet key={snippet.name} snippet={snippet} />)}
   </TreeContainer>
 );
 
