@@ -14,7 +14,7 @@ There are several ways in which you can contribute to the project:
 
 * Download & Install Visual Studio Code.  <https://code.visualstudio.com/>.  If you don't have a recent version, please update to latest (1.11 at time of writing)
   * I would also recommend installing the `TSLint` extension, which adds lint warnings straight into the editor.
-* Download & install Node, version 6.9+.  In our experience, the LTS version of 6.10 and 6.11 works, whereas 8.1.2 did not, so mileage may vary. <https://nodejs.org/en>.
+* Download & install Node.  In our experience, the 6.11.2 works, as does 8.9.4 (but for the latter, you need to install python for one of the dependencies -- watch the eror that you get when running `yarn install` and follow its recommendations). <https://nodejs.org/en>.
 * Download & install Yarn, for use as an alternative for `npm install`.  Download from <https://yarnpkg.com/en/docs/install> (or bootstrap Yarn installation by running once `npm install -g yarn`).  The documentation also describes why Yarn is preferable to `npm install`.
 
 Note: the installation of Node JS and Yarn add paths to your operating system's PATH variable. Therefore, in some cases you may log off and log in from your System to get Node JS and Yarn work withing Visual Studio Code.

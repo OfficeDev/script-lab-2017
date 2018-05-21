@@ -9,6 +9,8 @@ class TelemetryError extends CustomError {
     }
 }
 
+let DISABLE_DUE_TO_GDPR = true;
+
 class ApplicationInsights {
     private _basicInfo: {};
     private _current = AppInsights;
@@ -20,6 +22,10 @@ class ApplicationInsights {
      * To avoid the issue, wrap any use of "this.current" in a try/catch
     */
     initialize(instrumentationKey, disable?: boolean) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return;
+        }
+
         AppInsights.downloadAndSetup({
             instrumentationKey: instrumentationKey,
             autoTrackPageVisitTime: true
@@ -45,6 +51,10 @@ class ApplicationInsights {
     }
 
     toggleTelemetry(force?: boolean) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return;
+        }
+
         try {
             this._current.config.disableTelemetry = force || !this._disable;
         }
@@ -54,6 +64,15 @@ class ApplicationInsights {
     }
 
     trackPageView(name: string, url?: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return {
+                stop: () => { },
+                get elapsed() {
+                    return 0;
+                }
+            };
+        }
+
         let timer = performance || Date;
         const tStart = timer.now();
         return {
@@ -78,6 +97,15 @@ class ApplicationInsights {
     }
 
     trackTimedEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return {
+                stop: () => { },
+                get elapsed() {
+                    return 0;
+                }
+            };
+        }
+
         let timer = performance || Date;
         const tStart = timer.now();
         return {
@@ -104,6 +132,10 @@ class ApplicationInsights {
      * @param  location - Call stack, or a string description.
      */
     trackException(error, location) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return;
+        }
+
         try {
             if (environment.current.devMode) {
                 Utilities.log(error);
@@ -128,6 +160,10 @@ class ApplicationInsights {
     * @param   measurements    map[string, number] - metrics associated with this event, displayed in Metrics Explorer on the portal. Defaults to empty.
     */
     trackEvent(name: string, properties?: { [index: string]: string }, measurement?: { [index: string]: number }) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return;
+        }
+
         try {
             if (environment.current.devMode) {
                 console.info(name, {
@@ -161,6 +197,10 @@ class ApplicationInsights {
             [name: string]: string;
         }
     ) {
+        if (DISABLE_DUE_TO_GDPR) {
+            return;
+        }
+
         try {
             if (environment.current.devMode) {
                 console.info(name, average, sampleCount, min, max, {
@@ -180,6 +220,10 @@ class ApplicationInsights {
     }
 
     setAuthenticatedUserContext() {
+        if (DISABLE_DUE_TO_GDPR) {
+            return;
+        }
+
         try {
             this._current.setAuthenticatedUserContext(storage.user);
         }

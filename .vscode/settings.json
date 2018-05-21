@@ -4,6 +4,7 @@
   "spellright.notificationClass": "warning",
   "spellright.ignoreFiles": ["**/.gitignore", "**/.spellignore"],
   "cSpell.words": [
+    "GDPR",
     "bornholm",
     "onenote",
     "powepoint"

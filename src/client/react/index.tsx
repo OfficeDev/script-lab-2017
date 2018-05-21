@@ -61,7 +61,7 @@ tryCatch(async () => {
     document.getElementById('progress')!.style.display = 'none';
 
     if (visual.snippets.length > 0) {
-      ReactDOM.render(<App metadata={visual.snippets} />, document.getElementById(
+      ReactDOM.render(<App metadata={visual} />, document.getElementById(
         'root'
       ) as HTMLElement);
     } else {
