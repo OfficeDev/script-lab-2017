@@ -175,6 +175,7 @@ export class Editor implements AfterViewInit {
       return ['script', 'libraries'].indexOf(tabName) >= 0;
     }
     return true;
+    // tslint:disable-next-line:semicolon
   };
 
   changeTab = (name: string = 'script') => {
@@ -183,7 +184,13 @@ export class Editor implements AfterViewInit {
       language = this.tabs.get(name).language;
     }
 
-    this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
+    this._store.dispatch(
+      new Monaco.ChangeTabAction({
+        name: name,
+        language,
+      })
+    );
+    // tslint:disable-next-line:semicolon
   };
 
   updateIntellisense() {
