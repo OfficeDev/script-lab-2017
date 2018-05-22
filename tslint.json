@@ -22,7 +22,7 @@
     "no-use-before-declare": true,
     "one-line": [true, "check-open-brace", "check-whitespace"],
     "radix": true,
-    "semicolon": [true, "always", "ignore-interfaces"],
+    "semicolon": [true, "always", "ignore-interfaces", "ignore-bound-class-methods"],
     "triple-equals": [true, "allow-null-check"],
     "variable-name": false,
     "whitespace": [
