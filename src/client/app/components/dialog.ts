@@ -1,9 +1,9 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'dialog',
-    template: `
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'dialog',
+  template: `
     <div class="ms-Dialog-center" [hidden]="!show">
         <div class="ms-Overlay" [ngClass]="{ 'is-visible': show }"></div>
         <div class="ms-Dialog ms-Dialog--lgHeader ms-u-fadeIn200" [ngClass]="{ 'is-open': show }">
@@ -17,9 +17,9 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
             </div>
         </div>
     </div>
-`
+`,
 })
 export class Dialog {
-    @Input() title: string;
-    @Input() show: boolean;
+  @Input() title: string;
+  @Input() show: boolean;
 }

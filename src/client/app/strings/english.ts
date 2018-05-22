@@ -67,8 +67,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     cannotImportSnippetCreatedForDifferentHost: (
       snippetHost: string,
       currentHost: string
-    ) =>
-      `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
+    ) => `Cannot import a snippet created for ${snippetHost} in ${currentHost}.`,
     currentHostDoesNotSupportRequiredApiSet: (
       currentHost: string,
       setName: string,
@@ -90,8 +89,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     snippetNoOfficeMessage:
       /** NEEDS STRING REVIEW */ 'You can only run Office snippets inside of an Office Add-in. Acquire Script Lab for free today at https://aka.ms/getscriptlab.',
 
-    snippetUpdateError:
-      /** NEEDS STRING REVIEW */ 'Failed to update the snippet',
+    snippetUpdateError: /** NEEDS STRING REVIEW */ 'Failed to update the snippet',
 
     snippetValidationEmpty: `Your snippet can't be empty`,
     snippetValidationNoTitle: 'Your snippet needs a title',
@@ -115,8 +113,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     gistRetrieveFailed: 'Failed to retrieve GitHub gists',
     gistDescriptionAppendage: `Shared with ${playgroundName}`,
 
-    gistShareFailedBody:
-      /** NEEDS STRING REVIEW */ 'Failed to share the GitHub gist',
+    gistShareFailedBody: /** NEEDS STRING REVIEW */ 'Failed to share the GitHub gist',
     gistShareFailedTitle: 'Sharing failed',
 
     gistSharedDialogStart: 'The URL of your GitHub gist is:',
@@ -125,8 +122,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     gistSharedDialogViewButton: 'View on GitHub',
     gistUpdateUrlIsSameAsBefore:
       /** NEEDS STRING REVIEW */ 'The URL of your updated gist is the same as before:',
-    gistUpdateSuccess:
-      /** NEEDS STRING REVIEW */ 'Snippet successfully updated',
+    gistUpdateSuccess: /** NEEDS STRING REVIEW */ 'Snippet successfully updated',
 
     snippetCopiedConfirmation: `The snippet is copied to your clipboard`,
     snippetCopiedFailed: 'Failed to copy the snippet to your clipboard',
@@ -142,8 +138,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     aboutSnippets: 'Local snippets',
     aboutIntellisense: 'IntelliSense',
     aboutCurrentEnvironment: /** NEEDS STRING REVIEW */ 'Current Environment:',
-    aboutSwitchEnvironment:
-      /** NEEDS STRING REVIEW */ 'Switch from {0} to {1}:',
+    aboutSwitchEnvironment: /** NEEDS STRING REVIEW */ 'Switch from {0} to {1}:',
     changeEnvironmentConfirm:
       /** NEEDS STRING REVIEW */ 'You are about to change your Script Lab environment and will not have access to your saved local snippets until you return to this environment. Are you sure you want to proceed?',
     showExperimentationFlags: 'Show experimentation flags',
@@ -236,14 +231,12 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     localSnippetsLabel: 'My snippets on this computer',
     noLocalSnippets: `You haven't saved snippets on this computer. To get started, create a new snippet or import one.`,
     sharedGistsLabel: 'My shared gists on GitHub',
-    sharedGistsSignIn:
-      'Sign in to get any snippets you shared via GitHub gists.',
+    sharedGistsSignIn: 'Sign in to get any snippets you shared via GitHub gists.',
     samplesDescription: 'Choose one of the samples below to get started.',
     noSamplesMessage: `There aren't any samples available for this host yet.`,
     importWarning: `Imported snippets may contain malicious code. Don't run snippets unless you trust the source.`,
     importWarningAction: `Don't show this warning again.`,
-    importSucceed:
-      'The snippet was imported successfully' /** NEEDS STRING REVIEW **/,
+    importSucceed: 'The snippet was imported successfully' /** NEEDS STRING REVIEW **/,
 
     localStorageWarning:
       `Snippets you create get erased if you clear your browser cache. ` +
@@ -281,8 +274,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
 
       runtimeErrorWhileLoadingTheSnippet:
         'A Runtime error occurred while loading the snippet',
-      goBackToEditorToFixError:
-        'Please return to the script editor to fix the error.',
+      goBackToEditorToFixError: 'Please return to the script editor to fix the error.',
     },
 
     /** Error strings served by the server and displayed in the Error page */
@@ -334,8 +326,7 @@ export function getEnglishStrings(): ClientStringsPerLanguage {
     },
 
     Auth: {
-      authenticatingOnBehalfOfSnippet:
-        'Authenticating on behalf of the snippet...',
+      authenticatingOnBehalfOfSnippet: 'Authenticating on behalf of the snippet...',
       loggingOutOnBehalfOfSnippet: 'Logging out on behalf of the snippet...',
       authenticationRedirect: 'Authentication redirect',
       authenticationError: 'Authentication error',

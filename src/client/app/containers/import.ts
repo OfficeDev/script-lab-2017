@@ -2,7 +2,13 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import * as fromRoot from '../reducers';
 import { Store } from '@ngrx/store';
 import { UI, Snippet, GitHub } from '../actions';
-import { environment, AI, storage, isInsideOfficeApp, trustedSnippetManager } from '../helpers';
+import {
+  environment,
+  AI,
+  storage,
+  isInsideOfficeApp,
+  trustedSnippetManager,
+} from '../helpers';
 import { Request, ResponseTypes } from '../services';
 import { Strings } from '../strings';
 import { Subscription } from 'rxjs/Subscription';
@@ -12,9 +18,9 @@ const SNIPPET_TO_IMPORT_PROPERTY_NAME = 'SnippetToImport';
 const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'import',
-    template: `
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'import',
+  template: `
         <dialog class="panel" [show]="true">
             <section class="gallery__section">
                 <ul class="gallery__tabs ms-Pivot ms-Pivot--tabs">
@@ -94,168 +100,193 @@ const CORRELATION_ID_PROPERTY_NAME = 'CorrelationId';
                 </section>
             </section>
         </dialog>
-    `
+    `,
 })
 export class Import {
-    view = 'snippets';
-    urlOrSnippet: string;
-    showLocalStorageWarning: boolean;
-    activeSnippetId: string;
+  view = 'snippets';
+  urlOrSnippet: string;
+  showLocalStorageWarning: boolean;
+  activeSnippetId: string;
 
-    strings = Strings();
+  strings = Strings();
 
-    private snippetSub: Subscription;
+  private snippetSub: Subscription;
 
-    constructor(
-        private _request: Request,
-        private _store: Store<fromRoot.State>
-    ) {
-        trustedSnippetManager.cleanUpTrustedSnippets();
-        this._store.dispatch(new Snippet.LoadSnippetsAction());
-        this._store.dispatch(new Snippet.LoadTemplatesAction());
+  constructor(private _request: Request, private _store: Store<fromRoot.State>) {
+    trustedSnippetManager.cleanUpTrustedSnippets();
+    this._store.dispatch(new Snippet.LoadSnippetsAction());
+    this._store.dispatch(new Snippet.LoadTemplatesAction());
 
-        this.snippetSub = this._store.select(fromRoot.getCurrent)
-            .do(snippet => this.activeSnippetId = snippet ? snippet.id : null)
-            .filter(snippet => snippet == null)
-            .subscribe(() => {
-                this._store.dispatch(new UI.ToggleImportAction(true));
-            });
+    this.snippetSub = this._store
+      .select(fromRoot.getCurrent)
+      .do(snippet => (this.activeSnippetId = snippet ? snippet.id : null))
+      .filter(snippet => snippet == null)
+      .subscribe(() => {
+        this._store.dispatch(new UI.ToggleImportAction(true));
+      });
 
-        this.showLocalStorageWarning = !(storage.settings.get('disableLocalStorageWarning') as any === true);
+    this.showLocalStorageWarning = !(
+      (storage.settings.get('disableLocalStorageWarning') as any) === true
+    );
 
-        if (this.documentHasSnippetToImportSetting) {
-            this.importInDocumentSnippet();
+    if (this.documentHasSnippetToImportSetting) {
+      this.importInDocumentSnippet();
+    }
+  }
+
+  show$ = this._store.select(fromRoot.getImportState);
+  templates$ = this._store.select(fromRoot.getTemplates);
+  gists$ = this._store.select(fromRoot.getGists);
+  isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
+
+  snippets$ = this._store.select(fromRoot.getSnippets).map(snippets => {
+    if (isEmpty(snippets)) {
+      this.switch('samples');
+      this._store.dispatch(new UI.ToggleImportAction(true));
+    }
+    return snippets;
+  });
+
+  ngOnDestroy() {
+    if (this.snippetSub) {
+      this.snippetSub.unsubscribe();
+    }
+  }
+
+  hideLocalStorageWarning() {
+    this.showLocalStorageWarning = false;
+    storage.settings.insert('disableLocalStorageWarning', true as any);
+  }
+
+  /* Switch to a particular view (snippets, samples, import wizard) of the import screen */
+  switch(view: string) {
+    AI.trackPageView(view, `/import/${view}`).stop();
+    this.view = view;
+  }
+
+  import(item?: ITemplate) {
+    let data = null;
+    let mode = null;
+
+    switch (this.view) {
+      case 'snippets':
+        if (item.id) {
+          mode = Snippet.ImportType.OPEN;
+        } else {
+          mode = Snippet.ImportType.GIST;
         }
+        data = item.id || item.gist;
+        break;
+
+      case 'import':
+        mode = Snippet.ImportType.URL_OR_YAML;
+        data = this.urlOrSnippet;
+        break;
+
+      case 'samples':
+        mode = Snippet.ImportType.SAMPLE;
+        data = (item as any).rawUrl /** rawUrl field that comes from samples playlists */;
+        break;
     }
 
-    show$ = this._store.select(fromRoot.getImportState);
-    templates$ = this._store.select(fromRoot.getTemplates);
-    gists$ = this._store.select(fromRoot.getGists);
-    isLoggedIn$ = this._store.select(fromRoot.getLoggedIn);
-
-    snippets$ = this._store.select(fromRoot.getSnippets)
-        .map(snippets => {
-            if (isEmpty(snippets)) {
-                this.switch('samples');
-                this._store.dispatch(new UI.ToggleImportAction(true));
-            }
-            return snippets;
-        });
-
-    ngOnDestroy() {
-        if (this.snippetSub) {
-            this.snippetSub.unsubscribe();
-        }
+    if (data == null || data.trim() === '') {
+      return;
     }
 
-    hideLocalStorageWarning() {
-        this.showLocalStorageWarning = false;
-        storage.settings.insert('disableLocalStorageWarning', true as any);
-    }
+    data = data.trim();
 
-    /* Switch to a particular view (snippets, samples, import wizard) of the import screen */
-    switch(view: string) {
-        AI.trackPageView(view, `/import/${view}`).stop();
-        this.view = view;
-    }
+    this._store.dispatch(
+      new Snippet.ImportAction({
+        mode: mode,
+        data: data,
+        saveToLocalStorage: this.view !== 'samples',
+        isReadOnlyViewMode: false,
+      })
+    );
+    this.cancel();
+  }
 
-    import(item?: ITemplate) {
-        let data = null;
-        let mode = null;
+  login() {
+    this._store.dispatch(new GitHub.LoginAction());
+  }
 
-        switch (this.view) {
-            case 'snippets':
-                if (item.id) {
-                    mode = Snippet.ImportType.OPEN;
-                }
-                else {
-                    mode = Snippet.ImportType.GIST;
-                }
-                data = item.id || item.gist;
-                break;
+  new() {
+    this._store.dispatch(
+      new Snippet.ImportAction({
+        mode: Snippet.ImportType.DEFAULT,
+        data: null,
+        saveToLocalStorage: true,
+        isReadOnlyViewMode: false,
+      })
+    );
+    this._store.dispatch(new UI.ToggleImportAction(false));
+  }
 
-            case 'import':
-                mode = Snippet.ImportType.URL_OR_YAML;
-                data = this.urlOrSnippet;
-                break;
+  cancel() {
+    this._store.dispatch(new UI.ToggleImportAction(false));
+  }
 
-            case 'samples':
-                mode = Snippet.ImportType.SAMPLE;
-                data = (item as any).rawUrl /** rawUrl field that comes from samples playlists */;
-                break;
-        }
+  get documentHasSnippetToImportSetting(): boolean {
+    return (
+      isInsideOfficeApp() &&
+      Office.context.document &&
+      Office.context.document.settings.get(SNIPPET_TO_IMPORT_PROPERTY_NAME)
+    );
+  }
 
-        if (data == null || data.trim() === '') {
-            return;
-        }
-
-        data = data.trim();
-
-        this._store.dispatch(new Snippet.ImportAction({
-            mode: mode, data: data, saveToLocalStorage: this.view !== 'samples', isReadOnlyViewMode: false
-        }));
-        this.cancel();
-    }
-
-    login() {
-        this._store.dispatch(new GitHub.LoginAction());
-    }
-
-    new() {
-        this._store.dispatch(new Snippet.ImportAction({ mode: Snippet.ImportType.DEFAULT, data: null, saveToLocalStorage: true, isReadOnlyViewMode: false }));
+  async importInDocumentSnippet(): Promise<void> {
+    let commonImportActionParams = {
+      saveToLocalStorage: false /* Just like samples, don't save until user makes an edit */,
+      isReadOnlyViewMode: false,
+      onSuccess: () => {
         this._store.dispatch(new UI.ToggleImportAction(false));
-    }
+        Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
+        Office.context.document.settings.remove(SNIPPET_TO_IMPORT_PROPERTY_NAME);
+        Office.context.document.settings.saveAsync();
+      },
+    };
 
-    cancel() {
-        this._store.dispatch(new UI.ToggleImportAction(false));
-    }
+    let correlationId = Office.context.document.settings.get(
+      CORRELATION_ID_PROPERTY_NAME
+    );
+    let viewData = Office.context.document.settings.get(SNIPPET_TO_IMPORT_PROPERTY_NAME);
 
-    get documentHasSnippetToImportSetting(): boolean {
-        return isInsideOfficeApp() && Office.context.document && Office.context.document.settings.get(SNIPPET_TO_IMPORT_PROPERTY_NAME);
-    }
-
-    async importInDocumentSnippet(): Promise<void> {
-        let commonImportActionParams = {
-            saveToLocalStorage: false /* Just like samples, don't save until user makes an edit */,
-            isReadOnlyViewMode: false,
-            onSuccess: () => {
-                this._store.dispatch(new UI.ToggleImportAction(false));
-                Office.context.document.settings.remove(CORRELATION_ID_PROPERTY_NAME);
-                Office.context.document.settings.remove(SNIPPET_TO_IMPORT_PROPERTY_NAME);
-                Office.context.document.settings.saveAsync();
-            }
-        };
-
-        let correlationId = Office.context.document.settings.get(CORRELATION_ID_PROPERTY_NAME);
-        let viewData = Office.context.document.settings.get(SNIPPET_TO_IMPORT_PROPERTY_NAME);
-
-        if (viewData.type === 'samples') {
-            let hostJsonFile = `${environment.current.config.samplesUrl}/view/${environment.current.host.toLowerCase()}.json`;
-            let onError = error => this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet, error));
-            let sub = this._request.get<JSON>(hostJsonFile, ResponseTypes.JSON)
-                .subscribe(lookupTable => {
-                    if (lookupTable && lookupTable[viewData.id]) {
-                        this._store.dispatch(new Snippet.ImportAction({
-                            ...commonImportActionParams,
-                            mode: Snippet.ImportType.SAMPLE,
-                            data: lookupTable[viewData.id]
-                        }));
-                    }
-
-                    if (sub && !sub.closed) {
-                        sub.unsubscribe();
-                    }
-                }, onError);
-        }
-        else {
-            // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
-            this._store.dispatch(new Snippet.ImportAction({
+    if (viewData.type === 'samples') {
+      let hostJsonFile = `${
+        environment.current.config.samplesUrl
+      }/view/${environment.current.host.toLowerCase()}.json`;
+      let onError = error =>
+        this._store.dispatch(
+          new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet, error)
+        );
+      let sub = this._request
+        .get<JSON>(hostJsonFile, ResponseTypes.JSON)
+        .subscribe(lookupTable => {
+          if (lookupTable && lookupTable[viewData.id]) {
+            this._store.dispatch(
+              new Snippet.ImportAction({
                 ...commonImportActionParams,
-                mode: Snippet.ImportType.GIST,
-                data: viewData.id
-            }));
-        }
+                mode: Snippet.ImportType.SAMPLE,
+                data: lookupTable[viewData.id],
+              })
+            );
+          }
 
-        AI.trackEvent('Open in playground completed', { id: correlationId });
+          if (sub && !sub.closed) {
+            sub.unsubscribe();
+          }
+        }, onError);
+    } else {
+      // Even though user is in editor mode, dispatch with flag to avoid saving gist until user begins typing
+      this._store.dispatch(
+        new Snippet.ImportAction({
+          ...commonImportActionParams,
+          mode: Snippet.ImportType.GIST,
+          data: viewData.id,
+        })
+      );
     }
+
+    AI.trackEvent('Open in playground completed', { id: correlationId });
+  }
 }

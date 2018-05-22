@@ -21,9 +21,10 @@ let {
   AZURE_WA_SITE,
   AZURE_WA_PASSWORD,
 } = process.env;
-let TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env[
-  'TRAVIS_COMMIT_MESSAGE'
-].replace(/\W/g, '_');
+let TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env['TRAVIS_COMMIT_MESSAGE'].replace(
+  /\W/g,
+  '_'
+);
 
 const DAYS_TO_KEEP_HISTORY = 90;
 
@@ -62,13 +63,10 @@ try {
 
     default:
       buildConfig = null;
-      exit(
-        'No deployment configuration found for ' + slot + '. Skipping deploy.'
-      );
+      exit('No deployment configuration found for ' + slot + '. Skipping deploy.');
   }
 
-  const EDITOR_SITE_URL =
-    'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
+  const EDITOR_SITE_URL = 'https://' + AZURE_WA_SITE + '-' + slot + '.azurewebsites.net';
 
   const EDITOR_UsernamePassword_URL =
     'https://' +
@@ -101,8 +99,8 @@ try {
   // However, sometimes builds can also be rolled back!  To avoid issues with caching (and some files going missing)
   // we always want to copy existing bundle resources from both locations
   let additionalResourcesCopyFromUrl: {
-    friendlyName: string;
-    urlWithUsernameAndPassword: string;
+    friendlyName: string,
+    urlWithUsernameAndPassword: string,
   };
   if (slot === 'staging') {
     additionalResourcesCopyFromUrl = {
@@ -164,8 +162,8 @@ try {
     urlWithUsernameAndPassword: string,
     folder: string,
     copyDeployedResourcesUrls: {
-      friendlyName: string;
-      urlWithUsernameAndPassword: string;
+      friendlyName: string,
+      urlWithUsernameAndPassword: string,
     }[]
   ): void {
     try {
@@ -178,23 +176,16 @@ try {
         const historyPath = path.resolve(next_path, 'history.json');
 
         printHistoryDetailsIfAvailable('History before:', historyPath);
-        console.log(
-          '\n\n' + 'Now will copy the existing resources...' + '\n\n'
-        );
+        console.log('\n\n' + 'Now will copy the existing resources...' + '\n\n');
 
         copyDeployedResourcesUrls
           .filter(item => !_.isNil(item))
           .forEach(copyInfo => buildAssetAndLibHistory(copyInfo, next_path));
 
-        printHistoryDetailsIfAvailable(
-          'The appended history is now:',
-          historyPath
-        );
+        printHistoryDetailsIfAvailable('The appended history is now:', historyPath);
         console.log('\n\n\n\n');
 
-        let appendedHistory = JSON.parse(
-          fs.readFileSync(historyPath).toString()
-        );
+        let appendedHistory = JSON.parse(fs.readFileSync(historyPath).toString());
         let newHistory = {};
         let now = new Date().getTime() / 1000;
         for (let key in appendedHistory) {
@@ -205,10 +196,7 @@ try {
         }
         fs.writeFileSync(historyPath, JSON.stringify(newHistory));
 
-        printHistoryDetailsIfAvailable(
-          'Trimming out old entries, we get:',
-          historyPath
-        );
+        printHistoryDetailsIfAvailable('Trimming out old entries, we get:', historyPath);
         console.log('\n\n\n\n');
       }
 
@@ -220,20 +208,14 @@ try {
         shell.echo(result.stderr);
         exit('An error occurred while adding files...', true);
       }
-      result = shell.exec(
-        'git commit -m "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '"'
-      );
+      result = shell.exec('git commit -m "' + TRAVIS_COMMIT_MESSAGE_SANITIZED + '"');
       if (result.code !== 0) {
         shell.echo(result.stderr);
         exit('An error occurred while committing files...', true);
       }
-      log(
-        'Pushing ' + folder + ' to ' + EDITOR_SITE_URL + '... Please wait...'
-      );
+      log('Pushing ' + folder + ' to ' + EDITOR_SITE_URL + '... Please wait...');
       result = shell.exec(
-        'git push ' +
-          urlWithUsernameAndPassword +
-          ' -q -f -u HEAD:refs/heads/master',
+        'git push ' + urlWithUsernameAndPassword + ' -q -f -u HEAD:refs/heads/master',
         { silent: true }
       );
       if (result.code !== 0) {
@@ -247,10 +229,7 @@ try {
         );
       }
       const end = Date.now();
-      log(
-        'Successfully deployed in ' + (end - start) / 1000 + ' seconds.',
-        'green'
-      );
+      log('Successfully deployed in ' + (end - start) / 1000 + ' seconds.', 'green');
       shell.cd(current_path);
     } catch (error) {
       log('Deployment failed...', 'red');
@@ -259,15 +238,14 @@ try {
   }
 
   function buildAssetAndLibHistory(
-    source: { friendlyName: string; urlWithUsernameAndPassword: string },
+    source: { friendlyName: string, urlWithUsernameAndPassword: string },
     folder: string
   ) {
     log('Copying existing assets from ' + source.friendlyName);
 
-    shell.exec(
-      'git clone ' + source.urlWithUsernameAndPassword + ' existing_build',
-      { silent: true }
-    );
+    shell.exec('git clone ' + source.urlWithUsernameAndPassword + ' existing_build', {
+      silent: true,
+    });
     shell.cp('-n', ['existing_build/*.js', 'existing_build/*.css'], '.');
 
     let oldLibsPath = path.resolve(folder, 'existing_build/libs');
@@ -298,18 +276,13 @@ try {
 
     let history = {};
     if (fs.existsSync(newHistoryPath)) {
-      log(
-        `The new history path ("${newHistoryPath}") already exists, re-using it`
-      );
+      log(`The new history path ("${newHistoryPath}") already exists, re-using it`);
       history = JSON.parse(fs.readFileSync(newHistoryPath).toString());
     }
 
     if (fs.existsSync(oldHistoryPath)) {
       // Parse old history file if it exists
-      printHistoryDetailsIfAvailable(
-        'History of existing build:',
-        oldHistoryPath
-      );
+      printHistoryDetailsIfAvailable('History of existing build:', oldHistoryPath);
       log('\n\n');
       let oldHistory = JSON.parse(fs.readFileSync(oldHistoryPath).toString());
       for (let key in oldHistory) {
@@ -334,10 +307,7 @@ try {
         !fs.existsSync(assetPath) &&
         now - history[asset].time < 60 * 60 * 24 * DAYS_TO_KEEP_HISTORY
       ) {
-        fs.writeFileSync(
-          assetPath,
-          fs.readFileSync(path.resolve(oldAssetsPath, asset))
-        );
+        fs.writeFileSync(assetPath, fs.readFileSync(path.resolve(oldAssetsPath, asset)));
       }
     }
 
@@ -427,9 +397,7 @@ function log(message, color?: string) {
 
 function exit(reason, abort?: boolean) {
   if (reason) {
-    abort
-      ? console.log(chalk.bold.red(reason))
-      : console.log(chalk.bold.yellow(reason));
+    abort ? console.log(chalk.bold.red(reason)) : console.log(chalk.bold.yellow(reason));
   }
 
   return abort ? process.exit(1) : process.exit(0);

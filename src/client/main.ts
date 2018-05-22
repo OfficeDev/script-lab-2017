@@ -22,81 +22,75 @@ import { SnippetEffects, MonacoEffects, UIEffects, GitHubEffects } from './app/e
 import './assets/styles/editor.scss';
 
 let appRoutes: Routes = [
-    { path: 'view/:host/:type/:id', component: ViewMode },
-    { path: 'view/error', component: ViewModeError },
-    { path: 'edit/:host/:type/:id', component: EditorMode },
-    { path: 'edit/:host', component: EditorMode },
-    { path: '', component: EditorMode }
+  { path: 'view/:host/:type/:id', component: ViewMode },
+  { path: 'view/error', component: ViewModeError },
+  { path: 'edit/:host/:type/:id', component: EditorMode },
+  { path: 'edit/:host', component: EditorMode },
+  { path: '', component: EditorMode },
 ];
 
 let imports = [
-    BrowserModule,
-    HttpModule,
-    FormsModule,
-    RouterModule.forRoot(
-        appRoutes,
-        { useHash: true }
-    ),
-    StoreModule.provideStore(rootReducer),
-    EffectsModule.run(SnippetEffects),
-    EffectsModule.run(MonacoEffects),
-    EffectsModule.run(GitHubEffects),
-    EffectsModule.run(UIEffects)
+  BrowserModule,
+  HttpModule,
+  FormsModule,
+  RouterModule.forRoot(appRoutes, { useHash: true }),
+  StoreModule.provideStore(rootReducer),
+  EffectsModule.run(SnippetEffects),
+  EffectsModule.run(MonacoEffects),
+  EffectsModule.run(GitHubEffects),
+  EffectsModule.run(UIEffects),
 ];
 
 (async function start() {
-    const strings = Strings();
+  const strings = Strings();
 
-    try {
-        await Promise.all([
-            environment.initialize(),
-            MonacoService.initialize()
-        ]);
+  try {
+    await Promise.all([environment.initialize(), MonacoService.initialize()]);
 
-        const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
-        AI.initialize(environment.current.config.instrumentationKey);
+    const timer = AI.trackPageView('Mode', `/${environment.current.host}`);
+    AI.initialize(environment.current.config.instrumentationKey);
 
-        if (!environment.current.devMode) {
-            enableProdMode();
-        }
-        else {
-            imports.push(StoreDevtoolsModule.instrumentOnlyWithExtension());
-        }
-
-        await applyTheme(environment.current.host);
-
-        if (!Authenticator.isAuthDialog(environment.current.host === 'TEAMS')) {
-            AI.trackEvent(`[Perf] Playground ready`);
-            await platformBrowserDynamic().bootstrapModule(AppModule);
-            timer.stop();
-        }
+    if (!environment.current.devMode) {
+      enableProdMode();
+    } else {
+      imports.push(StoreDevtoolsModule.instrumentOnlyWithExtension());
     }
-    catch (e) {
-        $('.ms-progress-component__sub-title')
-            .text(strings.HtmlPageStrings.errorInitializingScriptLab)
-            .css('cursor', 'pointer')
-            .click(() => UI.notify(e));
-        $('.ms-progress-component__footer').hide();
-        AI.trackException(e, 'Playground Initialization');
+
+    await applyTheme(environment.current.host);
+
+    if (!Authenticator.isAuthDialog(environment.current.host === 'TEAMS')) {
+      AI.trackEvent(`[Perf] Playground ready`);
+      await platformBrowserDynamic().bootstrapModule(AppModule);
+      timer.stop();
     }
+  } catch (e) {
+    $('.ms-progress-component__sub-title')
+      .text(strings.HtmlPageStrings.errorInitializingScriptLab)
+      .css('cursor', 'pointer')
+      .click(() => UI.notify(e));
+    $('.ms-progress-component__footer').hide();
+    AI.trackException(e, 'Playground Initialization');
+  }
 })();
 
 @NgModule({
-    imports,
-    declarations: [AppComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
-    bootstrap: [AppComponent],
-    providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER]
+  imports,
+  declarations: [AppComponent, ...COMPONENT_DECLARATIONS, ...PIPES],
+  bootstrap: [AppComponent],
+  providers: [...SERVICE_PROVIDERS, EXCEPTION_PROVIDER],
 })
 export class AppModule {
-    constructor(private _store: Store<State>) {
-        this._store.dispatch({
-            type: 'SET_ROOT_STATE',
-            payload: storage.current
-        });
+  constructor(private _store: Store<State>) {
+    this._store.dispatch({
+      type: 'SET_ROOT_STATE',
+      payload: storage.current,
+    });
 
-        this._store
-            .select(getSettings)
-            .debounceTime(300)
-            .subscribe(changes => { storage.appendCurrent(changes); });
-    }
+    this._store
+      .select(getSettings)
+      .debounceTime(300)
+      .subscribe(changes => {
+        storage.appendCurrent(changes);
+      });
+  }
 }

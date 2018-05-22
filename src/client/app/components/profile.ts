@@ -1,10 +1,16 @@
-import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { Strings } from '../strings';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'profile',
-    template: `
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'profile',
+  template: `
         <dialog *ngIf="!(profile==null)" [show]="show">
             <div class="profile">
                 <img class="profile__image" [src]="profile?.avatar_url">
@@ -25,14 +31,14 @@ import { Strings } from '../strings';
                 </div>
             </div>
         </dialog>
-    `
+    `,
 })
 
 // the buttons should be switched
 export class Profile {
-    @Input() profile: IBasicProfile;
-    @Input() show: boolean;
-    @Output() dismiss = new EventEmitter<ISnippet>();
+  @Input() profile: IBasicProfile;
+  @Input() show: boolean;
+  @Output() dismiss = new EventEmitter<ISnippet>();
 
-    strings = Strings();
+  strings = Strings();
 }
