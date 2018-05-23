@@ -295,7 +295,7 @@ export class SnippetEffects {
         snippet = storage.snippets.get(id);
 
         /* check if fields are undefined or null */
-        if (!isNil(name)) {
+        if (!isNil(name) && /\S/.test(name)) {
           snippet.name = name;
         }
         if (!isNil(description)) {

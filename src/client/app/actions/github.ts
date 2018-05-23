@@ -10,21 +10,21 @@ import { type } from '../helpers';
  * action types in the application are unique.
  */
 export class GitHubActionTypes {
-    static readonly LOGIN = type('[GitHub] Login');
-    static readonly LOGIN_FAILED = type('[GitHub] Login Failed');
-    static readonly IS_LOGGED_IN = type('[Github] Is Logged In');
-    static readonly LOAD_GISTS = type('[Github] Load Gists');
-    static readonly LOAD_GISTS_SUCCESS = type('[Github] Load Gists Success');
-    static readonly LOGGED_IN = type('[GitHub] Logged In');
-    static readonly LOGGED_OUT = type('[GitHub] Logged Out');
-    static readonly SHARE_PUBLIC_GIST = type('[GitHub] Share Public Gist');
-    static readonly SHARE_PRIVATE_GIST = type('[GitHub] Share Private Gist');
-    static readonly SHARE_COPY = type('Share copy to clipboard');
-    static readonly SHARE_EXPORT = type('Share export');
-    static readonly SHARE_SUCCESS = type('[GitHub] Share Success');
-    static readonly SHARE_FAILED = type('[GitHub] Share Failed');
-    static readonly UPDATE_GIST = type('[GitHub] Update Gist');
-};
+  static readonly LOGIN = type('[GitHub] Login');
+  static readonly LOGIN_FAILED = type('[GitHub] Login Failed');
+  static readonly IS_LOGGED_IN = type('[Github] Is Logged In');
+  static readonly LOAD_GISTS = type('[Github] Load Gists');
+  static readonly LOAD_GISTS_SUCCESS = type('[Github] Load Gists Success');
+  static readonly LOGGED_IN = type('[GitHub] Logged In');
+  static readonly LOGGED_OUT = type('[GitHub] Logged Out');
+  static readonly SHARE_PUBLIC_GIST = type('[GitHub] Share Public Gist');
+  static readonly SHARE_PRIVATE_GIST = type('[GitHub] Share Private Gist');
+  static readonly SHARE_COPY = type('Share copy to clipboard');
+  static readonly SHARE_EXPORT = type('Share export');
+  static readonly SHARE_SUCCESS = type('[GitHub] Share Success');
+  static readonly SHARE_FAILED = type('[GitHub] Share Failed');
+  static readonly UPDATE_GIST = type('[GitHub] Update Gist');
+}
 
 /**
  * Every action is comprised of at least a type and an optional
@@ -34,105 +34,105 @@ export class GitHubActionTypes {
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
 export class LoginAction implements Action {
-    readonly type = GitHubActionTypes.LOGIN;
+  readonly type = GitHubActionTypes.LOGIN;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class LoginFailedAction implements Action {
-    readonly type = GitHubActionTypes.LOGIN_FAILED;
+  readonly type = GitHubActionTypes.LOGIN_FAILED;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class LogoutAction implements Action {
-    readonly type = GitHubActionTypes.LOGGED_OUT;
+  readonly type = GitHubActionTypes.LOGGED_OUT;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class IsLoggedInAction implements Action {
-    readonly type = GitHubActionTypes.IS_LOGGED_IN;
+  readonly type = GitHubActionTypes.IS_LOGGED_IN;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class LoadGistsAction implements Action {
-    readonly type = GitHubActionTypes.LOAD_GISTS;
+  readonly type = GitHubActionTypes.LOAD_GISTS;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class LoadGistsSuccessAction implements Action {
-    readonly type = GitHubActionTypes.LOAD_GISTS_SUCCESS;
+  readonly type = GitHubActionTypes.LOAD_GISTS_SUCCESS;
 
-    constructor(public payload: ISnippet[]) { }
+  constructor(public payload: ISnippet[]) {}
 }
 
 export class LoggedInAction implements Action {
-    readonly type = GitHubActionTypes.LOGGED_IN;
+  readonly type = GitHubActionTypes.LOGGED_IN;
 
-    constructor(public payload: IBasicProfile) { }
+  constructor(public payload: IBasicProfile) {}
 }
 
 export class ShareCopyGistAction implements Action {
-    readonly type = GitHubActionTypes.SHARE_COPY;
+  readonly type = GitHubActionTypes.SHARE_COPY;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class ShareExportAction implements Action {
-    readonly type = GitHubActionTypes.SHARE_EXPORT;
+  readonly type = GitHubActionTypes.SHARE_EXPORT;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class SharePublicGistAction implements Action {
-    readonly type = GitHubActionTypes.SHARE_PUBLIC_GIST;
+  readonly type = GitHubActionTypes.SHARE_PUBLIC_GIST;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class SharePrivateGistAction implements Action {
-    readonly type = GitHubActionTypes.SHARE_PRIVATE_GIST;
+  readonly type = GitHubActionTypes.SHARE_PRIVATE_GIST;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class ShareSuccessAction implements Action {
-    readonly type = GitHubActionTypes.SHARE_SUCCESS;
+  readonly type = GitHubActionTypes.SHARE_SUCCESS;
 
-    constructor(public payload: IGist) { }
+  constructor(public payload: IGist) {}
 }
 
 export class ShareFailedAction implements Action {
-    readonly type = GitHubActionTypes.SHARE_FAILED;
+  readonly type = GitHubActionTypes.SHARE_FAILED;
 
-    constructor(public payload: any) { }
+  constructor(public payload: any) {}
 }
 
 export class UpdateGistAction implements Action {
-    readonly type = GitHubActionTypes.UPDATE_GIST;
+  readonly type = GitHubActionTypes.UPDATE_GIST;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
  */
-export type GitHubActions
-    = LoginAction
-    | LoginFailedAction
-    | LoggedInAction
-    | LoadGistsAction
-    | LoadGistsSuccessAction
-    | IsLoggedInAction
-    | LogoutAction
-    | ShareCopyGistAction
-    | ShareExportAction
-    | SharePrivateGistAction
-    | SharePublicGistAction
-    | ShareSuccessAction
-    | ShareFailedAction
-    | UpdateGistAction;
+export type GitHubActions =
+  | LoginAction
+  | LoginFailedAction
+  | LoggedInAction
+  | LoadGistsAction
+  | LoadGistsSuccessAction
+  | IsLoggedInAction
+  | LogoutAction
+  | ShareCopyGistAction
+  | ShareExportAction
+  | SharePrivateGistAction
+  | SharePublicGistAction
+  | ShareSuccessAction
+  | ShareFailedAction
+  | UpdateGistAction;

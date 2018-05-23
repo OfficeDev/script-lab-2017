@@ -1,12 +1,18 @@
-import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { getGistUrl, environment, storage } from '../helpers';
 import { Strings } from '../strings';
 import { isNil } from 'lodash';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'snippet-info',
-    template: `
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'snippet-info',
+  template: `
         <dialog title="{{strings.snippetInfoDialogTitle}}" *ngIf="!(snippet==null)" [show]="show">
             <div class="ms-Dialog-content">
                 <div class="ms-TextField">
@@ -35,36 +41,37 @@ import { isNil } from 'lodash';
                 </div>
             </div>
         </dialog>
-    `
+    `,
 })
-
 export class SnippetInfo {
-    @Input() snippet: ISnippet;
-    @Input() show: boolean;
-    @Output() dismiss = new EventEmitter<ISnippet>();
+  @Input() snippet: ISnippet;
+  @Input() show: boolean;
+  @Output() dismiss = new EventEmitter<ISnippet>();
 
-    strings = Strings();
+  strings = Strings();
 
-    get showGistUrl() {
-        if (!this.snippet.gist) {
-            return false;
-        }
-
-        if (storage.current.profile && storage.current.profile.login) {
-            if (storage.current.profile.login === this.snippet.gistOwnerId) {
-                return true;
-            }
-        }
-
-        return false;
+  get showGistUrl() {
+    if (!this.snippet.gist) {
+      return false;
     }
 
-    get gistUrl() {
-        return isNil(this.snippet.gist) ? null : getGistUrl(this.snippet.gist);
+    if (storage.current.profile && storage.current.profile.login) {
+      if (storage.current.profile.login === this.snippet.gistOwnerId) {
+        return true;
+      }
     }
 
-    get viewModeGistUrl() {
-        let host = this.snippet.host.toLowerCase();
-        return `${environment.current.config.editorUrl}/#/view/${host}/gist/${this.snippet.gist}`;
-    }
+    return false;
+  }
+
+  get gistUrl() {
+    return isNil(this.snippet.gist) ? null : getGistUrl(this.snippet.gist);
+  }
+
+  get viewModeGistUrl() {
+    let host = this.snippet.host.toLowerCase();
+    return `${environment.current.config.editorUrl}/#/view/${host}/gist/${
+      this.snippet.gist
+    }`;
+  }
 }

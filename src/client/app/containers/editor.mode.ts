@@ -75,25 +75,21 @@ export class EditorMode {
     private _request: Request,
     private _route: ActivatedRoute
   ) {
-    this.snippetSub = this._store
-      .select(fromRoot.getCurrent)
-      .subscribe(snippet => {
-        this.isEmpty = snippet == null;
-        this.snippet = snippet;
+    this.snippetSub = this._store.select(fromRoot.getCurrent).subscribe(snippet => {
+      this.isEmpty = snippet == null;
+      this.snippet = snippet;
 
-        if (snippet) {
-          window.localStorage.setItem(
-            localStorageKeys.editorLastChangedTimestamp,
-            new Date().getTime().toString()
-          );
-        }
-      });
+      if (snippet) {
+        window.localStorage.setItem(
+          localStorageKeys.editorLastChangedTimestamp,
+          new Date().getTime().toString()
+        );
+      }
+    });
 
-    this.sharingSub = this._store
-      .select(fromRoot.getSharing)
-      .subscribe(sharing => {
-        this.isDisabled = sharing;
-      });
+    this.sharingSub = this._store.select(fromRoot.getSharing).subscribe(sharing => {
+      this.isDisabled = sharing;
+    });
 
     this._store.dispatch(new GitHub.IsLoggedInAction());
 
@@ -135,9 +131,7 @@ export class EditorMode {
 
   theme$ = this._store
     .select(fromRoot.getTheme)
-    .map(
-      isLight => (isLight ? this.strings.lightTheme : this.strings.darkTheme)
-    );
+    .map(isLight => (isLight ? this.strings.lightTheme : this.strings.darkTheme));
 
   language$ = this._store.select(fromRoot.getLanguage);
 
@@ -177,11 +171,7 @@ export class EditorMode {
 
       // Additionally, for a maker script:
       if (this.snippet && isMakerScript(this.snippet.script)) {
-        if (
-          !this.snippet.script.content.includes(
-            'ExcelMaker.getActiveWorkbook()'
-          )
-        ) {
+        if (!this.snippet.script.content.includes('ExcelMaker.getActiveWorkbook()')) {
           canRun = true;
         }
       }
@@ -361,10 +351,7 @@ export class EditorMode {
         mode: string;
         id: string;
       }> => {
-        if (
-          host &&
-          environment.current.host.toUpperCase() !== host.toUpperCase()
-        ) {
+        if (host && environment.current.host.toUpperCase() !== host.toUpperCase()) {
           environment.appendCurrent({ host: host.toUpperCase() });
         }
 
@@ -378,11 +365,7 @@ export class EditorMode {
               environment.current.config.samplesUrl
             }/view/${environment.current.host.toLowerCase()}.json`;
             return this._request
-              .get<JSON>(
-                hostJsonFile,
-                ResponseTypes.JSON,
-                true /*forceBypassCache*/
-              )
+              .get<JSON>(hostJsonFile, ResponseTypes.JSON, true /*forceBypassCache*/)
               .map(lookupTable => {
                 return {
                   valid: true,
@@ -390,9 +373,7 @@ export class EditorMode {
                   id: lookupTable[id],
                 };
               })
-              .catch(exception =>
-                Observable.of({ valid: false, mode: null, id: null })
-              );
+              .catch(exception => Observable.of({ valid: false, mode: null, id: null }));
           case 'gist':
             return Observable.of({
               valid: true,
@@ -481,9 +462,7 @@ export class EditorMode {
         break;
 
       default:
-        this._store.dispatch(
-          new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet)
-        );
+        this._store.dispatch(new UI.ReportErrorAction(Strings().failedToLoadCodeSnippet));
     }
   }
 }

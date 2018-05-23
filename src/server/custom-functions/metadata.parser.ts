@@ -51,26 +51,21 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
               .getJSDocTags(func)
               .filter(
                 (tag: ts.JSDocTag) =>
-                  (tag.tagName.escapedText as string).toLowerCase() ===
-                  CUSTOM_FUNCTION
+                  (tag.tagName.escapedText as string).toLowerCase() === CUSTOM_FUNCTION
               ).length > 0;
 
           if (isCF) {
             const jsDocParamInfo = getJSDocParams(func);
 
-            const parameters = func.parameters.map(
-              (p: ts.ParameterDeclaration) => {
-                const name = (p.name as ts.Identifier).text;
+            const parameters = func.parameters.map((p: ts.ParameterDeclaration) => {
+              const name = (p.name as ts.Identifier).text;
 
-                return {
-                  name,
-                  ...(jsDocParamInfo[name]
-                    ? { description: jsDocParamInfo[name] }
-                    : {}),
-                  ...getDimAndTypeHelper(p.type),
-                };
-              }
-            );
+              return {
+                name,
+                ...(jsDocParamInfo[name] ? { description: jsDocParamInfo[name] } : {}),
+                ...getDimAndTypeHelper(p.type),
+              };
+            });
 
             let description;
             if ((func as any).jsDoc) {
@@ -85,8 +80,7 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
             if (func.type) {
               if (
                 func.type.kind === ts.SyntaxKind.TypeReference &&
-                (func.type as ts.TypeReferenceNode).typeName.getText() ===
-                  'Promise' &&
+                (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
                 (func.type as ts.TypeReferenceNode).typeArguments &&
                 (func.type as ts.TypeReferenceNode).typeArguments.length === 1
               ) {
@@ -198,9 +192,7 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
         : tag.comment
       ).trim();
 
-      jsDocParamInfo[
-        (tag as ts.JSDocPropertyLikeTag).name.getFullText()
-      ] = comment;
+      jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;
     });
 
   return jsDocParamInfo;
@@ -212,9 +204,7 @@ function getJSDocParams(node: ts.Node): { [key: string]: string } {
  */
 function validateArray(a: ts.TypeReferenceNode) {
   return (
-    a.typeName.getText() === 'Array' &&
-    a.typeArguments &&
-    a.typeArguments.length === 1
+    a.typeName.getText() === 'Array' && a.typeArguments && a.typeArguments.length === 1
   );
 }
 

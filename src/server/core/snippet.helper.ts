@@ -81,9 +81,7 @@ function scrubCarriageReturns(snippet: ISnippet) {
     if (field === 'libraries') {
       snippet.libraries = removeCarriageReturnsHelper(snippet.libraries);
     } else {
-      snippet[field].content = removeCarriageReturnsHelper(
-        snippet[field].content
-      );
+      snippet[field].content = removeCarriageReturnsHelper(snippet[field].content);
     }
 
     function removeCarriageReturnsHelper(text) {
@@ -96,10 +94,7 @@ function scrubCarriageReturns(snippet: ISnippet) {
 }
 
 /** Returns a shallow copy of the snippet, filtered to only keep a particular set of fields */
-export function getScrubbedSnippet(
-  snippet: ISnippet,
-  keep: SnippetFieldType
-): ISnippet {
+export function getScrubbedSnippet(snippet: ISnippet, keep: SnippetFieldType): ISnippet {
   let copy = {};
   forIn(snippetFields, (fieldType, fieldName) => {
     if (fieldType & keep) {
@@ -112,10 +107,7 @@ export function getScrubbedSnippet(
   return copy as ISnippet;
 }
 
-export function getShareableYaml(
-  rawSnippet: ISnippet,
-  additionalFields: ISnippet
-) {
+export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippet) {
   const snippet = {
     ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC),
     ...additionalFields,
@@ -125,8 +117,7 @@ export function getShareableYaml(
   return jsyaml.safeDump(snippet, {
     indent: 4,
     lineWidth: -1,
-    sortKeys: <any>((a, b) =>
-      snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
+    sortKeys: <any>((a, b) => snippetFieldSortingOrder[a] - snippetFieldSortingOrder[b]),
     skipInvalid: true,
   });
 }

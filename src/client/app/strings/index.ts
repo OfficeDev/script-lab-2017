@@ -14,64 +14,66 @@ import { getSpanishStrings } from './spanish';
 import { getChineseSimplifiedStrings } from './chinese-simplified';
 
 let availableLanguages = [
-    { name: 'English', value: 'en' },
-    { name: 'Deutsch', value: 'de' },
-    { name: 'Español', value: 'es' },
-    { name: '中文', value: 'zh-cn' }
+  { name: 'English', value: 'en' },
+  { name: 'Deutsch', value: 'de' },
+  { name: 'Español', value: 'es' },
+  { name: '中文', value: 'zh-cn' },
 ];
 
 const languageGenerator: { [key: string]: () => ClientStringsPerLanguage } = {
-    'en': () => getEnglishStrings(),
-    'de': () => getGermanStrings(),
-    'es': () => getSpanishStrings(),
-    'zh-cn': () => getChineseSimplifiedStrings(),
-    '??': () => createFakeStrings(() => getEnglishStrings())
+  en: () => getEnglishStrings(),
+  de: () => getGermanStrings(),
+  es: () => getSpanishStrings(),
+  'zh-cn': () => getChineseSimplifiedStrings(),
+  '??': () => createFakeStrings(() => getEnglishStrings()),
 };
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-export function getAvailableLanguages(): { name: string, value: string }[] {
-    let langs = availableLanguages.slice();
-    if (environment.current.devMode) {
-        langs.push({ name: 'Fake Strings', value: '??' });
-    }
-    return langs;
+export function getAvailableLanguages(): { name: string; value: string }[] {
+  let langs = availableLanguages.slice();
+  if (environment.current.devMode) {
+    langs.push({ name: 'Fake Strings', value: '??' });
+  }
+  return langs;
 }
 
 export function Strings(): ClientStrings {
-    let strings = getStrings(getRawDisplayLanguage(), languageGenerator, () => getEnglishStrings());
-    return {
-        ...strings,
-        importUrlPlaceholder: importUrlPlaceholder(strings.exampleAbbreviation)
-    };
+  let strings = getStrings(getRawDisplayLanguage(), languageGenerator, () =>
+    getEnglishStrings()
+  );
+  return {
+    ...strings,
+    importUrlPlaceholder: importUrlPlaceholder(strings.exampleAbbreviation),
+  };
 }
 
 export function getDisplayLanguage() {
-    const rawDisplayLanguage = (getRawDisplayLanguage() || 'en-us').toLowerCase();
-    for (let language of availableLanguages) {
-        if (rawDisplayLanguage === language.value) {
-            return rawDisplayLanguage;
-        }
+  const rawDisplayLanguage = (getRawDisplayLanguage() || 'en-us').toLowerCase();
+  for (let language of availableLanguages) {
+    if (rawDisplayLanguage === language.value) {
+      return rawDisplayLanguage;
     }
+  }
 
-    return rawDisplayLanguage.substr(0, 2);
+  return rawDisplayLanguage.substr(0, 2);
 }
 
 export function getDisplayLanguageOrFake() {
-    const displayLang = getDisplayLanguage();
+  const displayLang = getDisplayLanguage();
 
-    if (displayLang === '??') {
-        // If localstorage is already set to the fake locale, return a different language
-        // (e.g., Russian), just to see that it's not English strings anymore
-        return 'ru';
-    }
+  if (displayLang === '??') {
+    // If localstorage is already set to the fake locale, return a different language
+    // (e.g., Russian), just to see that it's not English strings anymore
+    return 'ru';
+  }
 
-    return displayLang;
+  return displayLang;
 }
 
 export function setDisplayLanguage(language) {
-    window.localStorage.setItem(PLAYGROUND.localStorageKeys.language, language);
+  window.localStorage.setItem(PLAYGROUND.localStorageKeys.language, language);
 }
 
 /** Function for use in non-English files, acting as a marker for text that still needs to be translated.
@@ -79,27 +81,27 @@ export function setDisplayLanguage(language) {
  * and so that it's semantically clear that there are missing translations left.
  */
 export function getEnglishSubstitutesForNotYetTranslated() {
-    return getEnglishStrings();
+  return getEnglishStrings();
 }
 
 function getRawDisplayLanguage() {
-    if (!window.localStorage) {
-        return null;
-    }
-
-    ensureFreshLocalStorage();
-    if (window.localStorage.getItem(PLAYGROUND.localStorageKeys.language)) {
-        return window.localStorage.getItem(PLAYGROUND.localStorageKeys.language);
-    }
-
-    const Office = (window as any).Office;
-    if (Office && Office.context && Office.context.displayLanguage) {
-        return Office.context.displayLanguage;
-    }
-
-    if (window.navigator && window.navigator.language) {
-        return window.navigator.language;
-    }
-
+  if (!window.localStorage) {
     return null;
+  }
+
+  ensureFreshLocalStorage();
+  if (window.localStorage.getItem(PLAYGROUND.localStorageKeys.language)) {
+    return window.localStorage.getItem(PLAYGROUND.localStorageKeys.language);
+  }
+
+  const Office = (window as any).Office;
+  if (Office && Office.context && Office.context.displayLanguage) {
+    return Office.context.displayLanguage;
+  }
+
+  if (window.navigator && window.navigator.language) {
+    return window.navigator.language;
+  }
+
+  return null;
 }

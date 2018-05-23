@@ -175,7 +175,6 @@ export class Editor implements AfterViewInit {
       return ['script', 'libraries'].indexOf(tabName) >= 0;
     }
     return true;
-    // tslint:disable-next-line:semicolon
   };
 
   changeTab = (name: string = 'script') => {
@@ -190,7 +189,6 @@ export class Editor implements AfterViewInit {
         language,
       })
     );
-    // tslint:disable-next-line:semicolon
   };
 
   updateIntellisense() {

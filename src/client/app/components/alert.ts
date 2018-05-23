@@ -5,8 +5,8 @@ import { UI } from '../actions';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
-    selector: 'alert',
-    template: `
+  selector: 'alert',
+  template: `
         <dialog [title]="dialog?.title" [show]="!(dialog==null)">
             <div class="ms-Dialog-content">
                 <pre class="ms-Dialog-subText">{{ dialog?.message }}</pre>
@@ -19,30 +19,30 @@ import { Subscription } from 'rxjs/Subscription';
                 </div>
             </div>
         </dialog>
-    `
+    `,
 })
 export class Alert {
-    dialog: IAlert;
+  dialog: IAlert;
 
-    private alertSub: Subscription;
+  private alertSub: Subscription;
 
-    constructor(private _store: Store<fromRoot.State>) {
-        this.alertSub = this._store.select(fromRoot.getDialog).subscribe(dialog => {
-            this.dialog = dialog;
-        });
+  constructor(private _store: Store<fromRoot.State>) {
+    this.alertSub = this._store.select(fromRoot.getDialog).subscribe(dialog => {
+      this.dialog = dialog;
+    });
+  }
+
+  get isMultiLine() {
+    return this.dialog && this.dialog.actions && this.dialog.actions.length > 2;
+  }
+
+  ngOnDestroy() {
+    if (this.alertSub) {
+      this.alertSub.unsubscribe();
     }
+  }
 
-    get isMultiLine() {
-        return this.dialog && this.dialog.actions && this.dialog.actions.length > 2;
-    }
-
-    ngOnDestroy() {
-        if (this.alertSub) {
-            this.alertSub.unsubscribe();
-        }
-    }
-
-    dismiss(action: string) {
-        this._store.dispatch(new UI.DismissAlertAction(action));
-    }
+  dismiss(action: string) {
+    this._store.dispatch(new UI.DismissAlertAction(action));
+  }
 }

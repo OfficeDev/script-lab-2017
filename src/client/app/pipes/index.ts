@@ -1,7 +1,5 @@
 import { KeysPipe } from './keys';
 
-export const PIPES = [
-    KeysPipe
-];
+export const PIPES = [KeysPipe];
 
 export { KeysPipe };
