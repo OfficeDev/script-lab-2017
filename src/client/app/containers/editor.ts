@@ -32,7 +32,7 @@ const { localStorageKeys } = PLAYGROUND;
                 {{tab.displayName}}
             </li>
         </ul>
-        <section class="trust-snippet-bar" *ngIf="!isSnippetTrusted">
+        <section class="trust-snippet-bar" *ngIf="isTrustBarVisible">
             <div class="ms-MessageBar ms-MessageBar--warning ms-MessageBar-singleline" style="
                 width: 100%;
                 box-sizing: border-box;
@@ -159,9 +159,15 @@ export class Editor implements AfterViewInit {
   }
 
   trustSnippet() {
-    trustedSnippetManager.trustSnippet(this.snippet.id);
-    this.isSnippetTrusted = true;
-    this._resize();
+    if (this.snippet) {
+      trustedSnippetManager.trustSnippet(this.snippet.id);
+      this.isSnippetTrusted = true;
+      this._resize();
+    }
+  }
+
+  get isTrustBarVisible() {
+    return this.snippet && !this.isSnippetTrusted;
   }
 
   showTab = (tabName: string) => {
@@ -177,7 +183,12 @@ export class Editor implements AfterViewInit {
       language = this.tabs.get(name).language;
     }
 
-    this._store.dispatch(new Monaco.ChangeTabAction({ name: name, language }));
+    this._store.dispatch(
+      new Monaco.ChangeTabAction({
+        name: name,
+        language,
+      })
+    );
   };
 
   updateIntellisense() {
