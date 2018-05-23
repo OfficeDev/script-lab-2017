@@ -35,9 +35,6 @@ import { isNil } from 'lodash';
                     <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(true)">
                         <span class="ms-Button-label">{{strings.save}}</span>
                     </button>
-                    <button class="ms-Dialog-action ms-Button" (click)="dismiss.emit(false)">
-                        <span class="ms-Button-label">{{strings.cancel}}</span>
-                    </button>
                 </div>
             </div>
         </dialog>
