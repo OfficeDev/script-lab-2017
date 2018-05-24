@@ -45,7 +45,7 @@ const { localStorageKeys } = PLAYGROUND;
         <footer class="command__bar command__bar--condensed">
             <command icon="Info" title="{{strings.about}}" (click)="showAbout=true"></command>
             <command id="feedback" [title]="Feedback" icon="Emoji2" (click)="feedback()"></command>
-            <command icon="Color" [title]="theme$|async" (click)="changeTheme()"></command>
+            <command icon="Color" [title]="themeLocalized$|async" (click)="changeTheme()"></command>
             <command icon="StatusErrorFull" [title]="(errors$|async)?.length" (click)="showErrors()"></command>
             <command class="language" [title]="language$|async"></command>
         </footer>
@@ -129,9 +129,13 @@ export class EditorMode {
 
   menuOpened$ = this._store.select(fromRoot.getMenu);
 
-  theme$ = this._store
+  themeLocalized$ = this._store
     .select(fromRoot.getTheme)
     .map(isLight => (isLight ? this.strings.lightTheme : this.strings.darkTheme));
+
+  theme$ = this._store
+    .select(fromRoot.getTheme)
+    .map(isLight => (isLight ? 'Light' : 'Dark'));
 
   language$ = this._store.select(fromRoot.getLanguage);
 
