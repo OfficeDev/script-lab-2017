@@ -1,49 +1,49 @@
 import { MonacoActions, MonacoActionTypes } from '../actions/monaco';
 
 export interface MonacoState {
-    activeTab?: string;
-    activeLanguage?: string;
-    loading?: boolean;
+  activeTab?: string;
+  activeLanguage?: string;
+  loading?: boolean;
 }
 
 export const initialState = {
-    activeTab: null,
-    activeLanguage: null,
-    loading: false
+  activeTab: null,
+  activeLanguage: null,
+  loading: false,
 };
 
 export function reducer(state = initialState, action: MonacoActions): MonacoState {
-    switch (action.type) {
-        case MonacoActionTypes.CHANGE_TAB:
-            return {
-                ...state,
-                activeTab: action.payload.name,
-                activeLanguage: action.payload.language
-            };
+  switch (action.type) {
+    case MonacoActionTypes.CHANGE_TAB:
+      return {
+        ...state,
+        activeTab: action.payload.name,
+        activeLanguage: action.payload.language,
+      };
 
-        case MonacoActionTypes.RESET:
-            return {
-                ...state,
-                activeTab: null,
-                activeLanguage: null
-            };
+    case MonacoActionTypes.RESET:
+      return {
+        ...state,
+        activeTab: null,
+        activeLanguage: null,
+      };
 
-        case MonacoActionTypes.UPDATE_INTELLISENSE:
-            return {
-                ...state,
-                loading: true
-            };
+    case MonacoActionTypes.UPDATE_INTELLISENSE:
+      return {
+        ...state,
+        loading: true,
+      };
 
-        case MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS:
-            return {
-                ...state,
-                loading: false
-            };
+    case MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
 
-        default: return state;
-    }
-};
-
+    default:
+      return state;
+  }
+}
 
 /**
  * Because the data structure is defined within the reducer it is optimal to

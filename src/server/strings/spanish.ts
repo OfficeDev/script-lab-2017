@@ -13,8 +13,7 @@ export function getSpanishStrings(): ServerStrings {
 
     unexpectedError: 'Ocurrió un error inesperado',
 
-    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated()
-      .snippetNotTrusted,
+    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
     trust: getEnglishSubstitutesForNotYetTranslated().trust,
 
     error: 'Error',
@@ -32,8 +31,7 @@ export function getSpanishStrings(): ServerStrings {
     unrecognizedScriptLanguage: 'Lenguaje de script no reconocido',
     line: 'Line',
 
-    getLoadingSnippetSubtitle: (snippetName: string) =>
-      `Cargando "${snippetName}"`,
+    getLoadingSnippetSubtitle: (snippetName: string) => `Cargando "${snippetName}"`,
 
     getSyntaxErrorsTitle: (count: number) =>
       count === 1 ? 'Errores de sintaxis' : 'Syntax errors',
@@ -53,8 +51,7 @@ export function getSpanishStrings(): ServerStrings {
     run: 'Ejecutar',
     runPageTitle: 'Ejecutar código',
     back: 'Regresar',
-    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated()
-      .snippetNotTrusted,
+    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
     trust: getEnglishSubstitutesForNotYetTranslated().trust,
     cancel: getEnglishSubstitutesForNotYetTranslated().cancel,
     switchToSnippet: `Regresar al código que estas editando.`,

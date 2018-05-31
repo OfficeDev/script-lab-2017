@@ -7,70 +7,66 @@ export function getFunctionsAndMetadataForRegistration(
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
   let metadata: ICFFunctionMetadata[] = [];
 
-  snippets
-    .filter(snippet => snippet.script && snippet.name)
-    .forEach(snippet => {
-      let functions: ICFVisualFunctionMetadata[] = parseMetadata(
-        snippet.script.content
-      ) as ICFVisualFunctionMetadata[];
+  snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
+    let functions: ICFVisualFunctionMetadata[] = parseMetadata(
+      snippet.script.content
+    ) as ICFVisualFunctionMetadata[];
 
-      functions = convertFunctionErrorsToSpace(functions);
-      if (functions.length === 0) {
-        return;
-      } // no custom functions found
-      const hasErrors = doesSnippetHaveErrors(functions);
+    functions = convertFunctionErrorsToSpace(functions);
+    if (functions.length === 0) {
+      return;
+    } // no custom functions found
+    const hasErrors = doesSnippetHaveErrors(functions);
 
-      if (!hasErrors) {
-        const namespace = transformSnippetName(snippet.name);
-        const namespacedFunctions = functions.map(f => ({
-          ...f,
-          name: `${namespace}.${f.name}`,
-        }));
-        metadata = metadata.concat(...namespacedFunctions);
-      }
+    if (!hasErrors) {
+      const namespace = transformSnippetName(snippet.name);
+      const namespacedFunctions = functions.map(f => ({
+        ...f,
+        name: `${namespace}.${f.name}`,
+      }));
+      metadata = metadata.concat(...namespacedFunctions);
+    }
 
-      functions = functions.map(func => {
-        const status: CustomFunctionsRegistrationStatus = hasErrors
-          ? func.error
-            ? 'error'
-            : 'skipped'
-          : 'good';
-
-        func.parameters = func.parameters.map(p => ({
-          ...p,
-          prettyType: getPrettyType(p),
-          status: getFunctionChildNodeStatus(func, status, p),
-        }));
-
-        return {
-          ...func,
-          paramString: paramStringExtractor(func), // todo, i think this can be removed
-          status,
-          result: {
-            ...func.result,
-            status: getFunctionChildNodeStatus(func, status, func.result),
-          },
-        };
-      });
-
-      // TODO:  why do we have code commented out?
-      // const isTrusted = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
-      // let status;
-      // if (isTrusted) {
-      let status: CustomFunctionsRegistrationStatus = hasErrors
-        ? 'error'
+    functions = functions.map(func => {
+      const status: CustomFunctionsRegistrationStatus = hasErrors
+        ? func.error
+          ? 'error'
+          : 'skipped'
         : 'good';
-      // } else {
-      //     status = CustomFunctionsRegistrationStatus.Untrusted;
-      // }
 
-      visualMetadata.push({
-        name: transformSnippetName(snippet.name),
-        error: hasErrors,
+      func.parameters = func.parameters.map(p => ({
+        ...p,
+        prettyType: getPrettyType(p),
+        status: getFunctionChildNodeStatus(func, status, p),
+      }));
+
+      return {
+        ...func,
+        paramString: paramStringExtractor(func), // todo, i think this can be removed
         status,
-        functions,
-      });
+        result: {
+          ...func.result,
+          status: getFunctionChildNodeStatus(func, status, func.result),
+        },
+      };
     });
+
+    // TODO:  why do we have code commented out?
+    // const isTrusted = trustedSnippetManager.isSnippetTrusted(snippet.id, snippet.gist, snippet.gistOwnerId);
+    // let status;
+    // if (isTrusted) {
+    let status: CustomFunctionsRegistrationStatus = hasErrors ? 'error' : 'good';
+    // } else {
+    //     status = CustomFunctionsRegistrationStatus.Untrusted;
+    // }
+
+    visualMetadata.push({
+      name: transformSnippetName(snippet.name),
+      error: hasErrors,
+      status,
+      functions,
+    });
+  });
 
   const functions = filterOutDuplicates(metadata);
   // const funcNames = functions.map(f => f.name);
@@ -155,9 +151,7 @@ function convertFunctionErrorsToSpace(
   });
 }
 
-function filterOutDuplicates(
-  functions: ICFFunctionMetadata[]
-): ICFFunctionMetadata[] {
+function filterOutDuplicates(functions: ICFFunctionMetadata[]): ICFFunctionMetadata[] {
   return functions.filter(func => {
     return functions.filter(f => f.name === func.name).length === 1;
   });

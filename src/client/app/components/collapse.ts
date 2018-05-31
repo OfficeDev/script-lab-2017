@@ -1,9 +1,15 @@
-import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'collapse',
-    template: `
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'collapse',
+  template: `
         <div class="command__bar command--light" (click)="collapsed = !collapsed" *ngIf="title !== 'undefined'">
             <div class="command__title">
                 <span class="ms-font-m">{{ title }}</span>
@@ -17,19 +23,19 @@ import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from 
         </div>
         <section classs="collapse__panel" [hidden]="collapsed">
             <ng-content></ng-content>
-        </section>`
+        </section>`,
 })
 export class Collapse {
-    @Input() title: string;
-    @Input() collapsed: boolean;
-    @Input() actions: string[];
-    @Output() events: EventEmitter<any> = new EventEmitter<any>();
+  @Input() title: string;
+  @Input() collapsed: boolean;
+  @Input() actions: string[];
+  @Output() events: EventEmitter<any> = new EventEmitter<any>();
 
-    clicked(action: string, $event: Event) {
-        $event.stopPropagation();
-        this.events.emit({
-            action: action,
-            title: this.title
-        });
-    }
+  clicked(action: string, $event: Event) {
+    $event.stopPropagation();
+    this.events.emit({
+      action: action,
+      title: this.title,
+    });
+  }
 }

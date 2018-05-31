@@ -11,8 +11,7 @@ export function getChineseSimplifiedStrings(): ServerStrings {
     playgroundName: 'Script Lab',
     playgroundTagline: '代码 ● 编写 ● 共享',
     unexpectedError: '出现意外错误',
-    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated()
-      .snippetNotTrusted,
+    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
     trust: getEnglishSubstitutesForNotYetTranslated().trust,
     error: '错误',
     cancel: '注销',
@@ -31,8 +30,7 @@ export function getChineseSimplifiedStrings(): ServerStrings {
 
     getLoadingSnippetSubtitle: (snippetName: string) => `加载 "${snippetName}"`,
 
-    getSyntaxErrorsTitle: (count: number) =>
-      count === 1 ? '句法误差' : '句法误差',
+    getSyntaxErrorsTitle: (count: number) => (count === 1 ? '句法误差' : '句法误差'),
 
     createdWithScriptLab: 'Script Lab创造',
 
