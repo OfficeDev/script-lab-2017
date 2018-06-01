@@ -31,9 +31,23 @@
     <script src="{{{origin}}}/{{{assets.error.js}}}"></script>
 
     <script>
-        window.parent.scriptRunnerBeginInit(window);
+        if (window.parent && window.parent && window.parent.scriptRunnerBeginInit) {
+            try {
+                window.parent.scriptRunnerBeginInit(window);
+            } catch (e) {
+                console.error(e);
+            };
+        }
+
         window.initializeErrorView({{{expandDetailsByDefault}}});
-        window.parent.scriptRunnerEndInit(window);
+
+        if (window.parent && window.parent && window.parent.scriptRunnerEndInit) {
+            try {
+                window.parent.scriptRunnerEndInit(window);
+            } catch (e) {
+                console.error(e);
+            };
+        }
     </script>
 </body>
 
