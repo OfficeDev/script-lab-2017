@@ -6,8 +6,4 @@ export * from './github.service';
 export * from './request';
 export * from './monaco.service';
 
-export const SERVICE_PROVIDERS = [
-    Request,
-    MonacoService,
-    GitHubService
-];
+export const SERVICE_PROVIDERS = [Request, MonacoService, GitHubService];

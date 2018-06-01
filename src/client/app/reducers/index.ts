@@ -18,10 +18,10 @@ import * as github from './github';
  * our top level state interface is just a map of keys to inner state types.
  */
 export interface State {
-    snippet: snippet.SnippetState;
-    monaco: monaco.MonacoState;
-    ui: ui.UIState;
-    github: github.GitHubState;
+  snippet: snippet.SnippetState;
+  monaco: monaco.MonacoState;
+  ui: ui.UIState;
+  github: github.GitHubState;
 }
 
 /**
@@ -59,48 +59,49 @@ export const getProfile = createSelector(getGitHubState, github.getProfile);
 export const getLoggedIn = createSelector(getGitHubState, github.getLoggedIn);
 export const getSharing = createSelector(getGitHubState, github.getSharing);
 
-const getSettingsState = (state: State) => (<ISettings>{
+const getSettingsState = (state: State) =>
+  <ISettings>{
     lastOpened: getCurrent(state),
     profile: getProfile(state),
     theme: getTheme(state),
-    language: getLanguage(state)
-});
+    language: getLanguage(state),
+  };
 
 export const getSettings = createSelector(state => state, getSettingsState);
 
 const createDefaultState = (settings: ISettings) => {
-    if (settings == null) {
-        return <State>{
-            github: github.initialState,
-            monaco: monaco.initialState,
-            ui: ui.initialState,
-            snippet: snippet.initialState
-        };
-    }
-
-    let { profile, lastOpened, theme, language, env } = settings;
-
+  if (settings == null) {
     return <State>{
-        github: { ...github.initialState, profile },
-        monaco: { ...monaco.initialState },
-        ui: { ...ui.initialState, theme, language, env },
-        snippet: { ...snippet.initialState, lastOpened }
+      github: github.initialState,
+      monaco: monaco.initialState,
+      ui: ui.initialState,
+      snippet: snippet.initialState,
     };
+  }
+
+  let { profile, lastOpened, theme, language, env } = settings;
+
+  return <State>{
+    github: { ...github.initialState, profile },
+    monaco: { ...monaco.initialState },
+    ui: { ...ui.initialState, theme, language, env },
+    snippet: { ...snippet.initialState, lastOpened },
+  };
 };
 
 export const stateSetter: ActionReducer<any> = (reducer: ActionReducer<any>) => {
-    return (state, { type, payload }) => {
-        if (type === 'SET_ROOT_STATE') {
-            console.log('Setting root state', payload);
-            return createDefaultState(payload);
-        }
-        return reducer(state, { type, payload });
-    };
+  return (state, { type, payload }) => {
+    if (type === 'SET_ROOT_STATE') {
+      console.log('Setting root state', payload);
+      return createDefaultState(payload);
+    }
+    return reducer(state, { type, payload });
+  };
 };
 
 export const rootReducer = compose(stateSetter, combineReducers)({
-    snippet: snippet.reducer,
-    monaco: monaco.reducer,
-    ui: ui.reducer,
-    github: github.reducer
+  snippet: snippet.reducer,
+  monaco: monaco.reducer,
+  ui: ui.reducer,
+  github: github.reducer,
 });

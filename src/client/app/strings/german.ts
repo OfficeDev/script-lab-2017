@@ -56,8 +56,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     createNewCopyButtonLabel: 'Eine neue Kopie erstellen',
     editorTriggerSuggestContextMenuLabel: 'Trigger-Vorschlag',
 
-    failedToLoadCodeSnippet:
-      'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
+    failedToLoadCodeSnippet: 'Das Laden des Code-Schnipsels ist fehlgeschlagen.',
 
     snippetGistIdDuplicationError:
       'Es existiert bereits ein Schnipsel, das aus dem gleichen GitHub-Gist importiert wurde. Möchten Sie zu diesem Schnipsel wechseln oder eine neue Kopie erstellen?',
@@ -65,8 +64,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     snippetImportErrorTitle: 'Importfehler',
     snippetImportErrorBody: `Wir konnten das Schnipsel nicht importieren.`,
     cannotOpenSnippet: 'Das Schnipsel konnte nicht geöffnet werden',
-    requestedSnippetNoLongerExists:
-      'Das angeforderte Schnipsel existiert nicht mehr.',
+    requestedSnippetNoLongerExists: 'Das angeforderte Schnipsel existiert nicht mehr.',
     reloadPrompt:
       'Laden Sie diesen Aufgabenbereich erneut und probieren Sie anschließend eine andere URL oder ID aus.',
 
@@ -90,8 +88,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     snippetLoadAllError:
       'Die lokal gespeicherten Schnipsel konnten nicht geladen werden.',
     snippetRunError: 'Die Ausführung des Schnipsels ist fehlgeschlagen.',
-    snippetLoadDefaultsError:
-      'Die Beispiel-Schnipsel konnten nicht geladen werden.',
+    snippetLoadDefaultsError: 'Die Beispiel-Schnipsel konnten nicht geladen werden.',
     snippetOpenInPlaygroundError:
       /** Note: this is a more general translation **/ 'Das Schnipsel konnte nicht geöffnet werden',
 
@@ -114,8 +111,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     //monaco.ts strings:
     intellisenseUpdateError: 'IntelliSense konnte nicht aktualisiert werden.',
     intellisenseClearError: 'IntelliSense konnte nicht zurückgesetzt werden.',
-    intellisenseLoadError:
-      'Die IntelliSense-Datei konnte nicht geladen werden.',
+    intellisenseLoadError: 'Die IntelliSense-Datei konnte nicht geladen werden.',
 
     //github.ts strings:
     githubLoginFailed: 'Die Anmeldung bei GitHub ist fehlgeschlagen.',
@@ -185,16 +181,15 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     lightTheme: 'Hell',
     darkTheme: 'Dunkel',
 
-    deleteSnippetConfirm:
-      'Sind Sie sicher, dass dieses Schnipsel gelöscht werden soll?',
+    deleteSnippetConfirm: 'Sind Sie sicher, dass dieses Schnipsel gelöscht werden soll?',
 
     tabDisplayNames: {
       script: 'Script',
       template: 'HTML',
       style: 'CSS',
       libraries: 'Bibliotheken',
-      customFunctions: getEnglishSubstitutesForNotYetTranslated()
-        .tabDisplayNames.customFunctions,
+      customFunctions: getEnglishSubstitutesForNotYetTranslated().tabDisplayNames
+        .customFunctions,
     },
 
     registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated()
@@ -328,13 +323,11 @@ export function getGermanStrings(): ClientStringsPerLanguage {
       loadingRunnerDotDotDot: 'Wird geladen...',
       running: 'Ausführung',
       lastOpenedSnippet: 'Zuletzt verwendetes Schnipsel',
-      noLastOpenedSnippets:
-        'Sie verfügen über kein zuletzt geladenes Schnipsel.',
+      noLastOpenedSnippets: 'Sie verfügen über kein zuletzt geladenes Schnipsel.',
       toGetStartedCreateOrImportSnippet:
         'Wählen Sie im Menüband den Befehl "Code", um ein Schnipsel zu erstellen oder zu importieren.',
       mySavedSnippets: 'Meine gespeicherten Schnipsel',
-      noLocalSnippets:
-        'Es wurden auf diesem Computer noch keine Schnipsel gespeichert.',
+      noLocalSnippets: 'Es wurden auf diesem Computer noch keine Schnipsel gespeichert.',
       lastUpdated: 'Letztes Update',
       clickToRefresh: 'Zum Aktualisieren hier klicken',
 
@@ -346,8 +339,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     },
 
     Auth: {
-      authenticatingOnBehalfOfSnippet:
-        'Authentifizierung durch das Schnipsel...',
+      authenticatingOnBehalfOfSnippet: 'Authentifizierung durch das Schnipsel...',
       loggingOutOnBehalfOfSnippet: 'Abmeldung durch das Schnipsel...',
       authenticationRedirect: 'Umleitung zur Authentifizierung',
       authenticationError: 'Authentifizierungsfehler',

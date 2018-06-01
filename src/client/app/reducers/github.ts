@@ -3,70 +3,74 @@ import { AI } from '../helpers';
 import * as sha1 from 'crypto-js/sha1';
 
 export interface GitHubState {
-    isLoggedIn?: boolean;
-    loading?: boolean;
-    profile?: IBasicProfile;
-    sharing?: boolean;
-};
+  isLoggedIn?: boolean;
+  loading?: boolean;
+  profile?: IBasicProfile;
+  sharing?: boolean;
+}
 
 export const initialState: GitHubState = {
-    isLoggedIn: false,
-    loading: false,
-    profile: null,
-    sharing: false
+  isLoggedIn: false,
+  loading: false,
+  profile: null,
+  sharing: false,
 };
 
 export function reducer(state = initialState, action: GitHubActions): GitHubState {
-    switch (action.type) {
-        case GitHubActionTypes.LOGIN: {
-            AI.trackEvent(action.type);
-            return { ...state, loading: true };
-        }
-
-        case GitHubActionTypes.LOGIN_FAILED: {
-            return { ...state, loading: false };
-        }
-
-        case GitHubActionTypes.LOGGED_IN: {
-            AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()) });
-            return {
-                ...state,
-                loading: false,
-                isLoggedIn: true,
-                profile: action.payload
-            };
-        }
-
-        case GitHubActionTypes.LOGGED_OUT: {
-            AI.trackEvent(action.type);
-            return {
-                ...state,
-                loading: false,
-                isLoggedIn: false,
-                profile: null
-            };
-        }
-
-        case GitHubActionTypes.SHARE_COPY:
-        case GitHubActionTypes.SHARE_PRIVATE_GIST:
-        case GitHubActionTypes.SHARE_PUBLIC_GIST:
-        case GitHubActionTypes.UPDATE_GIST: {
-            AI.trackEvent(action.type);
-            return { ...state, sharing: true };
-        }
-
-        case GitHubActionTypes.SHARE_SUCCESS: {
-            AI.trackEvent(action.type, action.payload && action.payload.public ? action.payload as any : null);
-            return { ...state, sharing: false };
-        }
-
-        case GitHubActionTypes.SHARE_FAILED: {
-            AI.trackEvent(action.type, { exception: action.payload });
-            return { ...state, sharing: false };
-        }
-
-        default: return state;
+  switch (action.type) {
+    case GitHubActionTypes.LOGIN: {
+      AI.trackEvent(action.type);
+      return { ...state, loading: true };
     }
+
+    case GitHubActionTypes.LOGIN_FAILED: {
+      return { ...state, loading: false };
+    }
+
+    case GitHubActionTypes.LOGGED_IN: {
+      AI.trackEvent('LoggedIn', { githubHashedId: sha1(action.payload.id.toString()) });
+      return {
+        ...state,
+        loading: false,
+        isLoggedIn: true,
+        profile: action.payload,
+      };
+    }
+
+    case GitHubActionTypes.LOGGED_OUT: {
+      AI.trackEvent(action.type);
+      return {
+        ...state,
+        loading: false,
+        isLoggedIn: false,
+        profile: null,
+      };
+    }
+
+    case GitHubActionTypes.SHARE_COPY:
+    case GitHubActionTypes.SHARE_PRIVATE_GIST:
+    case GitHubActionTypes.SHARE_PUBLIC_GIST:
+    case GitHubActionTypes.UPDATE_GIST: {
+      AI.trackEvent(action.type);
+      return { ...state, sharing: true };
+    }
+
+    case GitHubActionTypes.SHARE_SUCCESS: {
+      AI.trackEvent(
+        action.type,
+        action.payload && action.payload.public ? (action.payload as any) : null
+      );
+      return { ...state, sharing: false };
+    }
+
+    case GitHubActionTypes.SHARE_FAILED: {
+      AI.trackEvent(action.type, { exception: action.payload });
+      return { ...state, sharing: false };
+    }
+
+    default:
+      return state;
+  }
 }
 
 /**

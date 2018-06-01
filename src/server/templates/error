@@ -31,7 +31,9 @@
     <script src="{{{origin}}}/{{{assets.error.js}}}"></script>
 
     <script>
+        window.parent.scriptRunnerBeginInit(window);
         window.initializeErrorView({{{expandDetailsByDefault}}});
+        window.parent.scriptRunnerEndInit(window);
     </script>
 </body>
 

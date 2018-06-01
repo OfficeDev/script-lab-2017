@@ -10,12 +10,14 @@ import { type } from '../helpers';
  * action types in the application are unique.
  */
 export class MonacoActionTypes {
-    static readonly CHANGE_TAB = type('[Monaco] Change Tab');
-    static readonly UPDATE_INTELLISENSE = type('[Monaco] Update Intellisense');
-    static readonly ADD_INTELLISENSE = type('[Monaco] Add Intellisense');
-    static readonly UPDATE_INTELLISENSE_SUCCESS = type('[Monaco] Update Intellisense Success');
-    static readonly RESET = type('[Monaco] Reset Tab');
-};
+  static readonly CHANGE_TAB = type('[Monaco] Change Tab');
+  static readonly UPDATE_INTELLISENSE = type('[Monaco] Update Intellisense');
+  static readonly ADD_INTELLISENSE = type('[Monaco] Add Intellisense');
+  static readonly UPDATE_INTELLISENSE_SUCCESS = type(
+    '[Monaco] Update Intellisense Success'
+  );
+  static readonly RESET = type('[Monaco] Reset Tab');
+}
 
 /**
  * Every action is comprised of at least a type and an optional
@@ -25,42 +27,42 @@ export class MonacoActionTypes {
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
 export class ChangeTabAction implements Action {
-    readonly type = MonacoActionTypes.CHANGE_TAB;
+  readonly type = MonacoActionTypes.CHANGE_TAB;
 
-    constructor(public payload: { name: string, language: string }) {}
+  constructor(public payload: { name: string; language: string }) {}
 }
 
 export class ResetAction implements Action {
-    readonly type = MonacoActionTypes.RESET;
+  readonly type = MonacoActionTypes.RESET;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class UpdateIntellisenseAction implements Action {
-    readonly type = MonacoActionTypes.UPDATE_INTELLISENSE;
+  readonly type = MonacoActionTypes.UPDATE_INTELLISENSE;
 
-    constructor(public payload: { libraries: string[], language: string }) {}
+  constructor(public payload: { libraries: string[]; language: string }) {}
 }
 
 export class AddIntellisenseAction implements Action {
-    readonly type = MonacoActionTypes.ADD_INTELLISENSE;
+  readonly type = MonacoActionTypes.ADD_INTELLISENSE;
 
-    constructor(public payload: { url: string, language: string }) { }
+  constructor(public payload: { url: string; language: string }) {}
 }
 
 export class UpdateIntellisenseSuccessAction implements Action {
-    readonly type = MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS;
+  readonly type = MonacoActionTypes.UPDATE_INTELLISENSE_SUCCESS;
 
-    constructor() { }
+  constructor() {}
 }
 
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
  */
-export type MonacoActions
-    = ChangeTabAction
-    | ResetAction
-    | UpdateIntellisenseAction
-    | AddIntellisenseAction
-    | UpdateIntellisenseSuccessAction;
+export type MonacoActions =
+  | ChangeTabAction
+  | ResetAction
+  | UpdateIntellisenseAction
+  | AddIntellisenseAction
+  | UpdateIntellisenseSuccessAction;

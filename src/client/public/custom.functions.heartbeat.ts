@@ -25,11 +25,7 @@ tryCatch(() => {
   setupMessenger();
   startPollingForChanges(params.clientTimestamp);
 
-  messenger.send(
-    window.parent,
-    CustomFunctionsMessageType.HEARTBEAT_READY,
-    null
-  );
+  messenger.send(window.parent, CustomFunctionsMessageType.HEARTBEAT_READY, null);
 });
 
 // Helpers from here on down
@@ -77,22 +73,14 @@ function getLocalStorageLastUpdateTimestamp(): number {
 
 function sendRefreshRequest() {
   let payload = getRunnerCustomFunctionsPayload();
-  messenger.send(
-    window.parent,
-    CustomFunctionsMessageType.NEED_TO_REFRESH,
-    payload
-  );
+  messenger.send(window.parent, CustomFunctionsMessageType.NEED_TO_REFRESH, payload);
 }
 
 function logToConsole(data: LogData) {
   pushToLogQueue(data);
 
   if (messenger) {
-    messenger.send(
-      window.parent,
-      CustomFunctionsMessageType.SHOW_LOG_DIALOG,
-      null
-    );
+    messenger.send(window.parent, CustomFunctionsMessageType.SHOW_LOG_DIALOG, null);
   }
 }
 

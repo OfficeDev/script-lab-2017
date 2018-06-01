@@ -10,8 +10,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     playgroundName: 'Script Lab',
     playgroundTagline: 'Codifica ● Ejecuta ● Comparte',
     unexpectedError: 'Ocurrió un error inesperado',
-    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated()
-      .snippetNotTrusted,
+    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
     trust: getEnglishSubstitutesForNotYetTranslated().trust,
     error: 'Error',
     cancel: 'Cancelar',
@@ -63,8 +62,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     snippetImportError: 'Error al importar fragmento de código',
     snippetImportErrorTitle: 'Error en importación',
     snippetImportErrorBody: 'No pudimos importar el fragmento de código.',
-    cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated()
-      .cannotOpenSnippet,
+    cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
     requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated()
       .requestedSnippetNoLongerExists,
     reloadPrompt: 'Vuelve a cargar este panel e intenta otro URL o ID.',
@@ -77,8 +75,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     snippetSaveError: 'Error al guardar el fragmento de código',
     snippetDupeError: 'Error al duplicar el fragmento de código',
     snippetDeleteError: 'Error al borrar el fragmento de código',
-    snippetDeleteAllError:
-      'Error al borrar todos los fragmentos de código locales',
+    snippetDeleteAllError: 'Error al borrar todos los fragmentos de código locales',
     snippetLoadAllError: 'Error al cargar fragmentos de código locales',
     snippetRunError: 'Error al ejecutar el fragmento de código',
     snippetLoadDefaultsError: 'Error al cargar ejemplos',
@@ -124,8 +121,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     gistUpdateSuccess: 'Fragmento de código modificado exitosamente',
 
     snippetCopiedConfirmation: `Tu fragmento de código esta copiado en el clipboard`,
-    snippetCopiedFailed:
-      'Error al copiar el fragmento de código en el clipboard',
+    snippetCopiedFailed: 'Error al copiar el fragmento de código en el clipboard',
 
     snippetExportFailed: 'Error al exportar fragmento de código',
     snippetExportNotSupported:
@@ -180,8 +176,8 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
       template: 'HTML',
       style: 'Estilo',
       libraries: 'Librerías',
-      customFunctions: getEnglishSubstitutesForNotYetTranslated()
-        .tabDisplayNames.customFunctions,
+      customFunctions: getEnglishSubstitutesForNotYetTranslated().tabDisplayNames
+        .customFunctions,
     },
 
     registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated()
@@ -199,17 +195,14 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     noGistsMessage: `No has subido el fragmento de código a gist aún. Después de crear o modificar un fragmento de código, escoge Compartir para subirlo.`,
 
     newSnippetDescription: 'Crear un fragmento de código',
-    importDescription:
-      'Crear un fragmento de código importando YAML o un gist de GitHub',
+    importDescription: 'Crear un fragmento de código importando YAML o un gist de GitHub',
 
     // view.mode.ts strings
 
-    openInPlayground: getEnglishSubstitutesForNotYetTranslated()
-      .openInPlayground,
+    openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
     openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
     openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
-    downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated()
-      .downloadAsHostFile,
+    downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
     openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
 
     // Outlook-only strings
@@ -240,8 +233,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     localStorageWarningAction: `No mostrar esta advertencia otra vez.`,
 
     importInstructions: `Proporciona el URL del fragmento de código o pega el YAML abajo, después escoje `,
-    importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated()
-      .importUrlOrYamlLabel,
+    importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel,
     /* String has been tweaked from original.  It should now be roughly a shortened combination of
                `URL del fragmento de código o ID del gist de Github`,
                and
@@ -250,8 +242,7 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
       'ejemplo',
 
     pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
-    scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated()
-      .scriptLabIsReloading,
+    scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
     Refresh: {
       /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -272,16 +263,13 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
       noSnippetIsCurrentlyOpened: `No existe un fragmento de código en el panel de edición.`,
 
       getLoadingSnippetSubtitle: (snippetName?: string) => {
-        return (
-          'Loading ' +
-          (snippetName ? `"${snippetName}"` : 'fragmento de código')
-        );
+        return 'Loading ' + (snippetName ? `"${snippetName}"` : 'fragmento de código');
       },
 
       runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated()
         .Runner.runtimeErrorWhileLoadingTheSnippet,
-      goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated()
-        .Runner.goBackToEditorToFixError,
+      goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner
+        .goBackToEditorToFixError,
     },
 
     /** Error strings served by the server and displayed in the Error page */
@@ -333,20 +321,20 @@ export function getSpanishStrings(): ClientStringsPerLanguage {
     },
 
     Auth: {
-      authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.authenticatingOnBehalfOfSnippet,
-      loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.loggingOutOnBehalfOfSnippet,
+      authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth
+        .authenticatingOnBehalfOfSnippet,
+      loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth
+        .loggingOutOnBehalfOfSnippet,
       authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth
         .authenticationRedirect,
       authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth
         .authenticationError,
       unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth
         .unrecognizedResource,
-      invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.invalidParametersPassedInForAuth,
-      invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.invalidAuthResponseReceived,
+      invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth
+        .invalidParametersPassedInForAuth,
+      invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth
+        .invalidAuthResponseReceived,
       yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth
         .yourAccessTokenIs,
     },

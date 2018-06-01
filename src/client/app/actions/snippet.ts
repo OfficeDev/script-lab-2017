@@ -10,33 +10,33 @@ import { type } from '../helpers';
  * action types in the application are unique.
  */
 export class SnippetActionTypes {
-    static readonly VIEW = type('[Snippet] View');
-    static readonly IMPORT = type('[Snippet] Import');
-    static readonly IMPORT_SUCCESS = type('[Snippet] Import Successful');
-    static readonly RUN = type('[Snippet] Run');
-    static readonly CANCEL_RUN = type('[Snippet] Cancel Run');
-    static readonly CREATE = type('[Snippet] Create');
-    static readonly UPDATE_INFO = type('[Snippet] Update Info');
-    static readonly DUPLICATE = type('[Snippet] Duplicate');
-    static readonly SAVE = type('[Snippet] Save');
-    static readonly SHARE = type('[Snippet] Share');
-    static readonly DELETE = type('[Snippet] Delete');
-    static readonly DELETE_ALL = type('[Snippet] Delete All');
-    static readonly STORE_UPDATED = type('[Snippet] Storage Updated');
-    static readonly LOAD_SNIPPETS = type('[Snippet] Load Snippets');
-    static readonly LOAD_SNIPPETS_SUCCESS = type('[Snippet] Load Snippets Success');
-    static readonly LOAD_TEMPLATES = type('[Snippet] Load Templates');
-    static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
-    static readonly OPEN_IN_PLAYGROUND = type('[Snippet] Open In Playground');
-};
+  static readonly VIEW = type('[Snippet] View');
+  static readonly IMPORT = type('[Snippet] Import');
+  static readonly IMPORT_SUCCESS = type('[Snippet] Import Successful');
+  static readonly RUN = type('[Snippet] Run');
+  static readonly CANCEL_RUN = type('[Snippet] Cancel Run');
+  static readonly CREATE = type('[Snippet] Create');
+  static readonly UPDATE_INFO = type('[Snippet] Update Info');
+  static readonly DUPLICATE = type('[Snippet] Duplicate');
+  static readonly SAVE = type('[Snippet] Save');
+  static readonly SHARE = type('[Snippet] Share');
+  static readonly DELETE = type('[Snippet] Delete');
+  static readonly DELETE_ALL = type('[Snippet] Delete All');
+  static readonly STORE_UPDATED = type('[Snippet] Storage Updated');
+  static readonly LOAD_SNIPPETS = type('[Snippet] Load Snippets');
+  static readonly LOAD_SNIPPETS_SUCCESS = type('[Snippet] Load Snippets Success');
+  static readonly LOAD_TEMPLATES = type('[Snippet] Load Templates');
+  static readonly LOAD_TEMPLATES_SUCCESS = type('[Snippet] Load Templates Success');
+  static readonly OPEN_IN_PLAYGROUND = type('[Snippet] Open In Playground');
+}
 
 export class ImportType {
-    static readonly DEFAULT = type('[Import] Load blank snippet');
-    static readonly OPEN = type('[Import] Open an existing snippet');
-    static readonly GIST = type('[Import] Import from a gist');
-    static readonly URL_OR_YAML = type('[Import] Import from URL or YAML');
-    static readonly SAMPLE = type('[Import] Import from sample');
-};
+  static readonly DEFAULT = type('[Import] Load blank snippet');
+  static readonly OPEN = type('[Import] Open an existing snippet');
+  static readonly GIST = type('[Import] Import from a gist');
+  static readonly URL_OR_YAML = type('[Import] Import from URL or YAML');
+  static readonly SAMPLE = type('[Import] Import from sample');
+}
 
 /**
  * Every action is comprised of at least a type and an optional
@@ -46,138 +46,148 @@ export class ImportType {
  * See Discriminated Unions: https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions
  */
 export class ViewAction implements Action {
-    readonly type = SnippetActionTypes.VIEW;
+  readonly type = SnippetActionTypes.VIEW;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class ImportAction implements Action {
-    readonly type = SnippetActionTypes.IMPORT;
+  readonly type = SnippetActionTypes.IMPORT;
 
-    constructor(public payload: {
-        mode: string,
-        data: string,
-        isReadOnlyViewMode: boolean,
-        saveToLocalStorage: boolean,
-        onSuccess?: (snippet: ISnippet) => void
-    }) { }
+  constructor(
+    public payload: {
+      mode: string;
+      data: string;
+      isReadOnlyViewMode: boolean;
+      saveToLocalStorage: boolean;
+      onSuccess?: (snippet: ISnippet) => void;
+    }
+  ) {}
 }
 
 export class ImportSuccessAction implements Action {
-    readonly type = SnippetActionTypes.IMPORT_SUCCESS;
+  readonly type = SnippetActionTypes.IMPORT_SUCCESS;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class UpdateInfoAction implements Action {
-    readonly type = SnippetActionTypes.UPDATE_INFO;
+  readonly type = SnippetActionTypes.UPDATE_INFO;
 
-    constructor(public payload: { id: string, name?: string, description?: string, gist?: string, gistOwnerId?: string }) { }
+  constructor(
+    public payload: {
+      id: string;
+      name?: string;
+      description?: string;
+      gist?: string;
+      gistOwnerId?: string;
+    }
+  ) {}
 }
 
 export class RunAction implements Action {
-    readonly type = SnippetActionTypes.RUN;
+  readonly type = SnippetActionTypes.RUN;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class CancelRunAction implements Action {
-    readonly type = SnippetActionTypes.CANCEL_RUN;
+  readonly type = SnippetActionTypes.CANCEL_RUN;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class CreateAction implements Action {
-    readonly type = SnippetActionTypes.CREATE;
+  readonly type = SnippetActionTypes.CREATE;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class DuplicateAction implements Action {
-    readonly type = SnippetActionTypes.DUPLICATE;
+  readonly type = SnippetActionTypes.DUPLICATE;
 
-    constructor(public payload: string) { }
+  constructor(public payload: string) {}
 }
 
 export class SaveAction implements Action {
-    readonly type = SnippetActionTypes.SAVE;
+  readonly type = SnippetActionTypes.SAVE;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class ShareAction implements Action {
-    readonly type = SnippetActionTypes.SHARE;
+  readonly type = SnippetActionTypes.SHARE;
 
-    constructor(public payload: ISnippet) { }
+  constructor(public payload: ISnippet) {}
 }
 
 export class DeleteAction implements Action {
-    readonly type = SnippetActionTypes.DELETE;
+  readonly type = SnippetActionTypes.DELETE;
 
-    constructor(public payload: string) { }
+  constructor(public payload: string) {}
 }
 
 export class DeleteAllAction implements Action {
-    readonly type = SnippetActionTypes.DELETE_ALL;
+  readonly type = SnippetActionTypes.DELETE_ALL;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class StoreUpdatedAction implements Action {
-    readonly type = SnippetActionTypes.STORE_UPDATED;
+  readonly type = SnippetActionTypes.STORE_UPDATED;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class LoadSnippetsAction implements Action {
-    readonly type = SnippetActionTypes.LOAD_SNIPPETS;
+  readonly type = SnippetActionTypes.LOAD_SNIPPETS;
 
-    constructor() { }
+  constructor() {}
 }
 
 export class LoadTemplatesAction implements Action {
-    readonly type = SnippetActionTypes.LOAD_TEMPLATES;
+  readonly type = SnippetActionTypes.LOAD_TEMPLATES;
 
-    constructor(public payload: string = 'LOCAL') { }
+  constructor(public payload: string = 'LOCAL') {}
 }
 
 export class LoadSnippetsSuccessAction implements Action {
-    readonly type = SnippetActionTypes.LOAD_SNIPPETS_SUCCESS;
+  readonly type = SnippetActionTypes.LOAD_SNIPPETS_SUCCESS;
 
-    constructor(public payload: ISnippet[]) { }
+  constructor(public payload: ISnippet[]) {}
 }
 
 export class LoadTemplatesSuccessAction implements Action {
-    readonly type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
+  readonly type = SnippetActionTypes.LOAD_TEMPLATES_SUCCESS;
 
-    constructor(public payload: ITemplate[]) { }
+  constructor(public payload: ITemplate[]) {}
 }
 
 export class OpenInPlaygroundAction implements Action {
-    readonly type = SnippetActionTypes.OPEN_IN_PLAYGROUND;
+  readonly type = SnippetActionTypes.OPEN_IN_PLAYGROUND;
 
-    constructor(public payload: { type: string, id: string, isDownload: boolean }) { }
+  constructor(public payload: { type: string; id: string; isDownload: boolean }) {}
 }
 
 /**
  * Export a type alias of all actions in this action group
  * so that reducers can easily compose action types
  */
-export type SnippetActions
-    = ViewAction
-    | ImportAction
-    | ImportSuccessAction
-    | RunAction
-    | CancelRunAction
-    | SaveAction
-    | ShareAction
-    | DeleteAction
-    | DeleteAllAction
-    | StoreUpdatedAction
-    | UpdateInfoAction
-    | LoadSnippetsAction
-    | LoadSnippetsSuccessAction
-    | LoadTemplatesAction
-    | LoadTemplatesSuccessAction
-    | CreateAction
-    | OpenInPlaygroundAction;
+export type SnippetActions =
+  | ViewAction
+  | ImportAction
+  | ImportSuccessAction
+  | RunAction
+  | CancelRunAction
+  | SaveAction
+  | ShareAction
+  | DeleteAction
+  | DeleteAllAction
+  | StoreUpdatedAction
+  | UpdateInfoAction
+  | LoadSnippetsAction
+  | LoadSnippetsSuccessAction
+  | LoadTemplatesAction
+  | LoadTemplatesSuccessAction
+  | CreateAction
+  | OpenInPlaygroundAction;

@@ -2,72 +2,73 @@ import { UIActions, UIActionTypes } from '../actions/ui';
 import { PlaygroundError, AI, environment } from '../helpers';
 
 export interface UIState {
-    menuOpened?: boolean;
-    dialog?: IAlert;
-    theme?: boolean;
-    errors?: Error[];
-    showImport?: boolean;
-    env?: string;
-};
+  menuOpened?: boolean;
+  dialog?: IAlert;
+  theme?: boolean;
+  errors?: Error[];
+  showImport?: boolean;
+  env?: string;
+}
 
 export const initialState: UIState = {
-    theme: false,
-    menuOpened: false,
-    errors: [],
-    dialog: null,
-    showImport: false,
-    env: 'PROD'
+  theme: false,
+  menuOpened: false,
+  errors: [],
+  dialog: null,
+  showImport: false,
+  env: 'PROD',
 };
 
 export function reducer(state = initialState, action: UIActions): UIState {
-    AI.trackEvent(action.type);
+  AI.trackEvent(action.type);
 
-    switch (action.type) {
-        case UIActionTypes.TOGGLE_IMPORT: {
-            if (action.payload) {
-                AI.trackPageView(action.type, '/import').stop();
-            }
-            return { ...state, showImport: action.payload };
-        }
-
-        case UIActionTypes.SHOW_ALERT: {
-            if (action.payload) {
-                AI.trackPageView(action.type, `/${action.payload.title || 'alert'}`).stop();
-            }
-            return { ...state, dialog: action.payload };
-        }
-
-        case UIActionTypes.DISMISS_ALERT:
-            return { ...state, dialog: null };
-
-        case UIActionTypes.SWITCH_ENV:
-            return { ...state, env: action.payload || 'PROD' };
-
-        case UIActionTypes.CHANGE_THEME: {
-            AI.trackEvent(action.type, { theme: (!state.theme) ? 'Light' : 'Dark' });
-            return { ...state, theme: !state.theme };
-        }
-
-        case UIActionTypes.REPORT_ERROR: {
-            let error = new PlaygroundError(action.payload, action.exception);
-            if (environment.current.devMode) {
-                console.error(error, error.innerError);
-            }
-            return { ...state, errors: [...state.errors, error] };
-        }
-
-        case UIActionTypes.DISMISS_ALL_ERRORS:
-            return { ...state, errors: [] };
-
-        case UIActionTypes.CHANGE_LANGUAGE: {
-            AI.trackEvent(action.type, { language: action.payload });
-            // NOT IMPLEMENTED.
-            console.log(`Wanted to switch to "${action.payload}"`);
-            return { ...state };
-        }
-
-        default: return state;
+  switch (action.type) {
+    case UIActionTypes.TOGGLE_IMPORT: {
+      if (action.payload) {
+        AI.trackPageView(action.type, '/import').stop();
+      }
+      return { ...state, showImport: action.payload };
     }
+
+    case UIActionTypes.SHOW_ALERT: {
+      if (action.payload) {
+        AI.trackPageView(action.type, `/${action.payload.title || 'alert'}`).stop();
+      }
+      return { ...state, dialog: action.payload };
+    }
+
+    case UIActionTypes.DISMISS_ALERT:
+      return { ...state, dialog: null };
+
+    case UIActionTypes.SWITCH_ENV:
+      return { ...state, env: action.payload || 'PROD' };
+
+    case UIActionTypes.CHANGE_THEME: {
+      AI.trackEvent(action.type, { theme: !state.theme ? 'Light' : 'Dark' });
+      return { ...state, theme: !state.theme };
+    }
+
+    case UIActionTypes.REPORT_ERROR: {
+      let error = new PlaygroundError(action.payload, action.exception);
+      if (environment.current.devMode) {
+        console.error(error, error.innerError);
+      }
+      return { ...state, errors: [...state.errors, error] };
+    }
+
+    case UIActionTypes.DISMISS_ALL_ERRORS:
+      return { ...state, errors: [] };
+
+    case UIActionTypes.CHANGE_LANGUAGE: {
+      AI.trackEvent(action.type, { language: action.payload });
+      // NOT IMPLEMENTED.
+      console.log(`Wanted to switch to "${action.payload}"`);
+      return { ...state };
+    }
+
+    default:
+      return state;
+  }
 }
 
 /**

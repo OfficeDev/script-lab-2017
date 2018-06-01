@@ -12,8 +12,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
     unexpectedError: '出现意外错误',
 
-    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated()
-      .snippetNotTrusted,
+    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
     trust: getEnglishSubstitutesForNotYetTranslated().trust,
 
     error: '错误',
@@ -66,8 +65,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
     snippetImportError: '导入代码失败',
     snippetImportErrorTitle: '导入失败',
     snippetImportErrorBody: `我们不能导入代码。`,
-    cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated()
-      .cannotOpenSnippet,
+    cannotOpenSnippet: getEnglishSubstitutesForNotYetTranslated().cannotOpenSnippet,
     requestedSnippetNoLongerExists: getEnglishSubstitutesForNotYetTranslated()
       .requestedSnippetNoLongerExists,
     reloadPrompt: '再次导入任务窗口，然后尝试其他URL或者ID。',
@@ -182,8 +180,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
       /* Changed from "Template" to "HTML" in english; should we use 'HTML' or the original Chinese: //'样本' */ style:
         '样式',
       libraries: '资源库',
-      customFunctions: getEnglishSubstitutesForNotYetTranslated()
-        .tabDisplayNames.customFunctions,
+      customFunctions: getEnglishSubstitutesForNotYetTranslated().tabDisplayNames
+        .customFunctions,
     },
 
     registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated()
@@ -205,12 +203,10 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
     // view.mode.ts strings
 
-    openInPlayground: getEnglishSubstitutesForNotYetTranslated()
-      .openInPlayground,
+    openInPlayground: getEnglishSubstitutesForNotYetTranslated().openInPlayground,
     openInHost: getEnglishSubstitutesForNotYetTranslated().openInHost,
     openInGithub: getEnglishSubstitutesForNotYetTranslated().openInGithub,
-    downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated()
-      .downloadAsHostFile,
+    downloadAsHostFile: getEnglishSubstitutesForNotYetTranslated().downloadAsHostFile,
     openTryIt: getEnglishSubstitutesForNotYetTranslated().openTryIt,
 
     // Outlook-only strings
@@ -240,14 +236,11 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
     localStorageWarningAction: `不要再显示这个警告了。`,
 
     importInstructions: `进入代码段的URL或粘贴下面的YAML，然后选择`,
-    importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated()
-      .importUrlOrYamlLabel,
-    exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated()
-      .exampleAbbreviation,
+    importUrlOrYamlLabel: getEnglishSubstitutesForNotYetTranslated().importUrlOrYamlLabel,
+    exampleAbbreviation: getEnglishSubstitutesForNotYetTranslated().exampleAbbreviation,
 
     pleaseWait: getEnglishSubstitutesForNotYetTranslated().pleaseWait,
-    scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated()
-      .scriptLabIsReloading,
+    scriptLabIsReloading: getEnglishSubstitutesForNotYetTranslated().scriptLabIsReloading,
 
     Refresh: {
       /** Error if refresh URL is somehow misformed (should essentially never happen) */
@@ -260,8 +253,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
     },
 
     Runner: {
-      snippetNoLongerExists:
-        '该代码段不再存在。重新加载此页，或返回到以前的代码段。',
+      snippetNoLongerExists: '该代码段不再存在。重新加载此页，或返回到以前的代码段。',
 
       reloadingOfficeJs: '重新加载 Office.js',
 
@@ -273,8 +265,8 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
 
       runtimeErrorWhileLoadingTheSnippet: getEnglishSubstitutesForNotYetTranslated()
         .Runner.runtimeErrorWhileLoadingTheSnippet,
-      goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated()
-        .Runner.goBackToEditorToFixError,
+      goBackToEditorToFixError: getEnglishSubstitutesForNotYetTranslated().Runner
+        .goBackToEditorToFixError,
     },
 
     /** Error strings served by the server and displayed in the Error page */
@@ -312,34 +304,32 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
       running: '运行',
       lastOpenedSnippet: '最后打开的代码段',
       noLastOpenedSnippets: '您没有最后打开的代码段。',
-      toGetStartedCreateOrImportSnippet:
-        '要开始，通过“代码”按钮创建或导入一个代码段。',
+      toGetStartedCreateOrImportSnippet: '要开始，通过“代码”按钮创建或导入一个代码段。',
       mySavedSnippets: '我保存的代码段',
       noLocalSnippets: '没有本地代码段。',
       lastUpdated: '最新更新',
       clickToRefresh: '点击刷新',
 
-      tutorialDescription:
-        '这个Excel文件向您展示了如何在几个简单的步骤中使用Script Lab:',
+      tutorialDescription: '这个Excel文件向您展示了如何在几个简单的步骤中使用Script Lab:',
       download: '下载',
       errorInitializingScriptLab: '初始化Script Lab时出错。',
     },
 
     Auth: {
-      authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.authenticatingOnBehalfOfSnippet,
-      loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.loggingOutOnBehalfOfSnippet,
+      authenticatingOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth
+        .authenticatingOnBehalfOfSnippet,
+      loggingOutOnBehalfOfSnippet: getEnglishSubstitutesForNotYetTranslated().Auth
+        .loggingOutOnBehalfOfSnippet,
       authenticationRedirect: getEnglishSubstitutesForNotYetTranslated().Auth
         .authenticationRedirect,
       authenticationError: getEnglishSubstitutesForNotYetTranslated().Auth
         .authenticationError,
       unrecognizedResource: getEnglishSubstitutesForNotYetTranslated().Auth
         .unrecognizedResource,
-      invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.invalidParametersPassedInForAuth,
-      invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated()
-        .Auth.invalidAuthResponseReceived,
+      invalidParametersPassedInForAuth: getEnglishSubstitutesForNotYetTranslated().Auth
+        .invalidParametersPassedInForAuth,
+      invalidAuthResponseReceived: getEnglishSubstitutesForNotYetTranslated().Auth
+        .invalidAuthResponseReceived,
       yourAccessTokenIs: getEnglishSubstitutesForNotYetTranslated().Auth
         .yourAccessTokenIs,
     },
