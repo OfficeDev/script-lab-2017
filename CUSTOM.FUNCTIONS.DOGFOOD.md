@@ -12,9 +12,12 @@ Note that for purposes of these instructions and the //build timeline, Script La
 
 ![Dogfood channel](./.github/images/dogfood-channel.png)
 
-## Refresh the Store version of Script Lab
+## Acquire / Refresh the Store version of Script Lab
 
-If you don't already see the "Functions" button in the ribbon, click on the "Edit" button in the Ribbon.  It should prompt you, letting you know that there is an update.
+If you don't have Script Lab yet, [install it from Office Store](https://store.office.com/app.aspx?assetid=WA104380862)
+
+If you have it, but don't see the "Functions" button in the ribbon when you open Excel, click on the "Edit" button in the Ribbon.  It should prompt you, letting you know that there is an update.
+
 Once the update installs, you should see the refreshed ribbon, now with three buttons in the "Script" group.
 
 ## A picture is worth a thousand recalcs
@@ -49,14 +52,13 @@ To try a more complicated (e.g., a web-service-calling) Custom Function, [import
 
 ## Troubleshooting
 
-If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel. Hopefully this shouldn't be happening too often.
+If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.  And please [file a bug](https://github.com/OfficeDev/script-lab/issues), describing what happened.
 
 ## Known issues
 
 ### Platform
 
 1.  If you enter a Custom Function into a formula and then remove the function -- or if you restart Excel and before you re-register the custom functions -- the formula bar will show something like `=_xldudf_96323233322223(...)`
-2.  Sometimes, you might get into a `#GETTING_DATA` state. This is a platform bug that *looks* like has been fixed, but hasn't made it into the Insider builds yet
 
 ### Script Lab
 
