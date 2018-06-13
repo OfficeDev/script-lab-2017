@@ -152,6 +152,12 @@ export function getShareableYaml(rawSnippet: ISnippet, additionalFields: ISnippe
     ...getScrubbedSnippet(rawSnippet, SnippetFieldType.PUBLIC),
     ...additionalFields,
   };
+
+  if (isCustomFunctionScript(snippet.script.content)) {
+    delete snippet.template;
+    delete snippet.style;
+  }
+
   scrubCarriageReturns(snippet);
 
   return jsyaml.safeDump(snippet, {
