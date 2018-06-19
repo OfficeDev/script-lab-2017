@@ -1,0 +1,28 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/office-js/custom-functions.schema.json",
+    "functions": [
+        {
+            "name": "ADD42",
+            "description": "adds 42 to the input numbers",
+            "helpUrl": "http://dev.office.com",
+            "result": {
+                "type": "number",
+                "dimensionality": "scalar"
+            },
+            "parameters": [
+                {
+                    "name": "number 1",
+                    "description": "the first number to be added",
+                    "type": "number",
+                    "dimensionality": "scalar"
+                },
+                {
+                    "name": "number 2",
+                    "description": "the second number to be added",
+                    "type": "number",
+                    "dimensionality": "scalar"
+                }
+            ]
+        }
+    ]
+}
