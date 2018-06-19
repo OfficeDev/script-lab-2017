@@ -1,27 +1,26 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "none",
-        "removeComments": false,
-        "declaration": true,
-        "noEmitOnError": true,
-        "outDir": "../../dist/client/libs" /*output into same folder as where editor is served from*/,
-        "allowUnusedLabels": false,
-        "noImplicitReturns": true,
-        "noUnusedLocals": false /* setting to false so that can have a module with an exported (but without "export" keyword) function name */,
-        "pretty": true,
-        "strictNullChecks": false,
-        "allowSyntheticDefaultImports": true,
-        "lib": [
-            "es2015",
-            "dom"
-        ],
-        "types": []
-    },
-    "files": [
-        "auth-helpers.ts",
-        "maker.ts",
-        "../../node_modules/@types/office-js/index.d.ts"
-    ],
-    "compileOnSave": false
+  "compilerOptions": {
+    "target": "es5",
+    "module": "none",
+    "removeComments": false,
+    "declaration": true,
+    "noEmitOnError": true,
+    "outDir":
+      "../../dist/client/libs" /*output into same folder as where editor is served from*/,
+    "allowUnusedLabels": false,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false /* setting to false so that can have a module with an exported (but without "export" keyword) function name */,
+    "pretty": true,
+    "strictNullChecks": false,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es2015", "dom"],
+    "types": []
+  },
+  "files": [
+    "auth-helpers.ts",
+    "maker.ts",
+    "custom-functions.ts",
+    "../../node_modules/@types/office-js/index.d.ts"
+  ],
+  "compileOnSave": false
 }
