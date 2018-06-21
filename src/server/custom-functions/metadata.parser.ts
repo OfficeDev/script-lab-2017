@@ -10,7 +10,7 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.BooleanKeyword]: 'boolean',
 };
 
-const CUSTOM_FUNCTION_OPTIONS_KEYS = ['cancelable', 'volatile'];
+const CUSTOM_FUNCTION_OPTIONS_KEYS = [];
 
 const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
   sync: true,
@@ -58,13 +58,13 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
             const jsDocParamInfo = getJSDocParams(func);
 
             const [lastParameter] = func.parameters.slice(-1);
-            const isStreamingFunction = checkLastParameterForStreaming(lastParameter);
+            const isStreamingFunction = isLastParameterStreaming(lastParameter);
+            const paramsToParse = isStreamingFunction
+              ? func.parameters.slice(0, func.parameters.length - 1)
+              : func.parameters.slice(0, func.parameters.length);
 
-            const parameters = func.parameters
-              .map((p: ts.ParameterDeclaration, i: number) => {
-                if (isStreamingFunction && i === func.parameters.length - 1) {
-                  return null;
-                }
+            const parameters = paramsToParse
+              .map((p: ts.ParameterDeclaration) => {
                 const name = (p.name as ts.Identifier).text;
 
                 return {
@@ -93,7 +93,7 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
               ) {
                 result = {
                   error:
-                    'One and only one argument should be specified to IInvocationContext',
+                    'One and only one argument should be specified to IStreamingCustomFunctionHandler',
                   dimensionality: 'invalid',
                   type: 'invalid',
                 };
@@ -132,6 +132,7 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
 
             if (isStreamingFunction) {
               options.stream = true;
+              options.cancelable = true;
             }
 
             const metadataItem = {
@@ -167,13 +168,14 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
 
 // helpers
 
-function checkLastParameterForStreaming(param: ts.ParameterDeclaration): boolean {
-  if (!ts.isTypeReferenceNode(param.type)) {
+function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
+  const isTypeReferenceNode = param && ts.isTypeReferenceNode(param.type);
+  if (!isTypeReferenceNode) {
     return false;
   }
 
   const typeRef = param.type as ts.TypeReferenceNode;
-  return typeRef.typeName.getText() === 'IInvocationContext';
+  return typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler';
 }
 
 function getDimAndTypeHelper(
