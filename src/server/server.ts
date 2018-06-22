@@ -36,7 +36,7 @@ import {
   ITryItHandlebarsContext,
   ICustomFunctionsRunnerHandlebarsContext,
 } from './interfaces';
-import { getFunctionsAndMetadataForRegistration } from './custom-functions/utilities';
+import { getCustomFunctionsInfoForRegistration } from './custom-functions/utilities';
 import { parseMetadata } from './custom-functions/metadata.parser';
 
 const moment = require('moment');
@@ -355,12 +355,13 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 });
 
 registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
+  const strings = Strings(req);
   const params: ICustomFunctionsMetadataRequestPostData = JSON.parse(req.body.data);
   let { snippets } = params;
 
   return respondWith(
     res,
-    JSON.stringify(getFunctionsAndMetadataForRegistration(snippets)),
+    JSON.stringify(getCustomFunctionsInfoForRegistration(snippets, strings)),
     'application/javascript'
   );
 });

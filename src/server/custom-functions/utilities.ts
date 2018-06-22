@@ -1,11 +1,14 @@
 import { parseMetadata } from './metadata.parser';
 import { transformSnippetName } from '../core/snippet.helper';
+import { compileScript } from '../core/snippet.generator';
 
-export function getFunctionsAndMetadataForRegistration(
-  snippets: ISnippet[]
-): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[] } {
+export function getCustomFunctionsInfoForRegistration(
+  snippets: ISnippet[],
+  strings: ServerStrings
+): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[]; code: string[] } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
   let metadata: ICFFunctionMetadata[] = [];
+  const code: string[] = [];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
     let functions: ICFVisualFunctionMetadata[] = parseMetadata(
@@ -16,15 +19,30 @@ export function getFunctionsAndMetadataForRegistration(
     if (functions.length === 0) {
       return;
     } // no custom functions found
-    const hasErrors = doesSnippetHaveErrors(functions);
+    let hasErrors = doesSnippetHaveErrors(functions);
+
+    let snippetCode: string;
+    if (!hasErrors) {
+      try {
+        snippetCode = compileScript(snippet.script, strings);
+      } catch (e) {
+        functions.forEach(f => (f.error = 'Snippet compiler error'));
+        hasErrors = true;
+      }
+    }
 
     if (!hasErrors) {
       const namespace = transformSnippetName(snippet.name);
       const namespacedFunctions = functions.map(f => ({
         ...f,
+        originalName: f.name,
         name: `${namespace}.${f.name}`,
       }));
       metadata = metadata.concat(...namespacedFunctions);
+
+      code.push(
+        wrapCustomFunctionSnippetCode(snippetCode, namespace, functions.map(f => f.name))
+      );
     }
 
     functions = functions.map(func => {
@@ -69,14 +87,29 @@ export function getFunctionsAndMetadataForRegistration(
   });
 
   const functions = filterOutDuplicates(metadata);
-  // const funcNames = functions.map(f => f.name);
-  // const visual = { snippets: tagDuplicatesAsErrors(visualMetadata, funcNames) }; // todo see below
   const visual = { snippets: visualMetadata };
 
-  return { visual, functions };
+  return { visual, functions, code };
 }
 
 // helpers
+
+function wrapCustomFunctionSnippetCode(
+  code: string,
+  namespace: string,
+  functionNames: string[]
+): string {
+  return [
+    `(() => {`,
+    ...code.split('\n').map(line => '\t' + line),
+    ...functionNames.map(
+      name =>
+        '\t' +
+        `CustomFunctionMappings["${namespace.toUpperCase()}.${name.toUpperCase()}"] = name`
+    ),
+    `})`,
+  ].join('\n');
+}
 
 function getFunctionChildNodeStatus(
   func: ICFVisualFunctionMetadata,
@@ -108,32 +141,6 @@ function paramStringExtractor(func) {
 function doesSnippetHaveErrors(snippetMetadata) {
   return snippetMetadata.some(func => func.error);
 }
-
-// TODO REVISIT
-// function tagDuplicatesAsErrors(
-//   visualMetadata: ICFVisualSnippetMetadata[],
-//   nonDuplicatedFunctionNames: string[]
-// ): ICFVisualSnippetMetadata[] {
-//   return visualMetadata.map(meta => {
-//     let isError = meta.error;
-//     meta.functions = meta.functions.map(func => {
-//       if (!nonDuplicatedFunctionNames.includes(func.name) && !func.error) {
-//         func.error =
-//           ' - Duplicated function name. Must be unique across ALL snippets.';
-//         func.status = CustomFunctionsRegistrationStatus.Error;
-//         isError = true;
-//       }
-//       return func;
-//     });
-//     return {
-//       ...meta,
-//       error: isError,
-//       status: isError
-//         ? CustomFunctionsRegistrationStatus.Error
-//         : CustomFunctionsRegistrationStatus.Good,
-//     };
-//   });
-// }
 
 /**
  * This function converts all the `true` errors on the functions to ' '. This is because we still want it

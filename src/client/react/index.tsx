@@ -42,7 +42,7 @@ tryCatch(async () => {
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
 
-    const { visual, functions } = await getMetadata();
+    const { visual, functions } = await getCustomFunctionsInfo();
 
     // To allow debugging in a plain web browser, only try to register if the
     // Excel namespace exists.  It always will for an Add-in,
@@ -72,21 +72,22 @@ tryCatch(async () => {
   }
 });
 
-async function getMetadata() {
+async function getCustomFunctionsInfo() {
   return new Promise<{
     visual: ICFVisualMetadata;
     functions: ICFFunctionMetadata[];
+    code: string;
   }>(async (resolve, reject) => {
     try {
       ensureFreshLocalStorage();
 
       if (!storage.snippets) {
-        resolve({ visual: { snippets: [] }, functions: [] });
+        resolve({ visual: { snippets: [] }, functions: [], code: '' });
         return;
       }
 
-      let allSnippetsToRegisterWithPossibleDuplicate = uniqBy(
-        // [storage.current.lastOpened].concat(storage.snippets.values()),
+      let allSnippetsToRegister = uniqBy(
+        // [storage.current.lastOpened].concat(storage.snippets.values()) // (Uncomment and test once support samples),
         storage.snippets.values(),
         'id'
       ).filter(
@@ -110,7 +111,7 @@ async function getMetadata() {
       };
 
       const data: ICustomFunctionsMetadataRequestPostData = {
-        snippets: allSnippetsToRegisterWithPossibleDuplicate,
+        snippets: allSnippetsToRegister,
       };
 
       xhr.send(
@@ -128,13 +129,55 @@ async function registerMetadata(functions: ICFFunctionMetadata[]) {
   // Register functions as ALLCAPS:
   functions.forEach(fn => (fn.name = fn.name.toUpperCase()));
 
-  await Excel.run(async context => {
-    (context.workbook as any).registerCustomFunctions(
-      'ScriptLab'.toUpperCase(),
-      JSON.stringify({ functions: functions })
-    );
-    await context.sync();
-  });
+  let fakeJson = {
+    $schema:
+      'https://developer.microsoft.com/en-us/json-schemas/office-js/custom-functions.schema.json',
+    functions: [
+      {
+        name: 'ADD1000',
+        description: 'adds 1000 to the input number',
+        helpUrl: 'http://dev.office.com',
+        result: {
+          type: 'number',
+          dimensionality: 'scalar',
+        },
+        parameters: [
+          {
+            name: 'number 1',
+            description: 'the first number to be added',
+            type: 'number',
+            dimensionality: 'scalar',
+          },
+        ],
+      },
+    ],
+  };
+
+  if (Office.context.requirements.isSetSupported('CustomFunctions', 1.2)) {
+    await Excel.run(async context => {
+      (context.workbook.application as any).customFunctions.register(
+        JSON.stringify(fakeJson, null, 4),
+        `
+        function add1000(input) {
+          return 1000 + input;
+        }
+        CustomFunctionMappings["ADD1000"] = add1000;
+        `
+
+        //JSON.stringify({ functions: functions }),
+      );
+      await context.sync();
+    });
+  } else {
+    // Older style registration
+    await Excel.run(async context => {
+      (context.workbook as any).registerCustomFunctions(
+        'ScriptLab'.toUpperCase(),
+        JSON.stringify({ functions: functions })
+      );
+      await context.sync();
+    });
+  }
 }
 
 async function tryCatch(callback: () => void) {
