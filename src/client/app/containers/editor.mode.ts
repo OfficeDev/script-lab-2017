@@ -35,7 +35,7 @@ const { localStorageKeys } = PLAYGROUND;
                 <command icon="PageCheckedin" title="{{strings.shareMenuPublic}}" (click)="shareGist({isPublic: true, isUpdate: false})"></command>
                 <command icon="ProtectedDocument" title="{{strings.shareMenuPrivate}}" (click)="shareGist({isPublic: false, isUpdate: false})"></command>
                 <command id="CopyToClipboard" icon="Copy" title="{{strings.shareMenuClipboard}}" (click)="shareCopy()"></command>
-                <command icon="Download" title="{{strings.shareMenuExport}}" (click)="shareExport()"></command>
+                <command [hidden]="isCustomFunctionsSnippet" icon="Download" title="{{strings.shareMenuExport}}" (click)="shareExport()"></command>
             </command>
             <command [hidden]="isEmpty" icon="Delete" title="{{strings.delete}}" (click)="delete()"></command>
             <command [hidden]="isLoggedIn$|async" [async]="profileLoading$|async" icon="AddFriend" title="{{strings.loginGithub}}" (click)="login()"></command>
