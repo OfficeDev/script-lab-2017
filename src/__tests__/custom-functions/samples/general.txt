@@ -20,7 +20,6 @@ function sum2(a: number, b: number[]): number {
 * Adds numbers in array
 * @param arr - array of numbers to add
 * @CustomFunction
-* @stream
 */
 function sumArr(arr: number[][]): number {
     return arr[0].reduce((accumulator, current) => accumulator + current);
@@ -34,7 +33,6 @@ function sumArr(arr: number[][]): number {
 /**
 * Checks to see if a number is prime
 * @CustomFunction
-* @stream
 */
 function isPrime(num: number): boolean {
     return true;
@@ -76,7 +74,7 @@ function isPrime(num: number): boolean {
       "name":"sumArr",
       "options":{
          "cancelable":false,
-         "stream":true,
+         "stream":false,
          "sync":true,
          "volatile":false
       },
@@ -98,7 +96,7 @@ function isPrime(num: number): boolean {
       "name":"isPrime",
       "options":{
          "cancelable":false,
-         "stream":true,
+         "stream":false,
          "sync":true,
          "volatile":false
       },

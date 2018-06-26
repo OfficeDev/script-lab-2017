@@ -1,0 +1,117 @@
+// should pass streaming functions tests
+
+/**
+* increments a value each iteration
+* @param increment - number to add
+* @CustomFunction
+*/
+function incrementValue(increment: number, caller: IStreamingCustomFunctionHandler<number>): void {
+    var result = 0;
+    setInterval(function(){
+         result += increment;
+         caller.setResult(result);
+    }, 1000);
+}
+
+/**
+* increments a value each iteration
+* @param increment - string to add
+* @CustomFunction
+*/
+function incrementValue(increment: string, caller: IStreamingCustomFunctionHandler<string>) {
+    var result = 0;
+    setInterval(function(){
+         result += increment;
+         caller.setResult(result);
+    }, 1000);
+}
+
+/**
+* increments a value each iteration
+* @param increment - string to add
+* @CustomFunction
+*/
+function incrementValue(increment: number[][], caller: IStreamingCustomFunctionHandler<number[][]>) {
+    var result = new Array(increment.length).fill(new Array(increment[0].length).fill(0));
+    setInterval(function(){
+         caller.setResult(result);
+    }, 1000);
+}
+
+// not included
+function sum2(a: number, b: number[]): number {
+    return a + b[0];
+}
+
+
+// metadata
+/*
+[
+   {
+      "description":"increments a value each iteration",
+      "name":"incrementValue",
+      "options":{
+         "cancelable":true,
+         "stream":true,
+         "sync":true,
+         "volatile":false
+      },
+      "parameters":[
+         {
+            "description":"number to add",
+            "dimensionality":"scalar",
+            "name":"increment",
+            "type":"number"
+         }
+      ],
+      "result":{
+         "dimensionality":"scalar",
+         "type":"number"
+      }
+   },
+   {
+      "description":"increments a value each iteration",
+      "name":"incrementValue",
+      "options":{
+         "cancelable":true,
+         "stream":true,
+         "sync":true,
+         "volatile":false
+      },
+      "parameters":[
+         {
+            "description":"string to add",
+            "dimensionality":"scalar",
+            "name":"increment",
+            "type":"string"
+         }
+      ],
+      "result":{
+         "dimensionality":"scalar",
+         "type":"string"
+      }
+   },
+   {
+      "description":"increments a value each iteration",
+      "name":"incrementValue",
+      "options":{
+         "cancelable":true,
+         "stream":true,
+         "sync":true,
+         "volatile":false
+      },
+      "parameters":[
+         {
+            "description":"string to add",
+            "dimensionality":"matrix",
+            "name":"increment",
+            "type":"number"
+         }
+      ],
+      "result":{
+         "dimensionality":"matrix",
+         "type":"number"
+      }
+   }
+]
+*/
