@@ -42,13 +42,13 @@ tryCatch(async () => {
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
 
-    const { visual, functions } = await getCustomFunctionsInfo();
+    const { visual, functions, code } = await getCustomFunctionsInfo();
 
     // To allow debugging in a plain web browser, only try to register if the
     // Excel namespace exists.  It always will for an Add-in,
     // since it would have waited for Office to load before getting here
     if (typeof Excel !== 'undefined') {
-      await registerMetadata(functions);
+      await registerMetadata(functions, code);
     }
 
     // Get the custom functions runner to reload as well
@@ -125,46 +125,15 @@ async function getCustomFunctionsInfo() {
   });
 }
 
-async function registerMetadata(functions: ICFFunctionMetadata[]) {
-  // Register functions as ALLCAPS:
+async function registerMetadata(functions: ICFFunctionMetadata[], code: string) {
+  // Register functions as ALL-CAPS:
   functions.forEach(fn => (fn.name = fn.name.toUpperCase()));
 
-  let fakeJson = {
-    $schema:
-      'https://developer.microsoft.com/en-us/json-schemas/office-js/custom-functions.schema.json',
-    functions: [
-      {
-        name: 'ADD1000',
-        description: 'adds 1000 to the input number',
-        helpUrl: 'http://dev.office.com',
-        result: {
-          type: 'number',
-          dimensionality: 'scalar',
-        },
-        parameters: [
-          {
-            name: 'number 1',
-            description: 'the first number to be added',
-            type: 'number',
-            dimensionality: 'scalar',
-          },
-        ],
-      },
-    ],
-  };
-
-  if (Office.context.requirements.isSetSupported('CustomFunctions', 1.2)) {
+  if (Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
     await Excel.run(async context => {
       (context.workbook.application as any).customFunctions.register(
-        JSON.stringify(fakeJson, null, 4),
-        `
-        function add1000(input) {
-          return 1000 + input;
-        }
-        CustomFunctionMappings["ADD1000"] = add1000;
-        `
-
-        //JSON.stringify({ functions: functions }),
+        JSON.stringify({ functions: functions }),
+        code
       );
       await context.sync();
     });

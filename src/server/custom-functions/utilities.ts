@@ -1,11 +1,12 @@
 import { parseMetadata } from './metadata.parser';
 import { transformSnippetName } from '../core/snippet.helper';
 import { compileScript } from '../core/snippet.generator';
+import { stripSpaces } from '../core/utilities';
 
 export function getCustomFunctionsInfoForRegistration(
   snippets: ISnippet[],
   strings: ServerStrings
-): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[]; code: string[] } {
+): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[]; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
   let metadata: ICFFunctionMetadata[] = [];
   const code: string[] = [];
@@ -41,7 +42,11 @@ export function getCustomFunctionsInfoForRegistration(
       metadata = metadata.concat(...namespacedFunctions);
 
       code.push(
-        wrapCustomFunctionSnippetCode(snippetCode, namespace, functions.map(f => f.name))
+        wrapCustomFunctionSnippetCode(
+          snippetCode,
+          namespace,
+          namespacedFunctions.map(f => f.originalName)
+        )
       );
     }
 
@@ -89,7 +94,7 @@ export function getCustomFunctionsInfoForRegistration(
   const functions = filterOutDuplicates(metadata);
   const visual = { snippets: visualMetadata };
 
-  return { visual, functions, code };
+  return { visual, functions, code: code.join('\n\n') };
 }
 
 // helpers
@@ -99,16 +104,43 @@ function wrapCustomFunctionSnippetCode(
   namespace: string,
   functionNames: string[]
 ): string {
-  return [
-    `(() => {`,
-    ...code.split('\n').map(line => '\t' + line),
-    ...functionNames.map(
-      name =>
-        '\t' +
-        `CustomFunctionMappings["${namespace.toUpperCase()}.${name.toUpperCase()}"] = name`
-    ),
-    `})`,
-  ].join('\n');
+  const newlineAndIndents = '\n        ';
+  const almostReady = stripSpaces(`
+    (function () {
+      try {
+        // TODO external code
+
+        ${code
+          .split('\n')
+          .map(line => newlineAndIndents + line)
+          .join('')}
+
+        ${generateFunctionAssignments()}
+      } catch (e) {
+        function onError() {
+          throw e;
+        }
+        ${generateFunctionAssignments('onError')}
+      }
+    })();  
+  `);
+
+  return almostReady
+    .split('\n')
+    .map(line => line.trimRight())
+    .join('\n');
+
+  // Helper
+  function generateFunctionAssignments(override?: string) {
+    return functionNames
+      .map(
+        name =>
+          `CustomFunctionMappings["${namespace.toUpperCase()}.${name.toUpperCase()}"] = ${
+            override ? override : name
+          };`
+      )
+      .join(newlineAndIndents);
+  }
 }
 
 function getFunctionChildNodeStatus(
