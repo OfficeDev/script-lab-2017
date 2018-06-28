@@ -4,9 +4,13 @@ import {
   generateUrl,
   navigateToRunCustomFunctions,
   stringifyPlusPlus,
-  assertIdentical,
 } from '../app/helpers';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
+
+// For now, expose "OfficeExtension" and "Office" to the iframe, since those
+// might be used (e.g., for Promises).  But don't expose any further APIs.
+// Also expose the new "CustomFunctions" namespace
+const NAMESPACES_TO_EXPOSE = ['Office', 'OfficeExtension', 'CustomFunctions'];
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -22,6 +26,8 @@ let heartbeat: {
 interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrationData {
   id: string;
 }
+
+declare var CustomFunctionMappings: { [key: string]: any };
 
 tryCatch(async () => {
   let params: InitializationParams = (window as any).customFunctionParams;
@@ -71,9 +77,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
           (contentWindow as any).console = window.console;
           contentWindow.onerror = (...args) => console.error(args);
 
-          // Expose "OfficeExtension" and "Office" to the iframe, since those
-          // might be used (e.g., for Promises).  But don't expose any further APIs
-          ['Office', 'OfficeExtension'].forEach(namespace => {
+          NAMESPACES_TO_EXPOSE.forEach(namespace => {
             contentWindow[namespace] = window[namespace];
           });
         });
@@ -89,31 +93,14 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             }, expecting ${snippetMetadata.functions.length} functions`
           );
 
-          window[namespaceUppercase] = {};
           snippetMetadata.functions.map(func => {
-            // Expect functions to have one-and-only-one dot, separating
-            // the namespace from the function name.
-            let splitIndex = assertIdentical(
-              func.name.indexOf('.'),
-              func.name.lastIndexOf('.')
-            );
-            // this should never happen:
-            if (splitIndex <= 0) {
-              throw new Error(`Invalid namespace.funcname format ("${func.name}")`);
-            }
-            let funcName = func.name.substr(splitIndex + 1);
-            let funcNameUppercase = funcName.toUpperCase();
-
-            logIfExtraLoggingEnabled(funcName, {
-              indent: 4,
-            });
-
+            const funcFullUpperName = `${namespaceUppercase}.${func.name.toUpperCase()}`;
             // disable the rule because want to use "arguments",
             //    which isn't allowed in an arrow function
             // tslint:disable-next-line:only-arrow-functions
-            window[namespaceUppercase][funcNameUppercase] = function() {
+            CustomFunctionMappings[funcFullUpperName] = function() {
               try {
-                return iframeWindow[funcName /*regular, not uppercase*/].apply(
+                return iframeWindow[func.name /*regular, not uppercase*/].apply(
                   null,
                   arguments
                 );
@@ -127,7 +114,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             };
 
             // Overwrite console.log on every snippet iframe
-            overwriteConsole(`${namespaceUppercase}.${funcNameUppercase}`, iframeWindow);
+            overwriteConsole(funcFullUpperName, iframeWindow);
           });
 
           successfulRegistrationsCount++;
