@@ -5,8 +5,13 @@ const path = require('path');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-module.exports = () =>
-  webpackMerge(commonConfig(false), {
+module.exports = () => {
+  const configParams = {
+    prodMode: false,
+    isLocalHost: true,
+  };
+
+  return webpackMerge(commonConfig(configParams), {
     devtool: 'inline-source-map',
 
     resolve: {
@@ -79,9 +84,10 @@ module.exports = () =>
         warnings: true,
       },
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-        "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-      }
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+        'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+      },
     },
   });
+};

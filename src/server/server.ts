@@ -45,6 +45,7 @@ const uuidV4 = require('uuid/v4');
 const { build, config, secrets } = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
 const currentConfig = config[env] as IEnvironmentConfig;
+const isLocal = currentConfig.name === 'LOCAL';
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
@@ -704,14 +705,19 @@ function runCommon(
     forIn(query, (value, key) => (queryParamsLowercase[key.toLowerCase()] = value));
 
     if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
-      return queryParamsLowercase.officejs.trim();
+      const candidateOfficeJs = queryParamsLowercase.officejs.trim();
+      if (isLocal && candidateOfficeJs.toLowerCase().indexOf('{localhost}') >= 0) {
+        return getDefaultHandlebarsContext().officeJsOrLocal;
+      } else {
+        return candidateOfficeJs;
+      }
     }
 
     if (isOfficeHost(host.toUpperCase())) {
       // Assume a production Office.js for the Office products --
       // and worse case (e.g., if targeting Beta, or debug version),
       // the runner will just force a refresh after the page has loaded
-      return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+      return getDefaultHandlebarsContext().officeJsOrLocal;
     }
 
     return '';
@@ -992,6 +998,9 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
     _defaultHandlebarsContext = {
       origin: currentConfig.editorUrl,
       assets: getFileAsJson('assets.json'),
+      officeJsOrLocal: isLocal
+        ? versionedPackageNames['@microsoft/office-js']
+        : 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js',
       versionedPackageNames_office_ui_fabric_js:
         versionedPackageNames['office-ui-fabric-js'],
       versionedPackageNames_jquery: versionedPackageNames['jquery'],
@@ -1035,7 +1044,7 @@ function getRuntimeHelpersUrl(filename: string) {
 }
 
 function getClientSecret() {
-  if (currentConfig.name === 'LOCAL') {
+  if (isLocal) {
     return (currentConfig as ILocalHostEnvironmentConfig).clientSecretLocalHost;
   }
 
