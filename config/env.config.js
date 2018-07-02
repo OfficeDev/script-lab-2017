@@ -279,6 +279,31 @@ class RedirectPlugin {
   }
 }
 
+class OfficeJsSubstitutionPlugin {
+  constructor(isLocalHost) {
+    this._isLocalHost = isLocalHost;
+  }
+
+  apply(compiler) {
+    compiler.plugin('compilation', compilation => {
+      compilation.plugin(
+        'html-webpack-plugin-before-html-processing',
+        (htmlPluginData, callback) => {
+          const officeJsToUse = this._isLocalHost
+            ? "libs/{{{versionedPackageNames['@microsoft/office-js']}}}/dist/office.js"
+            : 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+          htmlPluginData.html = htmlPluginData.html.replace(
+            /{{{officeJsOrLocal}}}/gi,
+            officeJsToUse
+          );
+
+          callback(null, htmlPluginData);
+        }
+      );
+    });
+  }
+}
+
 exports.build = build;
 exports.config = config;
 exports.safeExternalUrls = safeExternalUrls;
@@ -286,6 +311,7 @@ exports.localStorageKeys = localStorageKeys;
 exports.sessionStorageKeys = sessionStorageKeys;
 exports.experimentationFlagsDefaults = experimentationFlagsDefaults;
 exports.RedirectPlugin = RedirectPlugin;
+exports.OfficeJsSubstitutionPlugin = OfficeJsSubstitutionPlugin;
 
 // NOTE: Data in this file gets propagated to JS on client pages
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition

@@ -15,6 +15,7 @@ handlebars.registerHelper('indent', (text: string, indent: number) => {
 export interface IDefaultHandlebarsContext {
   origin: string;
   assets: { [key: string]: any };
+  officeJsOrLocal: string;
   versionedPackageNames_office_ui_fabric_js: string;
   versionedPackageNames_jquery: string;
   versionedPackageNames_jquery_resizable_dom: string;
