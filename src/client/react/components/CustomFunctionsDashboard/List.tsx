@@ -31,8 +31,7 @@ const ListItem = LI`
 `;
 
 const Text = styled.div`
-  flex: 1;
-  line-height: 12px;
+  flex: 2;
 `;
 
 const ListContainer = styled.ul``;
@@ -73,52 +72,52 @@ export default ({ items }) => (
           title={item.title}
           smallCaps={item.smallCaps}
         >
-          {item.dropdown && (
-            <Icon
-              className="ms-font-m"
-              // iconProps={{ iconName: item.dropdown.name }}
-              iconName={item.dropdown.name}
-              style={{
-                width: '18px',
-                fontSize: '16px',
-                color: item.dropdown.color,
-                marginRight: '5px',
-                marginLeft: (item.indent || 0) * 5 + 'px',
-              }}
-              // TODO: Implement this on summary.tsx
-              onClick={() =>
-                item.children.forEach(child => {
-                  // select div by id -> something like x = document.getelementbyid(item.name)
-                  // make it not visible -> x.display = none
-                  const listItem = document.getElementById(child);
-                  const display = listItem.style.display === 'flex' ? 'none' : 'flex';
-                  listItem.style.display = display;
-                })
-              }
-            />
-          )}
-          {item.icon && (
-            <Icon
-              className="ms-font-m"
-              iconName={item.icon.name}
-              style={{
-                fontSize: '16px',
-                color: item.icon.color,
-                marginRight: '5px',
-                marginLeft: (item.indent || 0) * 5 + 'px',
-              }}
-            />
-          )}
-
           <Text>
+            {item.dropdown && (
+              <Icon
+                className="ms-font-m"
+                // iconProps={{ iconName: item.dropdown.name }}
+                iconName={item.dropdown.name}
+                style={{
+                  width: '18px',
+                  fontSize: '16px',
+                  color: item.dropdown.color,
+                  marginRight: '5px',
+                  marginLeft: (item.indent || 0) * 5 + 'px',
+                }}
+                onClick={() =>
+                  item.children.forEach(child => {
+                    // select div by id and toggle visibility
+                    const listItem = document.getElementById(child);
+                    const display = listItem.style.display === 'flex' ? 'none' : 'flex';
+                    listItem.style.display = display;
+                    // TODO: add div to error message so you can collapse it
+                  })
+                }
+              />
+            )}
+            {item.icon && (
+              <Icon
+                className="ms-font-m"
+                iconName={item.icon.name}
+                style={{
+                  fontSize: '16px',
+                  color: item.icon.color,
+                  marginRight: '5px',
+                }}
+              />
+            )}
             {item.name}
-            <Label
+            <div
               style={{
+                alignItems: 'center',
                 fontSize: '12px',
+                marginLeft: (item.indent || 0) * 5 + 'px',
               }}
+              id={item.errorMessage}
             >
               {item.errorMessage}
-            </Label>
+            </div>
           </Text>
         </ListItem>
       </div>

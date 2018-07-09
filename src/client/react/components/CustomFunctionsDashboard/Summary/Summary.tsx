@@ -57,7 +57,6 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         name: `${name2}`,
         errorMessage: `${paramErrorMergeTest.toString()}`,
         key: name2,
-        smallCaps: true,
       };
       if (snippet.error) {
         if (func.error) {
@@ -72,7 +71,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           // the second indented item -> uses itemError instead of item
           items.error.push({
             ...itemError,
-            // dropdown: { name: 'ChevronDownMed', color: '#666' },
+            dropdown: { name: 'ChevronDownMed', color: '#666' },
             indent: 5,
             icon: { name: 'ErrorBadge', color: '#f04251' },
             children: [...paramErrorNames],
