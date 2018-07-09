@@ -41,10 +41,16 @@ const ListContainer = styled.ul``;
 export interface Item {
   key: any;
   name: string;
+  dropdown?: {
+    name: string;
+    color: string;
+  };
+  children?: string[]; // list of errors
   icon?: {
     name: string;
     color: string;
   };
+
   background?: string;
   color?: string;
   title?: string;
@@ -55,27 +61,54 @@ export interface Item {
 export default ({ items }) => (
   <ListContainer>
     {items.map((item: Item) => (
-      <ListItem
-        key={item.key}
-        className="ms-font-s"
-        backgroundColor={item.background}
-        color={item.color}
-        title={item.title}
-        smallCaps={item.smallCaps}
-      >
-        {item.icon && (
-          <Icon
-            className="ms-font-m"
-            iconName={item.icon.name}
-            style={{
-              fontSize: '16px',
-              color: item.icon.color,
-              marginRight: '5px',
-            }}
-          />
-        )}
-        <Text style={{ marginLeft: (item.indent || 0) * 5 + 'px' }}>{item.name}</Text>
-      </ListItem>
+      <div id={item.name}>
+        <ListItem
+          key={item.key}
+          className="ms-font-s"
+          id={item.name}
+          backgroundColor={item.background}
+          color={item.color}
+          title={item.title}
+          smallCaps={item.smallCaps}
+        >
+          {item.dropdown && (
+            <Icon
+              className="ms-font-m"
+              // iconProps={{ iconName: item.dropdown.name }}
+              iconName={item.dropdown.name}
+              style={{
+                width: '18px',
+                fontSize: '16px',
+                color: item.dropdown.color,
+                marginRight: '5px',
+                marginLeft: (item.indent || 0) * 5 + 'px',
+              }}
+              // TODO: Implement this on summary.tsx
+              onClick={() =>
+                item.children.forEach(child => {
+                  // select div by id -> something like x = document.getelementbyid(item.name)
+                  // make it not visible -> x.display = none
+                  const listItem = document.getElementById(child);
+                  const display = listItem.style.display === 'flex' ? 'none' : 'flex';
+                  listItem.style.display = display;
+                })
+              }
+            />
+          )}
+          {item.icon && (
+            <Icon
+              className="ms-font-m"
+              iconName={item.icon.name}
+              style={{
+                fontSize: '16px',
+                color: item.icon.color,
+                marginRight: '5px',
+              }}
+            />
+          )}
+          <Text>{item.name}</Text>
+        </ListItem>
+      </div>
     ))}
   </ListContainer>
 );
