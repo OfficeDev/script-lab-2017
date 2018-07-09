@@ -2,17 +2,30 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import List, { Item } from '../List';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
 
-const FunctionsContainer = styled.div`
+const ErrorContainer = styled.div`
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   flex-shrink: 2;
   border-top: 1px solid #f4f4f4;
+`;
+
+const RegisteredFunctionsContainer = styled.div`
+
+  width: 100%
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-shrink: 2;
+  border-top: 1px solid #f4f4f4;
+  z-index: 2000;
+  bottom: 20px;
 `;
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
@@ -99,9 +112,34 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           issue.
         </p>
       </TopInfo>
-      <FunctionsContainer style={{ marginTop: '20px' }}>
-        <List items={[...items.success, ...items.error, ...items.skipped]} />
-      </FunctionsContainer>
+      <ErrorContainer style={{ marginTop: '20px' }}>
+        <List items={[...items.error, ...items.skipped]} />
+      </ErrorContainer>
+      {/* TODO: insert another container here for the registered functions */}
+
+      <RegisteredFunctionsContainer>
+        <p className="ms-font-l" style={{ padding: '15px 24px 15px 17px' }}>
+          <Icon
+            className="ms-font-m"
+            iconName="ChevronDownMed"
+            style={{
+              width: '18px',
+              fontSize: '16px',
+              color: '#666',
+              marginRight: '5px',
+            }}
+            onClick={() => {
+              const listItem = document.getElementById('success-items');
+              const display = listItem.style.display === 'block' ? 'none' : 'block';
+              listItem.style.display = display;
+            }}
+          />
+          Registered Custom Functions
+        </p>
+        <div id="success-items">
+          <List items={[...items.success]} />
+        </div>
+      </RegisteredFunctionsContainer>
     </PivotContentContainer>
   );
 };
