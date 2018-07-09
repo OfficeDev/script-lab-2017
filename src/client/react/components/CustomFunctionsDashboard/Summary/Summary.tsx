@@ -32,11 +32,12 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       const item: Item = { name, key: name, smallCaps: true };
       // item for second indented error
       const name2 = func.name;
-      const itemError: Item = { name: name2, key: name2, smallCaps: false };
+      // const itemError: Item = { name: name2, key: name2, smallCaps: false };
       // item for third indented error
       const name3 = [...func.parameters]; // this is an array that contains all of the parameter names for each function
       const paramErrors = [];
       const paramErrorNames = [];
+      const paramErrorMergeTest = [];
       name3.forEach(param => {
         paramErrors.push({
           name: param.error !== undefined ? `${param.name}: ${param.error}` : null,
@@ -46,9 +47,18 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         if (param.error !== undefined) {
           paramErrorNames.push(param.name);
         }
+        if (param.error !== undefined) {
+          const x = `${param.name}: ${param.error}`;
+          paramErrorMergeTest.push(x);
+        }
       });
       // const paramError: Item = { name: `${name3[0].name}`, key: name2, smallCaps: false };
-
+      const itemError: Item = {
+        name: `${name2}`,
+        errorMessage: `${paramErrorMergeTest.toString()}`,
+        key: name2,
+        smallCaps: true,
+      };
       if (snippet.error) {
         if (func.error) {
           // first indented item
@@ -62,14 +72,13 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           // the second indented item -> uses itemError instead of item
           items.error.push({
             ...itemError,
-            dropdown: { name: 'ChevronDownMed', color: '#666' },
+            // dropdown: { name: 'ChevronDownMed', color: '#666' },
             indent: 5,
             icon: { name: 'ErrorBadge', color: '#f04251' },
-            title: 'Expand for details.',
             children: [...paramErrorNames],
           });
           // third indented item -> describes parameter errors
-          paramErrors.forEach(param => {
+          /* paramErrors.forEach(param => {
             // only display the problematic parameter
             if (param.name !== null) {
               items.error.push({
@@ -78,7 +87,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
                 ...param,
               });
             }
-          });
+          }); */
         } else {
           items.skipped.push({
             ...item,

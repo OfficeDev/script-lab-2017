@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled, { StyledFunction } from 'styled-components';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 
 interface LIProps {
   backgroundColor?: string;
@@ -12,6 +13,7 @@ const LI: StyledFunction<LIProps & React.HTMLProps<HTMLLIElement>> = styled.li;
 
 const ListItem = LI`
   display: flex;
+  
   align-items: center;
 
   width: 100%;
@@ -28,7 +30,7 @@ const ListItem = LI`
   font-variant: ${props => (props.smallCaps ? 'small-caps' : 'normal')};
 `;
 
-const Text = styled.span`
+const Text = styled.div`
   flex: 1;
   line-height: 12px;
 `;
@@ -45,12 +47,12 @@ export interface Item {
     name: string;
     color: string;
   };
+  errorMessage?: string;
   children?: string[]; // list of errors
   icon?: {
     name: string;
     color: string;
   };
-
   background?: string;
   color?: string;
   title?: string;
@@ -103,10 +105,21 @@ export default ({ items }) => (
                 fontSize: '16px',
                 color: item.icon.color,
                 marginRight: '5px',
+                marginLeft: (item.indent || 0) * 5 + 'px',
               }}
             />
           )}
-          <Text>{item.name}</Text>
+
+          <Text>
+            {item.name}
+            <Label
+              style={{
+                fontSize: '12px',
+              }}
+            >
+              {item.errorMessage}
+            </Label>
+          </Text>
         </ListItem>
       </div>
     ))}
