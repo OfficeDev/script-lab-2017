@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import MetadataTree from '../Details/MetadataTree';
 import PivotContentContainer from '../PivotContentContainer';
 import List, { Item } from '../List';
 
@@ -35,24 +34,14 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       // const itemError: Item = { name: name2, key: name2, smallCaps: false };
       // item for third indented error
       const name3 = [...func.parameters]; // this is an array that contains all of the parameter names for each function
-      const paramErrors = [];
       const paramErrorNames = [];
       const paramErrorMergeTest = [];
       name3.forEach(param => {
-        paramErrors.push({
-          name: param.error !== undefined ? `${param.name}: ${param.error}` : null,
-          key: `${param.name}`,
-          smallCaps: false,
-        });
         if (param.error !== undefined) {
           paramErrorNames.push(param.name);
-        }
-        if (param.error !== undefined) {
-          const x = `${param.name}: ${param.error}`;
-          paramErrorMergeTest.push(x);
+          paramErrorMergeTest.push(`${param.name}: ${param.error}`);
         }
       });
-      // const paramError: Item = { name: `${name3[0].name}`, key: name2, smallCaps: false };
       const itemError: Item = {
         name: `${name2}`,
         errorMessage: `${paramErrorMergeTest.toString()}`,
@@ -76,17 +65,6 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             icon: { name: 'ErrorBadge', color: '#f04251' },
             children: [...paramErrorNames],
           });
-          // third indented item -> describes parameter errors
-          /* paramErrors.forEach(param => {
-            // only display the problematic parameter
-            if (param.name !== null) {
-              items.error.push({
-                icon: { name: '', color: '#f04251' },
-                indent: 20,
-                ...param,
-              });
-            }
-          }); */
         } else {
           items.skipped.push({
             ...item,
@@ -117,11 +95,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were found in your workspace. These functions run
-          async in Script Lab. You can run them faster in sync mode with{' '}
-          <a href="https://aka.ms/customfunctions" target="_blank">
-            these instructions
-          </a>.
+          The following functions are invalid and cannot be declared. Review and fix the
+          issue.
         </p>
       </TopInfo>
       <FunctionsContainer style={{ marginTop: '20px' }}>

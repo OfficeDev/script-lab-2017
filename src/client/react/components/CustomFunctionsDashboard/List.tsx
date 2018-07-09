@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled, { StyledFunction } from 'styled-components';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
-import { Label } from 'office-ui-fabric-react/lib/Label';
 
 interface LIProps {
   backgroundColor?: string;
@@ -31,7 +30,8 @@ const ListItem = LI`
 `;
 
 const Text = styled.div`
-  flex: 2;
+  flex: 1;
+  line-height: 12px;
 `;
 
 const ListContainer = styled.ul``;
@@ -76,7 +76,6 @@ export default ({ items }) => (
             {item.dropdown && (
               <Icon
                 className="ms-font-m"
-                // iconProps={{ iconName: item.dropdown.name }}
                 iconName={item.dropdown.name}
                 style={{
                   width: '18px',
