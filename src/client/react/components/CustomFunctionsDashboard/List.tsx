@@ -12,7 +12,6 @@ const LI: StyledFunction<LIProps & React.HTMLProps<HTMLLIElement>> = styled.li;
 
 const ListItem = LI`
   display: flex;
-  
   align-items: center;
 
   width: 100%;
@@ -36,16 +35,22 @@ const Text = styled.div`
 
 const ListContainer = styled.ul``;
 
+const toggleVisibility = item =>
+  item.children.forEach(childname => {
+    // select div by id and toggle visibility
+    const listItem = document.getElementById(childname);
+    const display = listItem.style.display === 'flex' ? 'none' : 'flex';
+    listItem.style.display = display;
+    // TODO: add div to error message so you can collapse it
+  });
+
 // Note: for any change to this interface, be sure to also consider
 // How it will be mapped in the UI.  See the "render" method of List.tsx,
 // particularly the line starting with "const items: Item[] = logs.map((log, i) => ({"
 export interface Item {
   key: any;
   name: string;
-  dropdown?: {
-    name: string;
-    color: string;
-  };
+  success?: boolean;
   errorMessage?: string;
   children?: string[]; // list of errors
   icon?: {
@@ -73,28 +78,21 @@ export default ({ items }) => (
           smallCaps={item.smallCaps}
         >
           <Text>
-            {item.dropdown && (
+            {!item.success && (
               <Icon
                 className="ms-font-m"
-                iconName={item.dropdown.name}
+                iconName="ChevronDownMed"
                 style={{
                   width: '18px',
                   fontSize: '16px',
-                  color: item.dropdown.color,
+                  color: '#666',
                   marginRight: '5px',
                   marginLeft: (item.indent || 0) * 5 + 'px',
                 }}
-                onClick={() =>
-                  item.children.forEach(child => {
-                    // select div by id and toggle visibility
-                    const listItem = document.getElementById(child);
-                    const display = listItem.style.display === 'flex' ? 'none' : 'flex';
-                    listItem.style.display = display;
-                    // TODO: add div to error message so you can collapse it
-                  })
-                }
+                onClick={toggleVisibility}
               />
             )}
+
             {item.icon && (
               <Icon
                 className="ms-font-m"
@@ -113,7 +111,6 @@ export default ({ items }) => (
                 fontSize: '12px',
                 marginLeft: (item.indent || 0) * 5 + 'px',
               }}
-              id={item.errorMessage}
             >
               {item.errorMessage}
             </div>

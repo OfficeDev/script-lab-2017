@@ -142,7 +142,6 @@ class CustomFunctionsDashboard extends React.Component<
 
   private getPivotItems() {
     const { metadata } = this.props;
-    console.log(metadata);
     return [
       this.returnUrl ? (
         <PivotItem key="Back" itemIcon={NavigateBackIconName}>
