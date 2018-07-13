@@ -28,12 +28,21 @@ const ListItem = LI`
   font-variant: ${props => (props.smallCaps ? 'small-caps' : 'normal')};
 `;
 
-const Text = styled.span`
+const Text = styled.div`
   flex: 1;
   line-height: 12px;
 `;
 
 const ListContainer = styled.ul``;
+
+const toggleVisibility = item =>
+  item.children.forEach(childname => {
+    // select div by id and toggle visibility
+    const listItem = document.getElementById(childname);
+    const display = listItem.style.display === 'flex' ? 'none' : 'flex';
+    listItem.style.display = display;
+    // TODO: add div to error message so you can collapse it
+  });
 
 // Note: for any change to this interface, be sure to also consider
 // How it will be mapped in the UI.  See the "render" method of List.tsx,
@@ -41,6 +50,9 @@ const ListContainer = styled.ul``;
 export interface Item {
   key: any;
   name: string;
+  success?: boolean;
+  errorMessage?: string;
+  children?: string[]; // list of errors
   icon?: {
     name: string;
     color: string;
@@ -55,27 +67,56 @@ export interface Item {
 export default ({ items }) => (
   <ListContainer>
     {items.map((item: Item) => (
-      <ListItem
-        key={item.key}
-        className="ms-font-s"
-        backgroundColor={item.background}
-        color={item.color}
-        title={item.title}
-        smallCaps={item.smallCaps}
-      >
-        {item.icon && (
-          <Icon
-            className="ms-font-m"
-            iconName={item.icon.name}
-            style={{
-              fontSize: '16px',
-              color: item.icon.color,
-              marginRight: '5px',
-            }}
-          />
-        )}
-        <Text style={{ marginLeft: (item.indent || 0) * 5 + 'px' }}>{item.name}</Text>
-      </ListItem>
+      <div id={item.name}>
+        <ListItem
+          key={item.key}
+          className="ms-font-s"
+          id={item.name}
+          backgroundColor={item.background}
+          color={item.color}
+          title={item.title}
+          smallCaps={item.smallCaps}
+        >
+          <Text>
+            {!item.success && (
+              <Icon
+                className="ms-font-m"
+                iconName="ChevronDownMed"
+                style={{
+                  width: '18px',
+                  fontSize: '16px',
+                  color: '#666',
+                  marginRight: '5px',
+                  marginLeft: (item.indent || 0) * 5 + 'px',
+                }}
+                onClick={toggleVisibility}
+              />
+            )}
+
+            {item.icon && (
+              <Icon
+                className="ms-font-m"
+                iconName={item.icon.name}
+                style={{
+                  fontSize: '16px',
+                  color: item.icon.color,
+                  marginRight: '5px',
+                }}
+              />
+            )}
+            {item.name}
+            <div
+              style={{
+                alignItems: 'center',
+                fontSize: '12px',
+                marginLeft: (item.indent || 0) * 5 + 'px',
+              }}
+            >
+              {item.errorMessage}
+            </div>
+          </Text>
+        </ListItem>
+      </div>
     ))}
   </ListContainer>
 );
