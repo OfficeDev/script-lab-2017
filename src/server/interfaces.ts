@@ -58,6 +58,9 @@ export interface IRunnerHandlebarsContext {
    * (in which case will come up with default editor URL, using host & id as guide) */
   returnUrl: string;
 
+  /** Optional refresh URL override */
+  refreshUrl?: string;
+
   strings: ServerStrings;
   explicitlySetDisplayLanguageOrNull: string;
 }

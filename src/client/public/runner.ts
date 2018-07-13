@@ -26,6 +26,7 @@ interface InitializationParams {
   host: string;
   origin: string;
   returnUrl: string;
+  refreshUrl: string;
   isTrustedSnippet: boolean;
   currentSnippet: {
     officeJS: string;
@@ -50,6 +51,7 @@ interface MakerInitializationParams {
   let $snippetContent: JQuery;
 
   let returnUrl = '';
+  let refreshUrlOverride: string;
   let host: string;
 
   let currentSnippet: {
@@ -74,6 +76,10 @@ interface MakerInitializationParams {
     try {
       await environment.initializePartial({ host: params.host });
       instantiateRibbon('ribbon');
+
+      if (params.refreshUrl.trim().length > 0) {
+        refreshUrlOverride = params.refreshUrl;
+      }
 
       document.getElementById(
         'choose-your-host'
@@ -586,7 +592,8 @@ interface MakerInitializationParams {
   }
 
   function generateRefreshUrl(desiredOfficeJS: string) {
-    let refreshUrl = `${window.location.origin}/run/${host}/${currentSnippet.id}`;
+    let refreshUrl =
+      refreshUrlOverride || `${window.location.origin}/run/${host}/${currentSnippet.id}`;
     if (desiredOfficeJS) {
       refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJS)}`;
     }
