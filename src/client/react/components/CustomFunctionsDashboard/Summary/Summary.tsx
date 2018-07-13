@@ -15,10 +15,13 @@ const ErrorContainer = styled.div`
   border-top: 1px solid #f4f4f4;
 `;
 
+// TODO: try dropdown function here
+
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  let itemsTest: { error: any; skipped: any[]; success: any[] } = {
+  let items: { error: any; skipped: any[]; success: any[] } = {
     error: {
       content: [], // TODO: find some way to establish what content contains
+      isExpanded: true,
     },
     skipped: [],
     success: [],
@@ -39,7 +42,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       if (snippet.error) {
         if (func.error) {
-          itemsTest.error.content.push({
+          items.error.content.push({
             name: name,
             children: {
               funcName: functionName,
@@ -47,17 +50,18 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             },
           });
         } else {
-          itemsTest.skipped.push({ content: name });
+          items.skipped.push({ content: name });
         }
       } else {
-        itemsTest.success.push({ content: name });
+        items.success.push({ content: name });
       }
     });
   });
 
   // ERROR ITEMS
-  const errorItemsContainerTest = [];
-  itemsTest.error.content.forEach(item => {
+  const errorItemsContainer = [];
+  // TODO: put dropdown function as a constant
+  items.error.content.forEach(item => {
     const errorItem = [
       <DetailsItem
         content={item.name}
@@ -84,12 +88,12 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       );
       errorItem.push(paramError);
     });
-    errorItemsContainerTest.push(errorItem);
+    errorItemsContainer.push(errorItem);
   });
 
   // SKIPPED ITEMS
-  const skippedItemsContainerTest = [];
-  itemsTest.skipped.forEach(item => {
+  const skippedItemsContainer = [];
+  items.skipped.forEach(item => {
     const skippedItem = (
       <DetailsItem
         content={item.content}
@@ -98,12 +102,12 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         statusIconColor="#F0C784"
       />
     );
-    skippedItemsContainerTest.push(skippedItem);
+    skippedItemsContainer.push(skippedItem);
   });
 
   // SUCCESS ITEMS
-  const successItemsContainerTest = [];
-  itemsTest.success.forEach(item => {
+  const successItemsContainer = [];
+  items.success.forEach(item => {
     const successItem = (
       <DetailsItem
         content={item.content}
@@ -114,7 +118,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         indent="20px"
       />
     );
-    successItemsContainerTest.push(successItem);
+    successItemsContainer.push(successItem);
   });
 
   return (
@@ -136,11 +140,11 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         </p>
       </TopInfo>
       <ErrorContainer style={{ marginTop: '20px' }}>
-        {errorItemsContainerTest}
-        {skippedItemsContainerTest}
+        {errorItemsContainer}
+        {skippedItemsContainer}
       </ErrorContainer>
       <DetailsItem fontFamily={'ms-font-l'} content={'Registered Custom Functions'} />
-      {successItemsContainerTest}
+      {successItemsContainer}
     </PivotContentContainer>
   );
 };
