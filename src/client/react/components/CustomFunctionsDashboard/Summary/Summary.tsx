@@ -1,9 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
-import List, { Item } from '../List';
-
-import DetailsContainer from './DetailsContainer';
+import DetailsItem from './DetailsItem';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -15,71 +13,108 @@ const ErrorContainer = styled.div`
   overflow-y: auto;
   flex-shrink: 2;
   border-top: 1px solid #f4f4f4;
-  z-index: -1;
 `;
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  let items: { success: Item[]; skipped: Item[]; error: Item[] } = {
-    success: [],
+  let itemsTest: { error: any; skipped: any[]; success: any[] } = {
+    error: {
+      content: [], // TODO: find some way to establish what content contains
+    },
     skipped: [],
-    error: [],
+    success: [],
   };
+
   metadata.snippets.forEach(snippet => {
     snippet.functions.forEach(func => {
       const scriptLabToplevelNamespace = 'ScriptLab';
-      // this has to be conditional upon error based on if there is an error or not
       const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${func.name}(${
         func.parameters.length > 0 ? '…' : ''
       })`;
-      const item: Item = { name, key: name, smallCaps: true };
-      // item for second indented error
       const functionName = func.name;
-      // item for third indented error
-      const functionParams = [...func.parameters]; // this is an array that contains all of the parameters for each function
-      const paramErrorNames = [];
       const paramErrorMessages = [];
-      functionParams.forEach(param => {
+      func.parameters.forEach(param => {
         if (param.error !== undefined) {
-          paramErrorNames.push(param.name);
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
-      const itemError: Item = {
-        name: functionName,
-        errorMessage: `${paramErrorMessages.toString()}`,
-        key: functionName,
-      };
       if (snippet.error) {
         if (func.error) {
-          // overarching error
-          items.error.push({
-            ...item,
-            icon: { name: 'ErrorBadge', color: '#f04251' },
-            title: 'Expand for details.',
-            children: [itemError.name],
-          });
-          // the second indented item -> function error
-          items.error.push({
-            ...itemError,
-            indent: 5,
-            icon: { name: 'ErrorBadge', color: '#f04251' },
-            children: [...paramErrorNames],
+          itemsTest.error.content.push({
+            name: name,
+            children: {
+              funcName: functionName,
+              paramErrors: paramErrorMessages,
+            },
           });
         } else {
-          items.skipped.push({
-            ...item,
-            icon: { name: 'Unknown', color: '#ffd333' },
-            title: 'See Details tab for more information.',
-          });
+          itemsTest.skipped.push({ content: name });
         }
       } else {
-        items.success.push({
-          ...item,
-          icon: { name: 'Completed', color: '#55cf4a' },
-          success: true,
-        });
+        itemsTest.success.push({ content: name });
       }
     });
+  });
+
+  // ERROR ITEMS
+  const errorItemsContainerTest = [];
+  itemsTest.error.content.forEach(item => {
+    const errorItem = [
+      <DetailsItem
+        content={item.name}
+        fontFamily="ms-font-m"
+        statusIcon="ErrorBadge"
+        statusIconColor="#f04251"
+      />,
+      <DetailsItem
+        content={item.children.funcName}
+        fontFamily="ms-font-s"
+        statusIcon="ErrorBadge"
+        statusIconColor="#f04251"
+        indent="15px"
+      />,
+    ];
+    item.children.paramErrors.forEach(paramErrorMessage => {
+      const paramError = (
+        <DetailsItem
+          content={paramErrorMessage}
+          fontFamily="ms-font-s"
+          indent="30px"
+          noDropdown={true}
+        />
+      );
+      errorItem.push(paramError);
+    });
+    errorItemsContainerTest.push(errorItem);
+  });
+
+  // SKIPPED ITEMS
+  const skippedItemsContainerTest = [];
+  itemsTest.skipped.forEach(item => {
+    const skippedItem = (
+      <DetailsItem
+        content={item.content}
+        fontFamily="ms-font-m"
+        statusIcon="Warning"
+        statusIconColor="#F0C784"
+      />
+    );
+    skippedItemsContainerTest.push(skippedItem);
+  });
+
+  // SUCCESS ITEMS
+  const successItemsContainerTest = [];
+  itemsTest.success.forEach(item => {
+    const successItem = (
+      <DetailsItem
+        content={item.content}
+        fontFamily="ms-font-m"
+        statusIcon="Completed"
+        statusIconColor="#107C10"
+        noDropdown={true}
+        indent="20px"
+      />
+    );
+    successItemsContainerTest.push(successItem);
   });
 
   return (
@@ -101,14 +136,11 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         </p>
       </TopInfo>
       <ErrorContainer style={{ marginTop: '20px' }}>
-        <List items={[...items.error, ...items.skipped]} />
+        {errorItemsContainerTest}
+        {skippedItemsContainerTest}
       </ErrorContainer>
-      <DetailsContainer
-        fontFamily={'ms-font-l'}
-        content={'Registered Custom Functions'}
-        children={[...items.success]}
-      />
-      {/* TODO: insert another container here for the registered functions */}
+      <DetailsItem fontFamily={'ms-font-l'} content={'Registered Custom Functions'} />
+      {successItemsContainerTest}
     </PivotContentContainer>
   );
 };
