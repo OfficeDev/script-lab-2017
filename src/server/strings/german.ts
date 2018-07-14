@@ -2,7 +2,7 @@
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
 
-import { getEnglishSubstitutesForNotYetTranslated } from './index';
+// import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ServerStrings {
   // NOTE: Be sure to modify in both client and server code when
@@ -59,8 +59,7 @@ export function getGermanStrings(): ServerStrings {
     editingDifferentSnippet1: `Sie editieren zurzeit ein anderes Schnipsel`,
     editingDifferentSnippet2: `Aktualisieren Sie diese Seite, um das Schnipsel auszuführen`,
     loadLatestSnippet: 'Das zuletzt verwendete Schnipsel laden.',
-    registeringCustomFunctions: getEnglishSubstitutesForNotYetTranslated()
-      .registeringCustomFunctions,
+    registeringCustomFunctions: 'Benutzerdefinierte Funktionen werden registriert',
 
     RuntimeHelpers: {
       unexpectedError: sharedBetweenServerAndClient.unexpectedError,
