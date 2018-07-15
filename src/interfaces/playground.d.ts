@@ -94,6 +94,9 @@ interface IRunnerState {
    * Otherwise, if null, will create a default reference back to editor domain,
    * taking host and snippet ID into account */
   returnUrl?: string;
+
+  /** Optional overwrite refresh URL */
+  refreshUrl?: string;
 }
 
 interface IExportState {

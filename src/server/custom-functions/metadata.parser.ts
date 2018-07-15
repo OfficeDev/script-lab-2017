@@ -80,46 +80,11 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
               description = (func as any).jsDoc[0].comment;
             }
 
-            let result: {
-              dimensionality: CustomFunctionsDimensionality;
-              error?: string;
-              type: CustomFunctionsSupportedTypes;
-            };
-            if (isStreamingFunction) {
-              const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
-              if (
-                !lastParameterType.typeArguments ||
-                lastParameterType.typeArguments.length !== 1
-              ) {
-                result = {
-                  error:
-                    'One and only one argument should be specified to IStreamingCustomFunctionHandler',
-                  dimensionality: 'invalid',
-                  type: 'invalid',
-                };
-              } else {
-                result = getDimAndTypeHelper(lastParameterType.typeArguments[0]);
-              }
-            } else if (func.type) {
-              if (
-                func.type.kind === ts.SyntaxKind.TypeReference &&
-                (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
-                (func.type as ts.TypeReferenceNode).typeArguments &&
-                (func.type as ts.TypeReferenceNode).typeArguments.length === 1
-              ) {
-                result = getDimAndTypeHelper(
-                  (func.type as ts.TypeReferenceNode).typeArguments[0]
-                );
-              } else {
-                result = getDimAndTypeHelper(func.type);
-              }
-            } else {
-              result = {
-                error: 'No return type specified.',
-                dimensionality: 'invalid',
-                type: 'invalid',
-              };
-            }
+            let result = getDimentionalityAndTypeOrError({
+              func,
+              isStreamingFunction,
+              lastParameter,
+            });
 
             let options = parseCustomFunctionOptions(func);
             if (
@@ -167,6 +132,60 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
 }
 
 // helpers
+
+function getDimentionalityAndTypeOrError(info: {
+  func: ts.FunctionDeclaration;
+  isStreamingFunction: boolean;
+  lastParameter: ts.ParameterDeclaration;
+}): {
+  dimensionality: CustomFunctionsDimensionality;
+  error?: string;
+  type: CustomFunctionsSupportedTypes;
+} {
+  const { func, isStreamingFunction, lastParameter } = info;
+  if (isStreamingFunction) {
+    const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
+    if (
+      !lastParameterType.typeArguments ||
+      lastParameterType.typeArguments.length !== 1
+    ) {
+      return {
+        error:
+          'One and only one argument should be specified to IStreamingCustomFunctionHandler',
+        dimensionality: 'invalid',
+        type: 'invalid',
+      };
+    }
+
+    let returnType = func.type as ts.TypeReferenceNode;
+    if (returnType && returnType.getFullText().trim() !== 'void') {
+      return {
+        error: `A streaming function should not have a return type.  Instead, its type should be based purely on the value inside "IStreamingCustomFunctionHandler<T>".`,
+        dimensionality: 'invalid',
+        type: 'invalid',
+      };
+    }
+
+    return getDimAndTypeHelper(lastParameterType.typeArguments[0]);
+  } else if (func.type) {
+    if (
+      func.type.kind === ts.SyntaxKind.TypeReference &&
+      (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
+      (func.type as ts.TypeReferenceNode).typeArguments &&
+      (func.type as ts.TypeReferenceNode).typeArguments.length === 1
+    ) {
+      return getDimAndTypeHelper((func.type as ts.TypeReferenceNode).typeArguments[0]);
+    } else {
+      return getDimAndTypeHelper(func.type);
+    }
+  } else {
+    return {
+      error: 'No return type specified.',
+      dimensionality: 'invalid',
+      type: 'invalid',
+    };
+  }
+}
 
 function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
   const isTypeReferenceNode = param && ts.isTypeReferenceNode(param.type);
