@@ -9,7 +9,7 @@ import {
   getIsCustomFunctionsSupportedOnHost,
   isCustomFunctionScript,
 } from '../../client/app/helpers';
-import { uniqBy } from 'lodash';
+import { uniqBy, flatten } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
@@ -42,13 +42,17 @@ tryCatch(async () => {
   if (await getIsCustomFunctionsSupportedOnHost()) {
     initializeIcons();
 
-    const { visual, functions, code } = await getCustomFunctionsInfo();
+    const { visual, code } = await getCustomFunctionsInfo();
 
     // To allow debugging in a plain web browser, only try to register if the
     // Excel namespace exists.  It always will for an Add-in,
     // since it would have waited for Office to load before getting here
     if (typeof Excel !== 'undefined') {
-      await registerMetadata(functions, code);
+      const allFunctions: ICFVisualFunctionMetadata[] = flatten(
+        visual.snippets.map(snippet => snippet.functions)
+      );
+
+      await registerMetadata(allFunctions, code);
     }
 
     // Get the custom functions runner to reload as well
@@ -75,14 +79,13 @@ tryCatch(async () => {
 async function getCustomFunctionsInfo() {
   return new Promise<{
     visual: ICFVisualMetadata;
-    functions: ICFFunctionMetadata[];
     code: string;
   }>(async (resolve, reject) => {
     try {
       ensureFreshLocalStorage();
 
       if (!storage.snippets) {
-        resolve({ visual: { snippets: [] }, functions: [], code: '' });
+        resolve({ visual: { snippets: [] }, code: '' });
         return;
       }
 
@@ -125,14 +128,24 @@ async function getCustomFunctionsInfo() {
   });
 }
 
-async function registerMetadata(functions: ICFFunctionMetadata[], code: string) {
-  // Register functions as ALL-CAPS:
-  functions.forEach(fn => (fn.name = fn.name.toUpperCase()));
+async function registerMetadata(functions: ICFVisualFunctionMetadata[], code: string) {
+  const registrationPayload: ICustomFunctionsRegistrationApiMetadata = {
+    functions: functions.map(func => {
+      let schemaFunc: ICFSchemaFunctionMetadata = {
+        name: func.nonCapitalizedFullName.toUpperCase(),
+        description: func.description,
+        options: func.options,
+        result: func.result,
+        parameters: func.parameters,
+      };
+      return schemaFunc;
+    }),
+  };
 
   if (Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
     await Excel.run(async context => {
       (context.workbook.application as any).customFunctions.register(
-        JSON.stringify({ functions: functions }),
+        JSON.stringify(registrationPayload),
         code
       );
       await context.sync();
@@ -142,7 +155,7 @@ async function registerMetadata(functions: ICFFunctionMetadata[], code: string) 
     await Excel.run(async context => {
       (context.workbook as any).registerCustomFunctions(
         'ScriptLab'.toUpperCase(),
-        JSON.stringify({ functions: functions })
+        JSON.stringify(registrationPayload)
       );
       await context.sync();
     });
@@ -161,6 +174,11 @@ function handleError(error: Error) {
   let candidateErrorString = error.message || error.toString();
   if (candidateErrorString === '[object Object]') {
     candidateErrorString = Strings().unexpectedError;
+  }
+
+  if (environment.current.devMode) {
+    // tslint:disable-next-line:no-debugger
+    debugger;
   }
 
   if (error instanceof Error) {

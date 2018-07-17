@@ -10,7 +10,12 @@ import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger'
 // For now, expose "OfficeExtension" and "Office" to the iframe, since those
 // might be used (e.g., for Promises).  But don't expose any further APIs.
 // Also expose the new "CustomFunctions" namespace
-const NAMESPACES_TO_EXPOSE = ['Office', 'OfficeExtension', 'CustomFunctions'];
+const NAMESPACES_TO_EXPOSE = [
+  'Office',
+  'OfficeExtension',
+  'CustomFunctionMappings',
+  'CustomFunctions',
+];
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -26,8 +31,6 @@ let heartbeat: {
 interface RunnerCustomFunctionMetadata extends ICustomFunctionsSnippetRegistrationData {
   id: string;
 }
-
-declare var CustomFunctionMappings: { [key: string]: any };
 
 tryCatch(async () => {
   let params: InitializationParams = (window as any).customFunctionParams;
@@ -94,24 +97,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
           );
 
           snippetMetadata.functions.map(func => {
-            const funcFullUpperName = `${namespaceUppercase}.${func.name.toUpperCase()}`;
-            // disable the rule because want to use "arguments",
-            //    which isn't allowed in an arrow function
-            // tslint:disable-next-line:only-arrow-functions
-            CustomFunctionMappings[funcFullUpperName] = function() {
-              try {
-                return iframeWindow[func.name /*regular, not uppercase*/].apply(
-                  null,
-                  arguments
-                );
-              } catch (e) {
-                const error = new Error(`Unable to execute function "${func.name}"`);
-                handleError(error);
-
-                // Also throw the error to get this reflected into Excel's calc chain:
-                throw error;
-              }
-            };
+            const funcFullUpperName = `${namespaceUppercase}.${func.funcName.toUpperCase()}`;
 
             // Overwrite console.log on every snippet iframe
             overwriteConsole(funcFullUpperName, iframeWindow);

@@ -29,6 +29,11 @@ export interface ISnippetHandlebarsContext {
   editorUrl: string;
   runtimeHelperStringifiedStrings: string;
   shouldPutSnippetIntoOfficeInitialize: boolean;
+
+  customFunctionsIfAny?: ({
+    funcName: string;
+    fullName: string;
+  })[];
 }
 
 export interface IRunnerHandlebarsContext {

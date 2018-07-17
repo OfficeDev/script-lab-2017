@@ -13,7 +13,8 @@ function foo(a: number[][], b: number, c: number[][]): number[][] {
 [
   {
     "description": "*Insert Description here*",
-    "name": "foo",
+    "funcName": "foo",
+    "nonCapitalizedFullName": "matrix.txt.foo",
     "options": {
       "cancelable":false,
       "stream": false,

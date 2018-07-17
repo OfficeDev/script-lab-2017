@@ -24,7 +24,6 @@ import {
   getShareableYaml,
   isMakerScript,
   isCustomFunctionScript,
-  transformSnippetName,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -36,7 +35,10 @@ import {
   ITryItHandlebarsContext,
   ICustomFunctionsRunnerHandlebarsContext,
 } from './interfaces';
-import { getCustomFunctionsInfoForRegistration } from './custom-functions/utilities';
+import {
+  getCustomFunctionsInfoForRegistration,
+  transformSnippetName,
+} from './custom-functions/utilities';
 import { parseMetadata } from './custom-functions/metadata.parser';
 
 const moment = require('moment');
@@ -299,16 +301,16 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
   let { snippets } = params;
 
   snippets = snippets.filter(snippet => {
-    const result = parseMetadata(snippet.script.content);
+    const result = parseMetadata(
+      transformSnippetName(snippet.name),
+      snippet.script.content
+    );
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
     const namespace = transformSnippetName(snippet.name);
     snippet.metadata = {
       namespace,
-      functions: result.map(func => ({
-        ...func,
-        name: `${namespace}.${func.name}`,
-      })),
+      functions: result,
     };
     return isGoodSnippet;
   });
@@ -332,11 +334,18 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
         template: { content: '', language: 'html' },
         style: { content: '', language: 'css' },
       };
+
       return generateSnippetHtmlData(
         data,
         false /*isExternalExport*/,
         strings,
-        true /*isInsideOfficeApp*/
+        true /*isInsideOfficeApp*/,
+        {
+          customFunctionsIfAny: snippet.metadata.functions.map(func => ({
+            fullName: `${snippet.metadata.namespace}.${func.funcName}`.toUpperCase(),
+            funcName: func.funcName,
+          })),
+        }
       );
     })
   );
@@ -358,13 +367,10 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
   const strings = Strings(req);
   const params: ICustomFunctionsMetadataRequestPostData = JSON.parse(req.body.data);
-  let { snippets } = params;
+  const { snippets } = params;
+  const registrationInfo = getCustomFunctionsInfoForRegistration(snippets, strings);
 
-  return respondWith(
-    res,
-    JSON.stringify(getCustomFunctionsInfoForRegistration(snippets, strings)),
-    'application/javascript'
-  );
+  return respondWith(res, JSON.stringify(registrationInfo), 'application/javascript');
 });
 
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
@@ -787,7 +793,8 @@ async function generateSnippetHtmlData(
   compileData: SnippetCompileData,
   isExternalExport: boolean,
   strings: ServerStrings,
-  isInsideOfficeApp: boolean
+  isInsideOfficeApp: boolean,
+  extras: Partial<ISnippetHandlebarsContext> = {}
 ): Promise<{ succeeded: boolean; html: string; officeJS: string }> {
   let script: string;
   try {
@@ -863,6 +870,8 @@ async function generateSnippetHtmlData(
       strings.RuntimeHelpers
     ) /* stringify so that it gets written correctly into "snippets" template */,
     shouldPutSnippetIntoOfficeInitialize,
+
+    ...extras,
   };
 
   const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');

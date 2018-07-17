@@ -58,7 +58,8 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
 [
    {
       "description":"*Insert Description here*",
-      "name":"getRgb3",
+      "funcName": "getRgb3",
+      "nonCapitalizedFullName": "more.general.txt.getRgb3",
       "options":{
          "cancelable":false,
          "stream":false,
@@ -79,7 +80,8 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb6",
+      "funcName": "getRgb6",
+      "nonCapitalizedFullName": "more.general.txt.getRgb6",
       "options":{
          "cancelable":false,
          "stream":false,
@@ -100,7 +102,8 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb8",
+      "funcName": "getRgb8",
+      "nonCapitalizedFullName": "more.general.txt.getRgb8",
       "options":{
          "cancelable":false,
          "stream":false,
@@ -121,7 +124,8 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb9",
+      "funcName": "getRgb9",
+      "nonCapitalizedFullName": "more.general.txt.getRgb9",
       "options":{
          "cancelable":false,
          "stream":false,
@@ -142,7 +146,8 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"getRgb10",
+      "funcName": "getRgb10",
+      "nonCapitalizedFullName": "more.general.txt.getRgb10",
       "options":{
          "cancelable":false,
          "stream":false,
@@ -168,7 +173,8 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
    },
    {
       "description":"*Insert Description here*",
-      "name":"functionWith2DArraySyntax",
+      "funcName": "functionWith2DArraySyntax",
+      "nonCapitalizedFullName": "more.general.txt.functionWith2DArraySyntax",
       "options":{
          "cancelable":false,
          "stream":false,

@@ -25,7 +25,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   metadata.snippets.forEach(snippet => {
     snippet.functions.forEach(func => {
       const scriptLabToplevelNamespace = 'ScriptLab';
-      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${func.name}(${
+      const name = `=${scriptLabToplevelNamespace}.${func.nonCapitalizedFullName}(${
         func.parameters.length > 0 ? '…' : ''
       })`;
 
@@ -68,10 +68,11 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             marginTop: '10px',
           }}
         >
-          The following custom functions were found in your workspace. These
-          functions run async in Script Lab. You can run them faster in sync
-          mode with{' '}
-          <a href="https://aka.ms/customfunctions" target="_blank">these instructions</a>.
+          The following custom functions were found in your workspace. These functions run
+          async in Script Lab. You can run them faster in sync mode with{' '}
+          <a href="https://aka.ms/customfunctions" target="_blank">
+            these instructions
+          </a>.
         </p>
       </TopInfo>
       <FunctionsContainer style={{ marginTop: '20px' }}>

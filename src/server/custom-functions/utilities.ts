@@ -1,56 +1,51 @@
 import { parseMetadata } from './metadata.parser';
-import { transformSnippetName } from '../core/snippet.helper';
 import { compileScript } from '../core/snippet.generator';
 import { stripSpaces } from '../core/utilities';
 
 export function getCustomFunctionsInfoForRegistration(
   snippets: ISnippet[],
   strings: ServerStrings
-): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[]; code: string } {
+): { visual: ICFVisualMetadata; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
-  let metadata: ICFFunctionMetadata[] = [];
   const code: string[] = [];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
-    let functions: ICFVisualFunctionMetadata[] = parseMetadata(
+    const namespace = transformSnippetName(snippet.name);
+
+    let snippetFunctions: ICFVisualFunctionMetadata[] = parseMetadata(
+      namespace,
       snippet.script.content
     ) as ICFVisualFunctionMetadata[];
 
-    functions = convertFunctionErrorsToSpace(functions);
-    if (functions.length === 0) {
+    snippetFunctions = convertFunctionErrorsToSpace(snippetFunctions);
+    if (snippetFunctions.length === 0) {
+      // no custom functions found
       return;
-    } // no custom functions found
-    let hasErrors = doesSnippetHaveErrors(functions);
+    }
+
+    let hasErrors = doesSnippetHaveErrors(snippetFunctions);
 
     let snippetCode: string;
     if (!hasErrors) {
       try {
         snippetCode = compileScript(snippet.script, strings);
       } catch (e) {
-        functions.forEach(f => (f.error = 'Snippet compiler error'));
+        snippetFunctions.forEach(f => (f.error = 'Snippet compiler error'));
         hasErrors = true;
       }
     }
 
     if (!hasErrors) {
-      const namespace = transformSnippetName(snippet.name);
-      const namespacedFunctions = functions.map(f => ({
-        ...f,
-        originalName: f.name,
-        name: `${namespace}.${f.name}`,
-      }));
-      metadata = metadata.concat(...namespacedFunctions);
-
       code.push(
         wrapCustomFunctionSnippetCode(
           snippetCode,
           namespace,
-          namespacedFunctions.map(f => f.originalName)
+          snippetFunctions.map(func => func.funcName)
         )
       );
     }
 
-    functions = functions.map(func => {
+    snippetFunctions = snippetFunctions.map(func => {
       const status: CustomFunctionsRegistrationStatus = hasErrors
         ? func.error
           ? 'error'
@@ -87,14 +82,13 @@ export function getCustomFunctionsInfoForRegistration(
       name: transformSnippetName(snippet.name),
       error: hasErrors,
       status,
-      functions,
+      functions: snippetFunctions,
     });
   });
 
-  const functions = filterOutDuplicates(metadata);
   const visual = { snippets: visualMetadata };
 
-  return { visual, functions, code: code.join('\n\n') };
+  return { visual, code: code.join('\n\n') };
 }
 
 // helpers
@@ -190,8 +184,11 @@ function convertFunctionErrorsToSpace(
   });
 }
 
-function filterOutDuplicates(functions: ICFFunctionMetadata[]): ICFFunctionMetadata[] {
-  return functions.filter(func => {
-    return functions.filter(f => f.name === func.name).length === 1;
-  });
+const snippetNameRegex = /[^0-9A-Za-z_ ]/g;
+export function transformSnippetName(snippetName: string) {
+  return snippetName
+    .replace(snippetNameRegex, '')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
 }
