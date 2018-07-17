@@ -130,7 +130,7 @@ async function getCustomFunctionsInfo() {
 
 async function registerMetadata(functions: ICFVisualFunctionMetadata[], code: string) {
   const registrationPayload: ICustomFunctionsRegistrationApiMetadata = {
-    functions: functions.map(func => {
+    functions: functions.filter(func => func.status === 'good').map(func => {
       let schemaFunc: ICFSchemaFunctionMetadata = {
         name: func.nonCapitalizedFullName.toUpperCase(),
         description: func.description,
