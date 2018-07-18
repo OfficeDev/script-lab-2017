@@ -9,11 +9,13 @@ interface IState {
 interface IProps {
   content: string;
   fontFamily: string;
-  // children?: any[];
   noDropdown?: boolean;
   statusIcon?: string;
   statusIconColor?: string;
   indent?: string;
+  // TESTING: children props
+  children?: any[]; // does this element have any children
+  isExpanded?: boolean; // is this element expanded
 }
 
 const DropDownStyling = {
@@ -25,15 +27,15 @@ const DropDownStyling = {
 };
 
 export default class DetailsItem extends Component<IProps, IState> {
-  state = { isExpanded: false };
-  // Unused thus far (maybe this belongs in summary instead of detailsitem)
+  state = { isExpanded: true };
   toggleVisibility = () => {
     const currentDisplay = this.state.isExpanded ? false : true;
     this.setState({ isExpanded: currentDisplay });
   };
+
   render() {
     const props = this.props;
-    // const state = this.state; // unused
+    const state = this.state; // unused
     const ContainerWrapper = styled.div`
       padding: 12px;
       background: white;
@@ -68,6 +70,7 @@ export default class DetailsItem extends Component<IProps, IState> {
           )}
           <p className={props.fontFamily}>{props.content}</p>
         </ContainerWrapper>
+        {state.isExpanded && props.children}
       </div>
     );
   }

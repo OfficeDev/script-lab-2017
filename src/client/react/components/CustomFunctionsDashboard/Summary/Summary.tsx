@@ -16,24 +16,23 @@ const ErrorContainer = styled.div`
 `;
 
 // TODO: try dropdown function here
-
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  let items: { error: any; skipped: any[]; success: any[] } = {
-    error: {
-      content: [], // TODO: find some way to establish what content contains
-      isExpanded: true,
-    },
-    skipped: [],
-    success: [],
-  };
+  // ERROR CONTAINERS
+  const errorItemsContainer = [];
+  // SUCCESS CONTAINERS
+  const successItemsContainer = [];
 
   metadata.snippets.forEach(snippet => {
+    let items: { unsuccessful: any; successful: any[] } = {
+      unsuccessful: {
+        error: [],
+        skipped: [],
+        isExpanded: true,
+      },
+      successful: [],
+    };
     snippet.functions.forEach(func => {
-      const scriptLabToplevelNamespace = 'ScriptLab';
-      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${func.name}(${
-        func.parameters.length > 0 ? '…' : ''
-      })`;
-      const functionName = func.name;
+      const functionName = `${func.name}(${func.parameters.length > 0 ? '…' : ''})`;
       const paramErrorMessages = [];
       func.parameters.forEach(param => {
         if (param.error !== undefined) {
@@ -42,96 +41,114 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       if (snippet.error) {
         if (func.error) {
-          items.error.content.push({
-            name: name,
-            children: {
-              funcName: functionName,
-              paramErrors: paramErrorMessages,
-            },
+          items.unsuccessful.error.push({
+            name: functionName,
+            children: paramErrorMessages,
           });
         } else {
-          items.skipped.push({ content: name });
+          items.unsuccessful.skipped.push({
+            name: functionName,
+            children: paramErrorMessages,
+          });
         }
       } else {
-        items.success.push({ content: name });
+        items.successful.push({ content: functionName });
       }
     });
-  });
-
-  // ERROR ITEMS
-  const errorItemsContainer = [];
-  // TODO: put dropdown function as a constant
-  items.error.content.forEach(item => {
-    const errorItem = [
-      <DetailsItem
-        content={item.name}
-        fontFamily="ms-font-m"
-        statusIcon="ErrorBadge"
-        statusIconColor="#f04251"
-      />,
-      <DetailsItem
-        content={item.children.funcName}
-        fontFamily="ms-font-s"
-        statusIcon="ErrorBadge"
-        statusIconColor="#f04251"
-        indent="15px"
-      />,
-    ];
-    item.children.paramErrors.forEach(paramErrorMessage => {
-      const paramError = (
+    // ERROR ITEMS
+    if (snippet.error) {
+      const functionItemArray = [];
+      items.unsuccessful.error.forEach(item => {
+        const errorMessageTest = [];
+        item.children.forEach(paramErrorMessage => {
+          const paramError = (
+            <DetailsItem
+              content={paramErrorMessage}
+              fontFamily="ms-font-s"
+              indent="45px"
+              noDropdown={true}
+            />
+          );
+          errorMessageTest.push(paramError);
+        });
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="ErrorBadge"
+            statusIconColor="#f04251"
+            indent="20px"
+            children={errorMessageTest}
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      // SKIPPED ITEMS
+      items.unsuccessful.skipped.forEach(item => {
+        const errorMessageTest = [];
+        item.children.forEach(paramErrorMessage => {
+          const paramError = (
+            <DetailsItem
+              content={paramErrorMessage}
+              fontFamily="ms-font-s"
+              indent="45px"
+              noDropdown={true}
+            />
+          );
+          errorMessageTest.push(paramError);
+        });
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="Warning"
+            statusIconColor="#F0C784"
+            indent="20px"
+            children={errorMessageTest}
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      const errorItem = (
         <DetailsItem
-          content={paramErrorMessage}
-          fontFamily="ms-font-s"
-          indent="30px"
-          noDropdown={true}
+          content={`=ScriptLab.${snippet.name}`}
+          fontFamily="ms-font-m"
+          statusIcon="ErrorBadge"
+          statusIconColor="#f04251"
+          children={functionItemArray}
+          isExpanded={true}
         />
       );
-      errorItem.push(paramError);
-    });
-    errorItemsContainer.push(errorItem);
-  });
-
-  // SKIPPED ITEMS
-  const skippedItemsContainer = [];
-  items.skipped.forEach(item => {
-    const skippedItem = (
-      <DetailsItem
-        content={item.content}
-        fontFamily="ms-font-m"
-        statusIcon="Warning"
-        statusIconColor="#F0C784"
-      />
-    );
-    skippedItemsContainer.push(skippedItem);
-  });
-
-  // SUCCESS ITEMS
-  const successItemsContainer = [];
-  items.success.forEach(item => {
-    const successItem = (
-      <DetailsItem
-        content={item.content}
-        fontFamily="ms-font-m"
-        statusIcon="Completed"
-        statusIconColor="#107C10"
-        noDropdown={true}
-        indent="20px"
-      />
-    );
-    successItemsContainer.push(successItem);
+      errorItemsContainer.push(errorItem);
+    } else {
+      // SUCCESS ITEMS
+      items.successful.forEach(item => {
+        const successItem = (
+          <DetailsItem
+            content={`=ScriptLab.${snippet.name}.${item.content}`}
+            fontFamily="ms-font-m"
+            statusIcon="Completed"
+            statusIconColor="#107C10"
+            noDropdown={true}
+            indent="20px"
+          />
+        );
+        successItemsContainer.push(successItem);
+      });
+    }
   });
 
   return (
     <PivotContentContainer>
       <TopInfo>
         <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
-          Custom Functions (Preview)
+          Custom Functions
         </h1>
         <p
           className="ms-font-m"
           style={{
             lineHeight: '16.8px',
-            marginBottom: '26px',
+            marginBottom: '10px',
             marginTop: '10px',
           }}
         >
@@ -139,12 +156,16 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           issue.
         </p>
       </TopInfo>
-      <ErrorContainer style={{ marginTop: '20px' }}>
-        {errorItemsContainer}
-        {skippedItemsContainer}
-      </ErrorContainer>
-      <DetailsItem fontFamily={'ms-font-l'} content={'Registered Custom Functions'} />
-      {successItemsContainer}
+      {errorItemsContainer && (
+        <ErrorContainer style={{ marginTop: '20px' }}>
+          {errorItemsContainer}
+        </ErrorContainer>
+      )}
+      <DetailsItem
+        fontFamily={'ms-font-l'}
+        content={'Registered Custom Functions'}
+        children={successItemsContainer}
+      />
     </PivotContentContainer>
   );
 };
