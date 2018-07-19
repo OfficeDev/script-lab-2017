@@ -2,7 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
-import { ELEMENT_PROBE_PROVIDERS } from '@angular/platform-browser/src/dom/debug/ng_probe';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -76,6 +75,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
               fontFamily="ms-font-s"
               indent="45px"
               noDropdown={true}
+              backgroundColor="#EEE"
             />
           );
           errorMessageTest.push(paramError);
@@ -88,6 +88,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIconColor="#f04251"
             indent="20px"
             children={errorMessageTest}
+            backgroundColor="#EEE"
           />
         );
         functionItemArray.push(functionItem);
@@ -100,6 +101,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             fontFamily="ms-font-s"
             indent="45px"
             noDropdown={true}
+            backgroundColor="#EEE"
           />
         );
         const functionItem = (
@@ -110,6 +112,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIconColor="#F0C784"
             indent="20px"
             children={[errorMessageTest]}
+            backgroundColor="#EEE"
           />
         );
         functionItemArray.push(functionItem);

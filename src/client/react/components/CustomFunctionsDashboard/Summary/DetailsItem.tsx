@@ -13,9 +13,10 @@ interface IProps {
   statusIcon?: string;
   statusIconColor?: string;
   indent?: string;
-  // TESTING: children props
-  children?: any[]; // does this element have any children
-  isExpanded?: boolean; // is this element expanded
+  children?: any[];
+  isExpanded?: boolean; // don't know if this is still needed
+  // TESTING: Background color
+  backgroundColor?: string;
 }
 
 const DropDownStyling = {
@@ -28,6 +29,7 @@ const DropDownStyling = {
 
 export default class DetailsItem extends Component<IProps, IState> {
   state = { isExpanded: false };
+
   toggleVisibility = () => {
     const currentDisplay = this.state.isExpanded ? false : true;
     this.setState({ isExpanded: currentDisplay });
@@ -38,11 +40,19 @@ export default class DetailsItem extends Component<IProps, IState> {
     const state = this.state; // unused
     const ContainerWrapper = styled.div`
       padding: 12px;
-      background: white;
+      background: ${props.backgroundColor || '#fff'};
       display: flex;
       flex-direction: horizontal;
       margin-left: ${props.indent};
-    `; // TODO: make the background grey for each detail item if expanded
+    `; // TODO: make the background grey for each detail item if expanded (this should apply to children as well)
+    // thoughts: children will always be grey. so you can change their background to grey (you will alwyas only be able to view if expanded)
+
+    const dividerStyle = {
+      borderTop: 'solid',
+      borderTopColor: '#eee',
+      borderWidth: '0.5px',
+      background: props.backgroundColor || '#fff',
+    };
 
     const IconStyling = {
       width: '18px',
@@ -52,7 +62,7 @@ export default class DetailsItem extends Component<IProps, IState> {
       marginRight: '5px',
     };
     return (
-      <div>
+      <div style={dividerStyle}>
         <ContainerWrapper>
           {!props.noDropdown && (
             <Icon
