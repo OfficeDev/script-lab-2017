@@ -27,7 +27,7 @@ const DropDownStyling = {
 };
 
 export default class DetailsItem extends Component<IProps, IState> {
-  state = { isExpanded: true };
+  state = { isExpanded: false };
   toggleVisibility = () => {
     const currentDisplay = this.state.isExpanded ? false : true;
     this.setState({ isExpanded: currentDisplay });
@@ -42,7 +42,8 @@ export default class DetailsItem extends Component<IProps, IState> {
       display: flex;
       flex-direction: horizontal;
       margin-left: ${props.indent};
-    `;
+    `; // TODO: make the background grey for each detail item if expanded
+
     const IconStyling = {
       width: '18px',
       fontSize: '16px',
@@ -56,7 +57,7 @@ export default class DetailsItem extends Component<IProps, IState> {
           {!props.noDropdown && (
             <Icon
               className="ms-font-m"
-              iconName="ChevronDownMed"
+              iconName={this.state.isExpanded ? 'ChevronUpMed' : 'ChevronDownMed'}
               style={DropDownStyling}
               onClick={this.toggleVisibility}
             />

@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
+import { ELEMENT_PROBE_PROVIDERS } from '@angular/platform-browser/src/dom/debug/ng_probe';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -15,12 +16,19 @@ const ErrorContainer = styled.div`
   border-top: 1px solid #f4f4f4;
 `;
 
-// TODO: try dropdown function here
+/* const Divider = styled.div`
+  border-top: solid;
+  border-top-color: #eee;
+  border-width: 0.5px;
+`; */
+
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   // ERROR CONTAINERS
   const errorItemsContainer = [];
   // SUCCESS CONTAINERS
   const successItemsContainer = [];
+
+  // HF: GENERATING ERRONEOUS/SKIPPED ELEMENTS
 
   metadata.snippets.forEach(snippet => {
     let items: { unsuccessful: any; successful: any[] } = {
@@ -38,6 +46,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         if (param.error !== undefined) {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
+        // TODO: have some case for skipped items here
       });
       if (snippet.error) {
         if (func.error) {
@@ -85,18 +94,14 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       // SKIPPED ITEMS
       items.unsuccessful.skipped.forEach(item => {
-        const errorMessageTest = [];
-        item.children.forEach(paramErrorMessage => {
-          const paramError = (
-            <DetailsItem
-              content={paramErrorMessage}
-              fontFamily="ms-font-s"
-              indent="45px"
-              noDropdown={true}
-            />
-          );
-          errorMessageTest.push(paramError);
-        });
+        let errorMessageTest = (
+          <DetailsItem
+            content={'This function was skipped.'}
+            fontFamily="ms-font-s"
+            indent="45px"
+            noDropdown={true}
+          />
+        );
         const functionItem = (
           <DetailsItem
             content={item.name}
@@ -104,7 +109,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Warning"
             statusIconColor="#F0C784"
             indent="20px"
-            children={errorMessageTest}
+            children={[errorMessageTest]}
           />
         );
         functionItemArray.push(functionItem);
@@ -152,8 +157,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             marginTop: '10px',
           }}
         >
-          The following functions are invalid and cannot be declared. Review and fix the
-          issue.
+          The following snippets contain invalid functions that cannot be declared. Please
+          review and fix the issues.
         </p>
       </TopInfo>
       {errorItemsContainer && (
