@@ -144,8 +144,8 @@ async function registerMetadata(functions: ICFVisualFunctionMetadata[], code: st
 
   if (Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
     await Excel.run(async context => {
-      (context.workbook.application as any).customFunctions.register(
-        JSON.stringify(registrationPayload),
+      (Excel as any).CustomFunctionsManager.newObject(context).register(
+        JSON.stringify(registrationPayload, null, 4),
         code
       );
       await context.sync();
