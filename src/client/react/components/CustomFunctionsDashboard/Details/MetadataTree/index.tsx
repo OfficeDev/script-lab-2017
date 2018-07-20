@@ -9,14 +9,18 @@ const SnippetItem = props => (
 const FunctionItem = props => <Item className="ms-font-m" {...props} size="medium" />;
 const ParameterItem = props => <Item className="ms-font-s" {...props} size="small" />;
 
-const Function = ({ func }) => (
+const Function = ({ func }: { func: ICFVisualFunctionMetadata }) => (
   <FunctionWrapper>
-    <FunctionItem name={`${func.name}(...)`} status={func.status} />
+    <FunctionItem name={`${func.funcName}(...)`} status={func.status} />
     <List>
       {func.parameters.map(param => (
-        <ParameterItem key={`${func.name}${param.name}`} {...param} />
+        <ParameterItem key={`${func.nonCapitalizedFullName}${param.name}`} {...param} />
       ))}
-      <ParameterItem key={`${func.name}return`} name={'return'} {...func.result} />
+      <ParameterItem
+        key={`${func.nonCapitalizedFullName}return`}
+        name={'return'}
+        {...func.result}
+      />
     </List>
   </FunctionWrapper>
 );
@@ -25,8 +29,8 @@ const Snippet = ({ snippet }) => (
   <SnippetWrapper>
     <SnippetItem name={snippet.name} status={snippet.status} />
     <List>
-      {snippet.functions.map(func => (
-        <Function key={`${snippet.name}${func.name}`} func={func} />
+      {snippet.functions.map((func: ICFVisualFunctionMetadata) => (
+        <Function key={`${snippet.name}${func.funcName}`} func={func} />
       ))}
     </List>
   </SnippetWrapper>
