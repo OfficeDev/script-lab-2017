@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+// TODO: use focuszone from fabric components instead of greying out? -> https://developer.microsoft.com/en-us/fabric#/components/focuszone
+// import { FocusZone, FocusZoneDirection } from 'office-ui-fabric-react/lib/FocusZone';
+// TEST
 
 interface IState {
   isExpanded: boolean;
@@ -39,6 +42,9 @@ export default class DetailsItem extends Component<IProps, IState> {
     const props = this.props;
     const state = this.state; // unused
     const ContainerWrapper = styled.div`
+      &:hover: {
+        color: red;
+      }
       padding: 12px;
       background: ${props.backgroundColor || '#fff'};
       display: flex;
@@ -63,25 +69,27 @@ export default class DetailsItem extends Component<IProps, IState> {
     };
     return (
       <div style={dividerStyle}>
-        <ContainerWrapper>
-          {!props.noDropdown && (
-            <Icon
-              className="ms-font-m"
-              iconName={this.state.isExpanded ? 'ChevronUpMed' : 'ChevronDownMed'}
-              style={DropDownStyling}
-              onClick={this.toggleVisibility}
-            />
-          )}
-          {props.statusIcon && (
-            <Icon
-              className="ms-font-m"
-              iconName={this.props.statusIcon}
-              style={IconStyling}
-            />
-          )}
-          <p className={props.fontFamily}>{props.content}</p>
-        </ContainerWrapper>
-        {state.isExpanded && props.children}
+        <FocusZone>
+          <ContainerWrapper>
+            {!props.noDropdown && (
+              <Icon
+                className="ms-font-m"
+                iconName={this.state.isExpanded ? 'ChevronUpMed' : 'ChevronDownMed'}
+                style={DropDownStyling}
+                onClick={this.toggleVisibility}
+              />
+            )}
+            {props.statusIcon && (
+              <Icon
+                className="ms-font-m"
+                iconName={this.props.statusIcon}
+                style={IconStyling}
+              />
+            )}
+            <p className={props.fontFamily}>{props.content}</p>
+          </ContainerWrapper>
+          {state.isExpanded && props.children}
+        </FocusZone>
       </div>
     );
   }
