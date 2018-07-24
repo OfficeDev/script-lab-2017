@@ -9,7 +9,11 @@ import Details from './Details';
 import Console from './Console';
 import RefreshBar from './RefreshBar';
 import { Authenticator } from '@microsoft/office-js-helpers';
-import { isNullOrWhitespace, environment } from '../../../app/helpers';
+import {
+  isNullOrWhitespace,
+  environment,
+  CustomFunctionEngineStatus,
+} from '../../../app/helpers';
 import { getLogAndHeartbeatStatus } from './LogAndHeartbeatFetcher';
 
 const NavigateBackIconName = 'NavigateBack';
@@ -32,6 +36,7 @@ interface ICustomFunctionsDashboardState {
 interface ICustomFunctionsDashboardProps {
   placeholder?: any;
   metadata: ICFVisualMetadata;
+  engineStatus: CustomFunctionEngineStatus;
 }
 
 class CustomFunctionsDashboard extends React.Component<
@@ -141,7 +146,7 @@ class CustomFunctionsDashboard extends React.Component<
   }
 
   private getPivotItems() {
-    const { metadata } = this.props;
+    const { metadata, engineStatus } = this.props;
 
     return [
       this.returnUrl ? (
@@ -171,6 +176,7 @@ class CustomFunctionsDashboard extends React.Component<
           logs={this.state.logs}
           runnerLastUpdated={this.state.runnerLastUpdated}
           runnerIsAlive={this.state.runnerIsAlive}
+          engineStatus={engineStatus}
           clearLogsCallback={() => this.setState({ logs: [] })}
         />
       </PivotItem>,

@@ -75,9 +75,9 @@
     lodash "4.17.4"
     rxjs "5.2.0"
 
-"@microsoft/office-js@1.1.9-adhoc.8":
-  version "1.1.9-adhoc.8"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.9-adhoc.8.tgz#fde83b2e31bbd345a28f3a3fa78c18beb2474259"
+"@microsoft/office-js@1.1.9-adhoc.10":
+  version "1.1.9-adhoc.10"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.9-adhoc.10.tgz#228a57d532901cbb8d53d6dafa4d02f3504cc5e9"
 
 "@ngrx/core@1.2.0":
   version "1.2.0"

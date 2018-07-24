@@ -6,7 +6,7 @@ import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import {
   storage,
   environment,
-  getIsCustomFunctionsSupportedOnHost,
+  getCustomFunctionEngineStatus,
   isCustomFunctionScript,
 } from '../../client/app/helpers';
 import { uniqBy, flatten } from 'lodash';
@@ -39,7 +39,8 @@ tryCatch(async () => {
     }, 100);
   });
 
-  if (await getIsCustomFunctionsSupportedOnHost()) {
+  const engineStatus = await getCustomFunctionEngineStatus();
+  if (engineStatus.enabled) {
     initializeIcons();
 
     const { visual, code } = await getCustomFunctionsInfo();
@@ -65,9 +66,10 @@ tryCatch(async () => {
     document.getElementById('progress')!.style.display = 'none';
 
     if (visual.snippets.length > 0) {
-      ReactDOM.render(<App metadata={visual} />, document.getElementById(
-        'root'
-      ) as HTMLElement);
+      ReactDOM.render(
+        <App metadata={visual} engineStatus={engineStatus} />,
+        document.getElementById('root') as HTMLElement
+      );
     } else {
       ReactDOM.render(<Welcome />, document.getElementById('root') as HTMLElement);
     }
@@ -128,7 +130,10 @@ async function getCustomFunctionsInfo() {
   });
 }
 
-async function registerMetadata(functions: ICFVisualFunctionMetadata[], code: string) {
+async function registerMetadata(
+  functions: ICFVisualFunctionMetadata[],
+  code: string
+): Promise<void> {
   const registrationPayload: ICustomFunctionsRegistrationApiMetadata = {
     functions: functions.filter(func => func.status === 'good').map(func => {
       let schemaFunc: ICFSchemaFunctionMetadata = {
@@ -144,7 +149,7 @@ async function registerMetadata(functions: ICFVisualFunctionMetadata[], code: st
 
   if (Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
     await Excel.run(async context => {
-      (Excel as any).CustomFunctionsManager.newObject(context).register(
+      (Excel as any).CustomFunctionManager.newObject(context).register(
         JSON.stringify(registrationPayload, null, 4),
         code
       );
