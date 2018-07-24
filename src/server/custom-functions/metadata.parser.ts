@@ -10,7 +10,7 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.BooleanKeyword]: 'boolean',
 };
 
-const CUSTOM_FUNCTION_OPTIONS_KEYS = ['stream', 'volatile'];
+const CUSTOM_FUNCTION_OPTIONS_KEYS = [];
 
 const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
   sync: true,
@@ -57,46 +57,34 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
           if (isCF) {
             const jsDocParamInfo = getJSDocParams(func);
 
-            const parameters = func.parameters.map((p: ts.ParameterDeclaration) => {
-              const name = (p.name as ts.Identifier).text;
+            const [lastParameter] = func.parameters.slice(-1);
+            const isStreamingFunction = isLastParameterStreaming(lastParameter);
+            const paramsToParse = isStreamingFunction
+              ? func.parameters.slice(0, func.parameters.length - 1)
+              : func.parameters.slice(0, func.parameters.length);
 
-              return {
-                name,
-                ...(jsDocParamInfo[name] ? { description: jsDocParamInfo[name] } : {}),
-                ...getDimAndTypeHelper(p.type),
-              };
-            });
+            const parameters = paramsToParse
+              .map((p: ts.ParameterDeclaration) => {
+                const name = (p.name as ts.Identifier).text;
+
+                return {
+                  name,
+                  ...(jsDocParamInfo[name] ? { description: jsDocParamInfo[name] } : {}),
+                  ...getDimAndTypeHelper(p.type),
+                };
+              })
+              .filter(meta => meta);
 
             let description;
             if ((func as any).jsDoc) {
               description = (func as any).jsDoc[0].comment;
             }
 
-            let result: {
-              dimensionality: CustomFunctionsDimensionality;
-              error?: string;
-              type: CustomFunctionsSupportedTypes;
-            };
-            if (func.type) {
-              if (
-                func.type.kind === ts.SyntaxKind.TypeReference &&
-                (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
-                (func.type as ts.TypeReferenceNode).typeArguments &&
-                (func.type as ts.TypeReferenceNode).typeArguments.length === 1
-              ) {
-                result = getDimAndTypeHelper(
-                  (func.type as ts.TypeReferenceNode).typeArguments[0]
-                );
-              } else {
-                result = getDimAndTypeHelper(func.type);
-              }
-            } else {
-              result = {
-                error: 'No return type specified.',
-                dimensionality: 'invalid',
-                type: 'invalid',
-              };
-            }
+            let result = getDimentionalityAndTypeOrError({
+              func,
+              isStreamingFunction,
+              lastParameter,
+            });
 
             let options = parseCustomFunctionOptions(func);
             if (
@@ -105,6 +93,11 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
               func.modifiers[0].kind === ts.SyntaxKind.AsyncKeyword
             ) {
               options.sync = true;
+            }
+
+            if (isStreamingFunction) {
+              options.stream = true;
+              options.cancelable = true;
             }
 
             const metadataItem = {
@@ -139,6 +132,70 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
 }
 
 // helpers
+
+function getDimentionalityAndTypeOrError(info: {
+  func: ts.FunctionDeclaration;
+  isStreamingFunction: boolean;
+  lastParameter: ts.ParameterDeclaration;
+}): {
+  dimensionality: CustomFunctionsDimensionality;
+  error?: string;
+  type: CustomFunctionsSupportedTypes;
+} {
+  const { func, isStreamingFunction, lastParameter } = info;
+  if (isStreamingFunction) {
+    const lastParameterType = lastParameter.type as ts.TypeReferenceNode;
+    if (
+      !lastParameterType.typeArguments ||
+      lastParameterType.typeArguments.length !== 1
+    ) {
+      return {
+        error:
+          'One and only one argument should be specified to IStreamingCustomFunctionHandler',
+        dimensionality: 'invalid',
+        type: 'invalid',
+      };
+    }
+
+    let returnType = func.type as ts.TypeReferenceNode;
+    if (returnType && returnType.getFullText().trim() !== 'void') {
+      return {
+        error: `A streaming function should not have a return type.  Instead, its type should be based purely on the value inside "IStreamingCustomFunctionHandler<T>".`,
+        dimensionality: 'invalid',
+        type: 'invalid',
+      };
+    }
+
+    return getDimAndTypeHelper(lastParameterType.typeArguments[0]);
+  } else if (func.type) {
+    if (
+      func.type.kind === ts.SyntaxKind.TypeReference &&
+      (func.type as ts.TypeReferenceNode).typeName.getText() === 'Promise' &&
+      (func.type as ts.TypeReferenceNode).typeArguments &&
+      (func.type as ts.TypeReferenceNode).typeArguments.length === 1
+    ) {
+      return getDimAndTypeHelper((func.type as ts.TypeReferenceNode).typeArguments[0]);
+    } else {
+      return getDimAndTypeHelper(func.type);
+    }
+  } else {
+    return {
+      error: 'No return type specified.',
+      dimensionality: 'invalid',
+      type: 'invalid',
+    };
+  }
+}
+
+function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
+  const isTypeReferenceNode = param && ts.isTypeReferenceNode(param.type);
+  if (!isTypeReferenceNode) {
+    return false;
+  }
+
+  const typeRef = param.type as ts.TypeReferenceNode;
+  return typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler';
+}
 
 function getDimAndTypeHelper(
   t: ts.TypeNode
@@ -184,16 +241,16 @@ function parseCustomFunctionOptions(
 function getJSDocParams(node: ts.Node): { [key: string]: string } {
   const jsDocParamInfo = {};
 
-  ts
-    .getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag)
-    .forEach((tag: ts.JSDocParameterTag) => {
+  ts.getAllJSDocTagsOfKind(node, ts.SyntaxKind.JSDocParameterTag).forEach(
+    (tag: ts.JSDocParameterTag) => {
       const comment = (tag.comment.startsWith('-')
         ? tag.comment.slice(1)
         : tag.comment
       ).trim();
 
       jsDocParamInfo[(tag as ts.JSDocPropertyLikeTag).name.getFullText()] = comment;
-    });
+    }
+  );
 
   return jsDocParamInfo;
 }

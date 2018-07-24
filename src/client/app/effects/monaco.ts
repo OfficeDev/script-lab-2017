@@ -35,6 +35,7 @@ export class MonacoEffects {
       let additionalLibraries = [];
 
       additionalLibraries.push(`${location.origin}/libs/auth-helpers.d.ts`);
+      additionalLibraries.push(`${location.origin}/libs/custom-functions.d.ts`);
       additionalLibraries.push(`${location.origin}/libs/maker.d.ts`);
 
       let urlsToInclude = this._parse(libraries)

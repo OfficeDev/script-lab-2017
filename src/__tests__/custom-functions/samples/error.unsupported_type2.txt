@@ -3,6 +3,6 @@
  * *Insert Description here*
  * @CustomFunction
  */
-function foo(params: {input: number[]): number[][] {
+function foo(params: {input: number[]}): number[][] {
     return [[]];
 }

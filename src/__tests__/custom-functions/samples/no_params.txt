@@ -1,0 +1,18 @@
+// should be able to properly handle a function with no Params
+
+/* @CustomFunction */
+function foobar(): number {
+  return 42;
+}
+
+/* @CustomFunction */
+function streamingFoobar(caller: IStreamingCustomFunctionHandler<string>): number {
+  return 42;
+}
+
+// metadata
+/*
+
+[]
+
+*/
