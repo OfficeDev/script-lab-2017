@@ -35,14 +35,6 @@ const Text = styled.div`
 
 const ListContainer = styled.ul``;
 
-const toggleVisibility = item =>
-  item.children.forEach(childname => {
-    // select div by id and toggle visibility
-    const listItem = document.getElementById(childname);
-    const display = listItem.style.display === 'flex' ? 'none' : 'flex';
-    listItem.style.display = display;
-    // TODO: add div to error message so you can collapse it
-  });
 
 // Note: for any change to this interface, be sure to also consider
 // How it will be mapped in the UI.  See the "render" method of List.tsx,
@@ -52,7 +44,6 @@ export interface Item {
   name: string;
   success?: boolean;
   errorMessage?: string;
-  children?: string[]; // list of errors
   icon?: {
     name: string;
     color: string;
@@ -89,7 +80,6 @@ export default ({ items }) => (
                   marginRight: '5px',
                   marginLeft: (item.indent || 0) * 5 + 'px',
                 }}
-                onClick={toggleVisibility}
               />
             )}
 

@@ -15,26 +15,14 @@ const ErrorContainer = styled.div`
   border-top: 1px solid #f4f4f4;
 `;
 
-/* const Divider = styled.div`
-  border-top: solid;
-  border-top-color: #eee;
-  border-width: 0.5px;
-`; */
-
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  // ERROR CONTAINERS
   const errorItemsContainer = [];
-  // SUCCESS CONTAINERS
   const successItemsContainer = [];
-
-  // HF: GENERATING ERRONEOUS/SKIPPED ELEMENTS
-
   metadata.snippets.forEach(snippet => {
     let items: { unsuccessful: any; successful: any[] } = {
       unsuccessful: {
-        error: [],
+        errors: [],
         skipped: [],
-        isExpanded: true,
       },
       successful: [],
     };
@@ -45,11 +33,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         if (param.error !== undefined) {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
-        // TODO: have some case for skipped items here
       });
       if (snippet.error) {
         if (func.error) {
-          items.unsuccessful.error.push({
+          items.unsuccessful.errors.push({
             name: functionName,
             children: paramErrorMessages,
           });
@@ -63,11 +50,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         items.successful.push({ content: functionName });
       }
     });
-    // ERROR ITEMS
     if (snippet.error) {
       const functionItemArray = [];
-      items.unsuccessful.error.forEach(item => {
-        const errorMessageTest = [];
+      items.unsuccessful.errors.forEach(item => {
+        const errorMessages = [];
         item.children.forEach(paramErrorMessage => {
           const paramError = (
             <DetailsItem
@@ -78,7 +64,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
               backgroundColor="#EEE"
             />
           );
-          errorMessageTest.push(paramError);
+          errorMessages.push(paramError);
         });
         const functionItem = (
           <DetailsItem
@@ -87,15 +73,14 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
             indent="20px"
-            children={errorMessageTest}
+            children={errorMessages}
             backgroundColor="#EEE"
           />
         );
         functionItemArray.push(functionItem);
       });
-      // SKIPPED ITEMS
       items.unsuccessful.skipped.forEach(item => {
-        let errorMessageTest = (
+        let errorMessage = (
           <DetailsItem
             content={'This function was skipped.'}
             fontFamily="ms-font-s"
@@ -111,7 +96,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Warning"
             statusIconColor="#F0C784"
             indent="20px"
-            children={[errorMessageTest]}
+            children={[errorMessage]}
             backgroundColor="#EEE"
           />
         );
@@ -124,12 +109,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
           children={functionItemArray}
-          isExpanded={true}
         />
       );
       errorItemsContainer.push(errorItem);
     } else {
-      // SUCCESS ITEMS
       items.successful.forEach(item => {
         const successItem = (
           <DetailsItem
@@ -150,7 +133,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     <PivotContentContainer>
       <TopInfo>
         <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
-          Custom Functions
+          Custom Functions (Preview)
         </h1>
         <p
           className="ms-font-m"
