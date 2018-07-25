@@ -58,7 +58,6 @@ interface ICFSchemaFunctionResultMetadata {
 interface ICFSchemaFunctionOptions {
   sync: boolean;
   stream: boolean;
-  volatile: boolean;
   cancelable: boolean;
 }
 

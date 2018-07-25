@@ -13,9 +13,8 @@ const TYPE_MAPPINGS = {
 const CUSTOM_FUNCTION_OPTIONS_KEYS = [];
 
 const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICFSchemaFunctionOptions = {
-  sync: true,
+  sync: false,
   stream: false,
-  volatile: false,
   cancelable: false,
 };
 

@@ -99,6 +99,23 @@ function wrapCustomFunctionSnippetCode(
   functionNames: string[]
 ): string {
   const newlineAndIndents = '\n        ';
+
+  /*
+    // TODO MIZLATKO external code
+
+    // TODO MIZLATKO eventually enable console.log & etc.
+    var console = {
+      log: function() {
+        // do nothing for now
+      },
+      warn: function() {
+        // do nothing for now
+      },
+      error: function() {
+        // do nothing for now
+      },
+    }
+  */
   const almostReady = stripSpaces(`
     (function () {
       try {
