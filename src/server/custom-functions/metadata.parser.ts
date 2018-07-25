@@ -188,7 +188,7 @@ function getDimentionalityAndTypeOrError(info: {
 }
 
 function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
-  const isTypeReferenceNode = param && ts.isTypeReferenceNode(param.type);
+  const isTypeReferenceNode = param && param.type && ts.isTypeReferenceNode(param.type);
   if (!isTypeReferenceNode) {
     return false;
   }
