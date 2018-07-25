@@ -2,19 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
-// TRYING OUT GROUPEDLIST FROM FABRIC UI
-/* import {
-  GroupedList,
-  IGroup,
-} from 'office-ui-fabric-react/lib/components/GroupedList/index';
-import { IColumn } from 'office-ui-fabric-react/lib/DetailsList';
-import { DetailsRow } from 'office-ui-fabric-react/lib/components/DetailsList/DetailsRow';
-import { FocusZone } from 'office-ui-fabric-react/lib/FocusZone';
-import {
-  Selection,
-  SelectionMode,
-  SelectionZone,
-} from 'office-ui-fabric-react/lib/utilities/selection/index'; */
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -28,25 +15,19 @@ const ErrorContainer = styled.div`
   border-top: 1px solid #f4f4f4;
 `;
 
-// TODO: try dropdown function here
-
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  let items: { error: any; skipped: any[]; success: any[] } = {
-    error: {
-      content: [], // TODO: find some way to establish what content contains
-      isExpanded: true,
-    },
-    skipped: [],
-    success: [],
-  };
-
+  const errorItemsContainer = [];
+  const successItemsContainer = [];
   metadata.snippets.forEach(snippet => {
+    let items: { unsuccessful: any; successful: any[] } = {
+      unsuccessful: {
+        errors: [],
+        skipped: [],
+      },
+      successful: [],
+    };
     snippet.functions.forEach(func => {
-      const scriptLabToplevelNamespace = 'ScriptLab';
-      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${func.name}(${
-        func.parameters.length > 0 ? '…' : ''
-      })`;
-      const functionName = func.name;
+      const functionName = `${func.name}(${func.parameters.length > 0 ? '…' : ''})`;
       const paramErrorMessages = [];
       func.parameters.forEach(param => {
         if (param.error !== undefined) {
@@ -55,146 +36,104 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       if (snippet.error) {
         if (func.error) {
-          items.error.content.push({
-            name: name,
-            children: {
-              funcName: functionName,
-              paramErrors: paramErrorMessages,
-            },
+          items.unsuccessful.errors.push({
+            name: functionName,
+            children: paramErrorMessages,
           });
         } else {
-          items.skipped.push({ content: name });
+          items.unsuccessful.skipped.push({
+            name: functionName,
+            children: paramErrorMessages,
+          });
         }
       } else {
-        items.success.push({ content: name });
+        items.successful.push({ content: functionName });
       }
     });
-  });
-
-  // ERROR ITEMS
-  const errorItemsContainer = [];
-
-  const errorMessageTest = [];
-
-  // TODO: put dropdown function as a constant
-  items.error.content.forEach(item => {
-    item.children.paramErrors.forEach(paramErrorMessage => {
-      const paramError = (
-        <DetailsItem
-          content={paramErrorMessage}
-          fontFamily="ms-font-s"
-          indent="30px"
-          noDropdown={true}
-        />
-      );
-      errorMessageTest.push(paramError);
-    });
-    const errorItem = [
-      <DetailsItem
-        content={item.name}
-        fontFamily="ms-font-m"
-        statusIcon="ErrorBadge"
-        statusIconColor="#f04251"
-        // TESTING: children props
-        children={[
+    if (snippet.error) {
+      const functionItemArray = [];
+      items.unsuccessful.errors.forEach(item => {
+        const errorMessages = [];
+        item.children.forEach(paramErrorMessage => {
+          const paramError = (
+            <DetailsItem
+              content={paramErrorMessage}
+              fontFamily="ms-font-s"
+              indent="45px"
+              noDropdown={true}
+              backgroundColor="#EEE"
+            />
+          );
+          errorMessages.push(paramError);
+        });
+        const functionItem = (
           <DetailsItem
-            content={item.children.funcName}
+            content={item.name}
             fontFamily="ms-font-s"
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
-            indent="15px"
-            children={errorMessageTest}
-          />,
-        ]}
-        isExpanded={true}
-      />,
-      /* <DetailsItem
-        content={item.children.funcName}
-        fontFamily="ms-font-s"
-        statusIcon="ErrorBadge"
-        statusIconColor="#f04251"
-        indent="15px"
-      />, */
-    ];
-    /* item.children.paramErrors.forEach(paramErrorMessage => {
-      const paramError = (
+            indent="20px"
+            children={errorMessages}
+            backgroundColor="#EEE"
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      items.unsuccessful.skipped.forEach(item => {
+        let errorMessage = (
+          <DetailsItem
+            content={'This function was skipped.'}
+            fontFamily="ms-font-s"
+            indent="45px"
+            noDropdown={true}
+            backgroundColor="#EEE"
+          />
+        );
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="Warning"
+            statusIconColor="#F0C784"
+            indent="20px"
+            children={[errorMessage]}
+            backgroundColor="#EEE"
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      const errorItem = (
         <DetailsItem
-          content={paramErrorMessage}
-          fontFamily="ms-font-s"
-          indent="30px"
-          noDropdown={true}
+          content={`=ScriptLab.${snippet.name}`}
+          fontFamily="ms-font-m"
+          statusIcon="ErrorBadge"
+          statusIconColor="#f04251"
+          children={functionItemArray}
         />
       );
-      errorItem.push(paramError);
-    }); */
-    errorItemsContainer.push(errorItem);
+      errorItemsContainer.push(errorItem);
+    } else {
+      items.successful.forEach(item => {
+        const successItem = (
+          <DetailsItem
+            content={`=ScriptLab.${snippet.name}.${item.content}`}
+            fontFamily="ms-font-m"
+            statusIcon="Completed"
+            statusIconColor="#107C10"
+            noDropdown={true}
+            indent="20px"
+          />
+        );
+        successItemsContainer.push(successItem);
+      });
+    }
   });
-
-  // SKIPPED ITEMS
-  const skippedItemsContainer = [];
-  items.skipped.forEach(item => {
-    const skippedItem = (
-      <DetailsItem
-        content={item.content}
-        fontFamily="ms-font-m"
-        statusIcon="Warning"
-        statusIconColor="#F0C784"
-      />
-    );
-    skippedItemsContainer.push(skippedItem);
-  });
-
-  // SUCCESS ITEMS
-  const successItemsContainer = [];
-  items.success.forEach(item => {
-    const successItem = (
-      <DetailsItem
-        content={item.content}
-        fontFamily="ms-font-m"
-        statusIcon="Completed"
-        statusIconColor="#107C10"
-        noDropdown={true}
-        indent="20px"
-      />
-    );
-    successItemsContainer.push(successItem);
-  });
-
-  // FOR GROUPED LIST TESTING
-  /* const testArray = ['lol', 'haha', 'lel', 'agagag'];
-  const testGroups = [
-    { key: 'haha', name: 'lol', startIndex: 0, count: 0, children: [] },
-  ];
-  function onRenderCell(nestingDepth: number, item: any, itemIndex: number): JSX.Element {
-    const { _selection: selection } = this;
-    return (
-      <DetailsRow
-        columns={Object.keys(item)
-          .slice(0, 3)
-          .map(
-            (value): IColumn => {
-              return {
-                key: value,
-                name: value,
-                fieldName: value,
-                minWidth: 300,
-              };
-            }
-          )}
-        groupNestingDepth={nestingDepth}
-        item={item}
-        itemIndex={itemIndex}
-        selection={selection}
-        selectionMode={SelectionMode.multiple}
-      />
-    );
-  } */
 
   return (
     <PivotContentContainer>
       <TopInfo>
         <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
-          Custom Functions
+          Custom Functions (Preview)
         </h1>
         <p
           className="ms-font-m"
@@ -204,32 +143,22 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             marginTop: '10px',
           }}
         >
-          The following functions are invalid and cannot be declared. Review and fix the
-          issue.
+          The following snippets contain invalid functions that cannot be declared. Please
+          review and fix the issues.
         </p>
       </TopInfo>
-      {(errorItemsContainer || skippedItemsContainer) && (
+      {errorItemsContainer && (
         <ErrorContainer style={{ marginTop: '20px' }}>
           {errorItemsContainer}
-          {skippedItemsContainer}
         </ErrorContainer>
       )}
-      {/* <GroupedList
-        items={testArray}
-        onRenderCell={onRenderCell}
-        selection={this._selection}
-        groups={testGroups}
-      /> */}
       <DetailsItem
         fontFamily={'ms-font-l'}
         content={'Registered Custom Functions'}
         children={successItemsContainer}
       />
-      {/* successItemsContainer */}
     </PivotContentContainer>
   );
 };
 
 export default Summary;
-
-/*************** */

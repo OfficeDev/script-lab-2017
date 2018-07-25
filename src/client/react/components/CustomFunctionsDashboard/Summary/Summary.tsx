@@ -8,7 +8,7 @@ const TopInfo = styled.div`
 `;
 
 const ErrorContainer = styled.div`
-  height: 100%;
+  height: auto;
   overflow-x: hidden;
   overflow-y: auto;
   flex-shrink: 2;
@@ -75,6 +75,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             indent="20px"
             children={errorMessages}
             backgroundColor="#EEE"
+            noDropdown={true}
           />
         );
         functionItemArray.push(functionItem);
@@ -97,6 +98,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIconColor="#F0C784"
             indent="20px"
             children={[errorMessage]}
+            noDropdown={true}
             backgroundColor="#EEE"
           />
         );
@@ -109,6 +111,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
           children={functionItemArray}
+          noDropdown={true}
         />
       );
       errorItemsContainer.push(errorItem);

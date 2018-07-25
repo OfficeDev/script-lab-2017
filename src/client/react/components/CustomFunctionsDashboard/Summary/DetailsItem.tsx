@@ -26,7 +26,7 @@ const DropDownStyling = {
 };
 
 export default class DetailsItem extends Component<IProps, IState> {
-  state = { isExpanded: false };
+  state = { isExpanded: true };
 
   toggleVisibility = () => {
     const currentDisplay = this.state.isExpanded ? false : true;
