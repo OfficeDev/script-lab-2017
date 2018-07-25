@@ -95,6 +95,7 @@ interface ICustomFunctionsMetadataRequestPostData {
 
 interface IRunnerCustomFunctionsPostData {
   snippets: ICustomFunctionsRunnerRelevantData[];
+  loadFromOfficeJsPreviewCachedCopy: boolean;
   displayLanguage: string;
   heartbeatParams: ICustomFunctionsHeartbeatParams;
   experimentationFlags: ExperimentationFlags;

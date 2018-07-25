@@ -44,7 +44,12 @@ import { parseMetadata } from './custom-functions/metadata.parser';
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
 
-const { build, config, secrets } = require('./core/env.config.js');
+const {
+  build,
+  config,
+  secrets,
+  USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS,
+} = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
 const currentConfig = config[env] as IEnvironmentConfig;
 const isLocal = currentConfig.name === 'LOCAL';
@@ -298,7 +303,7 @@ registerRoute('post', '/compile/page', (req, res) =>
  */
 registerRoute('post', '/custom-functions/run', async (req, res) => {
   const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
-  let { snippets } = params;
+  let { snippets, loadFromOfficeJsPreviewCachedCopy } = params;
 
   snippets = snippets.filter(snippet => {
     const result = parseMetadata(
@@ -350,7 +355,14 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     })
   );
 
+  const customFunctionsOfficeJsLocation = `${currentConfig.editorUrl}/assets/${
+    loadFromOfficeJsPreviewCachedCopy
+      ? 'office-js-custom-functions-2018-05-design--npm-custom-functions-preview-tag'
+      : 'office-js-custom-functions-2018-07-design--api-set-1.3-or-later'
+  }/office.js`;
+
   const html = customFunctionsRunnerGenerator({
+    customFunctionsOfficeJsLocation,
     snippetsDataBase64: base64encode(
       JSON.stringify(snippetCompileResults.map(result => result.html))
     ),
@@ -1009,16 +1021,15 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
     _defaultHandlebarsContext = {
       origin: currentConfig.editorUrl,
       assets: getFileAsJson('assets.json'),
-      officeJsOrLocal: isLocal
-        ? versionedPackageNames['@microsoft/office-js']
-        : 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js',
+      officeJsOrLocal:
+        isLocal && USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS
+          ? versionedPackageNames['@microsoft/office-js']
+          : 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js',
       versionedPackageNames_office_ui_fabric_js:
         versionedPackageNames['office-ui-fabric-js'],
       versionedPackageNames_jquery: versionedPackageNames['jquery'],
       versionedPackageNames_jquery_resizable_dom:
         versionedPackageNames['jquery-resizable-dom'],
-      versionedPackageNames_microsoft_office_js:
-        versionedPackageNames['@microsoft/office-js'],
     };
   }
 

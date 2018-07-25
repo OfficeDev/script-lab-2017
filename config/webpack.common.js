@@ -223,7 +223,7 @@ module.exports = webpackConfig => {
       }),
       new HtmlWebpackPlugin({
         filename: 'custom-functions-run.html',
-        template: './views/empty.html',
+        template: './views/empty-with-office-js.html',
         chunks: ['polyfills', 'vendor', 'customFunctionsRunnerInitialRedirect'],
       }),
       new HtmlWebpackPlugin({

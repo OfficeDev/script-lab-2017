@@ -11,7 +11,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
 
-    <script src="{{{origin}}}/libs/{{{versionedPackageNames_microsoft_office_js}}}/dist/office.js"></script>
+    <script src="{{{customFunctionsOfficeJsLocation}}}"></script>
 
     <script>
         window.customFunctionParams = {

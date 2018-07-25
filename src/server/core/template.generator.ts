@@ -19,7 +19,6 @@ export interface IDefaultHandlebarsContext {
   versionedPackageNames_office_ui_fabric_js: string;
   versionedPackageNames_jquery: string;
   versionedPackageNames_jquery_resizable_dom: string;
-  versionedPackageNames_microsoft_office_js: string;
 }
 
 export function loadTemplateHelper<T>(

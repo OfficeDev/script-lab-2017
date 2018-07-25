@@ -78,6 +78,10 @@ export function getRunnerCustomFunctionsPayload() {
 
   let data: IRunnerCustomFunctionsPostData = {
     snippets: allSnippetsToRegisterWithPossibleDuplicate,
+    loadFromOfficeJsPreviewCachedCopy: !Office.context.requirements.isSetSupported(
+      'CustomFunctions',
+      1.3
+    ),
     displayLanguage: getDisplayLanguage(),
     heartbeatParams: {
       clientTimestamp: new Date().getTime(),
