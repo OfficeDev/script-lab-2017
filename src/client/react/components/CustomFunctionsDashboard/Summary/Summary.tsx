@@ -151,14 +151,22 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         </p>
       </TopInfo>
       {errorItemsContainer && (
-        <ErrorContainer style={{ marginTop: '20px' }}>
-          {errorItemsContainer}
+        <ErrorContainer style={{ marginTop: '10px' }}>
+          <DetailsItem
+            fontFamily={'ms-font-l'}
+            content={'Functions With Errors'}
+            children={errorItemsContainer}
+            noDropdown={true}
+            indent={'20px'}
+          />
         </ErrorContainer>
       )}
       <DetailsItem
         fontFamily={'ms-font-l'}
         content={'Registered Custom Functions'}
         children={successItemsContainer}
+        noDropdown={true}
+        indent={'20px'}
       />
     </PivotContentContainer>
   );
