@@ -153,13 +153,14 @@ class CustomFunctionsDashboard extends React.Component<
         <Summary metadata={metadata} />
       </PivotItem>,
 
+      /* commented out in case this needs to be revived
       <PivotItem
         linkText="Details"
         key="Details"
         itemCount={this.getErrorCount() || undefined}
       >
         <Details metadata={metadata} />
-      </PivotItem>,
+      </PivotItem>, */
 
       <PivotItem
         linkText="Console"
