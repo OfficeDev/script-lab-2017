@@ -2,12 +2,27 @@ import * as $ from 'jquery';
 
 /** Namespaces for the runner wrapper to share with the inner snippet iframe */
 export const officeNamespacesForIframe = [
+  'Office',
   'OfficeExtension',
   'OfficeCore',
+  'OfficeRuntime',
   'Excel',
   'Word',
   'OneNote',
+  'PowerPoint',
+  'Visio',
   'ExcelOp',
+];
+
+/** Namespaces for the custom functions iframes to share with their overarching page.
+ * Expose "OfficeExtension" and "Office" to the iframe, since those
+ * might be used (e.g., for Promises).  But don't expose any further APIs.
+ * (Note, this is still an evolving story)
+ */
+export const officeNamespacesForCustomFunctionsIframe = [
+  'Office',
+  'OfficeExtension',
+  'OfficeRuntime',
 ];
 
 export function loadFirebug(editorBaseUrl: string): Promise<void> {

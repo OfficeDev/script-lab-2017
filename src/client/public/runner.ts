@@ -274,7 +274,6 @@ interface MakerInitializationParams {
       }
 
       if (officeJS) {
-        iframeWindow['Office'] = window['Office'];
         officeNamespacesForIframe.forEach(namespace => {
           iframeWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
         });

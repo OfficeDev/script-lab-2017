@@ -7,6 +7,7 @@ import {
   assertIdentical,
 } from '../app/helpers';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
+import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -71,9 +72,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
           (contentWindow as any).console = window.console;
           contentWindow.onerror = (...args) => console.error(args);
 
-          // Expose "OfficeExtension" and "Office" to the iframe, since those
-          // might be used (e.g., for Promises).  But don't expose any further APIs
-          ['Office', 'OfficeExtension'].forEach(namespace => {
+          officeNamespacesForCustomFunctionsIframe.forEach(namespace => {
             contentWindow[namespace] = window[namespace];
           });
         });
