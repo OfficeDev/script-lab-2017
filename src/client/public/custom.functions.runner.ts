@@ -6,16 +6,8 @@ import {
   stringifyPlusPlus,
 } from '../app/helpers';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
+import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
 
-// For now, expose "OfficeExtension" and "Office" to the iframe, since those
-// might be used (e.g., for Promises).  But don't expose any further APIs.
-// Also expose the new "CustomFunctions" namespace
-const NAMESPACES_TO_EXPOSE = [
-  'Office',
-  'OfficeExtension',
-  'CustomFunctionMappings',
-  'CustomFunctions',
-];
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -80,7 +72,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
           (contentWindow as any).console = window.console;
           contentWindow.onerror = (...args) => console.error(args);
 
-          NAMESPACES_TO_EXPOSE.forEach(namespace => {
+          officeNamespacesForCustomFunctionsIframe.forEach(namespace => {
             contentWindow[namespace] = window[namespace];
           });
         });
