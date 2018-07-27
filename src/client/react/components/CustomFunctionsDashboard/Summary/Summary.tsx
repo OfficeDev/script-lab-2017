@@ -72,7 +72,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             fontFamily="ms-font-s"
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
-            indent="20px"
+            indent="30px"
             children={errorMessages}
             backgroundColor="#EEE"
             noDropdown={true}
@@ -96,7 +96,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             fontFamily="ms-font-s"
             statusIcon="Warning"
             statusIconColor="#F0C784"
-            indent="20px"
+            indent="30px"
             children={[errorMessage]}
             noDropdown={true}
             backgroundColor="#EEE"
@@ -112,6 +112,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           statusIconColor="#f04251"
           children={functionItemArray}
           noDropdown={true}
+          indent="10px"
         />
       );
       errorItemsContainer.push(errorItem);
@@ -124,7 +125,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Completed"
             statusIconColor="#107C10"
             noDropdown={true}
-            indent="20px"
+            indent="10px"
           />
         );
         successItemsContainer.push(successItem);
@@ -157,7 +158,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             content={'Functions With Errors'}
             children={errorItemsContainer}
             noDropdown={true}
-            indent={'20px'}
+            indent={'10px'}
           />
         </ErrorContainer>
       )}
@@ -166,7 +167,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         content={'Registered Custom Functions'}
         children={successItemsContainer}
         noDropdown={true}
-        indent={'20px'}
+        indent={'10px'}
       />
     </PivotContentContainer>
   );
