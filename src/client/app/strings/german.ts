@@ -2,7 +2,7 @@
 // Whenever this lines is not commented out, it means that there are
 // still strings that need to be localized (just search for this function name).
 
-import { getEnglishSubstitutesForNotYetTranslated } from './index';
+// import { getEnglishSubstitutesForNotYetTranslated } from './index';
 
 export function getGermanStrings(): ClientStringsPerLanguage {
   // NOTE: Be sure to modify in both client and server code when
@@ -29,7 +29,7 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     alpha: 'Alpha',
     beta: 'Beta',
     production: 'Produktiv',
-    staging: getEnglishSubstitutesForNotYetTranslated().staging,
+    staging: 'Staging',
 
     userId: 'Benutzer-ID',
 
@@ -42,12 +42,11 @@ export function getGermanStrings(): ClientStringsPerLanguage {
     about: 'Info',
     feedback: 'Feedback',
     errors: 'Fehler',
-    trustSnippetQuestionMark: getEnglishSubstitutesForNotYetTranslated()
-      .trustSnippetQuestionMark,
+    trustSnippetQuestionMark: 'Dem Schnipsel vertrauen?',
 
     ok: 'OK',
     logout: 'Abmelden',
-    logoutFromGraph: getEnglishSubstitutesForNotYetTranslated().logoutFromGraph,
+    logoutFromGraph: 'Von Microsoft Graph abmelden',
     save: 'Speichern',
     moreInfo: 'Mehr Infos',
     import: 'Importieren',
@@ -188,14 +187,22 @@ export function getGermanStrings(): ClientStringsPerLanguage {
       template: 'HTML',
       style: 'CSS',
       libraries: 'Bibliotheken',
-      customFunctions: getEnglishSubstitutesForNotYetTranslated().tabDisplayNames
-        .customFunctions,
+      customFunctions: 'Benutzerdef. Funktionen',
     },
 
-    registerCustomFunctions: getEnglishSubstitutesForNotYetTranslated()
-      .registerCustomFunctions,
-    getTextForCustomFunctionsLastUpdated: getEnglishSubstitutesForNotYetTranslated()
-      .getTextForCustomFunctionsLastUpdated,
+    registerCustomFunctions: 'Benutzerdefinierte Funktionen registrieren',
+    getTextForCustomFunctionsLastUpdated: (
+      lastUpdatesXSecondsAgo: string,
+      lastAliveXSecondsAgo: string
+    ) => {
+      return (
+        'Der Code zur derzeit ausgeführten benutzerdefinierten Funktion wurde vor  ' +
+        lastUpdatesXSecondsAgo +
+        'aktualisiert.\n' +
+        'Die Ausführung selbst war aktiv für ' +
+        lastAliveXSecondsAgo
+      );
+    },
 
     // Gallery.view strings
 

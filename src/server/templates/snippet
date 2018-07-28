@@ -62,8 +62,8 @@
 {{/if}}
     <!-- Script -->
     <script type="text/javascript">
-        {{#if isExternalExport}}
-        {{else}}
+{{#if isExternalExport}}
+{{else}}
         {{!-- It appears that doing document.body.onload from the runner can sometimes be --}}
         {{!-- unreliable and fail to fire. So, do a safer (albeit polluting) approach --}}
         window.parent.scriptRunnerBeginInit(window, {
@@ -75,19 +75,25 @@
             ]
         });
 
-        {{/if}}
-        {{#if shouldPutSnippetIntoOfficeInitialize}}
+{{/if}}
+{{#if shouldPutSnippetIntoOfficeInitialize}}
         Office.initialize = function() {
             {{{indent snippet.script 3}}}
         };
-        {{else}}
+{{else}}
         {{{indent snippet.script 2}}}
-        {{/if}}
+{{/if}}
 
-        {{#if isExternalExport}}
-        {{else}}
+{{#if customFunctionsIfAny}}
+{{#each customFunctionsIfAny}}
+        CustomFunctionMappings["{{this.fullName}}"] = {{this.funcName}};
+{{/each}}
+
+{{/if}}
+{{#if isExternalExport}}
+{{else}}
         window.parent.scriptRunnerEndInit(window, '{{{snippet.id}}}');
-        {{/if}}
+{{/if}}
     </script>
 </body>
 

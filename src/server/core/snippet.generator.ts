@@ -4,8 +4,7 @@ import { isMakerScript } from './snippet.helper';
 import { injectPerfMarkers } from './perf.injector';
 
 /**
- * Compiles script data (which might be the "script" tab on the snippet,
- * but might also be the "customFunctions").
+ * Compiles script data
  */
 export function compileScript(
   data: { language: string; content: string },

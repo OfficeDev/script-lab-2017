@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
+import { environment } from '../../../../app/helpers';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -27,13 +28,19 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       successful: [],
     };
     snippet.functions.forEach(func => {
-      const functionName = `${func.name}(${func.parameters.length > 0 ? '…' : ''})`;
+      const scriptLabTopLevelNamespace =
+        'ScriptLab' + (environment.current.devMode ? 'Local' : '');
+      const functionName = `=${scriptLabTopLevelNamespace}.${
+        func.nonCapitalizedFullName
+      }(${func.parameters.length > 0 ? '…' : ''})`;
+
       const paramErrorMessages = [];
       func.parameters.forEach(param => {
         if (param.error !== undefined) {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
+
       if (snippet.error) {
         if (func.error) {
           items.unsuccessful.errors.push({

@@ -4,9 +4,10 @@ import {
   generateUrl,
   navigateToRunCustomFunctions,
   stringifyPlusPlus,
-  assertIdentical,
 } from '../app/helpers';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
+import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
+
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -71,9 +72,7 @@ async function initializeRunnableSnippets(params: InitializationParams) {
           (contentWindow as any).console = window.console;
           contentWindow.onerror = (...args) => console.error(args);
 
-          // Expose "OfficeExtension" and "Office" to the iframe, since those
-          // might be used (e.g., for Promises).  But don't expose any further APIs
-          ['Office', 'OfficeExtension'].forEach(namespace => {
+          officeNamespacesForCustomFunctionsIframe.forEach(namespace => {
             contentWindow[namespace] = window[namespace];
           });
         });
@@ -89,45 +88,11 @@ async function initializeRunnableSnippets(params: InitializationParams) {
             }, expecting ${snippetMetadata.functions.length} functions`
           );
 
-          window[namespaceUppercase] = {};
           snippetMetadata.functions.map(func => {
-            // Expect functions to have one-and-only-one dot, separating
-            // the namespace from the function name.
-            let splitIndex = assertIdentical(
-              func.name.indexOf('.'),
-              func.name.lastIndexOf('.')
-            );
-            // this should never happen:
-            if (splitIndex <= 0) {
-              throw new Error(`Invalid namespace.funcname format ("${func.name}")`);
-            }
-            let funcName = func.name.substr(splitIndex + 1);
-            let funcNameUppercase = funcName.toUpperCase();
-
-            logIfExtraLoggingEnabled(funcName, {
-              indent: 4,
-            });
-
-            // disable the rule because want to use "arguments",
-            //    which isn't allowed in an arrow function
-            // tslint:disable-next-line:only-arrow-functions
-            window[namespaceUppercase][funcNameUppercase] = function() {
-              try {
-                return iframeWindow[funcName /*regular, not uppercase*/].apply(
-                  null,
-                  arguments
-                );
-              } catch (e) {
-                const error = new Error(`Unable to execute function "${func.name}"`);
-                handleError(error);
-
-                // Also throw the error to get this reflected into Excel's calc chain:
-                throw error;
-              }
-            };
+            const funcFullUpperName = `${namespaceUppercase}.${func.funcName.toUpperCase()}`;
 
             // Overwrite console.log on every snippet iframe
-            overwriteConsole(`${namespaceUppercase}.${funcNameUppercase}`, iframeWindow);
+            overwriteConsole(funcFullUpperName, iframeWindow);
           });
 
           successfulRegistrationsCount++;

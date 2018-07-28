@@ -20,7 +20,7 @@ function launchInDialog(
       if (result.status === Office.AsyncResultStatus.Failed) {
         event.completed();
       }
-      let dialog = result.value as Office.DialogHandler;
+      let dialog = result.value as Office.Dialog;
       dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
         if (event) {
           event.completed();
