@@ -113,7 +113,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       const errorItem = (
         <DetailsItem
-          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
+          content={`=${scriptLabTopLevelNamespace}.${snippet.name}.`}
           fontFamily="ms-font-m"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
