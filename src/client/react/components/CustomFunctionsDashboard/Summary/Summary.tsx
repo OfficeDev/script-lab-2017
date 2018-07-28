@@ -28,11 +28,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       successful: [],
     };
     snippet.functions.forEach(func => {
-      const scriptLabTopLevelNamespace =
-        'ScriptLab' + (environment.current.devMode ? 'Local' : '');
-      const functionName = `=${scriptLabTopLevelNamespace}.${
-        func.nonCapitalizedFullName
-      }(${func.parameters.length > 0 ? '…' : ''})`;
+      const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
 
       const paramErrorMessages = [];
       func.parameters.forEach(param => {
@@ -57,6 +53,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         items.successful.push({ content: functionName });
       }
     });
+
+    const scriptLabTopLevelNamespace =
+      'ScriptLab' + (environment.current.devMode ? 'Local' : '');
+
     if (snippet.error) {
       const functionItemArray = [];
       items.unsuccessful.errors.forEach(item => {
@@ -113,7 +113,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       const errorItem = (
         <DetailsItem
-          content={`=ScriptLab.${snippet.name}`}
+          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
           fontFamily="ms-font-m"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
@@ -127,7 +127,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.successful.forEach(item => {
         const successItem = (
           <DetailsItem
-            content={`=ScriptLab.${snippet.name}.${item.content}`}
+            content={`=${scriptLabTopLevelNamespace}.${snippet.name}.${item.content}`}
             fontFamily="ms-font-m"
             statusIcon="Completed"
             statusIconColor="#107C10"
