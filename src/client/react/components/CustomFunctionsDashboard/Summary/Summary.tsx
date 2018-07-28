@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import PivotContentContainer from '../PivotContentContainer';
 import List, { Item } from '../List';
+import { environment } from '../../../../app/helpers';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -24,8 +25,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   };
   metadata.snippets.forEach(snippet => {
     snippet.functions.forEach(func => {
-      const scriptLabToplevelNamespace = 'ScriptLab';
-      const name = `=${scriptLabToplevelNamespace}.${func.nonCapitalizedFullName}(${
+      const scriptLabTopLevelNamespace =
+        'ScriptLab' + (environment.current.devMode ? 'Local' : '');
+      const name = `=${scriptLabTopLevelNamespace}.${func.nonCapitalizedFullName}(${
         func.parameters.length > 0 ? '…' : ''
       })`;
 

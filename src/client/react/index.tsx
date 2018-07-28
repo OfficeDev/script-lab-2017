@@ -159,7 +159,7 @@ async function registerMetadata(
     // Older style registration
     await Excel.run(async context => {
       (context.workbook as any).registerCustomFunctions(
-        'ScriptLab'.toUpperCase(),
+        ('ScriptLab' + (environment.current.devMode ? 'Local' : '')).toUpperCase(),
         JSON.stringify(registrationPayload)
       );
       await context.sync();

@@ -73,6 +73,7 @@ interface ICustomFunctionsRegistrationApiMetadata {
 
 interface ICustomFunctionsHeartbeatParams {
   clientTimestamp: number;
+  loadFromOfficeJsPreviewCachedCopy: boolean;
 }
 
 interface ICustomFunctionsRunnerRelevantData {

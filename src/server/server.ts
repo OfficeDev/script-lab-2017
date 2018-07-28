@@ -370,6 +370,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
       JSON.stringify(snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata })))
     ),
     clientTimestamp: params.heartbeatParams.clientTimestamp,
+    loadFromOfficeJsPreviewCachedCopy: loadFromOfficeJsPreviewCachedCopy,
   });
 
   timer.stop();
