@@ -154,7 +154,7 @@ namespace ScriptLab {
             return;
           }
 
-          let dialog: Office.DialogHandler = result.value;
+          let dialog: Office.Dialog = result.value;
           dialog.addEventHandler(Office.EventType.DialogEventReceived, event => {
             switch (event.error) {
               case CODE_DIALOG_CLOSED_BY_USER:
@@ -243,7 +243,7 @@ namespace ScriptLab {
             return;
           }
 
-          let dialog: Office.DialogHandler = result.value;
+          let dialog: Office.Dialog = result.value;
           dialog.addEventHandler(Office.EventType.DialogEventReceived, event => {
             switch (event.error) {
               case CODE_DIALOG_CLOSED_BY_USER:

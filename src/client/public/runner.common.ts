@@ -20,6 +20,7 @@ export const officeNamespacesForIframe = [
  * (Note, this is still an evolving story)
  */
 export const officeNamespacesForCustomFunctionsIframe = [
+  'CustomFunctionMappings',
   'Office',
   'OfficeExtension',
   'OfficeRuntime',

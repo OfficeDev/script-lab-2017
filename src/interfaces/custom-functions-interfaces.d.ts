@@ -9,79 +9,71 @@ interface ICFVisualSnippetMetadata {
   status: CustomFunctionsRegistrationStatus;
 }
 
-interface ICFVisualFunctionMetadata extends ICFFunctionMetadata {
-  status: CustomFunctionsRegistrationStatus;
-  paramString?: string;
-}
-
-interface ICFVisualParameterMetadata extends ICFParameterMetadata {
+interface ICFVisualParameterMetadata extends ICFSchemaParameterMetadata {
   prettyType?: string;
+  error?: string;
 }
 
-interface ICFFunctionMetadata {
-  name: string;
+interface ICFVisualFunctionResultMetadata extends ICFSchemaFunctionResultMetadata {
+  error?: string;
+}
+
+interface ICFVisualFunctionMetadata /* doesn't extend ICFSchemaFunctionMetadata so as not to have "name" */ {
+  /** The actual name of the function (no namespace/sub-namespace.  E.g., "add42") */
+  funcName: string;
+
+  // Sub-namespaced full name, not capitalized (e.g., "BlankSnippet1.add42") */
+  nonCapitalizedFullName: string;
+
+  status?: CustomFunctionsRegistrationStatus;
+  paramString?: string;
+  error?: string | boolean;
+
   description?: string;
   parameters: ICFVisualParameterMetadata[];
   result: ICFFunctionResultMetadata;
   options: ICustomFunctionOptions;
-  error?: string;
 }
 
-interface ICFParameterMetadata {
+interface ICFSchemaFunctionMetadata {
+  name: string;
+  description?: string;
+  parameters: ICFSchemaParameterMetadata[];
+  result: ICFFunctionResultMetadata;
+  options: ICustomFunctionOptions;
+}
+
+interface ICFSchemaParameterMetadata {
   name: string;
   description?: string;
   type: CustomFunctionsSupportedTypes;
   dimensionality: CustomFunctionsDimensionality;
-  error?: string;
 }
 
-interface ICFFunctionResultMetadata {
+interface ICFSchemaFunctionResultMetadata {
   dimensionality: CustomFunctionsDimensionality;
   type: CustomFunctionsSupportedTypes;
-  error?: string;
 }
 
-interface ICustomFunctionOptions {
+interface ICFSchemaFunctionOptions {
   sync: boolean;
   stream: boolean;
-  volatile: boolean;
   cancelable: boolean;
 }
 
-type CustomFunctionsSupportedTypes = 'number' | 'string' | 'boolean' | 'invalid';
+type CustomFunctionsSchemaSupportedTypes = 'number' | 'string' | 'boolean' | 'invalid';
+type CustomFunctionsSchemaDimensionality = 'invalid' | 'scalar' | 'matrix';
+
 type CustomFunctionsRegistrationStatus = 'good' | 'skipped' | 'error' | 'untrusted';
-
-type CustomFunctionsDimensionality = 'invalid' | 'scalar' | 'matrix';
-
-interface ICFFunctionMetadata {
-  name: string;
-  description?: string;
-  parameters: ICFVisualParameterMetadata[];
-  result: ICFFunctionResultMetadata;
-  options: ICustomFunctionOptions;
-  error?: string;
-}
-
-interface ICFParameterMetadata {
-  name: string;
-  description?: string;
-  type: CustomFunctionsSupportedTypes;
-  dimensionality: CustomFunctionsDimensionality;
-  error?: string;
-}
 
 /** The interface used by Excel to register custom functions (workbook.registerCustomFunctions(...))  */
 interface ICustomFunctionsRegistrationApiMetadata {
-  functions: ICFFunctionMetadata[];
-}
-
-interface ICustomFunctionsSnippetRegistrationData {
-  namespace: string;
-  functions: ICFFunctionMetadata[];
+  functions: ICFSchemaFunctionMetadata[];
 }
 
 interface ICustomFunctionsHeartbeatParams {
   clientTimestamp: number;
+  loadFromOfficeJsPreviewCachedCopy: boolean;
 }
 
 interface ICustomFunctionsRunnerRelevantData {
@@ -92,12 +84,18 @@ interface ICustomFunctionsRunnerRelevantData {
   metadata: ICustomFunctionsSnippetRegistrationData;
 }
 
+interface ICustomFunctionsSnippetRegistrationData {
+  namespace: string;
+  functions: ICFVisualFunctionMetadata[];
+}
+
 interface ICustomFunctionsMetadataRequestPostData {
   snippets: ISnippet[];
 }
 
 interface IRunnerCustomFunctionsPostData {
   snippets: ICustomFunctionsRunnerRelevantData[];
+  loadFromOfficeJsPreviewCachedCopy: boolean;
   displayLanguage: string;
   heartbeatParams: ICustomFunctionsHeartbeatParams;
   experimentationFlags: ExperimentationFlags;

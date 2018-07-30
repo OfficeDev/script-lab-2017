@@ -13,13 +13,13 @@ const { localStorageKeys } = PLAYGROUND;
 const POLLING_INTERVAL = 1000;
 
 let messenger: Messenger<CustomFunctionsMessageType>;
+let params: ICustomFunctionsHeartbeatParams;
 
 tryCatch(() => {
-  const params: ICustomFunctionsHeartbeatParams = Authenticator.extractParams(
-    window.location.href.split('?')[1]
-  ) as any;
+  params = Authenticator.extractParams(window.location.href.split('?')[1]);
 
-  // Can do partial initialization, since host is guaranteed to be known
+  // Can do partial initialization, since host is guaranteed to be known,
+  // and since can't do an initialization form within an iframe anyway.
   environment.initializePartial({ host: 'EXCEL' });
 
   setupMessenger();
@@ -72,7 +72,9 @@ function getLocalStorageLastUpdateTimestamp(): number {
 }
 
 function sendRefreshRequest() {
-  let payload = getRunnerCustomFunctionsPayload();
+  let payload = getRunnerCustomFunctionsPayload({
+    loadFromOfficeJsPreviewCachedCopy: params.loadFromOfficeJsPreviewCachedCopy,
+  });
   messenger.send(window.parent, CustomFunctionsMessageType.NEED_TO_REFRESH, payload);
 }
 

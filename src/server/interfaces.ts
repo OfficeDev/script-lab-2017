@@ -29,6 +29,11 @@ export interface ISnippetHandlebarsContext {
   editorUrl: string;
   runtimeHelperStringifiedStrings: string;
   shouldPutSnippetIntoOfficeInitialize: boolean;
+
+  customFunctionsIfAny?: ({
+    funcName: string;
+    fullName: string;
+  })[];
 }
 
 export interface IRunnerHandlebarsContext {
@@ -58,6 +63,9 @@ export interface IRunnerHandlebarsContext {
    * (in which case will come up with default editor URL, using host & id as guide) */
   returnUrl: string;
 
+  /** Optional refresh URL override */
+  refreshUrl?: string;
+
   strings: ServerStrings;
   explicitlySetDisplayLanguageOrNull: string;
 }
@@ -66,6 +74,8 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
   snippetsDataBase64: string;
   metadataBase64: string;
   clientTimestamp: number;
+  loadFromOfficeJsPreviewCachedCopy: boolean;
+  customFunctionsOfficeJsLocation: string;
 }
 
 export interface IErrorHandlebarsContext {

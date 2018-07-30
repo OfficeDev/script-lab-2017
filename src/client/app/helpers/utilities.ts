@@ -43,54 +43,129 @@ export function isInsideOfficeApp() {
   return Office && Office.context && Office.context.requirements;
 }
 
-export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
+export interface CustomFunctionEngineStatus {
+  enabled: boolean;
+  error?: string;
+  nativeRuntime?: boolean;
+}
+
+export async function getCustomFunctionEngineStatus(): Promise<
+  CustomFunctionEngineStatus
+> {
   try {
     if (environment.current.experimentationFlags.customFunctions.forceOn) {
-      return true;
+      return { enabled: true };
     }
+
+    if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
+      return { enabled: false };
+    }
+
     const platform = Office.context.platform;
 
-    // For now, only supporting on PC
-    // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.
-    // On Mac, a number of issues:
-    //   - No way to detect flights, to know if the feature is on.  Also, calling "registerCustomFunctions" when flighted off is successful, so can't key off of a failure.
-    //   - Heartbeat doesn't work due to Mac iframe + localStorage (not really fixable)
-    //   - Other minor things (E.g., copy-paste of starter snippet didn't work for some reason; maybe a general clipboard issue?...)
-    if (platform !== Office.PlatformType.PC) {
-      return false;
+    if (platform === Office.PlatformType.PC) {
+      if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
+        return getPCstatusPre1_3();
+      }
+      return getStatusPost1_3();
     }
 
+    if (
+      platform === Office.PlatformType.Mac &&
+      Office.context.requirements.isSetSupported('CustomFunctions', 1.3)
+    ) {
+      return getStatusPost1_3();
+    }
+
+    if (platform === Office.PlatformType.OfficeOnline) {
+      // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.  For now, assume that it's off.
+      return { enabled: false };
+    }
+
+    // Catch-all:
+    return { enabled: false };
+  } catch (e) {
+    console.error('Could not perform a "getCustomFunctionEngineStatus" check');
+    console.error(e);
+    return { enabled: false };
+  }
+
+  // Helpers:
+
+  async function getPCstatusPre1_3(): Promise<CustomFunctionEngineStatus> {
     const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(Office.context.diagnostics.version)[1];
 
     if (semver.lt(threeDotVersion, '16.0.9323')) {
-      // note 16.0.9323 is the version number for windows
-      // for mac, it is 16.14.429, but
-      return false;
+      return { enabled: false };
     }
 
+    return tryExcelRun(
+      async (context): Promise<CustomFunctionEngineStatus> => {
+        const featuresThatWantOn = [
+          'Microsoft.Office.Excel.AddinDefinedFunctionEnabled',
+          'Microsoft.Office.Excel.AddinDefinedFunctionStreamingEnabled',
+          'Microsoft.Office.Excel.AddinDefinedFunctionCachingEnabled',
+          'Microsoft.Office.Excel.AddinDefinedFunctionUseCalcThreadEnabled',
+          'Microsoft.Office.OEP.UdfManifest',
+          'Microsoft.Office.OEP.UdfRuntime',
+        ].map(
+          name =>
+            (context as any).flighting
+              .getFeatureGate(name)
+              .load('value') as OfficeExtension.ClientResult<boolean>
+        );
+
+        const flightThatMustBeOffPre1_3 = (context as any).flighting
+          .getFeatureGate('Microsoft.Office.OEP.SdxSandbox')
+          .load('value') as OfficeExtension.ClientResult<boolean>;
+
+        await context.sync();
+
+        const firstNonTrueIndex = featuresThatWantOn.findIndex(
+          item => item.value !== true
+        );
+        const allDesirableOnesWereTrue = firstNonTrueIndex < 0;
+        if (!allDesirableOnesWereTrue) {
+          return { enabled: false };
+        }
+
+        if (flightThatMustBeOffPre1_3.value) {
+          return {
+            error: `Conflict: please disable the "Microsoft.Office.OEP.SdxSandbox" flight, or install a newer version of Excel`,
+            enabled: false,
+          };
+        }
+
+        return {
+          enabled: true,
+          nativeRuntime: false /* older version, so can't have the native runtime there */,
+        };
+      }
+    );
+  }
+
+  async function getStatusPost1_3(): Promise<CustomFunctionEngineStatus> {
+    return tryExcelRun(
+      async (context): Promise<CustomFunctionEngineStatus> => {
+        const manager = (Excel as any).CustomFunctionManager.newObject(context).load(
+          'status'
+        );
+        await context.sync();
+
+        return {
+          enabled: manager.status.enabled,
+          nativeRuntime: manager.status.nativeRuntime,
+        };
+      }
+    );
+  }
+
+  async function tryExcelRun(
+    callback: (context: Excel.RequestContext) => Promise<CustomFunctionEngineStatus>
+  ) {
     while (true) {
       try {
-        // Additionally, we need some flights
-        let allFlightsOn = await Excel.run(async context => {
-          let features = [
-            'Microsoft.Office.Excel.AddinDefinedFunctionEnabled',
-            'Microsoft.Office.Excel.AddinDefinedFunctionStreamingEnabled',
-            'Microsoft.Office.Excel.AddinDefinedFunctionCachingEnabled',
-            'Microsoft.Office.Excel.AddinDefinedFunctionUseCalcThreadEnabled',
-            'Microsoft.Office.OEP.UdfManifest',
-            'Microsoft.Office.OEP.UdfRuntime',
-          ].map(name => (context as any).flighting.getFeatureGate(name).load('value'));
-          await context.sync();
-          const firstNonTrueIndex = features.findIndex(item => item.value !== true);
-          const allWereTrue = firstNonTrueIndex < 0;
-          return allWereTrue;
-        });
-
-        if (allFlightsOn) {
-          break;
-        } else {
-          return false;
-        }
+        return Excel.run(async context => await callback(context));
       } catch (e) {
         const isInCellEditMode =
           e instanceof OfficeExtension.Error &&
@@ -99,17 +174,10 @@ export async function getIsCustomFunctionsSupportedOnHost(): Promise<boolean> {
           await pause(2000);
           continue;
         } else {
-          return false;
+          return { enabled: false };
         }
       }
     }
-
-    // If all checks passed:
-    return true;
-  } catch (e) {
-    console.error('Could not perform a "getIsCustomFunctionsSupportedOnHost" check');
-    console.error(e);
-    return false;
   }
 }
 

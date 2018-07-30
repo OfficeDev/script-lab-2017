@@ -130,12 +130,3 @@ const isCustomFunctionRegex = /@customfunction/i;
 export function isCustomFunctionScript(content: string) {
   return isCustomFunctionRegex.test(content);
 }
-
-const snippetNameRegex = /[^0-9A-Za-z_ ]/g;
-export function transformSnippetName(snippetName: string) {
-  return snippetName
-    .replace(snippetNameRegex, '')
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
-}
