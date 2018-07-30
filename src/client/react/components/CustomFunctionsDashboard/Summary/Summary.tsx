@@ -37,7 +37,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     snippet.functions.forEach(func => {
       const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
 
-      const paramErrorMessages = [];
+      const paramErrorMessages: String[] = [];
       func.parameters.forEach(param => {
         if (param.error !== undefined) {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
@@ -62,7 +62,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     });
 
     const scriptLabTopLevelNamespace =
-      'ScriptLab' + (environment.current.devMode ? 'Local' : '');
+      'SCRIPTLAB' + (environment.current.devMode ? 'LOCAL' : '');
 
     if (snippet.error) {
       const functionItemArray = [];
@@ -82,7 +82,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         });
         const functionItem = (
           <DetailsItem
-            content={item.name}
+            content={item.name.toUpperCase()}
             fontFamily="ms-font-s"
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
@@ -106,7 +106,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         );
         const functionItem = (
           <DetailsItem
-            content={item.name}
+            content={item.name.toUpperCase()}
             fontFamily="ms-font-s"
             statusIcon="Warning"
             statusIconColor="#F0C784"
@@ -120,8 +120,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       const errorItem = (
         <DetailsItem
-          content={`=${scriptLabTopLevelNamespace}.${snippetName}`}
-          fontFamily="ms-font-m"
+          content={`=${scriptLabTopLevelNamespace}.${snippetName.toUpperCase()}`}
+          fontFamily="ms-font-s"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
           children={functionItemArray}
@@ -135,8 +135,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.successful.forEach(item => {
         const successItem = (
           <DetailsItem
-            content={`=${scriptLabTopLevelNamespace}.${snippetName}.${item}`}
-            fontFamily="ms-font-m"
+            content={`=${scriptLabTopLevelNamespace}.${snippetName.toUpperCase()}.${item.toUpperCase()}`}
+            fontFamily="ms-font-s"
             statusIcon="Completed"
             statusIconColor="#107C10"
             noDropdown={true}
@@ -181,7 +181,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       {successItemsContainer.length === 0 && (
         <DetailsItem
           fontFamily={'ms-font-m'}
-          content={'There are no registered functions. Please fix the errors.'}
+          content={'There are no registered functions.'}
           noDropdown={true}
           indent={'10px'}
         />
