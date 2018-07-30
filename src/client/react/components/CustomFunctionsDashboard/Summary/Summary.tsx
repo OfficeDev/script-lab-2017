@@ -120,7 +120,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       });
       const errorItem = (
         <DetailsItem
-          content={`=SCRIPTLAB.${snippetName}`}
+          content={`=${scriptLabTopLevelNamespace}.${snippetName}`}
           fontFamily="ms-font-m"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
@@ -135,7 +135,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.successful.forEach(item => {
         const successItem = (
           <DetailsItem
-            content={`=SCRIPTLAB.${snippetName}.${item}`}
+            content={`=${scriptLabTopLevelNamespace}.${snippetName}.${item}`}
             fontFamily="ms-font-m"
             statusIcon="Completed"
             statusIconColor="#107C10"
