@@ -7,7 +7,7 @@ interface IState {
 }
 
 interface IProps {
-  content: string;
+  content: String;
   fontFamily: string;
   noDropdown?: boolean;
   statusIcon?: string;
@@ -15,6 +15,8 @@ interface IProps {
   indent?: string;
   children?: any[];
   backgroundColor?: string;
+  hasBorderTop?: boolean;
+  padding?: string;
 }
 
 const DropDownStyling = {
@@ -40,7 +42,7 @@ export default class DetailsItem extends Component<IProps, IState> {
       &:hover: {
         color: red;
       }
-      padding: 12px;
+      padding: ${props.padding || '12px'};
       background: ${props.backgroundColor || '#fff'};
       display: flex;
       flex-direction: horizontal;
@@ -50,7 +52,7 @@ export default class DetailsItem extends Component<IProps, IState> {
     const dividerStyle = {
       borderTop: 'solid',
       borderTopColor: '#eee',
-      borderWidth: '0.5px',
+      borderWidth: '1.3px',
       background: props.backgroundColor || '#fff',
     };
 
@@ -58,11 +60,11 @@ export default class DetailsItem extends Component<IProps, IState> {
       width: '18px',
       fontSize: '16px',
       color: `${props.statusIconColor}`,
-      marginTop: '3px',
+      marginTop: '2px',
       marginRight: '5px',
     };
     return (
-      <div style={dividerStyle}>
+      <div style={props.hasBorderTop && dividerStyle}>
         <ContainerWrapper>
           {!props.noDropdown && (
             <Icon
