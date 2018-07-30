@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
+import Items from './Items';
 
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -15,17 +16,24 @@ const ErrorContainer = styled.div`
   border-top: 1px solid #f4f4f4;
 `;
 
+const functionPadding = '4px 8px 10px 8px';
+
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   const errorItemsContainer = [];
   const successItemsContainer = [];
   metadata.snippets.forEach(snippet => {
-    let items: { unsuccessful: any; successful: any[] } = {
+    let items: Items = {
       unsuccessful: {
         errors: [],
         skipped: [],
       },
       successful: [],
     };
+    /* TODO: NOTE - when snippet name is empty it doesn't get read as a custom function at all
+    error message that says name cannot be empty
+    */
+    const snippetName =
+      snippet.name.length > 27 ? `${snippet.name.substring(0, 27)}...` : snippet.name;
     snippet.functions.forEach(func => {
       const functionName = `${func.name}(${func.parameters.length > 0 ? '…' : ''})`;
       const paramErrorMessages = [];
@@ -47,7 +55,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           });
         }
       } else {
-        items.successful.push({ content: functionName });
+        items.successful.push(functionName);
       }
     });
     if (snippet.error) {
@@ -61,7 +69,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
               fontFamily="ms-font-s"
               indent="45px"
               noDropdown={true}
-              backgroundColor="#EEE"
+              padding={functionPadding}
             />
           );
           errorMessages.push(paramError);
@@ -74,8 +82,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIconColor="#f04251"
             indent="30px"
             children={errorMessages}
-            backgroundColor="#EEE"
             noDropdown={true}
+            padding={functionPadding}
           />
         );
         functionItemArray.push(functionItem);
@@ -87,7 +95,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             fontFamily="ms-font-s"
             indent="45px"
             noDropdown={true}
-            backgroundColor="#EEE"
+            padding={functionPadding}
           />
         );
         const functionItem = (
@@ -99,20 +107,21 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             indent="30px"
             children={[errorMessage]}
             noDropdown={true}
-            backgroundColor="#EEE"
+            padding={functionPadding}
           />
         );
         functionItemArray.push(functionItem);
       });
       const errorItem = (
         <DetailsItem
-          content={`=ScriptLab.${snippet.name}`}
+          content={`=SCRIPTLAB.${snippetName}`}
           fontFamily="ms-font-m"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
           children={functionItemArray}
           noDropdown={true}
           indent="10px"
+          hasBorderTop={true}
         />
       );
       errorItemsContainer.push(errorItem);
@@ -120,12 +129,13 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.successful.forEach(item => {
         const successItem = (
           <DetailsItem
-            content={`=ScriptLab.${snippet.name}.${item.content}`}
+            content={`=SCRIPTLAB.${snippetName}.${item}`}
             fontFamily="ms-font-m"
             statusIcon="Completed"
             statusIconColor="#107C10"
             noDropdown={true}
             indent="10px"
+            hasBorderTop={true}
           />
         );
         successItemsContainer.push(successItem);
@@ -136,29 +146,20 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   return (
     <PivotContentContainer>
       <TopInfo>
-        <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
+        <h1 className="ms-font-xl" style={{ lineHeight: '28px', marginBottom: '10px' }}>
           Custom Functions (Preview)
         </h1>
-        <p
-          className="ms-font-m"
-          style={{
-            lineHeight: '16.8px',
-            marginBottom: '10px',
-            marginTop: '10px',
-          }}
-        >
-          The following snippets contain invalid functions that cannot be declared. Please
-          review and fix the issues.
-        </p>
       </TopInfo>
-      {errorItemsContainer && (
+      {errorItemsContainer.length > 0 && (
         <ErrorContainer style={{ marginTop: '10px' }}>
           <DetailsItem
             fontFamily={'ms-font-l'}
-            content={'Functions With Errors'}
+            content={'Invalid Functions - Please Review'}
             children={errorItemsContainer}
             noDropdown={true}
             indent={'10px'}
+            hasBorderTop={true}
+            backgroundColor={'#EEE'}
           />
         </ErrorContainer>
       )}
@@ -168,7 +169,17 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         children={successItemsContainer}
         noDropdown={true}
         indent={'10px'}
+        hasBorderTop={true}
+        backgroundColor={'#EEE'}
       />
+      {successItemsContainer.length === 0 && (
+        <DetailsItem
+          fontFamily={'ms-font-m'}
+          content={'There are no registered functions. Please fix the errors.'}
+          noDropdown={true}
+          indent={'10px'}
+        />
+      )}
     </PivotContentContainer>
   );
 };
