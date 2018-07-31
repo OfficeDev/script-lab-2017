@@ -8,6 +8,7 @@ import {
   environment,
   getCustomFunctionEngineStatus,
   isCustomFunctionScript,
+  getScriptLabTopLevelNamespace,
 } from '../../client/app/helpers';
 import { uniqBy, flatten } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
@@ -159,7 +160,7 @@ async function registerMetadata(
     // Older style registration
     await Excel.run(async context => {
       (context.workbook as any).registerCustomFunctions(
-        ('ScriptLab' + (environment.current.devMode ? 'Local' : '')).toUpperCase(),
+        getScriptLabTopLevelNamespace().toUpperCase(),
         JSON.stringify(registrationPayload)
       );
       await context.sync();

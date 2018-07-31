@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
-import { environment } from '../../../../app/helpers';
+import { environment, getScriptLabTopLevelNamespace } from '../../../../app/helpers';
 import Items from './Items';
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
@@ -56,8 +56,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       }
     });
 
-    const scriptLabTopLevelNamespace =
-      'ScriptLab' + (environment.current.devMode ? 'Dev' : '');
+    const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
 
     if (snippet.error) {
       const functionItemArray = [];
