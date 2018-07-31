@@ -1,85 +1,184 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
 import PivotContentContainer from '../PivotContentContainer';
-import List, { Item } from '../List';
-import { environment } from '../../../../app/helpers';
-
+import DetailsItem from './DetailsItem';
+import { getScriptLabTopLevelNamespace } from '../../../../app/helpers';
+import Items from './Items';
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
 
-const FunctionsContainer = styled.div`
-  height: 100%;
+const ErrorContainer = styled.div`
+  height: auto;
   overflow-x: hidden;
   overflow-y: auto;
   flex-shrink: 2;
   border-top: 1px solid #f4f4f4;
 `;
 
-const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  let items: { success: Item[]; skipped: Item[]; error: Item[] } = {
-    success: [],
-    skipped: [],
-    error: [],
-  };
-  metadata.snippets.forEach(snippet => {
-    snippet.functions.forEach(func => {
-      const scriptLabTopLevelNamespace =
-        'ScriptLab' + (environment.current.devMode ? 'Local' : '');
-      const name = `=${scriptLabTopLevelNamespace}.${func.nonCapitalizedFullName}(${
-        func.parameters.length > 0 ? '…' : ''
-      })`;
+const functionPadding = '4px 8px 10px 8px';
 
-      const item: Item = { name, key: name, smallCaps: true };
+const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
+  const errorItemsContainer: DetailsItem[] = [];
+  const successItemsContainer: DetailsItem[] = [];
+
+  metadata.snippets.forEach(snippet => {
+    let items: Items = {
+      unsuccessful: {
+        errors: [],
+        skipped: [],
+      },
+      successful: [],
+    };
+    snippet.functions.forEach(func => {
+      const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
+      const paramErrorMessages: string[] = [];
+      func.parameters.forEach(param => {
+        if (param.error !== undefined) {
+          paramErrorMessages.push(`${param.name}: ${param.error}`);
+        }
+      });
 
       if (snippet.error) {
         if (func.error) {
-          items.error.push({
-            ...item,
-            icon: { name: 'ErrorBadge', color: '#f04251' },
-            title: 'See Details tab for more information.',
+          items.unsuccessful.errors.push({
+            name: functionName,
+            children: paramErrorMessages,
           });
         } else {
-          items.skipped.push({
-            ...item,
-            icon: { name: 'Unknown', color: '#ffd333' },
-            title: 'See Details tab for more information.',
+          items.unsuccessful.skipped.push({
+            name: functionName,
+            children: paramErrorMessages,
           });
         }
       } else {
-        items.success.push({
-          ...item,
-          icon: { name: 'Completed', color: '#55cf4a' },
-        });
+        items.successful.push(functionName);
       }
     });
+
+    const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
+
+    if (snippet.error) {
+      const functionItemArray = [];
+      items.unsuccessful.errors.forEach(item => {
+        const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
+          return (
+            <DetailsItem
+              content={paramErrorMessage}
+              fontFamily="ms-font-s"
+              indent="45px"
+              noDropdown={true}
+              padding={functionPadding}
+            />
+          ) as any;
+        });
+
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="ErrorBadge"
+            statusIconColor="#f04251"
+            indent="30px"
+            children={errorDetailItems}
+            noDropdown={true}
+            padding={functionPadding}
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      items.unsuccessful.skipped.forEach(item => {
+        let errorMessage = (
+          <DetailsItem
+            content={'This function was skipped.'}
+            fontFamily="ms-font-s"
+            indent="45px"
+            noDropdown={true}
+            padding={functionPadding}
+          />
+        );
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="Warning"
+            statusIconColor="#F0C784"
+            indent="30px"
+            children={[errorMessage]}
+            noDropdown={true}
+            padding={functionPadding}
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      const errorItem: any = (
+        <DetailsItem
+          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
+          fontFamily="ms-font-s"
+          statusIcon="ErrorBadge"
+          statusIconColor="#f04251"
+          children={functionItemArray}
+          noDropdown={true}
+          indent="10px"
+          hasBorderTop={true}
+        />
+      );
+      errorItemsContainer.push(errorItem);
+    } else {
+      items.successful.forEach(item => {
+        const successItem: any = (
+          <DetailsItem
+            content={`=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`}
+            fontFamily="ms-font-s"
+            statusIcon="Completed"
+            statusIconColor="#107C10"
+            noDropdown={true}
+            indent="10px"
+            hasBorderTop={true}
+          />
+        );
+        successItemsContainer.push(successItem);
+      });
+    }
   });
 
   return (
     <PivotContentContainer>
       <TopInfo>
-        <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
+        <h1 className="ms-font-xl" style={{ lineHeight: '28px', marginBottom: '10px' }}>
           Custom Functions (Preview)
         </h1>
-        <p
-          className="ms-font-m"
-          style={{
-            lineHeight: '16.8px',
-            marginBottom: '26px',
-            marginTop: '10px',
-          }}
-        >
-          The following custom functions were found in your workspace. These functions run
-          async in Script Lab. You can run them faster in sync mode with{' '}
-          <a href="https://aka.ms/customfunctions" target="_blank">
-            these instructions
-          </a>.
-        </p>
       </TopInfo>
-      <FunctionsContainer style={{ marginTop: '20px' }}>
-        <List items={[...items.success, ...items.error, ...items.skipped]} />
-      </FunctionsContainer>
+      {errorItemsContainer.length > 0 && (
+        <ErrorContainer style={{ marginTop: '10px' }}>
+          <DetailsItem
+            fontFamily={'ms-font-l'}
+            content={'Invalid Functions - Please Review'}
+            children={errorItemsContainer}
+            noDropdown={true}
+            indent={'10px'}
+            hasBorderTop={true}
+            backgroundColor={'#EEE'}
+          />
+        </ErrorContainer>
+      )}
+      <DetailsItem
+        fontFamily={'ms-font-l'}
+        content={'Registered Custom Functions'}
+        children={successItemsContainer}
+        noDropdown={true}
+        indent={'10px'}
+        hasBorderTop={true}
+        backgroundColor={'#EEE'}
+      />
+      {successItemsContainer.length === 0 && (
+        <DetailsItem
+          fontFamily={'ms-font-m'}
+          content={'There are no registered functions.'}
+          noDropdown={true}
+          indent={'10px'}
+        />
+      )}
     </PivotContentContainer>
   );
 };

@@ -181,6 +181,10 @@ export async function getCustomFunctionEngineStatus(): Promise<
   }
 }
 
+export function getScriptLabTopLevelNamespace() {
+  return 'ScriptLab' + (environment.current.devMode ? 'Dev' : '');
+}
+
 let typeCache = new Dictionary<boolean>();
 
 /**
