@@ -2,8 +2,8 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
+import { environment } from '../../../../app/helpers';
 import Items from './Items';
-
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
@@ -19,8 +19,9 @@ const ErrorContainer = styled.div`
 const functionPadding = '4px 8px 10px 8px';
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  const errorItemsContainer = [];
-  const successItemsContainer = [];
+  const errorItemsContainer: DetailsItem[] = [];
+  const successItemsContainer: DetailsItem[] = [];
+
   metadata.snippets.forEach(snippet => {
     let items: Items = {
       unsuccessful: {
@@ -32,16 +33,15 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     /* TODO: NOTE - when snippet name is empty it doesn't get read as a custom function at all
     error message that says name cannot be empty
     */
-    const snippetName =
-      snippet.name.length > 27 ? `${snippet.name.substring(0, 27)}...` : snippet.name;
     snippet.functions.forEach(func => {
-      const functionName = `${func.name}(${func.parameters.length > 0 ? '…' : ''})`;
-      const paramErrorMessages = [];
+      const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
+      const paramErrorMessages: string[] = [];
       func.parameters.forEach(param => {
         if (param.error !== undefined) {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
+
       if (snippet.error) {
         if (func.error) {
           items.unsuccessful.errors.push({
@@ -58,12 +58,15 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         items.successful.push(functionName);
       }
     });
+
+    const scriptLabTopLevelNamespace =
+      'ScriptLab' + (environment.current.devMode ? 'Dev' : '');
+
     if (snippet.error) {
       const functionItemArray = [];
       items.unsuccessful.errors.forEach(item => {
-        const errorMessages = [];
-        item.children.forEach(paramErrorMessage => {
-          const paramError = (
+        const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
+          return (
             <DetailsItem
               content={paramErrorMessage}
               fontFamily="ms-font-s"
@@ -71,9 +74,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
               noDropdown={true}
               padding={functionPadding}
             />
-          );
-          errorMessages.push(paramError);
+          ) as any;
         });
+
         const functionItem = (
           <DetailsItem
             content={item.name}
@@ -81,7 +84,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
             indent="30px"
-            children={errorMessages}
+            children={errorDetailItems}
             noDropdown={true}
             padding={functionPadding}
           />
@@ -112,10 +115,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         );
         functionItemArray.push(functionItem);
       });
-      const errorItem = (
+      const errorItem: any = (
         <DetailsItem
-          content={`=SCRIPTLAB.${snippetName}`}
-          fontFamily="ms-font-m"
+          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
+          fontFamily="ms-font-s"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
           children={functionItemArray}
@@ -127,10 +130,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       errorItemsContainer.push(errorItem);
     } else {
       items.successful.forEach(item => {
-        const successItem = (
+        const successItem: any = (
           <DetailsItem
-            content={`=SCRIPTLAB.${snippetName}.${item}`}
-            fontFamily="ms-font-m"
+            content={`=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`}
+            fontFamily="ms-font-s"
             statusIcon="Completed"
             statusIconColor="#107C10"
             noDropdown={true}
@@ -175,7 +178,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       {successItemsContainer.length === 0 && (
         <DetailsItem
           fontFamily={'ms-font-m'}
-          content={'There are no registered functions. Please fix the errors.'}
+          content={'There are no registered functions.'}
           noDropdown={true}
           indent={'10px'}
         />

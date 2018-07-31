@@ -6,6 +6,12 @@ const metadata: ICFVisualMetadata = { snippets: [] };
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<CustomFunctionsDashboard metadata={metadata} />, div);
+  ReactDOM.render(
+    <CustomFunctionsDashboard
+      metadata={metadata}
+      engineStatus={{ enabled: true, nativeRuntime: true }}
+    />,
+    div
+  );
   ReactDOM.unmountComponentAtNode(div);
 });

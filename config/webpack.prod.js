@@ -6,8 +6,13 @@ const path = require('path');
 const ENV = (process.env.NODE_ENV = process.env.ENV = 'production');
 const { TRAVIS } = process.env;
 
-module.exports = env =>
-  webpackMerge(commonConfig(env.mode === 'prod'), {
+module.exports = env => {
+  const configParams = {
+    prodMode: env.mode === 'prod',
+    isLocalHost: false,
+  };
+
+  return webpackMerge(commonConfig(configParams), {
     devtool: 'source-map',
 
     module: {
@@ -65,3 +70,4 @@ module.exports = env =>
       }),
     ],
   });
+};
