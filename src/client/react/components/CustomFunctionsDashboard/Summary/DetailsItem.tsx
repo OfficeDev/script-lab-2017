@@ -38,8 +38,7 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
-    // TODO: word-break ONLY on snippet and function
-    // TODO: small caps on snippet and function
+
     const ContainerWrapper = styled.div`
       &:hover: {
         color: red;
