@@ -60,7 +60,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     });
 
     const scriptLabTopLevelNamespace =
-      'SCRIPTLAB' + (environment.current.devMode ? 'LOCAL' : '');
+      'ScriptLab' + (environment.current.devMode ? 'Dev' : '');
 
     if (snippet.error) {
       const functionItemArray = [];
@@ -79,7 +79,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
 
         const functionItem = (
           <DetailsItem
-            content={item.name.toUpperCase()}
+            content={item.name}
             fontFamily="ms-font-s"
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
@@ -103,7 +103,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         );
         const functionItem = (
           <DetailsItem
-            content={item.name.toUpperCase()}
+            content={item.name}
             fontFamily="ms-font-s"
             statusIcon="Warning"
             statusIconColor="#F0C784"
@@ -115,10 +115,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         );
         functionItemArray.push(functionItem);
       });
-      const stringTest = `=${scriptLabTopLevelNamespace}.${snippet.name.toUpperCase()}`;
       const errorItem: any = (
         <DetailsItem
-          content={stringTest}
+          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
           fontFamily="ms-font-s"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
@@ -133,7 +132,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.successful.forEach(item => {
         const successItem: any = (
           <DetailsItem
-            content={`=${scriptLabTopLevelNamespace}.${snippet.name.toUpperCase()}.${item.toUpperCase()}`}
+            content={`=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`}
             fontFamily="ms-font-s"
             statusIcon="Completed"
             statusIconColor="#107C10"

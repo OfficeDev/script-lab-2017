@@ -38,6 +38,8 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
+    // TODO: word-break ONLY on snippet and function
+    // TODO: small caps on snippet and function
     const ContainerWrapper = styled.div`
       &:hover: {
         color: red;
@@ -47,7 +49,8 @@ export default class DetailsItem extends Component<IProps, IState> {
       display: flex;
       flex-direction: horizontal;
       margin-left: ${props.indent};
-      word-break: break-all;
+      word-break: ${props.statusIcon && 'break-all'};
+      font-variant: ${props.statusIcon && 'small-caps'};
     `;
 
     const dividerStyle = {
