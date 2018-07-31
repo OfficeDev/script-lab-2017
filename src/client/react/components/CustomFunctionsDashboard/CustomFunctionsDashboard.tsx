@@ -5,7 +5,6 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { mergeStyles } from '@uifabric/merge-styles';
 
 import Summary from './Summary';
-import Details from './Details';
 import Console from './Console';
 import RefreshBar from './RefreshBar';
 import { Authenticator } from '@microsoft/office-js-helpers';
@@ -159,13 +158,14 @@ class CustomFunctionsDashboard extends React.Component<
         <Summary metadata={metadata} />
       </PivotItem>,
 
+      /* commented out in case this needs to be revived
       <PivotItem
         linkText="Details"
         key="Details"
         itemCount={this.getErrorCount() || undefined}
       >
         <Details metadata={metadata} />
-      </PivotItem>,
+      </PivotItem>, */
 
       <PivotItem
         linkText="Console"
@@ -191,12 +191,6 @@ class CustomFunctionsDashboard extends React.Component<
       logs: newLogs,
       runnerLastUpdated: newData.runnerLastUpdated,
     });
-  }
-
-  private getErrorCount() {
-    // Get the count of all snippets where the "error" property is true
-    return this.props.metadata.snippets.map(snippet => snippet.error).filter(item => item)
-      .length;
   }
 }
 
