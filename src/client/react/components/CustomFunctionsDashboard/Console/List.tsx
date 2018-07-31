@@ -39,8 +39,6 @@ const ListContainer = styled.ul``;
 export interface Item {
   key: any;
   name: string;
-  success?: boolean;
-  errorMessage?: string;
   icon?: {
     name: string;
     color: string;
@@ -64,20 +62,6 @@ export default ({ items }) => (
           title={item.title}
         >
           <Text>
-            {!item.success && (
-              <Icon
-                className="ms-font-m"
-                iconName="ChevronDownMed"
-                style={{
-                  width: '18px',
-                  fontSize: '16px',
-                  color: '#666',
-                  marginRight: '5px',
-                  marginLeft: (item.indent || 0) * 5 + 'px',
-                }}
-              />
-            )}
-
             {item.icon && (
               <Icon
                 className="ms-font-m"
@@ -90,15 +74,6 @@ export default ({ items }) => (
               />
             )}
             {item.name}
-            <div
-              style={{
-                alignItems: 'center',
-                fontSize: '12px',
-                marginLeft: (item.indent || 0) * 5 + 'px',
-              }}
-            >
-              {item.errorMessage}
-            </div>
           </Text>
         </ListItem>
       </div>
