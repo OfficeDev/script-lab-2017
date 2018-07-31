@@ -19,8 +19,9 @@ const ErrorContainer = styled.div`
 const functionPadding = '4px 8px 10px 8px';
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  const errorItemsContainer = [];
-  const successItemsContainer = [];
+  const errorItemsContainer: DetailsItem[] = [];
+  const successItemsContainer: DetailsItem[] = [];
+
   metadata.snippets.forEach(snippet => {
     let items: Items = {
       unsuccessful: {
@@ -32,12 +33,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     /* TODO: NOTE - when snippet name is empty it doesn't get read as a custom function at all
     error message that says name cannot be empty
     */
-    const snippetName =
-      snippet.name.length > 27 ? `${snippet.name.substring(0, 27)}...` : snippet.name;
     snippet.functions.forEach(func => {
       const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
-
-      const paramErrorMessages: String[] = [];
+      const paramErrorMessages: string[] = [];
       func.parameters.forEach(param => {
         if (param.error !== undefined) {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
@@ -67,9 +65,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     if (snippet.error) {
       const functionItemArray = [];
       items.unsuccessful.errors.forEach(item => {
-        const errorMessages = [];
-        item.children.forEach(paramErrorMessage => {
-          const paramError = (
+        const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
+          return (
             <DetailsItem
               content={paramErrorMessage}
               fontFamily="ms-font-s"
@@ -77,9 +74,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
               noDropdown={true}
               padding={functionPadding}
             />
-          );
-          errorMessages.push(paramError);
+          ) as any;
         });
+
         const functionItem = (
           <DetailsItem
             content={item.name.toUpperCase()}
@@ -87,7 +84,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="ErrorBadge"
             statusIconColor="#f04251"
             indent="30px"
-            children={errorMessages}
+            children={errorDetailItems}
             noDropdown={true}
             padding={functionPadding}
           />
@@ -118,9 +115,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         );
         functionItemArray.push(functionItem);
       });
-      const errorItem = (
+      const stringTest = `=${scriptLabTopLevelNamespace}.${snippet.name.toUpperCase()}`;
+      const errorItem: any = (
         <DetailsItem
-          content={`=${scriptLabTopLevelNamespace}.${snippetName.toUpperCase()}`}
+          content={stringTest}
           fontFamily="ms-font-s"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
@@ -133,9 +131,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       errorItemsContainer.push(errorItem);
     } else {
       items.successful.forEach(item => {
-        const successItem = (
+        const successItem: any = (
           <DetailsItem
-            content={`=${scriptLabTopLevelNamespace}.${snippetName.toUpperCase()}.${item.toUpperCase()}`}
+            content={`=${scriptLabTopLevelNamespace}.${snippet.name.toUpperCase()}.${item.toUpperCase()}`}
             fontFamily="ms-font-s"
             statusIcon="Completed"
             statusIconColor="#107C10"

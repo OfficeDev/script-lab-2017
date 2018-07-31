@@ -47,6 +47,7 @@ export default class DetailsItem extends Component<IProps, IState> {
       display: flex;
       flex-direction: horizontal;
       margin-left: ${props.indent};
+      word-break: break-all;
     `;
 
     const dividerStyle = {
@@ -81,7 +82,9 @@ export default class DetailsItem extends Component<IProps, IState> {
               style={IconStyling}
             />
           )}
-          <p className={props.fontFamily}>{props.content}</p>
+          <p style={{ width: '100%', marginRight: '5px' }} className={props.fontFamily}>
+            {props.content}
+          </p>
         </ContainerWrapper>
         {state.isExpanded && props.children}
       </div>

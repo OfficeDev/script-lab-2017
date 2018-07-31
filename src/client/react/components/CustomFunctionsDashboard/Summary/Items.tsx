@@ -1,12 +1,12 @@
 export default interface Items {
   unsuccessful: {
-    errors: Invalid[];
-    skipped: Invalid[];
+    errors: InvalidItems[];
+    skipped: InvalidItems[];
   };
-  successful: String[];
+  successful: string[];
 }
 
-interface Invalid {
-  name: String;
-  children: String[];
+interface InvalidItems {
+  name: string;
+  children: string[];
 }
