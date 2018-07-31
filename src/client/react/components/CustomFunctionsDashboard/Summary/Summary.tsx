@@ -30,9 +30,6 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       },
       successful: [],
     };
-    /* TODO: NOTE - when snippet name is empty it doesn't get read as a custom function at all
-    error message that says name cannot be empty
-    */
     snippet.functions.forEach(func => {
       const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
       const paramErrorMessages: string[] = [];
