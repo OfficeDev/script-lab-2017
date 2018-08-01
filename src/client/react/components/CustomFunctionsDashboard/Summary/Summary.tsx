@@ -81,6 +81,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             children={errorDetailItems}
             noDropdown={true}
             padding={functionPadding}
+            statusTitle={true}
           />
         );
         functionItemArray.push(functionItem);
@@ -107,6 +108,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             children={[errorMessage]}
             noDropdown={true}
             padding={functionPadding}
+            statusTitle={true}
           />
         );
         functionItemArray.push(functionItem);
@@ -121,6 +123,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           noDropdown={true}
           indent="7px"
           hasBorderTop={true}
+          statusTitle={true}
         />
       );
       errorItemsContainer.push(errorItem);
@@ -135,6 +138,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             noDropdown={true}
             indent="7px"
             hasBorderTop={true}
+            statusTitle={true}
           />
         );
         successItemsContainer.push(successItem);

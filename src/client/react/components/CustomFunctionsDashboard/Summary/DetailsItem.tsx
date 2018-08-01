@@ -18,6 +18,7 @@ interface IProps {
   backgroundColor?: string;
   hasBorderTop?: boolean;
   padding?: string;
+  statusTitle?: boolean;
 }
 
 const DropDownStyling = {
@@ -39,8 +40,6 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
-
-    // height auto is new
     const ContainerWrapper = styled.div`
       &:hover: {
         color: red;
@@ -50,8 +49,8 @@ export default class DetailsItem extends Component<IProps, IState> {
       display: flex;
       flex-direction: horizontal;
       margin-left: ${props.indent};
-      word-break: ${props.statusIcon && 'break-all'};
-      font-variant: ${props.statusIcon && 'small-caps'};
+      word-break: ${props.statusTitle && 'break-all'};
+      font-variant: ${props.statusTitle && 'small-caps'};
       height: auto;
     `;
 
