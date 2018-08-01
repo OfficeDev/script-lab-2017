@@ -172,7 +172,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           errors.
         </p>
         {errorItemsContainer}
-        <div style={{ marginTop: '8px' }}>
+        <div style={{ marginTop: '12px' }}>
           <DetailsItem
             fontFamily={'ms-font-l'}
             content={'Registered Custom Functions'}
@@ -190,7 +190,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             }}
           >
             These functions run async in Script Lab. You can run them faster in sync mode
-            with these <a href="https://aka.ms/customfunctions">instructions</a>
+            with <a href="https://aka.ms/customfunctions">these instructions</a>
           </p>
           {successItemsContainer}
 
