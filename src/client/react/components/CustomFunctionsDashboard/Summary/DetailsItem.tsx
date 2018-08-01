@@ -9,7 +9,6 @@ interface IState {
 interface IProps {
   content: String;
   fontFamily: string;
-  // TESTING
   caption?: string;
   noDropdown?: boolean;
   statusIcon?: string;
@@ -40,6 +39,7 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
+
     // height auto is new
     const ContainerWrapper = styled.div`
       &:hover: {
@@ -58,7 +58,7 @@ export default class DetailsItem extends Component<IProps, IState> {
     const dividerStyle = {
       borderTop: 'solid',
       borderTopColor: '#eee',
-      borderWidth: '1.3px',
+      borderWidth: '1px',
       background: props.backgroundColor || '#fff',
     };
 
@@ -90,12 +90,10 @@ export default class DetailsItem extends Component<IProps, IState> {
           )}
           <p style={{ width: '100%', marginRight: '5px' }} className={props.fontFamily}>
             {props.content}
-
             <br />
-            {/* {  <span className="ms-font-xs">{props.caption}</span>} */}
+            <span className="ms-font-s">{props.caption}</span>
           </p>
         </ContainerWrapper>
-
         {state.isExpanded && props.children}
       </div>
     );

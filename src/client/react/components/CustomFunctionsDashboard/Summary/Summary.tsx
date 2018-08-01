@@ -13,7 +13,6 @@ const SummaryContainer = styled.div`
   overflow-x: auto;
   overflow-y: auto;
   flex-shrink: 2;
-  border-top: 1px solid #f4f4f4;
 `;
 
 const functionPadding = '4px 8px 10px 8px';
@@ -59,7 +58,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
 
     if (snippet.error) {
       const functionItemArray = [];
-      items.unsuccessful.errors.forEach(item => {
+      items.unsuccessful.errors.map(item => {
         const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
           return (
             <DetailsItem
@@ -150,32 +149,50 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           Custom Functions (Preview)
         </h1>
       </TopInfo>
-      <SummaryContainer style={{ marginTop: '10px' }}>
+      <SummaryContainer>
         {errorItemsContainer.length > 0 && (
           <DetailsItem
             fontFamily={'ms-font-l'}
             content={'Invalid Functions'}
-            caption={'The following snippets contain invalid functions. Please review and fix the errors.'}
-            children={errorItemsContainer}
             noDropdown={true}
             indent={'7px'}
             hasBorderTop={true}
             backgroundColor={'#EEE'}
           />
         )}
+        <p
+          className="ms-font-xs"
+          style={{
+            fontStyle: 'italic',
+            padding: '10px 19px',
+            color: '#777',
+          }}
+        >
+          The following snippets contain invalid functions. Please review and fix the
+          errors.
+        </p>
+        {errorItemsContainer}
         <div style={{ marginTop: '8px' }}>
           <DetailsItem
             fontFamily={'ms-font-l'}
             content={'Registered Custom Functions'}
-            caption={
-              'These functions run async in Script Lab. You can run them faster in sync mode with these instructions. '
-            }
-            children={successItemsContainer}
             noDropdown={true}
             indent={'7px'}
             hasBorderTop={true}
             backgroundColor={'#EEE'}
           />
+          <p
+            className="ms-font-xs"
+            style={{
+              fontStyle: 'italic',
+              padding: '10px 19px',
+              color: '#777',
+            }}
+          >
+            These functions run async in Script Lab. You can run them faster in sync mode
+            with these <a href="https://aka.ms/customfunctions">instructions</a>
+          </p>
+          {successItemsContainer}
 
           {successItemsContainer.length === 0 && (
             <DetailsItem
