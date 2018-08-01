@@ -190,7 +190,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             }}
           >
             These functions run async in Script Lab. You can run them faster in sync mode
-            with <a href="https://aka.ms/customfunctions">these instructions</a>
+            with <a href="https://aka.ms/customfunctions">these instructions</a>.
           </p>
           {successItemsContainer}
 
