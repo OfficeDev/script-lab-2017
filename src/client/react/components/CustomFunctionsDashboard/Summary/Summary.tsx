@@ -8,9 +8,9 @@ const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
 
-const ErrorContainer = styled.div`
+const SummaryContainer = styled.div`
   height: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
   flex-shrink: 2;
   border-top: 1px solid #f4f4f4;
@@ -38,7 +38,6 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
-
       if (snippet.error) {
         if (func.error) {
           items.unsuccessful.errors.push({
@@ -65,8 +64,8 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           return (
             <DetailsItem
               content={paramErrorMessage}
-              fontFamily="ms-font-s"
-              indent="45px"
+              fontFamily="ms-font-xs"
+              indent="50px"
               noDropdown={true}
               padding={functionPadding}
             />
@@ -90,9 +89,11 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.unsuccessful.skipped.forEach(item => {
         let errorMessage = (
           <DetailsItem
-            content={'This function was skipped.'}
-            fontFamily="ms-font-s"
-            indent="45px"
+            content={
+              'This function was skipped because of other invalid functions in the snippet, please fix them.'
+            }
+            fontFamily="ms-font-xs"
+            indent="50px"
             noDropdown={true}
             padding={functionPadding}
           />
@@ -119,7 +120,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           statusIconColor="#f04251"
           children={functionItemArray}
           noDropdown={true}
-          indent="10px"
+          indent="7px"
           hasBorderTop={true}
         />
       );
@@ -133,7 +134,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Completed"
             statusIconColor="#107C10"
             noDropdown={true}
-            indent="10px"
+            indent="7px"
             hasBorderTop={true}
           />
         );
@@ -149,36 +150,43 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           Custom Functions (Preview)
         </h1>
       </TopInfo>
-      {errorItemsContainer.length > 0 && (
-        <ErrorContainer style={{ marginTop: '10px' }}>
+      <SummaryContainer style={{ marginTop: '10px' }}>
+        {errorItemsContainer.length > 0 && (
           <DetailsItem
             fontFamily={'ms-font-l'}
-            content={'Invalid Functions - Please Review'}
+            content={'Invalid Functions'}
+            caption={'The following snippets contain invalid functions. Please review and fix the errors.'}
             children={errorItemsContainer}
             noDropdown={true}
-            indent={'10px'}
+            indent={'7px'}
             hasBorderTop={true}
             backgroundColor={'#EEE'}
           />
-        </ErrorContainer>
-      )}
-      <DetailsItem
-        fontFamily={'ms-font-l'}
-        content={'Registered Custom Functions'}
-        children={successItemsContainer}
-        noDropdown={true}
-        indent={'10px'}
-        hasBorderTop={true}
-        backgroundColor={'#EEE'}
-      />
-      {successItemsContainer.length === 0 && (
-        <DetailsItem
-          fontFamily={'ms-font-m'}
-          content={'There are no registered functions.'}
-          noDropdown={true}
-          indent={'10px'}
-        />
-      )}
+        )}
+        <div style={{ marginTop: '8px' }}>
+          <DetailsItem
+            fontFamily={'ms-font-l'}
+            content={'Registered Custom Functions'}
+            caption={
+              'These functions run async in Script Lab. You can run them faster in sync mode with these instructions. '
+            }
+            children={successItemsContainer}
+            noDropdown={true}
+            indent={'7px'}
+            hasBorderTop={true}
+            backgroundColor={'#EEE'}
+          />
+
+          {successItemsContainer.length === 0 && (
+            <DetailsItem
+              fontFamily={'ms-font-m'}
+              content={'There are no registered functions.'}
+              noDropdown={true}
+              indent={'7px'}
+            />
+          )}
+        </div>
+      </SummaryContainer>
     </PivotContentContainer>
   );
 };

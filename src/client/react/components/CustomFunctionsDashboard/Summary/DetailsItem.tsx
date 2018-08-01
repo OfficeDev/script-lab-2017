@@ -9,6 +9,8 @@ interface IState {
 interface IProps {
   content: String;
   fontFamily: string;
+  // TESTING
+  caption?: string;
   noDropdown?: boolean;
   statusIcon?: string;
   statusIconColor?: string;
@@ -38,7 +40,7 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
-
+    // height auto is new
     const ContainerWrapper = styled.div`
       &:hover: {
         color: red;
@@ -50,6 +52,7 @@ export default class DetailsItem extends Component<IProps, IState> {
       margin-left: ${props.indent};
       word-break: ${props.statusIcon && 'break-all'};
       font-variant: ${props.statusIcon && 'small-caps'};
+      height: auto;
     `;
 
     const dividerStyle = {
@@ -63,9 +66,10 @@ export default class DetailsItem extends Component<IProps, IState> {
       width: '18px',
       fontSize: '16px',
       color: `${props.statusIconColor}`,
-      marginTop: '2px',
-      marginRight: '5px',
+      marginTop: '1px',
+      marginRight: '4px',
     };
+
     return (
       <div style={props.hasBorderTop && dividerStyle}>
         <ContainerWrapper>
@@ -86,8 +90,12 @@ export default class DetailsItem extends Component<IProps, IState> {
           )}
           <p style={{ width: '100%', marginRight: '5px' }} className={props.fontFamily}>
             {props.content}
+
+            <br />
+            {/* {  <span className="ms-font-xs">{props.caption}</span>} */}
           </p>
         </ContainerWrapper>
+
         {state.isExpanded && props.children}
       </div>
     );
