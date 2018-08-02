@@ -9,6 +9,7 @@ interface IState {
 interface IProps {
   content: String;
   fontFamily: string;
+  caption?: string;
   noDropdown?: boolean;
   statusIcon?: string;
   statusIconColor?: string;
@@ -17,6 +18,7 @@ interface IProps {
   backgroundColor?: string;
   hasBorderTop?: boolean;
   padding?: string;
+  statusTitle?: boolean;
 }
 
 const DropDownStyling = {
@@ -38,7 +40,6 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
-
     const ContainerWrapper = styled.div`
       &:hover: {
         color: red;
@@ -48,14 +49,15 @@ export default class DetailsItem extends Component<IProps, IState> {
       display: flex;
       flex-direction: horizontal;
       margin-left: ${props.indent};
-      word-break: ${props.statusIcon && 'break-all'};
-      font-variant: ${props.statusIcon && 'small-caps'};
+      word-break: ${props.statusTitle && 'break-all'};
+      font-variant: ${props.statusTitle && 'small-caps'};
+      height: auto;
     `;
 
     const dividerStyle = {
       borderTop: 'solid',
       borderTopColor: '#eee',
-      borderWidth: '1.3px',
+      borderWidth: '1px',
       background: props.backgroundColor || '#fff',
     };
 
@@ -63,9 +65,10 @@ export default class DetailsItem extends Component<IProps, IState> {
       width: '18px',
       fontSize: '16px',
       color: `${props.statusIconColor}`,
-      marginTop: '2px',
-      marginRight: '5px',
+      marginTop: '1px',
+      marginRight: '4px',
     };
+
     return (
       <div style={props.hasBorderTop && dividerStyle}>
         <ContainerWrapper>
@@ -86,6 +89,8 @@ export default class DetailsItem extends Component<IProps, IState> {
           )}
           <p style={{ width: '100%', marginRight: '5px' }} className={props.fontFamily}>
             {props.content}
+            <br />
+            <span className="ms-font-s">{props.caption}</span>
           </p>
         </ContainerWrapper>
         {state.isExpanded && props.children}

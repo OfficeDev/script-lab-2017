@@ -8,12 +8,11 @@ const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
 
-const ErrorContainer = styled.div`
+const SummaryContainer = styled.div`
   height: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
   flex-shrink: 2;
-  border-top: 1px solid #f4f4f4;
 `;
 
 const functionPadding = '4px 8px 10px 8px';
@@ -38,7 +37,6 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
-
       if (snippet.error) {
         if (func.error) {
           items.unsuccessful.errors.push({
@@ -60,13 +58,13 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
 
     if (snippet.error) {
       const functionItemArray = [];
-      items.unsuccessful.errors.forEach(item => {
+      items.unsuccessful.errors.map(item => {
         const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
           return (
             <DetailsItem
               content={paramErrorMessage}
-              fontFamily="ms-font-s"
-              indent="45px"
+              fontFamily="ms-font-xs"
+              indent="50px"
               noDropdown={true}
               padding={functionPadding}
             />
@@ -83,6 +81,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             children={errorDetailItems}
             noDropdown={true}
             padding={functionPadding}
+            statusTitle={true}
           />
         );
         functionItemArray.push(functionItem);
@@ -90,9 +89,11 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       items.unsuccessful.skipped.forEach(item => {
         let errorMessage = (
           <DetailsItem
-            content={'This function was skipped.'}
-            fontFamily="ms-font-s"
-            indent="45px"
+            content={
+              'This function was skipped because of other invalid functions in the snippet, please fix them.'
+            }
+            fontFamily="ms-font-xs"
+            indent="50px"
             noDropdown={true}
             padding={functionPadding}
           />
@@ -107,6 +108,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             children={[errorMessage]}
             noDropdown={true}
             padding={functionPadding}
+            statusTitle={true}
           />
         );
         functionItemArray.push(functionItem);
@@ -119,8 +121,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           statusIconColor="#f04251"
           children={functionItemArray}
           noDropdown={true}
-          indent="10px"
+          indent="7px"
           hasBorderTop={true}
+          statusTitle={true}
         />
       );
       errorItemsContainer.push(errorItem);
@@ -133,8 +136,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Completed"
             statusIconColor="#107C10"
             noDropdown={true}
-            indent="10px"
+            indent="7px"
             hasBorderTop={true}
+            statusTitle={true}
           />
         );
         successItemsContainer.push(successItem);
@@ -149,36 +153,61 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           Custom Functions (Preview)
         </h1>
       </TopInfo>
-      {errorItemsContainer.length > 0 && (
-        <ErrorContainer style={{ marginTop: '10px' }}>
+      <SummaryContainer>
+        {errorItemsContainer.length > 0 && (
           <DetailsItem
             fontFamily={'ms-font-l'}
-            content={'Invalid Functions - Please Review'}
-            children={errorItemsContainer}
+            content={'Invalid Functions'}
             noDropdown={true}
-            indent={'10px'}
+            indent={'7px'}
             hasBorderTop={true}
             backgroundColor={'#EEE'}
           />
-        </ErrorContainer>
-      )}
-      <DetailsItem
-        fontFamily={'ms-font-l'}
-        content={'Registered Custom Functions'}
-        children={successItemsContainer}
-        noDropdown={true}
-        indent={'10px'}
-        hasBorderTop={true}
-        backgroundColor={'#EEE'}
-      />
-      {successItemsContainer.length === 0 && (
-        <DetailsItem
-          fontFamily={'ms-font-m'}
-          content={'There are no registered functions.'}
-          noDropdown={true}
-          indent={'10px'}
-        />
-      )}
+        )}
+        <p
+          className="ms-font-xs"
+          style={{
+            fontStyle: 'italic',
+            padding: '10px 19px',
+            color: '#777',
+          }}
+        >
+          The following snippets contain invalid functions. Please review and fix the
+          errors.
+        </p>
+        {errorItemsContainer}
+        <div style={{ marginTop: '12px' }}>
+          <DetailsItem
+            fontFamily={'ms-font-l'}
+            content={'Registered Custom Functions'}
+            noDropdown={true}
+            indent={'7px'}
+            hasBorderTop={true}
+            backgroundColor={'#EEE'}
+          />
+          <p
+            className="ms-font-xs"
+            style={{
+              fontStyle: 'italic',
+              padding: '10px 19px',
+              color: '#777',
+            }}
+          >
+            These functions run async in Script Lab. You can run them faster in sync mode
+            with <a href="https://aka.ms/customfunctions">these instructions</a>.
+          </p>
+          {successItemsContainer}
+
+          {successItemsContainer.length === 0 && (
+            <DetailsItem
+              fontFamily={'ms-font-m'}
+              content={'There are no registered functions.'}
+              noDropdown={true}
+              indent={'7px'}
+            />
+          )}
+        </div>
+      </SummaryContainer>
     </PivotContentContainer>
   );
 };
