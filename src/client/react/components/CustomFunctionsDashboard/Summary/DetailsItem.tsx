@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 
 interface IState {
   isExpanded: boolean;
