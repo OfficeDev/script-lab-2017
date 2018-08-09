@@ -4,13 +4,20 @@ import PivotContentContainer from '../PivotContentContainer';
 import DetailsItem from './DetailsItem';
 import { getScriptLabTopLevelNamespace } from '../../../../app/helpers';
 import Items from './Items';
+import {
+  DetailsList,
+  CheckboxVisibility,
+  DetailsListLayoutMode,
+} from 'office-ui-fabric-react/lib/DetailsList';
+
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
 
 const SummaryContainer = styled.div`
   height: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
+  width: auto;
   overflow-y: auto;
   flex-shrink: 2;
 `;
@@ -18,8 +25,42 @@ const SummaryContainer = styled.div`
 const functionPadding = '4px 8px 10px 8px';
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
+  //stuff in here is constantly re-rendered every second? is that why tooltip keeps spazzing out and dropdown doesn't work??
+
   const errorItemsContainer: DetailsItem[] = [];
   const successItemsContainer: DetailsItem[] = [];
+  let detailsListErrors = [
+    /*{ name: 'sample(...)' },
+    { name: 'add2(...)' },
+    { name: 'mult2(...)' },*/
+  ];
+  const groupsErrors = [
+    /* dummy data: example schema for a grouped details list for reference
+     {
+      count: 2,
+      key: 'unique',
+      name: '=ScriptLab.Addition', // this should be the snippet top level namespace
+      startIndex: 0,
+      level: 0,
+      children: [
+        {
+          count: 1,
+          key: 'unique-nested',
+          name: 'add2(...)',
+          startIndex: 0,
+          level: 1,
+        },
+      ], // this should be the function groups
+    },
+    {
+      count: 1,
+      key: 'unique-2',
+      name: '=ScriptLab.Multiply',
+      startIndex: 0,
+      level: 0,
+      children: [],
+    }, */
+  ];
 
   metadata.snippets.forEach(snippet => {
     let items: Items = {
@@ -57,76 +98,20 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
     const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
 
     if (snippet.error) {
-      const functionItemArray = [];
+      //TODO: testing out detailslist function
+      const detailsListFunctionArray = [];
       items.unsuccessful.errors.map(item => {
-        const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
-          return (
-            <DetailsItem
-              content={paramErrorMessage}
-              fontFamily="ms-font-xs"
-              indent="50px"
-              noDropdown={true}
-              padding={functionPadding}
-            />
-          ) as any;
-        });
-
-        const functionItem = (
-          <DetailsItem
-            content={item.name}
-            fontFamily="ms-font-s"
-            statusIcon="ErrorBadge"
-            statusIconColor="#f04251"
-            indent="30px"
-            children={errorDetailItems}
-            noDropdown={true}
-            padding={functionPadding}
-            statusTitle={true}
-          />
-        );
-        functionItemArray.push(functionItem);
+        createItems(item.children, detailsListErrors);
+        // TODO: testing out detailslist function group creation
+        createGroup('function', item.name, detailsListFunctionArray, null);
       });
-      items.unsuccessful.skipped.forEach(item => {
-        let errorMessage = (
-          <DetailsItem
-            content={
-              'This function was skipped because of other invalid functions in the snippet, please fix them.'
-            }
-            fontFamily="ms-font-xs"
-            indent="50px"
-            noDropdown={true}
-            padding={functionPadding}
-          />
-        );
-        const functionItem = (
-          <DetailsItem
-            content={item.name}
-            fontFamily="ms-font-s"
-            statusIcon="Warning"
-            statusIconColor="#F0C784"
-            indent="30px"
-            children={[errorMessage]}
-            noDropdown={true}
-            padding={functionPadding}
-            statusTitle={true}
-          />
-        );
-        functionItemArray.push(functionItem);
-      });
-      const errorItem: any = (
-        <DetailsItem
-          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
-          fontFamily="ms-font-s"
-          statusIcon="ErrorBadge"
-          statusIconColor="#f04251"
-          children={functionItemArray}
-          noDropdown={true}
-          indent="7px"
-          hasBorderTop={true}
-          statusTitle={true}
-        />
+      // TODO: testing out detailslist function group creation
+      createGroup(
+        'snippet',
+        `=${scriptLabTopLevelNamespace}.${snippet.name}`,
+        groupsErrors,
+        detailsListFunctionArray
       );
-      errorItemsContainer.push(errorItem);
     } else {
       items.successful.forEach(item => {
         const successItem: any = (
@@ -177,6 +162,15 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           </p>
         )}
         {errorItemsContainer}
+
+        <DetailsList
+          groups={groupsErrors}
+          items={detailsListErrors}
+          checkboxVisibility={CheckboxVisibility.hidden} // KNOWN BUG: this doesn't work in all scenarios
+          isHeaderVisible={false}
+          layoutMode={DetailsListLayoutMode.justified}
+        />
+
         <div style={{ marginTop: '12px' }}>
           <DetailsItem
             fontFamily={'ms-font-l'}
@@ -210,6 +204,41 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       </SummaryContainer>
     </PivotContentContainer>
   );
+
+  /* HELPER: for snippets and function */
+  function createGroup(
+    type: string,
+    name: string,
+    parentContainer: any[],
+    children: any[] = null
+  ) {
+    let level: number;
+    if (type === 'snippet') {
+      level = 0;
+    }
+    if (type === 'function') {
+      level = 1;
+    }
+    //logic for children rendering goes here
+    // const params = createGroups("functions", name2)
+    parentContainer.push({
+      count: 1,
+      key: type + groupsErrors.length,
+      name: name,
+      startIndex: 0,
+      level: level,
+      children: children,
+    });
+  }
+
+  /* HELPER: for parameter error messages */
+  function createItems(errorMessages, parentContainer) {
+    errorMessages.forEach(errorMessage => {
+      parentContainer.push({
+        name: errorMessage,
+      });
+    });
+  }
 };
 
 export default Summary;
