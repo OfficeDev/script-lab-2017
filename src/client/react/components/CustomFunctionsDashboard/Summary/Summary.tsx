@@ -164,17 +164,18 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             backgroundColor={'#EEE'}
           />
         )}
-        <p
-          className="ms-font-xs"
-          style={{
-            fontStyle: 'italic',
-            padding: '10px 19px',
-            color: '#777',
-          }}
-        >
-          The following snippets contain invalid functions. Please review and fix the
-          errors.
-        </p>
+        {errorItemsContainer.length > 0 && (
+          <p
+            className="ms-font-xs"
+            style={{
+              padding: '10px 19px',
+              color: '#777',
+            }}
+          >
+            The following snippets contain invalid functions. Please review and fix the
+            errors.
+          </p>
+        )}
         {errorItemsContainer}
         <div style={{ marginTop: '12px' }}>
           <DetailsItem
@@ -188,7 +189,6 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           <p
             className="ms-font-xs"
             style={{
-              fontStyle: 'italic',
               padding: '10px 19px',
               color: '#777',
             }}
