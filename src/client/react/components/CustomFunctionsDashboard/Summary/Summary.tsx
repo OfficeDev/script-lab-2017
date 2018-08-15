@@ -19,7 +19,8 @@ const functionPadding = '4px 8px 10px 8px';
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   const errorItemsContainer: DetailsItem[] = [];
-  const successItemsContainer: DetailsItem[] = [];
+  let successItemsContainer: DetailsItem[] = [];
+  const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
 
   metadata.snippets.forEach(snippet => {
     let items: Items = {
@@ -54,22 +55,15 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       }
     });
 
-    const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
-
     if (snippet.error) {
       const functionItemArray = [];
       items.unsuccessful.errors.map(item => {
-        const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
-          return (
-            <DetailsItem
-              content={paramErrorMessage}
-              fontFamily="ms-font-xs"
-              indent="50px"
-              noDropdown={true}
-              padding={functionPadding}
-            />
-          ) as any;
-        });
+        const errorDetailItems: DetailsItem[] = generateRows(
+          item.children,
+          'ms-font-xs',
+          '50px',
+          functionPadding
+        );
 
         const functionItem = (
           <DetailsItem
@@ -87,16 +81,13 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         functionItemArray.push(functionItem);
       });
       items.unsuccessful.skipped.forEach(item => {
-        let errorMessage = (
-          <DetailsItem
-            content={
-              'This function was skipped because of other invalid functions in the snippet, please fix them.'
-            }
-            fontFamily="ms-font-xs"
-            indent="50px"
-            noDropdown={true}
-            padding={functionPadding}
-          />
+        const skippedItem: DetailsItem[] = generateRows(
+          [
+            'This function was skipped because of other invalid functions in the snippet, please fix them.',
+          ],
+          'ms-font-xs',
+          '50px',
+          functionPadding
         );
         const functionItem = (
           <DetailsItem
@@ -105,7 +96,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Warning"
             statusIconColor="#F0C784"
             indent="30px"
-            children={[errorMessage]}
+            children={skippedItem}
             noDropdown={true}
             padding={functionPadding}
             statusTitle={true}
@@ -128,23 +119,57 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       );
       errorItemsContainer.push(errorItem);
     } else {
-      items.successful.forEach(item => {
-        const successItem: any = (
-          <DetailsItem
-            content={`=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`}
-            fontFamily="ms-font-s"
-            statusIcon="Completed"
-            statusIconColor="#107C10"
-            noDropdown={true}
-            indent="7px"
-            hasBorderTop={true}
-            statusTitle={true}
-          />
-        );
-        successItemsContainer.push(successItem);
-      });
+      successItemsContainer = generateRows(
+        items.successful,
+        'ms-font-s',
+        '7px',
+        null,
+        'Completed',
+        '#107C10',
+        null,
+        true,
+        true,
+        true,
+        snippet.name
+      );
     }
   });
+
+  /*HELPER FUNCTION*/
+  function generateRows(
+    itemList: any,
+    fontFamily: string,
+    indent: string,
+    padding?: string,
+    statusIcon?: string,
+    statusIconColor?: string,
+    children?: any,
+    hasBorderTop?: boolean,
+    statusTitle?: boolean,
+    isSnippetHeader?: boolean,
+    snippetName?: string
+  ) {
+    const container: DetailsItem[] = itemList.map(itemMessage => {
+      if (isSnippetHeader) {
+        itemMessage = `=${scriptLabTopLevelNamespace}.${snippetName}.${itemMessage}`;
+      }
+      return (
+        <DetailsItem
+          content={itemMessage}
+          fontFamily={fontFamily}
+          indent={indent}
+          noDropdown={true}
+          padding={padding}
+          statusIcon={statusIcon}
+          statusIconColor={statusIconColor}
+          children={children}
+          hasBorderTop={hasBorderTop}
+          statusTitle={statusTitle}
+        />
+      ) as any;
+    });
+    return container;
+  }
 
   return (
     <PivotContentContainer>
@@ -164,17 +189,18 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             backgroundColor={'#EEE'}
           />
         )}
-        <p
-          className="ms-font-xs"
-          style={{
-            fontStyle: 'italic',
-            padding: '10px 19px',
-            color: '#777',
-          }}
-        >
-          The following snippets contain invalid functions. Please review and fix the
-          errors.
-        </p>
+        {errorItemsContainer.length > 0 && (
+          <p
+            className="ms-font-s"
+            style={{
+              padding: '10px 19px',
+              color: '#333',
+            }}
+          >
+            The following snippets contain invalid functions. Please review and fix the
+            errors.
+          </p>
+        )}
         {errorItemsContainer}
         <div style={{ marginTop: '12px' }}>
           <DetailsItem
@@ -186,11 +212,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             backgroundColor={'#EEE'}
           />
           <p
-            className="ms-font-xs"
+            className="ms-font-s"
             style={{
-              fontStyle: 'italic',
               padding: '10px 19px',
-              color: '#777',
+              color: '#333',
             }}
           >
             These functions run async in Script Lab. You can run them faster in sync mode
