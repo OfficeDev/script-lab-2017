@@ -226,7 +226,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           {successItemsContainer.length === 0 && (
             <DetailsItem
               fontFamily={'ms-font-m'}
-              content={'There are no registered functions.'}
+              content={'There are no registered custom functions.'}
               noDropdown={true}
               indent={'7px'}
             />
