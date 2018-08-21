@@ -211,16 +211,19 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             hasBorderTop={true}
             backgroundColor={'#EEE'}
           />
-          <p
-            className="ms-font-s"
-            style={{
-              padding: '10px 19px',
-              color: '#333',
-            }}
-          >
-            These functions run async in Script Lab. You can run them faster in sync mode
-            with <a href="https://aka.ms/customfunctions">these instructions</a>.
-          </p>
+          {successItemsContainer.length > 0 && (
+            <p
+              className="ms-font-s"
+              style={{
+                padding: '10px 19px',
+                color: '#333',
+              }}
+            >
+              These functions run async in Script Lab. You can run them faster in sync
+              mode with <a href="https://aka.ms/customfunctions">these instructions</a>.
+            </p>
+          )}
+
           {successItemsContainer}
 
           {successItemsContainer.length === 0 && (
