@@ -24,7 +24,7 @@ interface IProps {
 const DropDownStyling = {
   width: '18px',
   fontSize: '16px',
-  color: '#666',
+  color: '#333',
   marginTop: '3px',
   marginRight: '5px',
 };

@@ -31,13 +31,8 @@
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid-theme.min.css">
 	<script src="assets/office-js-custom-functions-2018-07-design--api-set-1.3-or-later/office.js"></script>
 
-
 	<script>
-
-		Office.initialize = function () {
-			window.playground_host_ready = true;
-		}
-
+		Office.onReady(() => window.playground_host_ready = true);
 	</script>
 </head>
 
