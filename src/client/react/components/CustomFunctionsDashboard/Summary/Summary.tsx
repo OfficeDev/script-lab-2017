@@ -38,7 +38,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
-      if (!func.result.error) {
+      if (func.result.error) {
         paramErrorMessages.push(`Return - ${func.result.error}`);
       }
       if (snippet.error) {
