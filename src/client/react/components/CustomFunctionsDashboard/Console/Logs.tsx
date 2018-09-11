@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { isEqual } from 'lodash';
 
-import List, { Item } from '../List';
+import List, { Item } from './List';
 
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
