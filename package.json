@@ -33,6 +33,7 @@
     "build:runtime_helpers:prod": "tsc -p src/runtime-helpers/tsconfig.json",
     "build:server_maker:dev": "tsc -p src/server/maker/tsconfig.json --watch",
     "build:server_maker:prod": "tsc -p src/server/maker/tsconfig.json",
+    "build:custom-functions-boilerplate": "tsc -p src/custom-functions-boilerplate && webpack --config src/custom-functions-boilerplate/webpack.config.js",
     "build:dev": "webpack-dev-server --config config/webpack.dev.js --progress",
     "build:prod": "webpack --config config/webpack.prod.js --env.mode=prod --progress --colors --bail",
     "start": "npm-run-all clean -p build:runtime_helpers:dev build:server_maker:dev build:dev dev:*",

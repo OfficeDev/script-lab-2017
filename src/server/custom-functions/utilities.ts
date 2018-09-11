@@ -7,7 +7,7 @@ export function getCustomFunctionsInfoForRegistration(
   strings: ServerStrings
 ): { visual: ICFVisualMetadata; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
-  const code: string[] = [];
+  const code: string[] = [...generateCodePreamble()];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
     const namespace = transformSnippetName(snippet.name);
@@ -154,6 +154,7 @@ function wrapCustomFunctionSnippetCode(
   }
 }
 
+function generateCodePreamble() {}
 function getFunctionChildNodeStatus(
   func: ICFVisualFunctionMetadata,
   funcStatus: CustomFunctionsRegistrationStatus,

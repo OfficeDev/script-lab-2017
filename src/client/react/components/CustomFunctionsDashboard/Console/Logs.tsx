@@ -6,6 +6,7 @@ import List, { Item } from './List';
 
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import { ConsoleLogTypes } from '../../../../app/helpers';
 
 const FilterWrapper = styled.div`
   display: flex;

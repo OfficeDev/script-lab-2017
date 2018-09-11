@@ -286,11 +286,9 @@ interface DefaultAuthRequestParamData {
   auth_url: string;
 }
 
-type ConsoleLogTypes = 'log' | 'info' | 'warn' | 'error';
-
 interface LogData {
   source: string;
   message: any;
-  severity: ConsoleLogTypes;
+  severity: string /* as defined in ConsoleLogTypes */;
   indent?: number;
 }
