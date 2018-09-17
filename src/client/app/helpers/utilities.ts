@@ -64,17 +64,17 @@ export async function getCustomFunctionEngineStatus(): Promise<
     const platform = Office.context.platform;
 
     if (platform === Office.PlatformType.PC) {
-      if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
-        return getPCstatusPre1_3();
+      if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.4)) {
+        return getPCstatusPre1_4();
       }
-      return getStatusPost1_3();
+      return getStatusPost1_4();
     }
 
     if (
       platform === Office.PlatformType.Mac &&
-      Office.context.requirements.isSetSupported('CustomFunctions', 1.3)
+      Office.context.requirements.isSetSupported('CustomFunctions', 1.4)
     ) {
-      return getStatusPost1_3();
+      return getStatusPost1_4();
     }
 
     if (platform === Office.PlatformType.OfficeOnline) {
@@ -92,7 +92,7 @@ export async function getCustomFunctionEngineStatus(): Promise<
 
   // Helpers:
 
-  async function getPCstatusPre1_3(): Promise<CustomFunctionEngineStatus> {
+  async function getPCstatusPre1_4(): Promise<CustomFunctionEngineStatus> {
     const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(Office.context.diagnostics.version)[1];
 
     if (semver.lt(threeDotVersion, '16.0.9323')) {
@@ -115,7 +115,7 @@ export async function getCustomFunctionEngineStatus(): Promise<
               .load('value') as OfficeExtension.ClientResult<boolean>
         );
 
-        const flightThatMustBeOffPre1_3 = (context as any).flighting
+        const flightThatMustBeOffPre1_4 = (context as any).flighting
           .getFeatureGate('Microsoft.Office.OEP.SdxSandbox')
           .load('value') as OfficeExtension.ClientResult<boolean>;
 
@@ -129,7 +129,7 @@ export async function getCustomFunctionEngineStatus(): Promise<
           return { enabled: false };
         }
 
-        if (flightThatMustBeOffPre1_3.value) {
+        if (flightThatMustBeOffPre1_4.value) {
           return {
             error: `Conflict: please disable the "Microsoft.Office.OEP.SdxSandbox" flight, or install a newer version of Excel`,
             enabled: false,
@@ -144,7 +144,7 @@ export async function getCustomFunctionEngineStatus(): Promise<
     );
   }
 
-  async function getStatusPost1_3(): Promise<CustomFunctionEngineStatus> {
+  async function getStatusPost1_4(): Promise<CustomFunctionEngineStatus> {
     return tryExcelRun(
       async (context): Promise<CustomFunctionEngineStatus> => {
         const manager = (Excel as any).CustomFunctionManager.newObject(context).load(
