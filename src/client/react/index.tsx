@@ -19,14 +19,12 @@ import Welcome from './components/CustomFunctionsDashboard/Welcome';
 const { localStorageKeys } = PLAYGROUND;
 
 import '../assets/styles/extras.scss';
+import { clearLogStorage } from './components/CustomFunctionsDashboard/Console';
 
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
   environment.initializePartial({ host: 'EXCEL' });
-
-  // clear out any former logs in the storage -- showing logs from a previous session is confusing
-  window.localStorage.removeItem(localStorageKeys.log);
 
   // Now wait for the host.  The advantage of doing it this way is that you can easily
   // bypass it for debugging, just by entering "window.playground_host_ready = true;"
@@ -43,6 +41,9 @@ tryCatch(async () => {
   const engineStatus = await getCustomFunctionEngineStatus();
   if (engineStatus.enabled) {
     initializeIcons();
+
+    // clear out any former logs in the storage -- showing logs from a previous session is confusing
+    await clearLogStorage(engineStatus);
 
     const { visual, code } = await getCustomFunctionsInfo();
 

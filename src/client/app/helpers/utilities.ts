@@ -4,6 +4,7 @@ import { toNumber } from 'lodash';
 import * as semver from 'semver';
 import { environment } from '.';
 import { stringifyPlusPlus } from './standalone-log-helper';
+import { isUndefined } from 'lodash';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = [
@@ -50,48 +51,57 @@ export interface CustomFunctionEngineStatus {
   nativeRuntime?: boolean;
 }
 
+let cachedCFEngineStatus;
 export async function getCustomFunctionEngineStatus(): Promise<
   CustomFunctionEngineStatus
 > {
-  try {
-    if (environment.current.experimentationFlags.customFunctions.forceOn) {
-      return { enabled: true };
-    }
-
-    if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
-      return { enabled: false };
-    }
-
-    const platform = Office.context.platform;
-
-    if (platform === Office.PlatformType.PC) {
-      if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
-        return getPCstatusPre1_3();
-      }
-      return getStatusPost1_3();
-    }
-
-    if (
-      platform === Office.PlatformType.Mac &&
-      Office.context.requirements.isSetSupported('CustomFunctions', 1.3)
-    ) {
-      return getStatusPost1_3();
-    }
-
-    if (platform === Office.PlatformType.OfficeOnline) {
-      // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.  For now, assume that it's off.
-      return { enabled: false };
-    }
-
-    // Catch-all:
-    return { enabled: false };
-  } catch (e) {
-    console.error('Could not perform a "getCustomFunctionEngineStatus" check');
-    console.error(e);
-    return { enabled: false };
+  if (isUndefined(cachedCFEngineStatus)) {
+    cachedCFEngineStatus = await queryCFEngineStatus();
   }
 
+  return cachedCFEngineStatus;
+
   // Helpers:
+
+  async function queryCFEngineStatus() {
+    try {
+      if (environment.current.experimentationFlags.customFunctions.forceOn) {
+        return { enabled: true };
+      }
+
+      if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
+        return { enabled: false };
+      }
+
+      const platform = Office.context.platform;
+
+      if (platform === Office.PlatformType.PC) {
+        if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
+          return getPCstatusPre1_3();
+        }
+        return getStatusPost1_3();
+      }
+
+      if (
+        platform === Office.PlatformType.Mac &&
+        Office.context.requirements.isSetSupported('CustomFunctions', 1.3)
+      ) {
+        return getStatusPost1_3();
+      }
+
+      if (platform === Office.PlatformType.OfficeOnline) {
+        // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.  For now, assume that it's off.
+        return { enabled: false };
+      }
+
+      // Catch-all:
+      return { enabled: false };
+    } catch (e) {
+      console.error('Could not perform a "getCustomFunctionEngineStatus" check');
+      console.error(e);
+      return { enabled: false };
+    }
+  }
 
   async function getPCstatusPre1_3(): Promise<CustomFunctionEngineStatus> {
     const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(Office.context.diagnostics.version)[1];
