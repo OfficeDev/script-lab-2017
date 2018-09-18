@@ -37,6 +37,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
+      if (func.result.error) {
+        paramErrorMessages.push(`Return - ${func.result.error}`);
+      }
       if (snippet.error) {
         if (func.error) {
           items.unsuccessful.errors.push({
@@ -166,10 +169,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         )}
         {errorItemsContainer.length > 0 && (
           <p
-            className="ms-font-xs"
+            className="ms-font-s"
             style={{
               padding: '10px 19px',
-              color: '#777',
+              color: '#333',
             }}
           >
             The following snippets contain invalid functions. Please review and fix the
@@ -186,22 +189,12 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             hasBorderTop={true}
             backgroundColor={'#EEE'}
           />
-          <p
-            className="ms-font-xs"
-            style={{
-              padding: '10px 19px',
-              color: '#777',
-            }}
-          >
-            These functions run async in Script Lab. You can run them faster in sync mode
-            with <a href="https://aka.ms/customfunctions">these instructions</a>.
-          </p>
           {successItemsContainer}
 
           {successItemsContainer.length === 0 && (
             <DetailsItem
               fontFamily={'ms-font-m'}
-              content={'There are no registered functions.'}
+              content={'There are no registered custom functions.'}
               noDropdown={true}
               indent={'7px'}
             />
