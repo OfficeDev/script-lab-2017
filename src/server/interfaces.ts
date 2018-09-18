@@ -75,7 +75,6 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
   metadataBase64: string;
   clientTimestamp: number;
   loadFromOfficeJsPreviewCachedCopy: boolean;
-  customFunctionsOfficeJsLocation: string;
 }
 
 export interface IErrorHandlebarsContext {
