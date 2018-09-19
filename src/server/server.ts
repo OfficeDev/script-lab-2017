@@ -303,7 +303,7 @@ registerRoute('post', '/compile/page', (req, res) =>
  */
 registerRoute('post', '/custom-functions/run', async (req, res) => {
   const params: IRunnerCustomFunctionsPostData = JSON.parse(req.body.data);
-  let { snippets, loadFromOfficeJsPreviewCachedCopy } = params;
+  let { snippets } = params;
 
   snippets = snippets.filter(snippet => {
     const result = parseMetadata(
@@ -355,14 +355,7 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
     })
   );
 
-  const customFunctionsOfficeJsLocation = `${currentConfig.editorUrl}/assets/${
-    loadFromOfficeJsPreviewCachedCopy
-      ? 'office-js-custom-functions-2018-05-design--npm-custom-functions-preview-tag'
-      : 'office-js-custom-functions-2018-07-design--api-set-1.3-or-later'
-  }/office.js`;
-
   const html = customFunctionsRunnerGenerator({
-    customFunctionsOfficeJsLocation,
     snippetsDataBase64: base64encode(
       JSON.stringify(snippetCompileResults.map(result => result.html))
     ),
@@ -370,7 +363,6 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
       JSON.stringify(snippets.map(snippet => ({ id: snippet.id, ...snippet.metadata })))
     ),
     clientTimestamp: params.heartbeatParams.clientTimestamp,
-    loadFromOfficeJsPreviewCachedCopy: loadFromOfficeJsPreviewCachedCopy,
   });
 
   timer.stop();

@@ -8,7 +8,6 @@ import {
   environment,
   getCustomFunctionEngineStatus,
   isCustomFunctionScript,
-  getScriptLabTopLevelNamespace,
 } from '../../client/app/helpers';
 import { uniqBy, flatten } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
@@ -23,7 +22,7 @@ import '../assets/styles/extras.scss';
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
-  environment.initializePartial({ host: 'EXCEL' });
+  await environment.initialize({ host: 'EXCEL' });
 
   // clear out any former logs in the storage -- showing logs from a previous session is confusing
   window.localStorage.removeItem(localStorageKeys.log);
@@ -148,24 +147,13 @@ async function registerMetadata(
     }),
   };
 
-  if (Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
-    await Excel.run(async context => {
-      (Excel as any).CustomFunctionManager.newObject(context).register(
-        JSON.stringify(registrationPayload, null, 4),
-        code
-      );
-      await context.sync();
-    });
-  } else {
-    // Older style registration
-    await Excel.run(async context => {
-      (context.workbook as any).registerCustomFunctions(
-        getScriptLabTopLevelNamespace().toUpperCase(),
-        JSON.stringify(registrationPayload)
-      );
-      await context.sync();
-    });
-  }
+  await Excel.run(async context => {
+    (Excel as any).CustomFunctionManager.newObject(context).register(
+      JSON.stringify(registrationPayload, null, 4),
+      code
+    );
+    await context.sync();
+  });
 }
 
 async function tryCatch(callback: () => void) {

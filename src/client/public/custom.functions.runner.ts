@@ -8,6 +8,7 @@ import {
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
 
+declare var CustomFunctionMappings: { [key: string]: any };
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -40,8 +41,7 @@ tryCatch(async () => {
     await initializeRunnableSnippets(params);
     logIfExtraLoggingEnabled('Done preparing snippets');
 
-    logIfExtraLoggingEnabled('Calling into Excel to request the pipeline to initialize');
-    await window['Office']['Preview']['startCustomFunctions']();
+    delete CustomFunctionMappings['__delay__'];
 
     logIfExtraLoggingEnabled(
       'Custom functions runner is ready to evaluate your functions!'
