@@ -73,7 +73,6 @@ interface ICustomFunctionsRegistrationApiMetadata {
 
 interface ICustomFunctionsHeartbeatParams {
   clientTimestamp: number;
-  loadFromOfficeJsPreviewCachedCopy: boolean;
 }
 
 interface ICustomFunctionsRunnerRelevantData {
@@ -95,7 +94,6 @@ interface ICustomFunctionsMetadataRequestPostData {
 
 interface IRunnerCustomFunctionsPostData {
   snippets: ICustomFunctionsRunnerRelevantData[];
-  loadFromOfficeJsPreviewCachedCopy: boolean;
   displayLanguage: string;
   heartbeatParams: ICustomFunctionsHeartbeatParams;
   experimentationFlags: ExperimentationFlags;

@@ -20,8 +20,7 @@
             snippetsDataBase64: '{{{snippetsDataBase64}}}',
             metadataBase64: '{{{metadataBase64}}}',
             heartbeatParams: {
-		        clientTimestamp: {{clientTimestamp}},
-                loadFromOfficeJsPreviewCachedCopy: {{loadFromOfficeJsPreviewCachedCopy}}
+                clientTimestamp: {{clientTimestamp}}
             }
         };
     </script>
