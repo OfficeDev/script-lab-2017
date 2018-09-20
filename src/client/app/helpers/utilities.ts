@@ -52,27 +52,23 @@ export async function getCustomFunctionEngineStatus(): Promise<
   CustomFunctionEngineStatus
 > {
   try {
-    if (environment.current.experimentationFlags.customFunctions.forceOn) {
-      return { enabled: true };
-    }
-
     if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.4)) {
       return { enabled: false };
     }
 
     const platform = Office.context.platform;
 
-    if (platform === Office.PlatformType.PC || platform === Office.PlatformType.Mac) {
+    const isOnSupportedPlatform = platform === Office.PlatformType.PC;
+    if (isOnSupportedPlatform) {
       return getEngineStatus();
     }
 
-    if (platform === Office.PlatformType.OfficeOnline) {
-      // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.  For now, assume that it's off.
+    // Catch-all, if haven't responded already:
+    if (environment.current.experimentationFlags.customFunctions.forceOn) {
+      return { enabled: true };
+    } else {
       return { enabled: false };
     }
-
-    // Catch-all:
-    return { enabled: false };
   } catch (e) {
     console.error('Could not perform a "getCustomFunctionEngineStatus" check');
     console.error(e);
