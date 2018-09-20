@@ -20,7 +20,7 @@ var TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env['TRAVIS_COMMIT_MESSAGE'].repla
   /\W/g,
   '_'
 );
-var DAYS_TO_KEEP_HISTORY = 90;
+var DAYS_TO_KEEP_HISTORY = 180;
 process.env.NODE_ENV = process.env.ENV = 'production';
 try {
   precheck();
