@@ -8,8 +8,6 @@ import {
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
 
-declare var CustomFunctionMappings: { [key: string]: any };
-
 interface InitializationParams {
   snippetsDataBase64: string;
   metadataBase64: string;
