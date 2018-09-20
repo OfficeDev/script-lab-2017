@@ -61,18 +61,21 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
 
     if (snippet.error) {
       const functionItemArray = [];
-      items.unsuccessful.errors.map(item => {
-        const errorDetailItems: DetailsItem[] = item.children.map(paramErrorMessage => {
-          return (
-            <DetailsItem
-              content={paramErrorMessage}
-              fontFamily="ms-font-xs"
-              indent="50px"
-              noDropdown={true}
-              padding={functionPadding}
-            />
-          ) as any;
-        });
+      items.unsuccessful.errors.map((item, index) => {
+        const errorDetailItems: DetailsItem[] = item.children.map(
+          (paramErrorMessage, index) => {
+            return (
+              <DetailsItem
+                content={paramErrorMessage}
+                fontFamily="ms-font-xs"
+                indent="50px"
+                noDropdown={true}
+                padding={functionPadding}
+                key={index}
+              />
+            ) as any;
+          }
+        );
 
         const functionItem = (
           <DetailsItem
@@ -85,11 +88,12 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             noDropdown={true}
             padding={functionPadding}
             statusTitle={true}
+            key={index}
           />
         );
         functionItemArray.push(functionItem);
       });
-      items.unsuccessful.skipped.forEach(item => {
+      items.unsuccessful.skipped.forEach((item, index) => {
         let errorMessage = (
           <DetailsItem
             content={
@@ -99,6 +103,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             indent="50px"
             noDropdown={true}
             padding={functionPadding}
+            key={index}
           />
         );
         const functionItem = (
@@ -116,9 +121,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
         );
         functionItemArray.push(functionItem);
       });
+      const namespacePlusSnippetName = `=${scriptLabTopLevelNamespace}.${snippet.name}`;
       const errorItem: any = (
         <DetailsItem
-          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
+          content={namespacePlusSnippetName}
           fontFamily="ms-font-s"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
@@ -132,9 +138,10 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       errorItemsContainer.push(errorItem);
     } else {
       items.successful.forEach(item => {
+        const functionFullName = `=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`;
         const successItem: any = (
           <DetailsItem
-            content={`=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`}
+            content={functionFullName}
             fontFamily="ms-font-s"
             statusIcon="Completed"
             statusIconColor="#107C10"
@@ -142,6 +149,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             indent="7px"
             hasBorderTop={true}
             statusTitle={true}
+            key={functionFullName}
           />
         );
         successItemsContainer.push(successItem);
