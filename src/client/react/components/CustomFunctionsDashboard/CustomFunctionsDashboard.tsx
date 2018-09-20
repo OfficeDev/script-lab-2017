@@ -27,7 +27,7 @@ const Container = styled.div`
 
 // interfaces
 interface ICustomFunctionsDashboardState {
-  logs: LogData[];
+  logs: (LogData & { id: string })[];
   runnerIsAlive: boolean;
   runnerLastUpdated: number;
 }
@@ -45,6 +45,7 @@ class CustomFunctionsDashboard extends React.Component<
   private returnUrl: string | undefined;
   private interval;
   private _pivotClassName: string;
+  private _logCounter: number = 0;
 
   constructor(props: ICustomFunctionsDashboardProps) {
     super(props);
@@ -158,15 +159,6 @@ class CustomFunctionsDashboard extends React.Component<
         <Summary metadata={metadata} />
       </PivotItem>,
 
-      /* commented out in case this needs to be revived
-      <PivotItem
-        linkText="Details"
-        key="Details"
-        itemCount={this.getErrorCount() || undefined}
-      >
-        <Details metadata={metadata} />
-      </PivotItem>, */
-
       <PivotItem
         linkText="Console"
         key="Console"
@@ -185,7 +177,10 @@ class CustomFunctionsDashboard extends React.Component<
 
   private performLogFetch() {
     let newData = getLogAndHeartbeatStatus();
-    let newLogs = [...this.state.logs, ...newData.newLogs];
+    let newLogs = [
+      ...this.state.logs,
+      ...newData.newLogs.map(item => ({ id: (this._logCounter++).toString(), ...item })),
+    ];
     this.setState({
       runnerIsAlive: newData.runnerIsAlive,
       logs: newLogs,

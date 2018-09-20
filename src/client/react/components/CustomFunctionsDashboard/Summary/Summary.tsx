@@ -61,9 +61,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
 
     if (snippet.error) {
       const functionItemArray = [];
-      items.unsuccessful.errors.map((item, index) => {
+      items.unsuccessful.errors.map((item, errorIndex) => {
         const errorDetailItems: DetailsItem[] = item.children.map(
-          (paramErrorMessage, index) => {
+          (paramErrorMessage, itemIndex) => {
             return (
               <DetailsItem
                 content={paramErrorMessage}
@@ -71,7 +71,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
                 indent="50px"
                 noDropdown={true}
                 padding={functionPadding}
-                key={index}
+                key={'unsuccessful|error|' + errorIndex + '|' + itemIndex}
               />
             ) as any;
           }
@@ -88,7 +88,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             noDropdown={true}
             padding={functionPadding}
             statusTitle={true}
-            key={index}
+            key={'unsuccessful|error|' + errorIndex}
           />
         );
         functionItemArray.push(functionItem);
@@ -103,7 +103,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             indent="50px"
             noDropdown={true}
             padding={functionPadding}
-            key={index}
+            key={'unsuccessful|skipped|error' + index}
           />
         );
         const functionItem = (
@@ -117,6 +117,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             noDropdown={true}
             padding={functionPadding}
             statusTitle={true}
+            key={'unsuccessful|skipped' + index}
           />
         );
         functionItemArray.push(functionItem);
@@ -133,6 +134,7 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           indent="7px"
           hasBorderTop={true}
           statusTitle={true}
+          key={namespacePlusSnippetName}
         />
       );
       errorItemsContainer.push(errorItem);

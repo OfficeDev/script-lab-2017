@@ -49,7 +49,7 @@ const CustomFunctionEngineStatusUI = ({
 );
 
 interface Props {
-  logs: LogData[];
+  logs: (LogData & { id: string })[];
   runnerLastUpdated: number;
   runnerIsAlive: boolean;
   engineStatus: CustomFunctionEngineStatus;
