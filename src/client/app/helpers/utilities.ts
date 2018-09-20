@@ -58,12 +58,15 @@ export async function getCustomFunctionEngineStatus(): Promise<
 
     const platform = Office.context.platform;
 
-    const isOnSupportedPlatform = platform === Office.PlatformType.PC;
+    const isOnSupportedPlatform =
+      platform === Office.PlatformType.PC ||
+      platform === Office.PlatformType.OfficeOnline;
     if (isOnSupportedPlatform) {
       return getEngineStatus();
     }
 
-    // Catch-all, if haven't responded already:
+    // To allow testing out on a not-officially-supported platform yet (e.g., Mac for now),
+    // have a flag to allow it to bypass the checks and just try to assume that it's enabled.
     if (environment.current.experimentationFlags.customFunctions.forceOn) {
       return { enabled: true };
     } else {

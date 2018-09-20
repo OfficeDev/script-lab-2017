@@ -147,11 +147,17 @@ async function registerMetadata(
     }),
   };
 
+  const jsonMetadataString = JSON.stringify(registrationPayload, null, 4);
+
   await Excel.run(async context => {
-    (Excel as any).CustomFunctionManager.newObject(context).register(
-      JSON.stringify(registrationPayload, null, 4),
-      code
-    );
+    if (Office.context.platform === Office.PlatformType.OfficeOnline) {
+      (context.workbook as any).registerCustomFunctions('SCRIPTLAB', jsonMetadataString);
+    } else {
+      (Excel as any).CustomFunctionManager.newObject(context).register(
+        code,
+        jsonMetadataString
+      );
+    }
     await context.sync();
   });
 }
