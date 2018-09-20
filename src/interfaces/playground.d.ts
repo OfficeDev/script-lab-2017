@@ -142,6 +142,8 @@ interface IEnvironmentConfigsMap {
   staging: IEnvironmentConfig;
   production: IEnvironmentConfig;
   productiondirect: IEnvironmentConfig;
+  reactalpha: IEnvironmentConfig;
+  reactbeta: IEnvironmentConfig;
 }
 
 interface ICompiledPlaygroundInfo {

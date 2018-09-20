@@ -139,6 +139,14 @@ const config = {
     feedbackUrl,
     thirdPartyAADAppClientId,
   },
+  reactalpha: {
+    name: 'REACTALPHA',
+    editorUrl: 'https://script-lab-react-alpha.azurewebsites.net',
+  },
+  reactbeta: {
+    name: 'REACTBETA',
+    editorUrl: 'https://script-lab-react-beta.azurewebsites.net',
+  },
 };
 
 // NOTE: Any changes to this data structure should also be copied to `playground.d.ts`
