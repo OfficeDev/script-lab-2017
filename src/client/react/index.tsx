@@ -136,8 +136,10 @@ async function registerMetadata(
 ): Promise<void> {
   const registrationPayload: ICustomFunctionsRegistrationApiMetadata = {
     functions: functions.filter(func => func.status === 'good').map(func => {
+      let uppercasedFullName = func.nonCapitalizedFullName.toUpperCase();
       let schemaFunc: ICFSchemaFunctionMetadata = {
-        name: func.nonCapitalizedFullName.toUpperCase(),
+        id: uppercasedFullName,
+        name: uppercasedFullName,
         description: func.description,
         options: func.options,
         result: func.result,

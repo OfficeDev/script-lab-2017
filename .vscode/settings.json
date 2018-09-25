@@ -3,7 +3,13 @@
 
   "spellright.notificationClass": "warning",
   "spellright.ignoreFiles": ["**/.gitignore", "**/.spellignore"],
-  "cSpell.words": ["GDPR", "bornholm", "onenote", "powepoint"],
+  "cSpell.words": [
+    "GDPR",
+    "bornholm",
+    "onenote",
+    "powepoint",
+    "uppercased"
+  ],
   "editor.formatOnSave": true,
   "search.exclude": {
     "**/node_modules": true,
