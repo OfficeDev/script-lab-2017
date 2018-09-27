@@ -156,8 +156,8 @@ async function registerMetadata(
       (context.workbook as any).registerCustomFunctions('SCRIPTLAB', jsonMetadataString);
     } else {
       (Excel as any).CustomFunctionManager.newObject(context).register(
-        code,
-        jsonMetadataString
+        jsonMetadataString,
+        code
       );
     }
     await context.sync();
