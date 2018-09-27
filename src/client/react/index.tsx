@@ -8,6 +8,7 @@ import {
   environment,
   getCustomFunctionEngineStatus,
   isCustomFunctionScript,
+  getScriptLabTopLevelNamespace,
 } from '../../client/app/helpers';
 import { uniqBy, flatten } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
@@ -153,7 +154,13 @@ async function registerMetadata(
 
   await Excel.run(async context => {
     if (Office.context.platform === Office.PlatformType.OfficeOnline) {
-      (context.workbook as any).registerCustomFunctions('SCRIPTLAB', jsonMetadataString);
+      const namespace = getScriptLabTopLevelNamespace();
+      (context.workbook as any).registerCustomFunctions(
+        namespace,
+        jsonMetadataString,
+        null,
+        namespace
+      );
     } else {
       (Excel as any).CustomFunctionManager.newObject(context).register(
         jsonMetadataString,
