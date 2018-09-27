@@ -154,7 +154,7 @@ async function registerMetadata(
 
   await Excel.run(async context => {
     if (Office.context.platform === Office.PlatformType.OfficeOnline) {
-      const namespace = getScriptLabTopLevelNamespace();
+      const namespace = getScriptLabTopLevelNamespace().toUpperCase();
       (context.workbook as any).registerCustomFunctions(
         namespace,
         jsonMetadataString,
