@@ -10,7 +10,7 @@
 And again, remember that you must be on an **Insider** build, the Custom Functions feature is not flighted for folks outside of Insiders!
 
 #### Excel Online:
-- As of Sept 27 (and probably for the next week or so), you must be on the **alpha** build of Script Lab to use Script Lab + Custom Functions in Excel Online.  
+- As of Sept 27 2018 (and probably for the next week or so), you must be on the **alpha** build of Script Lab to use Script Lab + Custom Functions in Excel Online.  
 
 #### Mac:
 - Currently, there is **no support** for Script Lab + Custom Functions on the Mac
@@ -52,9 +52,9 @@ To try a more complicated (e.g., a web-service-calling) Custom Function, [import
 
 ## Streaming functions:
 
-As of Sept 27 2018 (and for another week or so), you must be on the **alpha branch** of Script Lab.
+As of Sept 27 2018 (and for another week or so), you must be on the **alpha branch** of Script Lab for streaming functions to work.
 
-After that, all it takes is to **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a function**. 
+After that, all you need is to  **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
 
 Simple case:  (from https://gist.github.com/Zlatkovsky/dd706c40431efabce962308789cba6f1)
 
@@ -82,7 +82,7 @@ More complicated (from https://gist.github.com/Zlatkovsky/522183067333a47d8ec4f7
 ```
 /** @customfunction */
 function stockPriceStream(ticker: string, handler: CustomFunctions.StreamingHandler<number>) {
-    var updateFrequency = 10 /* milliseconds*/;
+    var updateFrequency = 10 /* milliseconds */;
     var isPending = false;
 
     var timer = setInterval(function () {
