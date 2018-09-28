@@ -158,7 +158,8 @@ async function registerMetadata(
       (context.workbook as any).registerCustomFunctions(
         namespace,
         jsonMetadataString,
-        null,
+        '' /*addinId*/,
+        'en-us',
         namespace
       );
     } else {
