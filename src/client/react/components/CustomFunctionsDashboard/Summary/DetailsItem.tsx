@@ -42,7 +42,7 @@ const ContainerWrapper = styled.div`
   ${(props: Partial<IContainerWrapperProps>) => css`
     padding: ${props.padding || '12px'};
     background: ${props.backgroundColor || '#fff'};
-    ${props.indent ? props.indent : ''} ${props.statusTitle
+    ${props.indent ? `margin-left: ${props.indent};` : ''} ${props.statusTitle
       ? `
       word-break: break-all;
       font-variant: small-caps;
