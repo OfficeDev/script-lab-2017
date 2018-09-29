@@ -29,8 +29,12 @@ tryCatch(async () => {
   window.localStorage.removeItem(localStorageKeys.log);
 
   // Now wait for the host.  The advantage of doing it this way is that you can easily
-  // bypass it for debugging, just by entering "window.playground_host_ready = true;"
-  // in the F12 debug console
+  //     bypass it for debugging.
+  // To bypass when using F12 tools, enter the following into the console:
+  /*
+    Office.context.requirements = { isSetSupported: function() { return true; } };
+    window.playground_host_ready = true;
+  */
   await new Promise(resolve => {
     const interval = setInterval(() => {
       if ((window as any).playground_host_ready) {
