@@ -40,14 +40,15 @@ const ContainerWrapper = styled.div`
   flex-direction: horizontal;
   height: auto;
   ${(props: Partial<IContainerWrapperProps>) => css`
-    padding: ${props.padding || '12px'};
-    background: ${props.backgroundColor || '#fff'};
-    ${props.indent ? `margin-left: ${props.indent};` : ''} ${props.statusTitle
-      ? `
-      word-break: break-all;
-      font-variant: small-caps;
-    `
-      : ''};
+    ${[
+      `padding: ${props.padding || '12px'};`,
+      `background: ${props.backgroundColor || '#fff'};`,
+      props.indent ? `margin-left: ${props.indent};` : null,
+      props.statusTitle ? `word-break: break-all;` : null,
+      props.statusTitle ? `font-variant: small-caps;` : null,
+    ]
+      .filter(item => item)
+      .join('\n')};
   `};
 `;
 
