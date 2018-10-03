@@ -1,31 +1,28 @@
 language: node_js
 
 node_js:
-  - "8"
+  - 8.11
 
 cache:
   yarn: true
   directories:
-  - node_modules
+    - node_modules
 
 git:
   depth: 3
 
-node_js:
-- 6.9.4
-
 install:
-- yarn install
+  - yarn install
 
 before_script:
-- npm rebuild node-sass
-- npm run lint
+  - npm rebuild node-sass
+  - npm run lint
 
 script:
-- npm run build
+  - npm run build
 
 after_success:
-- npm run deploy
+  - npm run deploy
 
 notifications:
   webhooks:
