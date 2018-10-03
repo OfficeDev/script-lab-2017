@@ -661,7 +661,7 @@ function compileSnippetCommon(
         officeJS,
         returnUrl: returnUrl,
         refreshUrl: refreshUrl,
-        hideSyncWithEditorButton,
+        hideSyncWithEditorButton: hideSyncWithEditorButton ? true : false,
         host: snippet.host,
         isTrustedSnippet,
         initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),

@@ -266,7 +266,7 @@
             origin: '{{{origin}}}',
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
-            hideSyncWithEditorButton: {{{hideSyncWithEditorButton}}}
+            hideSyncWithEditorButton: {{{hideSyncWithEditorButton}}},
             isTrustedSnippet: {{{isTrustedSnippet}}},
             currentSnippet: {
                 {{#if snippet.lastModified}}
