@@ -19,7 +19,8 @@ let TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env['TRAVIS_COMMIT_MESSAGE'].repla
   /\W/g,
   '_'
 );
-const DAYS_TO_KEEP_HISTORY = 180;
+// 90 days by default -- but will set to more on production config
+let DAYS_TO_KEEP_HISTORY = 90;
 process.env.NODE_ENV = process.env.ENV = 'production';
 (async () => {
   try {
@@ -42,6 +43,7 @@ process.env.NODE_ENV = process.env.ENV = 'production';
         break;
       case 'production':
         slot = 'staging';
+        DAYS_TO_KEEP_HISTORY = 180;
         break;
       default:
         exit('No deployment configuration found for ' + slot + '. Skipping deploy.');

@@ -32,7 +32,8 @@ let TRAVIS_COMMIT_MESSAGE_SANITIZED = process.env['TRAVIS_COMMIT_MESSAGE'].repla
   '_'
 );
 
-const DAYS_TO_KEEP_HISTORY = 180;
+// 90 days by default -- but will set to more on production config
+let DAYS_TO_KEEP_HISTORY = 90;
 
 process.env.NODE_ENV = process.env.ENV = 'production';
 
@@ -62,6 +63,7 @@ process.env.NODE_ENV = process.env.ENV = 'production';
 
       case 'production':
         slot = 'staging';
+        DAYS_TO_KEEP_HISTORY = 180;
         break;
 
       default:
