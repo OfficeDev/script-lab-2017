@@ -41,11 +41,15 @@ export default () => (
         }}
         className="ms-fontSize-m ms-fontWeight-regular"
       >
-        Currently, Script Lab only supports Custom Functions (Preview) on
-        Windows Desktop, and only on the latest Insider builds.<br />
+        Currently, Script Lab only supports Custom Functions (Preview) on Windows Desktop
+        on the latest Insider builds, and on Office Online.
+        <br />
         <br />
         For more info, see{' '}
-        <a href="https://aka.ms/customfunctions" target="_blank">these instructions</a>.
+        <a href="https://aka.ms/customfunctions" target="_blank">
+          these instructions
+        </a>
+        .
       </p>
     </main>
   </div>

@@ -36,6 +36,7 @@ interface ICFVisualFunctionMetadata /* doesn't extend ICFSchemaFunctionMetadata 
 }
 
 interface ICFSchemaFunctionMetadata {
+  id: string;
   name: string;
   description?: string;
   parameters: ICFSchemaParameterMetadata[];
@@ -56,7 +57,6 @@ interface ICFSchemaFunctionResultMetadata {
 }
 
 interface ICFSchemaFunctionOptions {
-  sync: boolean;
   stream: boolean;
   cancelable: boolean;
 }
@@ -73,7 +73,6 @@ interface ICustomFunctionsRegistrationApiMetadata {
 
 interface ICustomFunctionsHeartbeatParams {
   clientTimestamp: number;
-  loadFromOfficeJsPreviewCachedCopy: boolean;
 }
 
 interface ICustomFunctionsRunnerRelevantData {
@@ -95,7 +94,6 @@ interface ICustomFunctionsMetadataRequestPostData {
 
 interface IRunnerCustomFunctionsPostData {
   snippets: ICustomFunctionsRunnerRelevantData[];
-  loadFromOfficeJsPreviewCachedCopy: boolean;
   displayLanguage: string;
   heartbeatParams: ICustomFunctionsHeartbeatParams;
   experimentationFlags: ExperimentationFlags;

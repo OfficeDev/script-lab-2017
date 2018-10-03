@@ -19,9 +19,7 @@ function streamingFoobar(caller: IStreamingCustomFunctionHandler<string>) {
       "nonCapitalizedFullName": "no_params.txt.foobar",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
       ],
@@ -35,9 +33,7 @@ function streamingFoobar(caller: IStreamingCustomFunctionHandler<string>) {
       "nonCapitalizedFullName": "no_params.txt.streamingFoobar",
       "options":{
          "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
+         "stream":true
       },
       "parameters":[
       ],

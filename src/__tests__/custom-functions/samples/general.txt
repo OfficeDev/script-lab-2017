@@ -47,9 +47,7 @@ function isPrime(num: number): boolean {
       "nonCapitalizedFullName": "general.txt.sum",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -76,9 +74,7 @@ function isPrime(num: number): boolean {
       "nonCapitalizedFullName": "general.txt.sumArr",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -99,9 +95,7 @@ function isPrime(num: number): boolean {
       "nonCapitalizedFullName": "general.txt.isPrime",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {

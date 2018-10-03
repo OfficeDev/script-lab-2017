@@ -10,10 +10,7 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.BooleanKeyword]: 'boolean',
 };
 
-const CUSTOM_FUNCTION_OPTIONS_KEYS = [];
-
 const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICFSchemaFunctionOptions = {
-  sync: false,
   stream: false,
   cancelable: false,
 };
@@ -91,14 +88,9 @@ function traverseAST(
               lastParameter,
             });
 
-            let options = parseCustomFunctionOptions(func);
-            if (
-              func.modifiers &&
-              func.modifiers.length > 1 &&
-              func.modifiers[0].kind === ts.SyntaxKind.AsyncKeyword
-            ) {
-              options.sync = true;
-            }
+            let options = {
+              ...CUSTOM_FUNCTION_DEFAULT_OPTIONS,
+            };
 
             if (isStreamingFunction) {
               options.stream = true;
@@ -158,7 +150,7 @@ function getDimentionalityAndTypeOrError(info: {
     ) {
       return {
         error:
-          'One and only one argument should be specified to IStreamingCustomFunctionHandler',
+          'The "CustomFunctions.StreamingHandler" needs to be passed in a single result type (e.g., "CustomFunctions.StreamingHandler<number>")',
         dimensionality: 'invalid',
         type: 'invalid',
       };
@@ -167,7 +159,7 @@ function getDimentionalityAndTypeOrError(info: {
     let returnType = func.type as ts.TypeReferenceNode;
     if (returnType && returnType.getFullText().trim() !== 'void') {
       return {
-        error: `A streaming function should not have a return type.  Instead, its type should be based purely on the value inside "IStreamingCustomFunctionHandler<T>".`,
+        error: `A streaming function should not have a return type.  Instead, its type should be based purely on what's inside "CustomFunctions.StreamingHandler<T>".`,
         dimensionality: 'invalid',
         type: 'invalid',
       };
@@ -201,7 +193,10 @@ function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
   }
 
   const typeRef = param.type as ts.TypeReferenceNode;
-  return typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler';
+  return (
+    typeRef.typeName.getText() === 'CustomFunctions.StreamingHandler' ||
+    typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler' /* older version*/
+  );
 }
 
 function getDimAndTypeHelper(
@@ -220,25 +215,6 @@ function getDimAndTypeHelper(
       type: 'invalid',
     };
   }
-}
-
-/**
- * This function parses out the sync, stream, volatile, and cancelable parameters out of the JSDoc.
- * @param func - The @customfunction that we want to parse out the various parameters out of.
- */
-function parseCustomFunctionOptions(
-  func: ts.FunctionDeclaration
-): ICFSchemaFunctionOptions {
-  const params = { ...CUSTOM_FUNCTION_DEFAULT_OPTIONS }; // create a copy of default values
-
-  ts.getJSDocTags(func).forEach((tag: ts.JSDocTag) => {
-    const loweredTag = (tag.tagName.escapedText as string).toLowerCase();
-    if (CUSTOM_FUNCTION_OPTIONS_KEYS.indexOf(loweredTag) !== -1) {
-      params[loweredTag] = true;
-    }
-  });
-
-  return params;
 }
 
 /**

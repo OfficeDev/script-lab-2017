@@ -62,9 +62,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "nonCapitalizedFullName": "more.general.txt.getRgb3",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -84,9 +82,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "nonCapitalizedFullName": "more.general.txt.getRgb6",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -106,9 +102,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "nonCapitalizedFullName": "more.general.txt.getRgb8",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -128,9 +122,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "nonCapitalizedFullName": "more.general.txt.getRgb9",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -150,9 +142,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "nonCapitalizedFullName": "more.general.txt.getRgb10",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -177,9 +167,7 @@ function functionWith2DArraySyntax(x: Array<Array<number>>) : number {
       "nonCapitalizedFullName": "more.general.txt.functionWith2DArraySyntax",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
