@@ -152,7 +152,7 @@
             <span id="header-text" class="ms-font-m ms-u-slideLeftIn10">{{headerTitle}}</span>
         </a>
         <!-- (tooltip (title attribute))-->
-        <div id="sync-with-editor" class="command__icon ms-u-slideLeftIn10" title="{{strings.switchToSnippet}}">
+        <div id="sync-with-editor" style="display:none" class="command__icon ms-u-slideLeftIn10" title="{{strings.switchToSnippet}}">
             <i class="ms-Icon ms-Icon--Switch"></i>
         </div>
         <div id="padding-for-personality-menu" style="width: 0px"></div>
@@ -266,6 +266,7 @@
             origin: '{{{origin}}}',
             returnUrl: '{{{returnUrl}}}',
             refreshUrl: '{{{refreshUrl}}}',
+            hideSyncWithEditorButton: {{{hideSyncWithEditorButton}}}
             isTrustedSnippet: {{{isTrustedSnippet}}},
             currentSnippet: {
                 {{#if snippet.lastModified}}
