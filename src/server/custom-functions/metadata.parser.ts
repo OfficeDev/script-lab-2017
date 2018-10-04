@@ -10,12 +10,8 @@ const TYPE_MAPPINGS = {
   [ts.SyntaxKind.BooleanKeyword]: 'boolean',
 };
 
-const CUSTOM_FUNCTION_OPTIONS_KEYS = [];
-
-const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
-  sync: true,
+const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICFSchemaFunctionOptions = {
   stream: false,
-  volatile: false,
   cancelable: false,
 };
 
@@ -24,7 +20,10 @@ const CUSTOM_FUNCTION_DEFAULT_OPTIONS: ICustomFunctionOptions = {
  * It will either either return an array of metadata objects, or throw a JSON.stringified error object if there are errors/unsupported types.
  * @param fileContent - The string content of the typescript file to parse the custom functions metadata out of.
  */
-export function parseMetadata(fileContent: string): ICFFunctionMetadata[] {
+export function parseMetadata(
+  namespace: string,
+  fileContent: string
+): ICFVisualFunctionMetadata[] {
   const sourceFile = ts.createSourceFile(
     'someFileName',
     fileContent,
@@ -32,11 +31,14 @@ export function parseMetadata(fileContent: string): ICFFunctionMetadata[] {
     true
   );
 
-  return traverseAST(sourceFile);
+  return traverseAST(namespace, sourceFile);
 }
 
-function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
-  const metadata = [];
+function traverseAST(
+  namespace: string,
+  sourceFile: ts.SourceFile
+): ICFVisualFunctionMetadata[] {
+  const metadata: ICFVisualFunctionMetadata[] = [];
   visitNode(sourceFile);
   return metadata;
 
@@ -86,22 +88,19 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
               lastParameter,
             });
 
-            let options = parseCustomFunctionOptions(func);
-            if (
-              func.modifiers &&
-              func.modifiers.length > 1 &&
-              func.modifiers[0].kind === ts.SyntaxKind.AsyncKeyword
-            ) {
-              options.sync = true;
-            }
+            let options = {
+              ...CUSTOM_FUNCTION_DEFAULT_OPTIONS,
+            };
 
             if (isStreamingFunction) {
               options.stream = true;
               options.cancelable = true;
             }
 
-            const metadataItem = {
-              name: func.name.text,
+            const funcName = func.name.text;
+            const metadataItem: ICFVisualFunctionMetadata = {
+              funcName: funcName,
+              nonCapitalizedFullName: `${namespace}.${funcName}`,
               description,
               parameters,
               result,
@@ -114,7 +113,7 @@ function traverseAST(sourceFile: ts.SourceFile): ICFFunctionMetadata[] {
             const funcContainsErrors =
               result.error || parameters.some(p => !isUndefined(p.error));
             if (funcContainsErrors) {
-              metadataItem['error'] = true;
+              metadataItem.error = true;
             }
 
             metadata.push(metadataItem);
@@ -138,9 +137,9 @@ function getDimentionalityAndTypeOrError(info: {
   isStreamingFunction: boolean;
   lastParameter: ts.ParameterDeclaration;
 }): {
-  dimensionality: CustomFunctionsDimensionality;
+  dimensionality: CustomFunctionsSchemaDimensionality;
   error?: string;
-  type: CustomFunctionsSupportedTypes;
+  type: CustomFunctionsSchemaSupportedTypes;
 } {
   const { func, isStreamingFunction, lastParameter } = info;
   if (isStreamingFunction) {
@@ -151,7 +150,7 @@ function getDimentionalityAndTypeOrError(info: {
     ) {
       return {
         error:
-          'One and only one argument should be specified to IStreamingCustomFunctionHandler',
+          'The "CustomFunctions.StreamingHandler" needs to be passed in a single result type (e.g., "CustomFunctions.StreamingHandler<number>")',
         dimensionality: 'invalid',
         type: 'invalid',
       };
@@ -160,7 +159,7 @@ function getDimentionalityAndTypeOrError(info: {
     let returnType = func.type as ts.TypeReferenceNode;
     if (returnType && returnType.getFullText().trim() !== 'void') {
       return {
-        error: `A streaming function should not have a return type.  Instead, its type should be based purely on the value inside "IStreamingCustomFunctionHandler<T>".`,
+        error: `A streaming function should not have a return type.  Instead, its type should be based purely on what's inside "CustomFunctions.StreamingHandler<T>".`,
         dimensionality: 'invalid',
         type: 'invalid',
       };
@@ -194,14 +193,17 @@ function isLastParameterStreaming(param?: ts.ParameterDeclaration): boolean {
   }
 
   const typeRef = param.type as ts.TypeReferenceNode;
-  return typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler';
+  return (
+    typeRef.typeName.getText() === 'CustomFunctions.StreamingHandler' ||
+    typeRef.typeName.getText() === 'IStreamingCustomFunctionHandler' /* older version*/
+  );
 }
 
 function getDimAndTypeHelper(
   t: ts.TypeNode
 ): {
-  dimensionality: CustomFunctionsDimensionality;
-  type: CustomFunctionsSupportedTypes;
+  dimensionality: CustomFunctionsSchemaDimensionality;
+  type: CustomFunctionsSchemaSupportedTypes;
   error?: string;
 } {
   try {
@@ -213,25 +215,6 @@ function getDimAndTypeHelper(
       type: 'invalid',
     };
   }
-}
-
-/**
- * This function parses out the sync, stream, volatile, and cancelable parameters out of the JSDoc.
- * @param func - The @customfunction that we want to parse out the various parameters out of.
- */
-function parseCustomFunctionOptions(
-  func: ts.FunctionDeclaration
-): ICustomFunctionOptions {
-  const params = { ...CUSTOM_FUNCTION_DEFAULT_OPTIONS }; // create a copy of default values
-
-  ts.getJSDocTags(func).forEach((tag: ts.JSDocTag) => {
-    const loweredTag = (tag.tagName.escapedText as string).toLowerCase();
-    if (CUSTOM_FUNCTION_OPTIONS_KEYS.indexOf(loweredTag) !== -1) {
-      params[loweredTag] = true;
-    }
-  });
-
-  return params;
 }
 
 /**
@@ -273,13 +256,13 @@ function validateArray(a: ts.TypeReferenceNode) {
 function getTypeAndDimensionalityForParam(
   t: ts.TypeNode | undefined
 ): {
-  dimensionality: CustomFunctionsDimensionality;
-  type: CustomFunctionsSupportedTypes;
+  dimensionality: CustomFunctionsSchemaDimensionality;
+  type: CustomFunctionsSchemaSupportedTypes;
   error?: string;
 } {
   const errTypeAndDim = {
-    dimensionality: 'invalid' as CustomFunctionsDimensionality,
-    type: 'invalid' as CustomFunctionsSupportedTypes,
+    dimensionality: 'invalid' as CustomFunctionsSchemaDimensionality,
+    type: 'invalid' as CustomFunctionsSchemaSupportedTypes,
   };
 
   if (isUndefined(t)) {
@@ -291,7 +274,7 @@ function getTypeAndDimensionalityForParam(
     ...errTypeAndDim,
   };
 
-  let dimensionality: CustomFunctionsDimensionality = 'scalar';
+  let dimensionality: CustomFunctionsSchemaDimensionality = 'scalar';
   let kind = t.kind;
 
   if (ts.isTypeReferenceNode(t)) {

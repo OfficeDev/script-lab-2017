@@ -64,12 +64,11 @@ function sum2(a: number, b: number[]): number {
 [
    {
       "description":"increments a value each iteration",
-      "name":"incrementValue",
+      "funcName": "incrementValue",
+      "nonCapitalizedFullName": "streaming.txt.incrementValue",
       "options":{
          "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
+         "stream":true
       },
       "parameters":[
          {
@@ -86,46 +85,44 @@ function sum2(a: number, b: number[]): number {
    },
    {
       "description":"increments a value each iteration",
-      "name":"incrementValue",
+      "funcName": "incrementValue",
+      "nonCapitalizedFullName": "streaming.txt.incrementValue",
       "options":{
          "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
+         "stream":true
+      },
+      "parameters":[
+         {
+            "description":"number to add",
+            "dimensionality":"scalar",
+            "name":"increment",
+            "type":"number"
+         }
+      ],
+      "result":{
+         "dimensionality":"scalar",
+         "type":"number"
+      }
+   },
+   {
+      "description":"increments a value each iteration",
+      "funcName": "incrementValue",
+      "nonCapitalizedFullName": "streaming.txt.incrementValue",
+      "options":{
+         "cancelable":true,
+         "stream":true
       },
       "parameters":[
          {
             "description":"string to add",
             "dimensionality":"scalar",
-            "name":"increment",
+            "name":"concat",
             "type":"string"
          }
       ],
       "result":{
          "dimensionality":"scalar",
          "type":"string"
-      }
-   },
-   {
-      "description":"increments a value each iteration",
-      "name":"incrementValue",
-      "options":{
-         "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
-      },
-      "parameters":[
-         {
-            "description":"string to add",
-            "dimensionality":"matrix",
-            "name":"increment",
-            "type":"number"
-         }
-      ],
-      "result":{
-         "dimensionality":"matrix",
-         "type":"number"
       }
    }
 ]

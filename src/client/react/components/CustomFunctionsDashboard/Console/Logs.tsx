@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { isEqual } from 'lodash';
 
-import List, { Item } from '../List';
+import List, { Item } from './List';
 
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
@@ -82,7 +82,7 @@ function getLogPropsBySeverity(severity: ConsoleLogTypes) {
 }
 
 interface Props {
-  logs: LogData[];
+  logs: (LogData & { id: string })[];
   clearLogs: () => void;
 }
 
@@ -130,11 +130,11 @@ export default class Logs extends React.Component<Props, State> {
   render() {
     const { clearLogs, logs } = this.props;
 
-    const items: Item[] = logs.map((log, i) => ({
+    const items: Item[] = logs.map(log => ({
       name: log.message,
       title: log.source,
       indent: log.indent,
-      key: i,
+      key: log.id,
       ...getLogPropsBySeverity(log.severity),
     }));
 

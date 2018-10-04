@@ -4,21 +4,21 @@
 
 ### Prereq: Ensure you are on an Office Insider build.
 
+#### Desktop:
 - Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**)
-- Also be sure that the build number is **9325 or greater**.  If you're already on a 5-digit build numbers, you're good to go!
 
-Note that for purposes of these instructions and the //build timeline, Script Lab will only support Custom Functions **on Windows Desktop**.  And again, remember that you must be on an **Insider** build, the Custom Functions feature is not flighted for folks outside of Insiders!
+And again, remember that you must be on an **Insider** build, the Custom Functions feature is not flighted for folks outside of Insiders!
 
+#### Excel Online:
+- As of Sept 27 2018 (and probably for the next week or so), you must be on the **alpha** build of Script Lab to use Script Lab + Custom Functions in Excel Online.  
 
-![Dogfood channel](./.github/images/dogfood-channel.png)
+#### Mac:
+- Currently, there is **no support** for Script Lab + Custom Functions on the Mac
 
-## Acquire / Refresh the Store version of Script Lab
+## Acquire the Store version of Script Lab
 
 If you don't have Script Lab yet, [install it from Office Store](https://store.office.com/app.aspx?assetid=WA104380862)
 
-If you have it, but don't see the "Functions" button in the ribbon when you open Excel, click on the "Edit" button in the Ribbon.  It should prompt you, letting you know that there is an update.
-
-Once the update installs, you should see the refreshed ribbon, now with three buttons in the "Script" group.
 
 ## A picture is worth a thousand recalcs
 
@@ -46,13 +46,75 @@ To try a more complicated (e.g., a web-service-calling) Custom Function, [import
 
 1.  Remember to add `/** @CustomFunction */` to any function you want registered.
 
-1.  If you want to use `console.log`, do! It will show up in the "Console" tab of the Custom Functions dashboard.
+1.  If you want to use `console.log`, do!  On Office Online, it will show up in the "Console" tab of the Custom Functions dashboard.  On Desktop, it's currently *not supported*, but should be soon.
 
-1.  If you close and and re-open Excel, remember to re-register your custom functions.
+1.  If you close and and re-open Excel on Office Online, you will need to re-register your custom functions by opening the Custom Functions dashboard.  (There is an existing work item to persist them).  On Desktop, it should be persisted.
 
-## Troubleshooting
+## Streaming functions:
 
-If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.  And please [file a bug](https://github.com/OfficeDev/script-lab/issues), describing what happened.
+As of Sept 27 2018 (and for another week or so), you must be on the **alpha branch** of Script Lab for streaming functions to work.
+
+After that, all you need is to  **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
+
+Simple case:  (from https://gist.github.com/Zlatkovsky/dd706c40431efabce962308789cba6f1)
+
+```
+/** @customfunction */
+function increment(
+    incrementBy: number,
+    callback: CustomFunctions.StreamingHandler<number>
+): void {
+    let result = 0;
+    const timer = setInterval(() => {
+        result += incrementBy;
+        callback.setResult(result);
+    }, 1000);
+
+    callback.onCanceled = () => {
+        clearInterval(timer);
+    };
+}
+```
+
+
+More complicated (from https://gist.github.com/Zlatkovsky/522183067333a47d8ec4f7e8a4823c57)
+
+```
+/** @customfunction */
+function stockPriceStream(ticker: string, handler: CustomFunctions.StreamingHandler<number>) {
+    var updateFrequency = 10 /* milliseconds */;
+    var isPending = false;
+
+    var timer = setInterval(function () {
+        // If there is already a pending request, skip this iteration:
+        if (isPending) {
+            return;
+        }
+
+        var url = "https://api.iextrading.com/1.0/stock/" + ticker + "/price";
+        isPending = true;
+
+        fetch(url)
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (text) {
+                handler.setResult(parseFloat(text));
+            })
+            .catch(function (error) {
+                handler.setResult(new Error(error) as any); // FIXME
+            })
+            .then(function () {
+                isPending = false;
+            });
+    }, updateFrequency);
+
+    handler.onCanceled = () => {
+        clearInterval(timer);
+    };
+}
+```
+
 
 ## Known issues
 
@@ -62,4 +124,9 @@ If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart
 
 ### Script Lab
 
-No known issues at the moment (though note, for now the experience is for Windows only)
+#### Desktop:
+1. No support for `console.log` on Desktop yet, or the bubbling-up of errors in general.  But it's coming soon.
+2. No support for external libraries.  (Office Online will have those work, though).  But it's coming soon.
+
+#### Excel Online
+1. You will need to re-open the Functions pane anytime you reload the page, in order to get the functions to re-register.

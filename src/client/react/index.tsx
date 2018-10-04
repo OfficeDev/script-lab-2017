@@ -6,10 +6,11 @@ import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import {
   storage,
   environment,
-  getIsCustomFunctionsSupportedOnHost,
+  getCustomFunctionEngineStatus,
   isCustomFunctionScript,
+  getScriptLabTopLevelNamespace,
 } from '../../client/app/helpers';
-import { uniqBy } from 'lodash';
+import { uniqBy, flatten } from 'lodash';
 import { ensureFreshLocalStorage } from '../../client/app/helpers';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
@@ -22,14 +23,18 @@ import '../assets/styles/extras.scss';
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
-  environment.initializePartial({ host: 'EXCEL' });
+  await environment.initialize({ host: 'EXCEL' });
 
   // clear out any former logs in the storage -- showing logs from a previous session is confusing
   window.localStorage.removeItem(localStorageKeys.log);
 
   // Now wait for the host.  The advantage of doing it this way is that you can easily
-  // bypass it for debugging, just by entering "window.playground_host_ready = true;"
-  // in the F12 debug console
+  //     bypass it for debugging.
+  // To bypass when using F12 tools, enter the following into the console:
+  /*
+    Office.context.requirements = { isSetSupported: function() { return true; } };
+    window.playground_host_ready = true;
+  */
   await new Promise(resolve => {
     const interval = setInterval(() => {
       if ((window as any).playground_host_ready) {
@@ -39,16 +44,21 @@ tryCatch(async () => {
     }, 100);
   });
 
-  if (await getIsCustomFunctionsSupportedOnHost()) {
+  const engineStatus = await getCustomFunctionEngineStatus();
+  if (engineStatus.enabled) {
     initializeIcons();
 
-    const { visual, functions } = await getMetadata();
+    const { visual, code } = await getCustomFunctionsInfo();
 
     // To allow debugging in a plain web browser, only try to register if the
     // Excel namespace exists.  It always will for an Add-in,
     // since it would have waited for Office to load before getting here
     if (typeof Excel !== 'undefined') {
-      await registerMetadata(functions);
+      const allFunctions: ICFVisualFunctionMetadata[] = flatten(
+        visual.snippets.map(snippet => snippet.functions)
+      );
+
+      await registerMetadata(allFunctions, code);
     }
 
     // Get the custom functions runner to reload as well
@@ -61,9 +71,10 @@ tryCatch(async () => {
     document.getElementById('progress')!.style.display = 'none';
 
     if (visual.snippets.length > 0) {
-      ReactDOM.render(<App metadata={visual} />, document.getElementById(
-        'root'
-      ) as HTMLElement);
+      ReactDOM.render(
+        <App metadata={visual} engineStatus={engineStatus} />,
+        document.getElementById('root') as HTMLElement
+      );
     } else {
       ReactDOM.render(<Welcome />, document.getElementById('root') as HTMLElement);
     }
@@ -72,21 +83,21 @@ tryCatch(async () => {
   }
 });
 
-async function getMetadata() {
+async function getCustomFunctionsInfo() {
   return new Promise<{
     visual: ICFVisualMetadata;
-    functions: ICFFunctionMetadata[];
+    code: string;
   }>(async (resolve, reject) => {
     try {
       ensureFreshLocalStorage();
 
       if (!storage.snippets) {
-        resolve({ visual: { snippets: [] }, functions: [] });
+        resolve({ visual: { snippets: [] }, code: '' });
         return;
       }
 
-      let allSnippetsToRegisterWithPossibleDuplicate = uniqBy(
-        // [storage.current.lastOpened].concat(storage.snippets.values()),
+      let allSnippetsToRegister = uniqBy(
+        // [storage.current.lastOpened].concat(storage.snippets.values()) // (Uncomment and test once support samples),
         storage.snippets.values(),
         'id'
       ).filter(
@@ -110,7 +121,7 @@ async function getMetadata() {
       };
 
       const data: ICustomFunctionsMetadataRequestPostData = {
-        snippets: allSnippetsToRegisterWithPossibleDuplicate,
+        snippets: allSnippetsToRegister,
       };
 
       xhr.send(
@@ -124,15 +135,43 @@ async function getMetadata() {
   });
 }
 
-async function registerMetadata(functions: ICFFunctionMetadata[]) {
-  // Register functions as ALLCAPS:
-  functions.forEach(fn => (fn.name = fn.name.toUpperCase()));
+async function registerMetadata(
+  functions: ICFVisualFunctionMetadata[],
+  code: string
+): Promise<void> {
+  const registrationPayload: ICustomFunctionsRegistrationApiMetadata = {
+    functions: functions.filter(func => func.status === 'good').map(func => {
+      let uppercasedFullName = func.nonCapitalizedFullName.toUpperCase();
+      let schemaFunc: ICFSchemaFunctionMetadata = {
+        id: uppercasedFullName,
+        name: uppercasedFullName,
+        description: func.description,
+        options: func.options,
+        result: func.result,
+        parameters: func.parameters,
+      };
+      return schemaFunc;
+    }),
+  };
+
+  const jsonMetadataString = JSON.stringify(registrationPayload, null, 4);
 
   await Excel.run(async context => {
-    (context.workbook as any).registerCustomFunctions(
-      'ScriptLab'.toUpperCase(),
-      JSON.stringify({ functions: functions })
-    );
+    if (Office.context.platform === Office.PlatformType.OfficeOnline) {
+      const namespace = getScriptLabTopLevelNamespace().toUpperCase();
+      (context.workbook as any).registerCustomFunctions(
+        namespace,
+        jsonMetadataString,
+        '' /*addinId*/,
+        'en-us',
+        namespace
+      );
+    } else {
+      (Excel as any).CustomFunctionManager.newObject(context).register(
+        jsonMetadataString,
+        code
+      );
+    }
     await context.sync();
   });
 }
@@ -149,6 +188,11 @@ function handleError(error: Error) {
   let candidateErrorString = error.message || error.toString();
   if (candidateErrorString === '[object Object]') {
     candidateErrorString = Strings().unexpectedError;
+  }
+
+  if (environment.current.devMode) {
+    // tslint:disable-next-line:no-debugger
+    debugger;
   }
 
   if (error instanceof Error) {

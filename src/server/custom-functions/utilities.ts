@@ -1,33 +1,51 @@
 import { parseMetadata } from './metadata.parser';
-import { transformSnippetName } from '../core/snippet.helper';
+import { compileScript } from '../core/snippet.generator';
+import { stripSpaces } from '../core/utilities';
 
-export function getFunctionsAndMetadataForRegistration(
-  snippets: ISnippet[]
-): { visual: ICFVisualMetadata; functions: ICFFunctionMetadata[] } {
+export function getCustomFunctionsInfoForRegistration(
+  snippets: ISnippet[],
+  strings: ServerStrings
+): { visual: ICFVisualMetadata; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
-  let metadata: ICFFunctionMetadata[] = [];
+  const code: string[] = [];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
-    let functions: ICFVisualFunctionMetadata[] = parseMetadata(
+    const namespace = transformSnippetName(snippet.name);
+
+    let snippetFunctions: ICFVisualFunctionMetadata[] = parseMetadata(
+      namespace,
       snippet.script.content
     ) as ICFVisualFunctionMetadata[];
 
-    functions = convertFunctionErrorsToSpace(functions);
-    if (functions.length === 0) {
+    snippetFunctions = convertFunctionErrorsToSpace(snippetFunctions);
+    if (snippetFunctions.length === 0) {
+      // no custom functions found
       return;
-    } // no custom functions found
-    const hasErrors = doesSnippetHaveErrors(functions);
-
-    if (!hasErrors) {
-      const namespace = transformSnippetName(snippet.name);
-      const namespacedFunctions = functions.map(f => ({
-        ...f,
-        name: `${namespace}.${f.name}`,
-      }));
-      metadata = metadata.concat(...namespacedFunctions);
     }
 
-    functions = functions.map(func => {
+    let hasErrors = doesSnippetHaveErrors(snippetFunctions);
+
+    let snippetCode: string;
+    if (!hasErrors) {
+      try {
+        snippetCode = compileScript(snippet.script, strings);
+      } catch (e) {
+        snippetFunctions.forEach(f => (f.error = 'Snippet compiler error'));
+        hasErrors = true;
+      }
+    }
+
+    if (!hasErrors) {
+      code.push(
+        wrapCustomFunctionSnippetCode(
+          snippetCode,
+          namespace,
+          snippetFunctions.map(func => func.funcName)
+        )
+      );
+    }
+
+    snippetFunctions = snippetFunctions.map(func => {
       const status: CustomFunctionsRegistrationStatus = hasErrors
         ? func.error
           ? 'error'
@@ -64,19 +82,77 @@ export function getFunctionsAndMetadataForRegistration(
       name: transformSnippetName(snippet.name),
       error: hasErrors,
       status,
-      functions,
+      functions: snippetFunctions,
     });
   });
 
-  const functions = filterOutDuplicates(metadata);
-  // const funcNames = functions.map(f => f.name);
-  // const visual = { snippets: tagDuplicatesAsErrors(visualMetadata, funcNames) }; // todo see below
   const visual = { snippets: visualMetadata };
 
-  return { visual, functions };
+  return { visual, code: code.join('\n\n') };
 }
 
 // helpers
+
+function wrapCustomFunctionSnippetCode(
+  code: string,
+  namespace: string,
+  functionNames: string[]
+): string {
+  const newlineAndIndents = '\n        ';
+
+  /*
+    // TODO MIZLATKO external code
+
+    // TODO MIZLATKO eventually enable console.log & etc.
+    var console = {
+      log: function() {
+        // do nothing for now
+      },
+      warn: function() {
+        // do nothing for now
+      },
+      error: function() {
+        // do nothing for now
+      },
+    }
+  */
+  const almostReady = stripSpaces(`
+    (function () {
+      try {
+        // TODO external code
+
+        ${code
+          .split('\n')
+          .map(line => newlineAndIndents + line)
+          .join('')}
+
+        ${generateFunctionAssignments()}
+      } catch (e) {
+        function onError() {
+          throw e;
+        }
+        ${generateFunctionAssignments('onError')}
+      }
+    })();  
+  `);
+
+  return almostReady
+    .split('\n')
+    .map(line => line.trimRight())
+    .join('\n');
+
+  // Helper
+  function generateFunctionAssignments(override?: string) {
+    return functionNames
+      .map(
+        name =>
+          `CustomFunctionMappings["${namespace.toUpperCase()}.${name.toUpperCase()}"] = ${
+            override ? override : name
+          };`
+      )
+      .join(newlineAndIndents);
+  }
+}
 
 function getFunctionChildNodeStatus(
   func: ICFVisualFunctionMetadata,
@@ -109,32 +185,6 @@ function doesSnippetHaveErrors(snippetMetadata) {
   return snippetMetadata.some(func => func.error);
 }
 
-// TODO REVISIT
-// function tagDuplicatesAsErrors(
-//   visualMetadata: ICFVisualSnippetMetadata[],
-//   nonDuplicatedFunctionNames: string[]
-// ): ICFVisualSnippetMetadata[] {
-//   return visualMetadata.map(meta => {
-//     let isError = meta.error;
-//     meta.functions = meta.functions.map(func => {
-//       if (!nonDuplicatedFunctionNames.includes(func.name) && !func.error) {
-//         func.error =
-//           ' - Duplicated function name. Must be unique across ALL snippets.';
-//         func.status = CustomFunctionsRegistrationStatus.Error;
-//         isError = true;
-//       }
-//       return func;
-//     });
-//     return {
-//       ...meta,
-//       error: isError,
-//       status: isError
-//         ? CustomFunctionsRegistrationStatus.Error
-//         : CustomFunctionsRegistrationStatus.Good,
-//     };
-//   });
-// }
-
 /**
  * This function converts all the `true` errors on the functions to ' '. This is because we still want it
  * to have a truthy value, but not show anything in the UI, and this is the best way I could manage that at this time.
@@ -151,8 +201,11 @@ function convertFunctionErrorsToSpace(
   });
 }
 
-function filterOutDuplicates(functions: ICFFunctionMetadata[]): ICFFunctionMetadata[] {
-  return functions.filter(func => {
-    return functions.filter(f => f.name === func.name).length === 1;
-  });
+const snippetNameRegex = /[^0-9A-Za-z_ ]/g;
+export function transformSnippetName(snippetName: string) {
+  return snippetName
+    .replace(snippetNameRegex, '')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
 }

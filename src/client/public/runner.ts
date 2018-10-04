@@ -25,7 +25,9 @@ const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 interface InitializationParams {
   host: string;
   origin: string;
-  returnUrl: string;
+  returnUrl: string /* or magic string "NONE" for explicit no button */;
+  refreshUrl: string;
+  hideSyncWithEditorButton: boolean;
   isTrustedSnippet: boolean;
   currentSnippet: {
     officeJS: string;
@@ -50,6 +52,7 @@ interface MakerInitializationParams {
   let $snippetContent: JQuery;
 
   let returnUrl = '';
+  let refreshUrlOverride: string;
   let host: string;
 
   let currentSnippet: {
@@ -74,6 +77,10 @@ interface MakerInitializationParams {
     try {
       await environment.initializePartial({ host: params.host });
       instantiateRibbon('ribbon');
+
+      if (params.refreshUrl.trim().length > 0) {
+        refreshUrlOverride = params.refreshUrl;
+      }
 
       document.getElementById(
         'choose-your-host'
@@ -120,7 +127,6 @@ interface MakerInitializationParams {
     $('body').addClass(host);
 
     returnUrl = initialParams.returnUrl;
-
     if (returnUrl) {
       window.sessionStorage.playground_returnUrl = returnUrl;
     } else if (window.sessionStorage.playground_returnUrl) {
@@ -136,9 +142,11 @@ interface MakerInitializationParams {
       )};path=/;`;
     }
 
-    $('#header-back')
-      .attr('href', returnUrl)
-      .show();
+    if (returnUrl !== 'NONE') {
+      $('#header-back')
+        .attr('href', returnUrl)
+        .show();
+    }
 
     currentSnippet = {
       ...initialParams.currentSnippet,
@@ -190,9 +198,14 @@ interface MakerInitializationParams {
       lastModified: initialParams.currentSnippet.lastModified,
     });
 
-    $('#sync-with-editor').click(() =>
-      clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/)
-    );
+    const $syncWithEditor = $('#sync-with-editor');
+    if (!initialParams.hideSyncWithEditorButton) {
+      $syncWithEditor
+        .click(() =>
+          clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/)
+        )
+        .show();
+    }
 
     initializeTooltipUpdater();
 
@@ -274,7 +287,6 @@ interface MakerInitializationParams {
       }
 
       if (officeJS) {
-        iframeWindow['Office'] = window['Office'];
         officeNamespacesForIframe.forEach(namespace => {
           iframeWindow[namespace] = (isInTryItMode ? window.parent : window)[namespace];
         });
@@ -586,7 +598,8 @@ interface MakerInitializationParams {
   }
 
   function generateRefreshUrl(desiredOfficeJS: string) {
-    let refreshUrl = `${window.location.origin}/run/${host}/${currentSnippet.id}`;
+    let refreshUrl =
+      refreshUrlOverride || `${window.location.origin}/run/${host}/${currentSnippet.id}`;
     if (desiredOfficeJS) {
       refreshUrl += `?officeJS=${encodeURIComponent(desiredOfficeJS)}`;
     }

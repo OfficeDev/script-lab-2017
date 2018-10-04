@@ -43,12 +43,11 @@ function isPrime(num: number): boolean {
 [
    {
       "description":"Adds two numbers",
-      "name":"sum",
+      "funcName": "sum",
+      "nonCapitalizedFullName": "general.txt.sum",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -71,12 +70,11 @@ function isPrime(num: number): boolean {
    },
    {
       "description":"Adds numbers in array",
-      "name":"sumArr",
+      "funcName": "sumArr",
+      "nonCapitalizedFullName": "general.txt.sumArr",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {
@@ -93,12 +91,11 @@ function isPrime(num: number): boolean {
    },
    {
       "description":"Checks to see if a number is prime",
-      "name":"isPrime",
+      "funcName": "isPrime",
+      "nonCapitalizedFullName": "general.txt.isPrime",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {

@@ -29,6 +29,11 @@ export interface ISnippetHandlebarsContext {
   editorUrl: string;
   runtimeHelperStringifiedStrings: string;
   shouldPutSnippetIntoOfficeInitialize: boolean;
+
+  customFunctionsIfAny?: ({
+    funcName: string;
+    fullName: string;
+  })[];
 }
 
 export interface IRunnerHandlebarsContext {
@@ -55,8 +60,14 @@ export interface IRunnerHandlebarsContext {
   officeJS: string;
 
   /** return url (for back button / errors), or empty
-   * (in which case will come up with default editor URL, using host & id as guide) */
+   * (in which case will come up with default editor URL, using host & id as guide).
+   * If explicitly want empty, specify the magic string "NONE" */
   returnUrl: string;
+
+  /** Optional refresh URL override */
+  refreshUrl?: string;
+
+  hideSyncWithEditorButton?: boolean;
 
   strings: ServerStrings;
   explicitlySetDisplayLanguageOrNull: string;

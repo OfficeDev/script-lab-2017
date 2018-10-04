@@ -24,7 +24,6 @@ import {
   getShareableYaml,
   isMakerScript,
   isCustomFunctionScript,
-  transformSnippetName,
 } from './core/snippet.helper';
 import {
   SnippetCompileData,
@@ -36,15 +35,24 @@ import {
   ITryItHandlebarsContext,
   ICustomFunctionsRunnerHandlebarsContext,
 } from './interfaces';
-import { getFunctionsAndMetadataForRegistration } from './custom-functions/utilities';
+import {
+  getCustomFunctionsInfoForRegistration,
+  transformSnippetName,
+} from './custom-functions/utilities';
 import { parseMetadata } from './custom-functions/metadata.parser';
 
 const moment = require('moment');
 const uuidV4 = require('uuid/v4');
 
-const { build, config, secrets } = require('./core/env.config.js');
+const {
+  build,
+  config,
+  secrets,
+  USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS,
+} = require('./core/env.config.js');
 const env = process.env.PG_ENV || 'local';
 const currentConfig = config[env] as IEnvironmentConfig;
+const isLocal = currentConfig.name === 'LOCAL';
 const ai = new ApplicationInsights(currentConfig.instrumentationKey);
 const app = express();
 
@@ -298,16 +306,16 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
   let { snippets } = params;
 
   snippets = snippets.filter(snippet => {
-    const result = parseMetadata(snippet.script.content);
+    const result = parseMetadata(
+      transformSnippetName(snippet.name),
+      snippet.script.content
+    );
     const isGoodSnippet =
       result.length > 0 && !result.some(func => (func.error ? true : false));
     const namespace = transformSnippetName(snippet.name);
     snippet.metadata = {
       namespace,
-      functions: result.map(func => ({
-        ...func,
-        name: `${namespace}.${func.name}`,
-      })),
+      functions: result,
     };
     return isGoodSnippet;
   });
@@ -331,11 +339,18 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
         template: { content: '', language: 'html' },
         style: { content: '', language: 'css' },
       };
+
       return generateSnippetHtmlData(
         data,
         false /*isExternalExport*/,
         strings,
-        true /*isInsideOfficeApp*/
+        true /*isInsideOfficeApp*/,
+        {
+          customFunctionsIfAny: snippet.metadata.functions.map(func => ({
+            fullName: `${snippet.metadata.namespace}.${func.funcName}`.toUpperCase(),
+            funcName: func.funcName,
+          })),
+        }
       );
     })
   );
@@ -355,14 +370,12 @@ registerRoute('post', '/custom-functions/run', async (req, res) => {
 });
 
 registerRoute('post', '/custom-functions/parse-metadata', async (req, res) => {
+  const strings = Strings(req);
   const params: ICustomFunctionsMetadataRequestPostData = JSON.parse(req.body.data);
-  let { snippets } = params;
+  const { snippets } = params;
+  const registrationInfo = getCustomFunctionsInfoForRegistration(snippets, strings);
 
-  return respondWith(
-    res,
-    JSON.stringify(getFunctionsAndMetadataForRegistration(snippets)),
-    'application/javascript'
-  );
+  return respondWith(res, JSON.stringify(registrationInfo), 'application/javascript');
 });
 
 registerRoute('get', '/open/:host/:type/:id/:filename', async (req, res) => {
@@ -594,7 +607,13 @@ function compileSnippetCommon(
   wrapWithRunnerChrome?: boolean
 ) {
   const data: IRunnerState = JSON.parse(req.body.data);
-  const { snippet, returnUrl, isInsideOfficeApp } = data;
+  const {
+    snippet,
+    returnUrl,
+    isInsideOfficeApp,
+    refreshUrl,
+    hideSyncWithEditorButton,
+  } = data;
 
   let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
 
@@ -641,6 +660,8 @@ function compileSnippetCommon(
         },
         officeJS,
         returnUrl: returnUrl,
+        refreshUrl: refreshUrl,
+        hideSyncWithEditorButton: hideSyncWithEditorButton ? true : false,
         host: snippet.host,
         isTrustedSnippet,
         initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),
@@ -704,14 +725,19 @@ function runCommon(
     forIn(query, (value, key) => (queryParamsLowercase[key.toLowerCase()] = value));
 
     if (queryParamsLowercase.officejs && queryParamsLowercase.officejs.trim() !== '') {
-      return queryParamsLowercase.officejs.trim();
+      const candidateOfficeJs = queryParamsLowercase.officejs.trim();
+      if (isLocal && candidateOfficeJs.toLowerCase().indexOf('{localhost}') >= 0) {
+        return getDefaultHandlebarsContext().officeJsOrLocal;
+      } else {
+        return candidateOfficeJs;
+      }
     }
 
     if (isOfficeHost(host.toUpperCase())) {
       // Assume a production Office.js for the Office products --
       // and worse case (e.g., if targeting Beta, or debug version),
       // the runner will just force a refresh after the page has loaded
-      return 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+      return getDefaultHandlebarsContext().officeJsOrLocal;
     }
 
     return '';
@@ -779,7 +805,8 @@ async function generateSnippetHtmlData(
   compileData: SnippetCompileData,
   isExternalExport: boolean,
   strings: ServerStrings,
-  isInsideOfficeApp: boolean
+  isInsideOfficeApp: boolean,
+  extras: Partial<ISnippetHandlebarsContext> = {}
 ): Promise<{ succeeded: boolean; html: string; officeJS: string }> {
   let script: string;
   try {
@@ -855,6 +882,8 @@ async function generateSnippetHtmlData(
       strings.RuntimeHelpers
     ) /* stringify so that it gets written correctly into "snippets" template */,
     shouldPutSnippetIntoOfficeInitialize,
+
+    ...extras,
   };
 
   const snippetHtmlGenerator = await loadTemplate<ISnippetHandlebarsContext>('snippet');
@@ -992,13 +1021,15 @@ function getDefaultHandlebarsContext(): IDefaultHandlebarsContext {
     _defaultHandlebarsContext = {
       origin: currentConfig.editorUrl,
       assets: getFileAsJson('assets.json'),
+      officeJsOrLocal:
+        isLocal && USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS
+          ? versionedPackageNames['@microsoft/office-js']
+          : 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js',
       versionedPackageNames_office_ui_fabric_js:
         versionedPackageNames['office-ui-fabric-js'],
       versionedPackageNames_jquery: versionedPackageNames['jquery'],
       versionedPackageNames_jquery_resizable_dom:
         versionedPackageNames['jquery-resizable-dom'],
-      versionedPackageNames_microsoft_office_js:
-        versionedPackageNames['@microsoft/office-js'],
     };
   }
 
@@ -1035,7 +1066,7 @@ function getRuntimeHelpersUrl(filename: string) {
 }
 
 function getClientSecret() {
-  if (currentConfig.name === 'LOCAL') {
+  if (isLocal) {
     return (currentConfig as ILocalHostEnvironmentConfig).clientSecretLocalHost;
   }
 

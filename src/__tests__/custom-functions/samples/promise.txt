@@ -15,12 +15,11 @@ async function randomComment(id: number, fieldName: string): Promise<string> {
 /*
 [
    {
-      "name":"randomComment",
+      "funcName": "randomComment",
+      "nonCapitalizedFullName": "promise.txt.randomComment",
       "options":{
          "cancelable":false,
-         "stream":false,
-         "sync":true,
-         "volatile":false
+         "stream":false
       },
       "parameters":[
          {

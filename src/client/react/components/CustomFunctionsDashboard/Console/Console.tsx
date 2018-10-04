@@ -2,8 +2,12 @@ import * as React from 'react';
 import styled from 'styled-components';
 import PivotContentContainer from '../PivotContentContainer';
 import Logs from './Logs';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 
-import { setUpMomentJsDurationDefaults } from '../../../../app/helpers';
+import {
+  setUpMomentJsDurationDefaults,
+  CustomFunctionEngineStatus,
+} from '../../../../app/helpers';
 import { getDisplayLanguage } from '../../../../app/strings';
 import moment from 'moment';
 const NoLogsPlaceholder = styled.div`
@@ -32,10 +36,23 @@ const RunnerLastUpdated = ({ isAlive, lastUpdated }) => (
   </>
 );
 
+const CustomFunctionEngineStatusUI = ({
+  status,
+}: {
+  status: CustomFunctionEngineStatus;
+}) => (
+  <MessageBar messageBarType={MessageBarType.info}>
+    {status.nativeRuntime
+      ? 'Using the native javascript execution engine'
+      : 'Using the web execution engine'}
+  </MessageBar>
+);
+
 interface Props {
-  logs: LogData[];
+  logs: (LogData & { id: string })[];
   runnerLastUpdated: number;
   runnerIsAlive: boolean;
+  engineStatus: CustomFunctionEngineStatus;
   clearLogsCallback: () => void;
 }
 
@@ -49,7 +66,13 @@ export default class Console extends React.Component<Props, State> {
   }
 
   render() {
-    const { clearLogsCallback, logs, runnerIsAlive, runnerLastUpdated } = this.props;
+    const {
+      clearLogsCallback,
+      logs,
+      runnerIsAlive,
+      runnerLastUpdated,
+      engineStatus,
+    } = this.props;
 
     const runnerLastUpdatedText = runnerIsAlive
       ? moment(new Date(runnerLastUpdated))
@@ -59,33 +82,25 @@ export default class Console extends React.Component<Props, State> {
 
     return (
       <PivotContentContainer>
+        <CustomFunctionEngineStatusUI status={engineStatus} />
         <RunnerLastUpdated isAlive={runnerIsAlive} lastUpdated={runnerLastUpdatedText} />
         {logs.length > 0 ? (
           <Logs logs={logs} clearLogs={clearLogsCallback} />
         ) : (
-          this.generateNoLogsPlaceholder()
+          generateNoLogsPlaceholder()
         )}
       </PivotContentContainer>
     );
-  }
 
-  private generateNoLogsPlaceholder() {
-    return (
-      <NoLogsPlaceholder>
-        <div
-          style={{
-            position: 'absolute',
-            top: '0',
-            bottom: '0',
-            left: '0',
-            right: '0',
-            margin: 'auto',
-            color: '#333',
-            textAlign: 'center',
-            height: '60px',
-            padding: '20px',
-          }}
-        >
+    // Helpers
+    function generateNoLogsPlaceholder() {
+      let textBlock = engineStatus.nativeRuntime ? (
+        <>
+          Currently, the native javascript execution engine does not support console
+          logging from within Script Lab. Sorry about that!
+        </>
+      ) : (
+        <>
           There are no logs to display. Use{' '}
           <pre
             style={{
@@ -97,8 +112,29 @@ export default class Console extends React.Component<Props, State> {
             console.log()
           </pre>{' '}
           inside your functions to display logs here.
-        </div>
-      </NoLogsPlaceholder>
-    );
+        </>
+      );
+
+      return (
+        <NoLogsPlaceholder>
+          <div
+            style={{
+              position: 'absolute',
+              top: '0',
+              bottom: '0',
+              left: '0',
+              right: '0',
+              margin: 'auto',
+              color: '#333',
+              textAlign: 'center',
+              height: '60px',
+              padding: '20px',
+            }}
+          >
+            {textBlock}
+          </div>
+        </NoLogsPlaceholder>
+      );
+    }
   }
 }

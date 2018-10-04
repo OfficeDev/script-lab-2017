@@ -1,82 +1,216 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
 import PivotContentContainer from '../PivotContentContainer';
-import List, { Item } from '../List';
-
+import DetailsItem from './DetailsItem';
+import { getScriptLabTopLevelNamespace } from '../../../../app/helpers';
+import Items from './Items';
 const TopInfo = styled.div`
   padding: 27px 24px 0px 17px;
 `;
 
-const FunctionsContainer = styled.div`
-  height: 100%;
-  overflow-x: hidden;
+const SummaryContainer = styled.div`
+  height: auto;
+  overflow-x: auto;
   overflow-y: auto;
   flex-shrink: 2;
-  border-top: 1px solid #f4f4f4;
 `;
 
+const functionPadding = '4px 8px 10px 8px';
+
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
-  let items: { success: Item[]; skipped: Item[]; error: Item[] } = {
-    success: [],
-    skipped: [],
-    error: [],
-  };
+  const errorItemsContainer: DetailsItem[] = [];
+  const successItemsContainer: DetailsItem[] = [];
+
   metadata.snippets.forEach(snippet => {
+    let items: Items = {
+      unsuccessful: {
+        errors: [],
+        skipped: [],
+      },
+      successful: [],
+    };
     snippet.functions.forEach(func => {
-      const scriptLabToplevelNamespace = 'ScriptLab';
-      const name = `=${scriptLabToplevelNamespace}.${snippet.name}.${func.name}(${
-        func.parameters.length > 0 ? '…' : ''
-      })`;
-
-      const item: Item = { name, key: name, smallCaps: true };
-
+      const functionName = `${func.funcName}(${func.parameters.length > 0 ? '…' : ''})`;
+      const paramErrorMessages: string[] = [];
+      func.parameters.forEach(param => {
+        if (param.error !== undefined) {
+          paramErrorMessages.push(`${param.name}: ${param.error}`);
+        }
+      });
+      if (func.result.error) {
+        paramErrorMessages.push(`Return - ${func.result.error}`);
+      }
       if (snippet.error) {
         if (func.error) {
-          items.error.push({
-            ...item,
-            icon: { name: 'ErrorBadge', color: '#f04251' },
-            title: 'See Details tab for more information.',
+          items.unsuccessful.errors.push({
+            name: functionName,
+            children: paramErrorMessages,
           });
         } else {
-          items.skipped.push({
-            ...item,
-            icon: { name: 'Unknown', color: '#ffd333' },
-            title: 'See Details tab for more information.',
+          items.unsuccessful.skipped.push({
+            name: functionName,
+            children: paramErrorMessages,
           });
         }
       } else {
-        items.success.push({
-          ...item,
-          icon: { name: 'Completed', color: '#55cf4a' },
-        });
+        items.successful.push(functionName);
       }
     });
+
+    const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
+
+    if (snippet.error) {
+      const functionItemArray = [];
+      items.unsuccessful.errors.map((item, errorIndex) => {
+        const errorDetailItems: DetailsItem[] = item.children.map(
+          (paramErrorMessage, itemIndex) => {
+            return (
+              <DetailsItem
+                content={paramErrorMessage}
+                fontFamily="ms-font-xs"
+                indent="50px"
+                noDropdown={true}
+                padding={functionPadding}
+                key={'unsuccessful|error|' + errorIndex + '|' + itemIndex}
+              />
+            ) as any;
+          }
+        );
+
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="ErrorBadge"
+            statusIconColor="#f04251"
+            indent="30px"
+            children={errorDetailItems}
+            noDropdown={true}
+            padding={functionPadding}
+            statusTitle={true}
+            key={'unsuccessful|error|' + errorIndex}
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      items.unsuccessful.skipped.forEach((item, index) => {
+        let errorMessage = (
+          <DetailsItem
+            content={
+              'This function was skipped because of other invalid functions in the snippet, please fix them.'
+            }
+            fontFamily="ms-font-xs"
+            indent="50px"
+            noDropdown={true}
+            padding={functionPadding}
+            key={'unsuccessful|skipped|error' + index}
+          />
+        );
+        const functionItem = (
+          <DetailsItem
+            content={item.name}
+            fontFamily="ms-font-s"
+            statusIcon="Warning"
+            statusIconColor="#F0C784"
+            indent="30px"
+            children={[errorMessage]}
+            noDropdown={true}
+            padding={functionPadding}
+            statusTitle={true}
+            key={'unsuccessful|skipped' + index}
+          />
+        );
+        functionItemArray.push(functionItem);
+      });
+      const namespacePlusSnippetName = `=${scriptLabTopLevelNamespace}.${snippet.name}`;
+      const errorItem: any = (
+        <DetailsItem
+          content={namespacePlusSnippetName}
+          fontFamily="ms-font-s"
+          statusIcon="ErrorBadge"
+          statusIconColor="#f04251"
+          children={functionItemArray}
+          noDropdown={true}
+          indent="7px"
+          hasBorderTop={true}
+          statusTitle={true}
+          key={namespacePlusSnippetName}
+        />
+      );
+      errorItemsContainer.push(errorItem);
+    } else {
+      items.successful.forEach(item => {
+        const functionFullName = `=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`;
+        const successItem: any = (
+          <DetailsItem
+            content={functionFullName}
+            fontFamily="ms-font-s"
+            statusIcon="Completed"
+            statusIconColor="#107C10"
+            noDropdown={true}
+            indent="7px"
+            hasBorderTop={true}
+            statusTitle={true}
+            key={functionFullName}
+          />
+        );
+        successItemsContainer.push(successItem);
+      });
+    }
   });
 
   return (
     <PivotContentContainer>
       <TopInfo>
-        <h1 className="ms-font-xl" style={{ lineHeight: '28px' }}>
+        <h1 className="ms-font-xl" style={{ lineHeight: '28px', marginBottom: '10px' }}>
           Custom Functions (Preview)
         </h1>
-        <p
-          className="ms-font-m"
-          style={{
-            lineHeight: '16.8px',
-            marginBottom: '26px',
-            marginTop: '10px',
-          }}
-        >
-          The following custom functions were found in your workspace. These
-          functions run async in Script Lab. You can run them faster in sync
-          mode with{' '}
-          <a href="https://aka.ms/customfunctions" target="_blank">these instructions</a>.
-        </p>
       </TopInfo>
-      <FunctionsContainer style={{ marginTop: '20px' }}>
-        <List items={[...items.success, ...items.error, ...items.skipped]} />
-      </FunctionsContainer>
+      <SummaryContainer>
+        {errorItemsContainer.length > 0 && (
+          <DetailsItem
+            fontFamily={'ms-font-l'}
+            content={'Invalid Functions'}
+            noDropdown={true}
+            indent={'7px'}
+            hasBorderTop={true}
+            backgroundColor={'#EEE'}
+          />
+        )}
+        {errorItemsContainer.length > 0 && (
+          <p
+            className="ms-font-s"
+            style={{
+              padding: '10px 19px',
+              color: '#333',
+            }}
+          >
+            The following snippets contain invalid functions. Please review and fix the
+            errors.
+          </p>
+        )}
+        {errorItemsContainer}
+        <div style={{ marginTop: '12px' }}>
+          <DetailsItem
+            fontFamily={'ms-font-l'}
+            content={'Registered Custom Functions'}
+            noDropdown={true}
+            indent={'7px'}
+            hasBorderTop={true}
+            backgroundColor={'#EEE'}
+          />
+          {successItemsContainer}
+
+          {successItemsContainer.length === 0 && (
+            <DetailsItem
+              fontFamily={'ms-font-m'}
+              content={'There are no registered custom functions.'}
+              noDropdown={true}
+              indent={'7px'}
+            />
+          )}
+        </div>
+      </SummaryContainer>
     </PivotContentContainer>
   );
 };

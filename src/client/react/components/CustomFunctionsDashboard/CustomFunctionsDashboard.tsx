@@ -5,11 +5,14 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { mergeStyles } from '@uifabric/merge-styles';
 
 import Summary from './Summary';
-import Details from './Details';
 import Console from './Console';
 import RefreshBar from './RefreshBar';
 import { Authenticator } from '@microsoft/office-js-helpers';
-import { isNullOrWhitespace, environment } from '../../../app/helpers';
+import {
+  isNullOrWhitespace,
+  environment,
+  CustomFunctionEngineStatus,
+} from '../../../app/helpers';
 import { getLogAndHeartbeatStatus } from './LogAndHeartbeatFetcher';
 
 const NavigateBackIconName = 'NavigateBack';
@@ -24,7 +27,7 @@ const Container = styled.div`
 
 // interfaces
 interface ICustomFunctionsDashboardState {
-  logs: LogData[];
+  logs: (LogData & { id: string })[];
   runnerIsAlive: boolean;
   runnerLastUpdated: number;
 }
@@ -32,6 +35,7 @@ interface ICustomFunctionsDashboardState {
 interface ICustomFunctionsDashboardProps {
   placeholder?: any;
   metadata: ICFVisualMetadata;
+  engineStatus: CustomFunctionEngineStatus;
 }
 
 class CustomFunctionsDashboard extends React.Component<
@@ -41,6 +45,7 @@ class CustomFunctionsDashboard extends React.Component<
   private returnUrl: string | undefined;
   private interval;
   private _pivotClassName: string;
+  private _logCounter: number = 0;
 
   constructor(props: ICustomFunctionsDashboardProps) {
     super(props);
@@ -141,7 +146,7 @@ class CustomFunctionsDashboard extends React.Component<
   }
 
   private getPivotItems() {
-    const { metadata } = this.props;
+    const { metadata, engineStatus } = this.props;
 
     return [
       this.returnUrl ? (
@@ -155,14 +160,6 @@ class CustomFunctionsDashboard extends React.Component<
       </PivotItem>,
 
       <PivotItem
-        linkText="Details"
-        key="Details"
-        itemCount={this.getErrorCount() || undefined}
-      >
-        <Details metadata={metadata} />
-      </PivotItem>,
-
-      <PivotItem
         linkText="Console"
         key="Console"
         itemCount={this.state.logs.length || undefined}
@@ -171,6 +168,7 @@ class CustomFunctionsDashboard extends React.Component<
           logs={this.state.logs}
           runnerLastUpdated={this.state.runnerLastUpdated}
           runnerIsAlive={this.state.runnerIsAlive}
+          engineStatus={engineStatus}
           clearLogsCallback={() => this.setState({ logs: [] })}
         />
       </PivotItem>,
@@ -179,18 +177,15 @@ class CustomFunctionsDashboard extends React.Component<
 
   private performLogFetch() {
     let newData = getLogAndHeartbeatStatus();
-    let newLogs = [...this.state.logs, ...newData.newLogs];
+    let newLogs = [
+      ...this.state.logs,
+      ...newData.newLogs.map(item => ({ id: (this._logCounter++).toString(), ...item })),
+    ];
     this.setState({
       runnerIsAlive: newData.runnerIsAlive,
       logs: newLogs,
       runnerLastUpdated: newData.runnerLastUpdated,
     });
-  }
-
-  private getErrorCount() {
-    // Get the count of all snippets where the "error" property is true
-    return this.props.metadata.snippets.map(snippet => snippet.error).filter(item => item)
-      .length;
   }
 }
 

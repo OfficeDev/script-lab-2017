@@ -11,6 +11,15 @@ const experimentationFlagsDefaults = {
   },
 };
 
+/** FOR OFFLINE DEBUGGING:
+ * A flag to allow local debugging when not connected to the internet.
+ * If true, the version from "@microsoft/office-js" in "package.json" will be used
+ * when running on localhost.
+ * (Note, you may want to ensure that this package gets bumped to the latest, if you
+ * are using it to test APIs -- that way, you get the latest functionality and bug fixes)
+ */
+const USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS = false;
+
 /** NOTE: when adding local storage keys here, remember to add them for IntelliSense's sake in "ICompiledPlaygroundInfo" in playground.d.ts */
 const localStorageKeys = {
   dummyUnusedKey: 'playground_dummy_unused_key',
@@ -287,6 +296,32 @@ class RedirectPlugin {
   }
 }
 
+class OfficeJsSubstitutionPlugin {
+  constructor(isLocalHost) {
+    this._isLocalHost = isLocalHost;
+  }
+
+  apply(compiler) {
+    compiler.plugin('compilation', compilation => {
+      compilation.plugin(
+        'html-webpack-plugin-before-html-processing',
+        (htmlPluginData, callback) => {
+          const officeJsToUse =
+            this._isLocalHost && USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS
+              ? "libs/{{{versionedPackageNames['@microsoft/office-js']}}}/dist/office.js"
+              : 'https://appsforoffice.microsoft.com/lib/1/hosted/office.js';
+          htmlPluginData.html = htmlPluginData.html.replace(
+            /{{{officeJsOrLocal}}}/gi,
+            officeJsToUse
+          );
+
+          callback(null, htmlPluginData);
+        }
+      );
+    });
+  }
+}
+
 exports.build = build;
 exports.config = config;
 exports.safeExternalUrls = safeExternalUrls;
@@ -294,6 +329,8 @@ exports.localStorageKeys = localStorageKeys;
 exports.sessionStorageKeys = sessionStorageKeys;
 exports.experimentationFlagsDefaults = experimentationFlagsDefaults;
 exports.RedirectPlugin = RedirectPlugin;
+exports.OfficeJsSubstitutionPlugin = OfficeJsSubstitutionPlugin;
+exports.USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS = USE_LOCAL_OFFLINE_COPY_OF_OFFICE_JS;
 
 // NOTE: Data in this file gets propagated to JS on client pages
 // via the "new webpack.DefinePlugin({ PLAYGROUND: ... }) definition

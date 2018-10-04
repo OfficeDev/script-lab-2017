@@ -92,8 +92,15 @@ interface IRunnerState {
 
   /** URL to return to in case of the gallery (or something else custom).
    * Otherwise, if null, will create a default reference back to editor domain,
-   * taking host and snippet ID into account */
+   * taking host and snippet ID into account.
+   * If explicitly wan't to hide the back button, pass in the magic string "NONE" */
   returnUrl?: string;
+
+  /** Optional overwrite refresh URL */
+  refreshUrl?: string;
+
+  /** Whether to hide the "sync" bytton on the right (by default, false -- don't hide) */
+  hideSyncWithEditorButton?: boolean;
 }
 
 interface IExportState {

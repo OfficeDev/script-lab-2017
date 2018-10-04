@@ -125,6 +125,8 @@ export class About implements AfterViewInit {
 
     // To avoid clutter, only show the extra (staging, production-direct) sites if you're not on prod or beta
     const showExtra = !(isProd || isBeta);
+    // For the react ones, show them anywhere except prod.
+    const showReactOnes = !isProd;
 
     this.configs = [
       { name: this.strings.production, value: config.production.name },
@@ -143,14 +145,14 @@ export class About implements AfterViewInit {
       { name: this.strings.beta, value: config.insiders.name },
       { name: this.strings.alpha, value: config.edge.name },
 
-      showExtra
+      showReactOnes
         ? {
             name: 'Script Lab React - Beta',
             value: config.reactbeta.name,
           }
         : null,
 
-      showExtra
+      showReactOnes
         ? {
             name: 'Script Lab React - Alpha',
             value: config.reactalpha.name,

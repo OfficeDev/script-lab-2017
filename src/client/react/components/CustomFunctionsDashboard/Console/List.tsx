@@ -5,7 +5,6 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon';
 interface LIProps {
   backgroundColor?: string;
   color?: string;
-  smallCaps?: boolean;
 }
 
 const LI: StyledFunction<LIProps & React.HTMLProps<HTMLLIElement>> = styled.li;
@@ -25,10 +24,9 @@ const ListItem = LI`
 
   color: ${props => props.color || '#333333'};
   background: ${props => props.backgroundColor || 'white'};
-  font-variant: ${props => (props.smallCaps ? 'small-caps' : 'normal')};
 `;
 
-const Text = styled.span`
+const Text = styled.div`
   flex: 1;
   line-height: 12px;
 `;
@@ -48,34 +46,37 @@ export interface Item {
   background?: string;
   color?: string;
   title?: string;
-  smallCaps?: boolean;
   indent?: number;
 }
 
 export default ({ items }) => (
   <ListContainer>
     {items.map((item: Item) => (
-      <ListItem
-        key={item.key}
-        className="ms-font-s"
-        backgroundColor={item.background}
-        color={item.color}
-        title={item.title}
-        smallCaps={item.smallCaps}
-      >
-        {item.icon && (
-          <Icon
-            className="ms-font-m"
-            iconName={item.icon.name}
-            style={{
-              fontSize: '16px',
-              color: item.icon.color,
-              marginRight: '5px',
-            }}
-          />
-        )}
-        <Text style={{ marginLeft: (item.indent || 0) * 5 + 'px' }}>{item.name}</Text>
-      </ListItem>
+      <div id={item.name}>
+        <ListItem
+          key={item.key}
+          className="ms-font-s"
+          id={item.name}
+          backgroundColor={item.background}
+          color={item.color}
+          title={item.title}
+        >
+          <Text>
+            {item.icon && (
+              <Icon
+                className="ms-font-m"
+                iconName={item.icon.name}
+                style={{
+                  fontSize: '16px',
+                  color: item.icon.color,
+                  marginRight: '5px',
+                }}
+              />
+            )}
+            {item.name}
+          </Text>
+        </ListItem>
+      </div>
     ))}
   </ListContainer>
 );
