@@ -607,7 +607,13 @@ function compileSnippetCommon(
   wrapWithRunnerChrome?: boolean
 ) {
   const data: IRunnerState = JSON.parse(req.body.data);
-  const { snippet, returnUrl, isInsideOfficeApp, refreshUrl } = data;
+  const {
+    snippet,
+    returnUrl,
+    isInsideOfficeApp,
+    refreshUrl,
+    hideSyncWithEditorButton,
+  } = data;
 
   let isTrustedSnippet: boolean = req.body.isTrustedSnippet || false;
 
@@ -655,6 +661,7 @@ function compileSnippetCommon(
         officeJS,
         returnUrl: returnUrl,
         refreshUrl: refreshUrl,
+        hideSyncWithEditorButton: hideSyncWithEditorButton ? true : false,
         host: snippet.host,
         isTrustedSnippet,
         initialLoadSubtitle: strings.getLoadingSnippetSubtitle(snippet.name),

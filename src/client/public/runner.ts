@@ -25,8 +25,9 @@ const EXPLICIT_NONE_OFFICE_JS_REFERENCE = '<none>';
 interface InitializationParams {
   host: string;
   origin: string;
-  returnUrl: string;
+  returnUrl: string /* or magic string "NONE" for explicit no button */;
   refreshUrl: string;
+  hideSyncWithEditorButton: boolean;
   isTrustedSnippet: boolean;
   currentSnippet: {
     officeJS: string;
@@ -126,7 +127,6 @@ interface MakerInitializationParams {
     $('body').addClass(host);
 
     returnUrl = initialParams.returnUrl;
-
     if (returnUrl) {
       window.sessionStorage.playground_returnUrl = returnUrl;
     } else if (window.sessionStorage.playground_returnUrl) {
@@ -142,9 +142,11 @@ interface MakerInitializationParams {
       )};path=/;`;
     }
 
-    $('#header-back')
-      .attr('href', returnUrl)
-      .show();
+    if (returnUrl !== 'NONE') {
+      $('#header-back')
+        .attr('href', returnUrl)
+        .show();
+    }
 
     currentSnippet = {
       ...initialParams.currentSnippet,
@@ -196,9 +198,14 @@ interface MakerInitializationParams {
       lastModified: initialParams.currentSnippet.lastModified,
     });
 
-    $('#sync-with-editor').click(() =>
-      clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/)
-    );
+    const $syncWithEditor = $('#sync-with-editor');
+    if (!initialParams.hideSyncWithEditorButton) {
+      $syncWithEditor
+        .click(() =>
+          clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/)
+        )
+        .show();
+    }
 
     initializeTooltipUpdater();
 
