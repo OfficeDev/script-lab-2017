@@ -14,7 +14,7 @@ export async function getLogAndHeartbeatStatus(
   newLogs: LogData[];
   runnerLastUpdated: number;
 }> {
-  let data = await bulkGetData(isUsingAsyncStorage(engineStatus));
+  let data = await bulkGetData(engineStatus);
 
   const runnerIsAlive =
     getElapsedTime(
@@ -52,8 +52,8 @@ function processLog(logsString: string) {
   return newLogs;
 }
 
-async function bulkGetData(isUsingLocalStorage: boolean) {
-  if (isUsingAsyncStorage) {
+async function bulkGetData(engineStatus: CustomFunctionEngineStatus) {
+  if (isUsingAsyncStorage(engineStatus)) {
     const results = await OfficeRuntime.AsyncStorage.multiGet([
       localStorageKeys.customFunctionsLastHeartbeatTimestamp,
       localStorageKeys.customFunctionsCurrentlyRunningTimestamp,

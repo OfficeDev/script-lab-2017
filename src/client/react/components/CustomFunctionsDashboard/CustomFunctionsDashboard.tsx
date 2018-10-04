@@ -185,7 +185,26 @@ class CustomFunctionsDashboard extends React.Component<
   }
 
   private async performLogFetch() {
-    let newData = await getLogAndHeartbeatStatus(this.props.engineStatus);
+    let newData: {
+      runnerIsAlive: boolean;
+      newLogs: LogData[];
+      runnerLastUpdated: number;
+    };
+    try {
+      newData = await getLogAndHeartbeatStatus(this.props.engineStatus);
+    } catch (e) {
+      newData = {
+        newLogs: [
+          {
+            message: 'Unable to fetch logs & status',
+            source: 'SYSTEM',
+            severity: 'error',
+          },
+        ],
+        runnerIsAlive: false,
+        runnerLastUpdated: 0,
+      };
+    }
     let newLogs = [
       ...this.state.logs,
       ...newData.newLogs.map(item => ({ id: (this._logCounter++).toString(), ...item })),
