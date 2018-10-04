@@ -45,7 +45,9 @@ To try a more complicated (e.g., a web-service-calling) Custom Function, [import
 
 ## Streaming functions:
 
-All you need is to **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
+First, add the following line to your Libraries tab: `@types/custom-functions-runtime`.
+
+Then, **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
 
 Simple case:  (from https://gist.github.com/Zlatkovsky/dd706c40431efabce962308789cba6f1)
 
