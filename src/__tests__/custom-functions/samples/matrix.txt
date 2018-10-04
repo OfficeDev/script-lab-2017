@@ -17,9 +17,7 @@ function foo(a: number[][], b: number, c: number[][]): number[][] {
     "nonCapitalizedFullName": "matrix.txt.foo",
     "options": {
       "cancelable":false,
-      "stream": false,
-      "sync": true,
-      "volatile": false
+      "stream": false
     },
     "parameters": [
       {

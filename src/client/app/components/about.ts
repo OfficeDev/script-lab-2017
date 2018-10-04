@@ -26,8 +26,8 @@ const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
                 <div class="about__details">
                     <div class="about__primary-text ms-font-xxl">{{config?.build?.name}}</div>
                     <div class="profile__tertiary-text ms-font-m" style="margin-bottom: 20px;">{{strings.userId}}: ${
-    storage.user
-    }</div>
+                      storage.user
+                    }</div>
                     <button class="ms-Dialog-action ms-Button" style="margin-bottom: 20px;" (click)="logoutSnippets()">
                         <span class="ms-Button-label">{{strings.logoutFromGraph}}</span>
                     </button>
@@ -70,8 +70,10 @@ const { config, localStorageKeys, sessionStorageKeys } = PLAYGROUND;
     `,
 })
 export class About implements AfterViewInit {
-  @Input() show: boolean;
-  @Output() showChange = new EventEmitter<boolean>();
+  @Input()
+  show: boolean;
+  @Output()
+  showChange = new EventEmitter<boolean>();
 
   strings = Strings();
 
@@ -103,7 +105,7 @@ export class About implements AfterViewInit {
   showExperimentationFlags = false;
   experimentationFlags = '';
 
-  constructor(private _effects: UIEffects) { }
+  constructor(private _effects: UIEffects) {}
 
   ngAfterViewInit() {
     this.availableLanguages = getAvailableLanguages();
@@ -116,16 +118,15 @@ export class About implements AfterViewInit {
         window.localStorage.getItem(localStorageKeys.originEnvironmentUrl)
       );
 
-    let environmentToTest: (keyof IEnvironmentConfigsMap)[] = [
-      'insiders',
-      'production',
-    ];
+    let environmentToTest: (keyof IEnvironmentConfigsMap)[] = ['insiders', 'production'];
     const [isBeta, isProd] = environmentToTest.map(
       env => environment.current.config.name === config[env].name
     );
 
     // To avoid clutter, only show the extra (staging, production-direct) sites if you're not on prod or beta
     const showExtra = !(isProd || isBeta);
+    // For the react ones, show them anywhere except prod.
+    const showReactOnes = !isProd;
 
     this.configs = [
       { name: this.strings.production, value: config.production.name },
@@ -136,13 +137,27 @@ export class About implements AfterViewInit {
       // Which also means no need to localize its string, this is not a user-facing bit of UI
       showExtra
         ? {
-          name: this.strings.production + ' (direct)',
-          value: config.productiondirect.name,
-        }
+            name: this.strings.production + ' (direct)',
+            value: config.productiondirect.name,
+          }
         : null,
 
       { name: this.strings.beta, value: config.insiders.name },
       { name: this.strings.alpha, value: config.edge.name },
+
+      showReactOnes
+        ? {
+            name: 'Script Lab React - Beta',
+            value: config.reactbeta.name,
+          }
+        : null,
+
+      showReactOnes
+        ? {
+            name: 'Script Lab React - Alpha',
+            value: config.reactalpha.name,
+          }
+        : null,
 
       // User can only navigate to localhost if they've sideloaded local manifest
       isLocalHost ? { name: config.local.editorUrl, value: config.local.name } : null,

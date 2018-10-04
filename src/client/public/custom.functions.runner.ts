@@ -41,8 +41,7 @@ tryCatch(async () => {
     await initializeRunnableSnippets(params);
     logIfExtraLoggingEnabled('Done preparing snippets');
 
-    logIfExtraLoggingEnabled('Calling into Excel to request the pipeline to initialize');
-    await window['Office']['Preview']['startCustomFunctions']();
+    delete CustomFunctionMappings['__delay__'];
 
     logIfExtraLoggingEnabled(
       'Custom functions runner is ready to evaluate your functions!'

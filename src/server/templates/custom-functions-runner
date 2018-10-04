@@ -11,15 +11,16 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
 
-    <script src="{{{customFunctionsOfficeJsLocation}}}"></script>
+    <script src="https://officedev.github.io/custom-functions/lib/custom-functions-runtime.js"></script>
 
     <script>
+        CustomFunctionMappings["__delay__"] = true;
+
         window.customFunctionParams = {
             snippetsDataBase64: '{{{snippetsDataBase64}}}',
             metadataBase64: '{{{metadataBase64}}}',
             heartbeatParams: {
-		        clientTimestamp: {{clientTimestamp}},
-                loadFromOfficeJsPreviewCachedCopy: {{loadFromOfficeJsPreviewCachedCopy}}
+                clientTimestamp: {{clientTimestamp}}
             }
         };
     </script>

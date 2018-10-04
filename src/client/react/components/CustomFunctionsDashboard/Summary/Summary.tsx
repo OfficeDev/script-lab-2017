@@ -19,8 +19,7 @@ const functionPadding = '4px 8px 10px 8px';
 
 const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
   const errorItemsContainer: DetailsItem[] = [];
-  let successItemsContainer: DetailsItem[] = [];
-  const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
+  const successItemsContainer: DetailsItem[] = [];
 
   metadata.snippets.forEach(snippet => {
     let items: Items = {
@@ -38,6 +37,9 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           paramErrorMessages.push(`${param.name}: ${param.error}`);
         }
       });
+      if (func.result.error) {
+        paramErrorMessages.push(`Return - ${func.result.error}`);
+      }
       if (snippet.error) {
         if (func.error) {
           items.unsuccessful.errors.push({
@@ -55,14 +57,24 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
       }
     });
 
+    const scriptLabTopLevelNamespace = getScriptLabTopLevelNamespace();
+
     if (snippet.error) {
       const functionItemArray = [];
-      items.unsuccessful.errors.map(item => {
-        const errorDetailItems: DetailsItem[] = generateRows(
-          item.children,
-          'ms-font-xs',
-          '50px',
-          functionPadding
+      items.unsuccessful.errors.map((item, errorIndex) => {
+        const errorDetailItems: DetailsItem[] = item.children.map(
+          (paramErrorMessage, itemIndex) => {
+            return (
+              <DetailsItem
+                content={paramErrorMessage}
+                fontFamily="ms-font-xs"
+                indent="50px"
+                noDropdown={true}
+                padding={functionPadding}
+                key={'unsuccessful|error|' + errorIndex + '|' + itemIndex}
+              />
+            ) as any;
+          }
         );
 
         const functionItem = (
@@ -76,18 +88,23 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             noDropdown={true}
             padding={functionPadding}
             statusTitle={true}
+            key={'unsuccessful|error|' + errorIndex}
           />
         );
         functionItemArray.push(functionItem);
       });
-      items.unsuccessful.skipped.forEach(item => {
-        const skippedItem: DetailsItem[] = generateRows(
-          [
-            'This function was skipped because of other invalid functions in the snippet, please fix them.',
-          ],
-          'ms-font-xs',
-          '50px',
-          functionPadding
+      items.unsuccessful.skipped.forEach((item, index) => {
+        let errorMessage = (
+          <DetailsItem
+            content={
+              'This function was skipped because of other invalid functions in the snippet, please fix them.'
+            }
+            fontFamily="ms-font-xs"
+            indent="50px"
+            noDropdown={true}
+            padding={functionPadding}
+            key={'unsuccessful|skipped|error' + index}
+          />
         );
         const functionItem = (
           <DetailsItem
@@ -96,17 +113,19 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
             statusIcon="Warning"
             statusIconColor="#F0C784"
             indent="30px"
-            children={skippedItem}
+            children={[errorMessage]}
             noDropdown={true}
             padding={functionPadding}
             statusTitle={true}
+            key={'unsuccessful|skipped' + index}
           />
         );
         functionItemArray.push(functionItem);
       });
+      const namespacePlusSnippetName = `=${scriptLabTopLevelNamespace}.${snippet.name}`;
       const errorItem: any = (
         <DetailsItem
-          content={`=${scriptLabTopLevelNamespace}.${snippet.name}`}
+          content={namespacePlusSnippetName}
           fontFamily="ms-font-s"
           statusIcon="ErrorBadge"
           statusIconColor="#f04251"
@@ -115,61 +134,30 @@ const Summary = ({ metadata }: { metadata: ICFVisualMetadata }) => {
           indent="7px"
           hasBorderTop={true}
           statusTitle={true}
+          key={namespacePlusSnippetName}
         />
       );
       errorItemsContainer.push(errorItem);
     } else {
-      successItemsContainer = generateRows(
-        items.successful,
-        'ms-font-s',
-        '7px',
-        null,
-        'Completed',
-        '#107C10',
-        null,
-        true,
-        true,
-        true,
-        snippet.name
-      );
+      items.successful.forEach(item => {
+        const functionFullName = `=${scriptLabTopLevelNamespace}.${snippet.name}.${item}`;
+        const successItem: any = (
+          <DetailsItem
+            content={functionFullName}
+            fontFamily="ms-font-s"
+            statusIcon="Completed"
+            statusIconColor="#107C10"
+            noDropdown={true}
+            indent="7px"
+            hasBorderTop={true}
+            statusTitle={true}
+            key={functionFullName}
+          />
+        );
+        successItemsContainer.push(successItem);
+      });
     }
   });
-
-  /*HELPER FUNCTION*/
-  function generateRows(
-    itemList: any,
-    fontFamily: string,
-    indent: string,
-    padding?: string,
-    statusIcon?: string,
-    statusIconColor?: string,
-    children?: any,
-    hasBorderTop?: boolean,
-    statusTitle?: boolean,
-    isSnippetHeader?: boolean,
-    snippetName?: string
-  ) {
-    const container: DetailsItem[] = itemList.map(itemMessage => {
-      if (isSnippetHeader) {
-        itemMessage = `=${scriptLabTopLevelNamespace}.${snippetName}.${itemMessage}`;
-      }
-      return (
-        <DetailsItem
-          content={itemMessage}
-          fontFamily={fontFamily}
-          indent={indent}
-          noDropdown={true}
-          padding={padding}
-          statusIcon={statusIcon}
-          statusIconColor={statusIconColor}
-          children={children}
-          hasBorderTop={hasBorderTop}
-          statusTitle={statusTitle}
-        />
-      ) as any;
-    });
-    return container;
-  }
 
   return (
     <PivotContentContainer>

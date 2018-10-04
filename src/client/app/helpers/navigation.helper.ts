@@ -13,12 +13,7 @@ import { isCustomFunctionScript } from '../helpers/snippet.helper';
 
 export function navigateToRunCustomFunctions(payload?: any) {
   if (!payload) {
-    payload = getRunnerCustomFunctionsPayload({
-      loadFromOfficeJsPreviewCachedCopy: !Office.context.requirements.isSetSupported(
-        'CustomFunctions',
-        1.3
-      ),
-    });
+    payload = getRunnerCustomFunctionsPayload();
   }
 
   const url = environment.current.config.runnerUrl + '/custom-functions/run';
@@ -57,9 +52,7 @@ export function navigateToRunner(snippet: ISnippet, returnUrl: string) {
   });
 }
 
-export function getRunnerCustomFunctionsPayload(additionalInfo: {
-  loadFromOfficeJsPreviewCachedCopy: boolean;
-}) {
+export function getRunnerCustomFunctionsPayload() {
   ensureFreshLocalStorage();
   let allSnippetsToRegisterWithPossibleDuplicate: ICustomFunctionsRunnerRelevantData[] = uniqBy(
     [storage.current.lastOpened].concat(storage.snippets.values()),
@@ -83,15 +76,10 @@ export function getRunnerCustomFunctionsPayload(additionalInfo: {
       };
     });
 
-  const loadFromOfficeJsPreviewCachedCopy =
-    additionalInfo.loadFromOfficeJsPreviewCachedCopy;
-
   let data: IRunnerCustomFunctionsPostData = {
     snippets: allSnippetsToRegisterWithPossibleDuplicate,
-    loadFromOfficeJsPreviewCachedCopy: loadFromOfficeJsPreviewCachedCopy,
     displayLanguage: getDisplayLanguage(),
     heartbeatParams: {
-      loadFromOfficeJsPreviewCachedCopy: loadFromOfficeJsPreviewCachedCopy,
       clientTimestamp: new Date().getTime(),
     },
     experimentationFlags: environment.current.experimentationFlags,

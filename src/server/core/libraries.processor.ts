@@ -8,6 +8,19 @@
 ///           (https://github.com/OfficeDev/office-js-snippets)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const officeJsRegex = /.*office(\.(experimental))?(\.debug)?\.js$/;
+/* intentionally tests positive for any of the following:
+    https://office.js
+    https://office.debug.js
+    https://office.experimental.js
+    https://office.experimental.debug.js
+
+  and intentionally returns false on:
+    https://office.fooooo.debug.js
+    https://officedebug.js
+    https://officeydebug.js
+*/
+
 export function processLibraries(
   libraries: string,
   isMakerScript: boolean,
@@ -52,11 +65,11 @@ export function processLibraries(
 
     if (/\.ts$|\.js$/i.test(resolvedUrlPath)) {
       /*
-            * Don't add Office.js to the rest of the script references --
-            * it is special because of how it needs to be *outside* of the iframe,
-            * whereas the rest of the script references need to be inside the iframe.
-            */
-      if (/(?:office|office.debug).js$/.test(resolvedUrlPath.toLowerCase())) {
+       * Don't add Office.js to the rest of the script references --
+       * it is special because of how it needs to be *outside* of the iframe,
+       * whereas the rest of the script references need to be inside the iframe.
+       */
+      if (officeJsRegex.test(resolvedUrlPath.toLowerCase())) {
         officeJS = resolvedUrlPath;
         return null;
       }

@@ -68,9 +68,7 @@ function sum2(a: number, b: number[]): number {
       "nonCapitalizedFullName": "streaming.txt.incrementValue",
       "options":{
          "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
+         "stream":true
       },
       "parameters":[
          {
@@ -91,9 +89,7 @@ function sum2(a: number, b: number[]): number {
       "nonCapitalizedFullName": "streaming.txt.incrementValue",
       "options":{
          "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
+         "stream":true
       },
       "parameters":[
          {
@@ -114,9 +110,7 @@ function sum2(a: number, b: number[]): number {
       "nonCapitalizedFullName": "streaming.txt.incrementValue",
       "options":{
          "cancelable":true,
-         "stream":true,
-         "sync":true,
-         "volatile":false
+         "stream":true
       },
       "parameters":[
          {

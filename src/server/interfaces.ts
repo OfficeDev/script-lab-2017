@@ -60,11 +60,14 @@ export interface IRunnerHandlebarsContext {
   officeJS: string;
 
   /** return url (for back button / errors), or empty
-   * (in which case will come up with default editor URL, using host & id as guide) */
+   * (in which case will come up with default editor URL, using host & id as guide).
+   * If explicitly want empty, specify the magic string "NONE" */
   returnUrl: string;
 
   /** Optional refresh URL override */
   refreshUrl?: string;
+
+  hideSyncWithEditorButton?: boolean;
 
   strings: ServerStrings;
   explicitlySetDisplayLanguageOrNull: string;
@@ -74,8 +77,6 @@ export interface ICustomFunctionsRunnerHandlebarsContext {
   snippetsDataBase64: string;
   metadataBase64: string;
   clientTimestamp: number;
-  loadFromOfficeJsPreviewCachedCopy: boolean;
-  customFunctionsOfficeJsLocation: string;
 }
 
 export interface IErrorHandlebarsContext {

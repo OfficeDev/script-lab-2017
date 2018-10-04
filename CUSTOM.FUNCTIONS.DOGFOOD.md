@@ -2,30 +2,23 @@
 
 ## Setup
 
-### Prereq: Ensure you are on an Office Insider build.
+**Desktop:**
+* Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**).  The Custom Functions feature is not flighted for folks outside of Insiders!
 
-- Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**)
-- Also be sure that the build number is **9325 or greater**.  If you're already on a 5-digit build numbers, you're good to go!
+**Office Online:**
+- Should "just work".
 
-Note that for purposes of these instructions and the //build timeline, Script Lab will only support Custom Functions **on Windows Desktop**.  And again, remember that you must be on an **Insider** build, the Custom Functions feature is not flighted for folks outside of Insiders!
+**Mac:**
+- Currently, there is **no support** for Script Lab + Custom Functions on the Mac
 
-
-![Dogfood channel](./.github/images/dogfood-channel.png)
-
-## Acquire / Refresh the Store version of Script Lab
-
-If you don't have Script Lab yet, [install it from Office Store](https://store.office.com/app.aspx?assetid=WA104380862)
-
-If you have it, but don't see the "Functions" button in the ribbon when you open Excel, click on the "Edit" button in the Ribbon.  It should prompt you, letting you know that there is an update.
-
-Once the update installs, you should see the refreshed ribbon, now with three buttons in the "Script" group.
+See the *known issues* section at the bottom of this document, for some caveats.
 
 ## A picture is worth a thousand recalcs
 
 ![Screenshot](./.github/images/custom-functions-dogfood.png)
 Custom Functions in action. Note the console.logs in the dashboard, as well!
 
-## Usage
+## Dogfood instructions
 
 1.  Open the `Code` taskpane (via the Ribbon), create a new snippet, and replace the existing code with the following:
 
@@ -46,20 +39,82 @@ To try a more complicated (e.g., a web-service-calling) Custom Function, [import
 
 1.  Remember to add `/** @CustomFunction */` to any function you want registered.
 
-1.  If you want to use `console.log`, do! It will show up in the "Console" tab of the Custom Functions dashboard.
+1.  If you want to use `console.log`, do!  On Office Online, it will show up in the "Console" tab of the Custom Functions dashboard.  On Desktop, it's currently *not supported*, but should be soon.
 
-1.  If you close and and re-open Excel, remember to re-register your custom functions.
+1.  If you close and and re-open Excel on Office Online, you will need to re-register your custom functions by opening the Custom Functions dashboard.  (There is an existing work item to persist them).  On Desktop, it should be persisted.
 
-## Troubleshooting
+## Streaming functions:
 
-If for any reason your functions turn into `#GETTING_DATA` indefinitely, restart Excel.  And please [file a bug](https://github.com/OfficeDev/script-lab/issues), describing what happened.
+First, add the following line to your Libraries tab: `@types/custom-functions-runtime`.
+
+Then, **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
+
+Simple case:  (from https://gist.github.com/Zlatkovsky/dd706c40431efabce962308789cba6f1)
+
+```
+/** @customfunction */
+function increment(
+    incrementBy: number,
+    callback: CustomFunctions.StreamingHandler<number>
+): void {
+    let result = 0;
+    const timer = setInterval(() => {
+        result += incrementBy;
+        callback.setResult(result);
+    }, 1000);
+
+    callback.onCanceled = () => {
+        clearInterval(timer);
+    };
+}
+```
+
+
+More complicated (from https://gist.github.com/Zlatkovsky/522183067333a47d8ec4f7e8a4823c57)
+
+```
+/** @customfunction */
+function stockPriceStream(ticker: string, handler: CustomFunctions.StreamingHandler<number>) {
+    var updateFrequency = 10 /* milliseconds */;
+    var isPending = false;
+
+    var timer = setInterval(function () {
+        // If there is already a pending request, skip this iteration:
+        if (isPending) {
+            return;
+        }
+
+        var url = "https://api.iextrading.com/1.0/stock/" + ticker + "/price";
+        isPending = true;
+
+        fetch(url)
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (text) {
+                handler.setResult(parseFloat(text));
+            })
+            .catch(function (error) {
+                handler.setResult(new Error(error) as any); // FIXME
+            })
+            .then(function () {
+                isPending = false;
+            });
+    }, updateFrequency);
+
+    handler.onCanceled = () => {
+        clearInterval(timer);
+    };
+}
+```
+
+
 
 ## Known issues
 
-### Platform
+### Desktop:
+1. No support for `console.log` on Desktop yet, or the bubbling-up of errors in general.  But it's coming soon.
+2. No support for external libraries.  (Office Online will have those work, though).  But it's coming soon.
 
-1.  If you enter a Custom Function into a formula and then remove the function -- or if you restart Excel and before you re-register the custom functions -- the formula bar will show something like `=_xldudf_96323233322223(...)`
-
-### Script Lab
-
-No known issues at the moment (though note, for now the experience is for Windows only)
+### Excel Online
+1. You will need to re-open the Functions pane anytime you reload the page, in order to get the functions to re-register.

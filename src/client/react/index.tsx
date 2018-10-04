@@ -24,11 +24,15 @@ import { clearLogStorage } from './components/CustomFunctionsDashboard/Console';
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
-  environment.initializePartial({ host: 'EXCEL' });
+  await environment.initialize({ host: 'EXCEL' });
 
   // Now wait for the host.  The advantage of doing it this way is that you can easily
-  // bypass it for debugging, just by entering "window.playground_host_ready = true;"
-  // in the F12 debug console
+  //     bypass it for debugging.
+  // To bypass when using F12 tools, enter the following into the console:
+  /*
+    Office.context.requirements = { isSetSupported: function() { return true; } };
+    window.playground_host_ready = true;
+  */
   await new Promise(resolve => {
     const interval = setInterval(() => {
       if ((window as any).playground_host_ready) {
@@ -138,8 +142,10 @@ async function registerMetadata(
 ): Promise<void> {
   const registrationPayload: ICustomFunctionsRegistrationApiMetadata = {
     functions: functions.filter(func => func.status === 'good').map(func => {
+      let uppercasedFullName = func.nonCapitalizedFullName.toUpperCase();
       let schemaFunc: ICFSchemaFunctionMetadata = {
-        name: func.nonCapitalizedFullName.toUpperCase(),
+        id: uppercasedFullName,
+        name: uppercasedFullName,
         description: func.description,
         options: func.options,
         result: func.result,
@@ -149,24 +155,26 @@ async function registerMetadata(
     }),
   };
 
-  if (Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
-    await Excel.run(async context => {
+  const jsonMetadataString = JSON.stringify(registrationPayload, null, 4);
+
+  await Excel.run(async context => {
+    if (Office.context.platform === Office.PlatformType.OfficeOnline) {
+      const namespace = getScriptLabTopLevelNamespace().toUpperCase();
+      (context.workbook as any).registerCustomFunctions(
+        namespace,
+        jsonMetadataString,
+        '' /*addinId*/,
+        'en-us',
+        namespace
+      );
+    } else {
       (Excel as any).CustomFunctionManager.newObject(context).register(
-        JSON.stringify(registrationPayload, null, 4),
+        jsonMetadataString,
         code
       );
-      await context.sync();
-    });
-  } else {
-    // Older style registration
-    await Excel.run(async context => {
-      (context.workbook as any).registerCustomFunctions(
-        getScriptLabTopLevelNamespace().toUpperCase(),
-        JSON.stringify(registrationPayload)
-      );
-      await context.sync();
-    });
-  }
+    }
+    await context.sync();
+  });
 }
 
 async function tryCatch(callback: () => void) {

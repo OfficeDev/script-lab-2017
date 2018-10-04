@@ -72,9 +72,7 @@ function getLocalStorageLastUpdateTimestamp(): number {
 }
 
 function sendRefreshRequest() {
-  let payload = getRunnerCustomFunctionsPayload({
-    loadFromOfficeJsPreviewCachedCopy: params.loadFromOfficeJsPreviewCachedCopy,
-  });
+  let payload = getRunnerCustomFunctionsPayload();
   messenger.send(window.parent, CustomFunctionsMessageType.NEED_TO_REFRESH, payload);
 }
 

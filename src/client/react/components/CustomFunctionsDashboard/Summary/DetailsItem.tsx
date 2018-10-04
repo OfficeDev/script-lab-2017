@@ -1,24 +1,27 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 interface IState {
   isExpanded: boolean;
 }
 
-interface IProps {
+interface IProps extends IContainerWrapperProps {
   content: String;
   fontFamily: string;
   caption?: string;
   noDropdown?: boolean;
   statusIcon?: string;
   statusIconColor?: string;
-  indent?: string;
   children?: any[];
-  backgroundColor?: string;
   hasBorderTop?: boolean;
-  padding?: string;
+}
+
+interface IContainerWrapperProps {
   statusTitle?: boolean;
+  padding?: string;
+  indent?: string;
+  backgroundColor?: string;
 }
 
 const DropDownStyling = {
@@ -28,6 +31,26 @@ const DropDownStyling = {
   marginTop: '3px',
   marginRight: '5px',
 };
+
+const ContainerWrapper = styled.div`
+  &:hover: {
+    color: red;
+  }
+  display: flex;
+  flex-direction: horizontal;
+  height: auto;
+  ${(props: Partial<IContainerWrapperProps>) => css`
+    ${[
+      `padding: ${props.padding || '12px'};`,
+      `background: ${props.backgroundColor || '#fff'};`,
+      props.indent ? `margin-left: ${props.indent};` : null,
+      props.statusTitle ? `word-break: break-all;` : null,
+      props.statusTitle ? `font-variant: small-caps;` : null,
+    ]
+      .filter(item => item)
+      .join('\n')};
+  `};
+`;
 
 export default class DetailsItem extends Component<IProps, IState> {
   state = { isExpanded: true };
@@ -40,19 +63,6 @@ export default class DetailsItem extends Component<IProps, IState> {
   render() {
     const props = this.props;
     const state = this.state;
-    const ContainerWrapper = styled.div`
-      &:hover: {
-        color: red;
-      }
-      padding: ${props.padding || '12px'};
-      background: ${props.backgroundColor || '#fff'};
-      display: flex;
-      flex-direction: horizontal;
-      margin-left: ${props.indent};
-      word-break: ${props.statusTitle && 'break-all'};
-      font-variant: ${props.statusTitle && 'small-caps'};
-      height: auto;
-    `;
 
     const dividerStyle = {
       borderTop: 'solid',
@@ -71,7 +81,12 @@ export default class DetailsItem extends Component<IProps, IState> {
 
     return (
       <div style={props.hasBorderTop && dividerStyle}>
-        <ContainerWrapper>
+        <ContainerWrapper
+          statusTitle={props.statusTitle}
+          padding={props.padding}
+          indent={props.indent}
+          backgroundColor={props.backgroundColor}
+        >
           {!props.noDropdown && (
             <Icon
               className="ms-font-m"

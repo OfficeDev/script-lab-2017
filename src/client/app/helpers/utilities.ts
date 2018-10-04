@@ -1,10 +1,8 @@
 import { Dictionary } from '@microsoft/office-js-helpers';
 import { AI } from './ai.helper';
 import { toNumber } from 'lodash';
-import * as semver from 'semver';
 import { environment } from '.';
 import { stringifyPlusPlus } from './standalone-log-helper';
-import { isUndefined } from 'lodash';
 
 // Note: a similar mapping exists in server.ts as well
 const officeHosts = [
@@ -51,111 +49,39 @@ export interface CustomFunctionEngineStatus {
   nativeRuntime?: boolean;
 }
 
-let cachedCFEngineStatus;
 export async function getCustomFunctionEngineStatus(): Promise<
   CustomFunctionEngineStatus
 > {
-  if (isUndefined(cachedCFEngineStatus)) {
-    cachedCFEngineStatus = await queryCFEngineStatus();
-  }
+  try {
+    if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.4)) {
+      return { enabled: false };
+    }
 
-  return cachedCFEngineStatus;
+    const platform = Office.context.platform;
+
+    const isOnSupportedPlatform =
+      platform === Office.PlatformType.PC ||
+      platform === Office.PlatformType.OfficeOnline;
+    if (isOnSupportedPlatform) {
+      return getEngineStatus();
+    }
+
+    // To allow testing out on a not-officially-supported platform yet (e.g., Mac for now),
+    // have a flag to allow it to bypass the checks and just try to assume that it's enabled.
+    if (environment.current.experimentationFlags.customFunctions.forceOn) {
+      return { enabled: true };
+    } else {
+      return { enabled: false };
+    }
+  } catch (e) {
+    console.error('Could not perform a "getCustomFunctionEngineStatus" check');
+    console.error(e);
+    return { enabled: false };
+  }
 
   // Helpers:
 
-  async function queryCFEngineStatus() {
-    try {
-      if (environment.current.experimentationFlags.customFunctions.forceOn) {
-        return { enabled: true };
-      }
-
-      if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.1)) {
-        return { enabled: false };
-      }
-
-      const platform = Office.context.platform;
-
-      if (platform === Office.PlatformType.PC) {
-        if (!Office.context.requirements.isSetSupported('CustomFunctions', 1.3)) {
-          return getPCstatusPre1_3();
-        }
-        return getStatusPost1_3();
-      }
-
-      if (
-        platform === Office.PlatformType.Mac &&
-        Office.context.requirements.isSetSupported('CustomFunctions', 1.3)
-      ) {
-        return getStatusPost1_3();
-      }
-
-      if (platform === Office.PlatformType.OfficeOnline) {
-        // On Web: doesn't work yet, need to debug further. It might have to do with Web not expecting non-JSON-inputted functions.  For now, assume that it's off.
-        return { enabled: false };
-      }
-
-      // Catch-all:
-      return { enabled: false };
-    } catch (e) {
-      console.error('Could not perform a "getCustomFunctionEngineStatus" check');
-      console.error(e);
-      return { enabled: false };
-    }
-  }
-
-  async function getPCstatusPre1_3(): Promise<CustomFunctionEngineStatus> {
-    const threeDotVersion = /(\d+\.\d+\.\d+)/.exec(Office.context.diagnostics.version)[1];
-
-    if (semver.lt(threeDotVersion, '16.0.9323')) {
-      return { enabled: false };
-    }
-
-    return tryExcelRun(
-      async (context): Promise<CustomFunctionEngineStatus> => {
-        const featuresThatWantOn = [
-          'Microsoft.Office.Excel.AddinDefinedFunctionEnabled',
-          'Microsoft.Office.Excel.AddinDefinedFunctionStreamingEnabled',
-          'Microsoft.Office.Excel.AddinDefinedFunctionCachingEnabled',
-          'Microsoft.Office.Excel.AddinDefinedFunctionUseCalcThreadEnabled',
-          'Microsoft.Office.OEP.UdfManifest',
-          'Microsoft.Office.OEP.UdfRuntime',
-        ].map(
-          name =>
-            (context as any).flighting
-              .getFeatureGate(name)
-              .load('value') as OfficeExtension.ClientResult<boolean>
-        );
-
-        const flightThatMustBeOffPre1_3 = (context as any).flighting
-          .getFeatureGate('Microsoft.Office.OEP.SdxSandbox')
-          .load('value') as OfficeExtension.ClientResult<boolean>;
-
-        await context.sync();
-
-        const firstNonTrueIndex = featuresThatWantOn.findIndex(
-          item => item.value !== true
-        );
-        const allDesirableOnesWereTrue = firstNonTrueIndex < 0;
-        if (!allDesirableOnesWereTrue) {
-          return { enabled: false };
-        }
-
-        if (flightThatMustBeOffPre1_3.value) {
-          return {
-            error: `Conflict: please disable the "Microsoft.Office.OEP.SdxSandbox" flight, or install a newer version of Excel`,
-            enabled: false,
-          };
-        }
-
-        return {
-          enabled: true,
-          nativeRuntime: false /* older version, so can't have the native runtime there */,
-        };
-      }
-    );
-  }
-
-  async function getStatusPost1_3(): Promise<CustomFunctionEngineStatus> {
+  async function getEngineStatus(): Promise<CustomFunctionEngineStatus> {
     return tryExcelRun(
       async (context): Promise<CustomFunctionEngineStatus> => {
         const manager = (Excel as any).CustomFunctionManager.newObject(context).load(

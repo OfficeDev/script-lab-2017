@@ -75,9 +75,9 @@
     lodash "4.17.4"
     rxjs "5.2.0"
 
-"@microsoft/office-js@1.1.8":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.8.tgz#3b9133093d5f8164d5c2fa57facfcf528ecdb2d5"
+"@microsoft/office-js@1.1.10":
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.10.tgz#9125966bbd587c91e59fb400b4d202ce0ebe9711"
 
 "@ngrx/core@1.2.0":
   version "1.2.0"
@@ -142,6 +142,10 @@
   resolved "https://registry.yarnpkg.com/@types/cors/-/cors-2.8.1.tgz#54073caf3b7a741e67fb82483f83a6cadfba7501"
   dependencies:
     "@types/express" "*"
+
+"@types/custom-functions-runtime@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/custom-functions-runtime/-/custom-functions-runtime-1.4.0.tgz#cef70e1075139f84e38e6df4b96275f2b79acf14"
 
 "@types/express-serve-static-core@*":
   version "4.0.53"
@@ -222,9 +226,9 @@
   version "9.6.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.6.tgz#439b91f9caf3983cad2eef1e11f6bedcbf9431d2"
 
-"@types/office-js@^0.0.88":
-  version "0.0.88"
-  resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.88.tgz#5b84c1fb408bd81454984366f46cd7cfb499c407"
+"@types/office-js@^0.0.113":
+  version "0.0.113"
+  resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.113.tgz#849d75945a76ece66f99967e412f6df19a16ec7d"
 
 "@types/react-dom@^16.0.5":
   version "16.0.5"
