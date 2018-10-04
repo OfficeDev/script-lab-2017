@@ -1,13 +1,14 @@
 import { parseMetadata } from './metadata.parser';
 import { compileScript } from '../core/snippet.generator';
 import { stripSpaces } from '../core/utilities';
+import { preamble } from './base64preamble';
 
 export function getCustomFunctionsInfoForRegistration(
   snippets: ISnippet[],
   strings: ServerStrings
 ): { visual: ICFVisualMetadata; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
-  const code: string[] = [...generateCodePreamble()];
+  const code: string[] = [...decodeURIComponent(preamble).split('\n')];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
     const namespace = transformSnippetName(snippet.name);
@@ -152,10 +153,6 @@ function wrapCustomFunctionSnippetCode(
       )
       .join(newlineAndIndents);
   }
-}
-
-function generateCodePreamble() {
-  return []; // FIXME
 }
 
 function getFunctionChildNodeStatus(

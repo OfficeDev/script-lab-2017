@@ -44,8 +44,6 @@ function processLog(logsString: string) {
     return [];
   }
 
-  window.localStorage.removeItem(localStorageKeys.log);
-
   const newLogs = logsString
     .split('\n')
     .filter(line => line !== '')
@@ -61,14 +59,16 @@ async function bulkGetData(isUsingLocalStorage: boolean) {
       localStorageKeys.customFunctionsCurrentlyRunningTimestamp,
       localStorageKeys.log,
     ]);
-    return {
-      customFunctionsLastHeartbeatTimestamp: results[0][0],
-      customFunctionsCurrentlyRunningTimestamp: results[1][0],
-      log: results[2][0],
+    let data = {
+      customFunctionsLastHeartbeatTimestamp: results[0][1],
+      customFunctionsCurrentlyRunningTimestamp: results[1][1],
+      log: results[2][1],
     };
+    await OfficeRuntime.AsyncStorage.removeItem(localStorageKeys.log);
+    return data;
   } else {
     ensureFreshLocalStorage();
-    return {
+    let data = {
       customFunctionsLastHeartbeatTimestamp: window.localStorage.getItem(
         localStorageKeys.customFunctionsLastHeartbeatTimestamp
       ),
@@ -77,6 +77,8 @@ async function bulkGetData(isUsingLocalStorage: boolean) {
       ),
       log: window.localStorage.getItem(localStorageKeys.log),
     };
+    window.localStorage.removeItem(localStorageKeys.log);
+    return data;
   }
 }
 

@@ -1,3 +1,11 @@
+/* To incorporate the changes made here, do the following:
+  1. npm run build:custom-functions-boilerplate
+  2. open .\dist\console.g.js
+  3. pipe it through a tool like http://pressbin.com/tools/urlencode_urldecode/,
+        doing a "encodeURIComponent"
+  4. paste it into .\src\server\custom-functions\base64preamble.ts
+*/
+
 import {
   generateLogString,
   ConsoleLogTypes,
@@ -6,7 +14,18 @@ import {
 
 const StorageKey = 'playground_log'; // from "env.config.js";
 
+type LogEntry = { severity: ConsoleLogTypes; message: string };
+
+declare var OfficeExtensionBatch: {
+  CoreUtility: {
+    _logEnabled: boolean;
+  };
+};
+
 (() => {
+  // Disable the verbose logging that's on by default in the native execution
+  OfficeExtensionBatch.CoreUtility._logEnabled = false;
+
   const oldConsole = console;
   const logTypes: ConsoleLogTypes[] = ['log', 'info', 'warn', 'error'];
   console = {
@@ -21,8 +40,8 @@ const StorageKey = 'playground_log'; // from "env.config.js";
   });
 
   let storageOperationInProgress = false;
-  let queueToWrite = [];
-  function queueToAppendToStorage(data: { severity: ConsoleLogTypes; message: string }) {
+  let queueToWrite: LogEntry[] = [];
+  function queueToAppendToStorage(data: LogEntry) {
     if (storageOperationInProgress) {
       queueToWrite.push(data);
       return;

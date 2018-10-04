@@ -230,6 +230,10 @@
   version "0.0.113"
   resolved "https://registry.yarnpkg.com/@types/office-js/-/office-js-0.0.113.tgz#849d75945a76ece66f99967e412f6df19a16ec7d"
 
+"@types/office-runtime@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/office-runtime/-/office-runtime-1.0.3.tgz#190679ce3efef4e27d765a33727f1c3f25f3dbf5"
+
 "@types/react-dom@^16.0.5":
   version "16.0.5"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.5.tgz#a757457662e3819409229e8f86795ff37b371f96"
