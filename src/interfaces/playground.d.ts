@@ -295,6 +295,9 @@ interface DefaultAuthRequestParamData {
 interface LogData {
   source: string;
   message: any;
-  severity: string /* as defined in ConsoleLogTypes */;
+  severity: ConsoleLogTypes;
   indent?: number;
 }
+
+/* duplicated from src\client\app\helpers\standalone-log-helper.ts */
+type ConsoleLogTypes = 'log' | 'info' | 'warn' | 'error';

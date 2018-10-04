@@ -19,7 +19,7 @@ import Welcome from './components/CustomFunctionsDashboard/Welcome';
 const { localStorageKeys } = PLAYGROUND;
 
 import '../assets/styles/extras.scss';
-import { clearLogStorage } from './components/CustomFunctionsDashboard/Console';
+import { clearLogStorage } from './components/CustomFunctionsDashboard/LogAndHeartbeatFetcher';
 
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
@@ -43,6 +43,7 @@ tryCatch(async () => {
   });
 
   const engineStatus = await getCustomFunctionEngineStatus();
+
   if (engineStatus.enabled) {
     initializeIcons();
 

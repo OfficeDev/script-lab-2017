@@ -154,7 +154,10 @@ function wrapCustomFunctionSnippetCode(
   }
 }
 
-function generateCodePreamble() {}
+function generateCodePreamble() {
+  return []; // FIXME
+}
+
 function getFunctionChildNodeStatus(
   func: ICFVisualFunctionMetadata,
   funcStatus: CustomFunctionsRegistrationStatus,

@@ -1,14 +1,11 @@
 import * as $ from 'jquery';
-import {
-  environment,
-  generateUrl,
-  navigateToRunCustomFunctions,
-  stringifyPlusPlus,
-  generateLogString,
-  ConsoleLogTypes,
-} from '../app/helpers';
+import { environment, generateUrl, navigateToRunCustomFunctions } from '../app/helpers';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
+import {
+  stringifyPlusPlus,
+  generateLogString,
+} from '../app/helpers/standalone-log-helper';
 
 interface InitializationParams {
   snippetsDataBase64: string;
