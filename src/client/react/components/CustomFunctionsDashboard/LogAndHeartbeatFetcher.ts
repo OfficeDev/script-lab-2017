@@ -64,7 +64,7 @@ async function bulkGetData(engineStatus: CustomFunctionEngineStatus) {
       customFunctionsCurrentlyRunningTimestamp: results[1][1],
       log: results[2][1],
     };
-    await OfficeRuntime.AsyncStorage.setItem(localStorageKeys.log, '');
+    await OfficeRuntime.AsyncStorage.removeItem(localStorageKeys.log);
     return data;
   } else {
     ensureFreshLocalStorage();
