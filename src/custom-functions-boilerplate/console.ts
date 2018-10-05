@@ -12,9 +12,19 @@ import {
   stringifyPlusPlus,
 } from '../client/app/helpers/standalone-log-helper';
 
-const StorageKey = 'playground_log'; // from "env.config.js";
+// from "env.config.js"
+const StorageKeys = {
+  log: 'playground_log',
+  customFunctionsLastHeartbeatTimestamp:
+    'playground_custom_functions_last_heartbeat_timestamp',
+  customFunctionsCurrentlyRunningTimestamp:
+    'playground_custom_functions_currently_running_timestamp',
+};
 
 type LogEntry = { severity: ConsoleLogTypes; message: string };
+
+const startTime = new Date().getTime().toString();
+const WRITE_DELAY = 300;
 
 declare var OfficeExtensionBatch: {
   CoreUtility: {
@@ -22,7 +32,7 @@ declare var OfficeExtensionBatch: {
   };
 };
 
-(() => {
+(async () => {
   // Disable the verbose logging that's on by default in the native execution
   OfficeExtensionBatch.CoreUtility._logEnabled = false;
 
@@ -39,41 +49,52 @@ declare var OfficeExtensionBatch: {
     };
   });
 
-  let storageOperationInProgress = false;
-  let queueToWrite: LogEntry[] = [];
-  function queueToAppendToStorage(data: LogEntry) {
-    if (storageOperationInProgress) {
-      queueToWrite.push(data);
-      return;
-    }
-
-    processQueue();
+  try {
+    await OfficeRuntime.AsyncStorage.removeItem(StorageKeys.log);
+  } catch (e) {
+    console.error('Error clearing out initial AsyncStorage');
+    console.error(e);
   }
 
-  async function processQueue() {
-    storageOperationInProgress = true;
-    const currentValue = await OfficeRuntime.AsyncStorage.getItem(StorageKey);
-    const newValue =
-      (currentValue ? currentValue + '\n' : '') +
-      queueToWrite
-        .map(entry =>
-          JSON.stringify({
-            severity: entry.severity,
-            message: stringifyPlusPlus(entry.message),
-          })
-        )
-        .join('\n');
-    queueToWrite = [];
+  let queueToWrite: LogEntry[] = [];
+  startWritingLoop();
 
-    await OfficeRuntime.AsyncStorage.setItem(StorageKey, newValue);
+  // Helpers
+  function startWritingLoop() {
+    writeToAsyncStorage();
 
-    // Wait just one more moment, so that has a chance to *really* batch up
-    await new Promise(resolve => setTimeout(resolve, 100));
+    async function writeToAsyncStorage() {
+      const currentValue = await OfficeRuntime.AsyncStorage.getItem(StorageKeys.log);
+      const newLogValue =
+        (currentValue ? currentValue + '\n' : '') +
+        queueToWrite
+          .map(entry =>
+            JSON.stringify({
+              severity: entry.severity,
+              message: stringifyPlusPlus(entry.message),
+            })
+          )
+          .join('\n');
+      queueToWrite = [];
+      await OfficeRuntime.AsyncStorage.multiSet([
+        [StorageKeys.log, newLogValue],
+        [StorageKeys.customFunctionsCurrentlyRunningTimestamp, startTime],
+        [
+          StorageKeys.customFunctionsLastHeartbeatTimestamp,
+          new Date().getTime().toString(),
+        ],
+      ]);
+      try {
+      } catch (e) {
+        console.error('Error writing to AsyncStorage');
+        console.error(e);
+      }
 
-    if (queueToWrite.length > 0) {
-      setTimeout(() => processQueue(), 0);
-    } else {
-      storageOperationInProgress = false;
+      setTimeout(writeToAsyncStorage, WRITE_DELAY);
     }
+  }
+
+  function queueToAppendToStorage(data: LogEntry) {
+    queueToWrite.push(data);
   }
 })();

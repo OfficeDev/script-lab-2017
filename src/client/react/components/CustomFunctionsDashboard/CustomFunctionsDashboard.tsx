@@ -196,7 +196,7 @@ class CustomFunctionsDashboard extends React.Component<
       newData = {
         newLogs: [
           {
-            message: 'Unable to fetch logs & status',
+            message: 'Unable to fetch logs & status: ' + e,
             source: 'SYSTEM',
             severity: 'error',
           },
