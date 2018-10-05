@@ -1,14 +1,14 @@
 import { parseMetadata } from './metadata.parser';
 import { compileScript } from '../core/snippet.generator';
 import { stripSpaces } from '../core/utilities';
-import { preamble } from './base64preamble';
+import { consoleMonkeypatch } from './console-monkeypatch';
 
 export function getCustomFunctionsInfoForRegistration(
   snippets: ISnippet[],
   strings: ServerStrings
 ): { visual: ICFVisualMetadata; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
-  const code: string[] = [...decodeURIComponent(preamble).split('\n')];
+  const code: string[] = [...decodeURIComponent(consoleMonkeypatch).split('\n')];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
     const namespace = transformSnippetName(snippet.name);

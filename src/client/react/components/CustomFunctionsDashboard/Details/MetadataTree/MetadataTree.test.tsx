@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import MetadataTree from './index';
+import MetadataTree from '.';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');

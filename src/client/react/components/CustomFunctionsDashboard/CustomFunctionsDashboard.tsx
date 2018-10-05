@@ -193,18 +193,26 @@ class CustomFunctionsDashboard extends React.Component<
     try {
       newData = await getLogAndHeartbeatStatus(this.props.engineStatus);
     } catch (e) {
+      const isCellEditModeError =
+        e instanceof OfficeExtension.Error &&
+        e.code === 'GeneralException' &&
+        e.message === 'Invalid API call in the current context.';
+      // TODO: checking for message is dangerous, need to adjust or fix the platform issue
       newData = {
-        newLogs: [
-          {
-            message: 'Unable to fetch logs & status: ' + e,
-            source: 'SYSTEM',
-            severity: 'error',
-          },
-        ],
+        newLogs: isCellEditModeError
+          ? []
+          : [
+              {
+                message: 'Unable to fetch logs & status: ' + e,
+                source: 'SYSTEM',
+                severity: 'error',
+              },
+            ],
         runnerIsAlive: false,
         runnerLastUpdated: 0,
       };
     }
+
     let newLogs = [
       ...this.state.logs,
       ...newData.newLogs.map(item => ({ id: (this._logCounter++).toString(), ...item })),

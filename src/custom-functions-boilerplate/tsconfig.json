@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     /* Basic Options */
-    "target": "es2015",
+    "target": "es5",
     "module": "commonjs",
     "lib": ["es2015"],
     "strict": true,

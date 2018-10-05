@@ -1,9 +1,5 @@
-/* To incorporate the changes made here, do the following:
-  1. npm run build:custom-functions-boilerplate
-  2. open .\dist\console.g.js
-  3. pipe it through a tool like http://pressbin.com/tools/urlencode_urldecode/,
-        doing a "encodeURIComponent"
-  4. paste it into .\src\server\custom-functions\base64preamble.ts
+/* To incorporate the changes made here, run:
+    npm run build:custom-functions-boilerplate
 */
 
 import {

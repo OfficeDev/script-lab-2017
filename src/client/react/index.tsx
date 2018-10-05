@@ -9,9 +9,9 @@ import {
   getCustomFunctionEngineStatus,
   isCustomFunctionScript,
   getScriptLabTopLevelNamespace,
-} from '../../client/app/helpers';
+} from '../app/helpers';
 import { uniqBy, flatten } from 'lodash';
-import { ensureFreshLocalStorage } from '../../client/app/helpers';
+import { ensureFreshLocalStorage } from '../app/helpers';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
