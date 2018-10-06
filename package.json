@@ -33,6 +33,7 @@
     "build:runtime_helpers:prod": "tsc -p src/runtime-helpers/tsconfig.json",
     "build:server_maker:dev": "tsc -p src/server/maker/tsconfig.json --watch",
     "build:server_maker:prod": "tsc -p src/server/maker/tsconfig.json",
+    "build:custom-functions-boilerplate": "tsc -p src/custom-functions-boilerplate && webpack --config src/custom-functions-boilerplate/webpack.config.js && node tools/copy-custom-functions-boilerplate.js",
     "build:dev": "webpack-dev-server --config config/webpack.dev.js --progress",
     "build:prod": "webpack --config config/webpack.prod.js --env.mode=prod --progress --colors --bail",
     "start": "npm-run-all clean -p build:runtime_helpers:dev build:server_maker:dev build:dev dev:*",
@@ -110,6 +111,7 @@
     "@types/chalk": "0.4.31",
     "@types/clipboard": "1.5.32",
     "@types/cors": "2.8.1",
+    "@types/custom-functions-runtime": "^1.4.4",
     "@types/express": "4.0.35",
     "@types/express-serve-static-core": "4.0.44",
     "@types/file-saver": "0.0.1",
@@ -121,7 +123,7 @@
     "@types/mime": "0.0.29",
     "@types/node": "^9.6.6",
     "@types/office-js": "^0.0.113",
-    "@types/custom-functions-runtime": "^1.4.0",
+    "@types/office-runtime": "^1.0.3",
     "@types/react": "^16.3.12",
     "@types/react-dom": "^16.0.5",
     "@types/semver": "^5.5.0",
@@ -160,6 +162,7 @@
     "tslint": "4.5.1",
     "webpack": "2.3.2",
     "webpack-bundle-analyzer": "2.3.1",
+    "webpack-cli": "^3.1.2",
     "webpack-dev-server": "2.4.2",
     "webpack-merge": "4.1.0"
   }

@@ -1,12 +1,11 @@
 import * as $ from 'jquery';
-import {
-  environment,
-  generateUrl,
-  navigateToRunCustomFunctions,
-  stringifyPlusPlus,
-} from '../app/helpers';
+import { environment, generateUrl, navigateToRunCustomFunctions } from '../app/helpers';
 import { Messenger, CustomFunctionsMessageType } from '../app/helpers/messenger';
 import { officeNamespacesForCustomFunctionsIframe } from './runner.common';
+import {
+  stringifyPlusPlus,
+  generateLogString,
+} from '../app/helpers/standalone-log-helper';
 
 interface InitializationParams {
   snippetsDataBase64: string;
@@ -211,24 +210,12 @@ function overwriteConsole(source: '[SYSTEM]' | string, windowObject: Window) {
 
   function consoleMsgTypeImplementation(severityType: ConsoleLogTypes) {
     return (...args) => {
-      let logMsg: string = '';
-      let isSuccessfulMsg: boolean = true;
-      args.forEach((element, index, array) => {
-        try {
-          logMsg += stringifyPlusPlus(element);
-        } catch (e) {
-          isSuccessfulMsg = false;
-          logMsg += '<Unable to log>';
-        }
-        logMsg += '\n';
-      });
-      if (logMsg.length > 0) {
-        logMsg = logMsg.trim();
-      }
+      const { severity, message } = generateLogString(args, severityType);
+
       tryToSendLog({
-        source: source,
-        severity: isSuccessfulMsg ? severityType : 'error',
-        message: logMsg,
+        source,
+        severity,
+        message,
       });
     };
   }

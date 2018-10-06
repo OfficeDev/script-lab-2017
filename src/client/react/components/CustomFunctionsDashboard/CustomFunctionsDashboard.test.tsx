@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import CustomFunctionsDashboard from './index';
+import CustomFunctionsDashboard from '.';
 
 const metadata: ICFVisualMetadata = { snippets: [] };
 

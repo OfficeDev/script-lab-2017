@@ -1,5 +1,5 @@
 import * as React from 'react';
-import CustomFunctionsDashboard from './components/CustomFunctionsDashboard/';
+import CustomFunctionsDashboard from './components/CustomFunctionsDashboard';
 import { CustomFunctionEngineStatus } from '../app/helpers/utilities';
 
 class App extends React.Component<
