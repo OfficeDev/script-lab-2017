@@ -5,7 +5,7 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { mergeStyles } from '@uifabric/merge-styles';
 
 import Summary from './Summary';
-import Console from './Console';
+import Console from './Console/Console';
 import RefreshBar from './RefreshBar';
 import { Authenticator } from '@microsoft/office-js-helpers';
 import {
@@ -96,9 +96,18 @@ class CustomFunctionsDashboard extends React.Component<
     }
   }
 
-  componentDidMount() {
-    this.performLogFetch();
-    this.interval = setInterval(this.performLogFetch, 300);
+  async componentDidMount() {
+    await this.performLogFetch();
+
+    let waitingOnPreviousLogFetch = false;
+    this.interval = setInterval(async () => {
+      if (waitingOnPreviousLogFetch) {
+        return;
+      }
+      waitingOnPreviousLogFetch = true;
+      await this.performLogFetch();
+      waitingOnPreviousLogFetch = false;
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -175,8 +184,35 @@ class CustomFunctionsDashboard extends React.Component<
     ].filter(item => item != null);
   }
 
-  private performLogFetch() {
-    let newData = getLogAndHeartbeatStatus();
+  private async performLogFetch() {
+    let newData: {
+      runnerIsAlive: boolean;
+      newLogs: LogData[];
+      runnerLastUpdated: number;
+    };
+    try {
+      newData = await getLogAndHeartbeatStatus(this.props.engineStatus);
+    } catch (e) {
+      const isCellEditModeError =
+        e instanceof OfficeExtension.Error &&
+        e.code === 'GeneralException' &&
+        e.message === 'Invalid API call in the current context.';
+      // TODO: checking for message is dangerous, need to adjust or fix the platform issue
+      newData = {
+        newLogs: isCellEditModeError
+          ? []
+          : [
+              {
+                message: 'Unable to fetch logs & status: ' + e,
+                source: 'SYSTEM',
+                severity: 'error',
+              },
+            ],
+        runnerIsAlive: false,
+        runnerLastUpdated: 0,
+      };
+    }
+
     let newLogs = [
       ...this.state.logs,
       ...newData.newLogs.map(item => ({ id: (this._logCounter++).toString(), ...item })),

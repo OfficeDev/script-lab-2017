@@ -9,9 +9,9 @@ import {
   getCustomFunctionEngineStatus,
   isCustomFunctionScript,
   getScriptLabTopLevelNamespace,
-} from '../../client/app/helpers';
+} from '../app/helpers';
 import { uniqBy, flatten } from 'lodash';
-import { ensureFreshLocalStorage } from '../../client/app/helpers';
+import { ensureFreshLocalStorage } from '../app/helpers';
 import { UI } from '@microsoft/office-js-helpers';
 import { Strings } from '../app/strings';
 import Welcome from './components/CustomFunctionsDashboard/Welcome';
@@ -19,14 +19,12 @@ import Welcome from './components/CustomFunctionsDashboard/Welcome';
 const { localStorageKeys } = PLAYGROUND;
 
 import '../assets/styles/extras.scss';
+import { clearLogStorage } from './components/CustomFunctionsDashboard/LogAndHeartbeatFetcher';
 
 // Note: Office.initialize is already handled outside in the html page,
 // setting "window.playground_host_ready = true;""
 tryCatch(async () => {
   await environment.initialize({ host: 'EXCEL' });
-
-  // clear out any former logs in the storage -- showing logs from a previous session is confusing
-  window.localStorage.removeItem(localStorageKeys.log);
 
   // Now wait for the host.  The advantage of doing it this way is that you can easily
   //     bypass it for debugging.
@@ -45,8 +43,12 @@ tryCatch(async () => {
   });
 
   const engineStatus = await getCustomFunctionEngineStatus();
+
   if (engineStatus.enabled) {
     initializeIcons();
+
+    // clear out any former logs in the storage -- showing logs from a previous session is confusing
+    await clearLogStorage(engineStatus);
 
     const { visual, code } = await getCustomFunctionsInfo();
 

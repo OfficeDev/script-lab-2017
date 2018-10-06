@@ -94,12 +94,7 @@ export default class Console extends React.Component<Props, State> {
 
     // Helpers
     function generateNoLogsPlaceholder() {
-      let textBlock = engineStatus.nativeRuntime ? (
-        <>
-          Currently, the native javascript execution engine does not support console
-          logging from within Script Lab. Sorry about that!
-        </>
-      ) : (
+      let textBlock = (
         <>
           There are no logs to display. Use{' '}
           <pre
