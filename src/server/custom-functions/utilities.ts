@@ -101,22 +101,6 @@ function wrapCustomFunctionSnippetCode(
 ): string {
   const newlineAndIndents = '\n        ';
 
-  /*
-    // TODO MIZLATKO external code
-
-    // TODO MIZLATKO eventually enable console.log & etc.
-    var console = {
-      log: function() {
-        // do nothing for now
-      },
-      warn: function() {
-        // do nothing for now
-      },
-      error: function() {
-        // do nothing for now
-      },
-    }
-  */
   const almostReady = stripSpaces(`
     (function () {
       try {
@@ -127,12 +111,9 @@ function wrapCustomFunctionSnippetCode(
           .map(line => newlineAndIndents + line)
           .join('')}
 
-        ${generateFunctionAssignments()}
+        ${generateFunctionAssignments(true /*success*/)}
       } catch (e) {
-        function onError() {
-          throw e;
-        }
-        ${generateFunctionAssignments('onError')}
+        ${generateFunctionAssignments(false /*success*/)}
       }
     })();  
   `);
@@ -143,14 +124,18 @@ function wrapCustomFunctionSnippetCode(
     .join('\n');
 
   // Helper
-  function generateFunctionAssignments(override?: string) {
+  function generateFunctionAssignments(success: boolean) {
     return functionNames
-      .map(
-        name =>
-          `CustomFunctionMappings["${namespace.toUpperCase()}.${name.toUpperCase()}"] = ${
-            override ? override : name
-          };`
-      )
+      .map(name => {
+        const fullUppercaseName = `${namespace.toUpperCase()}.${name.toUpperCase()}`;
+        return `CustomFunctionMappings["${fullUppercaseName}"] = ${getRightSide()};`;
+
+        function getRightSide() {
+          return success
+            ? `__generateFunctionBinding__("${fullUppercaseName}", ${name})`
+            : `__generateErrorFunction__("${fullUppercaseName}", e)`;
+        }
+      })
       .join(newlineAndIndents);
   }
 }

@@ -8,18 +8,6 @@ import {
   stringifyPlusPlus,
 } from '../client/app/helpers/standalone-log-helper';
 
-// from "env.config.js"
-const StorageKeys = {
-  log: 'playground_log',
-  customFunctionsLastHeartbeatTimestamp:
-    'playground_custom_functions_last_heartbeat_timestamp',
-  customFunctionsCurrentlyRunningTimestamp:
-    'playground_custom_functions_currently_running_timestamp',
-};
-
-type LogEntry = { severity: ConsoleLogTypes; message: string };
-
-const startTime = new Date().getTime().toString();
 const WRITE_DELAY = 300;
 
 declare var OfficeExtensionBatch: {
@@ -28,7 +16,50 @@ declare var OfficeExtensionBatch: {
   };
 };
 
-(async () => {
+///////////////////////////////////////
+///////////////////////////////////////
+
+setUpConsoleMonkeypatch();
+
+// And expose a couple of global helpers:
+(global as any).__generateFunctionBinding__ = (funcName: string, func: Function) => {
+  // tslint:disable-next-line:only-arrow-functions
+  return function() {
+    const args = arguments;
+    try {
+      func.apply(global, args);
+    } catch (e) {
+      console.error(funcName + ' threw an error: ' + e);
+    }
+  };
+};
+
+(global as any).__generateErrorFunction__ = (funcName: string, error: Error) => {
+  console.error(
+    funcName +
+      ' could not be registered due to an error while loding the snippet: ' +
+      error
+  );
+};
+
+///////////////////////////////////////
+/////////////// Helpers ///////////////
+///////////////////////////////////////
+
+async function setUpConsoleMonkeypatch() {
+  // from "env.config.js"
+  const StorageKeys = {
+    log: 'playground_log',
+    customFunctionsLastHeartbeatTimestamp:
+      'playground_custom_functions_last_heartbeat_timestamp',
+    customFunctionsCurrentlyRunningTimestamp:
+      'playground_custom_functions_currently_running_timestamp',
+  };
+
+  type LogEntry = { severity: ConsoleLogTypes; message: string };
+
+  const startTime = new Date().getTime().toString();
+
   // Disable the verbose logging that's on by default in the native execution
   OfficeExtensionBatch.CoreUtility._logEnabled = false;
 
@@ -93,4 +124,4 @@ declare var OfficeExtensionBatch: {
   function queueToAppendToStorage(data: LogEntry) {
     queueToWrite.push(data);
   }
-})();
+}

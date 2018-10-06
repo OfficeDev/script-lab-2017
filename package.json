@@ -164,7 +164,6 @@
     "webpack-bundle-analyzer": "2.3.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "2.4.2",
-    "webpack-merge": "4.1.0",
-    "uglifyjs-webpack-plugin": "2.0.1"
+    "webpack-merge": "4.1.0"
   }
 }
