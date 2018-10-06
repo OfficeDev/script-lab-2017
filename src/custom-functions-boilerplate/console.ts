@@ -27,8 +27,21 @@ setUpConsoleMonkeypatch();
   return function() {
     const args = arguments;
     try {
-      func.apply(global, args);
+      const result = func.apply(global, args);
+      if (typeof result === 'object' && result['then']) {
+        return (result as Promise<any>).then(value => value).catch(e => {
+          handleError(e);
+          throw e;
+        });
+      } else {
+        return result;
+      }
     } catch (e) {
+      handleError(e);
+      throw e;
+    }
+
+    function handleError(e: Error) {
       console.error(funcName + ' threw an error: ' + e);
     }
   };
@@ -37,7 +50,7 @@ setUpConsoleMonkeypatch();
 (global as any).__generateErrorFunction__ = (funcName: string, error: Error) => {
   console.error(
     funcName +
-      ' could not be registered due to an error while loding the snippet: ' +
+      ' could not be registered due to an error while loading the snippet: ' +
       error
   );
 };
