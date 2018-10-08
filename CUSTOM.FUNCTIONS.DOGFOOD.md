@@ -4,6 +4,7 @@
 
 **Desktop:**
 * Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**).  The Custom Functions feature is not flighted for folks outside of Insiders!
+* For **desktop**, if you want to have support for `console.log` statements and automatic error reporting, you will need to [switch to **beta**](https://github.com/OfficeDev/script-lab/blob/master/.github/images/switch-to-beta.png).  For anything else, the prod version is fine.
 
 **Office Online:**
 - Should "just work".
@@ -113,8 +114,7 @@ function stockPriceStream(ticker: string, handler: CustomFunctions.StreamingHand
 ## Known issues
 
 ### Desktop:
-1. No support for `console.log` on Desktop yet, or the bubbling-up of errors in general.  But it's coming soon.
-2. No support for external libraries.  (Office Online will have those work, though).  But it's coming soon.
+1. No support for external libraries.  (Office Online will have those work, though).  But it's coming soon.
 
 ### Excel Online
-1. You will need to re-open the Functions pane anytime you reload the page, in order to get the functions to re-register.
+1. You will need to re-open the Functions pane anytime you reload the page, in order to get the functions to re-register.  A platform change is forthcoming to fix this.
