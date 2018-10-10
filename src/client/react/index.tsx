@@ -158,6 +158,27 @@ async function registerMetadata(
 
   const jsonMetadataString = JSON.stringify(registrationPayload, null, 4);
 
+  // Temporarily (i.e., through ~end of October 2018),
+  //    until the CDN is re-published to reflect the expanded signature
+  //    of "workbook.registerCustomFunctions", monkeypatch it instead:
+  // tslint:disable-next-line:only-arrow-functions
+  (Excel.Workbook.prototype as any).registerCustomFunctions = function(
+    addinNamespace,
+    metadataContent,
+    addinId,
+    locale,
+    addinInvariantNamespace
+  ) {
+    (OfficeExtension as any).BatchApiHelper.invokeMethod(
+      this,
+      'RegisterCustomFunctions',
+      0 /* Default */,
+      [addinNamespace, metadataContent, addinId, locale, addinInvariantNamespace],
+      0 /* none */,
+      0 /* none */
+    );
+  };
+
   await Excel.run(async context => {
     if (Office.context.platform === Office.PlatformType.OfficeOnline) {
       const namespace = getScriptLabTopLevelNamespace().toUpperCase();
