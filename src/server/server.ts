@@ -197,6 +197,7 @@ registerRoute(
         id: null,
         query: req.query,
         explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+        hideSyncWithEditorButton: false,
       },
       Strings(req),
       res
@@ -224,6 +225,7 @@ registerRoute('get', ['/run/:host', '/run/:host/:id'], (req, res) =>
       id: req.params.id,
       query: req.query,
       explicitlySetDisplayLanguageOrNull: getExplicitlySetDisplayLanguageOrNull(req),
+      hideSyncWithEditorButton: false,
     },
     Strings(req),
     res
@@ -686,6 +688,7 @@ function runCommon(
     query: { [key: string]: string };
     /** language, may be null */
     explicitlySetDisplayLanguageOrNull: string;
+    hideSyncWithEditorButton: boolean;
   },
   strings: ServerStrings,
   res: express.Response
@@ -711,6 +714,7 @@ function runCommon(
       headerTitle: strings.scriptLabRunner,
       strings,
       explicitlySetDisplayLanguageOrNull: options.explicitlySetDisplayLanguageOrNull,
+      hideSyncWithEditorButton: options.hideSyncWithEditorButton,
     });
 
     return respondWith(res, html, 'text/html');
