@@ -67,7 +67,7 @@ export interface IRunnerHandlebarsContext {
   /** Optional refresh URL override */
   refreshUrl?: string;
 
-  hideSyncWithEditorButton?: boolean;
+  hideSyncWithEditorButton: boolean;
 
   strings: ServerStrings;
   explicitlySetDisplayLanguageOrNull: string;

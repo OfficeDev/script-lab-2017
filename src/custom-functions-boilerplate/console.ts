@@ -22,7 +22,10 @@ declare var OfficeExtensionBatch: {
 setUpConsoleMonkeypatch();
 
 // And expose a couple of global helpers:
-(global as any).__generateFunctionBinding__ = (funcName: string, func: Function) => {
+(global as any).__generateFunctionBinding__ = (
+  funcName: string,
+  func: Function
+): Function => {
   // tslint:disable-next-line:only-arrow-functions
   return function() {
     const args = arguments;
@@ -47,12 +50,16 @@ setUpConsoleMonkeypatch();
   };
 };
 
-(global as any).__generateErrorFunction__ = (funcName: string, error: Error) => {
-  console.error(
-    funcName +
-      ' could not be registered due to an error while loading the snippet: ' +
-      error
-  );
+(global as any).__generateErrorFunction__ = (
+  funcName: string,
+  error: Error
+): Function => {
+  // tslint:disable-next-line:only-arrow-functions
+  return function() {
+    const errorText = `${funcName} could not be registered due to an error while loading the snippet: ${error}`;
+    console.error(errorText);
+    throw new Error(errorText);
+  };
 };
 
 ///////////////////////////////////////
