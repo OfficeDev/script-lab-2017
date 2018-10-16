@@ -11,26 +11,26 @@ export function getChineseSimplifiedStrings(): ServerStrings {
     playgroundName: 'Script Lab',
     playgroundTagline: '代码 ● 编写 ● 共享',
     unexpectedError: '出现意外错误',
-    snippetNotTrusted: getEnglishSubstitutesForNotYetTranslated().snippetNotTrusted,
-    trust: getEnglishSubstitutesForNotYetTranslated().trust,
+    snippetNotTrusted: '这个代码段来源于外部。在运行它之前，您需要信任它。',
+    trust: '信任',
     error: '错误',
-    cancel: '注销',
-    dismiss: '解散',
+    cancel: '取消',
+    dismiss: '关闭',
     refresh: '刷新',
   };
 
   return {
     invalidHost: '无效的主机',
     invalidId: '无效的ID',
-    receivedInvalidAuthCode: '收到验证码无效',
+    receivedInvalidAuthCode: '收到了无效的验证码',
     failedToAuthenticateUser: '无法验证用户身份',
-    receivedInvalidSnippetData: '接收无效的代码片段数据',
+    receivedInvalidSnippetData: '收到了无效的代码段数据',
     unrecognizedScriptLanguage: '无法识别的脚本语言',
-    line: '线条',
+    line: 'line',
 
     getLoadingSnippetSubtitle: (snippetName: string) => `加载 "${snippetName}"`,
 
-    getSyntaxErrorsTitle: (count: number) => (count === 1 ? '句法误差' : '句法误差'),
+    getSyntaxErrorsTitle: (count: number) => (count === 1 ? '语法错误' : '语法错误'),
 
     createdWithScriptLab: 'Script Lab创造',
 
@@ -40,16 +40,16 @@ export function getChineseSimplifiedStrings(): ServerStrings {
     versionInfo: '版本信息',
 
     manifestDefaults: {
-      nameIfEmpty: '代码片段',
+      nameIfEmpty: '代码段',
       descriptionIfEmpty: 'Script Lab创造',
     },
 
     run: '运行',
-    runPageTitle: '运行代码片段',
+    runPageTitle: '运行代码段',
     back: '返回',
     switchToSnippet: `切换到您正在编辑的代码段。`,
-    snippetCodeChanged: '你改变在这段代码段。刷新此窗格运行新版本。',
-    editingDifferentSnippet1: `您现在正在编辑一个不同的代码段`,
+    snippetCodeChanged: '您修改了这个代码段的代码。刷新此窗格以运行新版本的代码。',
+    editingDifferentSnippet1: `您正在编辑一个不同的代码段`,
     editingDifferentSnippet2: `刷新此窗格以运行它`,
     loadLatestSnippet: '下载最新代码段',
     registeringCustomFunctions: getEnglishSubstitutesForNotYetTranslated()
