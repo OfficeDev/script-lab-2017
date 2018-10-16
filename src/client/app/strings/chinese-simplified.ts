@@ -57,7 +57,7 @@ export function getChineseSimplifiedStrings(): ClientStringsPerLanguage {
     createNewCopyButtonLabel: '创建一个副本',
     editorTriggerSuggestContextMenuLabel: '引发建议',
 
-    failedToLoadCodeSnippet: '导入代码段失败',
+    failedToLoadCodeSnippet: '导入代码段失败。',
 
     snippetGistIdDuplicationError: '已存在一个和要导入代码段相同Gist ID的代码段。您想跳转到已存在的代码段还是创建一个副本?',
     snippetImportError: '导入代码段失败',
