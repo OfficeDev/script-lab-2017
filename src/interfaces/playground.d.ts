@@ -292,11 +292,12 @@ interface DefaultAuthRequestParamData {
   auth_url: string;
 }
 
-type ConsoleLogTypes = 'log' | 'info' | 'warn' | 'error';
-
 interface LogData {
   source: string;
   message: any;
   severity: ConsoleLogTypes;
   indent?: number;
 }
+
+/* duplicated from src\client\app\helpers\standalone-log-helper.ts */
+type ConsoleLogTypes = 'log' | 'info' | 'warn' | 'error';

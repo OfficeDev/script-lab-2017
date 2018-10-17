@@ -1,13 +1,14 @@
 import { parseMetadata } from './metadata.parser';
 import { compileScript } from '../core/snippet.generator';
 import { stripSpaces } from '../core/utilities';
+import { consoleMonkeypatch } from './console-monkeypatch';
 
 export function getCustomFunctionsInfoForRegistration(
   snippets: ISnippet[],
   strings: ServerStrings
 ): { visual: ICFVisualMetadata; code: string } {
   const visualMetadata: ICFVisualSnippetMetadata[] = [];
-  const code: string[] = [];
+  const code: string[] = [decodeURIComponent(consoleMonkeypatch.trim())];
 
   snippets.filter(snippet => snippet.script && snippet.name).forEach(snippet => {
     const namespace = transformSnippetName(snippet.name);
@@ -100,22 +101,6 @@ function wrapCustomFunctionSnippetCode(
 ): string {
   const newlineAndIndents = '\n        ';
 
-  /*
-    // TODO MIZLATKO external code
-
-    // TODO MIZLATKO eventually enable console.log & etc.
-    var console = {
-      log: function() {
-        // do nothing for now
-      },
-      warn: function() {
-        // do nothing for now
-      },
-      error: function() {
-        // do nothing for now
-      },
-    }
-  */
   const almostReady = stripSpaces(`
     (function () {
       try {
@@ -126,12 +111,9 @@ function wrapCustomFunctionSnippetCode(
           .map(line => newlineAndIndents + line)
           .join('')}
 
-        ${generateFunctionAssignments()}
+        ${generateFunctionAssignments(true /*success*/)}
       } catch (e) {
-        function onError() {
-          throw e;
-        }
-        ${generateFunctionAssignments('onError')}
+        ${generateFunctionAssignments(false /*success*/)}
       }
     })();  
   `);
@@ -142,14 +124,18 @@ function wrapCustomFunctionSnippetCode(
     .join('\n');
 
   // Helper
-  function generateFunctionAssignments(override?: string) {
+  function generateFunctionAssignments(success: boolean) {
     return functionNames
-      .map(
-        name =>
-          `CustomFunctionMappings["${namespace.toUpperCase()}.${name.toUpperCase()}"] = ${
-            override ? override : name
-          };`
-      )
+      .map(name => {
+        const fullUppercaseName = `${namespace.toUpperCase()}.${name.toUpperCase()}`;
+        return `CustomFunctionMappings["${fullUppercaseName}"] = ${getRightSide()};`;
+
+        function getRightSide() {
+          return success
+            ? `__generateFunctionBinding__("${fullUppercaseName}", ${name})`
+            : `__generateErrorFunction__("${fullUppercaseName}", e)`;
+        }
+      })
       .join(newlineAndIndents);
   }
 }

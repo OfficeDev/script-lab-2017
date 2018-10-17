@@ -2,30 +2,24 @@
 
 ## Setup
 
-### Prereq: Ensure you are on an Office Insider build.
+**Desktop:**
+* Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**).  The Custom Functions feature is not flighted for folks outside of Insiders!
+* For **desktop**, if you want to have support for `console.log` statements and automatic error reporting, you will need to [switch to **beta**](https://github.com/OfficeDev/script-lab/blob/master/.github/images/switch-to-beta.png).  For anything else, the prod version is fine.
 
-#### Desktop:
-- Ensure that you are on an **[Office Insider](https://products.office.com/en-us/office-insider?tab=Windows-Desktop#Tabs_section)** build (a.k.a. **DevMain Channel (Dogfood)**)
+**Office Online:**
+- Should "just work".
 
-And again, remember that you must be on an **Insider** build, the Custom Functions feature is not flighted for folks outside of Insiders!
-
-#### Excel Online:
-- As of Sept 27 2018 (and probably for the next week or so), you must be on the **alpha** build of Script Lab to use Script Lab + Custom Functions in Excel Online.  
-
-#### Mac:
+**Mac:**
 - Currently, there is **no support** for Script Lab + Custom Functions on the Mac
 
-## Acquire the Store version of Script Lab
-
-If you don't have Script Lab yet, [install it from Office Store](https://store.office.com/app.aspx?assetid=WA104380862)
-
+See the *known issues* section at the bottom of this document, for some caveats.
 
 ## A picture is worth a thousand recalcs
 
 ![Screenshot](./.github/images/custom-functions-dogfood.png)
 Custom Functions in action. Note the console.logs in the dashboard, as well!
 
-## Usage
+## Dogfood instructions
 
 1.  Open the `Code` taskpane (via the Ribbon), create a new snippet, and replace the existing code with the following:
 
@@ -52,9 +46,9 @@ To try a more complicated (e.g., a web-service-calling) Custom Function, [import
 
 ## Streaming functions:
 
-As of Sept 27 2018 (and for another week or so), you must be on the **alpha branch** of Script Lab for streaming functions to work.
+First, add the following line to your Libraries tab: `@types/custom-functions-runtime`.
 
-After that, all you need is to  **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
+Then, **specify a callback of type `CustomFunctions.StreamingHandler<X>` as the last parameter to a streaming function**. 
 
 Simple case:  (from https://gist.github.com/Zlatkovsky/dd706c40431efabce962308789cba6f1)
 
@@ -116,17 +110,11 @@ function stockPriceStream(ticker: string, handler: CustomFunctions.StreamingHand
 ```
 
 
+
 ## Known issues
 
-### Platform
+### Desktop:
+1. No support for external libraries.  (Office Online will have those work, though).  But it's coming soon.
 
-1.  If you enter a Custom Function into a formula and then remove the function -- or if you restart Excel and before you re-register the custom functions -- the formula bar will show something like `=_xldudf_96323233322223(...)`
-
-### Script Lab
-
-#### Desktop:
-1. No support for `console.log` on Desktop yet, or the bubbling-up of errors in general.  But it's coming soon.
-2. No support for external libraries.  (Office Online will have those work, though).  But it's coming soon.
-
-#### Excel Online
-1. You will need to re-open the Functions pane anytime you reload the page, in order to get the functions to re-register.
+### Excel Online
+1. You will need to re-open the Functions pane anytime you reload the page, in order to get the functions to re-register.  A platform change is forthcoming to fix this.

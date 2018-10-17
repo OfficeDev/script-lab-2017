@@ -4,6 +4,7 @@ export * from './environment';
 export * from './exception.helper';
 export * from './libraries.processor';
 export * from './messenger';
+export * from './standalone-log-helper';
 export * from './snippet.helper';
 export * from './splash.screen';
 export * from './storage';
