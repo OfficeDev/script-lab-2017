@@ -75,9 +75,10 @@
     lodash "4.17.4"
     rxjs "5.2.0"
 
-"@microsoft/office-js@1.1.10":
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.10.tgz#9125966bbd587c91e59fb400b4d202ce0ebe9711"
+"@microsoft/office-js@1.1.11-adhoc.20":
+  version "1.1.11-adhoc.20"
+  resolved "https://registry.yarnpkg.com/@microsoft/office-js/-/office-js-1.1.11-adhoc.20.tgz#d53b57720ce7f7aa8a5c155b275855852e85211f"
+  integrity sha512-E2Jq0nQDPwhuh7T8oZiog+COJnMhrSJQwWOIa060TwJxAtBYLQSHsRYM697cMQ8eskCxOQ1JYJQ3qTrhCPiA1A==
 
 "@ngrx/core@1.2.0":
   version "1.2.0"
@@ -5366,6 +5367,11 @@ lodash.uniq@^4.5.0:
 lodash@4.17.4, lodash@4.x.x, lodash@^4.0.0, lodash@^4.11.1, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.8.0, lodash@~4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
+
+lodash@4.17.5:
+  version "4.17.5"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
+  integrity sha512-svL3uiZf1RwhH+cWrfZn3A4+U58wbP0tGVTLQPbjplZxZ8ROD9VLuNgsRniTlLe7OlSqR79RUehXgpBW/s0IQw==
 
 lodash@^3.10.1, lodash@^3.3.1:
   version "3.10.1"
