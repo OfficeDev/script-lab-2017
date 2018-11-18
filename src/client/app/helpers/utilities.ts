@@ -82,19 +82,27 @@ export async function getCustomFunctionEngineStatus(): Promise<
   // Helpers:
 
   async function getEngineStatus(): Promise<CustomFunctionEngineStatus> {
-    return tryExcelRun(
-      async (context): Promise<CustomFunctionEngineStatus> => {
-        const manager = (Excel as any).CustomFunctionManager.newObject(context).load(
-          'status'
-        );
-        await context.sync();
+    if (Office.context.requirements.isSetSupported('CustomFunctions', 1.6)) {
+      const status = await (Excel as any).CustomFunctionManager.getStatus();
+      return {
+        enabled: status.enabled,
+        nativeRuntime: status.nativeRuntime,
+      };
+    } else {
+      return tryExcelRun(
+        async (context): Promise<CustomFunctionEngineStatus> => {
+          const manager = (Excel as any).CustomFunctionManager.newObject(context).load(
+            'status'
+          );
+          await context.sync();
 
-        return {
-          enabled: manager.status.enabled,
-          nativeRuntime: manager.status.nativeRuntime,
-        };
-      }
-    );
+          return {
+            enabled: manager.status.enabled,
+            nativeRuntime: manager.status.nativeRuntime,
+          };
+        }
+      );
+    }
   }
 
   async function tryExcelRun(
