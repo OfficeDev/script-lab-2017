@@ -2,6 +2,7 @@ import { parseMetadata } from './metadata.parser';
 import { compileScript } from '../core/snippet.generator';
 import { stripSpaces } from '../core/utilities';
 import { consoleMonkeypatch } from './console-monkeypatch';
+import { processLibraries } from '../core/libraries.processor';
 
 export function getCustomFunctionsInfoForRegistration(
   snippets: ISnippet[],
@@ -40,6 +41,11 @@ export function getCustomFunctionsInfoForRegistration(
       code.push(
         wrapCustomFunctionSnippetCode(
           snippetCode,
+          processLibraries(
+            snippet.libraries,
+            false /*isMakerScript*/,
+            true /*isInsideOffice*/
+          ).scriptReferences,
           namespace,
           snippetFunctions.map(func => func.funcName)
         )
@@ -96,6 +102,7 @@ export function getCustomFunctionsInfoForRegistration(
 
 function wrapCustomFunctionSnippetCode(
   code: string,
+  libraries: string[],
   namespace: string,
   functionNames: string[]
 ): string {
