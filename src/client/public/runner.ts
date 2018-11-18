@@ -191,15 +191,20 @@ interface MakerInitializationParams {
       return `${window.location.protocol}//${urlExtractor[2]}`;
     })();
 
-    establishHeartbeat(initialParams.origin, {
-      host: host,
-      runnerUrl: runnerUrlWithCorrectPrefix,
-      id: currentSnippet.id,
-      lastModified: initialParams.currentSnippet.lastModified,
-    });
+    // Use the "hideSyncWithEditorButton" flag as a way to indicate that:
+    // 1. Shouldn't show the "sync with editor" button on the top-right.
+    // 2. Shouldn't establish the heartbeat
+    const showSyncWithEditorAndEstablishHeartbeat = !initialParams.hideSyncWithEditorButton;
+    if (showSyncWithEditorAndEstablishHeartbeat) {
+      establishHeartbeat(initialParams.origin, {
+        host: host,
+        runnerUrl: runnerUrlWithCorrectPrefix,
+        id: currentSnippet.id,
+        lastModified: initialParams.currentSnippet.lastModified,
+      });
 
-    const $syncWithEditor = $('#sync-with-editor');
-    if (!initialParams.hideSyncWithEditorButton) {
+      const $syncWithEditor = $('#sync-with-editor');
+
       $syncWithEditor
         .click(() =>
           clearAndRefresh(null /*id*/, null /*name*/, false /*isTrustedSnippet*/)
