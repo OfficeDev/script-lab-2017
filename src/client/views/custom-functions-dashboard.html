@@ -29,7 +29,11 @@
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['office-ui-fabric-js']}}}/css/fabric.components.min.css">
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid.min.css">
 	<link rel="stylesheet" href="libs/{{{versionedPackageNames['jsgrid']}}}/jsgrid-theme.min.css">
-	<script src="https://appsforoffice.microsoft.com/lib/beta/hosted/office.js"></script>
+
+	<!-- Temporarily, through ~end of Nov 2018 or early Dec, use a private NPM package that
+	has updated code to allow CustomFunctionManager.register (CustomFunctions 1.6) -->
+	<script src="libs/{{{versionedPackageNames['@microsoft/office-js']}}}/dist/office.js"></script>
+	<!-- <script src="https://appsforoffice.microsoft.com/lib/custom-functions-preview-refresh/hosted/office.js"></script> -->
 
 	<script>
 		Office.initialize = function () {
