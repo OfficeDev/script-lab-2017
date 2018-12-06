@@ -8,8 +8,6 @@ import {
   stringifyPlusPlus,
 } from '../client/app/helpers/standalone-log-helper';
 
-const WRITE_DELAY = 300;
-
 declare var OfficeExtensionBatch: {
   CoreUtility: {
     _logEnabled: boolean;
@@ -27,7 +25,7 @@ setUpConsoleMonkeypatch();
   func: Function
 ): Function => {
   // tslint:disable-next-line:only-arrow-functions
-  return function() {
+  return function () {
     const args = arguments;
     try {
       const result = func.apply(global, args);
@@ -55,7 +53,7 @@ setUpConsoleMonkeypatch();
   error: Error
 ): Function => {
   // tslint:disable-next-line:only-arrow-functions
-  return function() {
+  return function () {
     const errorText = `${funcName} could not be registered due to an error while loading the snippet: ${error}`;
     console.error(errorText);
     throw new Error(errorText);
@@ -66,19 +64,22 @@ setUpConsoleMonkeypatch();
 /////////////// Helpers ///////////////
 ///////////////////////////////////////
 
+type LogEntry = { severity: ConsoleLogTypes; message: string };
+
+let logCounter = 0;
+const StorageKeys = {
+  logHash: 'cf_logs#',
+};
+
 async function setUpConsoleMonkeypatch() {
-  // from "env.config.js"
-  const StorageKeys = {
-    log: 'playground_log',
-    customFunctionsLastHeartbeatTimestamp:
-      'playground_custom_functions_last_heartbeat_timestamp',
-    customFunctionsCurrentlyRunningTimestamp:
-      'playground_custom_functions_currently_running_timestamp',
-  };
-
-  type LogEntry = { severity: ConsoleLogTypes; message: string };
-
-  const startTime = new Date().getTime().toString();
+  try {
+    let oldKeysToRemove = (await OfficeRuntime.AsyncStorage.getAllKeys())
+      .filter(key => key.startsWith(StorageKeys.logHash));
+    await OfficeRuntime.AsyncStorage.multiRemove(oldKeysToRemove);
+  } catch (e) {
+    console.error('Error clearing out initial AsyncStorage');
+    console.error(e);
+  }
 
   // Disable the verbose logging that's on by default in the native execution
   OfficeExtensionBatch.CoreUtility._logEnabled = false;
@@ -92,56 +93,20 @@ async function setUpConsoleMonkeypatch() {
   logTypes.forEach(methodName => {
     console[methodName] = (...args: any[]) => {
       oldConsole[methodName](...args);
-      queueToAppendToStorage(generateLogString(args, methodName));
+      writeToAsyncStorage(generateLogString(args, methodName));
     };
   });
+}
 
+// Helper
+async function writeToAsyncStorage(entry: LogEntry) {
   try {
-    await OfficeRuntime.AsyncStorage.removeItem(StorageKeys.log);
+    await OfficeRuntime.AsyncStorage.setItem(StorageKeys.logHash + (logCounter++), JSON.stringify({
+      severity: entry.severity,
+      message: stringifyPlusPlus(entry.message),
+    }));
   } catch (e) {
-    console.error('Error clearing out initial AsyncStorage');
+    console.error('Error writing to AsyncStorage');
     console.error(e);
-  }
-
-  let queueToWrite: LogEntry[] = [];
-  startWritingLoop();
-
-  // Helpers
-  function startWritingLoop() {
-    writeToAsyncStorage();
-
-    async function writeToAsyncStorage() {
-      const currentValue = await OfficeRuntime.AsyncStorage.getItem(StorageKeys.log);
-      const newLogValue =
-        (currentValue ? currentValue + '\n' : '') +
-        queueToWrite
-          .map(entry =>
-            JSON.stringify({
-              severity: entry.severity,
-              message: stringifyPlusPlus(entry.message),
-            })
-          )
-          .join('\n');
-      queueToWrite = [];
-      await OfficeRuntime.AsyncStorage.multiSet([
-        [StorageKeys.log, newLogValue],
-        [StorageKeys.customFunctionsCurrentlyRunningTimestamp, startTime],
-        [
-          StorageKeys.customFunctionsLastHeartbeatTimestamp,
-          new Date().getTime().toString(),
-        ],
-      ]);
-      try {
-      } catch (e) {
-        console.error('Error writing to AsyncStorage');
-        console.error(e);
-      }
-
-      setTimeout(writeToAsyncStorage, WRITE_DELAY);
-    }
-  }
-
-  function queueToAppendToStorage(data: LogEntry) {
-    queueToWrite.push(data);
   }
 }
