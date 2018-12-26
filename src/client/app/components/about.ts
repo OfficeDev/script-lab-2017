@@ -142,19 +142,20 @@ export class About implements AfterViewInit {
           }
         : null,
 
-      { name: this.strings.beta, value: config.insiders.name },
-      { name: this.strings.alpha, value: config.edge.name },
+      { name: 'Script Lab 2017', value: config.insiders.name },
 
       showReactOnes
         ? {
-            name: 'Script Lab React - Beta',
+            name: 'Script Lab React - ' + this.strings.beta,
             value: config.reactbeta.name,
           }
         : null,
 
+      { name: 'Script Lab 2017 - ' + this.strings.alpha, value: config.edge.name },
+
       showReactOnes
         ? {
-            name: 'Script Lab React - Alpha',
+            name: 'Script Lab React - ' + this.strings.alpha,
             value: config.reactalpha.name,
           }
         : null,
