@@ -12,7 +12,7 @@ export function instantiateRibbon(elementId: string): boolean {
   switch (environment.current.config.name) {
     // Utilize Office pallet colors for ribbons
     case config.insiders.name:
-      ribbon.textContent = strings.beta;
+      ribbon.textContent = '2017';
       ribbon.style.background = 'rgba(43, 87, 154, 1)';
       break;
     case config.edge.name:
