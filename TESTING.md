@@ -5,7 +5,7 @@
 * Import someone else's snippet
   * From YAML
   * From Gist (incl. old-style)
-  * From Non-GitHub URL **[Currently doesn't work, [Issue #146](https://github.com/OfficeDev/script-lab/issues/146)]**.
+  * From Non-GitHub URL **[Currently doesn't work, [Issue #146](https://github.com/OfficeDev/script-lab-2017/issues/146)]**.
 * Import gist that is already in workspace -- both your own and someone's else
   * User should be prompted to choose whether to open previously imported gist, import gist again, or cancel action.
 * Run snippet, in both in-editor runner (Office 2016 RTM and earlier, or online, or via tweaking the manifest to remove `command=true`) and via the "Run" button (`run.html`), testing that:

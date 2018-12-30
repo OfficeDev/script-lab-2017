@@ -186,8 +186,8 @@ Script Lab is currently available or being translated into the following languag
 <a id="incremental"></a>
 ## Tracking bugs for incremental translations
 
-| Language             | Filename                | URL for tracking issue                                 |
-|:---------------------|:------------------------|:-------------------------------------------------------|
-| German               | german.ts               | https://github.com/OfficeDev/script-lab/issues/472     |
-| Spanish              | spanish.ts              | https://github.com/OfficeDev/script-lab/issues/510     |
-| Chinese (Simplified) | chinese-simplified.ts   | https://github.com/OfficeDev/script-lab/issues/557     |
+| Language             | Filename                | URL for tracking issue                                  |
+|:---------------------|:------------------------|:--------------------------------------------------------|
+| German               | german.ts               | https://github.com/OfficeDev/script-lab-2017/issues/472 |
+| Spanish              | spanish.ts              | https://github.com/OfficeDev/script-lab-2017/issues/510 |
+| Chinese (Simplified) | chinese-simplified.ts   | https://github.com/OfficeDev/script-lab-2017/issues/557 |
