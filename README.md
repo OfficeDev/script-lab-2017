@@ -1,8 +1,10 @@
-﻿[![Build Status](https://travis-ci.com/OfficeDev/script-lab.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.org/OfficeDev/script-lab)
+﻿[![Build Status](https://travis-ci.com/OfficeDev/script-lab-2017.svg?token=zKp5xy2SuSortMzv5Pqc&branch=master)](https://travis-ci.org/OfficeDev/script-lab-2017)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 <a id="top"></a>
 
-# Script Lab, a Microsoft Garage project
+# Script Lab 2017, a Microsoft Garage project
+
+> **IMPORTANT**: A newer version of Script Lab, re-built from the ground up using React in late 2018, is now available at <https://github.com/officedev/script-lab>. This older 2017 version is now mostly for archival purposes. See [this link](https://github.com/OfficeDev/script-lab/blob/master/README.md#2017) for more info.
 
 Experiment with the Office JavaScript API without ever leaving Excel, Word, or PowerPoint! [**Get Script Lab for free, from the Office Store**](https://store.office.com/app.aspx?assetid=WA104380862).
 
