@@ -25,15 +25,17 @@ setUpConsoleMonkeypatch();
   func: Function
 ): Function => {
   // tslint:disable-next-line:only-arrow-functions
-  return function () {
+  return function() {
     const args = arguments;
     try {
       const result = func.apply(global, args);
       if (typeof result === 'object' && result['then']) {
-        return (result as Promise<any>).then(value => value).catch(e => {
-          handleError(e);
-          throw e;
-        });
+        return (result as Promise<any>)
+          .then(value => value)
+          .catch(e => {
+            handleError(e);
+            throw e;
+          });
       } else {
         return result;
       }
@@ -53,7 +55,7 @@ setUpConsoleMonkeypatch();
   error: Error
 ): Function => {
   // tslint:disable-next-line:only-arrow-functions
-  return function () {
+  return function() {
     const errorText = `${funcName} could not be registered due to an error while loading the snippet: ${error}`;
     console.error(errorText);
     throw new Error(errorText);
@@ -73,8 +75,9 @@ const StorageKeys = {
 
 async function setUpConsoleMonkeypatch() {
   try {
-    let oldKeysToRemove = (await OfficeRuntime.AsyncStorage.getAllKeys())
-      .filter(key => key.startsWith(StorageKeys.logHash));
+    let oldKeysToRemove = (await OfficeRuntime.AsyncStorage.getAllKeys()).filter(key =>
+      key.startsWith(StorageKeys.logHash)
+    );
     await OfficeRuntime.AsyncStorage.multiRemove(oldKeysToRemove);
   } catch (e) {
     console.error('Error clearing out initial AsyncStorage');
@@ -92,21 +95,36 @@ async function setUpConsoleMonkeypatch() {
 
   logTypes.forEach(methodName => {
     console[methodName] = (...args: any[]) => {
+      if (shouldIgnore(...args)) {
+        return;
+      }
+
       oldConsole[methodName](...args);
       writeToAsyncStorage(generateLogString(args, methodName));
     };
   });
 }
 
-// Helper
+///////////////////////////////////////
+
+// Helpers
+
 async function writeToAsyncStorage(entry: LogEntry) {
   try {
-    await OfficeRuntime.AsyncStorage.setItem(StorageKeys.logHash + (logCounter++), JSON.stringify({
-      severity: entry.severity,
-      message: stringifyPlusPlus(entry.message),
-    }));
+    await OfficeRuntime.AsyncStorage.setItem(
+      StorageKeys.logHash + logCounter++,
+      JSON.stringify({
+        severity: entry.severity,
+        message: stringifyPlusPlus(entry.message),
+      })
+    );
   } catch (e) {
     console.error('Error writing to AsyncStorage');
     console.error(e);
   }
+}
+
+const SHOULD_IGNORE_REGEX = /^\w+ CustomFunctions \[Execution\] \[(Begin|End)\].*/;
+function shouldIgnore(...args: any[]) {
+  return args.length === 1 && SHOULD_IGNORE_REGEX.test(args[0]);
 }
